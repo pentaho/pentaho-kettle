@@ -17,6 +17,12 @@
 
 package org.pentaho.di.ui.trans.steps.uniquerows;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
@@ -44,6 +50,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.uniquerows.Messages;
 import org.pentaho.di.trans.steps.uniquerows.UniqueRowsMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -69,11 +76,16 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
+	
+	private ColumnInfo[] colinf;
+	
+    private Map<String, Integer> inputFields;
 
 	public UniqueRowsDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input=(UniqueRowsMeta)in;
+        inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -186,9 +198,9 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 
 		final int FieldsRows=input.getCompareFields()==null?0:input.getCompareFields().length;
 		
-		ColumnInfo[] colinf=new ColumnInfo[]
+		colinf=new ColumnInfo[]
         {
-		  new ColumnInfo(Messages.getString("UniqueRowsDialog.ColumnInfo.Fieldname"),    ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
+		  new ColumnInfo(Messages.getString("UniqueRowsDialog.ColumnInfo.Fieldname"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
           new ColumnInfo(Messages.getString("UniqueRowsDialog.ColumnInfo.IgnoreCase"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] {"Y", "N"}, true ) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         };
 		
@@ -207,6 +219,35 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		fdFields.bottom = new FormAttachment(wOK, -2*margin);
 		wFields.setLayoutData(fdFields);
 
+		  // 
+        // Search the fields in the background
+		
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                       
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        setComboBoxes();
+                    }
+                    catch(KettleException e)
+                    {
+                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -238,7 +279,23 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		return stepname;
 	}
-	
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+        final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+
+        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+        Const.sortStrings(fieldNames);
+        colinf[0].setComboValues(fieldNames);
+    }
 	public void setFlags()
 	{
 		wlCountField.setEnabled(wCount.getSelection());

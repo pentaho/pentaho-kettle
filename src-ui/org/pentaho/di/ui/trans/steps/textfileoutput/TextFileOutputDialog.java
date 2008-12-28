@@ -19,7 +19,10 @@ package org.pentaho.di.ui.trans.steps.textfileoutput;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -57,6 +60,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.textfileoutput.Messages;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileField;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
@@ -197,12 +201,16 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	private Label        wlSpecifyFormat;
 	private Button       wSpecifyFormat;
 	private FormData     fdlSpecifyFormat, fdSpecifyFormat;
+	
+	private ColumnInfo[] colinf;
 
+    private Map<String, Integer> inputFields;
     
 	public TextFileOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input=(TextFileOutputMeta)in;
+        inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -1027,8 +1035,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		for (int x=0;x<dats.length;x++) formats[x] = dats[x];
 		for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
 		
-		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("TextFileOutputDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf=new ColumnInfo[FieldsCols];
+		colinf[0]=new ColumnInfo(Messages.getString("TextFileOutputDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
 		colinf[1]=new ColumnInfo(Messages.getString("TextFileOutputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
 		colinf[2]=new ColumnInfo(Messages.getString("TextFileOutputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO, formats);
 		colinf[3]=new ColumnInfo(Messages.getString("TextFileOutputDialog.LengthColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false);
@@ -1053,6 +1061,36 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		fdFields.right = new FormAttachment(100, 0);
 		fdFields.bottom= new FormAttachment(wGet, -margin);
 		wFields.setLayoutData(fdFields);
+		
+		  // 
+        // Search the fields in the background
+		
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                       
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        setComboBoxes();
+                    }
+                    catch(KettleException e)
+                    {
+                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
 
 		fdFieldsComp=new FormData();
 		fdFieldsComp.left  = new FormAttachment(0, 0);
@@ -1170,6 +1208,23 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		}
 		return stepname;
 	}
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+        final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+
+        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+        Const.sortStrings(fieldNames);
+        colinf[0].setComboValues(fieldNames);
+    }
 	private void setDateTimeFormat()
 	{
 		if(wSpecifyFormat.getSelection())

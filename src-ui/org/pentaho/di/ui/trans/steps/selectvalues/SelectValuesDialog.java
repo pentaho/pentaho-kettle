@@ -19,7 +19,10 @@ package org.pentaho.di.ui.trans.steps.selectvalues;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -114,10 +117,13 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 	 */
 	private boolean bPreviousFieldsLoaded = false;
 	
+    private Map<String, Integer> inputFields;
+	
 	public SelectValuesDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input=(SelectValuesMeta)in;
+        inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -448,6 +454,37 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
+		
+		  // 
+        // Search the fields in the background
+        //
+        
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                        RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                        prevFields=row;
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        setComboBoxes();
+                    }
+                    catch(KettleException e)
+                    {
+                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
 		
 		// Set the shell size, based upon previous time...
 		setSize();
@@ -788,4 +825,28 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			wTabFolder.setSelection(0);
 		}
 	}
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+        final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+
+        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+        Const.sortStrings(fieldNames);
+        
+        bPreviousFieldsLoaded = true;
+        for (int i = 0; i < fieldColumns.size(); i++) 
+        {
+			ColumnInfo colInfo = (ColumnInfo) fieldColumns.get(i);
+			colInfo.setComboValues(fieldNames);
+		}
+    }
 }

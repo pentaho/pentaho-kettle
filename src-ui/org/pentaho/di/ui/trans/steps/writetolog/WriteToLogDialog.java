@@ -241,12 +241,11 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
                         {
                             inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
                         }
-                        
                         setComboBoxes();
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), "It was not possible to get the fields from the previous step(s).");
+                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }

@@ -20,6 +20,12 @@
 
 package org.pentaho.di.ui.trans.steps.groupby;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
@@ -48,6 +54,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -99,11 +106,16 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
 	private GroupByMeta input;
 	private boolean backupAllRows;
+	private ColumnInfo[] ciKey;
+	private ColumnInfo[] ciReturn;
+	
+    private Map<String, Integer> inputFields;
 
 	public GroupByDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input=(GroupByMeta)in;
+        inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -326,8 +338,9 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		int nrKeyCols=1;
 		int nrKeyRows=(input.getGroupField()!=null?input.getGroupField().length:1);
 		
-		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.GroupField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciKey=new ColumnInfo[nrKeyCols];
+		ciKey[0]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.GroupField"),  
+		ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
 		
 		wGroup=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -363,9 +376,9 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		int UpInsCols=4;
 		int UpInsRows= (input.getAggregateField()!=null?input.getAggregateField().length:1);
 		
-		ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
+		ciReturn=new ColumnInfo[UpInsCols];
 		ciReturn[0]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.Name"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		ciReturn[1]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.Subject"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciReturn[1]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.Subject"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
 		ciReturn[2]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, GroupByMeta.typeGroupLongDesc); //$NON-NLS-1$
 		ciReturn[3]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.Value"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		ciReturn[3].setToolTip(Messages.getString("GroupByDialog.ColumnInfo.Value.Tooltip"));
@@ -385,6 +398,36 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		fdGetAgg.top   = new FormAttachment(wlAgg, margin);
 		fdGetAgg.right = new FormAttachment(100, 0);
 		wGetAgg.setLayoutData(fdGetAgg);
+		
+		  // 
+        // Search the fields in the background
+		
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                       
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        setComboBoxes();
+                    }
+                    catch(KettleException e)
+                    {
+                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
@@ -434,7 +477,24 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		return stepname;
 	}
-    
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+        final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+
+        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+        Const.sortStrings(fieldNames);
+        ciKey[0].setComboValues(fieldNames);
+        ciReturn[1].setComboValues(fieldNames);
+    }
     public void setFlags()
     {
         wlSortDir.setEnabled( wAllRows.getSelection() );

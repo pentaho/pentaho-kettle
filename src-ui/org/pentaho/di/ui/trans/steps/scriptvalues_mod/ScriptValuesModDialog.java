@@ -125,6 +125,7 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.trans.step.StepMeta;
 
 
 public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogInterface
@@ -171,6 +172,11 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	private Image imageInactiveScript=null;
 	private Image imageActiveStartScript=null;
 	private Image imageActiveEndScript=null;
+	private Image imageInputFields=null;
+	private Image imageOutputFields=null;
+	private Image imageArrowOrange=null;
+	private Image imageArrowGreen=null;
+	private Image imageUnderGreen=null;
 
 	
 	private CTabFolder 	folder;
@@ -207,6 +213,16 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	private ScriptValuesHelp scVHelp;
 	private ScriptValuesHighlight lineStyler = new ScriptValuesHighlight();
 	private Button wCompatible;
+	
+    private TreeItem iteminput;
+    
+    private TreeItem itemoutput;
+    
+	private static GUIResource guiresource=GUIResource.getInstance();
+	
+    private TreeItem itemWaitFieldsIn,itemWaitFieldsOut;
+    
+    private RowMetaInterface  rowPrevStepFields;;
 		
 	public ScriptValuesModDialog(Shell parent, Object in, TransMeta transMeta, String sname){
 
@@ -214,15 +230,25 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		input=(ScriptValuesMetaMod)in;
 		try{
 			//ImageLoader xl = new ImageLoader();
-			imageActiveScript = GUIResource.getInstance().getImage("ui/images/faScript.png");
-			imageInactiveScript = GUIResource.getInstance().getImage("ui/images/fScript.png");
-			imageActiveStartScript = GUIResource.getInstance().getImage("ui/images/sScript.png");
-			imageActiveEndScript = GUIResource.getInstance().getImage("ui/images/eScript.png");
+			imageUnderGreen = guiresource.getImage("ui/images/underGreen.png");
+			imageArrowGreen = guiresource.getImage("ui/images/arrowGreen.png");
+			imageArrowOrange = guiresource.getImage("ui/images/arrowOrange.png");
+			imageInputFields = guiresource.getImage("ui/images/inSmall.png");
+			imageOutputFields = guiresource.getImage("ui/images/outSmall.png");
+			imageActiveScript = guiresource.getImage("ui/images/faScript.png");
+			imageInactiveScript = guiresource.getImage("ui/images/fScript.png");
+			imageActiveStartScript = guiresource.getImage("ui/images/sScript.png");
+			imageActiveEndScript = guiresource.getImage("ui/images/eScript.png");
 		}catch(Exception e){
 			imageActiveScript = new Image(parent.getDisplay(), 16, 16);
 			imageInactiveScript = new Image(parent.getDisplay(), 16, 16);
 			imageActiveStartScript = new Image(parent.getDisplay(), 16, 16);
 			imageActiveEndScript = new Image(parent.getDisplay(), 16, 16);
+			imageInputFields = new Image(parent.getDisplay(), 16, 16);
+			imageOutputFields = new Image(parent.getDisplay(), 16, 16);
+			imageArrowOrange = new Image(parent.getDisplay(), 16, 16);
+			imageArrowGreen= new Image(parent.getDisplay(), 16, 16);
+			imageUnderGreen= new Image(parent.getDisplay(), 16, 16);
 		}
 		
         try
@@ -358,7 +384,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		fdCompatible.left  = new FormAttachment(wlCompatible, margin);
 		fdCompatible.top   = new FormAttachment(wlPosition, margin);
 		wCompatible.setLayoutData(fdCompatible);
-		wCompatible.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { rebuildInputFieldsTree();} });
+		wCompatible.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setInputOutputFields();} });
 		
 		
 		wlHelpLabel = new Text(wTop, SWT.V_SCROLL |   SWT.LEFT);
@@ -506,6 +532,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		// Adding the Default Transform Scripts Item to the Tree
 		wTreeScriptsItem = new TreeItem(wTree, SWT.NULL);
+		wTreeScriptsItem.setImage(guiresource.getImageBol());
 		wTreeScriptsItem.setText(Messages.getString("ScriptValuesDialogMod.TransformScript.Label"));
 		
 		// Set the shell size, based upon previous time...
@@ -514,8 +541,58 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		// Adding the Rest (Functions, InputItems, etc.) to the Tree
 		buildSpecialFunctionsTree();
-		rebuildInputFieldsTree();
-		buildOutputFieldsTree();
+		
+		// Input Fields
+		iteminput = new TreeItem(wTree, SWT.NULL);
+		iteminput.setImage(imageInputFields);
+		iteminput.setText(Messages.getString("ScriptValuesDialogMod.InputFields.Label"));
+		// Output Fields
+		itemoutput = new TreeItem(wTree, SWT.NULL);
+		itemoutput.setImage(imageOutputFields);
+		itemoutput.setText(Messages.getString("ScriptValuesDialogMod.OutputFields.Label"));
+		
+		// Display waiting message for input
+		itemWaitFieldsIn = new TreeItem(iteminput, SWT.NULL);
+		itemWaitFieldsIn.setText("Récupération des champs en cours ...");
+		itemWaitFieldsIn.setForeground(guiresource.getColorDirectory());
+        iteminput.setExpanded(true);
+		   
+		// Display waiting message for output
+        itemWaitFieldsOut = new TreeItem(itemoutput, SWT.NULL);
+        itemWaitFieldsOut.setText("Récupération des champs en cours ...");
+        itemWaitFieldsOut.setForeground(guiresource.getColorDirectory());
+        itemoutput.setExpanded(true);
+		
+		  // 
+        // Search the fields in the background
+        //
+        
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+            	StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                    	rowPrevStepFields = transMeta.getPrevStepFields(stepMeta);
+                        setInputOutputFields();
+                    }
+                    catch(KettleException e)
+                    {
+                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
+        
+
+		
+		
+		//rebuildInputFieldsTree();
+		//buildOutputFieldsTree();
 		buildAddClassesListTree();
 		addRenameTowTreeScriptItems();
 		input.setChanged(changed);
@@ -622,6 +699,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				break;
 			case ADD_ITEM :
 				TreeItem item = new TreeItem(wTreeScriptsItem, SWT.NULL);
+				item.setImage(imageActiveScript);
 				item.setText(ctabitem.getText());
 				input.setChanged();
 				break;
@@ -1138,42 +1216,53 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	private void buildSpecialFunctionsTree(){
 
 		TreeItem item = new TreeItem(wTree, SWT.NULL);
+		item.setImage(guiresource.getImageBol());
 		item.setText(Messages.getString("ScriptValuesDialogMod.TansformConstant.Label"));
 		TreeItem itemT = new TreeItem(item, SWT.NULL);
+		itemT.setImage(imageArrowGreen);
 		itemT.setText("SKIP_TRANSFORMATION");
 		itemT.setData("SKIP_TRANSFORMATION");
 		//itemT = new TreeItem(item, SWT.NULL);
 		//itemT.setText("ABORT_TRANSFORMATION");
 		//itemT.setData("ABORT_TRANSFORMATION");
 		itemT = new TreeItem(item, SWT.NULL);
+		itemT.setImage(imageArrowGreen);
 		itemT.setText("ERROR_TRANSFORMATION");
 		itemT.setData("ERROR_TRANSFORMATION");
 		itemT = new TreeItem(item, SWT.NULL);
+		itemT.setImage(imageArrowGreen);
 		itemT.setText("CONTINUE_TRANSFORMATION");
 		itemT.setData("CONTINUE_TRANSFORMATION");
 		
 		
 		item = new TreeItem(wTree, SWT.NULL);
+		item.setImage(guiresource.getImageBol());
 		item.setText(Messages.getString("ScriptValuesDialogMod.TransformFunctions.Label"));
 		String strData = "";
 		
 		// Adding the Grouping Items to the Tree
 		TreeItem itemStringFunctionsGroup = new TreeItem(item, SWT.NULL);
+		itemStringFunctionsGroup.setImage(imageUnderGreen);
 		itemStringFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.StringFunctions.Label"));
 		itemStringFunctionsGroup.setData("Function");
 		TreeItem itemNumericFunctionsGroup = new TreeItem(item, SWT.NULL);
+		itemNumericFunctionsGroup.setImage(imageUnderGreen);
 		itemNumericFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.NumericFunctions.Label"));
 		itemNumericFunctionsGroup.setData("Function");
 		TreeItem itemDateFunctionsGroup = new TreeItem(item, SWT.NULL);
+		itemDateFunctionsGroup.setImage(imageUnderGreen);
 		itemDateFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.DateFunctions.Label"));
 		itemDateFunctionsGroup.setData("Function");
 		TreeItem itemLogicFunctionsGroup = new TreeItem(item, SWT.NULL);
+		itemLogicFunctionsGroup.setImage(imageUnderGreen);
 		itemLogicFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.LogicFunctions.Label"));
 		itemLogicFunctionsGroup.setData("Function");
 		TreeItem itemSpecialFunctionsGroup = new TreeItem(item, SWT.NULL);
+		itemSpecialFunctionsGroup.setImage(imageUnderGreen);
 		itemSpecialFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.SpecialFunctions.Label"));
 		itemSpecialFunctionsGroup.setData("Function");
 		TreeItem itemFileFunctionsGroup = new TreeItem(item, SWT.NULL);
+		itemFileFunctionsGroup.setImage(imageUnderGreen);
 		itemFileFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.FileFunctions.Label"));
 		itemFileFunctionsGroup.setData("Function");
 		
@@ -1201,6 +1290,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 			}
 			if(itemFunction !=null){
 				itemFunction.setText(strFunction);
+				itemFunction.setImage(imageArrowGreen);
 				strData = "jsFunction";
 				itemFunction.setData(strData);
 			}
@@ -1218,36 +1308,81 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		return bRC;
 	}
 	
-	private void buildOutputFieldsTree(){
-		try{
-		
-			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null){
-				TreeItem item = new TreeItem(wTree, SWT.NULL);
-				item.setText(Messages.getString("ScriptValuesDialogMod.OutputFields.Label"));
-				String strItemToAdd="";
-				for (int i=0;i<r.size();i++){
-						ValueMetaInterface v = r.getValueMeta(i);					
-						switch(v.getType()){
-							case ValueMetaInterface.TYPE_STRING : 
-							case ValueMetaInterface.TYPE_NUMBER : 
-							case ValueMetaInterface.TYPE_INTEGER: 
-							case ValueMetaInterface.TYPE_DATE   : 
-							case ValueMetaInterface.TYPE_BOOLEAN: 
-								strItemToAdd=v.getName()+".setValue(var)"; break; //$NON-NLS-1$
-							default: strItemToAdd=v.getName(); break;
-						}
-						TreeItem itemInputFields = new TreeItem(item, SWT.NULL);
-						itemInputFields.setText(strItemToAdd);
-						itemInputFields.setData(strItemToAdd);
+	private void setInputOutputFields(){
+		 shell.getDisplay().syncExec(new Runnable()
+         {
+             public void run()
+             {
+            	 // fields are got...end of wait message
+            	 iteminput.removeAll();
+            	 itemoutput.removeAll();
+            	 
+	             String strItemInToAdd="";
+	             String strItemToAddOut="";
+            	 
+				//try{
+				
+					//RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+					if (rowPrevStepFields!=null){
+						//TreeItem item = new TreeItem(wTree, SWT.NULL);
+						//item.setText(Messages.getString("ScriptValuesDialogMod.OutputFields.Label"));
+						//String strItemToAdd="";
+
+						for (int i=0;i<rowPrevStepFields.size();i++){
+								ValueMetaInterface v = rowPrevStepFields.getValueMeta(i);	
+								strItemToAddOut=v.getName()+".setValue(var)";
+								if (wCompatible.getSelection()) {
+									switch(v.getType()){
+										case ValueMetaInterface.TYPE_STRING : strItemInToAdd=v.getName()+".getString()"; break; //$NON-NLS-1$
+										case ValueMetaInterface.TYPE_NUMBER : strItemInToAdd=v.getName()+".getNumber()"; break; //$NON-NLS-1$
+										case ValueMetaInterface.TYPE_INTEGER: strItemInToAdd=v.getName()+".getInteger()"; break; //$NON-NLS-1$
+										case ValueMetaInterface.TYPE_DATE   : strItemInToAdd=v.getName()+".getDate()"; break; //$NON-NLS-1$
+										case ValueMetaInterface.TYPE_BOOLEAN: 
+											strItemInToAdd=v.getName()+".getBoolean()"; 
+											strItemToAddOut=v.getName()+".setValue(var)";
+											break; //$NON-NLS-1$
+										case ValueMetaInterface.TYPE_BIGNUMBER: strItemInToAdd=v.getName()+".getBigNumber()"; break; //$NON-NLS-1$
+										case ValueMetaInterface.TYPE_BINARY: strItemInToAdd=v.getName()+".getBytes()"; break; //$NON-NLS-1$
+										case ValueMetaInterface.TYPE_SERIALIZABLE: strItemInToAdd=v.getName()+".getSerializable()"; break; //$NON-NLS-1$
+										default: 
+											strItemInToAdd=v.getName(); 
+											strItemToAddOut=v.getName();
+										break;
+									}
+								}
+								else {
+									strItemInToAdd=v.getName();
+								}
+								TreeItem itemFields = new TreeItem(iteminput, SWT.NULL);
+								itemFields.setImage(imageArrowOrange);
+								itemFields.setText(strItemInToAdd);
+								itemFields.setData(strItemInToAdd);
+								
+								/*
+								switch(v.getType()){
+									case ValueMetaInterface.TYPE_STRING : 
+									case ValueMetaInterface.TYPE_NUMBER : 
+									case ValueMetaInterface.TYPE_INTEGER: 
+									case ValueMetaInterface.TYPE_DATE   : 
+									case ValueMetaInterface.TYPE_BOOLEAN: 
+										strItemToAdd=v.getName()+".setValue(var)"; break; //$NON-NLS-1$
+									default: strItemToAdd=v.getName(); break;
+								}*/
+								itemFields = new TreeItem(itemoutput, SWT.NULL);
+								itemFields.setImage(imageArrowOrange);
+								itemFields.setText(strItemToAddOut);
+								itemFields.setData(strItemToAddOut);
+							}
 					}
-			}
-		}catch(KettleException ke){
-			new ErrorDialog(shell, Messages.getString("ScriptValuesDialogMod.FailedToGetFields.DialogTitle"), Messages.getString("ScriptValuesDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
-		}
+				/*}catch(KettleException ke){
+					new ErrorDialog(shell, Messages.getString("ScriptValuesDialogMod.FailedToGetFields.DialogTitle"), Messages.getString("ScriptValuesDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				}*/
+         }
+       }
+      );
 	}
 	
-	
+	/*
 	private void rebuildInputFieldsTree(){
 		try{
 			String itemName = Messages.getString("ScriptValuesDialogMod.InputFields.Label");
@@ -1292,7 +1427,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		}catch(KettleException ke){
 			new ErrorDialog(shell, Messages.getString("ScriptValuesDialogMod.FailedToGetFields.DialogTitle"), Messages.getString("ScriptValuesDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-	}
+	}*/
 
 	// Adds the Current item to the current Position
 	private void treeDblClick(Event event){

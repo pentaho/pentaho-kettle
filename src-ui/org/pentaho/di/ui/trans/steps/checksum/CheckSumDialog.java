@@ -17,6 +17,12 @@
 
 package org.pentaho.di.ui.trans.steps.checksum;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -47,6 +53,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.checksum.Messages;
 import org.pentaho.di.trans.steps.checksum.CheckSumMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -70,10 +77,15 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 	private Text         wResult;
 	private FormData     fdlResult, fdResult;
 	
+	private ColumnInfo[] colinf;
+	
+    private Map<String, Integer> inputFields;
+	
 	public CheckSumDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
 		input=(CheckSumMeta)in;
+        inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -185,8 +197,9 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 		final int FieldsCols=1;
 		final int FieldsRows=input.getFieldName().length;
 		
-		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("CheckSumDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf=new ColumnInfo[FieldsCols];
+		colinf[0]=new ColumnInfo(Messages.getString("CheckSumDialog.Fieldname.Column"),  
+				ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
 		wFields=new TableView(transMeta,shell,
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 							  colinf, 
@@ -201,6 +214,37 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 		fdFields.right = new FormAttachment(100, 0);
 		fdFields.bottom= new FormAttachment(wOK, -2*margin);
 		wFields.setLayoutData(fdFields);
+		
+		  // 
+        // Search the fields in the background
+		
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                       
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        
+                        setComboBoxes();
+                    }
+                    catch(KettleException e)
+                    {
+                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -233,6 +277,23 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 		}
 		return stepname;
 	}
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+        final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+
+        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+        Const.sortStrings(fieldNames);
+        colinf[0].setComboValues(fieldNames);
+    }
 	private void get()
 	{
 		try

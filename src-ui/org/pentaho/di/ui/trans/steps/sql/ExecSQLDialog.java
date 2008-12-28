@@ -12,6 +12,12 @@
 */
 package org.pentaho.di.ui.trans.steps.sql;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
@@ -46,6 +52,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.sql.ExecSQLMeta;
 import org.pentaho.di.trans.steps.sql.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -114,10 +121,15 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 
 	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
 	
+    private Map<String, Integer> inputFields;
+    
+    private ColumnInfo[] colinf;
+	
 	public ExecSQLDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta) in, transMeta, sname);
 		input = (ExecSQLMeta) in;
+	    inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -292,7 +304,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 
 		final int FieldsRows = input.getArguments().length;
 
-		ColumnInfo[] colinf = new ColumnInfo[] { new ColumnInfo(Messages.getString("ExecSQLDialog.ColumnInfo.ArgumentFieldname"), ColumnInfo.COLUMN_TYPE_TEXT, false) //$NON-NLS-1$
+		 colinf = new ColumnInfo[] { new ColumnInfo(Messages.getString("ExecSQLDialog.ColumnInfo.ArgumentFieldname"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false)
 		};
 
 		wFields = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,
@@ -376,6 +388,36 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		fdReadField.top = new FormAttachment(wDeleteField, margin);
 		fdReadField.right = new FormAttachment(100, 0);
 		wReadField.setLayoutData(fdReadField);
+		
+		  // 
+        // Search the fields in the background
+		
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                       
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        setComboBoxes();
+                    }
+                    catch(KettleException e)
+                    {
+                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
 
 		// Some buttons
 		wOK = new Button(shell, SWT.PUSH);
@@ -465,6 +507,23 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		wlPosition.setText(Messages.getString("ExecSQLDialog.Position.Label",""+linenr,""+colnr));
 
 	}
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+        final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+
+        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+        Const.sortStrings(fieldNames);
+        colinf[0].setComboValues(fieldNames);
+    }
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */

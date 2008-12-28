@@ -20,6 +20,12 @@
 
 package org.pentaho.di.ui.trans.steps.databasejoin;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
@@ -54,6 +60,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.databasejoin.DatabaseJoinMeta;
 import org.pentaho.di.trans.steps.databasejoin.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -97,11 +104,16 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 	private FormData     fdlPosition;
 	
 	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
+	
+	private ColumnInfo[] ciKey;
+	
+    private Map<String, Integer> inputFields;
 
 	public DatabaseJoinDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
 		input=(DatabaseJoinMeta)in;
+	    inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -309,8 +321,8 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		int nrKeyCols=2;
 		int nrKeyRows=(input.getParameterField()!=null?input.getParameterField().length:1);
 		
-		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo(Messages.getString("DatabaseJoinDialog.ColumnInfo.ParameterFieldname"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciKey=new ColumnInfo[nrKeyCols];
+		ciKey[0]=new ColumnInfo(Messages.getString("DatabaseJoinDialog.ColumnInfo.ParameterFieldname"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
 		ciKey[1]=new ColumnInfo(Messages.getString("DatabaseJoinDialog.ColumnInfo.ParameterType"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ); //$NON-NLS-1$
 		
 		wParam=new TableView(transMeta, shell, 
@@ -328,6 +340,37 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		fdParam.bottom= new FormAttachment(wOK, -2*margin);
 		wParam.setLayoutData(fdParam);
 
+		  // 
+        // Search the fields in the background
+		
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                       
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        setComboBoxes();
+                    }
+                    catch(KettleException e)
+                    {
+                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
+
+		
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();        } };
 		lsGet      = new Listener() { public void handleEvent(Event e) { get();       } };
@@ -359,6 +402,23 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		}
 		return stepname;
 	}
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+        final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+
+        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+        Const.sortStrings(fieldNames);
+        ciKey[0].setComboValues(fieldNames);
+    }
 	public void setPosition(){
 		
 		String scr = wSQL.getText();
