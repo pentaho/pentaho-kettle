@@ -16,10 +16,19 @@
 
 package org.pentaho.di.ui.trans.steps.tableoutput;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -61,6 +70,8 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.core.database.Database;
+
 
 /**
  * Dialog class for table output step.
@@ -149,7 +160,16 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	private FormData     fdGetFields;
 	    
     private TableOutputMeta input;
+    
+    private Map<String, Integer> inputFields;
 	
+    private  ColumnInfo[] ciFields;
+    
+	/**
+	 * List of ColumnInfo that should have the field names of the selected database table
+	 */
+    private List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
+    
     /**
      * Constructor.
      */
@@ -157,6 +177,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input=(TableOutputMeta)in;
+        inputFields =new HashMap<String, Integer>();
 	}
 
 	/**
@@ -176,6 +197,11 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 			public void modifyText(ModifyEvent e) 
 			{
 				input.setChanged();
+			}
+		};
+		FocusListener lsFocusLost = new FocusAdapter() {
+			public void focusLost(FocusEvent arg0) {
+				setTableFieldCombo();
 			}
 		};
 		backupChanged = input.hasChanged();
@@ -230,6 +256,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         wSchema=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
+        wSchema.addFocusListener(lsFocusLost);
         fdSchema=new FormData();
         fdSchema.left = new FormAttachment(middle, 0);
         fdSchema.top  = new FormAttachment(wConnection, margin*2);
@@ -257,6 +284,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		wTable=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
+		wTable.addFocusListener(lsFocusLost);
 		fdTable=new FormData();
 		fdTable.top  = new FormAttachment(wSchema, margin);
 		fdTable.left = new FormAttachment(middle, 0);
@@ -673,10 +701,10 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		int tableCols=2;
 		int UpInsRows= (input.getFieldStream()!=null?input.getFieldStream().length:1);
 
-		final ColumnInfo[] ciFields=new ColumnInfo[tableCols];
-		ciFields[0]=new ColumnInfo(Messages.getString("TableOutputDialog.ColumnInfo.TableField"),  ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		ciFields[1]=new ColumnInfo(Messages.getString("TableOutputDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-
+		ciFields=new ColumnInfo[tableCols];
+		ciFields[0]=new ColumnInfo(Messages.getString("TableOutputDialog.ColumnInfo.TableField"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciFields[1]=new ColumnInfo(Messages.getString("TableOutputDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		tableFieldColumns.add(ciFields[0]);
 		wFields=new TableView(transMeta, wFieldsComp,
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 							  ciFields,
@@ -709,6 +737,38 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		wFieldsComp.layout();
 		wFieldsTab.setControl(wFieldsComp);
 	
+		  // 
+        // Search the fields in the background
+        //
+        
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                        RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                        
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                        	inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        
+                        setComboBoxes();
+                    }
+                    catch(KettleException e)
+                    {
+                    	log.logError(toString(), "Impossible de récupérer les champs depuis l'étape précédente");
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
+		
      
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -761,6 +821,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		setSize();
 		
 		getData();
+		setTableFieldCombo();
 		input.setChanged(backupChanged);
 	
 		shell.open();
@@ -772,7 +833,65 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		}
 		return stepname;
 	}
-	
+	private void setTableFieldCombo(){
+		Runnable fieldLoader = new Runnable() {
+			public void run() {
+				//clear
+				for (int i = 0; i < tableFieldColumns.size(); i++) {
+					ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+					colInfo.setComboValues(new String[] {});
+				}
+				if (!Const.isEmpty(wTable.getText())) {
+					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
+					if (ci != null) {
+						Database db = new Database(ci);
+						try {
+							db.connect();
+
+							String schemaTable = ci	.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema
+											.getText()), transMeta.environmentSubstitute(wTable.getText()));
+							RowMetaInterface r = db.getTableFields(schemaTable);
+							if (null != r) {
+								String[] fieldNames = r.getFieldNames();
+								if (null != fieldNames) {
+									for (int i = 0; i < tableFieldColumns
+											.size(); i++) {
+										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+										colInfo.setComboValues(fieldNames);
+									}
+								}
+							}
+						} catch (Exception e) {
+							for (int i = 0; i < tableFieldColumns.size(); i++) {
+								ColumnInfo colInfo = (ColumnInfo) tableFieldColumns	.get(i);
+								colInfo.setComboValues(new String[] {});
+							}
+							// ignore any errors here. drop downs will not be
+							// filled, but no problem for the user
+						}
+					}
+				}
+			}
+		};
+		shell.getDisplay().asyncExec(fieldLoader);
+	}
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+        final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+
+        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+        Const.sortStrings(fieldNames);
+        ciFields[1].setComboValues(fieldNames);
+    }
     public void setFlags()
     {
     	DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
