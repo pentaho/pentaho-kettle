@@ -370,7 +370,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(), "Impossible de récupérer les champs depuis l'étape précédente");
+                        log.logError(toString(),Messages.getString("System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -487,7 +487,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), Messages.getString("InsertUpdateDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug(toString(), Messages.getString("InsertUpdateDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		wCommit.setText("" + input.getCommitSize()); //$NON-NLS-1$
 		wUpdateBypassed.setSelection(input.isUpdateBypassed());
@@ -557,7 +557,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 		inf.setCommitSize( Const.toInt(wCommit.getText(), 0) );
 		inf.setUpdateBypassed( wUpdateBypassed.getSelection() );
 		
-		log.logDebug(toString(), Messages.getString("InsertUpdateDialog.Log.FoundKeys",nrkeys + "")); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) log.logDebug(toString(), Messages.getString("InsertUpdateDialog.Log.FoundKeys",nrkeys + "")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrkeys; i++)
 		{
 			TableItem item = wKey.getNonEmpty(i);
@@ -569,7 +569,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 
 		//Table ftable = wReturn.table;
 
-		log.logDebug(toString(), Messages.getString("InsertUpdateDialog.Log.FoundFields", nrfields + "")); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug())log.logDebug(toString(), Messages.getString("InsertUpdateDialog.Log.FoundFields", nrfields + "")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrfields; i++)
 		{
 			TableItem item = wReturn.getNonEmpty(i);
@@ -653,7 +653,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 
 		if (inf != null)
 		{
-			log.logDebug(toString(), Messages.getString("InsertUpdateDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
+			if(log.isDebug()) log.logDebug(toString(), Messages.getString("InsertUpdateDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
 
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());

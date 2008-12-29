@@ -507,7 +507,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(), "It was not possible to get the fields from the previous step(s).");
+                        log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
 
                     }
                 }
@@ -806,6 +806,11 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 	private void setTableFieldCombo(){
 		Runnable fieldLoader = new Runnable() {
 			public void run() {
+				//clear
+				for (int i = 0; i < tableFieldColumns.size(); i++) {
+					ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+					colInfo.setComboValues(new String[] {});
+				}
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {

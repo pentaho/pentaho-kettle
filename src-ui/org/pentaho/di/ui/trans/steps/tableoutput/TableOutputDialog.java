@@ -762,7 +762,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), "Impossible de récupérer les champs depuis l'étape précédente");
+                    	log.logError(toString(),Messages.getString("System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }

@@ -17,8 +17,17 @@
 
 package org.pentaho.di.ui.trans.steps.delete;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -39,6 +48,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -48,6 +58,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -83,11 +94,21 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 	private FormData     fdlCommit, fdCommit;
     
 	private DeleteMeta input;
+	
+    private Map<String, Integer> inputFields;
+    
+    private ColumnInfo[] ciKey;
 
+	/**
+	 * List of ColumnInfo that should have the field names of the selected database table
+	 */
+	private List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
+    
 	public DeleteDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
 		input=(DeleteMeta)in;
+        inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -104,6 +125,11 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 			public void modifyText(ModifyEvent e) 
 			{
 				input.setChanged();
+			}
+		};
+		FocusListener lsFocusLost = new FocusAdapter() {
+			public void focusLost(FocusEvent arg0) {
+				setTableFieldCombo();
 			}
 		};
 		changed = input.hasChanged();
@@ -155,6 +181,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
         wSchema=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
+        wSchema.addFocusListener(lsFocusLost);
         fdSchema=new FormData();
         fdSchema.left = new FormAttachment(middle, 0);
         fdSchema.top  = new FormAttachment(wConnection, margin*2);
@@ -182,6 +209,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		wTable=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
+		wTable.addFocusListener(lsFocusLost);
 		fdTable=new FormData();
 		fdTable.left = new FormAttachment(middle, 0);
 		fdTable.top  = new FormAttachment(wSchema, margin);
@@ -218,12 +246,12 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		int nrKeyCols=4;
 		int nrKeyRows=(input.getKeyStream()!=null?input.getKeyStream().length:1);
 		
-		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo(Messages.getString("DeleteDialog.ColumnInfo.TableField"),    ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		ciKey[1]=new ColumnInfo(Messages.getString("DeleteDialog.ColumnInfo.Comparator"),     ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
-		ciKey[2]=new ColumnInfo(Messages.getString("DeleteDialog.ColumnInfo.StreamField1"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		ciKey[3]=new ColumnInfo(Messages.getString("DeleteDialog.ColumnInfo.StreamField2"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		
+		ciKey=new ColumnInfo[nrKeyCols];
+		ciKey[0]=new ColumnInfo(Messages.getString("DeleteDialog.ColumnInfo.TableField"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciKey[1]=new ColumnInfo(Messages.getString("DeleteDialog.ColumnInfo.Comparator"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
+		ciKey[2]=new ColumnInfo(Messages.getString("DeleteDialog.ColumnInfo.StreamField1"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciKey[3]=new ColumnInfo(Messages.getString("DeleteDialog.ColumnInfo.StreamField2"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		tableFieldColumns.add(ciKey[0]);
 		wKey=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
 						      ciKey, 
@@ -246,6 +274,40 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		fdKey.bottom = new FormAttachment(100, -30);
 		wKey.setLayoutData(fdKey);
 
+		
+	    // 
+        // Search the fields in the background
+        //
+        
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                        
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                        	inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        
+                        setComboBoxes(); 
+                    }
+                    catch(KettleException e)
+                    {
+                        log.logError(toString(),Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
+		
+		
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
@@ -287,6 +349,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		setSize();
 		
 		getData();
+		setTableFieldCombo();
 		input.setChanged(changed);
 
 		shell.open();
@@ -296,10 +359,25 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		return stepname;
 	}
-
-    public void setFlags()
+	protected void setComboBoxes()
     {
+        // Something was changed in the row.
+        //
+		final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+        
+        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
+        Const.sortStrings(fieldNames);
+        // Key fields
+        ciKey[2].setComboValues(fieldNames);
+        ciKey[3].setComboValues(fieldNames);
     }
+
 
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
@@ -307,7 +385,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), Messages.getString("DeleteDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug(toString(), Messages.getString("DeleteDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		wCommit.setText(""+input.getCommitSize()); //$NON-NLS-1$
         
@@ -332,8 +410,6 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		wStepname.selectAll();
 		wKey.setRowNums();
 		wKey.optWidth(true);
-        
-        setFlags();
 	}
 	
 	private void cancel()
@@ -342,7 +418,47 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		input.setChanged(changed);
 		dispose();
 	}
+	private void setTableFieldCombo(){
+		Runnable fieldLoader = new Runnable() {
+			public void run() {
+				//clear
+				for (int i = 0; i < tableFieldColumns.size(); i++) {
+					ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+					colInfo.setComboValues(new String[] {});
+				}
+				if (!Const.isEmpty(wTable.getText())) {
+					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
+					if (ci != null) {
+						Database db = new Database(ci);
+						try {
+							db.connect();
 
+							String schemaTable = ci	.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema
+											.getText()), transMeta.environmentSubstitute(wTable.getText()));
+							RowMetaInterface r = db.getTableFields(schemaTable);
+							if (null != r) {
+								String[] fieldNames = r.getFieldNames();
+								if (null != fieldNames) {
+									for (int i = 0; i < tableFieldColumns.size(); i++) {
+										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+										colInfo.setComboValues(fieldNames);
+									}
+								}
+							}
+						} catch (Exception e) {
+							for (int i = 0; i < tableFieldColumns.size(); i++) {
+								ColumnInfo colInfo = (ColumnInfo) tableFieldColumns	.get(i);
+								colInfo.setComboValues(new String[] {});
+							}
+							// ignore any errors here. drop downs will not be
+							// filled, but no problem for the user
+						}
+					}
+				}
+			}
+		};
+		shell.getDisplay().asyncExec(fieldLoader);
+	}
 	private void getInfo(DeleteMeta inf)
 	{
 		//Table ktable = wKey.table;
@@ -352,7 +468,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 				
 		inf.setCommitSize( Const.toInt( wCommit.getText(), 0) );
 		
-		log.logDebug(toString(), Messages.getString("DeleteDialog.Log.FoundKeys",String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) log.logDebug(toString(), Messages.getString("DeleteDialog.Log.FoundKeys",String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrkeys;i++)
 		{
 			TableItem item = wKey.getNonEmpty(i);

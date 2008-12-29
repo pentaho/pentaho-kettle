@@ -17,8 +17,17 @@
 
 package org.pentaho.di.ui.trans.steps.update;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -39,6 +48,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -98,11 +108,23 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 	private Listener lsGetLU;
 
 	private UpdateMeta input;
+	
+	private ColumnInfo[] ciKey;
+	
+	private ColumnInfo[] ciReturn;
+	
+    private Map<String, Integer> inputFields;
+    
+	/**
+	 * List of ColumnInfo that should have the field names of the selected database table
+	 */
+	private List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
 
 	public UpdateDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
 		input=(UpdateMeta)in;
+        inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -119,6 +141,11 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 			public void modifyText(ModifyEvent e) 
 			{
 				input.setChanged();
+			}
+		};
+		FocusListener lsFocusLost = new FocusAdapter() {
+			public void focusLost(FocusEvent arg0) {
+				setTableFieldCombo();
 			}
 		};
 		changed = input.hasChanged();
@@ -170,6 +197,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
         wSchema=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
+        wSchema.addFocusListener(lsFocusLost);
         fdSchema=new FormData();
         fdSchema.left = new FormAttachment(middle, 0);
         fdSchema.top  = new FormAttachment(wConnection, margin*2);
@@ -197,6 +225,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		wTable=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
+		wTable.addFocusListener(lsFocusLost);
 		fdTable=new FormData();
 		fdTable.left = new FormAttachment(middle, 0);
 		fdTable.top  = new FormAttachment(wSchema, margin);
@@ -276,12 +305,12 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		int nrKeyCols=4;
 		int nrKeyRows=(input.getKeyStream()!=null?input.getKeyStream().length:1);
 		
-		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.TableField"),    ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		ciKey[1]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.Comparator"),     ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
-		ciKey[2]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.StreamField1"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		ciKey[3]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.StreamField2"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		
+		ciKey=new ColumnInfo[nrKeyCols];
+		ciKey[0]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.TableField"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciKey[1]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.Comparator"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
+		ciKey[2]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.StreamField1"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciKey[3]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.StreamField2"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		tableFieldColumns.add(ciKey[0]);
 		wKey=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
 						      ciKey, 
@@ -327,10 +356,10 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		int UpInsCols=2;
 		int UpInsRows= (input.getUpdateLookup()!=null?input.getUpdateLookup().length:1);
 		
-		ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
-		ciReturn[0]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.TableField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		ciReturn[1]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		
+		ciReturn=new ColumnInfo[UpInsCols];
+		ciReturn[0]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.TableField"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciReturn[1]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		tableFieldColumns.add(ciReturn[0]);
 		wReturn=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
 							  ciReturn, 
@@ -352,6 +381,40 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		fdReturn.right = new FormAttachment(wGetLU, -margin);
 		fdReturn.bottom = new FormAttachment(wOK, -2*margin);
 		wReturn.setLayoutData(fdReturn);
+		
+		
+		
+	    // 
+        // Search the fields in the background
+        //
+        
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                        
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                        	inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        
+                        setComboBoxes(); 
+                    }
+                    catch(KettleException e)
+                    {
+                        log.logError(toString(),Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
 
 
 		// Add listeners
@@ -393,6 +456,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		setSize();
 		
 		getData();
+		setTableFieldCombo();
 		input.setChanged(changed);
 
 		shell.open();
@@ -402,13 +466,72 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		return stepname;
 	}
-
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+		final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+        
+        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
+        Const.sortStrings(fieldNames);
+        // Key fields
+        ciKey[2].setComboValues(fieldNames);
+        ciKey[3].setComboValues(fieldNames);
+        // return fields
+        ciReturn[1].setComboValues(fieldNames);
+    }
     public void setFlags()
     {
         wlIgnoreFlagField.setEnabled(wErrorIgnored.getSelection());
         wIgnoreFlagField.setEnabled(wErrorIgnored.getSelection());
     }
+    private void setTableFieldCombo(){
+		Runnable fieldLoader = new Runnable() {
+			public void run() {
+				//clear
+				for (int i = 0; i < tableFieldColumns.size(); i++) {
+					ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+					colInfo.setComboValues(new String[] {});
+				}
+				if (!Const.isEmpty(wTable.getText())) {
+					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
+					if (ci != null) {
+						Database db = new Database(ci);
+						try {
+							db.connect();
 
+							String schemaTable = ci	.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema
+											.getText()), transMeta.environmentSubstitute(wTable.getText()));
+							RowMetaInterface r = db.getTableFields(schemaTable);
+							if (null != r) {
+								String[] fieldNames = r.getFieldNames();
+								if (null != fieldNames) {
+									for (int i = 0; i < tableFieldColumns.size(); i++) {
+										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+										colInfo.setComboValues(fieldNames);
+									}
+								}
+							}
+						} catch (Exception e) {
+							for (int i = 0; i < tableFieldColumns.size(); i++) {
+								ColumnInfo colInfo = (ColumnInfo) tableFieldColumns	.get(i);
+								colInfo.setComboValues(new String[] {});
+							}
+							// ignore any errors here. drop downs will not be
+							// filled, but no problem for the user
+						}
+					}
+				}
+			}
+		};
+		shell.getDisplay().asyncExec(fieldLoader);
+	}
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 

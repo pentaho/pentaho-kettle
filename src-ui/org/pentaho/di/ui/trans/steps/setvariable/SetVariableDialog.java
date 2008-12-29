@@ -17,6 +17,12 @@
 
 package org.pentaho.di.ui.trans.steps.setvariable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
@@ -46,6 +52,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.setvariable.Messages;
 import org.pentaho.di.trans.steps.setvariable.SetVariableMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -68,10 +75,15 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 	
 	private SetVariableMeta input;
 
+    private Map<String, Integer> inputFields;
+    
+    private ColumnInfo[] colinf;
+	
 	public SetVariableDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input=(SetVariableMeta)in;
+        inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -130,14 +142,11 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsRows=input.getFieldName().length;
-		
-		ColumnInfo[] colinf=
-            {
-		        new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-		        new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableName"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableType"), ColumnInfo.COLUMN_TYPE_CCOMBO, SetVariableMeta.getVariableTypeDescriptions(), false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.DefaultValue"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
-            };
+		colinf=new ColumnInfo[4];
+		colinf[0]=  new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.FieldName"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);//$NON-NLS-1$
+		colinf[1]=  new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableName"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		colinf[2]=  new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableType"), ColumnInfo.COLUMN_TYPE_CCOMBO, SetVariableMeta.getVariableTypeDescriptions(), false); //$NON-NLS-1$
+		colinf[3]=  new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.DefaultValue"), ColumnInfo.COLUMN_TYPE_TEXT, false);
 		colinf[3].setUsingVariables(true);
 		colinf[3].setToolTip(Messages.getString("SetVariableDialog.Fields.Column.DefaultValue.Tooltip"));
 		
@@ -156,6 +165,36 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		fdFields.bottom= new FormAttachment(100, -50);
 		wFields.setLayoutData(fdFields);
 
+		
+		  // 
+        // Search the fields in the background
+		
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                       
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        setComboBoxes();
+                    }
+                    catch(KettleException e)
+                    {
+                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
 				
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -196,7 +235,23 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		}
 		return stepname;
 	}
-	
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+        final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+
+        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+        Const.sortStrings(fieldNames);
+        colinf[0].setComboValues(fieldNames);
+    }
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
