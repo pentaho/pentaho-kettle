@@ -35,6 +35,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -48,6 +49,8 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SQLStatement;
@@ -122,7 +125,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     private FormData     fdlUsePart, fdUsePart;
 	
     private Label        wlPartField;
-    private Text         wPartField;
+    private TextVar      wPartField;
     private FormData     fdlPartField, fdPartField;
 
     private Label        wlPartMonthly;
@@ -138,7 +141,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     private FormData     fdlNameInField, fdNameInField;
 
     private Label        wlNameField;
-    private Text         wNameField;
+	private ComboVar     wNameField;
     private FormData     fdlNameField, fdNameField;
 	
     private Label        wlNameInTable;
@@ -150,7 +153,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     private FormData     fdlReturnKeys, fdReturnKeys;
 
     private Label        wlReturnField;
-    private Text         wReturnField;
+    private TextVar      wReturnField;
     private FormData     fdlReturnField, fdReturnField;
     
 	private Label        wlFields;
@@ -164,6 +167,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     private Map<String, Integer> inputFields;
 	
     private  ColumnInfo[] ciFields;
+    
+	private boolean gotPreviousFields=false;
     
 	/**
 	 * List of ColumnInfo that should have the field names of the selected database table
@@ -441,7 +446,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         fdlPartField.left = new FormAttachment(0, 0);
         fdlPartField.right= new FormAttachment(middle, -margin);
         wlPartField.setLayoutData(fdlPartField);
-        wPartField=new Text(wMainComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wPartField=new TextVar(transMeta, wMainComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wPartField);
         wPartField.addModifyListener(lsMod);
         fdPartField=new FormData();
@@ -577,7 +582,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         fdlNameField.top  = new FormAttachment(wNameInField, margin);        
         fdlNameField.right= new FormAttachment(middle, -margin);
         wlNameField.setLayoutData(fdlNameField);
-        wNameField=new Text(wMainComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wNameField=new ComboVar(transMeta, wMainComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wNameField);
         wNameField.addModifyListener(lsMod);
         fdNameField=new FormData();
@@ -585,6 +590,22 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         fdNameField.top  = new FormAttachment(wNameInField, margin);
         fdNameField.right= new FormAttachment(100, 0);
         wNameField.setLayoutData(fdNameField);
+        wNameField.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getFields();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );  
 
         // NameInTable
         wlNameInTable=new Label(wMainComp, SWT.RIGHT);
@@ -650,7 +671,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         fdlReturnField.right= new FormAttachment(middle, -margin);
         fdlReturnField.top  = new FormAttachment(wReturnKeys, margin);
         wlReturnField.setLayoutData(fdlReturnField);
-        wReturnField=new Text(wMainComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wReturnField=new TextVar(transMeta,wMainComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wReturnField);
         wReturnField.addModifyListener(lsMod);
         fdReturnField=new FormData();
@@ -833,6 +854,24 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		}
 		return stepname;
 	}
+	 private void getFields()
+	 {
+		if(!gotPreviousFields)
+		{
+		 try{
+			 String field=wNameField.getText();
+			 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+			 if(r!=null)
+			  {
+				 wNameField.setItems(r.getFieldNames());
+			  }
+			 if(field!=null) wNameField.setText(field);
+		 	}catch(KettleException ke){
+				new ErrorDialog(shell, Messages.getString("TableOutputDialog.FailedToGetFields.DialogTitle"), Messages.getString("TableOutputDialog.FailedToGetFields.DialogMessage"), ke);
+			}
+		 	gotPreviousFields=true;
+		}
+	 }
 	private void setTableFieldCombo(){
 		Runnable fieldLoader = new Runnable() {
 			public void run() {

@@ -805,7 +805,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		int UpInsCols = 3;
 		int UpInsRows = (input.getFieldTable() != null ? input.getFieldTable().length : 1);
 
-		ColumnInfo[] ciReturn = new ColumnInfo[UpInsCols];
+		ciReturn = new ColumnInfo[UpInsCols];
 		ciReturn[0] = new ColumnInfo(Messages.getString("OraBulkLoaderDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
 		ciReturn[1] = new ColumnInfo(Messages.getString("OraBulkLoaderDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
 		ciReturn[2] = new ColumnInfo(Messages.getString("OraBulkLoaderDialog.ColumnInfo.DateMask"), ColumnInfo.COLUMN_TYPE_CCOMBO, 
@@ -1077,6 +1077,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         Const.sortStrings(fieldNames);
         // return fields
         ciReturn[1].setComboValues(fieldNames);
+        
     }
 	private void setTableFieldCombo(){
 		Runnable fieldLoader = new Runnable() {

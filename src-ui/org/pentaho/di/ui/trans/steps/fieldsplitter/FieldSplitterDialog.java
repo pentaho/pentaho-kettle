@@ -18,12 +18,15 @@
 package org.pentaho.di.ui.trans.steps.fieldsplitter;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -36,25 +39,29 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.trans.steps.fieldsplitter.FieldSplitterMeta;
 import org.pentaho.di.trans.steps.fieldsplitter.Messages;
+import org.pentaho.di.ui.core.widget.TextVar;
 
 public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private Label        wlSplitfield;
-	private Text         wSplitfield;
+	private CCombo         wSplitfield;
 	private FormData     fdlSplitfield, fdSplitfield;
 
 	private Label        wlDelimiter;
-	private Text         wDelimiter;
+	private TextVar      wDelimiter;
 	private FormData     fdlDelimiter, fdDelimiter;
 	
 	private Label        wlFields;
@@ -62,7 +69,9 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 	private FormData     fdlFields, fdFields;
 
 	private FieldSplitterMeta  input;
-
+	
+	private boolean gotPreviousFields=false;
+	
 	public FieldSplitterDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -125,7 +134,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		fdlSplitfield.right= new FormAttachment(middle, -margin);
 		fdlSplitfield.top  = new FormAttachment(wStepname, margin);
 		wlSplitfield.setLayoutData(fdlSplitfield);
-		wSplitfield=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSplitfield=new  CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
 		wSplitfield.setText(""); //$NON-NLS-1$
  		props.setLook(wSplitfield);
 		wSplitfield.addModifyListener(lsMod);
@@ -134,6 +143,23 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		fdSplitfield.top  = new FormAttachment(wStepname, margin);
 		fdSplitfield.right= new FormAttachment(100, 0);
 		wSplitfield.setLayoutData(fdSplitfield);
+		wSplitfield.addFocusListener(new FocusListener()
+	        {
+	            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+	            {
+	            }
+	        
+	            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+	            {
+	                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+	                shell.setCursor(busy);
+	                getFields();
+	                shell.setCursor(null);
+	                busy.dispose();
+	            }
+	        }
+	    );  
+
 
 		// Typefield line
 		wlDelimiter=new Label(shell, SWT.RIGHT);
@@ -144,7 +170,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		fdlDelimiter.right= new FormAttachment(middle, -margin);
 		fdlDelimiter.top  = new FormAttachment(wSplitfield, margin);
 		wlDelimiter.setLayoutData(fdlDelimiter);
-		wDelimiter=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wDelimiter=new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wDelimiter.setText(""); //$NON-NLS-1$
  		props.setLook(wDelimiter);
 		wDelimiter.addModifyListener(lsMod);
@@ -236,7 +262,24 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		}
 		return stepname;
 	}
-	
+	private void getFields()
+	 {
+		if(!gotPreviousFields)
+		{
+		 try{
+			 String field=wSplitfield.getText();
+			 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+			 if(r!=null)
+			  {
+				 wSplitfield.setItems(r.getFieldNames());
+			  }
+			 if(field!=null) wSplitfield.setText(field);
+		 	}catch(KettleException ke){
+				new ErrorDialog(shell, Messages.getString("FieldSplitterDialog.FailedToGetFields.DialogTitle"), Messages.getString("FieldSplitterDialog.FailedToGetFields.DialogMessage"), ke);
+			}
+		 	gotPreviousFields=true;
+		}
+	 }
 	public void getData()
 	{	
 		int i;

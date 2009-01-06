@@ -11,8 +11,17 @@
 
 package org.pentaho.di.ui.trans.steps.pgbulkloader;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -34,6 +43,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -107,11 +117,20 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     private static final String[] ALL_FILETYPES = new String[] {
         	Messages.getString("PGBulkLoaderDialog.Filetype.All") };
 
+    private ColumnInfo[] ciReturn ;
 
+    private Map<String, Integer> inputFields;
+    
+	/**
+	 * List of ColumnInfo that should have the field names of the selected database table
+	 */
+	private List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
+    
 	public PGBulkLoaderDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input = (PGBulkLoaderMeta) in;
+        inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -128,6 +147,11 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 			public void modifyText(ModifyEvent e)
 			{
 				input.setChanged();
+			}
+		};
+		FocusListener lsFocusLost = new FocusAdapter() {
+			public void focusLost(FocusEvent arg0) {
+				setTableFieldCombo();
 			}
 		};
 		changed = input.hasChanged();
@@ -179,6 +203,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
         wSchema=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
+        wSchema.addFocusListener(lsFocusLost);
         fdSchema=new FormData();
         fdSchema.left = new FormAttachment(middle, 0);
         fdSchema.top  = new FormAttachment(wConnection, margin*2);
@@ -205,6 +230,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		wTable = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
+		wTable.addFocusListener(lsFocusLost);
 		fdTable = new FormData();
 		fdTable.left = new FormAttachment(middle, 0);
 		fdTable.top = new FormAttachment(wSchema, margin);
@@ -342,15 +368,15 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		int UpInsCols = 3;
 		int UpInsRows = (input.getFieldTable() != null ? input.getFieldTable().length : 1);
 
-		ColumnInfo[] ciReturn = new ColumnInfo[UpInsCols];
-		ciReturn[0] = new ColumnInfo(Messages.getString("PGBulkLoaderDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		ciReturn[1] = new ColumnInfo(Messages.getString("PGBulkLoaderDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciReturn = new ColumnInfo[UpInsCols];
+		ciReturn[0] = new ColumnInfo(Messages.getString("PGBulkLoaderDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciReturn[1] = new ColumnInfo(Messages.getString("PGBulkLoaderDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
 		ciReturn[2] = new ColumnInfo(Messages.getString("PGBulkLoaderDialog.ColumnInfo.DateMask"), ColumnInfo.COLUMN_TYPE_CCOMBO,
 				                     new String[] {"",                
             									   Messages.getString("PGBulkLoaderDialog.PassThrough.Label"),  //$NON-NLS-1$
 			                                       Messages.getString("PGBulkLoaderDialog.DateMask.Label"),//$NON-NLS-1$
 	                                        	   Messages.getString("PGBulkLoaderDialog.DateTimeMask.Label")}, true); //$NON-NLS-1$
-
+		tableFieldColumns.add(ciReturn[0]);
 		wReturn = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 				ciReturn, UpInsRows, lsMod, props);
 
@@ -367,6 +393,38 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		fdReturn.right = new FormAttachment(wGetLU, -margin);
 		fdReturn.bottom = new FormAttachment(wOK, -2*margin);
 		wReturn.setLayoutData(fdReturn);
+		
+	    // 
+        // Search the fields in the background
+        //
+        
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                        
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                        	inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        
+                        setComboBoxes(); 
+                    }
+                    catch(KettleException e)
+                    {
+                        log.logError(toString(),Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
 
 		wbPsqlPath.addSelectionListener(new SelectionAdapter()
         {
@@ -454,6 +512,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		setSize();
 
 		getData();
+		setTableFieldCombo();
 		input.setChanged(changed);
 
 		shell.open();
@@ -540,7 +599,24 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		wReturn.setRowNums();
 		wReturn.optWidth(true);
 	}
-	
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+		final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+        
+        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
+        Const.sortStrings(fieldNames);
+        // return fields
+        ciReturn[1].setComboValues(fieldNames);
+        
+    }
 	private void cancel()
 	{
 		stepname = null;
@@ -727,7 +803,47 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		}
 
 	}
+	private void setTableFieldCombo(){
+		Runnable fieldLoader = new Runnable() {
+			public void run() {
+				//clear
+				for (int i = 0; i < tableFieldColumns.size(); i++) {
+					ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+					colInfo.setComboValues(new String[] {});
+				}
+				if (!Const.isEmpty(wTable.getText())) {
+					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
+					if (ci != null) {
+						Database db = new Database(ci);
+						try {
+							db.connect();
 
+							String schemaTable = ci	.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema
+											.getText()), transMeta.environmentSubstitute(wTable.getText()));
+							RowMetaInterface r = db.getTableFields(schemaTable);
+							if (null != r) {
+								String[] fieldNames = r.getFieldNames();
+								if (null != fieldNames) {
+									for (int i = 0; i < tableFieldColumns.size(); i++) {
+										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+										colInfo.setComboValues(fieldNames);
+									}
+								}
+							}
+						} catch (Exception e) {
+							for (int i = 0; i < tableFieldColumns.size(); i++) {
+								ColumnInfo colInfo = (ColumnInfo) tableFieldColumns	.get(i);
+								colInfo.setComboValues(new String[] {});
+							}
+							// ignore any errors here. drop downs will not be
+							// filled, but no problem for the user
+						}
+					}
+				}
+			}
+		};
+		shell.getDisplay().asyncExec(fieldLoader);
+	}
 	public String toString()
 	{
 		return this.getClass().getName();

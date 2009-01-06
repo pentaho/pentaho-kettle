@@ -75,6 +75,8 @@ public class FieldSplitter extends BaseStep implements StepInterface
 			for (ValueMetaInterface valueMeta : data.conversionMeta.getValueMetaList()) {
 				valueMeta.setType(ValueMetaInterface.TYPE_STRING);
 			}
+			
+			data.delimiter = environmentSubstitute(meta.getDelimiter());
 		}
 		
 		String v=data.previousMeta.getString(r, data.fieldnr);
@@ -94,7 +96,6 @@ public class FieldSplitter extends BaseStep implements StepInterface
 		boolean use_ids = meta.getFieldID().length>0 && meta.getFieldID()[0]!=null && meta.getFieldID()[0].length()>0;
 		
 		Object value=null;
-        final String delimiter = meta.getDelimiter();
 		if (use_ids)
 		{
 			if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.UsingIds")); //$NON-NLS-1$
@@ -109,7 +110,7 @@ public class FieldSplitter extends BaseStep implements StepInterface
                 polSize++;
                 for (int i = 0; i < v.length(); i++)
                 {
-                    i = v.indexOf(delimiter, i);
+                    i = v.indexOf(data.delimiter, i);
                     if (i == -1) break;
                     else polSize++;
                 }
@@ -119,10 +120,10 @@ public class FieldSplitter extends BaseStep implements StepInterface
 			int i=0;
 			while(v!=null && prev<v.length() && i<pol.length)
 			{
-                pol[i] = polNext(v, delimiter, prev);
+                pol[i] = polNext(v, data.delimiter, prev);
                 if (log.isDebug())
                     logDebug(Messages.getString("FieldSplitter.Log.SplitFieldsInfo", pol[i], String.valueOf(prev))); //$NON-NLS-1$ //$NON-NLS-2$
-                prev += pol[i].length() + delimiter.length();
+                prev += pol[i].length() + data.delimiter.length();
 				i++;
 			}
 
@@ -180,9 +181,9 @@ public class FieldSplitter extends BaseStep implements StepInterface
 			int prev=0;
 			for (int i=0;i<meta.getFieldName().length;i++)
 			{
-				String pol = polNext(v, delimiter, prev);
+				String pol = polNext(v, data.delimiter, prev);
 				if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.SplitFieldsInfo",pol,String.valueOf(prev))); //$NON-NLS-1$ //$NON-NLS-2$
-				prev+=(pol==null?0:pol.length()) + delimiter.length();
+				prev+=(pol==null?0:pol.length()) + data.delimiter.length();
 				
 				try
 				{

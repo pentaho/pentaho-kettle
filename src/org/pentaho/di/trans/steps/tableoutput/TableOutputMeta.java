@@ -590,7 +590,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
     	// Just add the returning key field...
 		if (returningGeneratedKeys && generatedKeyField!=null && generatedKeyField.length()>0)
 		{
-			ValueMetaInterface key = new ValueMeta(generatedKeyField, ValueMetaInterface.TYPE_INTEGER);
+			ValueMetaInterface key = new ValueMeta(space.environmentSubstitute(generatedKeyField), ValueMetaInterface.TYPE_INTEGER);
 			key.setOrigin(origin);
 			row.addValueMeta(key);
 		}

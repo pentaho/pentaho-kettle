@@ -163,10 +163,11 @@ public class TableOutput extends BaseStep implements StepInterface
             // Cache the position of the table name field
             if (data.indexOfTableNameField<0)
             {
-                data.indexOfTableNameField = rowMeta.indexOfValue(meta.getTableNameField());
+            	String realTablename=environmentSubstitute(meta.getTableNameField());
+                data.indexOfTableNameField = rowMeta.indexOfValue(realTablename);
                 if (data.indexOfTableNameField<0)
                 {
-                    String message = "Unable to find table name field ["+meta.getTableNameField()+"] in input row";
+                    String message = "Unable to find table name field ["+realTablename+"] in input row";
                     log.logError(toString(), message);
                     throw new KettleStepException(message);
                 }
@@ -196,7 +197,7 @@ public class TableOutput extends BaseStep implements StepInterface
             // Initialize some stuff!
             if (data.indexOfPartitioningField<0)
             {
-                data.indexOfPartitioningField = rowMeta.indexOfValue(meta.getPartitioningField());
+                data.indexOfPartitioningField = rowMeta.indexOfValue(environmentSubstitute(meta.getPartitioningField()));
                 if (data.indexOfPartitioningField<0)
                 {
                     throw new KettleStepException("Unable to find field ["+meta.getPartitioningField()+"] in the input row!");

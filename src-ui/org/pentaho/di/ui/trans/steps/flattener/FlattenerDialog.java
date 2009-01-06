@@ -13,12 +13,15 @@
  package org.pentaho.di.ui.trans.steps.flattener;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -31,11 +34,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.flattener.FlattenerMeta;
 import org.pentaho.di.trans.steps.flattener.Messages;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -50,9 +56,12 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 	private FormData     fdlFields, fdFields;
 
     private Label        wlField;
-    private Text         wField;
+    private CCombo       wField;
     private FormData     fdlField, fdField;
-
+    
+	private boolean gotPreviousFields=false;
+    
+    
 	private FlattenerMeta input;
 
 	public FlattenerDialog(Shell parent, Object in, TransMeta transMeta, String sname)
@@ -118,7 +127,7 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
         fdlField.right= new FormAttachment(middle, -margin);
         fdlField.top  = new FormAttachment(wStepname, margin);
         wlField.setLayoutData(fdlField);
-        wField=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wField=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
         props.setLook(wField);
         wField.addModifyListener(lsMod);
         fdField=new FormData();
@@ -126,6 +135,22 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
         fdField.top   = new FormAttachment(wStepname, margin);
         fdField.right = new FormAttachment(100, 0);
         wField.setLayoutData(fdField);
+        wField.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getFields();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );  
 
 		wlFields=new Label(shell, SWT.NONE);
 		wlFields.setText(Messages.getString("FlattenerDialog.TargetField.Label")); //$NON-NLS-1$
@@ -193,14 +218,31 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 		}
 		return stepname;
 	}
-
+	 private void getFields()
+	 {
+		if(!gotPreviousFields)
+		{
+		 try{
+			 String field=wField.getText();
+			 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+			 if(r!=null)
+			  {
+				 wField.setItems(r.getFieldNames());
+			  }
+			 if(field!=null) wField.setText(field);
+		 	}catch(KettleException ke){
+				new ErrorDialog(shell, Messages.getString("FlattenerDialog.FailedToGetFields.DialogTitle"), Messages.getString("FlattenerDialog.FailedToGetFields.DialogMessage"), ke);
+			}
+		 	gotPreviousFields=true;
+		}
+	 }
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), Messages.getString("FlattenerDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug(toString(), Messages.getString("FlattenerDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
         if (input.getFieldName()!= null) wField.setText(input.getFieldName());
 
