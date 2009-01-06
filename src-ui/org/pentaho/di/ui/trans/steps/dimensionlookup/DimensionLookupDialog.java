@@ -15,10 +15,17 @@
  */
 package org.pentaho.di.ui.trans.steps.dimensionlookup;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
@@ -148,11 +155,23 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	private boolean backupUpdate, backupAutoInc;
 
 	private DatabaseMeta ci;
+	
+	private ColumnInfo[] ciUpIns;
+	
+	private ColumnInfo[] ciKey;
+	
+    private Map<String, Integer> inputFields;
+    
+	/**
+	 * List of ColumnInfo that should have the field names of the selected database table
+	 */
+	private List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
 
 	public DimensionLookupDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
 		input=(DimensionLookupMeta)in;
+        inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -169,6 +188,11 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			public void modifyText(ModifyEvent e)
 			{
 				input.setChanged();
+			}
+		};
+		FocusListener lsFocusLost = new FocusAdapter() {
+			public void focusLost(FocusEvent arg0) {
+				setTableFieldCombo();
 			}
 		};
 		backupChanged = input.hasChanged();
@@ -266,6 +290,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         wSchema=new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
+        wSchema.addFocusListener(lsFocusLost);
         FormData fdSchema = new FormData();
         fdSchema.left = new FormAttachment(middle, 0);
         fdSchema.top  = new FormAttachment(wConnection, margin);
@@ -294,6 +319,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		wTable=new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
+		wTable.addFocusListener(lsFocusLost);
 		FormData fdTable=new FormData();
 		fdTable.left = new FormAttachment(middle, 0);
 		fdTable.top  = new FormAttachment(wSchema, margin);
@@ -370,10 +396,10 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		int nrKeyCols=2;
 		int nrKeyRows=(input.getKeyStream()!=null?input.getKeyStream().length:1);
 
-		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo(Messages.getString("DimensionLookupDialog.ColumnInfo.DimensionField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		ciKey[1]=new ColumnInfo(Messages.getString("DimensionLookupDialog.ColumnInfo.FieldInStream"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-
+		ciKey=new ColumnInfo[nrKeyCols];
+		ciKey[0]=new ColumnInfo(Messages.getString("DimensionLookupDialog.ColumnInfo.DimensionField"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciKey[1]=new ColumnInfo(Messages.getString("DimensionLookupDialog.ColumnInfo.FieldInStream"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		tableFieldColumns.add(ciKey[0]);
 		wKey=new TableView(transMeta, wKeyComp,
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 						      ciKey,
@@ -428,11 +454,11 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		int UpInsCols=3;
 		int UpInsRows= (input.getFieldStream()!=null?input.getFieldStream().length:1);
 
-		final ColumnInfo[] ciUpIns=new ColumnInfo[UpInsCols];
-		ciUpIns[0]=new ColumnInfo(Messages.getString("DimensionLookupDialog.ColumnInfo.DimensionField"),              ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		ciUpIns[1]=new ColumnInfo(Messages.getString("DimensionLookupDialog.ColumnInfo.StreamField"),                 ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciUpIns=new ColumnInfo[UpInsCols];
+		ciUpIns[0]=new ColumnInfo(Messages.getString("DimensionLookupDialog.ColumnInfo.DimensionField"),              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciUpIns[1]=new ColumnInfo(Messages.getString("DimensionLookupDialog.ColumnInfo.StreamField"),                 ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
 		ciUpIns[2]=new ColumnInfo(Messages.getString("DimensionLookupDialog.ColumnInfo.TypeOfDimensionUpdate"),     ColumnInfo.COLUMN_TYPE_CCOMBO, input.isUpdate()?DimensionLookupMeta.typeDesc:DimensionLookupMeta.typeDescLookup ); //$NON-NLS-1$
-
+		tableFieldColumns.add(ciUpIns[0]);
 		wUpIns=new TableView(transMeta, wFieldsComp,
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 							  ciUpIns,
@@ -447,6 +473,38 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdUpIns.right = new FormAttachment(100, 0);
 		fdUpIns.bottom= new FormAttachment(100, 0);
 		wUpIns.setLayoutData(fdUpIns);
+		
+	    // 
+        // Search the fields in the background
+        //
+        
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                        
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                        	inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        
+                        setComboBoxes(); 
+                    }
+                    catch(KettleException e)
+                    {
+                        log.logError(toString(),Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
 
 		fdFieldsComp=new FormData();
 		fdFieldsComp.left  = new FormAttachment(0, 0);
@@ -753,6 +811,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		setSize();
 
 		getData();
+		setTableFieldCombo();
 		input.setChanged(backupChanged);
 
 		shell.open();
@@ -832,7 +891,23 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         	setTableMax();
         }
 	}
-    
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+		final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+        
+        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
+        Const.sortStrings(fieldNames);
+        ciKey[1].setComboValues(fieldNames);
+        ciKey[1].setComboValues(fieldNames);
+    }
 	public void setAutoincUse()
 	{
 		boolean enable = (ci == null) || ci.supportsAutoinc();
@@ -1150,7 +1225,47 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			new ErrorDialog(shell, Messages.getString("DimensionLookupDialog.FailedToGetFields.DialogTitle"), Messages.getString("DimensionLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
+	private void setTableFieldCombo(){
+		Runnable fieldLoader = new Runnable() {
+			public void run() {
+				//clear
+				for (int i = 0; i < tableFieldColumns.size(); i++) {
+					ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+					colInfo.setComboValues(new String[] {});
+				}
+				if (!Const.isEmpty(wTable.getText())) {
+					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
+					if (ci != null) {
+						Database db = new Database(ci);
+						try {
+							db.connect();
 
+							String schemaTable = ci	.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema
+											.getText()), transMeta.environmentSubstitute(wTable.getText()));
+							RowMetaInterface r = db.getTableFields(schemaTable);
+							if (null != r) {
+								String[] fieldNames = r.getFieldNames();
+								if (null != fieldNames) {
+									for (int i = 0; i < tableFieldColumns.size(); i++) {
+										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+										colInfo.setComboValues(fieldNames);
+									}
+								}
+							}
+						} catch (Exception e) {
+							for (int i = 0; i < tableFieldColumns.size(); i++) {
+								ColumnInfo colInfo = (ColumnInfo) tableFieldColumns	.get(i);
+								colInfo.setComboValues(new String[] {});
+							}
+							// ignore any errors here. drop downs will not be
+							// filled, but no problem for the user
+						}
+					}
+				}
+			}
+		};
+		shell.getDisplay().asyncExec(fieldLoader);
+	}
 	/**
 	 * Get the fields from the table in the database and use them as lookup 
 	 * keys. Only get the the fields which are not yet in use as key, or in 
