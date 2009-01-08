@@ -17,8 +17,17 @@
 
 package org.pentaho.di.ui.trans.steps.streamlookup;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -85,10 +94,21 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
     private Button       wGetLU;
     private Listener     lsGetLU;
     
+    private ColumnInfo[] ciKey;
+    
+    private ColumnInfo[] ciReturn;
+    
+    private String lookupStep;
+    
+    private Map<String, Integer>      lookupFields;
+    private Map<String, Integer>      prevFields;
+    
 	public StreamLookupDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input=(StreamLookupMeta)in;
+		lookupFields =new HashMap<String, Integer>();
+		prevFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -105,6 +125,11 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 			public void modifyText(ModifyEvent e) 
 			{
 				input.setChanged();
+			}
+		};
+		FocusListener lsFocusLost = new FocusAdapter() {
+			public void focusLost(FocusEvent arg0) {
+				setComboBoxesLookup();
 			}
 		};
 		changed = input.hasChanged();
@@ -158,7 +183,8 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		// transMeta.getInfoStep()
 		
 		wStep.addModifyListener(lsMod);
-
+		wStep.addFocusListener(lsFocusLost);
+		
 		fdStep=new FormData();
 		fdStep.left = new FormAttachment(middle, 0);
 		fdStep.top  = new FormAttachment(wStepname, margin*2);
@@ -176,9 +202,9 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		int nrKeyCols=2;
 		int nrKeyRows=(input.getKeystream()!=null?input.getKeystream().length:1);
 		
-		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.Field"),        ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		ciKey[1]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.LookupField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciKey=new ColumnInfo[nrKeyCols];
+		ciKey[0]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.Field"),        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciKey[1]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.LookupField"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
 		
 		wKey=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -207,8 +233,8 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		int UpInsCols=4;
 		int UpInsRows= (input.getValue()!=null?input.getValue().length:1);
 		
-		ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
-		ciReturn[0]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.Field"),    ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciReturn=new ColumnInfo[UpInsCols];
+		ciReturn[0]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.FieldReturn"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
 		ciReturn[1]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.NewName"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		ciReturn[2]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.Default"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		ciReturn[3]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ); //$NON-NLS-1$
@@ -336,6 +362,59 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		setSize();
 		
 		getData();
+		
+		lookupStep=wStep.getText();
+		
+        // 
+        // Search the fields in the background
+        //
+        
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta lookupStepMeta = transMeta.findStep(lookupStep);
+                if (lookupStepMeta!=null)
+                {
+                    try
+                    {
+                    	RowMetaInterface row = transMeta.getStepFields(lookupStepMeta);
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            lookupFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        
+                        setComboBoxesLookup(); 
+                    }
+                    catch(KettleException e)
+                    {
+                        log.logError(toString(), "Impossible de récupérer les champs depuis l'étape [" + lookupStep + "]!");
+                    }
+                }
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                        RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            prevFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        
+                        setComboBoxes(); 
+                    }
+                    catch(KettleException e)
+                    {
+                    	log.logError(toString(),Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
+		
 		input.setChanged(changed);
 		
 		shell.open();
@@ -345,14 +424,54 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		}
 		return stepname;
 	}
-	
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+		final Map<String, Integer> fields = new HashMap<String, Integer>();;
+        
+        // Add the currentMeta fields...
+        fields.putAll(prevFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+        
+        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
+        Const.sortStrings(fieldNames);
+        // return fields
+        ciKey[0].setComboValues(fieldNames);
+    }
+	protected void setComboBoxesLookup()
+    {
+		Runnable fieldLoader = new Runnable() {
+			public void run() {
+		        // Something was changed in the row.
+		        //
+				final Map<String, Integer> fields = new HashMap<String, Integer>();
+		        
+		        // Add the currentMeta fields...
+		        fields.putAll(lookupFields);
+		        
+		        Set<String> keySet = fields.keySet();
+		        List<String> entries = new ArrayList<String>(keySet);
+		        
+		        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
+		        Const.sortStrings(fieldNames);
+		        // return fields
+		        ciReturn[0].setComboValues(fieldNames);
+		        ciKey[1].setComboValues(fieldNames);
+			}
+		};
+		shell.getDisplay().asyncExec(fieldLoader);
+    }
+
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), Messages.getString("StreamLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug(toString(), Messages.getString("StreamLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		if (input.getKeystream()!=null)
 		for (i=0;i<input.getKeystream().length;i++)
@@ -403,7 +522,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		input.setUsingSortedList(wSortedList.getSelection());
         input.setUsingIntegerPair(wIntegerPair.getSelection());
         
-		log.logDebug(toString(), Messages.getString("StreamLookupDialog.Log.FoundKeys",nrkeys+"")); //$NON-NLS-1$ //$NON-NLS-2$
+        if(log.isDebug()) log.logDebug(toString(), Messages.getString("StreamLookupDialog.Log.FoundKeys",nrkeys+"")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrkeys;i++)
 		{
 			TableItem item     = wKey.getNonEmpty(i);
