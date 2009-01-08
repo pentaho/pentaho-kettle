@@ -546,7 +546,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 				{
 					String string[] = wFields.getItem(idx);
 					wSourceFileFolder.setText(string[0]);
-					wWildcard.setText(string[2]);
+					wWildcard.setText(string[1]);
 					wFields.remove(idx);
 				}
 				wFields.removeEmptyRows();
