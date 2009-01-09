@@ -1317,4 +1317,16 @@
 		</tooltip>
 		<image-uri>ui/images/RS.png</image-uri>
 	</step>
+	
+	<step id="UnivariateStats">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.UnivariateStats")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.univariatestats.UnivariateStatsMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.UnivariateStats")
+		</tooltip>
+		<image-uri>ui/images/US.png</image-uri>
+	</step>
 </steps>
