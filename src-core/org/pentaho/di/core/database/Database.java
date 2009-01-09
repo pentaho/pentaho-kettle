@@ -58,7 +58,6 @@ import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
-import org.pentaho.di.core.database.util.DatabaseUtil;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -314,22 +313,28 @@ public class Database implements VariableSpace
 	}
 
 	
-	  private void initWithJNDI(String jndiName) throws KettleDatabaseException {
-		  connection = null;
-		  try {
-			  DataSource dataSource = DatabaseUtil.getDataSourceFromJndi(jndiName);
-			  if (dataSource != null) {
-				  connection = dataSource.getConnection();
-				  if (connection == null) {
-					  throw new KettleDatabaseException( "Invalid JNDI connection "+ jndiName); //$NON-NLS-1$
-				  }
-		      } else {
-				  throw new KettleDatabaseException( "Invalid JNDI connection "+ jndiName); //$NON-NLS-1$
-		      }
-		  } catch (Exception e) {
-			  throw new KettleDatabaseException( "Invalid JNDI connection "+ jndiName + " : " + e.getMessage()); //$NON-NLS-1$
-		  }
-	  }
+	/**
+	 * Initialize by getting the connection from a javax.sql.DataSource. This method uses the
+	 * DataSourceProviderFactory to get the provider of DataSource objects.
+	 * @param dataSourceName
+	 * @throws KettleDatabaseException
+	 */
+	private void initWithNamedDataSource(String dataSourceName) throws KettleDatabaseException {
+    connection = null;
+    DataSource dataSource = DataSourceProviderFactory.getDataSourceProviderInterface().getNamedDataSource(dataSourceName);
+    if (dataSource != null) {
+      try {
+        connection = dataSource.getConnection();
+      } catch (SQLException e) {
+        throw new KettleDatabaseException( "Invalid JNDI connection "+ dataSourceName + " : " + e.getMessage()); //$NON-NLS-1$
+      }
+      if (connection == null) {
+        throw new KettleDatabaseException( "Invalid JNDI connection "+ dataSourceName); //$NON-NLS-1$
+      }
+    } else {
+      throw new KettleDatabaseException( "Invalid JNDI connection "+ dataSourceName); //$NON-NLS-1$
+    }
+	}
 
 	/**
 	 * Connect using the correct classname 
@@ -342,7 +347,7 @@ public class Database implements VariableSpace
 
 		// first see if this is a JNDI connection
 		if( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
-			initWithJNDI( environmentSubstitute(databaseMeta.getDatabaseName()) );
+		  initWithNamedDataSource( environmentSubstitute(databaseMeta.getDatabaseName()) );
 			return;
 		}
 		
