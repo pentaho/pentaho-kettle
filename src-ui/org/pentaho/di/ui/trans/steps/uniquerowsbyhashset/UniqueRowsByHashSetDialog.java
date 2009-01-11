@@ -1,6 +1,12 @@
 package org.pentaho.di.ui.trans.steps.uniquerowsbyhashset;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -25,6 +31,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.uniquerowsbyhashset.Messages;
 import org.pentaho.di.trans.steps.uniquerowsbyhashset.UniqueRowsByHashSetMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -44,11 +51,16 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 	private Label        wlStoreValues;
 	private Button       wStoreValues;
 	private FormData     fdlStoreValues, fdStoreValues;
+	
+    private Map<String, Integer> inputFields;
 
+    private ColumnInfo[] colinf;
+    
 	public UniqueRowsByHashSetDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input=(UniqueRowsByHashSetMeta)in;
+        inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -144,9 +156,9 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 
 		final int FieldsRows=input.getCompareFields()==null?0:input.getCompareFields().length;
 		
-		ColumnInfo[] colinf=new ColumnInfo[]
+		colinf=new ColumnInfo[]
         {
-		  new ColumnInfo(Messages.getString("UniqueRowsByHashSetDialog.ColumnInfo.Fieldname"),    ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
+		  new ColumnInfo(Messages.getString("UniqueRowsByHashSetDialog.ColumnInfo.Fieldname"),ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), //$NON-NLS-1$
         };
 		
 		wFields=new TableView(transMeta, shell, 
@@ -163,6 +175,37 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 		fdFields.right  = new FormAttachment(100, 0);
 		fdFields.bottom = new FormAttachment(wOK, -2*margin);
 		wFields.setLayoutData(fdFields);
+		
+		
+		  // 
+      // Search the fields in the background
+		
+      final Runnable runnable = new Runnable()
+      {
+          public void run()
+          {
+              StepMeta stepMeta = transMeta.findStep(stepname);
+              if (stepMeta!=null)
+              {
+                  try
+                  {
+                  	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                     
+                      // Remember these fields...
+                      for (int i=0;i<row.size();i++)
+                      {
+                          inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                      }
+                      setComboBoxes();
+                  }
+                  catch(KettleException e)
+                  {
+                  	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                  }
+              }
+          }
+      };
+      new Thread(runnable).start();
 
 
 		// Add listeners
@@ -194,7 +237,23 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 		}
 		return stepname;
 	}
-	
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+        final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+
+        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+        Const.sortStrings(fieldNames);
+        colinf[0].setComboValues(fieldNames);
+    }
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
