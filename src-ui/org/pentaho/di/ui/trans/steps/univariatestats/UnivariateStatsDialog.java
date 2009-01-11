@@ -182,38 +182,29 @@ public class UnivariateStatsDialog extends BaseStepDialog
       : 1;
 
     m_colinf = new ColumnInfo[] {
-        new ColumnInfo(Messages.getString(
-            "UnivariateStatsDialog.InputFieldColumn.Column"),
+        new ColumnInfo(Messages.getString("UnivariateStatsDialog.InputFieldColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, new String [] { "" }, true),
-        new ColumnInfo(Messages.getString(
-            "UnivariateStatsDialog.NColumn.Column"),
+        new ColumnInfo(Messages.getString("UnivariateStatsDialog.NColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, 
              new String [] { "True", "False" }, true),
-        new ColumnInfo(Messages.getString(
-            "UnivariateStatsDialog.MeanColumn.Column"),
+        new ColumnInfo(Messages.getString("UnivariateStatsDialog.MeanColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, 
              new String [] { "True", "False" }, true),
-        new ColumnInfo(Messages.getString(
-            "UnivariateStatsDialog.StdDevColumn.Column"),
+        new ColumnInfo(Messages.getString("UnivariateStatsDialog.StdDevColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, 
              new String [] { "True", "False" }, true),
-        new ColumnInfo(Messages.getString(
-            "UnivariateStatsDialog.MinColumn.Column"),
+        new ColumnInfo(Messages.getString(      "UnivariateStatsDialog.MinColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, 
              new String [] { "True", "False" }, true),
-        new ColumnInfo(Messages.getString(
-            "UnivariateStatsDialog.MaxColumn.Column"),
+        new ColumnInfo(Messages.getString("UnivariateStatsDialog.MaxColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, 
              new String [] { "True", "False" }, true),
-        new ColumnInfo(Messages.getString(
-            "UnivariateStatsDialog.MedianColumn.Column"),
+        new ColumnInfo(Messages.getString("UnivariateStatsDialog.MedianColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, 
              new String [] { "True", "False" }, true),
-        new ColumnInfo(Messages.getString(
-            "UnivariateStatsDialog.PercentileColumn.Column"),
+        new ColumnInfo(Messages.getString("UnivariateStatsDialog.PercentileColumn.Column"),
             ColumnInfo.COLUMN_TYPE_TEXT, false),
-        new ColumnInfo(Messages.getString(
-            "UnivariateStatsDialog.InterpolateColumn.Column"),
+        new ColumnInfo(Messages.getString("UnivariateStatsDialog.InterpolateColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, 
              new String [] { "True", "False" }, true)
     };
