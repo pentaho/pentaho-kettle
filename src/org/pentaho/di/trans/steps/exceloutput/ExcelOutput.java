@@ -83,7 +83,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			
 		         if (!openNewFile())
 				 {
-					 logError("Couldn't open file "+meta.getFileName());
+					 logError("Couldn't open file "+buildFilename());
 					 return false;
 				 }
 		          // If we need to write a header, do so...
