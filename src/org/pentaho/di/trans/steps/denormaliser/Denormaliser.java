@@ -227,6 +227,9 @@ public class Denormaliser extends BaseStep implements StepInterface
                 	else resultValue = null; // TODO: perhaps throw an exception here?<
                 }
                 break;
+            case DenormaliserTargetField.TYPE_AGGR_COUNT_ALL :
+                if (resultValue == null) resultValue = Long.valueOf(0);
+                break;
             default: break;
             }
             outputRowData[outputIndex++] = resultValue;
@@ -292,15 +295,10 @@ public class Denormaliser extends BaseStep implements StepInterface
                         //
                         ValueMetaInterface sourceMeta = rowMeta.getValueMeta(data.fieldNameIndex[idx]);
                         Object sourceData = rowData[data.fieldNameIndex[idx]];
-                        
+                        Object targetData;
                         // What is the target value metadata??
                         // 
                         ValueMetaInterface targetMeta = data.outputRowMeta.getValueMeta(data.inputRowMeta.size()-data.removeNrs.length+idx);
-            
-                        // See if we need to convert this value
-                        //
-                        Object targetData = targetMeta.convertData(sourceMeta, sourceData);
-                 
                         // What was the previous target in the result row?
                         //
                         Object prevTargetData = data.targetResult[idx];
@@ -308,6 +306,7 @@ public class Denormaliser extends BaseStep implements StepInterface
                         switch(field.getTargetAggregationType())
                         {
                         case DenormaliserTargetField.TYPE_AGGR_SUM:
+                            targetData = targetMeta.convertData(sourceMeta, sourceData);
                         	if (prevTargetData!=null)
                         	{
                         		prevTargetData = ValueDataUtil.plus(targetMeta, prevTargetData, targetMeta, targetData);
@@ -328,12 +327,13 @@ public class Denormaliser extends BaseStep implements StepInterface
                             }
                             break;
                         case DenormaliserTargetField.TYPE_AGGR_COUNT_ALL:
-                            if (!targetMeta.isNull(sourceData)) prevTargetData = ((Integer)prevTargetData)+1;;
+                            prevTargetData = ++data.counters[idx];
                             break;
                         case DenormaliserTargetField.TYPE_AGGR_AVERAGE:
+                            targetData = targetMeta.convertData(sourceMeta, sourceData);
                             if (!sourceMeta.isNull(sourceData)) 
                             {
-                                data.counters[idx]++;
+                                prevTargetData = data.counters[idx]++;
                                 if (data.sum[idx]==null)
                                 {
                                 	data.sum[idx] = targetData;
@@ -347,7 +347,8 @@ public class Denormaliser extends BaseStep implements StepInterface
                             break;
                         case DenormaliserTargetField.TYPE_AGGR_NONE:
                         default:
-                            prevTargetData = targetData; // Overwrite the previous
+                            targetData = targetMeta.convertData(sourceMeta, sourceData);
+                            prevTargetData = targetMeta.convertData(sourceMeta, sourceData); // Overwrite the previous
                             break;
                         }
                         
