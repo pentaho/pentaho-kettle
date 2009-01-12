@@ -20,11 +20,35 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.pentaho.di.core.database.DataSourceNamingException;
 import org.pentaho.di.core.database.Messages;
+import org.pentaho.di.core.database.DataSourceProviderInterface;
 
-public class DatabaseUtil
+/**
+ * Provides default implementation for looking data sources up in
+ * JNDI.
+ * 
+ * @author mbatchel
+ *
+ */
+
+public class DatabaseUtil implements DataSourceProviderInterface
 {
+
+  /**
+   * Implementation of DatasourceProviderInterface.
+   * 
+   */
+  public DataSource getNamedDataSource(String datasourceName) throws DataSourceNamingException {
+    try {
+      return DatabaseUtil.getDataSourceFromJndi(datasourceName);
+    } catch (NamingException ex) {
+      throw new DataSourceNamingException(ex);
+    }
+  }
+  
 	private static Map<String,DataSource> FoundDS = Collections.synchronizedMap(new HashMap<String,DataSource>());
+	
 	/**
 	 * Since JNDI is supported different ways in different app servers, it's
 	 * nearly impossible to have a ubiquitous way to look up a datasource. This
@@ -36,7 +60,7 @@ public class DatabaseUtil
 	 * @return DataSource if there is one bound in JNDI
 	 * @throws NamingException
 	 */
-	public static DataSource getDataSourceFromJndi(String dsName) throws NamingException
+	private static DataSource getDataSourceFromJndi(String dsName) throws NamingException
 	{
 		Object foundDs = FoundDS.get(dsName);
 		if (foundDs != null)
