@@ -26,6 +26,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -229,6 +230,10 @@ public class Denormaliser extends BaseStep implements StepInterface
                 break;
             case DenormaliserTargetField.TYPE_AGGR_COUNT_ALL :
                 if (resultValue == null) resultValue = Long.valueOf(0);
+                if (field.getTargetType() != ValueMetaInterface.TYPE_INTEGER)
+                {
+                    resultValue = data.outputRowMeta.getValueMeta(outputIndex).convertData(new ValueMeta("num_values_aggregation", ValueMetaInterface.TYPE_INTEGER), resultValue);
+                }
                 break;
             default: break;
             }
