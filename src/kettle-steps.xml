@@ -1329,4 +1329,16 @@
 		</tooltip>
 		<image-uri>ui/images/US.png</image-uri>
 	</step>
+	
+		<step id="UniqueRowsByHashSet">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.UniqueRowsByHashSet")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.uniquerowsbyhashset.UniqueRowsByHashSetMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.UniqueRowsByHashSet")
+		</tooltip>
+		<image-uri>ui/images/URH.png</image-uri>
+	</step>
 </steps>
