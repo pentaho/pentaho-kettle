@@ -15,12 +15,15 @@
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -63,7 +66,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 	private FormData     fdlTarget, fdTarget;
 
     private Label        wlKeyField;
-    private Text         wKeyField;
+   	private CCombo       wKeyField;
     private FormData     fdlKeyField, fdKeyField;
 
 	private Button wGet, wGetAgg;
@@ -72,6 +75,8 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 
 	private DenormaliserMeta input;
 
+	private boolean gotPreviousFields=false;
+	
 	public DenormaliserDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -135,7 +140,8 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
         fdlKeyField.right= new FormAttachment(middle, -margin);
         fdlKeyField.top  = new FormAttachment(wStepname, margin);
         wlKeyField.setLayoutData(fdlKeyField);
-        wKeyField=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+
+        wKeyField=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
         props.setLook(wKeyField);
         wKeyField.addModifyListener(lsMod);
         fdKeyField=new FormData();
@@ -143,6 +149,22 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
         fdKeyField.top   = new FormAttachment(wStepname, margin);
         fdKeyField.right = new FormAttachment(100, 0);
         wKeyField.setLayoutData(fdKeyField);
+        wKeyField.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getPreviousFieldNames();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );
 
 		wlGroup=new Label(shell, SWT.NONE);
 		wlGroup.setText(Messages.getString("DenormaliserDialog.Group.Label")); //$NON-NLS-1$
@@ -441,7 +463,32 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 			new ErrorDialog(shell, Messages.getString("DenormaliserDialog.FailedToGetFields.DialogTitle"), Messages.getString("DenormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
+	 private void getPreviousFieldNames()
+	 {
+		 if(!gotPreviousFields) 
+		 {
+			try
+			{
+				String keyValue=wKeyField.getText();
+				wKeyField.removeAll();
+				RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+		
+				if (r != null) {
+					r.getFieldNames();
 	
+					for (int i = 0; i < r.getFieldNames().length; i++) {
+						wKeyField.add(r.getFieldNames()[i]);
+					}
+				}
+				if(keyValue!=null) wKeyField.setText(keyValue);
+				gotPreviousFields=true;
+			}
+			catch(KettleException ke)
+			{
+				new ErrorDialog(shell, Messages.getString("DenormaliserDialog.FailedToGetFields.DialogTitle"), Messages.getString("DenormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		 }
+		}
 	public String toString()
 	{
 		return this.getClass().getName();
