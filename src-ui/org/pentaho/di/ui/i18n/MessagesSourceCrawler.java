@@ -196,7 +196,7 @@ public class MessagesSourceCrawler {
 					// Scan for elements and tags in this file...
 					//
 					for (SourceCrawlerXMLElement xmlElement : xmlFolder.getElements()) {
-						addLabelOccurrences(fileObject, doc.getElementsByTagName(xmlElement.getElement()), xmlElement.getLabel(), xmlFolder.getDefaultPackage(), xmlFolder.getPackageExceptions());						
+						addLabelOccurrences(fileObject, doc.getElementsByTagName(xmlElement.getSearchElement()), xmlFolder.getKeyPrefix(), xmlElement.getKeyTag(), xmlElement.getKeyAttribute(), xmlFolder.getDefaultPackage(), xmlFolder.getPackageExceptions());						
 					}
 				}
 				catch(KettleXMLException e) {
@@ -206,7 +206,7 @@ public class MessagesSourceCrawler {
 		}
 	}
 	
-	private void addLabelOccurrences(FileObject fileObject, NodeList nodeList, String tag, String defaultPackage, List<SourceCrawlerPackageException> packageExcpeptions) throws Exception {
+	private void addLabelOccurrences(FileObject fileObject, NodeList nodeList, String keyPrefix, String tag, String attribute, String defaultPackage, List<SourceCrawlerPackageException> packageExcpeptions) throws Exception {
 		if (nodeList==null) return;
 
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -216,8 +216,15 @@ public class MessagesSourceCrawler {
 
 		for (int i=0;i<nodeList.getLength();i++) {
 			Node node = nodeList.item(i);
-			String labelString = XMLHandler.getTagAttribute(node, tag);
-			if (labelString!=null && labelString.startsWith("%")) {
+			String labelString=null;
+			
+			if (!Const.isEmpty(attribute)) {
+				labelString = XMLHandler.getTagAttribute(node, attribute);
+			} else if (!Const.isEmpty(tag)) {
+				labelString = XMLHandler.getTagValue(node, tag);
+			}
+			
+			if (labelString!=null && labelString.startsWith(keyPrefix)) {
 				String key = labelString.substring(1);
 				
 				String messagesPackage = defaultPackage;
@@ -228,10 +235,11 @@ public class MessagesSourceCrawler {
 		    	StringWriter bodyXML = new StringWriter();
 	    		transformer.transform(new DOMSource(node), new StreamResult(bodyXML));
 	    		String xml = bodyXML.getBuffer().toString();
-		    	
 					
 				KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject, messagesPackage, -1, -1, key, "?", xml);
-				occurrences.add(keyOccurrence);
+				if (!occurrences. contains(keyOccurrence)) {
+					occurrences.add(keyOccurrence);
+				}
 			}
 		}
 	}
@@ -419,11 +427,11 @@ public class MessagesSourceCrawler {
 		filesToAvoid.add("XulHelper.java"); 
 		
 		List<SourceCrawlerXMLFolder> xmlFolders = new ArrayList<SourceCrawlerXMLFolder>();
-		SourceCrawlerXMLFolder xmlFolder = new SourceCrawlerXMLFolder("ui", ".*\\.xul$");
-		xmlFolder.getElements().add(new SourceCrawlerXMLElement("menu", "label"));
-		xmlFolder.getElements().add(new SourceCrawlerXMLElement("menuitem", "label"));
-		xmlFolder.getElements().add(new SourceCrawlerXMLElement("toolbar", "label"));
-		xmlFolder.getElements().add(new SourceCrawlerXMLElement("toolbarbutton", "label"));
+		SourceCrawlerXMLFolder xmlFolder = new SourceCrawlerXMLFolder("ui", ".*\\.xul$", "%");
+		xmlFolder.getElements().add(new SourceCrawlerXMLElement("menu", null, "label"));
+		xmlFolder.getElements().add(new SourceCrawlerXMLElement("menuitem", null, "label"));
+		xmlFolder.getElements().add(new SourceCrawlerXMLElement("toolbar", null, "label"));
+		xmlFolder.getElements().add(new SourceCrawlerXMLElement("toolbarbutton", null, "label"));
 		xmlFolders.add(xmlFolder);
 		
 		MessagesSourceCrawler crawler = new MessagesSourceCrawler( directories, null, xmlFolders );

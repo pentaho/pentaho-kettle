@@ -15,15 +15,17 @@ public class SourceCrawlerXMLFolder {
 	private List<SourceCrawlerXMLElement> elements;
 	private String defaultPackage;
 	private List<SourceCrawlerPackageException> packageExceptions;
+	private String keyPrefix;
 	
 	/**
 	 * @param folder
 	 * @param wildcard
 	 * @param elements
 	 */
-	public SourceCrawlerXMLFolder(String folder, String wildcard, List<SourceCrawlerXMLElement> elements, List<SourceCrawlerPackageException> packageExceptions) {
+	public SourceCrawlerXMLFolder(String folder, String wildcard, String keyPrefix, List<SourceCrawlerXMLElement> elements, List<SourceCrawlerPackageException> packageExceptions) {
 		this.folder = folder;
 		this.wildcard = wildcard;
+		this.keyPrefix = keyPrefix;
 		this.elements = elements;
 		this.packageExceptions = packageExceptions;
 	}
@@ -32,8 +34,8 @@ public class SourceCrawlerXMLFolder {
 	 * @param folder
 	 * @param wildcard
 	 */
-	public SourceCrawlerXMLFolder(String folder, String wildcard) {
-		this(folder, wildcard, new ArrayList<SourceCrawlerXMLElement>(), new ArrayList<SourceCrawlerPackageException>());
+	public SourceCrawlerXMLFolder(String folder, String wildcard, String keyPrefix) {
+		this(folder, wildcard, keyPrefix, new ArrayList<SourceCrawlerXMLElement>(), new ArrayList<SourceCrawlerPackageException>());
 	}
 	
 	/**
@@ -104,6 +106,20 @@ public class SourceCrawlerXMLFolder {
 		this.packageExceptions = packageExceptions;
 	}
 
-	
+	/**
+	 * @return the keyPrefix
+	 */
+	public String getKeyPrefix() {
+		return keyPrefix;
+	}
+
+	/**
+	 * @param keyPrefix the keyPrefix to set
+	 */
+	public void setKeyPrefix(String keyPrefix) {
+		this.keyPrefix = keyPrefix;
+	}
+
+
 	
 }

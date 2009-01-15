@@ -1,39 +1,56 @@
 package org.pentaho.di.ui.i18n;
 
 public class SourceCrawlerXMLElement {
-	private String element;
-	private String label;
+	private String searchElement;
+	private String keyTag;
+	private String keyAttribute;
 	
 	/**
-	 * @param element
-	 * @param label
+	 * @param searchElement
+	 * @param keyTag
+	 * @param keyAttribute
 	 */
-	public SourceCrawlerXMLElement(String element, String label) {
-		this.element = element;
-		this.label = label;
+	public SourceCrawlerXMLElement(String searchElement, String keyTag, String keyAttribute) {
+		this.searchElement = searchElement;
+		this.keyTag = keyTag;
+		this.keyAttribute = keyAttribute;
 	}
 	/**
-	 * @return the element
+	 * @return the searchElement
 	 */
-	public String getElement() {
-		return element;
+	public String getSearchElement() {
+		return searchElement;
 	}
 	/**
-	 * @param element the element to set
+	 * @param searchElement the searchElement to set
 	 */
-	public void setElement(String element) {
-		this.element = element;
+	public void setSearchElement(String searchElement) {
+		this.searchElement = searchElement;
 	}
 	/**
-	 * @return the label
+	 * @return the keyTag
 	 */
-	public String getLabel() {
-		return label;
+	public String getKeyTag() {
+		return keyTag;
 	}
 	/**
-	 * @param label the label to set
+	 * @param keyTag the keyTag to set
 	 */
-	public void setLabel(String label) {
-		this.label = label;
+	public void setKeyTag(String keyTag) {
+		this.keyTag = keyTag;
 	}
+	/**
+	 * @return the keyAttribute
+	 */
+	public String getKeyAttribute() {
+		return keyAttribute;
+	}
+	/**
+	 * @param keyAttribute the keyAttribute to set
+	 */
+	public void setKeyAttribute(String keyAttribute) {
+		this.keyAttribute = keyAttribute;
+	}
+	
+
 }

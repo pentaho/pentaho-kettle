@@ -93,10 +93,10 @@ public class KeyOccurrence implements Comparable<KeyOccurrence> {
 		return "[key="+key+", messages package="+messagesPackage+"]";
 	}
 
-	public boolean equals(KeyOccurrence occ) {
+	public boolean equals(Object occ) {
 		if (occ==null) return false;
 		if (this==occ) return true;
-		return key.equals(occ.key) && messagesPackage.equals(occ.messagesPackage);
+		return key.equals(((KeyOccurrence)occ).key) && messagesPackage.equals(((KeyOccurrence)occ).messagesPackage);
 	}
 	 
     public int compareTo(KeyOccurrence occ) {

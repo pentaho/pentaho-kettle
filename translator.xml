@@ -42,6 +42,7 @@
     <xml-folder-to-scan> 
        <folder>ui</folder> 
        <wildcard>.*\.xul$</wildcard>
+       <key-prefix>%</key-prefix>
        <package-default>org.pentaho.di.ui.spoon</package-default>
        <package-exceptions>
          <package-exception>  
@@ -50,10 +51,10 @@
          </package-exception>
        </package-exceptions>
        <elements-to-scan> 
-         <element-to-scan> <element>menu</element> <tag>label</tag> </element-to-scan> 
-         <element-to-scan> <element>menuitem</element> <tag>label</tag> </element-to-scan>
-         <element-to-scan> <element>toolbar</element> <tag>label</tag> </element-to-scan>
-         <element-to-scan> <element>toolbarbutton</element> <tag>label</tag> </element-to-scan>
+         <element-to-scan> <element>menu</element> <tag></tag> <attribute>label</attribute> </element-to-scan> 
+         <element-to-scan> <element>menuitem</element> <tag></tag> <attribute>label</attribute> </element-to-scan>
+         <element-to-scan> <element>toolbar</element> <tag></tag> <attribute>label</attribute> </element-to-scan>
+         <element-to-scan> <element>toolbarbutton</element> <tag></tag> <attribute>label</attribute> </element-to-scan>
        </elements-to-scan>
      </xml-folder-to-scan>
     

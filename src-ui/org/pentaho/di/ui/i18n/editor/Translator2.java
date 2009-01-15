@@ -276,7 +276,8 @@ public class Translator2
     				Node folderToScanNode = XMLHandler.getSubNodeByNr(foldersToScanNode, "xml-folder-to-scan", i);
     				String folderName = XMLHandler.getTagValue(folderToScanNode, "folder");
     				String wildcard = XMLHandler.getTagValue(folderToScanNode, "wildcard");
-    				SourceCrawlerXMLFolder xmlFolder = new SourceCrawlerXMLFolder(folderName, wildcard);
+    				String keyPrefix = XMLHandler.getTagValue(folderToScanNode, "key-prefix");
+    				SourceCrawlerXMLFolder xmlFolder = new SourceCrawlerXMLFolder(folderName, wildcard, keyPrefix);
     				
     				Node elementsNode = XMLHandler.getSubNode(folderToScanNode, "elements-to-scan");
     				int nrElements = XMLHandler.countNodes(elementsNode, "element-to-scan");
@@ -284,7 +285,8 @@ public class Translator2
     					Node elementNode = XMLHandler.getSubNodeByNr(elementsNode, "element-to-scan", j);
     					String element = XMLHandler.getTagValue(elementNode, "element");
     					String tag = XMLHandler.getTagValue(elementNode, "tag");
-    					xmlFolder.getElements().add(new SourceCrawlerXMLElement(element, tag));
+    					String attribute = XMLHandler.getTagValue(elementNode, "attribute");
+    					xmlFolder.getElements().add(new SourceCrawlerXMLElement(element, tag, attribute));
     				}
     				
     				String defaultPackage = XMLHandler.getTagValue(folderToScanNode, "package-default");
