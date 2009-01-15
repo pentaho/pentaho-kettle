@@ -62,11 +62,11 @@ import org.pentaho.di.ui.core.widget.TableView;
 public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private Label        wlUrl;
-	private TextVar         wUrl;
+	private TextVar      wUrl;
 	private FormData     fdlUrl, fdUrl;
 
 	private Label        wlResult;
-	private TextVar         wResult;
+	private TextVar      wResult;
 	private FormData     fdlResult, fdResult;
 
 	private Label        wlFields;
@@ -82,11 +82,11 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
     private FormData     fdlUrlInField, fdUrlInField;
 	
 	private Label        wlUrlField;
-	private ComboVar      wUrlField;
+	private ComboVar     wUrlField;
 	private FormData     fdlUrlField, fdUrlField;
 	
 	private Label        wlrequestEntity;
-	private ComboVar      wrequestEntity;
+	private ComboVar     wrequestEntity;
 	private FormData     fdlrequestEntity, fdrequestEntity;
 
 	private HTTPPOSTMeta input;
@@ -100,12 +100,12 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
     
     private boolean gotPreviousFields=false;
     
-	private Button				wGetBodyParam;
-	private FormData			fdGetBodyParam;
-	private Listener			lsGetBodyParam;
+	private Button		 wGetBodyParam;
+	private FormData	 fdGetBodyParam;
+	private Listener	 lsGetBodyParam;
 	
     private Label        wlEncoding;
-    private ComboVar       wEncoding;
+    private ComboVar     wEncoding;
     private FormData     fdlEncoding, fdEncoding;
     
 	private Label        wlPostAFile;
