@@ -67,6 +67,7 @@ import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -84,7 +85,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 	private Label        wlFilename;
 	private Button       wbFilename;
-	private TextVar      wFilename;
+	private TextVar     wFilename;
 	private FormData     fdlFilename, fdbFilename, fdFilename;
 
 	private Label        wlFileIsCommand;
@@ -120,7 +121,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     private FormData     fdlFileNameInField, fdFileNameInField;
 	
 	private Label        wlFileNameField;
-	private TextVar      wFileNameField;
+	private ComboVar      wFileNameField;
 	private FormData     fdlFileNameField, fdFileNameField;
 	/*END*/
 
@@ -205,6 +206,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	private ColumnInfo[] colinf;
 
     private Map<String, Integer> inputFields;
+    
+    private boolean gotPreviousFields=false;
     
 	public TextFileOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -304,6 +307,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		fdFilename.top  = new FormAttachment(0, margin);
 		fdFilename.right= new FormAttachment(wbFilename, -margin);
 		wFilename.setLayoutData(fdFilename);
+		
 
 		// Run this as a command instead?
 		wlFileIsCommand=new Label(wFileComp, SWT.RIGHT);
@@ -407,8 +411,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		fdlFileNameField.right= new FormAttachment(middle, -margin);
 		fdlFileNameField.top  = new FormAttachment(wFileNameInField, margin);
 		wlFileNameField.setLayoutData(fdlFileNameField);
-
-    	wFileNameField=new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		
+    	wFileNameField=new ComboVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wFileNameField);
 		wFileNameField.addModifyListener(lsMod);
 		fdFileNameField=new FormData();
@@ -417,6 +421,22 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		fdFileNameField.right= new FormAttachment(100, 0);
 		wFileNameField.setLayoutData(fdFileNameField);
 		wFileNameField.setEnabled(false);
+		wFileNameField.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getFields();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );  
 		/*End*/
 
 		// Extension line
@@ -1263,7 +1283,24 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         }
     }
 
-
+    private void getFields()
+	 {
+		if(!gotPreviousFields)
+		{
+		 try{
+			 String field=wFileNameField.getText();
+			 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+			 if(r!=null)
+			  {
+				 wFileNameField.setItems(r.getFieldNames());
+			  }
+			 if(field!=null) wFileNameField.setText(field);
+		 	}catch(KettleException ke){
+				new ErrorDialog(shell, Messages.getString("TextFileOutputDialog.FailedToGetFields.DialogTitle"), Messages.getString("TextFileOutputDialog.FailedToGetFields.DialogMessage"), ke);
+			}
+		 	gotPreviousFields=true;
+		}
+	 }
     /**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 

@@ -18,12 +18,15 @@
 package org.pentaho.di.ui.trans.steps.valuemapper;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -37,12 +40,15 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.valuemapper.Messages;
 import org.pentaho.di.trans.steps.valuemapper.ValueMapperMeta;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 
@@ -54,7 +60,7 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
     private FormData     fdlStepname, fdStepname;
     
     private Label        wlFieldname;
-    private Text         wFieldname;
+	private CCombo       wFieldname;
     private FormData     fdlFieldname, fdFieldname;
 
     private Label        wlTargetFieldname;
@@ -71,6 +77,8 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
 	
 	private ValueMapperMeta input;
 
+	private boolean gotPreviousFields=false;
+	
 	public ValueMapperDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -132,7 +140,8 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
         fdlFieldname.right= new FormAttachment(middle, -margin);
         fdlFieldname.top  = new FormAttachment(wStepname, margin);
         wlFieldname.setLayoutData(fdlFieldname);
-        wFieldname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+
+        wFieldname=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
         props.setLook(wFieldname);
         wFieldname.addModifyListener(lsMod);
         fdFieldname=new FormData();
@@ -140,7 +149,22 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
         fdFieldname.top  = new FormAttachment(wStepname, margin);
         fdFieldname.right= new FormAttachment(100, 0);
         wFieldname.setLayoutData(fdFieldname);
-
+        wFieldname.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getFields();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );
         // TargetFieldname line
         wlTargetFieldname=new Label(shell, SWT.RIGHT);
         wlTargetFieldname.setText(Messages.getString("ValueMapperDialog.TargetFieldname.Label")); //$NON-NLS-1$
@@ -244,7 +268,29 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
 		}
 		return stepname;
 	}
-	
+	 private void getFields()
+		{
+		 if(!gotPreviousFields)
+		 {
+			 gotPreviousFields=true;
+			try
+			{
+				String fieldname=wFieldname.getText();
+				
+				wFieldname.removeAll();
+				RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+				if (r!=null)
+				{
+					wFieldname.setItems(r.getFieldNames());
+					if(fieldname!=null) wFieldname.setText(fieldname);
+				}
+			}
+			catch(KettleException ke)
+			{
+				new ErrorDialog(shell, Messages.getString("ValueMapperDialog.FailedToGetFields.DialogTitle"), Messages.getString("ValueMapperDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		 }
+		}
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 

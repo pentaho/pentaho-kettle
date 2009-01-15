@@ -16,6 +16,12 @@
 
 package org.pentaho.di.ui.trans.steps.sortedmerge;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
@@ -47,6 +53,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.sortedmerge.Messages;
 import org.pentaho.di.trans.steps.sortedmerge.SortedMergeMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -62,11 +69,16 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
     private FormData     fdlFields, fdFields;
 
 	private SortedMergeMeta input;
+	
+    private Map<String, Integer> inputFields;
+    
+    private ColumnInfo[] colinf;
 
 	public SortedMergeDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
 		input=(SortedMergeMeta)in;
+        inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -138,8 +150,8 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
         final int FieldsCols=2;
         final int FieldsRows=input.getFieldName().length;
         
-        ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-        colinf[0]=new ColumnInfo(Messages.getString("SortedMergeDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+        colinf=new ColumnInfo[FieldsCols];
+        colinf[0]=new ColumnInfo(Messages.getString("SortedMergeDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
         colinf[1]=new ColumnInfo(Messages.getString("SortedMergeDialog.Ascending.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") } );
         
         wFields=new TableView(transMeta, shell, 
@@ -156,6 +168,36 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
         fdFields.right = new FormAttachment(100, 0);
         fdFields.bottom= new FormAttachment(wOK, -2*margin);
         wFields.setLayoutData(fdFields);
+        
+		  // 
+        // Search the fields in the background
+		
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                       
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        setComboBoxes();
+                    }
+                    catch(KettleException e)
+                    {
+                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
         
 		// Add listeners
 		wCancel.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { cancel(); } });
@@ -183,7 +225,23 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
 		}
 		return stepname;
 	}
-	
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+        final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+
+        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+        Const.sortStrings(fieldNames);
+        colinf[0].setComboValues(fieldNames);
+    }
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
