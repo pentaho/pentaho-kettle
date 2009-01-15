@@ -38,5 +38,26 @@
     <filename>XulHelper.java</filename>
   </files-to-avoid>
   
+  <xml-folders-to-scan>
+    <xml-folder-to-scan> 
+       <folder>ui</folder> 
+       <wildcard>.*\.xul$</wildcard>
+       <package-default>org.pentaho.di.ui.spoon</package-default>
+       <package-exceptions>
+         <package-exception>  
+           <starts-with>JobGraph.</starts-with>  
+           <package>org.pentaho.di.ui.spoon.job</package>  
+         </package-exception>
+       </package-exceptions>
+       <elements-to-scan> 
+         <element-to-scan> <element>menu</element> <tag>label</tag> </element-to-scan> 
+         <element-to-scan> <element>menuitem</element> <tag>label</tag> </element-to-scan>
+         <element-to-scan> <element>toolbar</element> <tag>label</tag> </element-to-scan>
+         <element-to-scan> <element>toolbarbutton</element> <tag>label</tag> </element-to-scan>
+       </elements-to-scan>
+     </xml-folder-to-scan>
+    
+  </xml-folders-to-scan>
+  
 </translator-config>
 

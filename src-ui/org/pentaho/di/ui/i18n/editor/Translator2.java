@@ -60,8 +60,10 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.i18n.KeyOccurrence;
 import org.pentaho.di.ui.i18n.MessagesSourceCrawler;
-import org.pentaho.di.ui.i18n.editor.Messages;
 import org.pentaho.di.ui.i18n.MessagesStore;
+import org.pentaho.di.ui.i18n.SourceCrawlerPackageException;
+import org.pentaho.di.ui.i18n.SourceCrawlerXMLElement;
+import org.pentaho.di.ui.i18n.SourceCrawlerXMLFolder;
 import org.pentaho.di.ui.i18n.TranslationsStore;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.w3c.dom.Document;
@@ -130,6 +132,8 @@ public class Translator2
 	protected String searchString;
 	protected String lastFoundKey;
 	private String singleMessagesFile;
+
+	private java.util.List<SourceCrawlerXMLFolder> xmlFolders;
 		
     public Translator2(Display display)
     {
@@ -149,9 +153,8 @@ public class Translator2
         {
         	// crawl through the source directories...
         	//
-        	crawler = new MessagesSourceCrawler(directories, singleMessagesFile);
+        	crawler = new MessagesSourceCrawler(directories, singleMessagesFile, xmlFolders);
         	crawler.setFilesToAvoid(filesToAvoid);
-        	crawler.setXulDirectories( new String[] { "ui", } );
         	crawler.crawl();
         	
         	// get the packages...
@@ -226,6 +229,7 @@ public class Translator2
     	localeList = new ArrayList<String>();
     	rootDirectories = new ArrayList<String>();
     	filesToAvoid = new ArrayList<String>();
+    	xmlFolders = new ArrayList<SourceCrawlerXMLFolder>();
 
     	File file = new File("translator.xml");
     	if (file.exists()) {
@@ -264,7 +268,44 @@ public class Translator2
     				String filename = XMLHandler.getNodeValue(fileNode);
     				filesToAvoid.add(filename);
     			}
+    			
+    			Node foldersToScanNode = XMLHandler.getSubNode(configNode, "xml-folders-to-scan");
+    			int nrFolders = XMLHandler.countNodes(foldersToScanNode, "xml-folder-to-scan");
+    			if (nrFolders>0) xmlFolders.clear();
+    			for (int i=0;i<nrFolders;i++) {
+    				Node folderToScanNode = XMLHandler.getSubNodeByNr(foldersToScanNode, "xml-folder-to-scan", i);
+    				String folderName = XMLHandler.getTagValue(folderToScanNode, "folder");
+    				String wildcard = XMLHandler.getTagValue(folderToScanNode, "wildcard");
+    				SourceCrawlerXMLFolder xmlFolder = new SourceCrawlerXMLFolder(folderName, wildcard);
+    				
+    				Node elementsNode = XMLHandler.getSubNode(folderToScanNode, "elements-to-scan");
+    				int nrElements = XMLHandler.countNodes(elementsNode, "element-to-scan");
+    				for (int j=0;j<nrElements;j++) {
+    					Node elementNode = XMLHandler.getSubNodeByNr(elementsNode, "element-to-scan", j);
+    					String element = XMLHandler.getTagValue(elementNode, "element");
+    					String tag = XMLHandler.getTagValue(elementNode, "tag");
+    					xmlFolder.getElements().add(new SourceCrawlerXMLElement(element, tag));
+    				}
+    				
+    				String defaultPackage = XMLHandler.getTagValue(folderToScanNode, "package-default");
+    				xmlFolder.setDefaultPackage(defaultPackage);
+    				
+    				Node packageExceptionsNode = XMLHandler.getSubNode(folderToScanNode, "package-exceptions");
+    				int nrExceptions = XMLHandler.countNodes(packageExceptionsNode, "package-exception");
+    				for (int j=0;j<nrExceptions;j++) {
+    					Node packageExceptionNode = XMLHandler.getSubNodeByNr(packageExceptionsNode, "package-exception", j);
+    					String startsWith = XMLHandler.getTagValue(packageExceptionNode, "starts-with");
+    					String packageName = XMLHandler.getTagValue(packageExceptionNode, "package");
+    					xmlFolder.getPackageExceptions().add(new SourceCrawlerPackageException(startsWith, packageName));
+    				}
+    				
+    				xmlFolders.add(xmlFolder);
+    			}
 
+    			System.out.println(xmlFolders.size()+" XML folders to scan:");
+    			for (SourceCrawlerXMLFolder xmlFolder : xmlFolders) {
+    				System.out.println("folder ["+xmlFolder.getFolder()+"] : wildcard ["+xmlFolder.getWildcard()+"] with "+xmlFolder.getElements().size()+" elements to scan for");
+    			}
     		}
     		catch (Exception e) {
 				log.logError("Translator", "Error reading translator.xml", e);

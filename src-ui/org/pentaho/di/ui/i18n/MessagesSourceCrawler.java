@@ -15,12 +15,19 @@ package org.pentaho.di.ui.i18n;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -32,8 +39,6 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
-import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -53,12 +58,6 @@ public class MessagesSourceCrawler {
 	private List<String> sourceDirectories;
 	
 	/**
-	 * The directories to search for XUL files in
-	 */
-	private String[] xulDirectories;
-	
-	
-	/**
 	 * The key occurrences, sorted by  
 	 */
 	private List<KeyOccurrence> occurrences;
@@ -69,19 +68,24 @@ public class MessagesSourceCrawler {
 	private List<String> filesToAvoid;
 
 	private String singleMessagesFile;
+
+	/**
+	 * The folders with XML files to scan for keys in
+	 */
+	private List<SourceCrawlerXMLFolder> xmlFolders;
 	
 
 	/**
 	 * @param sourceDirectories The source directories to crawl through
 	 * @param singleMessagesFile the messages file if there is only one, otherwise: null
 	 */
-	public MessagesSourceCrawler(List<String> sourceDirectories, String singleMessagesFile) {
+	public MessagesSourceCrawler(List<String> sourceDirectories, String singleMessagesFile, List<SourceCrawlerXMLFolder> xmlFolders) {
 		super();
 		this.sourceDirectories = sourceDirectories;
 		this.singleMessagesFile = singleMessagesFile;
 		this.occurrences = new ArrayList<KeyOccurrence>();
 		this.filesToAvoid = new ArrayList<String>();
-		this.xulDirectories = new String[] {};
+		this.xmlFolders = xmlFolders;
 	}
 
 	/**
@@ -144,7 +148,7 @@ public class MessagesSourceCrawler {
 		}
 	}
 	
-	public void crawl() throws IOException {
+	public void crawl() throws Exception {
 		String[] dirs = new  String[sourceDirectories.size()];
 		String[] masks = new String[sourceDirectories.size()];
 		String[] req = new String[sourceDirectories.size()];
@@ -178,48 +182,55 @@ public class MessagesSourceCrawler {
 		
 		// Also search for keys in the XUL files...
 		//
-		String[] xulMasks = new String[xulDirectories.length];
-		String[] xulReq = new String[xulDirectories.length];
-		boolean[] xulSubdirs = new boolean[xulDirectories.length];
-		
-		for (int i=0;i<xulMasks.length;i++) {
-			xulMasks[i] = ".*\\.xul$";
-			xulReq[i] = "N";
-			xulSubdirs[i] = true;
-		}
-		FileInputList xulFileInputList = FileInputList.createFileList(new Variables(), xulDirectories, xulMasks, xulReq, xulSubdirs);
-		for (FileObject fileObject : xulFileInputList.getFiles()) {
-			try {
-				Document doc = XMLHandler.loadXMLFile(fileObject);
-				
-				// The menus...
-				//
-				addLabelOccurrences(fileObject, doc.getElementsByTagName("menu"));
-				addLabelOccurrences(fileObject, doc.getElementsByTagName("menuitem"));
-				addLabelOccurrences(fileObject, doc.getElementsByTagName("toolbar"));
-				addLabelOccurrences(fileObject, doc.getElementsByTagName("toolbarbutton"));
-			}
-			catch(KettleXMLException e) {
-				LogWriter.getInstance().logError(toString(), "Unable to open XUL / XML document: "+fileObject);
+		for (SourceCrawlerXMLFolder xmlFolder : xmlFolders) {
+			String[] xmlDirs = { xmlFolder.getFolder(), };
+			String[] xmlMasks = { xmlFolder.getWildcard(), };
+			String[] xmlReq = { "N", };
+			boolean[] xmlSubdirs = { true, }; // search sub-folders too
+			
+			FileInputList xulFileInputList = FileInputList.createFileList(new Variables(), xmlDirs, xmlMasks, xmlReq, xmlSubdirs);
+			for (FileObject fileObject : xulFileInputList.getFiles()) {
+				try {
+					Document doc = XMLHandler.loadXMLFile(fileObject);
+					
+					// Scan for elements and tags in this file...
+					//
+					for (SourceCrawlerXMLElement xmlElement : xmlFolder.getElements()) {
+						addLabelOccurrences(fileObject, doc.getElementsByTagName(xmlElement.getElement()), xmlElement.getLabel(), xmlFolder.getDefaultPackage(), xmlFolder.getPackageExceptions());						
+					}
+				}
+				catch(KettleXMLException e) {
+					LogWriter.getInstance().logError(toString(), "Unable to open XUL / XML document: "+fileObject);
+				}
 			}
 		}
 	}
 	
-	private void addLabelOccurrences(FileObject fileObject, NodeList nodeList) {
+	private void addLabelOccurrences(FileObject fileObject, NodeList nodeList, String tag, String defaultPackage, List<SourceCrawlerPackageException> packageExcpeptions) throws Exception {
 		if (nodeList==null) return;
-		
+
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    	Transformer transformer = transformerFactory.newTransformer();
+    	transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
 		for (int i=0;i<nodeList.getLength();i++) {
 			Node node = nodeList.item(i);
-			String labelString = XMLHandler.getTagAttribute(node, "label");
+			String labelString = XMLHandler.getTagAttribute(node, tag);
 			if (labelString!=null && labelString.startsWith("%")) {
 				String key = labelString.substring(1);
 				
-				// TODO: figure out a way to do this cleaner...
-				// 
-				String messagesPackage = Spoon.class.getPackage().getName();
-				if (key.startsWith("JobGraph.")) messagesPackage = JobGraph.class.getPackage().getName();
+				String messagesPackage = defaultPackage;
+				for (SourceCrawlerPackageException packageException : packageExcpeptions) {
+					if (key.startsWith(packageException.getStartsWith())) messagesPackage = packageException.getPackageName();
+				}
 				
-				KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject, messagesPackage, -1, -1, key, "?", node.toString());
+		    	StringWriter bodyXML = new StringWriter();
+	    		transformer.transform(new DOMSource(node), new StreamResult(bodyXML));
+	    		String xml = bodyXML.getBuffer().toString();
+		    	
+					
+				KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject, messagesPackage, -1, -1, key, "?", xml);
 				occurrences.add(keyOccurrence);
 			}
 		}
@@ -388,7 +399,7 @@ public class MessagesSourceCrawler {
 		return list;
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		List<String> directories = new ArrayList<String>();
 		directories.add("src-core");
 		directories.add("src");
@@ -407,8 +418,15 @@ public class MessagesSourceCrawler {
 		filesToAvoid.add("Const.java");
 		filesToAvoid.add("XulHelper.java"); 
 		
+		List<SourceCrawlerXMLFolder> xmlFolders = new ArrayList<SourceCrawlerXMLFolder>();
+		SourceCrawlerXMLFolder xmlFolder = new SourceCrawlerXMLFolder("ui", ".*\\.xul$");
+		xmlFolder.getElements().add(new SourceCrawlerXMLElement("menu", "label"));
+		xmlFolder.getElements().add(new SourceCrawlerXMLElement("menuitem", "label"));
+		xmlFolder.getElements().add(new SourceCrawlerXMLElement("toolbar", "label"));
+		xmlFolder.getElements().add(new SourceCrawlerXMLElement("toolbarbutton", "label"));
+		xmlFolders.add(xmlFolder);
 		
-		MessagesSourceCrawler crawler = new MessagesSourceCrawler( directories, null );
+		MessagesSourceCrawler crawler = new MessagesSourceCrawler( directories, null, xmlFolders );
 		crawler.setFilesToAvoid(filesToAvoid);
 		crawler.crawl();
 		int mis=0;
@@ -436,14 +454,6 @@ public class MessagesSourceCrawler {
 			System.out.println("["+packageName+"]");
 		}
 		*/
-	}
-
-	public String[] getXulDirectories() {
-		return xulDirectories;
-	}
-
-	public void setXulDirectories(String[] xulDirectories) {
-		this.xulDirectories = xulDirectories;
 	}
 
 	public KeyOccurrence getKeyOccurrence(String key, String selectedMessagesPackage) {
