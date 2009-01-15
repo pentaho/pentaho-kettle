@@ -1433,12 +1433,14 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     			
     			SAXReader reader = new SAXReader();
     			Document document  = reader.read( KettleVFS.getInputStream(inputList.getFile(0)),encoding );	
-    			List<Node> nodes = document.selectNodes(meta.getLoopXPath());
-    			 for (Node node : nodes) 
-    			 {
-    				 setNodeField(node); 
-				     ChildNode(node);
-    			 }
+    			String realXPath=transMeta.environmentSubstitute(meta.getLoopXPath());
+    			List<Node> nodes = document.selectNodes(realXPath);
+    			String realXPathCleaned=cleanLoopXpath(realXPath);
+    			for (Node node : nodes) 
+    			{
+    			    setNodeField(node,realXPathCleaned); 
+    			    ChildNode(node,realXPath,realXPathCleaned);
+    			}
     			 
                 wFields.removeEmptyRows();
                 wFields.setRowNums();
@@ -1450,7 +1452,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
             new ErrorDialog(shell, Messages.getString("GetXMLDataDialog.ErrorParsingData.DialogTitle"), Messages.getString("GetXMLDataDialog.ErrorParsingData.DialogMessage"), e);
         }
 	}
-	private void ChildNode(Node node)
+	private void ChildNode(Node node,String realXPath,String realXPathCleaned)
 	{
 		 Element ce = (Element) node;
 	
@@ -1465,10 +1467,10 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 				 if(cce.nodeCount()>1)
 				 {
 					 // let's get child nodes
-				 	 ChildNode(cnode);
+				 	 ChildNode(cnode,realXPath,realXPathCleaned);
 				 }else
 				 {
-					 setNodeField(cnode); 
+					 setNodeField(cnode,realXPathCleaned); 
 				 }
 			 } 
 		 } 
@@ -1492,11 +1494,11 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		 } 
 	}
 
-	private void setAttributeField(Attribute attribute)
+	private void setAttributeField(Attribute attribute,String realXPathCleaned)
 	{
 		// Get Attribute Name
 		String attributname=attribute.getName();
-		String attributnametxt=cleanString(attribute.getPath());
+		String attributnametxt=cleanString(attribute.getPath(),realXPathCleaned);
 		if(!Const.isEmpty(attributnametxt) && !list.contains(attribute.getPath()))
 		{
             TableItem item = new TableItem(wFields.table, SWT.NONE);
@@ -1524,10 +1526,10 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		}// end if
 	            
 	}
-	private String cleanString(String inputstring)
+	private String cleanString(String inputstring,String realXPathCleaned)
 	{
 		String retval=inputstring;
-		retval=retval.replace(wLoopXPath.getText(), "");
+		retval=retval.replace(realXPathCleaned, "");
 		while(retval.startsWith("/"))
 		{
 			retval=retval.substring(1, retval.length());
@@ -1537,19 +1539,19 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void setNodeField(Node node)
+	private void setNodeField(Node node,String realXPathCleaned)
 	{
 		Element e = (Element) node; 
 		// get all attributes
 		List<Attribute> lista = e.attributes(); 
 		for(int i=0;i<lista.size();i++)
 		{
-			 setAttributeField(lista.get(i));
+			 setAttributeField(lista.get(i),realXPathCleaned);
 		}
 
 		// Get Node Name
 		String nodename=node.getName();
-		String nodenametxt=cleanString(node.getPath());
+		String nodenametxt=cleanString(node.getPath(),realXPathCleaned);
 		
 		if(!Const.isEmpty(nodenametxt) && !list.contains(nodenametxt))
 		{	
@@ -1876,7 +1878,36 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
             new ErrorDialog(shell, Messages.getString("GetXMLDataDialog.ErrorPreviewingData.DialogTitle"), Messages.getString("GetXMLDataDialog.ErrorPreviewingData.DialogMessage"), e);
         }
 	}
+	private String cleanLoopXpath(String realXPath)
+	{
+		StringBuffer buffer = new StringBuffer();
+		String open="[";
+		String close="]";
+		String rest = realXPath;
 
+		// search for opening string
+		int i = rest.indexOf(open);
+		while (i > -1)
+		{
+			int j = rest.indexOf(close, i + open.length());
+			// search for closing string
+			if (j > -1)
+			{			
+				buffer.append(rest.substring(0, i));
+				rest = rest.substring(j + close.length());
+			}
+			else
+			{
+				// no closing tag found; end the search
+				buffer.append(rest);
+				rest = "";
+			}
+			// keep searching
+			i = rest.indexOf(open);
+		}
+		buffer.append(rest);
+		return buffer.toString();
+	}
 	public String toString()
 	{
 		return this.getClass().getName();

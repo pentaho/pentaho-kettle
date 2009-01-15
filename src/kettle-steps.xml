@@ -1341,4 +1341,15 @@
 		</tooltip>
 		<image-uri>ui/images/URH.png</image-uri>
 	</step>
+		<step id="HTTPPOST">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.HTTPPOST")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.httppost.HTTPPOSTMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.HTTPPOST")
+		</tooltip>
+		<image-uri>ui/images/HTP.png</image-uri>
+	</step>
 </steps>
