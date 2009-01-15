@@ -86,7 +86,8 @@ public class CheckBoxToolTip extends ToolTip {
 		fdLine.top = new FormAttachment(titleLabel, 5);
 		line.setLayoutData(fdLine);
 
-		Text messageLabel = new Text(composite, SWT.LEFT | ( showingScrollBars ? SWT.H_SCROLL | SWT.V_SCROLL : SWT.NONE ) );
+		//Text messageLabel = new Text(composite, SWT.LEFT | ( showingScrollBars ? SWT.H_SCROLL | SWT.V_SCROLL : SWT.NONE ) );
+		Text messageLabel = new Text(composite, SWT.SINGLE | SWT.LEFT);
 		messageLabel.setText(message);
 		messageLabel.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 		FormData fdMessageLabel = new FormData();

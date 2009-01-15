@@ -995,8 +995,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           // See if we want to draw a tool tip explaining how to create new hops...
           //
           if (newstep && transMeta.nrSteps() > 1 && transMeta.nrSteps() < 5 && spoon.props.isShowingHelpToolTips()) {
-            showHelpTip(p.x, p.y, Messages.getString("TransGraph.HelpToolTip.CreatingHops.Title"), Messages
-                .getString("TransGraph.HelpToolTip.CreatingHops.Message"));
+            showHelpTip(p.x, p.y, Messages.getString("TransGraph.HelpToolTip.CreatingHops.Title"), 
+            		Messages.getString("TransGraph.HelpToolTip.CreatingHops.Message"));
           }
         } catch (Exception e) {
           new ErrorDialog(shell, Messages.getString("TransGraph.Dialog.ErrorDroppingObject.Message"), 

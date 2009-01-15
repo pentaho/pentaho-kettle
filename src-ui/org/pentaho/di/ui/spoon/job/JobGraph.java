@@ -105,6 +105,8 @@ import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
+import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
+import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
@@ -246,6 +248,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
   private float translationY;
 
   private boolean shadow;
+  
+  private CheckBoxToolTip helpTip;
 
   public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     super(par, SWT.NONE);
@@ -288,6 +292,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     //
     canvas = new Canvas(sashForm, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND | SWT.BORDER);
 
+   
     sashForm.setWeights(new int[] { 100, });
 
     try {
@@ -299,6 +304,16 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
       new ErrorDialog(shell, Messages.getString("JobGraph.Exception.ErrorReadingXULFile.Title"), 
     		  Messages.getString("JobGraph.Exception.ErrorReadingXULFile.Message", Spoon.XUL_FILE_MENUS), new Exception(t));
     }
+    
+
+    helpTip = new CheckBoxToolTip(canvas);
+    helpTip.addCheckBoxToolTipListener(new CheckBoxToolTipListener() {
+
+      public void checkBoxSelected(boolean enabled) {
+        spoon.props.setShowingHelpToolTips(enabled);
+      }
+    });
+
 
     newProps();
 
@@ -698,6 +713,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
                 PropsUI.setLocation(jge, p.x, p.y);
                 jge.setDrawn();
                 redraw();
+                
+                // See if we want to draw a tool tip explaining how to create new hops...
+                //
+                if (jobMeta.nrJobEntries() > 1 && jobMeta.nrJobEntries() < 5 && spoon.props.isShowingHelpToolTips()) {
+                  showHelpTip(p.x, p.y, Messages.getString("JobGraph.HelpToolTip.CreatingHops.Title"), Messages
+                      .getString("JobGraph.HelpToolTip.CreatingHops.Message"));
+                }
               }
             }
               break;
@@ -1162,6 +1184,17 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     return new int[] { x1, y1, x2, y2 };
   }
 
+  private void showHelpTip(int x, int y, String tipTitle, String tipMessage) {
+
+    helpTip.setTitle(tipTitle);
+    helpTip.setMessage(tipMessage);
+    helpTip.setCheckBoxMessage(Messages.getString("JobGraph.HelpToolTip.DoNotShowAnyMoreCheckBox.Message"));
+    // helpTip.hide();
+    // int iconSize = spoon.props.getIconSize();
+    org.eclipse.swt.graphics.Point location = new org.eclipse.swt.graphics.Point(x - 5, y - 5);
+
+    helpTip.show(location);
+  }
   public void setJobEntry(JobEntryCopy jobEntry) {
     this.jobEntry = jobEntry;
   }
