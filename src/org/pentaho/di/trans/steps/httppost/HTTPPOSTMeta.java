@@ -40,7 +40,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 /*
- * Created on 10-dec-2006
+ * Created on 15-jan-2009
  * 
  */
 

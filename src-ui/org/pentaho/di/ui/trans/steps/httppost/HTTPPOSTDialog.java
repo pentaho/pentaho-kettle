@@ -1,23 +1,13 @@
- /**********************************************************************
- **                                                                   **
- **               This code belongs to the KETTLE project.            **
- **                                                                   **
- ** Kettle, from version 2.2 on, is released into the public domain   **
- ** under the Lesser GNU Public License (LGPL).                       **
- **                                                                   **
- ** For more details, please read the document LICENSE.txt, included  **
- ** in this project                                                   **
- **                                                                   **
- ** http://www.kettle.be                                              **
- ** info@kettle.be                                                    **
- **                                                                   **
- **********************************************************************/
-
- 
-/*
- * Created on 2-jul-2003
+ /* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
+ * This software was developed by Samatar Hassan and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. If you need a copy of the license, 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Samatar Hassan.
+ * The Initial Developer is Samatar Hassan.
  *
- */
+ * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
+ * the license for the specific language governing your rights and limitations.*/
 
 
 package org.pentaho.di.ui.trans.steps.httppost;

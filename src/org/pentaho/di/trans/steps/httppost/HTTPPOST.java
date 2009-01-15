@@ -38,8 +38,8 @@ import org.pentaho.di.core.Const;
 /**
  * Retrieves values from a database by calling database stored procedures or functions
  *  
- * @author Matt
- * @since 26-apr-2003
+ * @author Samatar
+ * @since 15-jan-2009
  *
  */
 
