@@ -65,6 +65,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 	private boolean includeSubfolders;
 	private boolean specifywildcard;
 	private String wildcard;
+	private Pattern pattern;
 	
 	public JobEntryFolderIsEmpty(String n)
 	{
@@ -103,7 +104,6 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 		retval.append("      ").append(XMLHandler.addTagValue("specify_wildcard", specifywildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",   wildcard));
 		
-		
 		return retval.toString();
 	}
 	
@@ -115,10 +115,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 			foldername = XMLHandler.getTagValue(entrynode, "foldername");
 			includeSubfolders = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_subfolders"));
 			specifywildcard = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "specify_wildcard"));
-			wildcard = XMLHandler.getTagValue(entrynode, "wildcard");
-			
-			
-			
+			wildcard = XMLHandler.getTagValue(entrynode, "wildcard");	
 		}
 		catch(KettleXMLException xe)
 		{
@@ -134,10 +131,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 			foldername = rep.getJobEntryAttributeString(id_jobentry, "foldername");
 			includeSubfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders"); 
 			specifywildcard = rep.getJobEntryAttributeBoolean(id_jobentry, "specify_wildcard");  
-			wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
-			
-			
-			 
+			wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard"); 
 		}
 		catch(KettleException dbe)
 		{
@@ -151,13 +145,10 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 		try
 		{
 			super.saveRep(rep, id_job);
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "foldername", foldername);
 			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", includeSubfolders);
 			rep.saveJobEntryAttribute(id_job, getID(), "specify_wildcard", specifywildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
-			
-	
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -216,9 +207,13 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 		result.setResult( false );
+		result.setNrErrors(1);
 		
 		filescount=0;
 		folderscount=0;
+		pattern = null;
+		
+		if (!Const.isEmpty(getWildcard()))  pattern = Pattern.compile(getRealWildcard());
 		
 		if (foldername!=null)
 		{
@@ -234,26 +229,23 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 					{
 						// File provided is a folder, so we can process ...
 						FolderObject.findFiles(new TextFileSelector(FolderObject.toString()));
-						
-						if(log.isBasic())
-							log.logBasic("Total files", "We found : "+filescount + " file(s)");
-						
-						if(filescount==0) result.setResult(true);
-						
-						
+						if(log.isBasic())	log.logBasic("Total files", "We found : "+filescount + " file(s)");
+						if(filescount==0)
+						{
+							result.setResult(true);
+							result.setNrErrors(0);
+						}
 					}
 					else
 					{
 						// Not a folder, fail
 						log.logError("Found files", "[" + realFoldername+"] is not a folder, failing.");
-					}
-						
+					}	
 				}
 				else
 				{
 					//  No Folder found	
-					if(log.isBasic())
-						log.logBasic(toString(), "we can not find ["+realFoldername+"] !");
+					if(log.isBasic()) log.logBasic(toString(), "we can not find ["+realFoldername+"] !");
 				}
 			} catch (IOException e) {
 				log.logError(toString(), "Could not create Folder ["+realFoldername+"], exception: " + e.getMessage());
@@ -285,7 +277,6 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 		
 		public TextFileSelector(String rootfolder) 
 		 {
-			
 			 if (rootfolder!=null)
 			 {
 				 root_folder=rootfolder;
@@ -304,11 +295,10 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 					// Pass over the Base folder itself
 					if ((info.getFile().getType() == FileType.FILE))
 					{
-						
 						if (info.getFile().getParent().equals(info.getBaseFolder()))
 						 {
 							// We are in the Base folder
-							if((isSpecifyWildcard() && GetFileWildcard(info.getFile().toString()) || !isSpecifyWildcard()))
+							if((isSpecifyWildcard() && GetFileWildcard(info.getFile().getName().getBaseName())) || !isSpecifyWildcard())
 							{
 								if(log.isDetailed()) log.logDetailed("Found files", "We found file : " + info.getFile().toString());
 								filescount++; 
@@ -317,12 +307,14 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 						else
 						{
 							// We are not in the base Folder...ONLY if Use sub folders
-							// We are in the Base folder
-							if((isSpecifyWildcard() && GetFileWildcard(info.getFile().toString()) || !isSpecifyWildcard())
-									&& (isIncludeSubFolders()))
+							// We are in the Base folder							
+							if(isIncludeSubFolders())
 							{
-								if(log.isDetailed()) log.logDetailed("Found files", "We found file : " + info.getFile().toString());
-								filescount++; 
+								if((isSpecifyWildcard() && GetFileWildcard(info.getFile().getName().getBaseName())) || !isSpecifyWildcard())
+								{
+									if(log.isDetailed()) log.logDetailed("Found files", "We found file : " + info.getFile().toString());
+									filescount++; 
+								}
 							}
 						}
 					}
@@ -336,7 +328,8 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 			}
 			catch (Exception e) 
 			{
-				log.logError(Messages.getString("JobFolderIsEmpty.Error") , Messages.getString("JobFolderIsEmpty.Error.Exception", 
+				log.logError(Messages.getString("JobFolderIsEmpty.Error") , 
+						Messages.getString("JobFolderIsEmpty.Error.Exception", 
 						info.getFile().toString(),e.getMessage()));
 				 returncode= false;
 			}
@@ -347,20 +340,16 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 					try  
 					{
 						file_name.close();
-						
 					}
 					catch ( IOException ex ) {};
 				}
-
 			}
-			
-			
 			return returncode;
 		}
 
 		public boolean traverseDescendents(FileSelectInfo info) 
 		{
-			return true;//isIncludeSubFolders();
+			return true;
 		}
 	}
 	/**********************************************************
@@ -371,20 +360,14 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 	 **********************************************************/
 	private boolean GetFileWildcard(String selectedfile)
 	{
-		Pattern pattern = null;
 		boolean getIt=true;
 	
-        if (!Const.isEmpty(getWildcard()))
-        {
-        	 pattern = Pattern.compile(getRealWildcard());
-			// First see if the file matches the regular expression!
-			if (pattern!=null)
-			{
-				Matcher matcher = pattern.matcher(selectedfile);
-				getIt = matcher.matches();
-			}
-        }
-		
+		// First see if the file matches the regular expression!
+		if (pattern!=null)
+		{
+			Matcher matcher = pattern.matcher(selectedfile);
+			getIt = matcher.matches();
+		}
 		return getIt;
 	}
 
