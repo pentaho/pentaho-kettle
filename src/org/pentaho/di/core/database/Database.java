@@ -1541,22 +1541,19 @@ public class Database implements VariableSpace
 			char c = all.charAt(to);
 			if (c=='"')
 			{
-				to++;
 				c=' ';
-				while (to<length && c!='"') { c=all.charAt(to); to++; }
+				while (to<length && c!='"') { to++; c=all.charAt(to); }
 			}
 			else
 			if (c=='\'') // skip until next '
 			{
-				to++;
 				c=' ';
-				while (to<length && c!='\'') { c=all.charAt(to); to++; }
+				while (to<length && c!='\'') { to++; c=all.charAt(to); }
 			}
 			else
 			if (all.substring(to).startsWith("--"))  // -- means: ignore comment until end of line...
 			{
-				to++;
-				while (to<length && c!='\n' && c!='\r') { c=all.charAt(to); to++; }
+				while (to<length && c!='\n' && c!='\r') { to++; c=all.charAt(to); }
 			}
 			if (c==';' || to>=length-1) // end of statement
 			{
