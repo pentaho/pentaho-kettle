@@ -125,7 +125,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     private FormData     fdlUsePart, fdUsePart;
 	
     private Label        wlPartField;
-    private TextVar      wPartField;
+    private ComboVar     wPartField;
     private FormData     fdlPartField, fdPartField;
 
     private Label        wlPartMonthly;
@@ -446,7 +446,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         fdlPartField.left = new FormAttachment(0, 0);
         fdlPartField.right= new FormAttachment(middle, -margin);
         wlPartField.setLayoutData(fdlPartField);
-        wPartField=new TextVar(transMeta, wMainComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wPartField=new ComboVar(transMeta, wMainComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wPartField);
         wPartField.addModifyListener(lsMod);
         fdPartField=new FormData();
@@ -454,6 +454,22 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         fdPartField.left = new FormAttachment(middle, 0);
         fdPartField.right= new FormAttachment(100, 0);
         wPartField.setLayoutData(fdPartField);
+        wPartField.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getFields();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );  
 
         // Partition per month
         wlPartMonthly=new Label(wMainComp, SWT.RIGHT);
@@ -860,12 +876,15 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		{
 		 try{
 			 String field=wNameField.getText();
+			 String partfield=wPartField.getText();
 			 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
 			 if(r!=null)
 			  {
 				 wNameField.setItems(r.getFieldNames());
+				 wPartField.setItems(r.getFieldNames());
 			  }
 			 if(field!=null) wNameField.setText(field);
+			 if(partfield!=null) wPartField.setText(partfield);
 		 	}catch(KettleException ke){
 				new ErrorDialog(shell, Messages.getString("TableOutputDialog.FailedToGetFields.DialogTitle"), Messages.getString("TableOutputDialog.FailedToGetFields.DialogMessage"), ke);
 			}
