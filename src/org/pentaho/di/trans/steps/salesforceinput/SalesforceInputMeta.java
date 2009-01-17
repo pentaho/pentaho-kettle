@@ -54,7 +54,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterface
 {	
 	
-	public String TargetDefaultURL= " https://www.salesforce.com/services/Soap/u/10.0";
+	public String TargetDefaultURL= "https://www.salesforce.com/services/Soap/u/10.0";
  	 
 	/** Flag indicating that we should include the generated SQL in the output */
 	private  boolean includeSQL;
@@ -615,6 +615,10 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 		try
 		{
 			targeturl     = rep.getStepAttributeString (id_step, "targeturl");
+			username     = rep.getStepAttributeString (id_step, "username");
+			password     = rep.getStepAttributeString (id_step, "password");
+			module     = rep.getStepAttributeString (id_step, "module");
+			condition     = rep.getStepAttributeString (id_step, "condition");
 			includeTargetURL   = rep.getStepAttributeBoolean(id_step, "include_targeturl");  
 			targetURLField     = rep.getStepAttributeString (id_step, "targeturl_field");
 			includeModule   = rep.getStepAttributeBoolean(id_step, "include_module");  
@@ -663,6 +667,10 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 		try
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "targeturl",         targeturl);
+			rep.saveStepAttribute(id_transformation, id_step, "username",         username);
+			rep.saveStepAttribute(id_transformation, id_step, "password",         password);
+			rep.saveStepAttribute(id_transformation, id_step, "module",         module);
+			rep.saveStepAttribute(id_transformation, id_step, "condition",         condition);
 			rep.saveStepAttribute(id_transformation, id_step, "include_targeturl",  includeTargetURL);
 			rep.saveStepAttribute(id_transformation, id_step, "targeturl_field",   targetURLField);
 			rep.saveStepAttribute(id_transformation, id_step, "include_module",  includeModule);
@@ -682,7 +690,7 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 				SalesforceInputField field = inputFields[i];
 			    
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",          field.getName());
-				rep.saveStepAttribute(id_transformation, id_step, i, "fied_attribut",       field.getField());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_attribut",       field.getField());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",          field.getTypeDesc());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",        field.getFormat());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",      field.getCurrencySymbol());
