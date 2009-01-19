@@ -615,10 +615,21 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 		try
 		{
 			targeturl     = rep.getStepAttributeString (id_step, "targeturl");
+
+			// H.kawaguchi Add 19-01-2009
 			username     = rep.getStepAttributeString (id_step, "username");
 			password     = rep.getStepAttributeString (id_step, "password");
+			if (password != null && password.startsWith("Encrypted")){
+				password = Encr.decryptPassword(password.replace("Encrypted","").replace(" ", ""));
+			}
+			// H.kawaguchi Add 19-01-2009
+			
 			module     = rep.getStepAttributeString (id_step, "module");
+			
+			// H.kawaguchi Add 19-01-2009
 			condition     = rep.getStepAttributeString (id_step, "condition");
+			// H.kawaguchi Add 19-01-2009
+			
 			includeTargetURL   = rep.getStepAttributeBoolean(id_step, "include_targeturl");  
 			targetURLField     = rep.getStepAttributeString (id_step, "targeturl_field");
 			includeModule   = rep.getStepAttributeBoolean(id_step, "include_module");  
@@ -667,10 +678,18 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 		try
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "targeturl",         targeturl);
+			
+			// H.kawaguchi Add 19-01-2009
 			rep.saveStepAttribute(id_transformation, id_step, "username",         username);
-			rep.saveStepAttribute(id_transformation, id_step, "password",         password);
+			rep.saveStepAttribute(id_transformation, id_step, "password",         Encr.encryptPasswordIfNotUsingVariables(password));
+			// H.kawaguchi Add 19-01-2009
+			
 			rep.saveStepAttribute(id_transformation, id_step, "module",         module);
+			
+			// H.kawaguchi Add 19-01-2009
 			rep.saveStepAttribute(id_transformation, id_step, "condition",         condition);
+			// H.kawaguchi Add 19-01-2009
+			
 			rep.saveStepAttribute(id_transformation, id_step, "include_targeturl",  includeTargetURL);
 			rep.saveStepAttribute(id_transformation, id_step, "targeturl_field",   targetURLField);
 			rep.saveStepAttribute(id_transformation, id_step, "include_module",  includeModule);
@@ -690,7 +709,11 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 				SalesforceInputField field = inputFields[i];
 			    
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",          field.getName());
+				
+				// H.kawaguchi Bug Fix 17-01-2009
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_attribut",       field.getField());
+				// H.kawaguchi Bug Fix 17-01-2009
+
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",          field.getTypeDesc());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",        field.getFormat());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",      field.getCurrencySymbol());
