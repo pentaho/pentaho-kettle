@@ -389,7 +389,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(), "Impossible de récupérer les champs depuis l'étape [" + lookupStep + "]!");
+                        log.logError(toString(), "It was not possible to retrieve the list of fields for step [" + lookupStep + "]!");
                     }
                 }
                 StepMeta stepMeta = transMeta.findStep(stepname);
