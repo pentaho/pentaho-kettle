@@ -56,7 +56,6 @@ public class BuildVersion
         try
         {
         	URL url = this.getClass().getResource(REFERENCE_FILE);
-        	System.out.println("URL : "+url.toString());
         	JarURLConnection jarConnection = (JarURLConnection) url.openConnection();
         	Manifest manifest = jarConnection.getManifest();
 
