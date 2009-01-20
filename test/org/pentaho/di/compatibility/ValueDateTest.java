@@ -20,6 +20,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
@@ -78,6 +79,8 @@ public class ValueDateTest extends TestCase
 	 */
 	public void testGetters()
 	{
+		TimeZone.setDefault(TimeZone.getTimeZone("CET"));
+		
 		ValueDate vs1 = new ValueDate();
 		ValueDate vs2 = new ValueDate(dt);
 

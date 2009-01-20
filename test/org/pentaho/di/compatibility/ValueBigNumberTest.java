@@ -20,6 +20,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
@@ -100,6 +101,8 @@ public class ValueBigNumberTest extends TestCase
 	 */
 	public void testSetters()
 	{
+		TimeZone.setDefault(TimeZone.getTimeZone("CET"));
+		
 		ValueBigNumber vs = new ValueBigNumber();
 		
 		vs.setString("unknown");
