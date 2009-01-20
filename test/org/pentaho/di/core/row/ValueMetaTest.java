@@ -2,6 +2,7 @@ package org.pentaho.di.core.row;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
@@ -151,9 +152,10 @@ public class ValueMetaTest extends TestCase
 	
 	public void testDateToStringToDate() throws Exception
 	{
+		TimeZone.setDefault(TimeZone.getTimeZone("CET"));
+		
 		ValueMetaInterface datValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_DATE);
 		datValueMeta.setConversionMask("yyyy - MM - dd   HH:mm:ss'('SSS')' z");
-		
 		Date originalValue = new Date(7258114799999L);
 		
 		String string = datValueMeta.getString(originalValue);
@@ -170,6 +172,8 @@ public class ValueMetaTest extends TestCase
 	
 	public void testConvertDataDate() throws Exception
 	{
+		TimeZone.setDefault(TimeZone.getTimeZone("CET"));
+
 		ValueMetaInterface source = new ValueMeta("src", ValueMetaInterface.TYPE_STRING);
 		source.setConversionMask("SSS.ss:mm:HH dd/MM/yyyy z");
 		ValueMetaInterface target = new ValueMeta("tgt", ValueMetaInterface.TYPE_DATE);
