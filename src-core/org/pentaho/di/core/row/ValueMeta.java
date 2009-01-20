@@ -84,6 +84,9 @@ public class ValueMeta implements ValueMetaInterface
 	
 	private long numberOfBinaryStringConversions;
 
+    private boolean bigNumberFormatting;
+    
+
     // get & store original result set meta data for later use
 	// @see java.sql.ResultSetMetaData
     private int originalColumnType;
@@ -140,6 +143,7 @@ public class ValueMeta implements ValueMetaInterface
         this.groupingSymbol = ""+Const.DEFAULT_GROUPING_SEPARATOR;
         this.dateFormatLocale = Locale.getDefault();
         this.identicalFormat = true;
+        this.bigNumberFormatting = true;
         
         determineSingleByteEncoding();
         setDefaultConversionMask();
@@ -163,6 +167,11 @@ public class ValueMeta implements ValueMetaInterface
 		{
 		case TYPE_INTEGER: setConversionMask("#;-#"); break;
 		case TYPE_NUMBER: setConversionMask("#.#;-#.#"); break;
+		case TYPE_BIGNUMBER: 
+			setConversionMask("#.###############################################;-#.###############################################");
+			setGroupingSymbol(null);
+			setDecimalSymbol(".");  // For backward compatibility reasons!
+			break;
 		default: break;
 		}
     }
@@ -894,7 +903,7 @@ public class ValueMeta implements ValueMetaInterface
 
         try
         {
-            return getDecimalFormat(true).format(number);
+            return getDecimalFormat(bigNumberFormatting).format(number);
         }
         catch(Exception e)
         {
@@ -910,7 +919,7 @@ public class ValueMeta implements ValueMetaInterface
 
         try
         {
-            return (BigDecimal)getDecimalFormat(true).parse(string);
+            return (BigDecimal)getDecimalFormat(bigNumberFormatting).parse(string);
         }
         catch(Exception e)
         {
@@ -3602,5 +3611,19 @@ public class ValueMeta implements ValueMetaInterface
 	 */
 	public void setOriginalSigned(boolean originalSigned) {
 		this.originalSigned=originalSigned;
+	}
+
+	/**
+	 * @return the bigNumberFormatting flag : true if BigNumbers of formatted as well
+	 */
+	public boolean isBigNumberFormatting() {
+		return bigNumberFormatting;
+	}
+
+	/**
+	 * @param bigNumberFormatting the bigNumberFormatting flag to set : true if BigNumbers of formatted as well
+	 */
+	public void setBigNumberFormatting(boolean bigNumberFormatting) {
+		this.bigNumberFormatting = bigNumberFormatting;
 	}
 }

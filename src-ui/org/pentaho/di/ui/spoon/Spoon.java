@@ -198,7 +198,6 @@ import org.pentaho.di.ui.spoon.dialog.AnalyseImpactProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.CheckTransProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.LogSettingsDialog;
 import org.pentaho.di.ui.spoon.dialog.SaveProgressDialog;
-import org.pentaho.di.ui.spoon.dialog.ShowCreditsDialog;
 import org.pentaho.di.ui.spoon.dialog.TipsDialog;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
@@ -1248,11 +1247,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     public void copyJob() {
 		copyJob(getActiveJob());
-	}
-
-    public void showCredits() {
-    		ShowCreditsDialog scd = new ShowCreditsDialog(shell, props, GUIResource.getInstance().getImageCredits()); 
-		scd.open();
 	}
 
     public void showTips() {

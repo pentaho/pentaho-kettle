@@ -219,7 +219,7 @@ public class Formula extends BaseStep implements StepInterface
             
             return outputRowData;
         }
-        catch(Exception e)
+        catch(Throwable e)
         {
             throw new KettleValueException(e);
         }

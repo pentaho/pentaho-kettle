@@ -125,7 +125,7 @@ public class Kitchen
         if (!Const.isEmpty(optionVersion))
         {
             BuildVersion buildVersion = BuildVersion.getInstance();
-            log.logBasic("Kitchen", Messages.getString("Kitchen.Log.KettleVersion",Const.VERSION,""+buildVersion.getVersion(),""+buildVersion.getBuildDate()));
+            log.logBasic("Kitchen", Messages.getString("Kitchen.Log.KettleVersion", buildVersion.getVersion(), buildVersion.getRevision(), buildVersion.getBuildDate()));
             if (a.length==1) exitJVM(6);
         }
         

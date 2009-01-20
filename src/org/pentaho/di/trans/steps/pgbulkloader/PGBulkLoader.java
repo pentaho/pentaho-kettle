@@ -433,13 +433,13 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 
 			data.dateFormatChoices = new int[meta.getFieldStream().length];
 			for (int i=0;i<data.dateFormatChoices.length;i++) {
-				if (meta.getDateMask()[i].equalsIgnoreCase(PGBulkLoaderMeta.DATE_MASK_DATE)) {
+				if (Const.isEmpty(meta.getDateMask()[i])) {
+					data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH;
+				} else if (meta.getDateMask()[i].equalsIgnoreCase(PGBulkLoaderMeta.DATE_MASK_DATE)) {
 					data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_DATE;
-				}
-				else if (meta.getDateMask()[i].equalsIgnoreCase(PGBulkLoaderMeta.DATE_MASK_DATETIME)) {
+				} else if (meta.getDateMask()[i].equalsIgnoreCase(PGBulkLoaderMeta.DATE_MASK_DATETIME)) {
 					data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_DATETIME;
-				} 				
-				else { // The default : just pass it along...
+				}  else { // The default : just pass it along...
 					data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH;
 				}
 

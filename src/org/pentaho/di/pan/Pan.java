@@ -135,7 +135,7 @@ public class Pan
         if (!Const.isEmpty(optionVersion))
         {
             BuildVersion buildVersion = BuildVersion.getInstance();
-            if(log.isBasic()) log.logBasic("Pan", Messages.getString("Pan.Log.KettleVersion",""+Const.VERSION,""+buildVersion.getVersion(),""+buildVersion.getBuildDate()));
+            if(log.isBasic()) log.logBasic("Pan", Messages.getString("Pan.Log.KettleVersion", buildVersion.getVersion(), buildVersion.getRevision(), buildVersion.getBuildDate()));
             
             if (a.length==1) exitJVM(6);
         }

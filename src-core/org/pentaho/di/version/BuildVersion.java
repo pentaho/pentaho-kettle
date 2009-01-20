@@ -12,15 +12,14 @@
 */
 package org.pentaho.di.version;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
+import java.net.JarURLConnection;
+import java.net.URL;
 import java.util.Date;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.xml.XMLHandler;
 
 
 /**
@@ -31,14 +30,9 @@ import org.pentaho.di.core.Const;
  */
 public class BuildVersion
 {
-    /** name of the Kettle version file, updated in the ant script, contains date and time of build */
-    public static final String BUILD_VERSION_FILE = "build_version.txt";
-
-    public static final String SEPARATOR = "@";
-    
-    public static final String BUILD_DATE_FORMAT = "yyyy/MM/dd'T'HH:mm:ss";
-    
-    private static BuildVersion buildVersion;
+	public static final String REFERENCE_FILE = "/kettle-steps.xml";
+	
+	private static BuildVersion buildVersion;
     
     /**
      * @return the instance of the BuildVersion singleton
@@ -52,96 +46,40 @@ public class BuildVersion
         return buildVersion;
     }
     
-    private int version;
-    private Date buildDate;
-    private String hostname;
+    private String version;
+    private String revision;
+    private String buildDate;
+    private String buildUser;
     
     private BuildVersion()
     {
-        String filename = BUILD_VERSION_FILE;
-        StringBuffer buffer = new StringBuffer(30);
-
         try
         {
-            // The version file only contains a single lines of text
-            InputStream inputStream = getClass().getResourceAsStream( "/"+filename ); // try to find it in the jars...
-            if (inputStream==null) // not found
-            {
-                // System.out.println("Stream not found for filename [/"+filename+"], looking for it on the normal filesystem...");
-                try
-                {
-                    inputStream = new FileInputStream(filename); // Retry from normal file system
-                    // System.out.println("BuildVersion: filename ["+filename+"] found!");
-                }
-                catch(FileNotFoundException e)
-                {
-                    inputStream = new FileInputStream("./"+filename);
-                    // System.out.println("BuildVersion: filename [./"+filename+"] found!");
-                }
-            }
-            else
-            {
-                // System.out.println("BuildVersion: filename [/"+filename+"] found!");
-            }
-            
-            // read the file into a String
-            int c=inputStream.read();
-            while ( c>0 && c!='\n' && c!='\r' )
-            {
-                if (c!=' ' && c!='\t') buffer.append((char)c);  // no spaces or tabs please ;-)
-                c=inputStream.read();
-            }
-            
-            // The 3 parts we expect are in here: 
-            String parts[] = buffer.toString().split(SEPARATOR);
-            
-            if (parts.length!=3)
-            {
-                throw new RuntimeException("Could not find 3 parts in versioning line : ["+buffer+"]");
-            }
-            
-            // Get the revision
-            version = Integer.parseInt(parts[0]);
+        	URL url = this.getClass().getResource(REFERENCE_FILE);
+        	System.out.println("URL : "+url.toString());
+        	JarURLConnection jarConnection = (JarURLConnection) url.openConnection();
+        	Manifest manifest = jarConnection.getManifest();
 
-            // Get the build date
-            SimpleDateFormat format = new SimpleDateFormat(BUILD_DATE_FORMAT);
-            buildDate = format.parse(parts[1]);
-            
-            // Now try to get a more accurate build date: check the date of kettle-engine.3.0.jar
-            //
-            try {
-            	File engineJar = new File("lib/kettle-engine.jar");
-            	long lastModifiedJar = engineJar.lastModified();
-            	if (lastModifiedJar!=0L) {
-            		buildDate = new Date(lastModifiedJar);
-            	} else {
-                	System.out.println("Unable to find kettle engine jar file to set build date. (ignored)");
-            	}
-            }
-            catch(Exception e) {
-            	// Eat this exception, keep things the way the were before.
-            	// Eats security exceptions, etc.
-            }
+        	version = manifest.getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+        	revision = manifest.getMainAttributes().getValue(Attributes.Name.SPECIFICATION_VERSION);
+        	buildDate = manifest.getMainAttributes().getValue("Compile-Timestamp");
+        	buildUser = manifest.getMainAttributes().getValue("Compile-User");
         }
-        catch(FileNotFoundException e){
-          System.out.println("Unable to load revision number from file : ["+filename+"]");
-          
-          version = 1;
-          buildDate = new Date();
-        }
-        catch(Exception e){
-          System.out.println("Unable to load revision number from file : ["+filename+"]" + e.getMessage());
+        catch(Exception e) {
+          System.out.println("Unable to read version information from manifest : " + e.getMessage());
           e.printStackTrace();  
           
-          version = 1;
-          buildDate = new Date();
+          version = Const.VERSION;
+          revision = "";
+          buildDate = XMLHandler.date2string(new Date());
+          buildUser = "";
         }
     }
 
     /**
      * @return the buildDate
      */
-    public Date getBuildDate()
+    public String getBuildDate()
     {
         return buildDate;
     }
@@ -149,93 +87,52 @@ public class BuildVersion
     /**
      * @param buildDate the buildDate to set
      */
-    public void setBuildDate(Date buildDate)
+    public void setBuildDate(String buildDate)
     {
         this.buildDate = buildDate;
     }
 
     /**
-     * @return the revision
+     * @return the version
      */
-    public int getVersion()
+    public String getVersion()
     {
         return version;
     }
 
     /**
-     * @param revision the revision to set
+     * @param revision the version to set
      */
-    public void setVersion(int revision)
+    public void setVersion(String version)
     {
-        this.version = revision;
+        this.version = version;
     }
     
-    public void save()
-    {
-        FileWriter fileWriter = null;
-        String filename = BUILD_VERSION_FILE;
-        File file = new File( filename );
-        
-        try
-        {
-            fileWriter = new FileWriter(file);
-            
-            // First write the revision
-            fileWriter.write(Integer.toString(version)+" ");
-            
-            // Then the separator
-            fileWriter.write(SEPARATOR);
-            
-            // Finally the build date
-            SimpleDateFormat format = new SimpleDateFormat(BUILD_DATE_FORMAT);
-            fileWriter.write(" "+format.format(buildDate)+" ");
-            
-            // Then the separator
-            fileWriter.write(SEPARATOR);
-            
-            // Then the hostname
-            fileWriter.write(" "+Const.getHostname());
+	/**
+	 * @return the revision
+	 */
+	public String getRevision() {
+		return revision;
+	}
 
-            // Return
-            fileWriter.write(Const.CR);
-            
-            System.out.println("Saved build version info to file ["+file.getAbsolutePath()+"]");
-        }
-        catch(Exception e)
-        {
-            throw new RuntimeException("Unable to save revision information to file ["+BUILD_VERSION_FILE+"]", e);
-        }
-        finally
-        {
-            try
-            {
-                if (fileWriter!=null)
-                {
-                    fileWriter.close();
-                }
-            }
-            catch(Exception e)
-            {
-                throw new RuntimeException("Unable to close file ["+BUILD_VERSION_FILE+"] after writing", e);
-            }
-        }
-    }
+	/**
+	 * @param revision the revision to set
+	 */
+	public void setRevision(String revision) {
+		this.revision = revision;
+	}
 
-    /**
-     * @return the hostname
-     */
-    public String getHostname()
-    {
-        return hostname;
-    }
+	/**
+	 * @return the buildUser
+	 */
+	public String getBuildUser() {
+		return buildUser;
+	}
 
-    /**
-     * @param hostname the hostname to set
-     */
-    public void setHostname(String hostname)
-    {
-        this.hostname = hostname;
-    }
-    
-
+	/**
+	 * @param buildUser the buildUser to set
+	 */
+	public void setBuildUser(String buildUser) {
+		this.buildUser = buildUser;
+	}
 }

@@ -128,7 +128,7 @@ public class RowTest extends TestCase
         rowMeta.addValueMeta(meta4);
 
         ValueMetaInterface meta5 = new ValueMeta("bigNumberValue", ValueMetaInterface.TYPE_BIGNUMBER, 30, 7);
-        meta5.setDecimalSymbol(",");
+        meta5.setDecimalSymbol(".");
         rowMeta.addValueMeta(meta5);
 
         ValueMetaInterface meta6 = new ValueMeta("booleanValue", ValueMetaInterface.TYPE_BOOLEAN, 3, 0);

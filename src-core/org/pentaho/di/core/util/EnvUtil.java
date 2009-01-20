@@ -16,7 +16,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -114,10 +113,10 @@ public class EnvUtil
         prop.put(Const.INTERNAL_VARIABLE_KETTLE_VERSION, Const.VERSION);
 
         // The Kettle build version
-        prop.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_VERSION, Integer.toString( BuildVersion.getInstance().getVersion() ));
+        prop.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_VERSION, BuildVersion.getInstance().getVersion());
 
         // The Kettle build date
-        prop.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_DATE, new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format( BuildVersion.getInstance().getBuildDate() ));
+        prop.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_DATE, BuildVersion.getInstance().getBuildDate() );
     }
 
     /**

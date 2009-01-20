@@ -12,7 +12,6 @@
 
 package org.pentaho.di.core.variables;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -47,10 +46,10 @@ public class Variables implements VariableSpace
         properties.put(Const.INTERNAL_VARIABLE_KETTLE_VERSION, Const.VERSION);
 
         // The Kettle build version
-        properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_VERSION, Integer.toString( BuildVersion.getInstance().getVersion() ));
+        properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_VERSION, BuildVersion.getInstance().getRevision() );
 
         // The Kettle build date
-        properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_DATE, new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format( BuildVersion.getInstance().getBuildDate() ));
+        properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_DATE, BuildVersion.getInstance().getBuildDate() );
     }
 
 	public void copyVariablesFrom(VariableSpace space) {

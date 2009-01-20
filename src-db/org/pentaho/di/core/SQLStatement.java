@@ -15,6 +15,7 @@ package org.pentaho.di.core;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 
+
 /**
  * This class contains all that is needed to execute an SQL statement in a database.
  * --> The Database connection

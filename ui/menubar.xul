@@ -103,7 +103,6 @@ align="vertical" >
           </menu>
           <menu value="help" label="%Spoon.Menu.Help">
                <menupopup>
-                    <menuitem value="help-credits" label="%Spoon.Menu.Help.Credits"/>
                     <menuitem value="help-tip" label="%Spoon.Menu.Help.Tip"/>
                     <menuitem value="help-welcome" label="%Spoon.Menu.Help.Welcome"/>
 					<menuseparator/>

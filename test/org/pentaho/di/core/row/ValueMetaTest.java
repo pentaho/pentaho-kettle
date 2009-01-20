@@ -132,8 +132,8 @@ public class ValueMetaTest extends TestCase
 	{
 		ValueMetaInterface numValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_BIGNUMBER);
 		numValueMeta.setLength(42,9);
-		numValueMeta.setDecimalSymbol(",");
-		numValueMeta.setGroupingSymbol(".");
+		numValueMeta.setDecimalSymbol(".");
+		numValueMeta.setGroupingSymbol(",");
 		
 		BigDecimal originalValue = new BigDecimal("34039423484343123.443489056");
 		
@@ -315,13 +315,18 @@ public class ValueMetaTest extends TestCase
 		// The representation formatting options.
 		//
 		numValueMeta.setLength(36,10);
-		numValueMeta.setDecimalSymbol(",");
-		numValueMeta.setGroupingSymbol(".");
+		numValueMeta.setConversionMask("#.############");
+		numValueMeta.setDecimalSymbol(".");
+		numValueMeta.setGroupingSymbol(",");
 		numValueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
 		
 		// let's explain to the parser how the input data looks like. (the storage metadata)
 		//
 		ValueMetaInterface strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
+		strValueMeta.setConversionMask("#.############");
+		strValueMeta.setDecimalSymbol(".");
+		strValueMeta.setGroupingSymbol(",");
+		
 		numValueMeta.setStorageMetadata(strValueMeta);
 		
 		// NOTE This is obviously a number that is too large to fit into an Integer or a Number, but this is what we expect to come back.
@@ -329,11 +334,11 @@ public class ValueMetaTest extends TestCase
 		// At the time of writing this unit test is not the case. 
 		// -- Matt
 		
-		Long integerValue = numValueMeta.getInteger(data);
+		Long integerValue = numValueMeta.getInteger(data);  // -8165278906150410137
 		assertEquals(new Long(-5045838617297571962L), integerValue); 
-		Double numberValue = numValueMeta.getNumber(data);
+		Double numberValue = numValueMeta.getNumber(data);  // 3.49834334332123E35
 		assertEquals(new Double("3.4983433433212304E25"), numberValue);
-		BigDecimal bigNumberValue = numValueMeta.getBigNumber(data);
+		BigDecimal bigNumberValue = numValueMeta.getBigNumber(data);  // 349834334332123041219009345634314343
 		assertEquals(new BigDecimal(originalValue), bigNumberValue);
 		Date dateValue = numValueMeta.getDate(data);
 		assertEquals(new Date(-5045838617297571962L), dateValue);

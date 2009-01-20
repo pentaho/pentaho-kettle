@@ -4,6 +4,7 @@
 	<classpathentry kind="src" output="classes-ui" path="src-ui"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" output="classes-core" path="src-core"/>
+	<classpathentry kind="src" output="classes-db" path="src-db"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libext/js.jar"/>
 	<classpathentry kind="lib" path="libext/mail.jar"/>

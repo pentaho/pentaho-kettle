@@ -15,6 +15,7 @@
       <rejected/>
       <connection/>
       <table/>
+      <step_performance_table/>
       <use_batchid>Y</use_batchid>
       <use_logfield>N</use_logfield>
     </log>
@@ -33,11 +34,19 @@
     <feedback_size>50000</feedback_size>
     <using_thread_priorities>N</using_thread_priorities>
     <shared_objects_file/>
+    <capture_step_performance>N</capture_step_performance>
+    <step_performance_capturing_delay>1000</step_performance_capturing_delay>
     <dependencies>
     </dependencies>
     <partitionschemas>
     </partitionschemas>
     <slaveservers>
+         <slaveserver><name>localhost:8084</name><hostname>localhost</hostname><port>8084</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8083</name><hostname>localhost</hostname><port>8083</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8082</name><hostname>localhost</hostname><port>8082</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080 master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>localhost:8081</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
@@ -59,11 +68,17 @@
            <schema_name/>
            </partitioning>
     <filename>testfiles&#47;blackbox&#47;tests&#47;trans&#47;steps&#47;reservoirSampling&#47;regressTestReservoir.input.csv</filename>
+    <filename_field/>
+    <rownum_field/>
+    <include_filename>N</include_filename>
     <separator>,</separator>
     <enclosure>&quot;</enclosure>
     <header>Y</header>
     <buffer_size>50000</buffer_size>
     <lazy_conversion>Y</lazy_conversion>
+    <add_filename_result>N</add_filename_result>
+    <parallel>N</parallel>
+    <encoding/>
     <fields>
       <field>
         <name>sepallength</name>
@@ -168,15 +183,20 @@
     <compression>None</compression>
     <encoding/>
     <endedLine/>
+    <fileNameInField>N</fileNameInField>
+    <fileNameField/>
     <file>
       <name>testfiles&#47;blackbox&#47;tests&#47;trans&#47;steps&#47;reservoirSampling&#47;regressTestReservoir_sample10.actual</name>
       <is_command>N</is_command>
+      <do_not_open_new_file_init>N</do_not_open_new_file_init>
       <extention>txt</extention>
       <append>N</append>
       <split>N</split>
       <haspartno>N</haspartno>
       <add_date>N</add_date>
       <add_time>N</add_time>
+      <SpecifyFormat>N</SpecifyFormat>
+      <date_time_format/>
       <add_to_result_filenames>N</add_to_result_filenames>
       <pad>N</pad>
       <fast_dump>N</fast_dump>
@@ -188,8 +208,8 @@
         <type>Number</type>
         <format>0000.00</format>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>6</length>
@@ -200,8 +220,8 @@
         <type>Number</type>
         <format>0000.00</format>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>6</length>
@@ -212,8 +232,8 @@
         <type>Number</type>
         <format>0000.00</format>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>6</length>
@@ -224,8 +244,8 @@
         <type>Number</type>
         <format>0000.00</format>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>6</length>

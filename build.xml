@@ -12,8 +12,6 @@
 
         <!-- Look for user-override properties file first -->        
 		<property file="override.properties"/>
-	    <!-- version properites -->
-	    <property file="build-res/version.properties" /> <!-- version.properties file has build number -->
         <!-- set global properties for this build -->
 		<property file="build.properties"/>
 		  
@@ -27,6 +25,8 @@
 	    <mkdir dir="${classes-ui}"/>
 	    <mkdir dir="${classes-ui}/ui"/>
 	    <mkdir dir="${classes-core}"/>
+	    <mkdir dir="${classes-db}"/>
+	    <mkdir dir="${classes-translator}"/>
 	  	<mkdir dir="${testClasses}"/>
 	    <mkdir dir="${lib}"/>
 		<mkdir dir="${distrib}"/>
@@ -38,6 +38,23 @@
 	  	
 	  	<!-- used by the nightly build. we can build zips directly to this location -->
 	  	<mkdir dir="${dist.dir}"/>
+
+	  	<exec executable="get-revision.sh" 
+	  	 	   os="Linux,OSX" 
+	  	 	   outputproperty="svn-revision"
+	  	       failonerror="false"
+	  	 	   timeout="20000"
+	  	 	   failifexecutionfails="false"
+	  	 	   resolveexecutable="true"
+	  		   spawn="false"
+	  	 />
+	  	
+	  	<condition property="revision" value="${svn-revision}" else="1">
+	  		<length string="${svn-revision}" length="7" when="less"/>
+	  	</condition>
+	  	
+	  	<echo message="Revision set to r${revision}"/>
+	  	
 	  </target>
 
 	  <!--
@@ -64,8 +81,29 @@
 		  		</classpath>
 	    </javac>
 	  </target>
+	
+	  <target name="compile-db" depends="compile-core" description="compile the db source code " >
+	  	<echo>Compiling Kettle DB...</echo>
+      <javac fork="true"
+          destdir="${classes-core}"
+          target="5"
+          source="5"
+          deprecation="true"
+          debug="${debug}"
+          optimize="${optimize}"
+          memorymaximumsize="256m">
+	    	<src path="${src-db}"/>
+	    	
+	    	<classpath id="cp-kettle-db">
+	    		<pathelement path="${classes-core}"/>
+				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
+				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
+		  		</classpath>
+	    </javac>
+	  </target>
 
-	  <target name="compile" depends="compile-core" description="compile the source " >
+
+	  <target name="compile" depends="compile-db" description="compile the source " >
 	  	<echo>Compiling Kettle...</echo>
         <javac fork="true"
             destdir="${classes}"
@@ -85,7 +123,7 @@
         </javac>
 	  </target>
 	  
-	  <target name="compile-ui" depends="kettle-core, kettle" description="compile the UI source " >
+	  <target name="compile-ui" depends="compile-db, compile" description="compile the UI source " >
 	  	<echo>Compiling Kettle UI...</echo>
 	    <javac 
 	    	   destdir="${classes-ui}"
@@ -102,6 +140,7 @@
 	    	
 	    	<classpath id="cp-kettle-ui">
 				<fileset dir="${lib}" 			includes="kettle-core.jar"/>
+				<fileset dir="${lib}" 			includes="kettle-db.jar"/>
 				<fileset dir="${lib}" 			includes="kettle-engine.jar"/>
 				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
 				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
@@ -118,20 +157,6 @@
 	  	    </copy>
 	  </target>
 	  
-		  <!--
-		       ===================================
-		          Increase the revision number
-		       ===================================
-		  -->
-	  	
-		<target name="revision" depends="compile-core" description="compile the source " >
-	 	  <echo>Bumping revision...</echo>
-	  	  <java classname="org.pentaho.di.version.UpdateBuildVersion"
-		  	    classpath="${classes-core}"
-	  	  	  />
-		 <!-- <concat><filelist dir="." files="build_version.txt"/></concat> -->
-	    </target>
-	
 		<!--
 		       ==========================
 		          Compile the test code
@@ -149,6 +174,7 @@
 
 		    	<classpath id="cp-kettle-test">
 		    		<fileset dir="${lib}" 	  		includes="kettle-core.jar"/>
+		    		<fileset dir="${lib}" 	  		includes="kettle-db.jar"/>
 		    		<fileset dir="${lib}" 	  		includes="kettle-engine.jar"/>
 		    		<fileset dir="${testlibext}" 	includes="*.jar"/>
 		    		<fileset dir="${libext}/commons" 	includes="*.jar"/>
@@ -164,14 +190,21 @@
 	       ==========================
 	  -->
 	
-	  <target name="copy-core" depends="compile-core" description="copy images etc from the core source to classes directory" >
+	  <target name="copy-core" depends="compile-core" description="copy images etc from the src-core to the classes-core directory" >
 	  	<echo>Copying core images etc to classes directory...</echo>
 	    <copy todir="${classes-core}">
 	    	<fileset dir="${src-core}" includes="**/*.xml **/*properties"/>
 	  	    </copy>
 	  </target>
+	
+	  <target name="copy-db" depends="compile-db" description="copy images etc from the src-db to the classes-db directory" >
+	  	<echo>Copying db images etc to classes-db directory...</echo>
+	    <copy todir="${classes-db}">
+	    	<fileset dir="${src-db}" includes="**/*.xml **/*properties"/>
+	  	    </copy>
+	  </target>
 
-	  <target name="copy" depends="compile" description="copy images etc to classes directory" >
+	  <target name="copy" depends="compile" description="copy images etc to the classes directory" >
 	  	<echo>Copying images etc to classes directory...</echo>
 	    <copy todir="${classes}">
 	    	<fileset dir="${src}" includes="**/*.xml **/*properties"/>
@@ -263,14 +296,35 @@
           <manifest>
               <attribute name="Implementation-Title" value="${impl.title.engine}" />
               <attribute name="Implementation-Version" value="${impl.version}" />
+              <attribute name="Specification-Version" value="${revision}" />
               <attribute name="Implementation-Vendor" value="${impl.vendor}" />
-			<attribute name="Implementation-ProductID" value="${impl.productID}" />
+			  <attribute name="Implementation-ProductID" value="${impl.productID}" />
               <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
+              <attribute name="Compile-User" value="${user.name}" />
           </manifest>
         </jar>
 	  </target>
 		
-	  <target name="kettle" depends="compile, revision, copy" description="generate the kettle library kettle-engine.jar">
+	  <target name="kettle-db" depends="compile-db, copy-db" description="generate the kettle db library kettle-db.jar">
+	  	<echo>Generating the Kettle DB library kettle-db.jar ...</echo>
+	  	<jar jarfile="${lib}/kettle-db.jar" 
+	    	 basedir="${classes-core}" 
+	    	 includes="**/* ${version.file.path}"
+	  	     excludes="**/Thumbs.db **/*.jar **/*.swp"
+	  		>
+        <manifest>
+            <attribute name="Implementation-Title" value="${impl.title.engine}" />
+            <attribute name="Implementation-Version" value="${impl.version}" />
+            <attribute name="Specification-Version" value="${revision}" />
+            <attribute name="Implementation-Vendor" value="${impl.vendor}" />
+			<attribute name="Implementation-ProductID" value="${impl.productID}" />
+            <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
+            <attribute name="Compile-User" value="${user.name}" />
+        </manifest>
+      </jar>
+	  </target>
+	
+	  <target name="kettle" depends="compile, copy" description="generate the kettle library kettle-engine.jar">
 	  	<echo>Generating the Kettle library kettle-engine.jar ...</echo>
 	  	<jar jarfile="${lib}/kettle-engine.jar" 
 	    	 basedir="${classes}" 
@@ -280,9 +334,11 @@
             <manifest>
                 <attribute name="Implementation-Title" value="${impl.title.engine}" />
                 <attribute name="Implementation-Version" value="${impl.version}" />
+                <attribute name="Specification-Version" value="${revision}" />
                 <attribute name="Implementation-Vendor" value="${impl.vendor}" />
 				<attribute name="Implementation-ProductID" value="${impl.productID}" />
                 <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
+                <attribute name="Compile-User" value="${user.name}" />
             </manifest>
         </jar>
 	  </target>	
@@ -296,9 +352,11 @@
                 <manifest>
                     <attribute name="Implementation-Title" value="${impl.title.ui}" />
                     <attribute name="Implementation-Version" value="${impl.version}" />
+                    <attribute name="Specification-Version" value="${revision}" />
                     <attribute name="Implementation-Vendor" value="${impl.vendor}" />
     				<attribute name="Implementation-ProductID" value="${impl.productID}" />
                     <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
+                    <attribute name="Compile-User" value="${user.name}" />
                 </manifest>
 	  	</jar>
 
@@ -309,7 +367,7 @@
 	        Distribution jar package
 	       ==========================
 	  -->
-	  <target name="distrib" depends="kettle-core, kettle, kettle-ui" description="copy jar file to distribution directory" >
+	  <target name="distrib" depends="kettle-core, kettle-db, kettle, kettle-ui" description="copy jar file to distribution directory" >
 	  	<echo>Construct the distribution package...</echo>
 	  	
 	        <!-- root directory -->
@@ -321,6 +379,7 @@
 	  		<!-- base lib -->
 	  		<mkdir dir="${distrib}/lib"/>
 			<copy todir="${distrib}/lib"  file="${lib}/kettle-core.jar"/>
+		    <copy todir="${distrib}/lib"  file="${lib}/kettle-db.jar"/>
   			<copy todir="${distrib}/lib"  file="${lib}/kettle-engine.jar"/>
   			<copy todir="${distrib}/lib"  file="${lib}/kettle-ui-swt.jar"/>
 
@@ -406,9 +465,9 @@
 	       ==========================
 	  -->
 		
-	  <target name="zip" depends="distrib" description="generate the ${product.name}-${product.release.type}-${release.version}${release.status.token}.zip file">
-	  	<echo>Generating the Kettle distribution package ${product.name}-${product.release.type}-${release.version}${release.status.token}.zip ...</echo>
-	  	<jar jarfile="${dist.dir}/${product.name}-${product.release.type}-${release.version}${release.status.token}.zip" 
+	  <target name="zip" depends="distrib" description="generate the ${impl.productID}-${version}-r${revision}.zip file">
+	  	<echo>Generating the Kettle distribution package ${impl.productID}-${version}-r${revision}.zip ...</echo>
+	  	<jar jarfile="${dist.dir}/${impl.productID}-${version}-r${revision}.zip" 
 	    	 basedir="${distrib}" 
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
@@ -421,9 +480,9 @@
 	       ==========================
 	  -->
 		
-	  <target name="sourcezip" depends="" description="generate the Kettle-src-${version}-${release.build.number}.zip file">
-	  	<echo>Generating the Kettle source packge zip file (${product.name}-${product.release.type}-src-${release.version}${release.status.token}.zip) ...</echo>
-	  	<jar jarfile="${dist.dir}/${product.name}-${product.release.type}-src-${release.version}${release.status.token}.zip" 
+	  <target name="sourcezip" depends="" description="generate the Kettle-src-${version}-${release.build.number}-r${revision}.zip file">
+	  	<echo>Generating the Kettle source packge zip file (${impl.productID}-src-${version}-r${revision}.zip) ...</echo>
+	  	<jar jarfile="${dist.dir}/${impl.productID}-src-${version}-r${revision}.zip" 
 	  		 basedir="."
 	    	 includes="**/*"
 	  	     excludes="*.zip ${classes}/**/* ${distrib}/**/* homepage/**/* Licenses/**/* ${lib}/**/* ${webstart}/**/*"
@@ -509,9 +568,9 @@
 	   translator.sh
 	--> 
 	
-	<target name="i18n" depends="kettle-ui" description="generate the Kettle-i18n-${version}-${release.build.number}.zip file">
-		  	<echo>Generating the Kettle i18n distribution package Kettle-i18n-${version}-${release.build.number}.zip ...</echo>
-		  	<jar jarfile="${dist.dir}/Kettle-i18n-${version}-${release.build.number}.zip" 
+	<target name="i18n" depends="kettle-ui" description="generate the Kettle-i18n-${version}-r${revision}.zip file">
+		  	<echo>Generating the Kettle i18n distribution package Kettle-i18n-${version}-r${revision}.zip ...</echo>
+		  	<jar jarfile="${dist.dir}/Kettle-i18n-${version}-r${revision}.zip" 
 		    	 basedir="." 
 		    	 includes="src/**/*.java src/**/*.properties src-ui/**/*.java src-ui/**/*.properties lib/*.jar libswt/win32/*.jar libswt/linux/x86/*.jar libswt/*.jar libext/log4j-1.2.8.jar libext/spring/spring-core.jar libext/commons/commons-vfs*.jar libext/commons/commons-logging*.jar ui/*.xul Translator.bat translator.sh translator.xml"
 		  	     excludes="**/Thumbs.db **/.svn"
@@ -550,7 +609,7 @@
     <target name="webstart" depends="sign-jars" description="Package WAR">
     	<echo>Create the webstart WAR file...</echo>
 
-        <war destfile="${webstart}/kettle.war" webxml="${web}/web.xml" compress="true">
+        <war destfile="${webstart}/${impl.productID}-${version}.war" webxml="${web}/web.xml" compress="true">
             
         	<fileset dir="${web}">
 		      <include name="**/*.html"/>
@@ -750,6 +809,7 @@
 	    <delete dir="${classes}"/>
 	    <delete dir="${classes-ui}"/>
 	    <delete dir="${classes-core}"/>
+	    <delete dir="${classes-db}"/>
 	    <delete dir="${testClasses}"/>
 	    <delete dir="${lib}"/>
 	    <delete dir="${junit}"/>
@@ -798,7 +858,7 @@
 	  	                    name="${ant.project.name}"
 	  	                    mainclass="org.pentaho.di.ui.spoon.Spoon"
 	  	                    icon="${ui}/images/spoon32.icns"
-	  	                    version="${version} build number ${release.build.number}"
+	  	                    version="${version}"
 	  	        			verbose="true"
 	  	        	VMOptions="${macappmaxmem} ${macappextravmoptions}"
 				    shortname="Spoon"
@@ -835,7 +895,7 @@
 	  		      <arg value="-volname"/>
 	  		      <arg value="${ant.project.name} ${version}"/>
 	  		      <arg value="-ov"/>
-	  		      <arg value="${macdistrib}/${ant.project.name}-${version}-${release.build.number}.dmg"/>
+	  		      <arg value="${macdistrib}/${impl.productID}-${version}.dmg"/>
 	  		    </exec>
 	  	    </target>
 	
