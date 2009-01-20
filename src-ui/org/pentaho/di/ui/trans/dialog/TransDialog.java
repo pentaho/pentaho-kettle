@@ -490,6 +490,7 @@ public class TransDialog extends Dialog
 				if (rep!=null)
 				{
 					RepositoryDirectory directoryFrom = transMeta.getDirectory();
+					// if (directoryFrom==null) directoryFrom = new RepositoryDirectory();
 					long idDirectoryFrom  = directoryFrom.getID();
                     
                     SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);

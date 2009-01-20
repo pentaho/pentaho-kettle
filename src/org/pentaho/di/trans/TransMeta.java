@@ -3085,6 +3085,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 				String directoryPath = XMLHandler.getTagValue(infonode, "directory");
 				if (directoryPath!=null) {
 					directory = rep.getDirectoryTree().findDirectory(directoryPath);
+					if (directory==null) { // not found
+						directory = new RepositoryDirectory(); // The root as default
+					}
 				}
 			}
 
