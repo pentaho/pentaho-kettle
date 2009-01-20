@@ -36,6 +36,7 @@ public class ValueDateTest extends TestCase
 
 	static 
 	{
+		TimeZone.setDefault(TimeZone.getTimeZone("CET"));
 		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS", Locale.US);				
 		try 
 		{
@@ -113,6 +114,8 @@ public class ValueDateTest extends TestCase
 	 */
 	public void testSetters()
 	{
+		TimeZone.setDefault(TimeZone.getTimeZone("CET"));
+		
 		ValueDate vs = new ValueDate();
 
 		try 
