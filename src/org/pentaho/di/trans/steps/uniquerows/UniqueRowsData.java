@@ -24,12 +24,11 @@ import org.pentaho.di.trans.step.StepDataInterface;
 public class UniqueRowsData extends BaseStepData implements StepDataInterface
 {
     public RowMetaInterface outputRowMeta;
+    public RowMetaInterface compareRowMeta;
     public RowMetaInterface inputRowMeta;
 	public long	counter;
 	public Object[]	previous;
 	public int  fieldnrs[];
-	public boolean ascending[];
-    public boolean[] caseInsensitive;
 	
 	/**
 	 * 

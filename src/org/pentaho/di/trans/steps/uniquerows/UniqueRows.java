@@ -64,6 +64,7 @@ public class UniqueRows extends BaseStep implements StepInterface
             first=false;
             
             data.inputRowMeta = getInputRowMeta().clone();
+            data.compareRowMeta = getInputRowMeta().clone();
             data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
@@ -71,14 +72,10 @@ public class UniqueRows extends BaseStep implements StepInterface
 			
 			// Cache lookup of fields
 			data.fieldnrs=new int[meta.getCompareFields().length];
-			data.ascending=new boolean[meta.getCompareFields().length];
-            data.caseInsensitive=new boolean[meta.getCaseInsensitive().length];
             
 			for (int i=0;i<meta.getCompareFields().length;i++)
 			{
-			    data.ascending[i] = false;
 				data.fieldnrs[i] = getInputRowMeta().indexOfValue(meta.getCompareFields()[i]);
-                data.caseInsensitive[i] = meta.getCaseInsensitive()[i];
 				if (data.fieldnrs[i]<0)
 				{
 					logError(Messages.getString("UniqueRows.Log.CouldNotFindFieldInRow",meta.getCompareFields()[i])); //$NON-NLS-1$ //$NON-NLS-2$
@@ -86,6 +83,9 @@ public class UniqueRows extends BaseStep implements StepInterface
 					stopAll();
 					return false;
 				}
+				// Change the case insensitive flag...
+				//
+                data.compareRowMeta.getValueMeta(data.fieldnrs[i]).setCaseInsensitive(meta.getCaseInsensitive()[i]);
 			}
 		}
 		
@@ -94,11 +94,11 @@ public class UniqueRows extends BaseStep implements StepInterface
 		if (meta.getCompareFields()==null || meta.getCompareFields().length==0)
 		{
 		    // Compare the complete row...
-		    isEqual = data.inputRowMeta.compare(r, data.previous)==0;
+		    isEqual = data.outputRowMeta.compare(r, data.previous)==0;
 		}
 		else
 		{
-		    isEqual = data.inputRowMeta.compare(r, data.previous, data.fieldnrs)==0;
+		    isEqual = data.outputRowMeta.compare(r, data.previous, data.fieldnrs)==0;
 		}
 		if (!isEqual)
 		{
