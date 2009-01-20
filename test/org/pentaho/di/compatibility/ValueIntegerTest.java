@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import junit.framework.TestCase;
 
@@ -114,18 +113,20 @@ public class ValueIntegerTest extends TestCase
 		vs.setString("3");
 		assertEquals(3, vs.getInteger());
 		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS", Locale.US);		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS z");		
 	    Date dt = null;
 	    try 
 	    {
-	       dt = format.parse("2006/06/07 01:02:03.004");
+	       dt = format.parse("2006/06/07 01:02:03.004 CET");
 	    }
 	    catch ( ParseException ex )
 	    {
 	       dt = null;	
 	    }
 		vs.setDate(dt);
-		assertEquals(1149634923004L, vs.getInteger());
+		
+		// Epoch time conversion
+		assertEquals(1149638523004L, vs.getInteger());
 
 		vs.setBoolean(true);
 		assertEquals(1, vs.getInteger());

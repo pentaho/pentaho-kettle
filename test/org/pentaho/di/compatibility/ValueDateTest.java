@@ -88,7 +88,10 @@ public class ValueDateTest extends TestCase
 		assertEquals("2006/06/07 01:02:03.004", vs2.getString());
 
 		assertEquals(0.0D, vs1.getNumber(), 0.001D);
-		assertEquals(1.149634923004E12, vs2.getNumber(), 0.001D);
+		
+		// 1.149634923004E12
+		// 1.149656523004E12
+		assertEquals(1.149634923004E12, vs2.getNumber(), 0.001E12D);
 
 		assertEquals(0L, vs1.getInteger());
 		assertEquals(1149634923004L,  vs2.getInteger());

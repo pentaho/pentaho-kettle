@@ -122,7 +122,8 @@ public class ValueBigNumberTest extends TestCase
 	       dt = null;	
 	    }
 		vs.setDate(dt);
-		assertEquals(BigDecimal.valueOf(1.149634923004E12), vs.getBigNumber());
+
+		assertEquals(new BigDecimal("1149634923004"), vs.getBigNumber());
 
 		vs.setBoolean(true);
 		assertEquals(BigDecimal.ONE, vs.getBigNumber());

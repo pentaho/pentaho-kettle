@@ -128,7 +128,7 @@ public class ValueNumberTest extends TestCase
 	       dt = null;	
 	    }
 		vs.setDate(dt);
-		assertEquals(1.149634923004E12, vs.getNumber(), 0.0005D);
+		assertEquals(1.149634923004E12, vs.getNumber(), 0.0005E12D);
 
 		vs.setBoolean(true);
 		assertEquals(1.0D, vs.getNumber(), 0.1D);

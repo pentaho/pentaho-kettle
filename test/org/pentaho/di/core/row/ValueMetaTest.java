@@ -152,13 +152,13 @@ public class ValueMetaTest extends TestCase
 	public void testDateToStringToDate() throws Exception
 	{
 		ValueMetaInterface datValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_DATE);
-		datValueMeta.setConversionMask("yyyy - MM - dd   HH:mm:ss'('SSS')'");
+		datValueMeta.setConversionMask("yyyy - MM - dd   HH:mm:ss'('SSS')' z");
 		
 		Date originalValue = new Date(7258114799999L);
 		
 		String string = datValueMeta.getString(originalValue);
 		
-		assertEquals("2199 - 12 - 31   23:59:59(999)", string);
+		assertEquals("2199 - 12 - 31   23:59:59(999) CET", string);
 		
 		ValueMetaInterface strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
 		strValueMeta.setConversionMetadata(datValueMeta);
@@ -171,10 +171,10 @@ public class ValueMetaTest extends TestCase
 	public void testConvertDataDate() throws Exception
 	{
 		ValueMetaInterface source = new ValueMeta("src", ValueMetaInterface.TYPE_STRING);
-		source.setConversionMask("SSS.ss:mm:HH dd/MM/yyyy");
+		source.setConversionMask("SSS.ss:mm:HH dd/MM/yyyy z");
 		ValueMetaInterface target = new ValueMeta("tgt", ValueMetaInterface.TYPE_DATE);
 		
-		Date date = (Date) target.convertData(source, "999.59:59:23 31/12/2007");
+		Date date = (Date) target.convertData(source, "999.59:59:23 31/12/2007 CET");
 		assertEquals(new Date(1199141999999L), date);
 		
 		target.setConversionMask("yy/MM/dd HH:mm");

@@ -169,6 +169,7 @@
 		    	   target="5"
 		    	   source="5"
 		           deprecation="true"
+		    	   debug="true"
 		    	>
 
 		    	<classpath id="cp-kettle-test">
@@ -672,7 +673,6 @@
 		  	<test todir="${junit}" name="org.pentaho.di.core.CountersTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.CounterTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.RowSetTest" haltonerror="false" />
-		  	<test todir="${junit}" name="org.pentaho.di.laf.LAFFactoryTest" haltonerror="false" />
 			
 		</junit>
 	</target>
@@ -749,7 +749,6 @@
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.rowgenerator.RowGeneratorTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptSpecialTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptStringTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.sort.SortRowsTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.tableoutput.TableOutputTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.tableinput.TableInputTest" haltonerror="false" />
