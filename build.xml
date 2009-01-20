@@ -26,7 +26,6 @@
 	    <mkdir dir="${classes-ui}/ui"/>
 	    <mkdir dir="${classes-core}"/>
 	    <mkdir dir="${classes-db}"/>
-	    <mkdir dir="${classes-translator}"/>
 	  	<mkdir dir="${testClasses}"/>
 	    <mkdir dir="${lib}"/>
 		<mkdir dir="${distrib}"/>
@@ -654,12 +653,26 @@
 			
 			<formatter type="xml"/>
 			
+		  	<test todir="${junit}" name="org.pentaho.di.compatibility.ValueBigNumberTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.compatibility.ValueBooleanTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.compatibility.ValueDateTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.compatibility.ValueIntegerTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.compatibility.ValueNumberTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.compatibility.ValueStringTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.compatibility.ValueTestTest" haltonerror="false" />
+
 		  	<test todir="${junit}" name="org.pentaho.di.core.database.DatabaseTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.core.encryption.EncrTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.row.RowDataUtilTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.row.RowTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.row.ValueDataUtilTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.core.row.ValueMetaTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.core.util.StringUtilTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.core.ConstTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.core.CountersTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.core.CounterTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.RowSetTest" haltonerror="false" />
-		  	<test todir="${junit}" name="org.pentaho.di.blackbox.BlackBoxTests" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.core.LAFFactoryTest" haltonerror="false" />
 			
 		</junit>
 	</target>
@@ -717,33 +730,48 @@
 			<formatter type="xml"/>
 			
 		  	<test todir="${junit}" name="org.pentaho.di.trans.HopTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.addsequence.AddSequenceTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.append.AppendTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.blockingstep.BlockingStepTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.combinationlookup.CombinationLookupTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.constant.ConstantTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.csvinput.CsvInput1Test" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.csvinput.CsvInput2Test" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.databaselookup.DatabaseLookupTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.detectlastrow.DetectLastRowStepTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.injector.InjectorTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.mapping.RunMapping" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.rowgenerator.RowGeneratorTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.sort.SortRowsTest" haltonerror="false" />
-		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.valuemapper.ValueMapperTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.nullif.NullIfTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.numberrange.NumberRangeRuleTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.numberrange.NumberRangeSetTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.regexeval.RegexEvalTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.rowgenerator.RowGeneratorTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptSpecialTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptStringTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.sort.SortRowsTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.tableoutput.TableOutputTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.tableinput.TableInputTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.unique.UniqueRowsTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.valuemapper.ValueMapperTest" haltonerror="false" />
 
 		</junit>
 	</target>
-
+	
 	<!--
 	       ===========================================
-	          tests : junit performance tests
+	          tests : junit black box tests
 	       ============================================
 	  -->
-
-	<target name="tests-run" depends="compileTests" description="Execute the run performance tests">
+	
+	<target name="tests-blackbox" depends="compileTests" description="Execute the black box transformation tests">
 		
 		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
 	    	<classpath>
 				<fileset dir="${lib}" includes="kettle-core.jar"/>
 				<fileset dir="${lib}" includes="kettle-db.jar"/>
 				<fileset dir="${lib}" includes="kettle-engine.jar"/>
-				<fileset dir="test/libext/" includes="kettle.jar"/>
 				<!-- fileset dir="test/libext/" includes="junit.jar"/ -->
 	    		<pathelement path="${testClasses}"/>
 
@@ -754,44 +782,37 @@
 			</classpath>
 			
 			<formatter type="xml"/>
+
+		  	<test todir="${junit}" name="org.pentaho.di.blackbox.BlackBoxTests" haltonerror="false" />
+		</junit>
+	</target>
+
+	<!--
+	       ===========================================
+	          tests : junit run tests
+	       ============================================
+	  -->
+
+	<target name="tests-run" depends="compileTests" description="Execute the transformation run tests">
+		
+		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
+	    	<classpath>
+				<fileset dir="${lib}" includes="kettle-core.jar"/>
+				<fileset dir="${lib}" includes="kettle-db.jar"/>
+				<fileset dir="${lib}" includes="kettle-engine.jar"/>
+				<!-- fileset dir="test/libext/" includes="junit.jar"/ -->
+	    		<pathelement path="${testClasses}"/>
+
+				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
+				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
+				<fileset dir="${libswt}" 		includes="*.jar *.zip"/>
+				<fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
+			</classpath>
 			
-		  	<test todir="${junit}" name="org.pentaho.di.run.tableoutput.RunTableOutput" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.abort.RunAbort" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.addsequence.RunAddSequence4To10" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.addsequence.RunAddSequence4To05" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.addsequence.RunAddSequence4To00" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.addsequence.RunAddSequence2To10" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.addsequence.RunAddSequence2To05" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.addsequence.RunAddSequence2To00" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.addsequence.RunAddSequence1To10" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.addsequence.RunAddSequence1To05" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.addsequence.RunAddSequence1To00" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.calculator.RunCalculator" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.constant.RunConstant" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.filterrows.RunFilterRows" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.rowgenerator.RunRowGenerator" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.selectvalues.RunSelectValues" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.sortrows.RunSortRows" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.streamlookup.RunStreamLookup" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.systemdata.RunSystemData" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.tableinput.RunTableInput" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.textfileinput.RunTextFileInput" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.textfileoutput.RunTextFileOutput" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.uniquerows.RunUniqueRows" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.databaselookup.RunDatabaseLookup" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.dimensionlookup.RunDimensionLookup" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.excelinput.RunExcelInput" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.exceloutput.RunCombinationLookup" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.scriptvalues_mod.RunScriptValuesMod" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.joinrows.RunJoinRows" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.update.RunUpdate" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.insertupdate.RunInsertUpdate" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.delete.RunDelete" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.getfilenames.RunGetFileNames" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.groupby.RunGroupBy" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.mergejoin.RunMergeJoin" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.run.sortedmerge.RunSortedMerge" haltonerror="false" />
-			
+			<formatter type="xml"/>
+
+		  	<test todir="${junit}" name="org.pentaho.di.cluster.MasterSlave" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.cluster.Partitioning" haltonerror="false" />
 		</junit>
 	</target>
 	

@@ -65,8 +65,7 @@ public class BuildVersion
         	buildUser = manifest.getMainAttributes().getValue("Compile-User");
         }
         catch(Exception e) {
-          System.out.println("Unable to read version information from manifest : " + e.getMessage());
-          e.printStackTrace();  
+          // System.out.println("Unable to read version information from manifest : not running from jar files (Igored)");
           
           version = Const.VERSION;
           revision = "";

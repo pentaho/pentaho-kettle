@@ -66,7 +66,7 @@ public class BaseCluster extends TestCase {
 	
 	protected void init() throws Exception {
         EnvUtil.environmentInit();
-        LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
+        LogWriter.getInstance( LogWriter.LOG_LEVEL_ERROR);
 
         StepLoader.init();
         JobEntryLoader.init();
