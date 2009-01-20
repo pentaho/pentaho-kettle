@@ -456,7 +456,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(), "Impossible de récupérer les champs depuis l'étape précédente");
+                        log.logError(toString(), "It was not possible to acquire the fields from the previous steps");
 
                     }
                 }
