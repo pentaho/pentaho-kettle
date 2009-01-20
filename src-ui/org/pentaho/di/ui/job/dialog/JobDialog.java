@@ -410,6 +410,7 @@ public class JobDialog extends Dialog
 			public void widgetSelected(SelectionEvent arg0)
 			{
 				RepositoryDirectory directoryFrom = jobMeta.getDirectory();
+				if (directoryFrom==null) directoryFrom = new RepositoryDirectory();
 				long idDirectoryFrom  = directoryFrom.getID();
 				
 				SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
