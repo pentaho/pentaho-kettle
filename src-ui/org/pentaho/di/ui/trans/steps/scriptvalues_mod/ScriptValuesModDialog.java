@@ -111,21 +111,29 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.trans.StepLoader;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 import org.pentaho.di.trans.steps.scriptvalues_mod.Messages;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesAddedFunctions;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesMetaMod;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesModDummy;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesScript;
+import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.trans.step.StepMeta;
 
 
 public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogInterface
@@ -223,11 +231,14 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
     private TreeItem itemWaitFieldsIn,itemWaitFieldsOut;
     
     private RowMetaInterface  rowPrevStepFields;;
+    
+    private RowGeneratorMeta genMeta;
 		
 	public ScriptValuesModDialog(Shell parent, Object in, TransMeta transMeta, String sname){
 
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input=(ScriptValuesMetaMod)in;
+		genMeta = null;
 		try{
 			//ImageLoader xl = new ImageLoader();
 			imageUnderGreen = guiresource.getImage("ui/images/underGreen.png");
@@ -486,7 +497,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();          } };
 		//lsGet      = new Listener() { public void handleEvent(Event e) { get();             } };
-		lsTest     = new Listener() { public void handleEvent(Event e) { test(false, true); } };
+		lsTest     = new Listener() { public void handleEvent(Event e) { newTest(); } };
 		lsVars     = new Listener() { public void handleEvent(Event e) { test(true, true);  } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();              } };
 		lsTree	   = new Listener() { public void handleEvent(Event e) { treeDblClick(e);       } };
@@ -897,6 +908,47 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		dispose();
 	}
 	
+	private void getInfo(ScriptValuesMetaMod meta) {
+		meta.setCompatible( wCompatible.getSelection() );
+		int nrfields = wFields.nrNonEmpty();
+		meta.allocate(nrfields);
+		for (int i=0;i<nrfields;i++){
+			TableItem item = wFields.getNonEmpty(i);
+			meta.getName()  [i] = item.getText(1);
+			meta.getRename()[i] = item.getText(2);
+			if (meta.getRename()[i]==null || 
+					meta.getRename()[i].length()==0 || 
+					meta.getRename()[i].equalsIgnoreCase(meta.getName()[i])
+			)
+			{
+				meta.getRename()[i] = meta.getName()[i];
+			}
+			meta.getType()  [i] = ValueMeta.getType(item.getText(3));
+			String slen = item.getText(4);
+			String sprc = item.getText(5);
+			meta.getLength()   [i]=Const.toInt(slen, -1);
+			meta.getPrecision()[i]=Const.toInt(sprc, -1);
+		}
+		
+		//input.setActiveJSScript(strActiveScript);
+		CTabItem[] cTabs = folder.getItems();
+		if(cTabs.length>0){
+			ScriptValuesScript[] jsScripts = new ScriptValuesScript[cTabs.length];
+			for(int i=0;i<cTabs.length;i++){
+				ScriptValuesScript jsScript = new ScriptValuesScript(
+						ScriptValuesScript.NORMAL_SCRIPT,
+						cTabs[i].getText(),
+						getStyledTextComp(cTabs[i]).getText()
+					);
+				if(cTabs[i].getImage().equals(imageActiveScript)) jsScript.setScriptType(ScriptValuesScript.TRANSFORM_SCRIPT);
+				else if(cTabs[i].getImage().equals(imageActiveStartScript)) jsScript.setScriptType(ScriptValuesScript.START_SCRIPT);
+				else if(cTabs[i].getImage().equals(imageActiveEndScript)) jsScript.setScriptType(ScriptValuesScript.END_SCRIPT);
+				jsScripts[i] = jsScript;
+			}
+			meta.setJSScripts(jsScripts);
+		}
+	}
+	
 	private void ok()
 	{
 		if (Const.isEmpty(wStepname.getText())) return;
@@ -924,49 +976,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		}
 		
 		if(bInputOK){
-
-			//StyledTextComp wScript = getStyledTextComp();
-			
-			input.setCompatible( wCompatible.getSelection() );
-			int nrfields = wFields.nrNonEmpty();
-			input.allocate(nrfields);
-			for (int i=0;i<nrfields;i++){
-				TableItem item = wFields.getNonEmpty(i);
-				input.getName()  [i] = item.getText(1);
-				input.getRename()[i] = item.getText(2);
-				if (input.getRename()[i]==null || 
-						input.getRename()[i].length()==0 || 
-						input.getRename()[i].equalsIgnoreCase(input.getName()[i])
-				)
-				{
-					input.getRename()[i] = input.getName()[i];
-				}
-				input.getType()  [i] = ValueMeta.getType(item.getText(3));
-				String slen = item.getText(4);
-				String sprc = item.getText(5);
-				input.getLength()   [i]=Const.toInt(slen, -1);
-				input.getPrecision()[i]=Const.toInt(sprc, -1);
-			}
-		
-			
-			
-			//input.setActiveJSScript(strActiveScript);
-			CTabItem[] cTabs = folder.getItems();
-			if(cTabs.length>0){
-				ScriptValuesScript[] jsScripts = new ScriptValuesScript[cTabs.length];
-				for(int i=0;i<cTabs.length;i++){
-					ScriptValuesScript jsScript = new ScriptValuesScript(
-							ScriptValuesScript.NORMAL_SCRIPT,
-							cTabs[i].getText(),
-							getStyledTextComp(cTabs[i]).getText()
-						);
-					if(cTabs[i].getImage().equals(imageActiveScript)) jsScript.setScriptType(ScriptValuesScript.TRANSFORM_SCRIPT);
-					else if(cTabs[i].getImage().equals(imageActiveStartScript)) jsScript.setScriptType(ScriptValuesScript.START_SCRIPT);
-					else if(cTabs[i].getImage().equals(imageActiveEndScript)) jsScript.setScriptType(ScriptValuesScript.END_SCRIPT);
-					jsScripts[i] = jsScript;
-				}
-				input.setJSScripts(jsScripts);
-			}
+			getInfo(input);
 			dispose();
 		}
 	}
@@ -974,6 +984,141 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	public boolean test()
 	{
 		return test(false, false);
+	}
+	
+	private boolean newTest() {
+		
+	    StepLoader stepLoader = StepLoader.getInstance();
+	    String scriptStepName = wStepname.getText();
+
+		try{
+			// What fields are coming into the step?
+			//
+			RowMetaInterface rowMeta = transMeta.getPrevStepFields(stepname).clone();
+			if (rowMeta!=null){
+				// Create a new RowGenerator step to generate rows for the test data...
+				// Only create a new instance the first time to help the user.
+				// Otherwise he/she has to key in the same test data all the time
+				//
+				if (genMeta==null) {
+					genMeta = new RowGeneratorMeta();
+					genMeta.setRowLimit("10");
+					genMeta.allocate(rowMeta.size());
+				    for (int i=0;i<rowMeta.size();i++)
+				    {
+				    	ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
+				    	if (valueMeta.isStorageBinaryString()) {
+				    		valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+				    	}
+				    	genMeta.getFieldName()[i] = valueMeta.getName();
+				    	genMeta.getFieldType()[i] = valueMeta.getTypeDesc();
+				    	genMeta.getFieldLength()[i] = valueMeta.getLength();
+				    	genMeta.getFieldPrecision()[i] = valueMeta.getPrecision();
+				    	genMeta.getCurrency()[i] = valueMeta.getCurrencySymbol();
+				    	genMeta.getDecimal()[i] = valueMeta.getDecimalSymbol();
+				    	genMeta.getGroup()[i] = valueMeta.getGroupingSymbol();
+			
+				    	String string=null;
+				    	switch(valueMeta.getType()) {
+				    	case ValueMetaInterface.TYPE_DATE :
+					    	genMeta.getFieldFormat()[i] = "yyyy/MM/dd HH:mm:ss";
+					    	valueMeta.setConversionMask(genMeta.getFieldFormat()[i]);
+				    		string = valueMeta.getString(new Date()); 
+				    		break;
+				    	case ValueMetaInterface.TYPE_STRING : 
+				    		string = "test value test value";  //$NON-NLS-1$
+				    		break;
+				    	case ValueMetaInterface.TYPE_INTEGER :
+				    		genMeta.getFieldFormat()[i] = " #;-#";
+					    	valueMeta.setConversionMask(genMeta.getFieldFormat()[i]);
+				    		string = valueMeta.getString(Long.valueOf(0L)); 
+				    		break;
+				    	case ValueMetaInterface.TYPE_NUMBER : 
+				    		genMeta.getFieldFormat()[i] = " #.#;-#.#";
+					    	valueMeta.setConversionMask(genMeta.getFieldFormat()[i]);
+				    		string = valueMeta.getString(Double.valueOf(0.0D)); 
+				    		break;
+				    	case ValueMetaInterface.TYPE_BIGNUMBER : 
+				    		genMeta.getFieldFormat()[i] = " #.#;-#.#";
+					    	valueMeta.setConversionMask(genMeta.getFieldFormat()[i]);
+				    		string = valueMeta.getString(BigDecimal.ZERO);
+				    		break;
+				    	case ValueMetaInterface.TYPE_BOOLEAN : 
+				    		string = valueMeta.getString(Boolean.TRUE);
+				    		break;
+				    	case ValueMetaInterface.TYPE_BINARY : 
+				    		string = valueMeta.getString(new byte[] { 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, }); 
+				    		break;
+				    	default: 
+				    		break;
+				    	}
+				    	
+				    	genMeta.getValue()[i] = string;
+				    }
+				}
+			    StepMeta genStep = new StepMeta(stepLoader.getStepPluginID(genMeta), "## TEST DATA ##", genMeta);
+			    genStep.setLocation(50, 50);
+			    			    
+			    // Now create a JavaScript step with the information in this dialog
+			    //
+			    ScriptValuesMetaMod scriptMeta = new ScriptValuesMetaMod();
+			    getInfo(scriptMeta);
+			    StepMeta scriptStep = new StepMeta(stepLoader.getStepPluginID(scriptMeta), Const.NVL(scriptStepName, "## SCRIPT ##"), scriptMeta);
+			    scriptStepName = scriptStep.getName();
+			    scriptStep.setLocation(150, 50);
+			    
+			    // Create a hop between both steps...
+			    //
+			    TransHopMeta hop = new TransHopMeta(genStep, scriptStep);
+			    
+			    // Generate a new test transformation...
+			    //
+			    TransMeta transMeta = new TransMeta();
+			    transMeta.addStep(genStep);
+			    transMeta.addStep(scriptStep);
+			    transMeta.addTransHop(hop);
+			    
+			    // OK, now we ask the user to edit this dialog...
+			    //
+			    if (Spoon.getInstance().editStep(transMeta, genStep)!=null) {
+			    	// Now run this transformation and grab the results...
+			    	//
+			    	TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(
+			    			shell, 
+			    			transMeta, 
+			    			new String[] { scriptStepName, }, 
+			    			new int[] { Const.toInt(genMeta.getRowLimit(), 10), }
+			    		);
+			    	progressDialog.open();
+			    	
+		            Trans trans = progressDialog.getTrans();
+		            String loggingText = progressDialog.getLoggingText();
+
+		            if (!progressDialog.isCancelled())
+		            {
+		                if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
+		                {
+		                	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
+		                			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+		                	etd.setReadOnly();
+		                	etd.open();
+		                }
+		            }
+		            
+		            PreviewRowsDialog prd =new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
+		            prd.open();
+			    }
+
+			    return true;
+			} else {
+				throw new KettleException(Messages.getString("ScriptValuesDialogMod.Exception.CouldNotGetFields")); //$NON-NLS-1$
+			}
+		}
+		catch(Exception e) {
+			new ErrorDialog(shell, Messages.getString("ScriptValuesDialogMod.TestFailed.DialogTitle"), Messages.getString("ScriptValuesDialogMod.TestFailed.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			return false;
+		}
+		
 	}
 	
 	private boolean test(boolean getvars, boolean popup)
@@ -1059,7 +1204,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 					    // Set date and string values to something to simulate real thing
                         //
 					    if (valueMeta.isDate()) valueData = new Date();
-					    if (valueMeta.isString()) valueData = "test value test value test value test value test value test value test value test value test value test value"; //$NON-NLS-1$
+					    if (valueMeta.isString()) valueData = "test value test value test value test value test value test value test value test value test value test value"; //$NON-NLS-1$ 
                         if (valueMeta.isInteger()) valueData = Long.valueOf(0L);
                         if (valueMeta.isNumber()) valueData = new Double(0.0);
                         if (valueMeta.isBigNumber()) valueData = BigDecimal.ZERO;
@@ -1078,6 +1223,12 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
     					    jsscope.put(valueMeta.getName(), jsscope, jsarg);
                         }
 				    }
+				    
+				    // OK, for these input values, we're going to allow the user to edit the default values...
+				    // We are displaying a
+				    // 2) 
+				    
+				    
 				    // Add support for Value class (new Value())
 				    Scriptable jsval = Context.toObject(Value.class, jsscope);
 				    jsscope.put("Value", jsscope, jsval); //$NON-NLS-1$
