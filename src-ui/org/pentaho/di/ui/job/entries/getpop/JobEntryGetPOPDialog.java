@@ -53,8 +53,7 @@ import org.pentaho.di.job.entries.getpop.Messages;
 
 
 /**
- * This dialog allows you to edit the SQL job entry settings. (select the connection and the sql
- * script to be executed)
+ * This dialog allows you to edit the Get POP job entry settings.
  * 
  * @author Matt
  * @since 19-06-2003
@@ -415,20 +414,11 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("System.Button.OK"));
-        FormData fd = new FormData();
-        fd.right = new FormAttachment(50, -10);
-        fd.bottom = new FormAttachment(100, 0);
-        fd.width = 100;
-        wOK.setLayoutData(fd);
 
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(Messages.getString("System.Button.Cancel"));
-        fd = new FormData();
-        fd.left = new FormAttachment(50, 10);
-        fd.bottom = new FormAttachment(100, 0);
-        fd.width = 100;
-        wCancel.setLayoutData(fd);
 
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wDelete);
 
 
         // Add listeners
