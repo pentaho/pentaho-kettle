@@ -21,8 +21,12 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
@@ -47,11 +51,13 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
     /** The calculations to be performed */
     private Validation[] validations;
     
+    /** Checkbox to have all rules validated, with all the errors in the output */
+    private boolean validatingAll;
+    
     public ValidatorMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
-
     
     public void allocate(int nrValidations)
     {
@@ -62,6 +68,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	{
         int nrCalcs   = XMLHandler.countNodes(stepnode,   Validation.XML_TAG);
         allocate(nrCalcs);
+        validatingAll = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "validate_all"));
         for (int i=0;i<nrCalcs;i++)
         {
             Node calcnode = XMLHandler.getSubNodeByNr(stepnode, Validation.XML_TAG, i);
@@ -73,6 +80,8 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer(300);
        
+        retval.append(XMLHandler.addTagValue("validate_all", validatingAll));
+        
         if (validations!=null)
         for (int i=0;i<validations.length;i++)
         {
@@ -118,6 +127,8 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	{
         int nrValidationFields = rep.countNrStepAttributes(id_step, "validator_field_name");
         allocate(nrValidationFields);
+        validatingAll = rep.getStepAttributeBoolean(id_step, "validate_all");
+        
         for (int i=0;i<nrValidationFields;i++)
         {
         	validations[i] = new Validation(rep, id_step, i);
@@ -127,6 +138,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	public void saveRep(Repository rep, long id_transformation, long id_step)
 		throws KettleException
 	{
+		rep.saveStepAttribute(id_transformation, id_step, "validate_all", validatingAll);
         for (int i=0;i<validations.length;i++)
         {
         	validations[i].saveRep(rep, id_transformation, id_step, i);
@@ -224,5 +236,21 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		if (infoSteps.isEmpty()) return null;
 		
 	    return infoSteps.toArray(new String[infoSteps.size()]);
+	}
+
+
+	/**
+	 * @return the validatingAll
+	 */
+	public boolean isValidatingAll() {
+		return validatingAll;
+	}
+
+
+	/**
+	 * @param validatingAll the validatingAll to set
+	 */
+	public void setValidatingAll(boolean validatingAll) {
+		this.validatingAll = validatingAll;
 	}
 }

@@ -67,6 +67,8 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 	private ValidatorMeta input;
 	private List wValidationsList;
 	private RowMetaInterface inputFields;
+
+	private Button wValidateAll;
 	
 	private Validation selectedField;
 
@@ -221,7 +223,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
  		props.setLook(wlFieldList);
 		FormData fdlFieldList = new FormData();
 		fdlFieldList.left = new FormAttachment(0, 0);
-		fdlFieldList.right= new FormAttachment(100, 0);
+		fdlFieldList.right= new FormAttachment(middle, -margin);
 		fdlFieldList.top  = new FormAttachment(wStepname, margin);
 		wlFieldList.setLayoutData(fdlFieldList);
 		wValidationsList=new List(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
@@ -231,14 +233,25 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 			public void widgetSelected(SelectionEvent event) {
 				showSelectedValidatorField(wValidationsList.getSelection()[0]);
 			}
-		
 		});
+ 		
 		FormData fdFieldList = new FormData();
 		fdFieldList.left   = new FormAttachment(0, 0);
 		fdFieldList.top    = new FormAttachment(wlFieldList, margin);
 		fdFieldList.right  = new FormAttachment(middle, -margin);
 		fdFieldList.bottom = new FormAttachment(wOK, -margin*2);
 		wValidationsList.setLayoutData(fdFieldList);
+
+		// General: an option to allow ALL the options to be checked.
+		//
+		wValidateAll=new Button(shell, SWT.CHECK);
+		wValidateAll.setText(Messages.getString("ValidatorDialog.ValidateAll.Label")); //$NON-NLS-1$
+ 		props.setLook(wValidateAll);
+		FormData fdValidateAll = new FormData();
+		fdValidateAll.left = new FormAttachment(middle, 0);
+		fdValidateAll.right= new FormAttachment(100, 0);
+		fdValidateAll.top  = new FormAttachment(wStepname, margin);
+		wValidateAll.setLayoutData(fdValidateAll);
 		
 		// Create a scrolled composite on the right side...
 		//
@@ -247,12 +260,12 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wSComp.setLayout(new FillLayout());
 		FormData fdComp = new FormData();
 		fdComp.left   = new FormAttachment(middle, 0);
-		fdComp.top    = new FormAttachment(wlFieldList, margin);
+		fdComp.top    = new FormAttachment(wValidateAll, 2*margin);
 		fdComp.right  = new FormAttachment(100, 0);
 		fdComp.bottom = new FormAttachment(wOK, -margin*2);
 		wSComp.setLayoutData(fdComp);
 		
-		Composite wComp = new Composite(wSComp, SWT.NONE);
+		Composite wComp = new Composite(wSComp, SWT.BORDER);
 		props.setLook(wComp);
         FormLayout compLayout = new FormLayout();
         compLayout.marginWidth  = 3;
@@ -1073,6 +1086,8 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		refreshValidationsList();
 		enableFields();
 		
+		wValidateAll.setSelection(input.isValidatingAll());
+		
 		// Select the first available field...
 		//
 		if (input.getValidations().length>0) {
@@ -1110,6 +1125,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		saveChanges();
 		input.setChanged();
+		input.setValidatingAll(wValidateAll.getSelection());
 		Validation[] fields = selectionList.toArray(new Validation[selectionList.size()]);
 		input.setValidations(fields);
 		
