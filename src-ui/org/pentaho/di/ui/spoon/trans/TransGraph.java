@@ -1141,7 +1141,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   private void showHelpTip(int x, int y, String tipTitle, String tipMessage) {
 
     helpTip.setTitle(tipTitle);
-    helpTip.setMessage(tipMessage);
+    helpTip.setMessage(tipMessage.replaceAll("\n", Const.CR));
     helpTip.setCheckBoxMessage(Messages.getString("TransGraph.HelpToolTip.DoNotShowAnyMoreCheckBox.Message"));
 
     // helpTip.hide();
