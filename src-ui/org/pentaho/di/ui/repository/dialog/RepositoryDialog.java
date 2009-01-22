@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -44,6 +45,7 @@ import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
+import org.pentaho.di.ui.core.database.dialog.SQLEditor;
 import org.pentaho.di.ui.core.dialog.EnterPasswordDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -454,10 +456,26 @@ public class RepositoryDialog
 						UpgradeRepositoryProgressDialog urpd = new UpgradeRepositoryProgressDialog(shell, rep, upgrade);
 						if (urpd.open())
 						{
-							MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-							mb.setMessage(Messages.getString("RepositoryDialog.Dialog.UpgradeFinished.Message1")+cu+Messages.getString("RepositoryDialog.Dialog.UpgradeFinished.Message2")); //$NON-NLS-1$ //$NON-NLS-2$
-							mb.setText(Messages.getString("RepositoryDialog.Dialog.UpgradeFinished.Title")); //$NON-NLS-1$
-							mb.open();
+							if (urpd.isDryRun()) {
+		                		StringBuffer sql = new StringBuffer();
+		                		sql.append("-- Repository creation/upgrade DDL: ").append(Const.CR);
+		                		sql.append("--").append(Const.CR);
+		                		sql.append("-- Nothing was created nor modified in the target repository database.").append(Const.CR);
+		                		sql.append("-- Hit the OK button to execute the generated SQL or Close to reject the changes.").append(Const.CR);
+		                		sql.append("-- Please note that it is possible to change/edit the generated SQL before execution.").append(Const.CR);
+		                		sql.append("--").append(Const.CR);
+		                		for (String statement : urpd.getGeneratedStatements()) {
+		                			sql.append(statement).append(";").append(Const.CR).append(Const.CR);
+		                		}
+		                		SQLEditor editor = new SQLEditor(shell, SWT.NONE, rep.getDatabaseMeta(), DBCache.getInstance(), sql.toString());
+		                		editor.open();
+
+							} else {
+								MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+								mb.setMessage(Messages.getString("RepositoryDialog.Dialog.UpgradeFinished.Message1")+cu+Messages.getString("RepositoryDialog.Dialog.UpgradeFinished.Message2")); //$NON-NLS-1$ //$NON-NLS-2$
+								mb.setText(Messages.getString("RepositoryDialog.Dialog.UpgradeFinished.Title")); //$NON-NLS-1$
+								mb.open();
+							}
 						}
 					}
 				}

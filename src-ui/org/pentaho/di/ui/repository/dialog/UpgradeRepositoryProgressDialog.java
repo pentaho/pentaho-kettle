@@ -18,10 +18,14 @@
 package org.pentaho.di.ui.repository.dialog;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorAdapter;
@@ -29,7 +33,6 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.repository.dialog.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 
@@ -46,6 +49,10 @@ public class UpgradeRepositoryProgressDialog
     private Shell shell;
     private Repository rep;
     private boolean upgrade;
+    
+    private List<String> generatedStatements;
+    
+    private boolean dryRun;
 
     /**
      * @deprecated Use the constructor version without <i>log</i> or <i>props</i>
@@ -63,7 +70,11 @@ public class UpgradeRepositoryProgressDialog
         this.shell = shell;
         this.rep = rep;
         this.upgrade = upgrade;
+        this.generatedStatements = new ArrayList<String>();
+        this.dryRun = false;
     }
+    
+    
 
     public boolean open()
     {
@@ -78,10 +89,25 @@ public class UpgradeRepositoryProgressDialog
                 // kettleVariables.getLocalThread(), true);
                 // --> don't set variables if not running in different thread --> pmd.run(true,true,
                 // op);
-
+            	
+            	// Ask if you want to do a dry run first?
+            	//
+            	MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO);
+            	box.setMessage(Messages.getString("UpgradeRepositoryDialog.DryRunQuestion.Message"));
+            	box.setText(Messages.getString("UpgradeRepositoryDialog.DryRunQuestion.Title"));
+            	int answer = box.open();
+            	
                 try
                 {
-                    rep.createRepositorySchema(new ProgressMonitorAdapter(monitor), upgrade);
+                	if (answer==SWT.YES) {
+                    	// First do a dry-run
+                		//
+                		dryRun=true;
+                		rep.createRepositorySchema(new ProgressMonitorAdapter(monitor), upgrade, generatedStatements, true);
+                	} else {
+                		rep.createRepositorySchema(new ProgressMonitorAdapter(monitor), upgrade, generatedStatements, false);
+                	}
+                    
                 }
                 catch (KettleException e)
                 {
@@ -132,4 +158,18 @@ public class UpgradeRepositoryProgressDialog
 
         new ErrorDialog(shell, sTitle, sMessage, e);
     }
+
+	/**
+	 * @return the dryRun
+	 */
+	public boolean isDryRun() {
+		return dryRun;
+	}
+
+	/**
+	 * @return the generatedStatements
+	 */
+	public List<String> getGeneratedStatements() {
+		return generatedStatements;
+	}
 }
