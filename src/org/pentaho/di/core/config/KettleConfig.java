@@ -105,7 +105,7 @@ public class KettleConfig
 		digester.addRule(KETTLE_CONFIG_PROPERTY, new SetPropertiesRule()
 		{
 			@Override
-			public void begin(Attributes attrs) throws Exception
+			public void begin(String name, String namespace, Attributes attrs) throws Exception
 			{
 				((TempConfig) digester.peek()).parms.put(attrs.getValue("name"), attrs.getValue("value"));
 			}
