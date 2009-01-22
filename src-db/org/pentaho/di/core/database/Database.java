@@ -4624,10 +4624,12 @@ public class Database implements VariableSpace
 		{
 			if (i>0) ins.append(",");
 			{
-				if (fields.getValueMeta(i).getType()==ValueMeta.TYPE_STRING)
+				switch(fields.getValueMeta(i).getType()) {
+				case ValueMetaInterface.TYPE_BOOLEAN:
+				case ValueMetaInterface.TYPE_STRING:
 					ins.append("'" + fields.getString(r,i) + "'") ;
-				else if (fields.getValueMeta(i).getType()==ValueMeta.TYPE_DATE)
-				{
+					break;
+				case ValueMetaInterface.TYPE_DATE:
 					if (Const.isEmpty(dateFormat))
 						ins.append("'" +  fields.getString(r,i)+ "'") ;
 					else
@@ -4642,11 +4644,11 @@ public class Database implements VariableSpace
 			                throw new KettleDatabaseException("Error : ", e);
 			            }
 					}
-				}
-				else
-				{
+					break;
+				default:
 					ins.append( fields.getString(r,i)) ;
-				}				
+					break;
+				}
 			}
 		}
 		ins.append(')');

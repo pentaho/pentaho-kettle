@@ -33,7 +33,6 @@ import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.Counters;
-import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
@@ -4411,7 +4410,7 @@ public class Repository
      * 
      * @throws KettleException in case something goes wrong!
      */
-	public void createRepositorySchema(ProgressMonitorAdapter monitor, boolean upgrade, List<String> statements, boolean dryRun) throws KettleException {
+	public void createRepositorySchema(ProgressMonitorListener monitor, boolean upgrade, List<String> statements, boolean dryRun) throws KettleException {
 		creationHelper.createRepositorySchema(monitor, upgrade, statements, dryRun);
 	}
 }

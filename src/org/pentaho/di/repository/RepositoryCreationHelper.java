@@ -166,7 +166,7 @@ public class RepositoryCreationHelper {
                     Boolean.valueOf(upgrade),
                 };
             if (dryrun) {
-            	sql = database.getSQLOutput(null, Repository.TABLE_R_VERSION, table, data, "yyyy/MM/dd");
+            	sql = database.getSQLOutput(null, Repository.TABLE_R_VERSION, table, data, "yyyy/MM/dd HH:mm:ss");
             	statements.add(sql);
             } else {
             	database.execStatement("INSERT INTO "+databaseMeta.getQuotedSchemaTableCombination(null, Repository.TABLE_R_VERSION)+" VALUES(?, ?, ?, ?, ?)", table, data);
@@ -240,7 +240,7 @@ public class RepositoryCreationHelper {
 					Object[] tableData = new Object[] { new Long(nextid), code[i], desc[i], };
 					
 					if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, table, tableData, "yyyy/MM/dd");
+		            	sql = database.getSQLOutput(null, tablename, table, tableData, "yyyy/MM/dd HH:mm:ss");
 		            	statements.add(sql);
 					} else {
 						database.setValuesInsert(table, tableData);
@@ -323,7 +323,7 @@ public class RepositoryCreationHelper {
                             desc[i],
                     };
 					if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, table, tableData, "yyyy/MM/dd");
+		            	sql = database.getSQLOutput(null, tablename, table, tableData, "yyyy/MM/dd HH:mm:ss");
 		            	statements.add(sql);
 					} else {
 						database.setValuesInsert(table, tableData);
@@ -904,35 +904,6 @@ public class RepositoryCreationHelper {
             if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
-        
-        //////////////////////////////////////////////////////////////////////////////////
-        //
-        // R_TRANS_SLAVE
-        //
-        // Create table...
-        table = new RowMeta();
-        tablename = Repository.TABLE_R_TRANS_SLAVE;
-        schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
-        if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-        table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_SLAVE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, false);
-
-        if (!Const.isEmpty(sql))
-        {
-        	statements.add(sql);
-        	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
-	            database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
-        	}
-        }
-        else
-        {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
-        }
-        if (monitor!=null) monitor.worked(1);
 
 		//
 		// R_TRANS_HOP
@@ -1159,9 +1130,9 @@ public class RepositoryCreationHelper {
 				keyfield = new String[] { Repository.FIELD_STEP_ATTRIBUTE_ID_STEP, Repository.FIELD_STEP_ATTRIBUTE_CODE, Repository.FIELD_STEP_ATTRIBUTE_NR, };
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
-		        	statements.add(sql);
+					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
+					statements.add(sql);
 		        	if (!dryrun) {
-						sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
 	                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 						database.execStatements(sql);
 	                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
@@ -1338,7 +1309,7 @@ public class RepositoryCreationHelper {
                     tableData.addValue(new ValueMeta(Repository.FIELD_LOGLEVEL_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
 
                     if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), "yyyy/MM/dd");
+		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), "yyyy/MM/dd HH:mm:ss");
 		            	statements.add(sql);
 					} else {
 						database.setValuesInsert(tableData.getRowMeta(), tableData.getData());
@@ -1729,7 +1700,7 @@ public class RepositoryCreationHelper {
                     tableData.addValue(new ValueMeta(Repository.FIELD_PROFILE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
 
                     if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), "yyyy/MM/dd");
+		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), "yyyy/MM/dd HH:mm:ss");
 		            	statements.add(sql);	
                     } else {
 						database.setValuesInsert(tableData);
@@ -1830,7 +1801,7 @@ public class RepositoryCreationHelper {
                     tableData.addValue(new ValueMeta(Repository.FIELD_USER_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.TRUE);
 
                     if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), "yyyy/MM/dd");
+		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), "yyyy/MM/dd HH:mm:ss");
 		            	statements.add(sql);	
                     } else {
 						database.setValuesInsert(tableData);
@@ -1914,7 +1885,7 @@ public class RepositoryCreationHelper {
                     tableData.addValue(new ValueMeta(Repository.FIELD_PERMISSION_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
 
                     if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), "yyyy/MM/dd");
+		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), "yyyy/MM/dd HH:mm:ss");
 		            	statements.add(sql);	
                     } else {
 						database.setValuesInsert(tableData);
@@ -2071,7 +2042,7 @@ public class RepositoryCreationHelper {
                     tableData.addValue(new ValueMeta(Repository.FIELD_PROFILE_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER), new Long(id_permission));
 
                     if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), "yyyy/MM/dd");
+		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), "yyyy/MM/dd HH:mm:ss");
 		            	statements.add(sql);	
                     } else {
 						database.setValuesInsert(tableData);
@@ -2113,7 +2084,7 @@ public class RepositoryCreationHelper {
 			for (int i = 0; i < stepLoader.nrStepsWithType(StepPlugin.TYPE_ALL); i++)
 			{
 				StepPlugin sp = stepLoader.getStepWithType(StepPlugin.TYPE_ALL, i);
-				long id = 0;
+				long id = -1;
 				if (!create) id = repository.getStepTypeID(sp.getID()[0]);
 				if (id < 0) // Not found, we need to add this one...
 				{
@@ -2128,7 +2099,7 @@ public class RepositoryCreationHelper {
 					table.addValue(new ValueMeta(Repository.FIELD_STEP_TYPE_HELPTEXT, ValueMetaInterface.TYPE_STRING), sp.getTooltip());
 	
 					if (dryrun) {
-		            	String sql = database.getSQLOutput(null, Repository.TABLE_R_STEP_TYPE, table.getRowMeta(), table.getData(), "yyyy/MM/dd");
+		            	String sql = database.getSQLOutput(null, Repository.TABLE_R_STEP_TYPE, table.getRowMeta(), table.getData(), "yyyy/MM/dd HH:mm:ss");
 		            	statements.add(sql);
 					} else {
 						database.prepareInsert(table.getRowMeta(), null, Repository.TABLE_R_STEP_TYPE);
@@ -2160,7 +2131,7 @@ public class RepositoryCreationHelper {
 	        {
 	            String type_desc = jobPlugins[i].getID();
 	            String type_desc_long = jobPlugins[i].getDescription();
-	            long id = 0;
+	            long id = -1;
 	            if (!create) id = repository.getJobEntryTypeID(type_desc);
 	            if (id < 0) // Not found, we need to add this one...
 	            {
@@ -2174,7 +2145,7 @@ public class RepositoryCreationHelper {
 	                table.addValue(new ValueMeta(Repository.FIELD_JOBENTRY_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), type_desc_long);
 	
 					if (dryrun) {
-		            	String sql = database.getSQLOutput(null, Repository.TABLE_R_JOBENTRY_TYPE, table.getRowMeta(), table.getData(), "yyyy/MM/dd");
+		            	String sql = database.getSQLOutput(null, Repository.TABLE_R_JOBENTRY_TYPE, table.getRowMeta(), table.getData(), "yyyy/MM/dd HH:mm:ss");
 		            	statements.add(sql);
 					} else {
 		                database.prepareInsert(table.getRowMeta(), null, Repository.TABLE_R_JOBENTRY_TYPE);
