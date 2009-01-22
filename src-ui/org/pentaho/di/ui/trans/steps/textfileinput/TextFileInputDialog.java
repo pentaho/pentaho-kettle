@@ -2025,6 +2025,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     	boolean accept = wAccFilenames.getSelection();
     	wlPassThruFields.setEnabled(accept);
     	wPassThruFields.setEnabled(accept);
+    	if(!wAccFilenames.getSelection()) wPassThruFields.setSelection(false);
     	wlAccField.setEnabled(accept);
     	wAccField.setEnabled(accept);
     	wlAccStep.setEnabled(accept);
