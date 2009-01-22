@@ -25,6 +25,7 @@ REM   KETTLE Library
 REM ******************
 
 set CLASSPATH=%CLASSPATH%;lib\kettle-core.jar
+set CLASSPATH=%CLASSPATH%;lib\kettle-db.jar
 set CLASSPATH=%CLASSPATH%;lib\kettle-engine.jar
 
 REM **********************
