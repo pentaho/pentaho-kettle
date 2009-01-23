@@ -16,6 +16,7 @@ package org.pentaho.di.core.database;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -243,15 +244,28 @@ public class DatabaseMetaInformation
 				ArrayList<Schema> schemaList = new ArrayList<Schema>();
 				try 
 				{
-					ResultSet schemaResultSet = dbmd.getSchemas();
-					while (schemaResultSet!=null && schemaResultSet.next())
-					{
-						String schemaName = schemaResultSet.getString(1);
-						schemaList.add(new Schema(schemaName));
+					// Support schemas for MS SQL server due to PDI-1531
+					if (dbInfo.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MSSQL) {
+						Statement schemaStatement = db.getConnection().createStatement();
+						ResultSet schemaResultSet = schemaStatement.executeQuery("select name from sys.schemas");
+						while (schemaResultSet!=null && schemaResultSet.next())
+						{
+							String schemaName = schemaResultSet.getString("name");
+							schemaList.add(new Schema(schemaName));
+						}
+						schemaResultSet.close();
+						schemaStatement.close();
+					} else {
+						ResultSet schemaResultSet = dbmd.getSchemas();
+						while (schemaResultSet!=null && schemaResultSet.next())
+						{
+							String schemaName = schemaResultSet.getString(1);
+							schemaList.add(new Schema(schemaName));
+						}
+						// Close the schema ResultSet immediately
+						//
+						schemaResultSet.close();
 					}
-					// Close the schema ResultSet immediately
-					//
-					schemaResultSet.close();
 						
 					for (Schema schema : schemaList) 
 					{
@@ -296,14 +310,24 @@ public class DatabaseMetaInformation
 	
 			if (monitor!=null && monitor.isCanceled()) return;
 			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.GettingTables"));
-			setTables(db.getTablenames());
+			if (dbInfo.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MSSQL) {
+				// Support schemas for MS SQL server due to PDI-1531
+				setTables(db.getTablenames(true));
+			} else {
+				setTables(db.getTablenames());
+			}
 			if (monitor!=null) monitor.worked(1);
 	
 			if (monitor!=null && monitor.isCanceled()) return;
 			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.GettingViews"));
 			if (dbInfo.supportsViews())
 			{
-				setViews(db.getViews());
+				if (dbInfo.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MSSQL) {
+					// Support schemas for MS SQL server due to PDI-1531
+					setViews(db.getViews(true));
+				} else {
+					setViews(db.getViews());
+				}
 			}
 			if (monitor!=null) monitor.worked(1);
 	
@@ -311,7 +335,12 @@ public class DatabaseMetaInformation
 			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.GettingSynonyms"));
 			if (dbInfo.supportsSynonyms())
 			{
-				setSynonyms(db.getSynonyms());
+				if (dbInfo.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MSSQL) {
+					// Support schemas for MS SQL server due to PDI-1531
+					setSynonyms(db.getSynonyms(true));
+				} else {
+					setSynonyms(db.getSynonyms());
+				}
 			}
 			if (monitor!=null) monitor.worked(1);
 		}

@@ -312,7 +312,7 @@ public class Database implements VariableSpace
 		}
 	}
 
-
+	
 	/**
 	 * Initialize by getting the connection from a javax.sql.DataSource. This method uses the
 	 * DataSourceProviderFactory to get the provider of DataSource objects.
@@ -335,7 +335,7 @@ public class Database implements VariableSpace
       throw new KettleDatabaseException( "Invalid JNDI connection "+ dataSourceName); //$NON-NLS-1$
     }
 	}
-	
+
 	/**
 	 * Connect using the correct classname 
 	 * @param classname for example "org.gjt.mm.mysql.Driver"
@@ -4097,9 +4097,26 @@ public class Database implements VariableSpace
 			alltables = getDatabaseMetaData().getTables(null, schemaname, null, databaseMeta.getTableTypes() );
 			while (alltables.next())
 			{
+				// due to PDI-743 with ODBC and MS SQL Server the order is changed and try/catch included for safety
+				String cat = "";
+				try {
+					cat = alltables.getString("TABLE_CAT");
+				} catch (Exception e) {
+					// ignore
+					if(log.isDebug()) log.logDebug(toString(), "Error getting tables for field TABLE_CAT (ignored): "+e.toString());
+				}
+				
+				String schema = "";
+				try {
+					schema = alltables.getString("TABLE_SCHEM");
+				} catch (Exception e) {
+					// ignore
+					if(log.isDebug()) log.logDebug(toString(), "Error getting tables for field TABLE_SCHEM (ignored): "+e.toString());
+				}
+				
+				if (Const.isEmpty(schema)) schema = cat;
+				
 				String table = alltables.getString("TABLE_NAME");
-				String schema = alltables.getString("TABLE_SCHEM");
-				if (Const.isEmpty(schema)) schema = alltables.getString("TABLE_CAT"); // retry for the catalog.
 				
 				String schemaTable;
 				if (includeSchema) schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
@@ -4149,9 +4166,26 @@ public class Database implements VariableSpace
 			alltables = dbmd.getTables(null, schemaname, null, databaseMeta.getViewTypes() );
 			while (alltables.next())
 			{
+				// due to PDI-743 with ODBC and MS SQL Server the order is changed and try/catch included for safety
+				String cat = "";
+				try {
+					cat = alltables.getString("TABLE_CAT");
+				} catch (Exception e) {
+					// ignore
+					if(log.isDebug()) log.logDebug(toString(), "Error getting views for field TABLE_CAT (ignored): "+e.toString());
+				}
+				
+				String schema = "";
+				try {
+					schema = alltables.getString("TABLE_SCHEM");
+				} catch (Exception e) {
+					// ignore
+					if(log.isDebug()) log.logDebug(toString(), "Error getting views for field TABLE_SCHEM (ignored): "+e.toString());
+				}
+				
+				if (Const.isEmpty(schema)) schema = cat;
+				
 				String table = alltables.getString("TABLE_NAME");
-				String schema = alltables.getString("TABLE_SCHEM");
-				if (Const.isEmpty(schema)) schema = alltables.getString("TABLE_CAT"); // retry for the catalog.
 				
 				String schemaTable;
 				if (includeSchema) schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
@@ -4184,7 +4218,7 @@ public class Database implements VariableSpace
 
 	public String[] getSynonyms() throws KettleDatabaseException
 	{
-		return getViews(false);
+		return getSynonyms(false);
 	}
 	
 	public String[] getSynonyms(boolean includeSchema) throws KettleDatabaseException
@@ -4201,9 +4235,26 @@ public class Database implements VariableSpace
 			alltables = dbmd.getTables(null, schemaname, null, databaseMeta.getSynonymTypes() );
 			while (alltables.next())
 			{
+				// due to PDI-743 with ODBC and MS SQL Server the order is changed and try/catch included for safety
+				String cat = "";
+				try {
+					cat = alltables.getString("TABLE_CAT");
+				} catch (Exception e) {
+					// ignore
+					if(log.isDebug()) log.logDebug(toString(), "Error getting synonyms for field TABLE_CAT (ignored): "+e.toString());
+				}
+				
+				String schema = "";
+				try {
+					schema = alltables.getString("TABLE_SCHEM");
+				} catch (Exception e) {
+					// ignore
+					if(log.isDebug()) log.logDebug(toString(), "Error getting synonyms for field TABLE_SCHEM (ignored): "+e.toString());
+				}
+				
+				if (Const.isEmpty(schema)) schema = cat;
+				
 				String table = alltables.getString("TABLE_NAME");
-				String schema = alltables.getString("TABLE_SCHEM");
-				if (Const.isEmpty(schema)) schema = alltables.getString("TABLE_CAT"); // retry for the catalog.
 				
 				String schemaTable;
 				if (includeSchema) schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
@@ -4311,7 +4362,7 @@ public class Database implements VariableSpace
     	// Quote table names too...
     	//
     	String[] quotedTableNames = new String[tableNames.length];
-    	for (int i=0;i<tableNames.length;i++) quotedTableNames[i] = databaseMeta.quoteField(tableNames[i]);
+    	for (int i=0;i<tableNames.length;i++) quotedTableNames[i] = databaseMeta.getQuotedSchemaTableCombination(null, tableNames[i]);
     	
     	// Get the SQL to lock the (quoted) tables
     	//
@@ -4334,7 +4385,7 @@ public class Database implements VariableSpace
     	// Quote table names too...
     	//
     	String[] quotedTableNames = new String[tableNames.length];
-    	for (int i=0;i<tableNames.length;i++) quotedTableNames[i] = databaseMeta.quoteField(tableNames[i]);
+    	for (int i=0;i<tableNames.length;i++) quotedTableNames[i] = databaseMeta.getQuotedSchemaTableCombination(null, tableNames[i]);
     	
     	// Get the SQL to unlock the (quoted) tables
     	//
@@ -4624,10 +4675,12 @@ public class Database implements VariableSpace
 		{
 			if (i>0) ins.append(",");
 			{
-				if (fields.getValueMeta(i).getType()==ValueMeta.TYPE_STRING)
+				switch(fields.getValueMeta(i).getType()) {
+				case ValueMetaInterface.TYPE_BOOLEAN:
+				case ValueMetaInterface.TYPE_STRING:
 					ins.append("'" + fields.getString(r,i) + "'") ;
-				else if (fields.getValueMeta(i).getType()==ValueMeta.TYPE_DATE)
-				{
+					break;
+				case ValueMetaInterface.TYPE_DATE:
 					if (Const.isEmpty(dateFormat))
 						ins.append("'" +  fields.getString(r,i)+ "'") ;
 					else
@@ -4642,11 +4695,11 @@ public class Database implements VariableSpace
 			                throw new KettleDatabaseException("Error : ", e);
 			            }
 					}
-				}
-				else
-				{
+					break;
+				default:
 					ins.append( fields.getString(r,i)) ;
-				}				
+					break;
+				}
 			}
 		}
 		ins.append(')');

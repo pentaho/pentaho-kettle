@@ -43,6 +43,10 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 		return "MS SQL Server";
 	}
 	
+	public boolean supportsCatalogs() {
+		return false;
+	}
+	
 	/**
 	 * @return Returns the databaseType.
 	 */
