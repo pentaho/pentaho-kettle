@@ -892,6 +892,13 @@ public class DatabaseExplorerDialog extends Dialog
 				{
                     schemaName = null;
 					tableName = table;
+ 					if (dbMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MSSQL) {
+ 						String st[] = tableName.split("\\.",2);
+ 						if (st.length>1) { // we have a dot in there and need to separate
+ 		                    schemaName = st[0];
+ 							tableName = st[1];
+						}
+ 					}
                     dispose();
 				}
             }

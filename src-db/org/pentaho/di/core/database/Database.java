@@ -4097,9 +4097,26 @@ public class Database implements VariableSpace
 			alltables = getDatabaseMetaData().getTables(null, schemaname, null, databaseMeta.getTableTypes() );
 			while (alltables.next())
 			{
+				// due to PDI-743 with ODBC and MS SQL Server the order is changed and try/catch included for safety
+				String cat = "";
+				try {
+					cat = alltables.getString("TABLE_CAT");
+				} catch (Exception e) {
+					// ignore
+					if(log.isDebug()) log.logDebug(toString(), "Error getting tables for field TABLE_CAT (ignored): "+e.toString());
+				}
+				
+				String schema = "";
+				try {
+					schema = alltables.getString("TABLE_SCHEM");
+				} catch (Exception e) {
+					// ignore
+					if(log.isDebug()) log.logDebug(toString(), "Error getting tables for field TABLE_SCHEM (ignored): "+e.toString());
+				}
+				
+				if (Const.isEmpty(schema)) schema = cat;
+				
 				String table = alltables.getString("TABLE_NAME");
-				String schema = alltables.getString("TABLE_SCHEM");
-				if (Const.isEmpty(schema)) schema = alltables.getString("TABLE_CAT"); // retry for the catalog.
 				
 				String schemaTable;
 				if (includeSchema) schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
@@ -4149,9 +4166,26 @@ public class Database implements VariableSpace
 			alltables = dbmd.getTables(null, schemaname, null, databaseMeta.getViewTypes() );
 			while (alltables.next())
 			{
+				// due to PDI-743 with ODBC and MS SQL Server the order is changed and try/catch included for safety
+				String cat = "";
+				try {
+					cat = alltables.getString("TABLE_CAT");
+				} catch (Exception e) {
+					// ignore
+					if(log.isDebug()) log.logDebug(toString(), "Error getting views for field TABLE_CAT (ignored): "+e.toString());
+				}
+				
+				String schema = "";
+				try {
+					schema = alltables.getString("TABLE_SCHEM");
+				} catch (Exception e) {
+					// ignore
+					if(log.isDebug()) log.logDebug(toString(), "Error getting views for field TABLE_SCHEM (ignored): "+e.toString());
+				}
+				
+				if (Const.isEmpty(schema)) schema = cat;
+				
 				String table = alltables.getString("TABLE_NAME");
-				String schema = alltables.getString("TABLE_SCHEM");
-				if (Const.isEmpty(schema)) schema = alltables.getString("TABLE_CAT"); // retry for the catalog.
 				
 				String schemaTable;
 				if (includeSchema) schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
@@ -4184,7 +4218,7 @@ public class Database implements VariableSpace
 
 	public String[] getSynonyms() throws KettleDatabaseException
 	{
-		return getViews(false);
+		return getSynonyms(false);
 	}
 	
 	public String[] getSynonyms(boolean includeSchema) throws KettleDatabaseException
@@ -4201,9 +4235,26 @@ public class Database implements VariableSpace
 			alltables = dbmd.getTables(null, schemaname, null, databaseMeta.getSynonymTypes() );
 			while (alltables.next())
 			{
+				// due to PDI-743 with ODBC and MS SQL Server the order is changed and try/catch included for safety
+				String cat = "";
+				try {
+					cat = alltables.getString("TABLE_CAT");
+				} catch (Exception e) {
+					// ignore
+					if(log.isDebug()) log.logDebug(toString(), "Error getting synonyms for field TABLE_CAT (ignored): "+e.toString());
+				}
+				
+				String schema = "";
+				try {
+					schema = alltables.getString("TABLE_SCHEM");
+				} catch (Exception e) {
+					// ignore
+					if(log.isDebug()) log.logDebug(toString(), "Error getting synonyms for field TABLE_SCHEM (ignored): "+e.toString());
+				}
+				
+				if (Const.isEmpty(schema)) schema = cat;
+				
 				String table = alltables.getString("TABLE_NAME");
-				String schema = alltables.getString("TABLE_SCHEM");
-				if (Const.isEmpty(schema)) schema = alltables.getString("TABLE_CAT"); // retry for the catalog.
 				
 				String schemaTable;
 				if (includeSchema) schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
