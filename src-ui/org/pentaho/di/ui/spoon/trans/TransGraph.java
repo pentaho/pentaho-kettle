@@ -2063,6 +2063,26 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     if (newTip == null) {
       toolTip.hide();
+      final TransHopMeta hi = findHop(x, y);
+      if (hi != null) // We clicked on a HOP!
+      {
+          // Set the tooltip for the hop:
+          newTip = Messages.getString("TransGraph.Dialog.HopInfo")+ Const.CR 
+          + Messages.getString("TransGraph.Dialog.HopInfo.SourceStep") + " " + hi.getFromStep().getName() + Const.CR 
+          + Messages.getString("TransGraph.Dialog.HopInfo.TargetStep") + " " + hi.getToStep().getName() + Const.CR  
+          + Messages.getString("TransGraph.Dialog.HopInfo.Status")+ " " + (hi.isEnabled()?Messages.getString("TransGraph.Dialog.HopInfo.Enable"):Messages.getString("TransGraph.Dialog.HopInfo.Disable")); 
+          toolTip.setText(newTip);
+          if(hi.isEnabled())
+        	  toolTip.setImage(GUIResource.getInstance().getImageHop());
+          else
+        	  toolTip.setImage(GUIResource.getInstance().getImageDisabledHop()); 
+          toolTip.show(new org.eclipse.swt.graphics.Point(screenX, screenY));
+      }
+      else
+      {
+          newTip = null;
+      }
+
     } else if (!newTip.equalsIgnoreCase(getToolTipText())) {
       if (tipImage != null) {
         toolTip.setImage(tipImage);

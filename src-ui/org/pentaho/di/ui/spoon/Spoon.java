@@ -4599,7 +4599,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						TransHopMeta hopMeta = transMeta.getTransHop(i);
 						TreeItem tiHop = new TreeItem(tiHopTitle, SWT.NONE);
 						tiHop.setText(hopMeta.toString());
-						tiHop.setImage(guiResource.getImageHop());
+						if(hopMeta.isEnabled())
+							tiHop.setImage(guiResource.getImageHop());
+						else
+							tiHop.setImage(guiResource.getImageDisabledHop());
 					}
 
 					// /////////////////////////////////////////////////////

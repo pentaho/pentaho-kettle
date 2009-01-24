@@ -133,6 +133,8 @@ public class GUIResource
 	private Map<String, Image> imagesJobentriesSmall;
 
 	private Image imageHop;
+	
+	private Image imageDisabledHop;
 
 	private Image imageConnection;
 	
@@ -298,7 +300,7 @@ public class GUIResource
 		colorWhite = new ManagedColor(display, 255, 255, 255);
 		colorDemoGray = new ManagedColor(display, 240, 240, 240);
 		colorLightGray = new ManagedColor(display, 225, 225, 225);
-		colorGray = new ManagedColor(display, 150, 150, 150);
+		colorGray = new ManagedColor(display, 215, 215, 215);//150, 150, 150);
 		colorDarkGray = new ManagedColor(display, 100, 100, 100);
 		colorBlack = new ManagedColor(display, 0, 0, 0);
 
@@ -356,6 +358,7 @@ public class GUIResource
 
 			// Common images
 			imageHop.dispose();
+			imageDisabledHop.dispose();
 			imageConnection.dispose();
 			imageTable.dispose();
 			imageSchema.dispose();
@@ -545,6 +548,8 @@ public class GUIResource
 		imageHop = ImageUtil.getImageAsResource(display,BasePropertyHandler.getProperty("HOP_image")); // "ui/images/HOP.png"
 		imageConnection = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CNC_image")); // , "ui/images/CNC.png"
 		
+		imageDisabledHop=ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display,
+				BasePropertyHandler.getProperty("Disabled_HOP_image")), new RGB(255, 255, 255));
 		
 		imageTable = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Table_image")); // , "ui/images/table.png"
 		imageSchema = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Schema_image")); // , "ui/images/schema.png"
@@ -992,6 +997,13 @@ public class GUIResource
 	public Image getImageHop()
 	{
 		return imageHop;
+	}
+	/**
+	 * @return Returns the imageDisabledHop.
+	 */
+	public Image getImageDisabledHop()
+	{
+		return imageDisabledHop;
 	}
 
 	/**
