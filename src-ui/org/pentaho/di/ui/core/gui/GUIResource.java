@@ -300,7 +300,7 @@ public class GUIResource
 		colorWhite = new ManagedColor(display, 255, 255, 255);
 		colorDemoGray = new ManagedColor(display, 240, 240, 240);
 		colorLightGray = new ManagedColor(display, 225, 225, 225);
-		colorGray = new ManagedColor(display, 215, 215, 215);//150, 150, 150);
+		colorGray = new ManagedColor(display, 215, 215, 215);
 		colorDarkGray = new ManagedColor(display, 100, 100, 100);
 		colorBlack = new ManagedColor(display, 0, 0, 0);
 
