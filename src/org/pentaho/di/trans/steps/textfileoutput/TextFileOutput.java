@@ -749,7 +749,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					}
 
 					data.oneFileOpened=true;
-					initBinaryDataFields();
 					return true;
 				}	
 				catch(Exception e)
@@ -759,6 +758,16 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					stopAll();
 				}
 			}
+
+			try {
+				initBinaryDataFields();
+			} catch(Exception e)
+			{
+				logError("Couldn't initialize binary data fields", e);
+				setErrors(1L);
+				stopAll();
+			}
+
 			return true;
 		}
 	
