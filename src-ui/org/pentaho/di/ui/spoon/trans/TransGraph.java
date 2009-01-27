@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -2846,6 +2847,15 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
             transMeta.injectVariables(executionConfiguration.getVariables());
             
+            // Set the named parameters
+            Map<String, String> paramMap = executionConfiguration.getParams();
+            Set<String> keys = paramMap.keySet();
+            for ( String key : keys )  {
+            	transMeta.setParameterValue(key, Const.NVL(paramMap.get(key), ""));
+            }
+            
+            transMeta.activateParameters();
+            
             // Do we need to clear the log before running?
             //
             if (executionConfiguration.isClearingLog()) {
@@ -2955,6 +2965,15 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           args = convertArguments(arguments);
         }
         transMeta.injectVariables(executionConfiguration.getVariables());
+        
+        // Set the named parameters
+        Map<String, String> paramMap = executionConfiguration.getParams();
+        Set<String> keys = paramMap.keySet();
+        for ( String key : keys )  {
+        	transMeta.setParameterValue(key, Const.NVL(paramMap.get(key), ""));
+        }
+        
+        transMeta.activateParameters();        
 
         // Do we need to clear the log before running?
         //

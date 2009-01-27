@@ -27,6 +27,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.NamedParams;
+import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobEntryLoader;
@@ -64,6 +66,7 @@ public class Pan
 		// The options: 
 		StringBuffer optionRepname, optionUsername, optionPassword, optionTransname, optionDirname, optionFilename, optionLoglevel;
 		StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode, optionVersion, optionJarFilename;
+		NamedParams optionParams = new NamedParamsDefault();
         
 		CommandLineOption options[] = new CommandLineOption[] 
             {
@@ -84,6 +87,7 @@ public class Pan
 		        new CommandLineOption("safemode", Messages.getString("Pan.ComdLine.SafeMode"), optionSafemode=new StringBuffer(), true, false),
                 new CommandLineOption("version", Messages.getString("Pan.ComdLine.Version"), optionVersion=new StringBuffer(), true, false),
                 new CommandLineOption("jarfile", Messages.getString("Pan.ComdLine.JarFile") , optionJarFilename=new StringBuffer(), false, true),
+                new CommandLineOption("param", Messages.getString("Pan.ComdLine.Param") , optionParams, true),
             };
 
 		if (args.size()==0 ) 
@@ -143,7 +147,8 @@ public class Pan
         /////////////////////////////////////////////////////////////////////////////////////////////////////
         // This is where the action starts.
         // Print the options before we start processing when running in Debug or Rowlevel
-        // 
+        //
+        // TODO: include the named parameters        
         if (log.isDebug())
         {
 		    System.out.println("Arguments:");
@@ -157,8 +162,7 @@ public class Pan
         /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        log.logMinimal("Pan", Messages.getString("Pan.Log.StartingToRun"));
-        
+        log.logMinimal("Pan", Messages.getString("Pan.Log.StartingToRun"));       
 		
 		/* Load the plugins etc.*/
 		try {
@@ -364,14 +368,12 @@ public class Pan
 					for (int i=0;i<ri.nrRepositories();i++)
 					{
 						RepositoryMeta rinfo = ri.getRepository(i);
-						System.out.println(Messages.getString("Pan.Log.RepNameDesc",""+(i+1),rinfo.getName(),rinfo.getDescription()));
-						
+						System.out.println(Messages.getString("Pan.Log.RepNameDesc",""+(i+1),rinfo.getName(),rinfo.getDescription()));					
 					}
 				}
 				else
 				{
-					System.out.println(Messages.getString("Pan.Error.UnableReadXML"));
-					
+					System.out.println(Messages.getString("Pan.Error.UnableReadXML"));					
 				}
 			}
 		}
@@ -408,6 +410,19 @@ public class Pan
 		{
 			trans.initializeVariablesFrom(null);
 			trans.getTransMeta().setInternalKettleVariables(trans);
+			
+			// Map the command line named parameters to the actual named parameters. Skip for
+			// the moment any extra command line parameter not known in the transformation.
+			String[] transParams = trans.listParameters();
+			for ( String param : transParams )  {
+				String value = optionParams.getParameterValue(param);
+				if ( value != null )  {
+					trans.setParameterValue(param, value);
+				}
+			}
+			// Put the parameters over the already defined variable space. Parameters
+			// get priority.
+			trans.activateParameters();
 			
 			// See if we want to run in safe mode:
 			if ("Y".equalsIgnoreCase(optionSafemode.toString()))

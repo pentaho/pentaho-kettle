@@ -61,7 +61,6 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.dialog.Messages;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -82,14 +81,14 @@ import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 public class TransDialog extends Dialog
 {
 
-  public static enum Tabs {TRANS_TAB, LOG_TAB, DATE_TAB, DEP_TAB, MISC_TAB, PART_TAB, MONITOR_TAB};
+  public static enum Tabs {TRANS_TAB, PARAM_TAB, LOG_TAB, DATE_TAB, DEP_TAB, MISC_TAB, PART_TAB, MONITOR_TAB};
   
   private LogWriter    log;
 	
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wTransTab, wLogTab, wDateTab, wDepTab, wMiscTab, wPartTab, wMonitorTab;
+	private CTabItem     wTransTab, wParamTab, wLogTab, wDateTab, wDepTab, wMiscTab, wPartTab, wMonitorTab;
 
 	private Text         wTransname;
 
@@ -139,6 +138,8 @@ public class TransDialog extends Dialog
 	private Text         wMaxdatediff;
 	
 	private TableView    wFields;
+	
+	private TableView    wParamFields;
 
 	private Text         wSizeRowset;
     private Button       wUniqueConnections;
@@ -258,6 +259,7 @@ public class TransDialog extends Dialog
  		wTabFolder.setSimple(false);
 
  		addTransTab();
+ 		addParamTab();
 		addLogTab();
 		addDateTab();
 		addDepTab();
@@ -619,6 +621,68 @@ public class TransDialog extends Dialog
         /////////////////////////////////////////////////////////////
     }
 
+    private void addParamTab()
+    {
+        //////////////////////////
+        // START OF PARAM TAB
+        ///
+        wParamTab=new CTabItem(wTabFolder, SWT.NONE);
+        wParamTab.setText(Messages.getString("TransDialog.ParamTab.Label")); //$NON-NLS-1$
+
+        FormLayout paramLayout = new FormLayout ();
+        paramLayout.marginWidth  = Const.MARGIN;
+        paramLayout.marginHeight = Const.MARGIN;
+        
+        Composite wParamComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wParamComp);
+        wParamComp.setLayout(paramLayout);
+
+        Label wlFields = new Label(wParamComp, SWT.RIGHT);
+        wlFields.setText(Messages.getString("TransDialog.Parameters.Label")); //$NON-NLS-1$
+        props.setLook(wlFields);
+        FormData fdlFields = new FormData();
+        fdlFields.left = new FormAttachment(0, 0);
+        fdlFields.top  = new FormAttachment(0, 0);
+        wlFields.setLayoutData(fdlFields);
+        
+        final int FieldsCols=2;
+        final int FieldsRows=10;  // TODO get the real number of parameters?
+        
+        ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
+        colinf[0]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        colinf[1]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Description.Label"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        //colinf[2]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Field.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        
+        wParamFields=new TableView(transMeta, wParamComp, 
+                              SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
+                              colinf, 
+                              FieldsRows,  
+                              lsMod,
+                              props
+                              );
+       
+        FormData fdFields = new FormData();
+        fdFields.left  = new FormAttachment(0, 0);
+        fdFields.top   = new FormAttachment(wlFields, margin);
+        fdFields.right = new FormAttachment(100, 0);
+        fdFields.bottom= new FormAttachment(100, 0);
+        wParamFields.setLayoutData(fdFields);
+
+        FormData fdDepComp = new FormData();
+        fdDepComp.left  = new FormAttachment(0, 0);
+        fdDepComp.top   = new FormAttachment(0, 0);
+        fdDepComp.right = new FormAttachment(100, 0);
+        fdDepComp.bottom= new FormAttachment(100, 0);
+        wParamComp.setLayoutData(fdDepComp);
+        
+        wParamComp.layout();
+        wParamTab.setControl(wParamComp);
+
+        /////////////////////////////////////////////////////////////
+        /// END OF PARAM TAB
+        /////////////////////////////////////////////////////////////
+   }	
+	
     private void addLogTab()
     {
         //////////////////////////
@@ -1579,7 +1643,8 @@ public class TransDialog extends Dialog
 		if (transMeta.getMaxDateField()!=null)      wMaxdatefield.setText     ( transMeta.getMaxDateField());
 		wMaxdateoffset.setText(Double.toString(transMeta.getMaxDateOffset()));
 		wMaxdatediff.setText(Double.toString(transMeta.getMaxDateDifference()));
-		
+
+		// The dependencies
 		for (int i=0;i<transMeta.nrDependencies();i++)
 		{
 			TableItem item = wFields.table.getItem(i);
@@ -1592,7 +1657,19 @@ public class TransDialog extends Dialog
 			if (table!=null) item.setText(2, table);
 			if (field!=null) item.setText(3, field);
 		}
-		
+
+		// The named parameters
+		String[] parameters = transMeta.listParameters();
+		for (int idx=0;idx<parameters.length;idx++)
+		{
+			TableItem item = wParamFields.table.getItem(idx);
+			
+			String description = transMeta.getParameterDescription(parameters[idx]);
+						
+			item.setText(1, parameters[idx]);
+			item.setText(2, Const.NVL(description, ""));
+		}
+				
 		wSizeRowset.setText(Integer.toString(transMeta.getSizeRowset()));
 		wUniqueConnections.setSelection(transMeta.isUsingUniqueConnections());
 		wShowFeedback.setSelection(transMeta.isFeedbackShown());
@@ -1602,6 +1679,9 @@ public class TransDialog extends Dialog
         
 		wFields.setRowNums();
 		wFields.optWidth(true);
+		
+		wParamFields.setRowNums();
+		wParamFields.optWidth(true);
         
         // The partitions?
         for (PartitionSchema schema : schemas)
@@ -1741,8 +1821,8 @@ public class TransDialog extends Dialog
 			OK=false;
 		}
 		
+		// Clear and add current dependencies
 		transMeta.removeAllDependencies();
-		
     	int nrNonEmptyFields = wFields.nrNonEmpty(); 
 		for (int i=0;i<nrNonEmptyFields;i++)
 		{
@@ -1754,6 +1834,16 @@ public class TransDialog extends Dialog
 			TransDependency td = new TransDependency(db, tablename, fieldname);
 			transMeta.addDependency(td);
 		}
+		
+		// Clear and add parameters
+		transMeta.clearValues();
+    	nrNonEmptyFields = wParamFields.nrNonEmpty(); 
+		for (int i=0;i<nrNonEmptyFields;i++)
+		{
+			TableItem item = wParamFields.getNonEmpty(i);
+
+			transMeta.addParameterDefinition(item.getText(1), item.getText(2));
+		}		
 		
 		transMeta.setSizeRowset( Const.toInt( wSizeRowset.getText(), Const.ROWS_IN_ROWSET) );
 		transMeta.setUsingUniqueConnections( wUniqueConnections.getSelection() );
@@ -1972,6 +2062,9 @@ public class TransDialog extends Dialog
 	    case TRANS_TAB:
 	      wTabFolder.setSelection(wTransTab);
 	      break;
+	    case PARAM_TAB:
+	        wTabFolder.setSelection(wParamTab);
+	        break;	      
       case PART_TAB:
         wTabFolder.setSelection(wPartTab);
         break;
@@ -1990,8 +2083,6 @@ public class TransDialog extends Dialog
       case MONITOR_TAB:
         wTabFolder.setSelection(wMonitorTab);
         break;
-	  
-	    
 	  }
 	}
 }

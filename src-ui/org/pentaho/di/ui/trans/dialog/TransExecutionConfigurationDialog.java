@@ -78,6 +78,8 @@ public class TransExecutionConfigurationDialog extends Dialog
     private Text wReplayDate;
     private TableView wArguments;
     private Label wlArguments;
+    private TableView wParams;
+    private Label wlParams;
     private Label wlVariables;
     private TableView wVariables;
     private Label wlReplayDate;
@@ -93,6 +95,14 @@ public class TransExecutionConfigurationDialog extends Dialog
         this.parent = parent;
         this.configuration = configuration;
         this.transMeta  = transMeta;
+        
+        // Fill the parameters, maybe do this in another place?
+        Map<String, String> params = configuration.getParams();
+        params.clear();
+        String[] paramNames = transMeta.listParameters();
+        for ( String name : paramNames ) {
+        	params.put(name, "");
+        }
                 
         props = PropsUI.getInstance();
     }
@@ -321,7 +331,30 @@ public class TransExecutionConfigurationDialog extends Dialog
         fdReplayDate.top    = new FormAttachment(wLogLevel, margin);
         wReplayDate.setLayoutData(fdReplayDate);
 
+        // Named parameters
+        wlParams = new Label(shell, SWT.LEFT);
+        props.setLook(wlParams);
+        wlParams.setText(Messages.getString("TransExecutionConfigurationDialog.Params.Label")); //$NON-NLS-1$
+        wlParams.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.Params.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        FormData fdlParams = new FormData();
+        fdlParams.left   = new FormAttachment(0, 0);
+        fdlParams.right  = new FormAttachment(50, -margin);
+        fdlParams.top    = new FormAttachment(gDetails, margin*2);
+        wlParams.setLayoutData(fdlParams);
 
+        ColumnInfo[] cParams = {
+            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.ArgumentsColumn.Argument"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
+            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.ArgumentsColumn.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
+          };
+              
+        String[] namedParams = transMeta.listParameters();
+        int nrParams = namedParams.length; 
+        wParams = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cParams, nrParams, true, null, props);
+        FormData fdParams = new FormData();
+        fdParams.left   = new FormAttachment(0, 0);
+        fdParams.right  = new FormAttachment(50, -margin);
+        fdParams.top    = new FormAttachment(wlParams, margin);        
+        wParams.setLayoutData(fdParams);        
         
         // Arguments
         wlArguments = new Label(shell, SWT.LEFT);
@@ -331,7 +364,8 @@ public class TransExecutionConfigurationDialog extends Dialog
         FormData fdlArguments = new FormData();
         fdlArguments.left   = new FormAttachment(0, 0);
         fdlArguments.right  = new FormAttachment(50, -margin);
-        fdlArguments.top    = new FormAttachment(gDetails, margin*2);
+        fdlArguments.top    = new FormAttachment(wParams, margin*2);
+        //fdlArguments.bottom = new FormAttachment(wOK, -margin*2);
         wlArguments.setLayoutData(fdlArguments);
 
         ColumnInfo[] cArguments = {
@@ -348,6 +382,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         fdArguments.bottom = new FormAttachment(wOK, -margin*2);
         wArguments.setLayoutData(fdArguments);
 
+        
         // Variables
         wlVariables = new Label(shell, SWT.LEFT);
         props.setLook(wlVariables);
@@ -369,7 +404,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         FormData fdVariables = new FormData();
         fdVariables.left   = new FormAttachment(50, margin);
         fdVariables.right  = new FormAttachment(100, 0);
-        fdVariables.top    = new FormAttachment(wlVariables, margin);
+        fdVariables.top    = new FormAttachment(wlParams, margin);
         fdVariables.bottom = new FormAttachment(wOK, -margin*2);
         wVariables.setLayoutData(fdVariables);
         
@@ -383,12 +418,34 @@ public class TransExecutionConfigurationDialog extends Dialog
         shell.open();
         while (!shell.isDisposed())
         {
-            if (!display.readAndDispatch()) display.sleep();
+            if (!display.readAndDispatch())  {
+            	display.sleep();
+            }
         }
         
         return retval;
     }
 
+    private void getParamsData()
+    {
+        wParams.clearAll(false);
+        List<String> paramNames = new ArrayList<String>( configuration.getParams().keySet() );
+        Collections.sort(paramNames);
+        
+        for (int i=0;i<paramNames.size();i++)
+        {
+        	String paramName = paramNames.get(i);
+        	String paramValue = configuration.getParams().get(paramName);
+        	
+            TableItem tableItem = new TableItem(wParams.table, SWT.NONE);
+            tableItem.setText(1, paramName);
+            tableItem.setText(2, Const.NVL(paramValue, ""));
+        }
+        wParams.removeEmptyRows();
+        wParams.setRowNums();
+        wParams.optWidth(true);
+    }    
+    
     private void getVariablesData()
     {
         wVariables.clearAll(false);
@@ -402,7 +459,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         	
             TableItem tableItem = new TableItem(wVariables.table, SWT.NONE);
             tableItem.setText(1, variableName);
-            tableItem.setText(2, Const.NVL(variableValue, ""));;
+            tableItem.setText(2, Const.NVL(variableValue, ""));
         }
         wVariables.removeEmptyRows();
         wVariables.setRowNums();
@@ -448,6 +505,7 @@ public class TransExecutionConfigurationDialog extends Dialog
     		// OSX bug workaround.
     		//
     		wVariables.applyOSXChanges();
+    		wParams.applyOSXChanges();
     		wArguments.applyOSXChanges();
     	}
         getInfo();
@@ -471,6 +529,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         if (logIndex>=0) wLogLevel.select( logIndex );
         else wLogLevel.setText(LogWriter.getInstance().getLogLevelLongDesc());
         if (configuration.getReplayDate()!=null) wReplayDate.setText(simpleDateFormat.format(configuration.getReplayDate()));
+        getParamsData();
         getArgumentsData();
         getVariablesData();
         
@@ -514,6 +573,7 @@ public class TransExecutionConfigurationDialog extends Dialog
             configuration.setLogLevel( LogWriter.getLogLevel(wLogLevel.getText()) );
             
             // The lower part of the dialog...
+            getInfoParameters();
             getInfoVariables();
             getInfoArguments();
         }
@@ -522,7 +582,28 @@ public class TransExecutionConfigurationDialog extends Dialog
             new ErrorDialog(shell, "Error in settings", "There is an error in the dialog settings", e);
         }
     }
-    
+
+    /**
+     * Get the parameters from the dialog.
+     */
+    private void getInfoParameters()
+    {
+        Map<String,String> map = new HashMap<String, String>();
+    	int nrNonEmptyVariables = wParams.nrNonEmpty(); 
+        for (int i=0;i<nrNonEmptyVariables;i++)
+        {
+            TableItem tableItem = wParams.getNonEmpty(i);
+            String paramName = tableItem.getText(1);
+            String paramValue = tableItem.getText(2);
+            
+            if (!Const.isEmpty(paramName))
+            {
+                map.put(paramName, paramValue);
+            }
+        }
+        configuration.setParams(map);
+    }
+        
     private void getInfoVariables()
     {
         Map<String,String> map = new HashMap<String, String>();
@@ -584,8 +665,6 @@ public class TransExecutionConfigurationDialog extends Dialog
         wShowTransformations.setEnabled(enableCluster);
     }
 
-    
-    
     /**
      * @return the configuration
      */
@@ -601,5 +680,4 @@ public class TransExecutionConfigurationDialog extends Dialog
     {
         this.configuration = configuration;
     }
-
 }

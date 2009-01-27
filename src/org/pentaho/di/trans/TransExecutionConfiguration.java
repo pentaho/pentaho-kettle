@@ -56,6 +56,7 @@ public class TransExecutionConfiguration implements Cloneable
     private boolean     clusterShowingTransformation;
     
     private Map<String, String> arguments;
+    private Map<String, String> params;
     private Map<String, String> variables;
     
     private Date     replayDate;
@@ -78,6 +79,7 @@ public class TransExecutionConfiguration implements Cloneable
         clusterShowingTransformation = false;
         
         arguments = new HashMap<String, String>();
+        params = new HashMap<String, String>();
         variables = new HashMap<String, String>();
         
         transDebugMeta = null;
@@ -92,6 +94,9 @@ public class TransExecutionConfiguration implements Cloneable
         try
         {
             TransExecutionConfiguration configuration = (TransExecutionConfiguration) super.clone();
+
+            configuration.params = new HashMap<String, String>();
+            configuration.params.putAll(params);            
             
             configuration.arguments = new HashMap<String, String>();
             configuration.arguments.putAll(arguments);
@@ -122,7 +127,31 @@ public class TransExecutionConfiguration implements Cloneable
     {
         this.arguments = arguments;
     }
+
+    /**
+     * @return the parameters
+     */
+    public Map<String, String> getParms()
+    {
+        return params;
+    }
+
+    /**
+     * @param params the parameters to set
+     */
+    public void setParams(Map<String, String> params)
+    {
+        this.params = params;
+    }    
     
+    /**
+     * @return the parameters.
+     */
+    public Map<String, String> getParams()
+    {
+        return params;
+    }
+
     /**
      * @param arguments the arguments to set
      */
@@ -447,6 +476,20 @@ public class TransExecutionConfiguration implements Cloneable
         xml.append("    ").append(XMLHandler.addTagValue("cluster_start", clusterStarting));
         xml.append("    ").append(XMLHandler.addTagValue("cluster_show_trans", clusterShowingTransformation));
 
+        // Serialize the parameters...
+        //
+        xml.append("    <parameters>").append(Const.CR);
+        List<String> paramNames = new ArrayList<String>(params.keySet());
+        Collections.sort(paramNames);
+        for (String name : paramNames) {
+        	String value = params.get(name);
+        	xml.append("    <parameter>");
+        	xml.append(XMLHandler.addTagValue("name", name, false));
+        	xml.append(XMLHandler.addTagValue("value", value, false));
+        	xml.append("</parameter>").append(Const.CR);
+        }
+        xml.append("    </parameters>").append(Const.CR);        
+        
         // Serialize the variables...
         //
         xml.append("    <variables>").append(Const.CR);
@@ -550,6 +593,20 @@ public class TransExecutionConfiguration implements Cloneable
         		arguments.put(name, value);
         	}
         }
+        
+        // Read the parameters...
+        //
+        Node parmsNode = XMLHandler.getSubNode(trecNode, "parameters");
+        int nrParams = XMLHandler.countNodes(argsNode, "parameter");
+        for (int i=0;i<nrParams;i++) {
+        	Node parmNode = XMLHandler.getSubNodeByNr(parmsNode, "parameter", i);
+        	String name = XMLHandler.getTagValue(parmNode, "name");
+        	String value = XMLHandler.getTagValue(parmNode, "value");
+        	if (!Const.isEmpty(name) ) {
+        		params.put(name, value);
+        	}
+        }
+        
         
         // IMPORTANT: remote preview and remote debugging is NOT yet supported.
         //

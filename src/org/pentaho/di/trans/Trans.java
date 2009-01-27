@@ -39,6 +39,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.NamedParams;
+import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -77,7 +79,7 @@ import org.pentaho.di.www.WebResult;
  * @since 07-04-2003
  *
  */
-public class Trans implements VariableSpace
+public class Trans implements VariableSpace, NamedParams
 {
     public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss"; //$NON-NLS-1$
     
@@ -171,6 +173,8 @@ public class Trans implements VariableSpace
     
     private int nrOfFinishedSteps;
     
+    private NamedParams namedParams = new NamedParamsDefault();
+    
 	/**
 	 * Initialize a transformation from transformation meta-data defined in memory
 	 * @param transMeta the transformation meta-data to use.
@@ -182,6 +186,7 @@ public class Trans implements VariableSpace
 		if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
 		if (log.isDebug()) log.logDebug(toString(), Messages.getString("Trans.Log.NumberOfStepsToRun",String.valueOf(transMeta.nrSteps()) ,String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
 		initializeVariablesFrom(transMeta);
+		copyParametersFrom(transMeta);
 		
         // This is needed for e.g. database 'unique' connections.
         threadName = Thread.currentThread().getName();
@@ -221,6 +226,7 @@ public class Trans implements VariableSpace
 			}
 			
 			initializeVariablesFrom(parentVariableSpace);
+			copyParametersFrom(transMeta);
 			
 	        // This is needed for e.g. database 'unique' connections.
 	        threadName = Thread.currentThread().getName();			
@@ -648,8 +654,8 @@ public class Trans implements VariableSpace
 					public void stepFinished(Trans trans, StepMeta stepMeta, StepInterface step) {
 						synchronized (Trans.this) {
 							nrOfFinishedSteps++;
-							
-							if (nrOfFinishedSteps>=steps.size()) {
+													
+							if (nrOfFinishedSteps>=steps.size()) {						
 								// Set the finished flag
 								//
 								finished.set(true);
@@ -2806,5 +2812,42 @@ public class Trans implements VariableSpace
             errors+=1;
             log.logError(transName, "Unable to contact slave server '"+remoteSlaveServer.getName()+"' to clean up transformation : "+e.toString());
         }
+	}
+
+	public void addParameterDefinition(String key, String description) {
+		namedParams.addParameterDefinition(key, description);		
+	}
+
+	public String getParameterDescription(String key) {
+		return namedParams.getParameterDescription(key);
+	}
+
+	public String getParameterValue(String key) {
+		return namedParams.getParameterValue(key);
+	}
+
+	public String[] listParameters() {
+		return namedParams.listParameters();
+	}
+
+	public void setParameterValue(String key, String value) {
+		namedParams.setParameterValue(key, value);
+	}
+
+	public void clearValues() {
+		namedParams.clearValues();		
+	}
+
+	public void activateParameters() {
+		String[] keys = listParameters();
+		
+		for ( String key : keys )  {
+			String value = getParameterValue(key);
+			setVariable(key, value);
+		}		 		
+	}
+
+	public void copyParametersFrom(NamedParams params) {
+		namedParams.copyParametersFrom(params);
 	}
 }

@@ -54,6 +54,8 @@ import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.NamedParams;
+import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
 import org.pentaho.di.core.row.RowMeta;
@@ -91,12 +93,12 @@ import org.w3c.dom.Node;
  * from XML or a PDI database repository.
  *
  * @since 20-jun-2003
- * @author Matt
+ * @author Matt Casters
  */
 public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>, 
 								  Cloneable, UndoInterface, 
 								  HasDatabasesInterface, VariableSpace, EngineMetaInterface, 
-								  ResourceExportInterface, HasSlaveServersInterface
+								  ResourceExportInterface, HasSlaveServersInterface, NamedParams
 {
     public static final String XML_TAG = "transformation";
         
@@ -232,6 +234,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     private List<NameChangedListener> nameChangedListeners;
     private List<FilenameChangedListener> filenameChangedListeners;
     
+    private NamedParams namedParams = new NamedParamsDefault();
+    
     // //////////////////////////////////////////////////////////////////////////
 
     public static final int     TYPE_UNDO_CHANGE   = 1;
@@ -247,13 +251,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     private static final String XML_TAG_INFO                = "info";
     private static final String XML_TAG_ORDER               = "order";
     public  static final String XML_TAG_NOTEPADS            = "notepads";
+    public  static final String XML_TAG_PARAMETERS          = "parameters";
     private static final String XML_TAG_DEPENDENCIES        = "dependencies";
     public  static final String XML_TAG_PARTITIONSCHEMAS    = "partitionschemas";
     public  static final String XML_TAG_SLAVESERVERS        = "slaveservers";
     public  static final String XML_TAG_CLUSTERSCHEMAS      = "clusterschemas";
     private static final String XML_TAG_STEP_ERROR_HANDLING = "step_error_handling";
-
-    
     
     /**
      * Builds a new empty transformation.
@@ -2608,6 +2611,22 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		    retval.append("    ").append(XMLHandler.addTagValue("trans_status", trans_status));
 		}
         retval.append("    ").append(XMLHandler.addTagValue("directory", directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR)); //$NON-NLS-1$ //$NON-NLS-2$
+
+        retval.append("    ").append(XMLHandler.openTag(XML_TAG_PARAMETERS)).append(Const.CR); //$NON-NLS-1$
+        String[] parameters = listParameters();
+        for (int idx = 0; idx < parameters.length; idx++)
+        {
+        	retval.append("        ").append(XMLHandler.openTag("parameter")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+        	retval.append("            ").append(XMLHandler.openTag("name")); //$NON-NLS-1$
+        	retval.append(parameters[idx]);
+        	retval.append(XMLHandler.closeTag("name")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+        	retval.append("            ").append(XMLHandler.openTag("description")); //$NON-NLS-1$
+        	retval.append(getParameterDescription(parameters[idx]));
+        	retval.append(XMLHandler.closeTag("description")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+        	retval.append("        ").append(XMLHandler.closeTag("parameter")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
+        }        
+        retval.append("    ").append(XMLHandler.closeTag(XML_TAG_PARAMETERS)).append(Const.CR); //$NON-NLS-1$
+        
         retval.append("    <log>").append(Const.CR); //$NON-NLS-1$
         retval.append("      ").append(XMLHandler.addTagValue("read", readStep == null ? "" : readStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         retval.append("      ").append(XMLHandler.addTagValue("write", writeStep == null ? "" : writeStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -2683,14 +2702,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             retval.append(clusterSchema.getXML());
         }
         retval.append("    ").append(XMLHandler.closeTag(XML_TAG_CLUSTERSCHEMAS)).append(Const.CR); //$NON-NLS-1$
-
         
         retval.append("  ").append(XMLHandler.addTagValue("modified_user", modifiedUser));
         retval.append("  ").append(XMLHandler.addTagValue("modified_date", modifiedDate));
 
         retval.append("  ").append(XMLHandler.closeTag(XML_TAG_INFO)).append(Const.CR); //$NON-NLS-1$
-        
-        
         
         
         retval.append("  ").append(XMLHandler.openTag(XML_TAG_NOTEPADS)).append(Const.CR); //$NON-NLS-1$
@@ -3119,12 +3135,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             // We calculate BEFORE we run the MAX of these dates
             // If the date is larger then enddate, startdate is set to MIN_DATE
             //
-            Node depsNode = XMLHandler.getSubNode(infonode, XML_TAG_DEPENDENCIES); //$NON-NLS-1$
-            int nrDeps = XMLHandler.countNodes(depsNode, TransDependency.XML_TAG); //$NON-NLS-1$
+            Node depsNode = XMLHandler.getSubNode(infonode, XML_TAG_DEPENDENCIES);
+            int nrDeps = XMLHandler.countNodes(depsNode, TransDependency.XML_TAG);
 
             for (int i = 0; i < nrDeps; i++)
             {
-                Node depNode = XMLHandler.getSubNodeByNr(depsNode, TransDependency.XML_TAG, i); //$NON-NLS-1$
+                Node depNode = XMLHandler.getSubNodeByNr(depsNode, TransDependency.XML_TAG, i);
 
                 TransDependency transDependency = new TransDependency(depNode, databases);
                 if (transDependency.getDatabase() != null && transDependency.getFieldname() != null)
@@ -3132,6 +3148,20 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                     addDependency(transDependency);
                 }
             }
+
+            // Read the named parameters.
+            Node paramsNode = XMLHandler.getSubNode(infonode, XML_TAG_PARAMETERS);
+            int nrParams = XMLHandler.countNodes(paramsNode, "parameter"); //$NON-NLS-1$
+
+            for (int i = 0; i < nrParams; i++)
+            {
+                Node paramNode = XMLHandler.getSubNodeByNr(paramsNode, "parameter", i); //$NON-NLS-1$
+
+                String paramName = XMLHandler.getTagValue(paramNode, "name"); //$NON-NLS-1$
+                String descr = XMLHandler.getTagValue(paramNode, "description"); //$NON-NLS-1$
+                
+                addParameterDefinition(paramName, descr);
+            }            
 
             // Read the partitioning schemas
             // 
@@ -3297,7 +3327,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         	initializeVariablesFrom(null);
             if (setInternalVariables) setInternalKettleVariables();
         }
-
     }
     
     public SharedObjects readSharedObjects(Repository rep) throws KettleException
@@ -6310,5 +6339,42 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 				}
 			}
 		}
+	}
+
+	public void activateParameters() {
+		String[] keys = listParameters();
+		
+		for ( String key : keys )  {
+			String value = getParameterValue(key);
+			setVariable(key, value);
+		}		 		
+	}
+
+	public void addParameterDefinition(String key, String description) {
+		namedParams.addParameterDefinition(key, description);		
+	}
+
+	public String getParameterDescription(String key) {
+		return namedParams.getParameterDescription(key);
+	}
+
+	public String getParameterValue(String key) {
+		return namedParams.getParameterValue(key);
+	}
+
+	public String[] listParameters() {
+		return namedParams.listParameters();
+	}
+
+	public void setParameterValue(String key, String value) {
+		namedParams.setParameterValue(key, value);
+	}
+
+	public void clearValues() {
+		namedParams.clearValues();		
+	}
+
+	public void copyParametersFrom(NamedParams params) {
+		namedParams.copyParametersFrom(params);		
 	}
 }

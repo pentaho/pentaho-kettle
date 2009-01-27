@@ -19,21 +19,49 @@ import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.NamedParams;
 
 /**
+ * This class allows you to define command-line options.
  * 
- * This class allows you to define command-line options
- * 
- * @author matt
+ * @author Matt Casters
  */
 public class CommandLineOption
 {
+	/**
+	 * The option string 
+	 */
 	private String option;
-	private String description; 
+	
+	/**
+	 * Description of the option.
+	 */
+	private String description;
+	
+	/**
+	 * Is it a boolean or not.
+	 */
 	private boolean yesNo;
 	
+	/**
+	 * Is it an array.
+	 */
+	private boolean array;
+	
+	/**
+	 * The value for a normal string argument
+	 */
 	private StringBuffer argument;
+	
+	/**
+	 * The value for a boolean argument
+	 */
 	private boolean hiddenOption;
+	
+	/**
+	 * The value of an array parameter.
+	 */
+	private NamedParams arrayParams;
 
 	/**
 	 * @return Returns the argument.
@@ -52,7 +80,8 @@ public class CommandLineOption
 	}
 
 	/**
-	 * Creates a new command line option 
+	 * Creates a new command line option.
+	 *  
 	 * @param option The option string
 	 * @param description the description of the option
 	 * @param argument the StringBuffer that will contain the argument later
@@ -61,19 +90,39 @@ public class CommandLineOption
 	 */
 	public CommandLineOption(String option, String description, StringBuffer argument, boolean yesNo, boolean hiddenOption)
 	{
-		super();
-
 		this.option = option;
 		this.description = description;
+		this.arrayParams = null;
 		this.argument = argument;
 		this.yesNo = yesNo;
+		this.array = false;
 		this.hiddenOption = hiddenOption;
 	}
+	
+	/**
+	 * Creates a new "array" command line option.
+	 *  
+	 * @param option The option string
+	 * @param description the description of the option
+	 * @param argument the StringBuffer that will contain the argument later
+	 * @param hiddenOption true if this option should not be shown in the usage list. 
+	 */
+	public CommandLineOption(String option, String description, NamedParams argument, boolean hiddenOption)
+	{
+		this.option = option;
+		this.description = description;
+		this.arrayParams = argument;
+		this.argument = null;
+		this.yesNo = false;
+		this.array = true;
+		this.hiddenOption = hiddenOption;
+	}	
 	
 	/**
 	 * Creates a new normal command line option 
 	 * @param option The option string
 	 * @param description the description of the option
+	 * @param argument the StringBuffer that will contain the argument later
 	 */
 	public CommandLineOption(String option, String description, StringBuffer argument)
 	{
@@ -143,17 +192,13 @@ public class CommandLineOption
 	 */
 	public String getUsageDescription()
 	{
-        String optionStart;
-        String optionDelim;
+        String optionStart = "  -";
+        String optionDelim = " = ";
+        
         if (Const.isWindows()) 
         {
             optionStart = "  /";
             optionDelim = " : ";
-        }
-        else
-        {
-            optionStart = "  -";
-            optionDelim = " = ";
         }
 
 		return optionStart+Const.rightPad(option, 10)+optionDelim+description;
@@ -166,8 +211,8 @@ public class CommandLineOption
 	 */
 	public String extractAndSetArgument(String arg)
 	{
-		String optionStart[] = new String[] { "-", "/" };
-		String optionDelim[] = new String[] { "=", ":" };
+		String[] optionStart = new String[] { "-", "/" };
+		String[] optionDelim = new String[] { "=", ":" };
 
 		for (int s = 0; s < optionStart.length; s++)
 		{
@@ -224,13 +269,13 @@ public class CommandLineOption
 	}
 
 	/**
-	 * Parse and set the command line arguments using the defined options
+	 * Parse and set the command line arguments using the defined options.
+	 * 
 	 * @param args The list of arguments to parse
 	 * @param options The command line options to use
 	 */
 	public static boolean parseArguments(List<String> args, CommandLineOption[] options, LogWriter log)
-	{
-		
+	{		
 		Map<String,CommandLineOption> optionMap = new HashMap<String,CommandLineOption>();
 
 		for (int i=0;i<options.length;i++)
@@ -274,9 +319,69 @@ public class CommandLineOption
 				}
 				if( option != null ) 
 				{
+					// We got a valid option
 					args.remove(idx);
-					if( !option.yesNo )
+					if( option.yesNo )
 					{
+						if( value != null ) {
+							option.argument.append( value );
+						}
+						else  {
+							option.argument.append( "Y" );
+						}
+					}
+					else if ( option.array )
+					{
+						String parameterString = null;
+						
+						//
+						// the application specific parameters
+						//
+						if( idx < args.size() ) 
+						{
+							if( value == null )
+							{
+								parameterString = args.get(idx);
+								args.remove(idx);
+							}
+						}
+						else if( value != null ) {
+							parameterString = value;
+						}
+						else 
+						{
+							// we did not get a valid value
+							if( log != null ) {
+								log.logError( "Command Line Options", "Option "+optionName+" expects an argument", new Object[] {optionName});
+							}
+							return false;
+						}
+						
+						// We expect something of KEY=VALUE in parameterString
+						String key = null;
+						String val = null;
+						
+						int pos = parameterString.indexOf('=');
+						if ( pos > 0 )  {
+							key = parameterString.substring(0, pos);
+							val = parameterString.substring(pos+1);
+							key = key.trim();
+							
+							option.arrayParams.addParameterDefinition(key, "runtime");
+							option.arrayParams.setParameterValue(key, val);						
+						}
+						else  {
+							if( log != null ) {
+								log.logError( "Command Line Options", "Option " + optionName + " expects an argument of the format KEY=VALUE (missing '=')", new Object[] {optionName});
+							}
+							return false;							
+						}							
+					}
+					else
+					{
+						//
+						// string and named param things
+						//
 						if( idx < args.size() ) 
 						{
 							if( value == null )
@@ -297,15 +402,7 @@ public class CommandLineOption
 							}
 							return false;
 						}
-					} else {
-						if( value != null ) {
-							option.argument.append( value );
-						}
-						else 
-						{
-							option.argument.append( "Y" );
-						}
-					}
+					} 
 				} else {
 					// this is not a valid option
 					idx++;
