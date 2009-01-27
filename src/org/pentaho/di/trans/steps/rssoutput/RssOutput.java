@@ -77,7 +77,6 @@ public class RssOutput extends BaseStep implements StepInterface
 		
 		
 		Object[] r=getRow();    // this also waits for a previous step to be finished.
-	
 
 		if (r==null)  // no more input to be expected...
 		{
@@ -477,13 +476,10 @@ public class RssOutput extends BaseStep implements StepInterface
 				// add namespaces here ...
 				for(int i=0;i<meta.getNameSpaces().length;i++)
 				{
-					System.out.println(meta.getNameSpacesTitle()[i]+"="+meta.getNameSpaces()[i]);
 					data.rssElement.addAttribute(environmentSubstitute(meta.getNameSpacesTitle()[i]),
 							environmentSubstitute(meta.getNameSpaces()[i]));
 				}
-				
-				
-				
+
 				// Add channel
 				data.channel = data.rssElement.addElement("channel");
 				
@@ -501,10 +497,7 @@ public class RssOutput extends BaseStep implements StepInterface
 					channeltag.setText(channelvalue);
 					
 				}
-			}
-
-			
-			
+			}	
 		}  // end test first time
 
 		// Let's get value for each item...
@@ -556,9 +549,7 @@ public class RssOutput extends BaseStep implements StepInterface
 					data.channel.addElement(itemname);
 					data.channel.setText(itemvalue);
 				}
-
 			}
-			
 		}
 
         try

@@ -1976,7 +1976,7 @@ public class Const
 				out.append(c);
 		}
 		return out.toString();
-	}	//	removeCRLF
+	}
 
 	/**
 	 * 	Remove CR / LF from String
