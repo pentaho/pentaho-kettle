@@ -85,6 +85,9 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
     
     /** adds a boolean field to the output indicating success of the update */
     private String  ignoreFlagField;
+    
+    /** adds a boolean field to skip lookup and directly update selected fields */
+    private boolean  skipLookup;
 	
 	public UpdateMeta()
 	{
@@ -108,7 +111,22 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.commitSize = commitSize;
     }
-    
+    /**
+     * @return Returns the skipLookup.
+     */
+    public boolean isSkipLookup()
+    {
+        return skipLookup;
+    }
+
+    /**
+     * @param skipLookup The skipLookup to set.
+     */
+    public void setSkipLookup(boolean skipLookup)
+    {
+        this.skipLookup = skipLookup;
+    }
+
     /**
      * @return Returns the database.
      */
@@ -325,6 +343,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 			databaseMeta = DatabaseMeta.findDatabase(databases, con);
 			csize      = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
 			commitSize=Const.toInt(csize, 0);
+			skipLookup = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "skip_lookup")); 
             errorIgnored = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "error_ignored")); //$NON-NLS-1$ //$NON-NLS-2$
             ignoreFlagField = XMLHandler.getTagValue(stepnode, "ignore_flag_field"); //$NON-NLS-1$
             schemaName     = XMLHandler.getTagValue(stepnode, "lookup", "schema"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -364,6 +383,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
+		skipLookup=false;
 		keyStream    = null;
 		updateLookup = null;
 		databaseMeta = null;
@@ -396,6 +416,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		StringBuffer retval=new StringBuffer();
 		
 		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("    "+XMLHandler.addTagValue("skip_lookup", skipLookup));
 		retval.append("    "+XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    "+XMLHandler.addTagValue("error_ignored", errorIgnored)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    "+XMLHandler.addTagValue("ignore_flag_field", ignoreFlagField)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -433,7 +454,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
 			databaseMeta = DatabaseMeta.findDatabase( databases, id_connection);
-			
+			skipLookup =     rep.getStepAttributeBoolean (id_step, "skip_lookup");
 			commitSize     = (int)rep.getStepAttributeInteger(id_step, "commit"); //$NON-NLS-1$
             schemaName     =      rep.getStepAttributeString(id_step, "schema"); //$NON-NLS-1$
 			tableName      =      rep.getStepAttributeString(id_step, "table"); //$NON-NLS-1$
@@ -472,6 +493,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "id_connection", databaseMeta==null?-1:databaseMeta.getID()); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "skip_lookup",    skipLookup);
 			rep.saveStepAttribute(id_transformation, id_step, "commit",        commitSize); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "schema",        schemaName); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "table",         tableName); //$NON-NLS-1$

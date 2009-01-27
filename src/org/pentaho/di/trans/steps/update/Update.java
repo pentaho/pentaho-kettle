@@ -48,6 +48,7 @@ public class Update extends BaseStep implements StepInterface
 	private synchronized Object[] lookupValues(RowMetaInterface rowMeta, Object[] row) throws KettleException
 	{
         Object[] outputRow=row;
+        Object[] add;
         
         // Create the output row and copy the input values
         if (!Const.isEmpty( meta.getIgnoreFlagField())) // add flag field!
@@ -77,15 +78,18 @@ public class Update extends BaseStep implements StepInterface
                 lookupIndex++;
 			}
 		}
-		
-		data.db.setValues(data.lookupParameterRowMeta, lookupRow, data.prepStatementLookup);
-		
-		if (log.isDebug()) logDebug(Messages.getString("Update.Log.ValuesSetForLookup", data.lookupParameterRowMeta.getString(lookupRow), rowMeta.getString(row))); //$NON-NLS-1$ //$NON-NLS-2$
-		Object[] add = data.db.getLookup(data.prepStatementLookup);
-		RowMetaInterface returnRowMeta = data.db.getReturnRowMeta();
+		RowMetaInterface returnRowMeta=null;;
+		if(!meta.isSkipLookup())
+		{
+			data.db.setValues(data.lookupParameterRowMeta, lookupRow, data.prepStatementLookup);
+			if (log.isDebug()) logDebug(Messages.getString("Update.Log.ValuesSetForLookup", data.lookupParameterRowMeta.getString(lookupRow), rowMeta.getString(row))); //$NON-NLS-1$ //$NON-NLS-2$
+			add = data.db.getLookup(data.prepStatementLookup);
+			returnRowMeta = data.db.getReturnRowMeta();
+		}else add=null;
+			
 		incrementLinesInput();
 		
-		if (add==null) 
+		if (add==null && !meta.isSkipLookup()) 
 		{
 			/* nothing was found: throw error!
 			 */
@@ -121,26 +125,40 @@ public class Update extends BaseStep implements StepInterface
             }
 		}
 		else
-		{			
-			if (log.isRowLevel()) logRowlevel(Messages.getString("Update.Log.FoundRow")+data.lookupReturnRowMeta.getString(add)); //$NON-NLS-1$
+		{		
+			if(!meta.isSkipLookup()) 
+			{
+				if (log.isRowLevel()) logRowlevel(Messages.getString("Update.Log.FoundRow")+data.lookupReturnRowMeta.getString(add)); //$NON-NLS-1$
+			}
+			
 			/* Row was found:
 			 *  
 			 * UPDATE row or do nothing?
 			 *
 			 */
 			boolean update = false;
-			for (int i=0;i<data.valuenrs.length;i++)
+			
+			if(meta.isSkipLookup()) 
 			{
-                ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.valuenrs[i] );
-				Object rowvalue = row[ data.valuenrs[i] ];
-				ValueMetaInterface returnValueMeta = returnRowMeta.getValueMeta( i );
-				Object retvalue = add[ i ];
-                
-                if ( valueMeta.compare(rowvalue, returnValueMeta, retvalue)!=0 )
+				// Update fields directly
+				update=true;
+			}
+			else
+			{
+				for (int i=0;i<data.valuenrs.length;i++)
 				{
-					update=true;
+	                ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.valuenrs[i] );
+					Object rowvalue = row[ data.valuenrs[i] ];
+					ValueMetaInterface returnValueMeta = returnRowMeta.getValueMeta( i );
+					Object retvalue = add[ i ];
+	                
+	                if ( valueMeta.compare(rowvalue, returnValueMeta, retvalue)!=0 )
+					{
+						update=true;
+					}
 				}
 			}
+			
 			if (update)
 			{
                 // Create the update row...
@@ -167,7 +185,7 @@ public class Update extends BaseStep implements StepInterface
             
             if (!Const.isEmpty(meta.getIgnoreFlagField())) // add flag field!
             {
-                row[rowMeta.size()] = Boolean.TRUE;
+            	outputRow[rowMeta.size()] = Boolean.TRUE;
             }
 		}
         
@@ -237,14 +255,36 @@ public class Update extends BaseStep implements StepInterface
                 }
                 if (log.isDebug()) logDebug(Messages.getString("Update.Log.FieldHasDataNumbers",meta.getUpdateStream()[i])+""+data.valuenrs[i]); //$NON-NLS-1$ //$NON-NLS-2$
             }
-            
-            setLookup(getInputRowMeta());
+            if(meta.isSkipLookup())
+            {
+            	// We skip lookup
+            	// but we need fields for update
+            	 data.lookupParameterRowMeta = new RowMeta();
+	        	 for (int i = 0; i < meta.getKeyLookup().length; i++)
+	             {
+	                 if ("BETWEEN".equalsIgnoreCase(meta.getKeyCondition()[i]))
+	                 {
+	                     data.lookupParameterRowMeta.addValueMeta( getInputRowMeta().searchValueMeta(meta.getKeyStream()[i]) );
+	                     data.lookupParameterRowMeta.addValueMeta( getInputRowMeta().searchValueMeta(meta.getKeyStream2()[i]) );
+	                 }
+	                 else
+	                 {
+	                     if (!"IS NULL".equalsIgnoreCase(meta.getKeyCondition()[i]) && !"IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i]))
+	                     {
+	                         data.lookupParameterRowMeta.addValueMeta( getInputRowMeta().searchValueMeta(meta.getKeyStream()[i]) );
+	                     }
+	                 }
+	             }
+            }
+            else
+            {
+            	setLookup(getInputRowMeta());
+            }
             prepareUpdate(getInputRowMeta());
         }
         
         try
         {
-            
 			Object[] outputRow = lookupValues(getInputRowMeta(), r); // add new values to the row in rowset[0].
 	        if (outputRow!=null) putRow(data.outputRowMeta, outputRow); // copy non-ignored rows to output rowset(s);
 	        if (checkFeedback(getLinesRead())) 
@@ -261,7 +301,6 @@ public class Update extends BaseStep implements StepInterface
 	        }
 	        else
 	        {
-			
 				logError(Messages.getString("Update.Log.ErrorInStep"), e); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
@@ -330,6 +369,7 @@ public class Update extends BaseStep implements StepInterface
         {
             throw new KettleDatabaseException("Unable to prepare statement for SQL statement [" + sql + "]", ex);
         }
+        
     }
     
     // Lookup certain fields in a table

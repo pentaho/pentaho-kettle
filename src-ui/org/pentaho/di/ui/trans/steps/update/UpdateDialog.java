@@ -115,6 +115,10 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 	
     private Map<String, Integer> inputFields;
     
+    private Label        wlSkipLookup;
+	private Button       wSkipLookup;
+	private FormData     fdlSkipLookup, fdSkipLookup;
+    
 	/**
 	 * List of ColumnInfo that should have the field names of the selected database table
 	 */
@@ -250,13 +254,39 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		fdCommit.right = new FormAttachment(100, 0);
 		wCommit.setLayoutData(fdCommit);
         
-        
+		// UsePart update
+		wlSkipLookup=new Label(shell, SWT.RIGHT);
+		wlSkipLookup.setText(Messages.getString("UpdateDialog.SkipLookup.Label"));
+ 		props.setLook(wlSkipLookup);
+		fdlSkipLookup=new FormData();
+		fdlSkipLookup.left  = new FormAttachment(0, 0);
+		fdlSkipLookup.top   = new FormAttachment(wCommit, margin);
+		fdlSkipLookup.right = new FormAttachment(middle, -margin);
+		wlSkipLookup.setLayoutData(fdlSkipLookup);
+		wSkipLookup=new Button(shell, SWT.CHECK);
+		wSkipLookup.setToolTipText(Messages.getString("UpdateDialog.SkipLookup.Tooltip"));
+ 		props.setLook(wSkipLookup);
+		fdSkipLookup=new FormData();
+		fdSkipLookup.left  = new FormAttachment(middle, 0);
+		fdSkipLookup.top   = new FormAttachment(wCommit, margin);
+		fdSkipLookup.right = new FormAttachment(100, 0);
+		wSkipLookup.setLayoutData(fdSkipLookup);
+		wSkipLookup.addSelectionListener(new SelectionAdapter() 
+        {
+            public void widgetSelected(SelectionEvent e) 
+            {
+                input.setChanged();
+                setActiveIgnoreLookup();
+            }
+        }
+    );		
+		
         wlErrorIgnored=new Label(shell, SWT.RIGHT);
         wlErrorIgnored.setText(Messages.getString("UpdateDialog.ErrorIgnored.Label")); //$NON-NLS-1$
- 		props.setLook(        wlErrorIgnored);
+ 		props.setLook(wlErrorIgnored);
         fdlErrorIgnored=new FormData();
         fdlErrorIgnored.left = new FormAttachment(0, 0);
-        fdlErrorIgnored.top  = new FormAttachment(wCommit, margin);
+        fdlErrorIgnored.top  = new FormAttachment(wSkipLookup, margin);
         fdlErrorIgnored.right= new FormAttachment(middle, -margin);
         wlErrorIgnored.setLayoutData(fdlErrorIgnored);
         
@@ -265,7 +295,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
         wErrorIgnored.setToolTipText(Messages.getString("UpdateDialog.ErrorIgnored.ToolTip")); //$NON-NLS-1$
         fdErrorIgnored=new FormData();
         fdErrorIgnored.left = new FormAttachment(middle, 0);
-        fdErrorIgnored.top  = new FormAttachment(wCommit, margin);
+        fdErrorIgnored.top  = new FormAttachment(wSkipLookup, margin);
         wErrorIgnored.setLayoutData(fdErrorIgnored);
         wErrorIgnored.addSelectionListener(new SelectionAdapter() 
             {
@@ -282,14 +312,14 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
  		props.setLook(        wlIgnoreFlagField);
         fdlIgnoreFlagField=new FormData();
         fdlIgnoreFlagField.left = new FormAttachment(wErrorIgnored, margin);
-        fdlIgnoreFlagField.top  = new FormAttachment(wCommit, margin);
+        fdlIgnoreFlagField.top  = new FormAttachment(wSkipLookup, margin);
         wlIgnoreFlagField.setLayoutData(fdlIgnoreFlagField);
         wIgnoreFlagField=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(        wIgnoreFlagField);
         wIgnoreFlagField.addModifyListener(lsMod);
         fdIgnoreFlagField=new FormData();
         fdIgnoreFlagField.left = new FormAttachment(wlIgnoreFlagField, margin);
-        fdIgnoreFlagField.top  = new FormAttachment(wCommit, margin);
+        fdIgnoreFlagField.top  = new FormAttachment(wSkipLookup, margin);
         fdIgnoreFlagField.right= new FormAttachment(100, 0);
         wIgnoreFlagField.setLayoutData(fdIgnoreFlagField);
 
@@ -454,8 +484,8 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Set the shell size, based upon previous time...
 		setSize();
-		
 		getData();
+		setActiveIgnoreLookup();
 		setTableFieldCombo();
 		input.setChanged(changed);
 
@@ -466,6 +496,20 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		return stepname;
 	}
+	 
+	 public void setActiveIgnoreLookup()
+	 {
+		 if(wSkipLookup.getSelection())
+		 {
+			 wErrorIgnored.setSelection(false);
+			 wIgnoreFlagField.setText("");
+		 }
+		 wErrorIgnored.setEnabled(!wSkipLookup.getSelection());
+		 wlErrorIgnored.setEnabled(!wSkipLookup.getSelection());
+	     wlIgnoreFlagField.setEnabled(!wSkipLookup.getSelection() && wErrorIgnored.getSelection());
+	     wIgnoreFlagField.setEnabled(!wSkipLookup.getSelection() && wErrorIgnored.getSelection());
+	     
+	 }
 	protected void setComboBoxes()
     {
         // Something was changed in the row.
@@ -538,10 +582,10 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), Messages.getString("UpdateDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug(toString(), Messages.getString("UpdateDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		wCommit.setText(""+input.getCommitSize()); //$NON-NLS-1$
-        
+		wSkipLookup.setSelection(input.isSkipLookup());
         wErrorIgnored.setSelection( input.isErrorIgnored() );
         if (input.getIgnoreFlagField()!=null) wIgnoreFlagField.setText( input.getIgnoreFlagField() );
 		
@@ -596,8 +640,9 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		inf.allocate(nrkeys, nrfields);
 				
 		inf.setCommitSize( Const.toInt( wCommit.getText(), 0) );
+		inf.setSkipLookup(wSkipLookup.getSelection() );
 		
-		log.logDebug(toString(), Messages.getString("UpdateDialog.Log.FoundKeys",nrkeys+"")); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) log.logDebug(toString(), Messages.getString("UpdateDialog.Log.FoundKeys",nrkeys+"")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrkeys;i++)
 		{
 			TableItem item = wKey.getNonEmpty(i);
