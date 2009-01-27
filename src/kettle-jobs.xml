@@ -783,4 +783,17 @@
 		</tooltip>
 		<image-uri>ui/images/ETC.png</image-uri>
 	</job>
+		<job id="SIMPLE_EVAL">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@SIMPLE_EVAL
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.simpleeval.JobEntrySimpleEval
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SimpleEval.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/SEV.png</image-uri>
+	</job>
 </jobs>
