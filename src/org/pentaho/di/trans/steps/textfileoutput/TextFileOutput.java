@@ -749,7 +749,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					}
 
 					data.oneFileOpened=true;
-					return true;
 				}	
 				catch(Exception e)
 				{
