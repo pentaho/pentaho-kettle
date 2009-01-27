@@ -278,7 +278,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 		}	
 		catch(KettleXMLException xe)
 		{	
-			throw new KettleXMLException(Messages.getString("JobXMLWellFormed.Error.Exception.UnableLoadXML"), xe);
+			throw new KettleXMLException(Messages.getString("JobEntrySimple.Error.Exception.UnableLoadXML"), xe);
 		}
 	}
 
@@ -301,7 +301,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException(Messages.getString("JobXMLWellFormed.Error.Exception.UnableLoadRep")+id_jobentry, dbe);
+			throw new KettleException(Messages.getString("JobEntrySimple.Error.Exception.UnableLoadRep")+id_jobentry, dbe);
 		}
 	}
 	
@@ -327,7 +327,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 		catch(KettleDatabaseException dbe)
 		{
 			
-			throw new KettleException(Messages.getString("JobXMLWellFormed.Error.Exception.UnableSaveRep")+id_job, dbe);
+			throw new KettleException(Messages.getString("JobEntrySimple.Error.Exception.UnableSaveRep")+id_job, dbe);
 		}
 	}
 
