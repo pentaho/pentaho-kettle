@@ -256,7 +256,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			wildcardSource=rep.getJobEntryAttributeString(id_jobentry, "wildcardSource");
 			success_condition  = rep.getJobEntryAttributeString(id_jobentry, "success_condition");
 			if(Const.isEmpty(success_condition)) success_condition=SUCCESS_IF_NO_ERRORS;
-			iffileexist    = getIfFileExistsInt(rep.getStepAttributeString(id_jobentry,"iffileexists") );
+			iffileexist    = getIfFileExistsInt(rep.getJobEntryAttributeString(id_jobentry,"iffileexists") );
 		}
 
 
@@ -290,7 +290,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getID(), "nr_limit", nr_limit);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcardSource", wildcardSource);
 			rep.saveJobEntryAttribute(id_job, getID(), "success_condition",    success_condition);
-			rep.saveStepAttribute(id_job, getID(), "iffileexists", getIfFileExistsCode(iffileexist));
+			rep.saveJobEntryAttribute(id_job, getID(), "iffileexists", getIfFileExistsCode(iffileexist));
 		}
 		catch(KettleDatabaseException dbe)
 		{
