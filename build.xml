@@ -480,7 +480,7 @@
 	       ==========================
 	  -->
 		
-	  <target name="sourcezip" depends="" description="generate the Kettle-src-${version}-${release.build.number}-r${revision}.zip file">
+	  <target name="sourcezip" depends="init" description="generate the Kettle-src-${version}-${release.build.number}-r${revision}.zip file">
 	  	<echo>Generating the Kettle source packge zip file (${impl.productID}-src-${version}-r${revision}.zip) ...</echo>
 	  	<jar jarfile="${dist.dir}/${impl.productID}-src-${version}-r${revision}.zip" 
 	  		 basedir="."
@@ -810,8 +810,8 @@
 			
 			<formatter type="xml"/>
 
-		  	<test todir="${junit}" name="org.pentaho.di.cluster.MasterSlave" haltonerror="false" />
-		  	<test todir="${junit}" name="org.pentaho.di.cluster.Partitioning" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.cluster.MasterSlaveTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.cluster.PartitioningTest" haltonerror="false" />
 		</junit>
 	</target>
 	
