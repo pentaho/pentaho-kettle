@@ -23,6 +23,7 @@ cd $BASEDIR
 CLASSPATH=$BASEDIR
 
 CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-core.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-db.jar
 CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine.jar
 CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-ui-swt.jar
 
