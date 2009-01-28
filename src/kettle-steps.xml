@@ -565,6 +565,18 @@
 		<image-uri>ui/images/GRP.png</image-uri>
 	</step>
 	
+		<step id="AnalyticQuery">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AnalyticQuery")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.analyticquery.AnalyticQueryMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.AnalyticQuery")
+		</tooltip>
+		<image-uri>ui/images/GRP.png</image-uri>
+	</step>
+	
 	<step id="MergeJoin">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MergeJoin")
