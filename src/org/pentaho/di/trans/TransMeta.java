@@ -258,6 +258,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     public  static final String XML_TAG_CLUSTERSCHEMAS      = "clusterschemas";
     private static final String XML_TAG_STEP_ERROR_HANDLING = "step_error_handling";
     
+    
     /**
      * Builds a new empty transformation.
      */
@@ -1950,6 +1951,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingTransformationInfo")); //$NON-NLS-1$
             
             rep.insertTransformation(this); // save the top level information for the transformation
+            
+            saveRepParameters(rep);
+            
             rep.closeTransAttributeInsertPreparedStatement();
             
             // Save the partition schemas
@@ -2036,6 +2040,42 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             rep.unlockRepository();
         }
     }
+    
+    /**
+     * Save the parameters of this transformation to the repository.
+     * 
+     * @param rep The repository to save to.
+     * 
+     * @throws KettleException Upon any error.
+     */
+    private void saveRepParameters(Repository rep) throws KettleException
+    {
+    	String[] paramKeys = listParameters();
+    	for (int idx = 0; idx < paramKeys.length; idx++)  {
+    		String desc = getParameterDescription(paramKeys[idx]);
+    		rep.insertTransParameter(getId(), idx, paramKeys[idx], desc);
+    	}
+    }
+    
+    /**
+     * Load the parameters of this transformation from the repository. The current 
+     * ones already loaded will be erased.
+     * 
+     * @param rep The repository to load from.
+     * 
+     * @throws KettleException Upon any error.
+     */
+    private void loadRepParameters(Repository rep) throws KettleException
+    {
+    	clearValues();
+
+    	int count = rep.countTransParameter(getId());
+    	for (int idx = 0; idx < count; idx++)  {
+    		String key  = rep.getTransParameterKey(getId(), idx);
+    		String desc = rep.getTransParameterDescription(getId(), idx);
+    		addParameterDefinition(key, desc);
+    	}
+    }    
 
     public boolean isUsingPartitionSchema(PartitionSchema partitionSchema)
     {
@@ -2294,6 +2334,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 capturingStepPerformanceSnapShots = rep.getTransAttributeBoolean(getID(), 0, Repository.TRANS_ATTRIBUTE_CAPTURE_STEP_PERFORMANCE);
                 stepPerformanceCapturingDelay = rep.getTransAttributeInteger(getID(), 0, Repository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_CAPTURING_DELAY);
                 stepPerformanceLogTable = rep.getTransAttributeString(getID(), 0, Repository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_LOG_TABLE);
+                
+                loadRepParameters(rep);
             }
         }
         catch (KettleDatabaseException dbe)

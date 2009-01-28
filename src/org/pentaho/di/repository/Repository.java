@@ -158,7 +158,7 @@ public class Repository
 	public static final String FIELD_TRANS_ATTRIBUTE_CODE = "CODE";
 	public static final String FIELD_TRANS_ATTRIBUTE_VALUE_NUM = "VALUE_NUM";
 	public static final String FIELD_TRANS_ATTRIBUTE_VALUE_STR = "VALUE_STR";
-
+	
 	public static final String TABLE_R_DEPENDENCY             = "R_DEPENDENCY";
 	public static final String FIELD_DEPENDENCY_ID_DEPENDENCY = "ID_DEPENDENCY";
 	public static final String FIELD_DEPENDENCY_ID_TRANSFORMATION = "ID_TRANSFORMATION";
@@ -387,6 +387,8 @@ public class Repository
 	public static final String FIELD_TRANS_SLAVE_ID_TRANSFORMATION = "ID_TRANSFORMATION";
 	public static final String FIELD_TRANS_SLAVE_ID_SLAVE = "ID_SLAVE";
 
+	private static final String TRANS_ATTRIBUTE_PARAM_KEY         = "PARAM_KEY";
+	private static final String TRANS_ATTRIBUTE_PARAM_DESCRIPTION = "PARAM_DESC";
 
     public static final String repositoryTableNames[] = new String[] 
          { 
@@ -4412,5 +4414,58 @@ public class Repository
      */
 	public void createRepositorySchema(ProgressMonitorListener monitor, boolean upgrade, List<String> statements, boolean dryRun) throws KettleException {
 		creationHelper.createRepositorySchema(monitor, upgrade, statements, dryRun);
+	}
+	
+	/**
+	 * Count the number of parameters of a transaction.
+	 * 
+	 * @param id_transformation transformation id
+	 * @return the number of transactions
+	 * 
+	 * @throws KettleException Upon any error.
+	 */
+	public int countTransParameter(long id_transformation) throws KettleException  {
+		return countNrTransAttributes(id_transformation, TRANS_ATTRIBUTE_PARAM_KEY);
+	}
+	
+	/**
+	 * Get a transformation parameter key. You can count the number of parameters up front.
+	 * 
+	 * @param id_transformation transformation id
+	 * @param nr number of the parameter 
+	 * @return they key/name of specified parameter
+	 * 
+	 * @throws KettleException Upon any error.
+	 */
+	public String getTransParameterKey(long id_transformation, int nr) throws KettleException  {
+ 		return getTransAttributeString(id_transformation, nr, TRANS_ATTRIBUTE_PARAM_KEY);		
+	}
+
+	/**
+	 * Get a transformation parameter description. You can count the number of parameters up front. 
+	 * 
+	 * @param id_transformation transformation id
+	 * @param nr number of the parameter
+	 * @return
+	 * 
+	 * @throws KettleException Upon any error.
+	 */
+	public String getTransParameterDescription(long id_transformation, int nr) throws KettleException  {
+ 		return getTransAttributeString(id_transformation, nr, TRANS_ATTRIBUTE_PARAM_DESCRIPTION);		
+	}
+	
+	/**
+	 * Insert a parameter for a transformation in the repository.
+	 * 
+	 * @param id_transformation transformation id
+	 * @param nr number of the parameter to insert
+	 * @param key key to insert
+	 * @param description description to insert
+	 * 
+	 * @throws KettleException Upon any error.
+	 */
+	public void insertTransParameter(long id_transformation, long nr, String key, String description) throws KettleException {
+	    insertTransAttribute(id_transformation, nr, TRANS_ATTRIBUTE_PARAM_KEY, 0, key != null ? key : "");		
+	    insertTransAttribute(id_transformation, nr, TRANS_ATTRIBUTE_PARAM_DESCRIPTION, 0, description != null ? description : "");
 	}
 }
