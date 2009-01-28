@@ -11,17 +11,8 @@
 
 package org.pentaho.di.ui.trans.steps.luciddbbulkloader;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -34,7 +25,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -43,7 +33,6 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SQLStatement;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -81,11 +70,6 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	private TextVar				wTable;
 	private FormData			fdlTable, fdbTable, fdTable;
 
-	private Label				wlClientPath;
-	private Button				wbClientPath;
-	private TextVar				wClientPath;
-	private FormData			fdlClientPath, fdbClientPath, fdClientPath;
-	
 	private Label				wlFifoPath;
 	private Button				wbFifoPath;
 	private TextVar				wFifoPath;
@@ -103,25 +87,22 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	private FormData			fdGetLU;
 	private Listener			lsGetLU;
 
+	private Label				wlMaxErrors;
+	private TextVar				wMaxErrors;
+	private FormData			fdlMaxErrors, fdMaxErrors;
+
 	private LucidDBBulkLoaderMeta	input;
 	
-	private ColumnInfo[] ciReturn ;
-	
+	/*
     private static final String[] ALL_FILETYPES = new String[] {
         	Messages.getString("LucidDBBulkLoaderDialog.Filetype.All") };
+	*
+	*/
 
-    private Map<String, Integer> inputFields;
-
-	/**
-	 * List of ColumnInfo that should have the field names of the selected database table
-	 */
-	private List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
-    
 	public LucidDBBulkLoaderDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input = (LucidDBBulkLoaderMeta) in;
-        inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -138,11 +119,6 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 			public void modifyText(ModifyEvent e)
 			{
 				input.setChanged();
-			}
-		};
-		FocusListener lsFocusLost = new FocusAdapter() {
-			public void focusLost(FocusEvent arg0) {
-				setTableFieldCombo();
 			}
 		};
 		changed = input.hasChanged();
@@ -194,7 +170,6 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         wSchema=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
-        wSchema.addFocusListener(lsFocusLost);
         fdSchema=new FormData();
         fdSchema.left = new FormAttachment(middle, 0);
         fdSchema.top  = new FormAttachment(wConnection, margin*2);
@@ -221,39 +196,30 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		wTable = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
-		wTable.addFocusListener(lsFocusLost);
 		fdTable = new FormData();
 		fdTable.left = new FormAttachment(middle, 0);
 		fdTable.top = new FormAttachment(wSchema, margin);
 		fdTable.right = new FormAttachment(wbTable, -margin);
 		wTable.setLayoutData(fdTable);
 
-		// Client line...
-		wlClientPath = new Label(shell, SWT.RIGHT);
-		wlClientPath.setText(Messages.getString("LucidDBBulkLoaderDialog.ClientPath.Label")); //$NON-NLS-1$
- 		props.setLook(wlClientPath);
-		fdlClientPath = new FormData();
-		fdlClientPath.left = new FormAttachment(0, 0);
-		fdlClientPath.right = new FormAttachment(middle, -margin);
-		fdlClientPath.top = new FormAttachment(wTable, margin);
-		wlClientPath.setLayoutData(fdlClientPath);
-		
-		wbClientPath = new Button(shell, SWT.PUSH | SWT.CENTER);
- 		props.setLook(wbClientPath);
-		wbClientPath.setText(Messages.getString("LucidDBBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
-		fdbClientPath = new FormData();
-		fdbClientPath.right = new FormAttachment(100, 0);
-		fdbClientPath.top = new FormAttachment(wTable, margin);
-		wbClientPath.setLayoutData(fdbClientPath);
-		wClientPath = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wClientPath);
-		wClientPath.addModifyListener(lsMod);
-		fdClientPath = new FormData();
-		fdClientPath.left = new FormAttachment(middle, 0);
-		fdClientPath.top = new FormAttachment(wTable, margin);
-		fdClientPath.right = new FormAttachment(wbClientPath, -margin);
-		wClientPath.setLayoutData(fdClientPath);
-				
+		// MaxErrors file line
+		wlMaxErrors = new Label(shell, SWT.RIGHT);
+		wlMaxErrors.setText(Messages.getString("LucidDBBulkLoaderDialog.MaxErrors.Label")); //$NON-NLS-1$
+ 		props.setLook(wlMaxErrors);
+		fdlMaxErrors = new FormData();
+		fdlMaxErrors.left = new FormAttachment(0, 0);
+		fdlMaxErrors.top = new FormAttachment(wTable, margin);
+		fdlMaxErrors.right = new FormAttachment(middle, -margin);
+		wlMaxErrors.setLayoutData(fdlMaxErrors);
+		wMaxErrors = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wMaxErrors);
+		wMaxErrors.addModifyListener(lsMod);
+		fdMaxErrors = new FormData();
+		fdMaxErrors.left = new FormAttachment(middle, 0);
+		fdMaxErrors.top = new FormAttachment(wTable, margin);
+		fdMaxErrors.right = new FormAttachment(100, 0);
+		wMaxErrors.setLayoutData(fdMaxErrors);
+        
 		// Fifo directory line...
 		//
 		wlFifoPath = new Label(shell, SWT.RIGHT);
@@ -262,7 +228,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		fdlFifoPath = new FormData();
 		fdlFifoPath.left = new FormAttachment(0, 0);
 		fdlFifoPath.right = new FormAttachment(middle, -margin);
-		fdlFifoPath.top = new FormAttachment(wClientPath, margin);
+		fdlFifoPath.top = new FormAttachment(wMaxErrors, margin);
 		wlFifoPath.setLayoutData(fdlFifoPath);
 		
 		wbFifoPath = new Button(shell, SWT.PUSH | SWT.CENTER);
@@ -270,14 +236,14 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		wbFifoPath.setText(Messages.getString("LucidDBBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbFifoPath = new FormData();
 		fdbFifoPath.right = new FormAttachment(100, 0);
-		fdbFifoPath.top = new FormAttachment(wClientPath, margin);
+		fdbFifoPath.top = new FormAttachment(wMaxErrors, margin);
 		wbFifoPath.setLayoutData(fdbFifoPath);
 		wFifoPath = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFifoPath);
 		wFifoPath.addModifyListener(lsMod);
 		fdFifoPath = new FormData();
 		fdFifoPath.left = new FormAttachment(middle, 0);
-		fdFifoPath.top = new FormAttachment(wClientPath, margin);
+		fdFifoPath.top = new FormAttachment(wMaxErrors, margin);
 		fdFifoPath.right = new FormAttachment(wbFifoPath, -margin);
 		wFifoPath.setLayoutData(fdFifoPath);
 				
@@ -299,6 +265,8 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         fdFifoServer.top  = new FormAttachment(wFifoPath, margin*2);
         fdFifoServer.right= new FormAttachment(100, 0);
         wFifoServer.setLayoutData(fdFifoServer);
+
+        
 
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
@@ -322,11 +290,11 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		int UpInsCols = 3;
 		int UpInsRows = (input.getFieldTable() != null ? input.getFieldTable().length : 1);
 
-		ciReturn = new ColumnInfo[UpInsCols];
-		ciReturn[0] = new ColumnInfo(Messages.getString("LucidDBBulkLoaderDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciReturn[1] = new ColumnInfo(Messages.getString("LucidDBBulkLoaderDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ColumnInfo[] ciReturn = new ColumnInfo[UpInsCols];
+		ciReturn[0] = new ColumnInfo(Messages.getString("LucidDBBulkLoaderDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciReturn[1] = new ColumnInfo(Messages.getString("LucidDBBulkLoaderDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 		ciReturn[2] = new ColumnInfo(Messages.getString("LucidDBBulkLoaderDialog.ColumnInfo.FormatOK"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y","N",}, true); // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$
-		tableFieldColumns.add(ciReturn[0]);
+
 		wReturn = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 				ciReturn, UpInsRows, lsMod, props);
 
@@ -343,58 +311,6 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		fdReturn.right = new FormAttachment(wGetLU, -margin);
 		fdReturn.bottom = new FormAttachment(wOK, -2*margin);
 		wReturn.setLayoutData(fdReturn);
-		
-	    // 
-        // Search the fields in the background
-        //
-        
-        final Runnable runnable = new Runnable()
-        {
-            public void run()
-            {
-                StepMeta stepMeta = transMeta.findStep(stepname);
-                if (stepMeta!=null)
-                {
-                    try
-                    {
-                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
-                        
-                        // Remember these fields...
-                        for (int i=0;i<row.size();i++)
-                        {
-                        	inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
-                        }
-                        
-                        setComboBoxes(); 
-                    }
-                    catch(KettleException e)
-                    {
-                        log.logError(toString(),Messages.getString("System.Dialog.GetFieldsFailed.Message"));
-                    }
-                }
-            }
-        };
-        new Thread(runnable).start();
-		
-
-		wbClientPath.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-                FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-                dialog.setFilterExtensions(new String[] { "*" });
-                if (wClientPath.getText() != null)
-                {
-                    dialog.setFileName(wClientPath.getText());
-                }
-                dialog.setFilterNames(ALL_FILETYPES);
-                if (dialog.open() != null)
-                {
-                	wClientPath.setText(dialog.getFilterPath() + Const.FILE_SEPARATOR
-                                      + dialog.getFileName());
-                }
-            }
-        });		
 
 		// Add listeners
 		lsOK = new Listener()
@@ -435,10 +351,10 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 		wStepname.addSelectionListener(lsDef);
         wSchema.addSelectionListener(lsDef);
-        wClientPath.addSelectionListener(lsDef);
         wFifoPath.addSelectionListener(lsDef);
         wFifoServer.addSelectionListener(lsDef);
         wTable.addSelectionListener(lsDef);
+        wMaxErrors.addSelectionListener(lsDef);
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(new ShellAdapter()
@@ -462,7 +378,6 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		setSize();
 
 		getData();
-		setTableFieldCombo();
 		input.setChanged(changed);
 
 		shell.open();
@@ -473,71 +388,16 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		}
 		return stepname;
 	}
-	private void setTableFieldCombo(){
-		Runnable fieldLoader = new Runnable() {
-			public void run() {
-				//clear
-				for (int i = 0; i < tableFieldColumns.size(); i++) {
-					ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
-					colInfo.setComboValues(new String[] {});
-				}
-				if (!Const.isEmpty(wTable.getText())) {
-					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
-					if (ci != null) {
-						Database db = new Database(ci);
-						try {
-							db.connect();
 
-							String schemaTable = ci	.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema
-											.getText()), transMeta.environmentSubstitute(wTable.getText()));
-							RowMetaInterface r = db.getTableFields(schemaTable);
-							if (null != r) {
-								String[] fieldNames = r.getFieldNames();
-								if (null != fieldNames) {
-									for (int i = 0; i < tableFieldColumns.size(); i++) {
-										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
-										colInfo.setComboValues(fieldNames);
-									}
-								}
-							}
-						} catch (Exception e) {
-							for (int i = 0; i < tableFieldColumns.size(); i++) {
-								ColumnInfo colInfo = (ColumnInfo) tableFieldColumns	.get(i);
-								colInfo.setComboValues(new String[] {});
-							}
-							// ignore any errors here. drop downs will not be
-							// filled, but no problem for the user
-						}
-					}
-				}
-			}
-		};
-		shell.getDisplay().asyncExec(fieldLoader);
-	}
-	protected void setComboBoxes()
-    {
-        // Something was changed in the row.
-        //
-		final Map<String, Integer> fields = new HashMap<String, Integer>();
-        
-        // Add the currentMeta fields...
-        fields.putAll(inputFields);
-        
-        Set<String> keySet = fields.keySet();
-        List<String> entries = new ArrayList<String>(keySet);
-        
-        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
-        Const.sortStrings(fieldNames);
-        // return fields
-        ciReturn[1].setComboValues(fieldNames);
-    }
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), Messages.getString("LucidDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		log.logDebug(toString(), Messages.getString("LucidDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+
+		wMaxErrors.setText("" + input.getMaxErrors());   //$NON-NLS-1$
 
 		if (input.getFieldTable() != null) {
 			for (i = 0; i < input.getFieldTable().length; i++)
@@ -562,7 +422,6 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		}
         if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
 		if (input.getTableName() != null) wTable.setText(input.getTableName());
-		if (input.getClientPath() != null) wClientPath.setText(input.getClientPath());
 		if (input.getFifoDirectory() != null) wFifoPath.setText(input.getFifoDirectory());
 		if (input.getFifoServerName() != null) wFifoServer.setText(input.getFifoServerName());
 		
@@ -584,7 +443,9 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 		inf.allocate(nrfields);
 
-		if(log.isDebug()) log.logDebug(toString(), Messages.getString("LucidDBBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
+		inf.setMaxErrors( Const.toInt(wMaxErrors.getText(), 0) );
+
+		log.logDebug(toString(), Messages.getString("LucidDBBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrfields; i++)
 		{
 			TableItem item = wReturn.getNonEmpty(i);
@@ -596,7 +457,6 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         inf.setSchemaName( wSchema.getText() );
 		inf.setTableName( wTable.getText() );
 		inf.setDatabaseMeta(  transMeta.findDatabase(wConnection.getText()) );
-		inf.setClientPath( wClientPath.getText() );
 		inf.setFifoDirectory(wFifoPath.getText());
 		inf.setFifoServerName(wFifoServer.getText());
 		
@@ -631,7 +491,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 		if (inf != null)
 		{
-			if(log.isDebug()) log.logDebug(toString(), Messages.getString("LucidDBBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
+			log.logDebug(toString(), Messages.getString("LucidDBBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
 
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());

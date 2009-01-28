@@ -18,7 +18,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.postgresql.PGConnection;
 
 /**
  * Stores data for the LucidDB bulk load step.
@@ -31,21 +30,17 @@ public class LucidDBBulkLoaderData extends BaseStepData implements StepDataInter
 	public Database db;
 
 	public int    keynrs[];         // nr of keylookup -value in row...
-
+	public ValueMetaInterface bulkFormatMeta [];
+    
 	public StreamLogger errorLogger;
 
-	public Process mClientlProcess;
-
 	public StreamLogger outputLogger;
-
-	public OutputStream bulkOutputStream;
 
 	public byte[] quote;
 	public byte[] separator;
 	public byte[] newline;
 
-	public PGConnection pgdb;
-	
+	public ValueMetaInterface bulkTimestampMeta;
 	public ValueMetaInterface bulkDateMeta;
 	public ValueMetaInterface bulkNumberMeta;
 	
@@ -62,6 +57,8 @@ public class LucidDBBulkLoaderData extends BaseStepData implements StepDataInter
 	public String bcpFilename;
 
 	public OutputStream fifoStream;
+
+	public LucidDBBulkLoader.SqlRunner sqlRunner;
 	
 	/**
 	 *  Default constructor.

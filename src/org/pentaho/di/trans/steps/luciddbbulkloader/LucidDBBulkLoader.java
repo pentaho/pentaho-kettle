@@ -16,10 +16,19 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.DBCache;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -47,66 +56,11 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 {
 	private LucidDBBulkLoaderMeta meta;
 	private LucidDBBulkLoaderData data;
-	
+    // private SqlRunner sqlRunner;
+    
 	public LucidDBBulkLoader(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
-	}
-
-	/**
-	 * Create the command line for a LucidDB process depending on the meta
-	 * information supplied.
-	 * 
-	 * @param meta The meta data to create the command line from
-	 * @param password Use the real password or not
-	 * 
-	 * @return The string to execute.
-	 * 
-	 * @throws KettleException Upon any exception
-	 */
-	public String createCommandLine(LucidDBBulkLoaderMeta meta, boolean password) throws KettleException
-	{
-	   StringBuffer sb = new StringBuffer(300);
-	   
-	   if ( !Const.isEmpty(meta.getClientPath()) )
-	   {
-		   try
-		   {
-	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getClientPath()));
-  	      	   String psqlexec = KettleVFS.getFilename(fileObject);
-		       sb.append(psqlexec);
-  	       }
-	       catch ( IOException ex )
-	       {
-	           throw new KettleException("Error retrieving mclient application string", ex);
-	       }		       
-	   }
-	   else
-	   {
-		   throw new KettleException("No mclient application specified");
-	   }
-
-	   // JDBC URL
-	   //
-	   sb.append(" -u '"+meta.getDatabaseMeta().getURL()+"'");
-
-	   // Driver class
-	   //
-	   sb.append(" -d '"+meta.getDatabaseMeta().getDriverClass()+"'");
-
-	   // username
-	   //
-	   if (!Const.isEmpty(meta.getDatabaseMeta().getUsername())) {
-		   sb.append(" -n "+meta.getDatabaseMeta().getUsername());
-	   }
-
-	   // password
-	   //
-	   if (!Const.isEmpty(meta.getDatabaseMeta().getPassword())) {
-		   sb.append(" -p "+meta.getDatabaseMeta().getPassword());
-	   }
-
-	   return sb.toString(); 
 	}
 	
 	public boolean execute(LucidDBBulkLoaderMeta meta, boolean wait) throws KettleException
@@ -144,19 +98,26 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 	        		throw new Exception("Return code "+result+" received from statement : "+mkFifoCmd);
 	        	}
         	}
-        	            
-        	// 3) Execute the client tool (sqllineClient) from LucidDB
-        	//    Again, we make sure to log all the possible output, also from STDERR
-        	//
-        	String cmd = createCommandLine(meta, true);
-        	
-        	logBasic("Executing command: "+cmd);
-            data.mClientlProcess = rt.exec(cmd);
-            data.errorLogger = new StreamLogger(data.mClientlProcess.getErrorStream(), "ERROR");
-            data.outputLogger = new StreamLogger(data.mClientlProcess.getInputStream(), "OUTPUT");
-            data.bulkOutputStream = data.mClientlProcess.getOutputStream();
-            new Thread(data.errorLogger).start();
-            new Thread(data.outputLogger).start();                              
+
+        	// 3) Make a connection to LucidDB for sending SQL commands
+            // (Also, we need a clear cache for getting up-to-date target metadata)
+            DBCache.getInstance().clear(meta.getDatabaseMeta().getName());
+
+			data.db = new Database(meta.getDatabaseMeta());
+			data.db.shareVariablesWith(this);
+			// Connect to the database
+            if (getTransMeta().isUsingUniqueConnections())
+            {
+                synchronized (getTrans())
+                {
+                    data.db.connect(getTrans().getThreadName(), getPartitionID());
+                }
+            } else
+            {
+                data.db.connect(getPartitionID());
+            }
+
+            logBasic("Connected to LucidDB");
 
             // 4) Now we are ready to create the LucidDB FIFO server that will handle the actual bulk loading.
             //
@@ -171,21 +132,30 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
             fifoServerStatement += "lenient 'no');"+Const.CR;
             
             logBasic("Creating LucidDB fifo_server with the following command: "+fifoServerStatement);
-            data.bulkOutputStream.write(fifoServerStatement.getBytes());
-            data.bulkOutputStream.flush();
+            data.db.execStatements(fifoServerStatement);
             
-            // 5) Now we also need to create a bulk loader file .bcp
+            // 5) Set the error limit in the LucidDB session 
+            // REVIEW jvs 13-Dec-2008:  is this guaranteed to retain the same
+            // connection?
+            String errorMaxStatement = "";
+            errorMaxStatement += "alter session set \"errorMax\" = " + meta.getMaxErrors() + ";" + Const.CR;
+            logBasic("Setting error limit in LucidDB session with the following command: " + errorMaxStatement);
+            data.db.execStatements(errorMaxStatement);
+            
+            // 6) Now we also need to create a bulk loader file .bcp
             //
             createBulkLoadConfigFile(data.bcpFilename);
             
-            // 6) execute the actual load command!
-            //    This will actually block until the load is done in the separate execution thread.
+            // 7) execute the actual load command!
+            //    This will actually block until the load is done in the
+            // separate execution thread; see notes in executeLoadCommand
+            // on why it's important for this to occur BEFORE
+            // opening our end of the FIFO.
             //
             executeLoadCommand(tableName);
             
-        	// 7) We have to write rows to the FIFO file later on.
-            //
-        	data.fifoStream = new BufferedOutputStream( new FileOutputStream( new File(data.fifoFilename) ) );
+        	// 8) We have to write rows to the FIFO file later on.
+        	data.fifoStream = new BufferedOutputStream( new FileOutputStream( fifoFile ));
         }
         catch ( Exception ex )
         {
@@ -198,16 +168,20 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 	private void executeLoadCommand(String tableName) throws KettleException {
 		String loadCommand = "";
 		loadCommand += "insert into "+data.schemaTable+Const.CR;
-		loadCommand += "select * from "+meta.getFifoServerName()+".\"DEFAULT\"."+tableName+";"+Const.CR;
+		loadCommand += "select * from "+meta.getFifoServerName()+".\"DEFAULT\"."+tableName+Const.CR;
 
-		try {
-			data.bulkOutputStream.write(loadCommand.getBytes());
-			data.bulkOutputStream.flush();
-			logBasic("Executed load command : "+Const.CR+loadCommand);
-		}
-		catch(IOException e) {
-			throw new KettleException("Unable to execute the bulk load command on LucidDB", e);
-		}
+        // NOTE jvs 13-Dec-2008: We prepare the SQL before spawning the thread
+        // to execute it.  The reason is that if a SQL validation exception
+        // occurs during preparation (e.g. due to datatype mismatch), we don't
+        // even want to open our end of the FIFO, otherwise we can get stuck
+        // since the server is never going to open its end until execution,
+        // which ain't gonna happen in that case.
+
+        logBasic("Preparing load command : "+Const.CR+loadCommand);
+        PreparedStatement ps = data.db.prepareSQL(loadCommand);
+        
+        data.sqlRunner = new SqlRunner(data, ps);
+        data.sqlRunner.start();
 	}
 
 	private void createBulkLoadConfigFile(String bcpFilename) throws KettleException {
@@ -224,7 +198,11 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 			// The second line contains the number of columns...
 			//
 			writer.write(meta.getFieldTable().length+Const.CR);
+
+            RowMetaInterface targetFieldMeta = meta.getRequiredFields();
 			
+            data.bulkFormatMeta = new ValueMetaInterface[meta.getFieldTable().length];
+            
 			// The next block lists the columns from 1..N where N is the number of columns...
 			//
 			for (int i=0;i<meta.getFieldTable().length;i++) {
@@ -240,9 +218,21 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 				switch(field.getType()) {
 				case ValueMetaInterface.TYPE_STRING : dataType="SQLVARCHAR"; break;
 				case ValueMetaInterface.TYPE_BIGNUMBER: dataType="SQLREAL"; break;
-				case ValueMetaInterface.TYPE_NUMBER : dataType="SQLREAL"; break;
+				case ValueMetaInterface.TYPE_NUMBER : dataType="SQLFLT8"; break;
 				case ValueMetaInterface.TYPE_INTEGER : dataType="SQLBIGINT"; break;
-				case ValueMetaInterface.TYPE_DATE : dataType="SQLTIMESTAMP"; break;
+				case ValueMetaInterface.TYPE_DATE :
+                    // Use the actual datatypes in the target table to
+                    // determine how to create the control file column
+                    // definition for date/time fields.
+                    if (targetFieldMeta.getValueMetaList().get(i).getOriginalColumnType() == Types.DATE) {
+                        data.bulkFormatMeta[i] = data.bulkDateMeta;
+                        dataType="SQLDATE";
+                    } else {
+                        data.bulkFormatMeta[i] = data.bulkTimestampMeta;
+                        dataType="SQLTIMESTAMP";
+                    }
+                    break;
+                    // REVIEW jvs 13-Dec-2008:  enable boolean support?
 				case ValueMetaInterface.TYPE_BOOLEAN : dataType="SQLCHAR"; break;
 				default : dataType="SQLVARCHAR"; break;
 				}
@@ -254,7 +244,11 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 				
 				// Col 4 : the data length, just put the length metadata in here
 				//
-				writer.write(""+field.getLength()+" ");
+                if (field.getLength() == -1) {
+                    writer.write("1000 ");
+                } else {
+                    writer.write(""+field.getLength()+" ");
+                }
 				
 				// Col 5 : The separator is also ignored, we're going to put a tab in here, like in the sample
 				//
@@ -310,17 +304,29 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 				data.fifoStream.close();
 				data.fifoStream=null;
 
-				// Close the output stream...
-				//
-				data.bulkOutputStream.flush();
-				data.bulkOutputStream.close();
-				data.bulkOutputStream=null;
-				
-                // wait for the client process to finish and check for any error...
-				//
-            	int exitVal = data.mClientlProcess.waitFor();
-				logBasic(Messages.getString("LucidDBBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
-	            data.mClientlProcess=null;
+                // wait for the INSERT statement to finish and check for any
+                // error and/or warning...
+                data.sqlRunner.join();
+                SqlRunner sqlRunner = data.sqlRunner;
+                data.sqlRunner = null;
+                for (String warning : sqlRunner.warnings) {
+                    // REVIEW jvs 13-Dec-2008:  It would be nice if there were
+                    // a logWarning instead?
+                    logError(" (WARNING) " + warning);
+                }
+                sqlRunner.checkExcn();
+
+                // If there was no fatal exception, but there were warnings,
+                // retrieve the rejected row count
+                if (!sqlRunner.warnings.isEmpty()) {
+                    ResultSet rs = data.db.openQuery("SELECT PARAM_VALUE FROM SYS_ROOT.USER_SESSION_PARAMETERS WHERE PARAM_NAME='lastRowsRejected'");
+                    try {
+                        rs.next();
+                        setLinesRejected(rs.getInt(1));
+                    } finally {
+                        rs.close();
+                    }
+                }
 	            
 				return false;
 			}
@@ -396,15 +402,17 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 		    			}
 		    			break;
 		    		case ValueMetaInterface.TYPE_DATE:
-		    			// Keep the data format as indicated.
-		    			//
-		    			if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
+		    			// REVIEW jvs 13-Dec-2008:  Is it OK to ignore
+		    			// FieldFormatOk like this?
+		    			if (false && valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
 		    				data.fifoStream.write((byte[])valueData);
 		    			} else {
 		    				Date date = valueMeta.getDate(valueData);
-		    				// Convert it to the LucidDB date format "yyyy/MM/dd HH:mm:ss"
-		    				//
-		    				data.fifoStream.write(data.bulkDateMeta.getString(date).getBytes());
+		    				// Convert it to the ISO timestamp format
+		    				// "yyyy-MM-dd HH:mm:ss" // or date format
+		    				// "yyyy-MM-dd" as appropriate, since LucidDB
+		    				// follows SQL:2003 here
+		    				data.fifoStream.write(data.bulkFormatMeta[i].getString(date).getBytes());
 		    			}
 		    			break;
 		    		case ValueMetaInterface.TYPE_BOOLEAN:
@@ -454,8 +462,12 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 			data.separator = ",".getBytes();
 			data.newline = Const.CR.getBytes();
 
+			data.bulkTimestampMeta = new ValueMeta("timestampMeta", ValueMetaInterface.TYPE_DATE);
+			data.bulkTimestampMeta.setConversionMask("yyyy-MM-dd HH:mm:ss");
+			data.bulkTimestampMeta.setStringEncoding(meta.getEncoding());
+
 			data.bulkDateMeta = new ValueMeta("dateMeta", ValueMetaInterface.TYPE_DATE);
-			data.bulkDateMeta.setConversionMask("yyyy-MM-dd HH:mm:ss");
+			data.bulkDateMeta.setConversionMask("yyyy-MM-dd");
 			data.bulkDateMeta.setStringEncoding(meta.getEncoding());
 
 			data.bulkNumberMeta = new ValueMeta("numberMeta", ValueMetaInterface.TYPE_NUMBER);
@@ -488,15 +500,21 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 	    //
 	    try {
 	    	if (data.fifoStream!=null) data.fifoStream.close();
-	    	if (data.bulkOutputStream!=null) data.bulkOutputStream.close();
-	    	if (data.mClientlProcess!=null) {
-	    		int exitValue = data.mClientlProcess.waitFor();
-	    		logDetailed("Exit value for the mclient process was : "+exitValue);
-	    	}
+
+            // Stop the SQL execution thread
+            if (data.sqlRunner!= null) {
+                data.sqlRunner.join();
+                data.sqlRunner = null;
+            }
+            // And finally, release the database connection
+            if (data.db!=null) {
+                data.db.disconnect();
+                data.db = null;
+            }
 	    }
 	    catch(Exception e) {
 	    	setErrors(1L);
-	    	logError("Unexpected error encountered while finishing the client process", e);
+	    	logError("Unexpected error encountered while closing the client connection", e);
 	    }
 	    
 	    super.dispose(smi, sdi);
@@ -509,4 +527,57 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 	{
 		BaseStep.runStepThread(this, meta, data);
 	}
+
+    static class SqlRunner extends Thread
+    {
+        private LucidDBBulkLoaderData data;
+        
+        private PreparedStatement ps;
+
+        private SQLException ex;
+
+        List<String> warnings;
+        
+        SqlRunner(LucidDBBulkLoaderData data, PreparedStatement ps)
+        {
+            this.data = data;
+            this.ps = ps;
+            warnings = new ArrayList<String>();
+        }
+        
+        public void run()
+        {
+            try {
+                // TODO jvs 12-Dec-2008:  cross-check result against actual number
+                // of rows sent.
+                ps.executeUpdate();
+
+                // Pump out any warnings and save them.
+                SQLWarning warning = ps.getWarnings();
+                while (warning != null) {
+                    warnings.add(warning.getMessage());
+                    warning = warning.getNextWarning();
+                }
+            } catch (SQLException ex) {
+                this.ex = ex;
+            } finally {
+                try {
+                    data.db.closePreparedStatement(ps);
+                } catch (KettleException ke) {
+                    // not much we can do with this
+                } finally {
+                    ps = null;
+                }
+            }
+        }
+
+        void checkExcn() throws SQLException
+        {
+            // This is called from the main thread context to rethrow any saved
+            // excn.
+            if (ex != null) {
+                throw ex;
+            }
+        }
+    }
 }

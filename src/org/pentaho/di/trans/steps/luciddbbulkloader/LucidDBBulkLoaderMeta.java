@@ -66,7 +66,7 @@ import org.w3c.dom.Node;
 		    lenient 'no');
  * </pre><br>
  * - Create a bulk loader file, SQL Server style: .bcp extension<br>
- * - Execute the following SQL Command to bulk load in a separate shell process in the background:<br>
+ * - Execute the following SQL Command to bulk load in a separate SQL thread in the background:<br>
  <pre>
 		insert into {schemaName}.{tableName}
 		select * from {fifoServerName}."DEFAULT"."{tableName}";
@@ -94,9 +94,6 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	/** The name of the FIFO server to create */
 	private String fifoServerName;
 	
-	/** Path to the client utility */
-	private String clientPath;
-
     /** database connection */
 	private DatabaseMeta databaseMeta;
 
@@ -111,6 +108,9 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 
 	/** Encoding to use */
 	private String encoding;
+	
+    /** maximum errors */
+	private int    maxErrors;		
 	
 	
 	/** The number of rows to buffer before passing them over to LucidDB.
@@ -224,6 +224,9 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 			String con     = XMLHandler.getTagValue(stepnode, "connection");   //$NON-NLS-1$
 			databaseMeta   = DatabaseMeta.findDatabase(databases, con);
 
+			String serror   = XMLHandler.getTagValue(stepnode, "errors");       //$NON-NLS-1$
+			maxErrors      = Const.toInt(serror, 0);      // default to 0.
+            
 			bufferSize = XMLHandler.getTagValue(stepnode, "buffer_size");       //$NON-NLS-1$
 
             schemaName     = XMLHandler.getTagValue(stepnode, "schema");       //$NON-NLS-1$
@@ -232,7 +235,6 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 			fifoDirectory  = XMLHandler.getTagValue(stepnode, "fifo_directory");        //$NON-NLS-1$
 			fifoServerName = XMLHandler.getTagValue(stepnode, "fifo_server_name");        //$NON-NLS-1$
 
-			clientPath         = XMLHandler.getTagValue(stepnode, "client_path");       //$NON-NLS-1$
 			encoding       = XMLHandler.getTagValue(stepnode, "encoding");         //$NON-NLS-1$
 
 			int nrvalues = XMLHandler.countNodes(stepnode, "mapping");      //$NON-NLS-1$
@@ -258,10 +260,10 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	{
 		fieldTable   = null;
 		databaseMeta = null;
+		maxErrors    = 0;
 		bufferSize   = "100000";
         schemaName   = "";                //$NON-NLS-1$
 		tableName    = Messages.getString("LucidDBBulkLoaderMeta.DefaultTableName"); //$NON-NLS-1$
-		clientPath  = "/opt/luciddb-0.7.5/bin/sqllineClient";    //$NON-NLS-1$
         encoding     = "";                                       //$NON-NLS-1$
         fifoDirectory = "/tmp/fifo/";
         
@@ -273,10 +275,10 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
         StringBuffer retval = new StringBuffer(300);
 
 		retval.append("    ").append(XMLHandler.addTagValue("connection",   databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("    ").append(XMLHandler.addTagValue("errors",       maxErrors));     //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("buffer_size",  bufferSize));     //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    ").append(XMLHandler.addTagValue("schema",       schemaName));    //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("table",        tableName));     //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("client_path",  clientPath));        //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("encoding",     encoding));      //$NON-NLS-1$ //$NON-NLS-2$
 
 		retval.append("    ").append(XMLHandler.addTagValue("fifo_directory",   fifoDirectory));      //$NON-NLS-1$ //$NON-NLS-2$
@@ -301,10 +303,10 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		{
 			long id_connection =  rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
 			databaseMeta   =      DatabaseMeta.findDatabase( databases, id_connection);
+     		maxErrors      = (int)rep.getStepAttributeInteger(id_step, "errors");         //$NON-NLS-1$
      		bufferSize     =      rep.getStepAttributeString(id_step, "buffer_size");         //$NON-NLS-1$
             schemaName     =      rep.getStepAttributeString(id_step,  "schema");         //$NON-NLS-1$
 			tableName      =      rep.getStepAttributeString(id_step,  "table");          //$NON-NLS-1$
-			clientPath    =      rep.getStepAttributeString(id_step,  "client_path");         //$NON-NLS-1$
 			encoding       =      rep.getStepAttributeString(id_step,  "encoding");       //$NON-NLS-1$
 			fifoDirectory  =      rep.getStepAttributeString(id_step,  "fifo_directory");       //$NON-NLS-1$
 			fifoServerName =      rep.getStepAttributeString(id_step,  "fifo_server_name");       //$NON-NLS-1$
@@ -333,12 +335,11 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		try
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "id_connection",    databaseMeta==null?-1:databaseMeta.getID()); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "errors",          maxErrors);     //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "buffer_size",      bufferSize);     //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "schema",           schemaName);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "table",            tableName);     //$NON-NLS-1$
 			
-			rep.saveStepAttribute(id_transformation, id_step, "client_path",      clientPath);        //$NON-NLS-1$
-
 			rep.saveStepAttribute(id_transformation, id_step, "encoding",         encoding);      //$NON-NLS-1$
 
 			rep.saveStepAttribute(id_transformation, id_step, "fifo_directory",   fifoDirectory);      //$NON-NLS-1$
@@ -706,6 +707,14 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	public String getEnclosure() {
 		return "\"";
 	}
+    
+	public int getMaxErrors() {
+		return maxErrors;
+	}
+
+	public void setMaxErrors(int maxErrors) {
+		this.maxErrors = maxErrors;
+	}
 
 	/**
 	 * @return the bufferSize
@@ -733,20 +742,6 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	 */
 	public void setFieldFormatOk(boolean[] fieldFormatOk) {
 		this.fieldFormatOk = fieldFormatOk;
-	}
-
-	/**
-	 * @param clientPath the client path to set
-	 */
-	public void setClientPath(String clientPath) {
-		this.clientPath = clientPath;
-	}
-
-	/**
-	 * @return the client path
-	 */
-	public String getClientPath() {
-		return clientPath;
 	}
 
 	/**
