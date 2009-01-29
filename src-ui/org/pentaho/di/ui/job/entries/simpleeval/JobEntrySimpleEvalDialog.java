@@ -68,10 +68,8 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 	private Button       wOK, wCancel;
 	private Listener     lsOK, lsCancel;
 
-
 	private JobEntrySimpleEval jobEntry;
 	private Shell         	    shell;
-	//private Props props;
 
 	private SelectionAdapter lsDef;
 
@@ -96,9 +94,6 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 	private Label wlSuccessNumberCondition;
 	private CCombo wSuccessNumberCondition;
 	private FormData fdlSuccessNumberCondition, fdSuccessNumberCondition;
-	
-	
-	
 	
 	private Label wlCompareValue;
 	private TextVar wCompareValue;
