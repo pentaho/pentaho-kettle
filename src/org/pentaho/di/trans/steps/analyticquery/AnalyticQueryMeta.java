@@ -340,7 +340,7 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
 				aggregateField[i] = rep.getStepAttributeString(id_step, i, "aggregate_name"); //$NON-NLS-1$
 				subjectField[i]   = rep.getStepAttributeString(id_step, i, "aggregate_subject"); //$NON-NLS-1$
 				aggregateType[i]      = getType( rep.getStepAttributeString(id_step, i, "aggregate_type") ); //$NON-NLS-1$
-				valueField[i]   = Integer.parseInt(rep.getStepAttributeString(id_step, i, "aggregate_value_field")); //$NON-NLS-1$
+				valueField[i]   = (int) rep.getStepAttributeInteger(id_step, i, "aggregate_value_field"); //$NON-NLS-1$
 			}
 			
 		}
