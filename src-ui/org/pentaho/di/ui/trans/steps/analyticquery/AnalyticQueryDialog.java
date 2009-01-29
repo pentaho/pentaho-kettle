@@ -39,7 +39,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -59,7 +58,6 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.trans.steps.analyticquery.AnalyticQueryMeta;
 import org.pentaho.di.trans.steps.analyticquery.Messages;
 
@@ -75,39 +73,11 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 	private Label        wlAgg;
 	private TableView    wAgg;
 	private FormData     fdlAgg, fdAgg;
-
-	/*private Label        wlAllRows;
-	private Button       wAllRows;
-	private FormData     fdlAllRows, fdAllRows;
-
-    private Label        wlSortDir;
-    private Button       wbSortDir;
-    private TextVar      wSortDir;
-    private FormData     fdlSortDir, fdbSortDir, fdSortDir;
-
-    private Label        wlPrefix;
-    private Text         wPrefix;
-    private FormData     fdlPrefix, fdPrefix;
-
-    private Label        wlAddLineNr;
-    private Button       wAddLineNr;
-    private FormData     fdlAddLineNr, fdAddLineNr;
-    
-    private Label        wlLineNrField;
-    private Text         wLineNrField;
-    private FormData     fdlLineNrField, fdLineNrField;
-
-    private Label        wlAlwaysAddResult;
-    private Button       wAlwaysAddResult;
-    private FormData     fdlAlwaysAddResult, fdAlwaysAddResult;*/
-    
-
 	private Button wGet, wGetAgg;
 	private FormData fdGet, fdGetAgg;
 	private Listener lsGet, lsGetAgg;
 
 	private AnalyticQueryMeta input;
-	/*private boolean backupAllRows;*/
 	private ColumnInfo[] ciKey;
 	private ColumnInfo[] ciReturn;
 	
@@ -168,167 +138,6 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
 
-		/*// Include all rows?
-		wlAllRows=new Label(shell, SWT.RIGHT);
-		wlAllRows.setText(Messages.getString("AnalyticQueryDialog.AllRows.Label")); //$NON-NLS-1$
- 		props.setLook(wlAllRows);
-		fdlAllRows=new FormData();
-		fdlAllRows.left = new FormAttachment(0, 0);
-		fdlAllRows.top  = new FormAttachment(wStepname, margin);
-		fdlAllRows.right= new FormAttachment(middle, -margin);
-		wlAllRows.setLayoutData(fdlAllRows);
-		wAllRows=new Button(shell, SWT.CHECK );
- 		props.setLook(wAllRows);
-		fdAllRows=new FormData();
-		fdAllRows.left = new FormAttachment(middle, 0);
-		fdAllRows.top  = new FormAttachment(wStepname, margin);
-		fdAllRows.right= new FormAttachment(100, 0);
-		wAllRows.setLayoutData(fdAllRows);
-		wAllRows.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					//input.setPassAllRows( !input.passAllRows() );
-					input.setChanged();
-                    setFlags();
-				}
-			}
-		);
-        
-        wlSortDir=new Label(shell, SWT.RIGHT);
-        wlSortDir.setText(Messages.getString("AnalyticQueryDialog.TempDir.Label")); //$NON-NLS-1$
-        props.setLook(wlSortDir);
-        fdlSortDir=new FormData();
-        fdlSortDir.left = new FormAttachment(0, 0);
-        fdlSortDir.right= new FormAttachment(middle, -margin);
-        fdlSortDir.top  = new FormAttachment(wAllRows, margin);
-        wlSortDir.setLayoutData(fdlSortDir);
-
-        wbSortDir=new Button(shell, SWT.PUSH| SWT.CENTER);
-        props.setLook(wbSortDir);
-        wbSortDir.setText(Messages.getString("AnalyticQueryDialog.Browse.Button")); //$NON-NLS-1$
-        fdbSortDir=new FormData();
-        fdbSortDir.right= new FormAttachment(100, 0);
-        fdbSortDir.top  = new FormAttachment(wAllRows, margin);
-        wbSortDir.setLayoutData(fdbSortDir);
-
-        wSortDir=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wSortDir);
-        wSortDir.addModifyListener(lsMod);
-        fdSortDir=new FormData();
-        fdSortDir.left = new FormAttachment(middle, 0);
-        fdSortDir.top  = new FormAttachment(wAllRows, margin);
-        fdSortDir.right= new FormAttachment(wbSortDir, -margin);
-        wSortDir.setLayoutData(fdSortDir);
-        
-        wbSortDir.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent arg0)
-            {
-                DirectoryDialog dd = new DirectoryDialog(shell, SWT.NONE);
-                dd.setFilterPath(wSortDir.getText());
-                String dir = dd.open();
-                if (dir!=null)
-                {
-                    wSortDir.setText(dir);
-                }
-            }
-        });
-
-        // Whenever something changes, set the tooltip to the expanded version:
-        wSortDir.addModifyListener(new ModifyListener()
-            {
-                public void modifyText(ModifyEvent e)
-                {
-                    wSortDir.setToolTipText(transMeta.environmentSubstitute( wSortDir.getText() ) );
-                }
-            }
-        );
-
-        // Prefix line...
-        wlPrefix=new Label(shell, SWT.RIGHT);
-        wlPrefix.setText(Messages.getString("AnalyticQueryDialog.FilePrefix.Label")); //$NON-NLS-1$
-        props.setLook(wlPrefix);
-        fdlPrefix=new FormData();
-        fdlPrefix.left = new FormAttachment(0, 0);
-        fdlPrefix.right= new FormAttachment(middle, -margin);
-        fdlPrefix.top  = new FormAttachment(wbSortDir, margin*2);
-        wlPrefix.setLayoutData(fdlPrefix);
-        wPrefix=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-        props.setLook(wPrefix);
-        wPrefix.addModifyListener(lsMod);
-        fdPrefix=new FormData();
-        fdPrefix.left  = new FormAttachment(middle, 0);
-        fdPrefix.top   = new FormAttachment(wbSortDir, margin*2);
-        fdPrefix.right = new FormAttachment(100, 0);
-        wPrefix.setLayoutData(fdPrefix);
-
-        // Include all rows?
-        wlAddLineNr=new Label(shell, SWT.RIGHT);
-        wlAddLineNr.setText(Messages.getString("AnalyticQueryDialog.AddLineNr.Label")); //$NON-NLS-1$
-        props.setLook(wlAddLineNr);
-        fdlAddLineNr=new FormData();
-        fdlAddLineNr.left = new FormAttachment(0, 0);
-        fdlAddLineNr.top  = new FormAttachment(wPrefix, margin);
-        fdlAddLineNr.right= new FormAttachment(middle, -margin);
-        wlAddLineNr.setLayoutData(fdlAddLineNr);
-        wAddLineNr=new Button(shell, SWT.CHECK );
-        props.setLook(wAddLineNr);
-        fdAddLineNr=new FormData();
-        fdAddLineNr.left = new FormAttachment(middle, 0);
-        fdAddLineNr.top  = new FormAttachment(wPrefix, margin);
-        fdAddLineNr.right= new FormAttachment(100, 0);
-        wAddLineNr.setLayoutData(fdAddLineNr);
-        wAddLineNr.addSelectionListener(new SelectionAdapter() 
-            {
-                public void widgetSelected(SelectionEvent e) 
-                {
-                    
-                    input.setChanged();
-                    setFlags();
-                }
-            }
-        );
-
-        // LineNrField line...
-        wlLineNrField=new Label(shell, SWT.RIGHT);
-        wlLineNrField.setText(Messages.getString("AnalyticQueryDialog.LineNrField.Label")); //$NON-NLS-1$
-        props.setLook(wlLineNrField);
-        fdlLineNrField=new FormData();
-        fdlLineNrField.left = new FormAttachment(0, 0);
-        fdlLineNrField.right= new FormAttachment(middle, -margin);
-        fdlLineNrField.top  = new FormAttachment(wAddLineNr, margin);
-        wlLineNrField.setLayoutData(fdlLineNrField);
-        wLineNrField=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-        props.setLook(wLineNrField);
-        wLineNrField.addModifyListener(lsMod);
-        fdLineNrField=new FormData();
-        fdLineNrField.left  = new FormAttachment(middle, 0);
-        fdLineNrField.top   = new FormAttachment(wAddLineNr, margin);
-        fdLineNrField.right = new FormAttachment(100, 0);
-        wLineNrField.setLayoutData(fdLineNrField);
-
-        // Always pass a result rows as output
-        //
-        wlAlwaysAddResult=new Label(shell, SWT.RIGHT);
-        wlAlwaysAddResult.setText(Messages.getString("AnalyticQueryDialog.AlwaysAddResult.Label")); //$NON-NLS-1$
-        wlAlwaysAddResult.setToolTipText(Messages.getString("AnalyticQueryDialog.AlwaysAddResult.ToolTip")); //$NON-NLS-1$
-        props.setLook(wlAlwaysAddResult);
-        fdlAlwaysAddResult=new FormData();
-        fdlAlwaysAddResult.left = new FormAttachment(0, 0);
-        fdlAlwaysAddResult.top  = new FormAttachment(wLineNrField, margin);
-        fdlAlwaysAddResult.right= new FormAttachment(middle, -margin);
-        wlAlwaysAddResult.setLayoutData(fdlAlwaysAddResult);
-        wAlwaysAddResult=new Button(shell, SWT.CHECK );
-        wAlwaysAddResult.setToolTipText(Messages.getString("AnalyticQueryDialog.AlwaysAddResult.ToolTip")); //$NON-NLS-1$
-        props.setLook(wAlwaysAddResult);
-        fdAlwaysAddResult=new FormData();
-        fdAlwaysAddResult.left = new FormAttachment(middle, 0);
-        fdAlwaysAddResult.top  = new FormAttachment(wLineNrField, margin);
-        fdAlwaysAddResult.right= new FormAttachment(100, 0);
-        wAlwaysAddResult.setLayoutData(fdAlwaysAddResult);*/
-
-        
 		wlGroup=new Label(shell, SWT.NONE);
 		wlGroup.setText(Messages.getString("AnalyticQueryDialog.Group.Label")); //$NON-NLS-1$
  		props.setLook(wlGroup);
@@ -497,19 +306,6 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
         ciKey[0].setComboValues(fieldNames);
         ciReturn[1].setComboValues(fieldNames);
     }
-    /*public void setFlags()
-    {
-        wlSortDir.setEnabled( wAllRows.getSelection() );
-        wbSortDir.setEnabled( wAllRows.getSelection() );
-        wSortDir.setEnabled( wAllRows.getSelection() );
-        wlPrefix.setEnabled( wAllRows.getSelection() );
-        wPrefix.setEnabled( wAllRows.getSelection() );
-        wlAddLineNr.setEnabled( wAllRows.getSelection() );
-        wAddLineNr.setEnabled( wAllRows.getSelection() );
-        
-        wlLineNrField.setEnabled( wAllRows.getSelection() && wAddLineNr.getSelection() );
-        wLineNrField.setEnabled( wAllRows.getSelection() && wAddLineNr.getSelection() );
-    }*/
 
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
@@ -517,7 +313,7 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), Messages.getString("AnalyticQueryDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug(toString(), Messages.getString("AnalyticQueryDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
         
         
 		if (input.getGroupField()!=null)
@@ -539,8 +335,6 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 			if (valuetext != null ){
 				item.setText(4, valuetext);
 			}
-				
-			
 		}
         
 		wStepname.selectAll();
@@ -548,15 +342,12 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 		wGroup.optWidth(true);
 		wAgg.setRowNums();
 		wAgg.optWidth(true);
-        
-      /*  setFlags();*/
 	}
 	
 	private void cancel()
 	{
 		stepname=null;
 		input.setChanged(backupChanged);
-		//input.setPassAllRows(  backupAllRows );
 		dispose();
 	}
 	
@@ -566,10 +357,6 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 
 		int sizegroup = wGroup.nrNonEmpty();
 		int nrfields = wAgg.nrNonEmpty();
-        //input.setPrefix( wPrefix.getText() );
-        //input.setDirectory( wSortDir.getText() );
-
-       
         
 		input.allocate(sizegroup, nrfields);
 				
@@ -585,7 +372,7 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 			input.getAggregateField()[i]  = item.getText(1);		
 			input.getSubjectField()[i]    = item.getText(2);		
 			input.getAggregateType()[i]       = AnalyticQueryMeta.getType(item.getText(3));
-			input.getValueField()[i]    = Integer.parseInt(item.getText(4));
+			input.getValueField()[i]    = Const.toInt(item.getText(4),1);
 		}
 		
 		stepname = wStepname.getText();

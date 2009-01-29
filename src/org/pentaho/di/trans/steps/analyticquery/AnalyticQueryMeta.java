@@ -410,8 +410,4 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
 		this.number_of_fields = number_of_fields;
 	}
 
-
-
-   
-    
 }
