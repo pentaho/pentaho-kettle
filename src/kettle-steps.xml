@@ -1342,7 +1342,7 @@
 		<image-uri>ui/images/US.png</image-uri>
 	</step>
 	
-		<step id="UniqueRowsByHashSet">
+		<step id="UniqueRowsByHashSet,UniqueRowsByHashSetMeta">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.UniqueRowsByHashSet")
 		</description>
