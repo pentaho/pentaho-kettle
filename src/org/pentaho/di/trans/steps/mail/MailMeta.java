@@ -776,7 +776,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 		     this.secureconnectiontype = rep.getStepAttributeString(id_step, "secureconnectiontype");
 
 		      
-		      int nrTypes = rep.countNrJobEntryAttributes(id_step, "file_type");
+		      int nrTypes = rep.countNrStepAttributes(id_step, "file_type");
 		      allocate(nrTypes);
 
 		      for (int i = 0; i < nrTypes; i++) {
@@ -790,7 +790,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 		      
 		    } catch (KettleDatabaseException dbe)
 		    {
-		      throw new KettleException("Unable to load job entry of type 'mail' from the repository with id_step="
+		      throw new KettleException("Unable to load step type 'mail' from the repository with id_step="
 		          + id_step, dbe);
 		    }
 
@@ -859,7 +859,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 
 	    } catch (KettleDatabaseException dbe)
 	    {
-	      throw new KettleException("Unable to save job entry of type 'mail' to the repository for id_step=" + id_step, dbe);
+	      throw new KettleException("Unable to save step type 'mail' to the repository for id_step=" + id_step, dbe);
 	    }
 
 	}
