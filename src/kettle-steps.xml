@@ -564,7 +564,6 @@
 		</tooltip>
 		<image-uri>ui/images/GRP.png</image-uri>
 	</step>
-	
 		<step id="AnalyticQuery">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AnalyticQuery")
@@ -574,7 +573,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.AnalyticQuery")
 		</tooltip>
-		<image-uri>ui/images/GRP.png</image-uri>
+		<image-uri>ui/images/AQI.png</image-uri>
 	</step>
 	
 	<step id="MergeJoin">
