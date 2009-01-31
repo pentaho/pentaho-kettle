@@ -65,7 +65,7 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 
 	//Add a comment
 {
-    public static final String STRING_SORT_WARNING_PARAMETER = "GroupSortWarning"; //$NON-NLS-1$
+    public static final String STRING_SORT_WARNING_PARAMETER = "AnalyticQuerySortWarning"; //$NON-NLS-1$
 	private Label        wlGroup;
 	private TableView    wGroup;
 	private FormData     fdlGroup, fdGroup;
