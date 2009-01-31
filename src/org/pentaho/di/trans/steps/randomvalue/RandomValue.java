@@ -49,7 +49,7 @@ public class RandomValue extends BaseStep implements StepInterface {
 		Object[] row = new Object[data.outputRowMeta.size()];
 		for (int i = 0; i < inputRowMeta.size(); i++) {
 			row[i] = inputRowData[i]; // no data is changed, clone is not
-										// needed here.
+									  // needed here.
 		}
 		Random randomgen = new Random();
 
@@ -59,15 +59,7 @@ public class RandomValue extends BaseStep implements StepInterface {
 				row[index] = randomgen.nextDouble();
 				break;
 			case RandomValueMeta.TYPE_RANDOM_INTEGER:
-				row[index] = new Long(randomgen.nextInt(2147483647)); // 2147483647
-																		// is
-																		// the
-																		// max
-																		// value
-																		// for
-																		// integer
-																		// (32
-																		// bits)
+				row[index] = new Long(randomgen.nextInt(2147483647)); // 2147483647 is the max value for integer (32 bits)
 				break;
 			case RandomValueMeta.TYPE_RANDOM_STRING:
 				row[index] = Long.toString(Math.abs(randomgen.nextLong()), 32);
@@ -75,11 +67,12 @@ public class RandomValue extends BaseStep implements StepInterface {
 			case RandomValueMeta.TYPE_RANDOM_UUID:
 				row[index] = UUIDUtil.getUUIDAsString();
 				break;
-
+			case RandomValueMeta.TYPE_RANDOM_UUID4:
+				row[index] = data.u4.getUUID4AsString();
+				break;
 			default:
 				break;
 			}
-
 		}
 
 		return row;
@@ -98,8 +91,7 @@ public class RandomValue extends BaseStep implements StepInterface {
 			if (first) {
 				first = false;
 				data.outputRowMeta = getInputRowMeta().clone();
-				meta.getFields(data.outputRowMeta, getStepname(), null, null,
-						this);
+				meta.getFields(data.outputRowMeta, getStepname(), null, null,this);
 			}
 
 		} else {
@@ -109,8 +101,7 @@ public class RandomValue extends BaseStep implements StepInterface {
 			if (first) {
 				first = false;
 				data.outputRowMeta = new RowMeta();
-				meta.getFields(data.outputRowMeta, getStepname(), null, null,
-						this);
+				meta.getFields(data.outputRowMeta, getStepname(), null, null,this);
 			}
 		}
 
@@ -123,8 +114,7 @@ public class RandomValue extends BaseStep implements StepInterface {
 		row = getRandomValue(imeta, row);
 
 		if (log.isRowLevel())
-			logRowlevel(Messages.getString("RandomValue.Log.ValueReturned",
-					data.outputRowMeta.getString(row)));
+			logRowlevel(Messages.getString("RandomValue.Log.ValueReturned",data.outputRowMeta.getString(row)));
 
 		putRow(data.outputRowMeta, row);
 

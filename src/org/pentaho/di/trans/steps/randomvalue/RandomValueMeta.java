@@ -51,6 +51,8 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 	public final static int TYPE_RANDOM_STRING = 3;
 
 	public final static int TYPE_RANDOM_UUID = 4;
+	
+	public final static int TYPE_RANDOM_UUID4 = 5;
 
 	public static final RandomValueMetaFunction functions[] = new RandomValueMetaFunction[] {
 			null,
@@ -61,7 +63,9 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 			new RandomValueMetaFunction(TYPE_RANDOM_STRING, "random string",
 					Messages.getString("RandomValueMeta.TypeDesc.RandomString")),
 			new RandomValueMetaFunction(TYPE_RANDOM_UUID, "random uuid",
-					Messages.getString("RandomValueMeta.TypeDesc.RandomUUID")), };
+					Messages.getString("RandomValueMeta.TypeDesc.RandomUUID")),
+			new RandomValueMetaFunction(TYPE_RANDOM_UUID4, "random uuid4",
+					Messages.getString("RandomValueMeta.TypeDesc.RandomUUID4"))};
 
 	private String fieldName[];
 
@@ -183,20 +187,20 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 			ValueMetaInterface v;
 
 			switch (fieldType[i]) {
-			case TYPE_RANDOM_NUMBER: // All date values...
+			case TYPE_RANDOM_NUMBER: 
 				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_NUMBER);
 				break;
-			case TYPE_RANDOM_INTEGER: // All date values...
+			case TYPE_RANDOM_INTEGER: 
 				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_INTEGER);
-				// v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 				break;
-			case TYPE_RANDOM_STRING: // All date values...
+			case TYPE_RANDOM_STRING:
 				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING);
-				// v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 				break;
-			case TYPE_RANDOM_UUID: // All date values...
+			case TYPE_RANDOM_UUID:
 				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING);
-				// v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
+				break;
+			case TYPE_RANDOM_UUID4:
+				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING);
 				break;
 			default:
 				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_NONE);
