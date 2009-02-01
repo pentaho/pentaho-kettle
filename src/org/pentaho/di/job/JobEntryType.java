@@ -80,8 +80,8 @@ public enum JobEntryType
 	MS_ACCESS_BULK_LOAD(Messages.getString("JobEntry.MSAccessBulkLoad.TypeDesc")),
 	WAIT_FOR_SQL(Messages.getString("JobEntry.WaitForSQL.TypeDesc")),
 	EVAL_TABLE_CONTENT(Messages.getString("JobEntry.EvalTableContent.TypeDesc")),
-    SIMPLE_EVAL(Messages.getString("JobEntry.SimpleEval.TypeDesc"))
-	;
+    SIMPLE_EVAL(Messages.getString("JobEntry.SimpleEval.TypeDesc")),
+    SNMP_TRAP(Messages.getString("JobEntry.SNMPTrap.TypeDesc"));
 
 	private String description;
 	

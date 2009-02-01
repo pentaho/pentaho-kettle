@@ -796,4 +796,17 @@
 		</tooltip>
 		<image-uri>ui/images/SEV.png</image-uri>
 	</job>
+	<job id="SNMP_TRAP">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@SNMP_TRAP
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.snmptrap.JobEntrySNMPTrap
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SNMPTrap.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/SNMP.png</image-uri>
+	</job>
 </jobs>

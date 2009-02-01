@@ -108,5 +108,6 @@
 	<classpathentry kind="lib" path="libext/jfree/jcommon-1.0.14.jar"/>
 	<classpathentry kind="lib" path="libext/janino.jar"/>
 	<classpathentry kind="lib" path="libext/jackcess-1.1.18.jar"/>
+	<classpathentry kind="lib" path="libext/SNMP4J.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
