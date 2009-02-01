@@ -200,15 +200,28 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 
 	private void storeRowInCache(RowMetaInterface lookupMeta, Object[] lookupRow, Object[] add) {
 		
-		data.look.put(new RowMetaAndData(lookupMeta, lookupRow), new TimedRow(add));
+		RowMetaAndData rowMetaAndData = new RowMetaAndData(lookupMeta, lookupRow);
+// DEinspanjer 2009-02-01 XXX: I want to write a test case to prove this point before checking in.
+//		/* Don't insert a row with a duplicate key into the cache. It doesn't seem
+//		 * to serve a useful purpose and can potentially cause the step to return
+//		 * different values over the life of the transformation (if the source DB rows change)
+//		 * Additionally, if using the load all data feature, re-inserting would reverse the order
+//		 * specified in the step.
+//		 */
+//		if (!data.look.containsKey(rowMetaAndData)) {
+//		    data.look.put(rowMetaAndData, new TimedRow(add));
+//		}
+		data.look.put(rowMetaAndData, new TimedRow(add));
 
         // See if we have to limit the cache_size.
         // Sample 10% of the rows in the cache.
         // Remove everything below the second lowest date.
         // That should on average remove more than 10% of the entries
         // It's not exact science, but it will be faster than the old algorithm
-        // 
-        if (meta.getCacheSize()>0 && data.look.size()>meta.getCacheSize())
+        
+		// DEinspanjer 2009-02-01: If you had previously set a cache size and then turned on load all, this
+		// method would throw out entries if the previous cache size wasn't big enough.
+        if (!meta.isLoadingAllDataInCache() && meta.getCacheSize()>0 && data.look.size()>meta.getCacheSize())
         {
             List<RowMetaAndData> keys = new ArrayList<RowMetaAndData>(data.look.keySet());
             List<Date> samples = new ArrayList<Date>();
