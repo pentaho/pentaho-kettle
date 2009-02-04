@@ -436,8 +436,10 @@ public class GroupBy extends BaseStep implements StepInterface
 					data.agg[i]=ValueDataUtil.sum(valueMeta, value, subjMeta, subj);
 					break; 
 				case GroupByMeta.TYPE_GROUP_AVERAGE        :
-					data.agg[i]=ValueDataUtil.sum(valueMeta, value, subjMeta, subj);
-					data.counts[i]++;
+					if (!subjMeta.isNull(subj)) {
+					    data.agg[i]=ValueDataUtil.sum(valueMeta, value, subjMeta, subj);
+					    data.counts[i]++;
+					}
 					break; 
 				case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION :
 					data.counts[i]++;
@@ -454,7 +456,9 @@ public class GroupBy extends BaseStep implements StepInterface
 					data.agg[i] = sum;
 					break; 
 				case GroupByMeta.TYPE_GROUP_COUNT_ALL      :
-					data.counts[i]++;
+					if (!subjMeta.isNull(subj)) {
+					    data.counts[i]++;
+					}
 					break;
 				case GroupByMeta.TYPE_GROUP_MIN            :
 					if (subjMeta.compare(subj,valueMeta,value)<0) data.agg[i]=subj; 
