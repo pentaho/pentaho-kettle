@@ -134,11 +134,28 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
     {
         return  getSQLQueryColumnFields(columnname, tablename);
     }
+    
     public String getSQLQueryColumnFields(String columnname, String tableName)
     {
         return "SELECT TOP 1 " + columnname + " FROM "+tableName;
     }
 
+    /**
+     * @param tableNames The names of the tables to lock
+     * @return The SQL command to lock database tables for write purposes.
+     *         null is returned in case locking is not supported on the target database.
+     *         null is the default value
+     */
+    public String getSQLLockTables(String tableNames[])
+    {
+        StringBuffer sql=new StringBuffer(128);
+        for (int i=0;i<tableNames.length;i++)
+        {
+            sql.append("SELECT top 0 * FROM ").append(tableNames[i]).append(" (TABLOCK, REPEATABLEREAD);").append(Const.CR);
+        }
+        return sql.toString();
+    }
+    
 	/**
 	 * Generates the SQL statement to add a column to the specified table
 	 * @param tablename The table to add
