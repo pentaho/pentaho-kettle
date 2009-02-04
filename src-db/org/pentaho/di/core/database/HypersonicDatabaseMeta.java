@@ -156,7 +156,13 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 		switch(type)
 		{
 		case ValueMetaInterface.TYPE_DATE   : retval.append("TIMESTAMP"); break;
-		case ValueMetaInterface.TYPE_BOOLEAN: retval.append("CHAR(1)"); break;
+		case ValueMetaInterface.TYPE_BOOLEAN:
+			if (supportsBooleanDataType()) {
+				retval.append("BOOLEAN"); 
+			} else {
+				retval.append("CHAR(1)");
+			}
+			break;
 		case ValueMetaInterface.TYPE_NUMBER : 
 		case ValueMetaInterface.TYPE_INTEGER: 
         case ValueMetaInterface.TYPE_BIGNUMBER: 

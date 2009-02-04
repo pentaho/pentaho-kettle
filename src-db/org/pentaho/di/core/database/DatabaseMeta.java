@@ -1919,6 +1919,14 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     {
         return databaseInterface.supportsBooleanDataType();
     }
+    
+    /**
+     * 
+     * @param b Set to true if the database supports a boolean, bit, logical, ... datatype
+     */
+    public void setSupportsBooleanDataType(boolean b) {
+    	databaseInterface.setSupportsBooleanDataType(b);
+    }
 
     /**
      * Changes the names of the fields to their quoted equivalent if this is needed

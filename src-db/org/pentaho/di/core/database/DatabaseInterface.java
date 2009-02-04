@@ -551,6 +551,11 @@ public interface DatabaseInterface extends Cloneable
     public boolean supportsBooleanDataType();
     
     /**
+     * @param b Set to true if the database supports a boolean, bit, logical, ... datatype
+     */
+	public void setSupportsBooleanDataType(boolean b);
+
+    /**
      * @return true if the database defaults to naming tables and fields in upper case.
      * True for most databases except for stuborn stuff like Postgres ;-)
      */
@@ -769,4 +774,5 @@ public interface DatabaseInterface extends Cloneable
      * @param preferredSchemaName The preferred schema name of this database connection.
      */
     public void setPreferredSchemaName(String preferredSchemaName);
+
 }

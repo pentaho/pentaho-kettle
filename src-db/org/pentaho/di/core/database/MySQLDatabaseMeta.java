@@ -227,7 +227,14 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		switch(type)
 		{
 		case ValueMetaInterface.TYPE_DATE      : retval+="DATETIME"; break;
-		case ValueMetaInterface.TYPE_BOOLEAN   : retval+="CHAR(1)"; break;
+		case ValueMetaInterface.TYPE_BOOLEAN   : 
+			if (supportsBooleanDataType()) {
+				retval+="BOOLEAN"; 
+			} else {
+				retval+="CHAR(1)";
+			}
+			break;
+
 		case ValueMetaInterface.TYPE_NUMBER    :
 		case ValueMetaInterface.TYPE_INTEGER   : 
         case ValueMetaInterface.TYPE_BIGNUMBER : 

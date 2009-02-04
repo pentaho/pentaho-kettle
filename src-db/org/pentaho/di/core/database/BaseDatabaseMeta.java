@@ -134,6 +134,12 @@ public abstract class BaseDatabaseMeta implements Cloneable
      */
     public static final String ATTRIBUTE_PREFERRED_SCHEMA_NAME = "PREFERRED_SCHEMA_NAME";
     
+    /**
+     * Checkbox to allow you to configure if the database supports the boolean data type or not.
+     * Defaults to "false" for backward compatibility! 
+     */
+    public static final String ATTRIBUTE_SUPPORTS_BOOLEAN_DATA_TYPE = "SUPPORTS_BOOLEAN_DATA_TYPE";
+    
 
     
     public static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[]
@@ -867,8 +873,17 @@ public abstract class BaseDatabaseMeta implements Cloneable
      */
     public boolean supportsBooleanDataType()
     {
-        return false;
+        String usePool = attributes.getProperty(ATTRIBUTE_SUPPORTS_BOOLEAN_DATA_TYPE, "N");
+        return "Y".equalsIgnoreCase(usePool);
     }
+    
+    /**
+     * @param b Set to true if the database supports a boolean, bit, logical, ... datatype
+     */
+	public void setSupportsBooleanDataType(boolean b) 
+	{
+		attributes.setProperty(ATTRIBUTE_SUPPORTS_BOOLEAN_DATA_TYPE, b?"Y":"N");
+	}
 
     /**
      * @return true if the database defaults to naming tables and fields in uppercase.
