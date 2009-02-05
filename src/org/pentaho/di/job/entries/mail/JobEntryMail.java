@@ -903,7 +903,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   
       if (includeDate)
       {
-        messageText.append(Messages.getString("JobMail.Log.Comment.MsgDate") +": ").append(XMLHandler.date2string(new Date())).append(Const.CR).append(
+        messageText.append(Const.CR).append(Messages.getString("JobMail.Log.Comment.MsgDate") +": ").append(XMLHandler.date2string(new Date())).append(Const.CR).append(
             Const.CR);
       }
       if (!onlySendComment && result != null)
