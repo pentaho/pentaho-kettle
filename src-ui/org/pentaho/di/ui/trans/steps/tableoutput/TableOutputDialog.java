@@ -705,13 +705,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		wMainComp.layout();
 		wMainTab.setControl(wMainComp);
-		
-		fdTabFolder = new FormData();
-		fdTabFolder.left  = new FormAttachment(0, 0);
-		fdTabFolder.top   = new FormAttachment(wSpecifyFields, margin);
-		fdTabFolder.right = new FormAttachment(100, 0);		
-		wTabFolder.setLayoutData(fdTabFolder);
-		
+				
 		//
 		// Fields tab...
 		//
@@ -753,15 +747,15 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		wGetFields = new Button(wFieldsComp, SWT.PUSH);
 		wGetFields.setText(Messages.getString("TableOutputDialog.GetFields.Button")); //$NON-NLS-1$
 		fdGetFields = new FormData();
-		fdGetFields.top = new FormAttachment(wlFields, margin);
+		fdGetFields.top   = new FormAttachment(wlFields, margin);
 		fdGetFields.right = new FormAttachment(100, 0);
 		wGetFields.setLayoutData(fdGetFields);
 		
 		FormData fdFields=new FormData();
 		fdFields.left  = new FormAttachment(0, 0);
 		fdFields.top   = new FormAttachment(wlFields, margin);
-		fdFields.right = new FormAttachment(wGetFields, 0);
-		fdFields.bottom= new FormAttachment(100, 0);
+		fdFields.right = new FormAttachment(wGetFields, -margin);
+		fdFields.bottom= new FormAttachment(100, -2 * margin);
 		wFields.setLayoutData(fdFields);
 		
 		fdFieldsComp=new FormData();
@@ -774,7 +768,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		wFieldsComp.layout();
 		wFieldsTab.setControl(wFieldsComp);
 	
-		  // 
+  	    // 
         // Search the fields in the background
         //
         
@@ -804,8 +798,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
                 }
             }
         };
-        new Thread(runnable).start();
-		
+        new Thread(runnable).start();		
      
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -815,8 +808,15 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		
-		setButtonPositions(new Button[] { wOK, wCancel , wCreate }, margin, wTabFolder);
+		setButtonPositions(new Button[] { wOK, wCancel , wCreate }, margin, null);
 
+		fdTabFolder = new FormData();
+		fdTabFolder.left   = new FormAttachment(0, 0);
+		fdTabFolder.top    = new FormAttachment(wSpecifyFields, margin);
+		fdTabFolder.right  = new FormAttachment(100, 0);		
+		fdTabFolder.bottom = new FormAttachment(wOK, -margin);
+		wTabFolder.setLayoutData(fdTabFolder);
+		
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		lsCreate   = new Listener() { public void handleEvent(Event e) { sql(); } };
@@ -870,6 +870,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		}
 		return stepname;
 	}
+	
 	 private void getFields()
 	 {
 		if(!gotPreviousFields)
@@ -891,6 +892,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		 	gotPreviousFields=true;
 		}
 	 }
+	 
 	private void setTableFieldCombo(){
 		Runnable fieldLoader = new Runnable() {
 			public void run() {
@@ -933,6 +935,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		};
 		shell.getDisplay().asyncExec(fieldLoader);
 	}
+	
 	protected void setComboBoxes()
     {
         // Something was changed in the row.
@@ -950,6 +953,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         Const.sortStrings(fieldNames);
         ciFields[1].setComboValues(fieldNames);
     }
+	
     public void setFlags()
     {
     	DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
