@@ -34,7 +34,6 @@ public class VariableButtonListenerFactory
     }
 
     // Listen to the Variable... button
-    @SuppressWarnings("unchecked")
     public static final SelectionAdapter getSelectionAdapter(final Composite composite, final Text destination, final GetCaretPositionInterface getCaretPositionInterface, final InsertTextInterface insertTextInterface, final VariableSpace space)
     {
         return new SelectionAdapter()

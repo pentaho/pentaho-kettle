@@ -37,6 +37,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.i18n.LoaderInputStreamProvider;
 import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.StepCategory;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -637,8 +638,22 @@ public class StepLoader implements LoaderInputStreamProvider
             for (int b = 0; b < retval.length - 1; b++)
             {
                 // What is the index of retval[b] and retval[b+1]?
-                int idx1 = Const.indexOfString(retval[b  ], BaseStep.category_order);
-                int idx2 = Const.indexOfString(retval[b+1], BaseStep.category_order);
+                int idx1 = -1;
+                for (int x=0;x<StepCategory.STANDARD_CATEGORIES.length;x++) {
+                	StepCategory category = StepCategory.STANDARD_CATEGORIES[x];
+                	if (category.getName().equalsIgnoreCase(retval[b])) {
+                		idx1=x;
+                		break;
+                	}
+                }
+                int idx2 = -1;
+                for (int x=0;x<StepCategory.STANDARD_CATEGORIES.length;x++) {
+                	StepCategory category = StepCategory.STANDARD_CATEGORIES[x];
+                	if (category.getName().equalsIgnoreCase(retval[b+1])) {
+                		idx2=x;
+                		break;
+                	}
+                }
                 
                 if (idx1>idx2)
                 {

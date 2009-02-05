@@ -3181,6 +3181,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           trans.prepareExecution(args);
           initialized = true;
         } catch (KettleException e) {
+          log.logError(trans.getName(), "Preparing transformation execution failed", e);
           initialized = false;
         }
         halted = trans.hasHaltedSteps();

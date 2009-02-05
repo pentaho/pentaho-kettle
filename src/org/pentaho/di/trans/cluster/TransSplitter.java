@@ -449,7 +449,7 @@ public class TransSplitter
                             // Verify that the number of copies is equal to the number of slaves or 1
                             //
                             if (masterStep.getCopies()!=1 && masterStep.getCopies()!=(previousClusterSchema.findNrSlaves()*nrOfSourceCopies)) {
-                                throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+referenceClusterSchema.findNrSlaves()+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
+                                throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+previousClusterSchema.findNrSlaves()+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
                             }
                             Queue<Integer> masterStepCopyNumbers = new LinkedList<Integer>();
                             for (int i = 0; i < masterStep.getCopies(); i++) {
@@ -559,7 +559,7 @@ public class TransSplitter
                         					partitionSchema.expandPartitionsDynamically(previousClusterSchema.findNrSlaves(), originalTransformation);
                         				}
                         				
-                        				partitionSchema.retainPartitionsForSlaveServer(referenceClusterSchema.findNrSlaves(), getSlaveServerNumber(referenceClusterSchema, slaveServer));
+                        				partitionSchema.retainPartitionsForSlaveServer(previousClusterSchema.findNrSlaves(), getSlaveServerNumber(referenceClusterSchema, slaveServer));
                     					slave.addOrReplacePartitionSchema( partitionSchema );
                         			}
                                 }

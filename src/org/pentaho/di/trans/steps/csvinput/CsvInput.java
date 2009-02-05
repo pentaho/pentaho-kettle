@@ -302,14 +302,17 @@ public class CsvInput extends BaseStep implements StepInterface
 			//
 			data.filenr++;
 			
-			// See if we need to skip the header row...
+			// See if we need to skip a row...
+			// - If you have a header row checked and if you're not running in parallel
+			// - If you're running in parallel, if a header row is checked, if you're at the beginning of a file
 			//
-			if ((meta.isHeaderPresent() && !data.parallel) || // Standard flat file : skip header 
-				(data.parallel && data.filenr==data.startFilenr && data.bytesToSkipInFirstFile<=0) || // parallel processing : first file : nothing to skip
-				(data.parallel && data.filenr>data.startFilenr && data.bytesToSkipInFirstFile<=0)   // parallel processing : start of next file, nothing to skip
-				) {
-				readOneRow(false); // skip this row.
-				logBasic(Messages.getString("CsvInput.Log.HeaderRowSkipped", data.filenames[data.filenr-1]));
+			if (meta.isHeaderPresent()) {
+				if ( (!data.parallel) || // Standard flat file : skip header 
+					(data.parallel && data.bytesToSkipInFirstFile<=0)
+					) {
+					readOneRow(false); // skip this row.
+					logBasic(Messages.getString("CsvInput.Log.HeaderRowSkipped", data.filenames[data.filenr-1]));
+				}
 			}
 			
 			// Reset the row number pointer...

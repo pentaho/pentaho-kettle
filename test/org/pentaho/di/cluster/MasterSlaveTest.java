@@ -8,7 +8,7 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.cluster.TransSplitter;
 
-public class MasterSlave extends BaseCluster {
+public class MasterSlaveTest extends BaseCluster {
 
 	public void testStartStopSlaveServers() throws KettleException {
 		ClusterGenerator clusterGenerator = new ClusterGenerator();

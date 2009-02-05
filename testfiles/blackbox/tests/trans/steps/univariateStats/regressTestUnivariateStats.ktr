@@ -182,8 +182,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -194,8 +194,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -206,8 +206,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -218,8 +218,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -230,8 +230,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -242,8 +242,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -254,8 +254,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -266,8 +266,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -278,8 +278,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -290,8 +290,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -302,8 +302,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -314,8 +314,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -326,8 +326,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -338,8 +338,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -350,8 +350,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -362,8 +362,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -374,8 +374,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -386,8 +386,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -398,8 +398,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -410,8 +410,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -422,8 +422,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -434,8 +434,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -446,8 +446,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>
@@ -458,8 +458,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif/>
         <trim_type>none</trim_type>
         <length>-1</length>

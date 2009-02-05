@@ -143,7 +143,7 @@ public class ErrorDialog extends Dialog
 				else
 				{
                     text.append(Const.NVL(cause.getMessage(), cause.toString()));
-					while (text==null && cause!=null)
+					while (text.length()==0 && cause!=null)
 					{
 						cause = cause.getCause();
 						if (cause!=null) 

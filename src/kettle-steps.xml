@@ -18,7 +18,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Dummy")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.dummytrans.DummyTransMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Dummy")
 		</tooltip>
@@ -30,7 +30,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Append")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.append.AppendMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Append")
 		</tooltip>
@@ -126,7 +126,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Abort")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.abort.AbortMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Abort")
 		</tooltip>
@@ -198,7 +198,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.FilterRows")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.filterrows.FilterRowsMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.FilterRows")
 		</tooltip>
@@ -438,7 +438,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.NullIf")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.nullif.NullIfMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Nullif")
 		</tooltip>
@@ -486,7 +486,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.BlockingStep")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.blockingstep.BlockingStepMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.BlockingStep")
 		</tooltip>
@@ -558,18 +558,19 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GroupBy")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.groupby.GroupByMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@STATISTICS.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Groupby")
 		</tooltip>
 		<image-uri>ui/images/GRP.png</image-uri>
 	</step>
-		<step id="AnalyticQuery">
+	
+	<step id="AnalyticQuery">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AnalyticQuery")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.analyticquery.AnalyticQueryMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@STATISTICS.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.AnalyticQuery")
 		</tooltip>
@@ -605,7 +606,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XMLInput")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.xmlinput.XMLInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@DEPRECATED.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.XMLInput")
 		</tooltip>
@@ -814,7 +815,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XSDValidator")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.xsdvalidator.XsdValidatorMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@VALIDATION.getName()</category>
 		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.XSDValidator")
 		</tooltip>
 		<image-uri>ui/images/XSD.png</image-uri>
@@ -836,7 +837,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Validator")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.validator.ValidatorMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@VALIDATION.getName()</category>
 		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Validator")
 		</tooltip>
 		<image-uri>ui/images/VLD.png</image-uri>
@@ -926,7 +927,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SwitchCase")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.switchcase.SwitchCaseMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
 		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SwitchCase")
 		</tooltip>
 		<image-uri>ui/images/SWC.png</image-uri>
@@ -948,7 +949,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.StepMetastructure")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.stepmeta.StepMetastructureMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
 		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.StepMetastructure")
 		</tooltip>
 		<image-uri>ui/images/STMD.png</image-uri>
@@ -992,7 +993,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CloneRow")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.clonerow.CloneRowMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CloneRow")
 		</tooltip>
@@ -1004,7 +1005,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Delay")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.delay.DelayMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Delay")
 		</tooltip>
@@ -1064,7 +1065,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MailValidator")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.mailvalidator.MailValidatorMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@VALIDATION.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.MailValidator")
 		</tooltip>
@@ -1076,7 +1077,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Mail")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.mail.MailMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Mail")
 		</tooltip>
@@ -1088,7 +1089,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CreditCardValidator")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.creditcardvalidator.CreditCardValidatorMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@VALIDATION.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CreditCardValidator")
 		</tooltip>
@@ -1100,7 +1101,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ProcessFiles")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.processfiles.ProcessFilesMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ProcessFiles")
 		</tooltip>
@@ -1112,7 +1113,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DetectLastRow")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.detectlastrow.DetectLastRowMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.DetectLastRow")
 		</tooltip>
@@ -1124,7 +1125,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DetectEmptyStream")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.detectemptystream.DetectEmptyStreamMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.DetectEmptyStream")
 		</tooltip>
@@ -1136,7 +1137,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.WriteToLog")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.writetolog.WriteToLogMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.WriteToLog")
 		</tooltip>
@@ -1160,7 +1161,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetPreviousRowField")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.getpreviousrowfield.GetPreviousRowFieldMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@DEPRECATED.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GetPreviousRowField")
 		</tooltip>
@@ -1196,13 +1197,14 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.NumberRange")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.numberrange.NumberRangeMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.NumberRange")
 		</tooltip>
 		<image-uri>ui/images/NRI.png</image-uri>
 	</step>
-		<step id="SynchronizeAfterMerge">
+	
+	<step id="SynchronizeAfterMerge">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SynchronizeAfterMerge")
 		</description>
@@ -1219,62 +1221,67 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.LucidDBBulkLoader")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.luciddbbulkloader.LucidDBBulkLoaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@BULK.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.LucidDBBulkLoader")
 		</tooltip>
 		<image-uri>ui/images/OBL.png</image-uri>
 	</step>
-		<step id="ReplaceString">
+	
+	<step id="ReplaceString">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ReplaceString")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.replacestring.ReplaceStringMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ReplaceString")
 		</tooltip>
 		<image-uri>ui/images/RST.png</image-uri>
 	</step>
-		<step id="StringCut">
+	
+	<step id="StringCut">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.StringCut")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.stringcut.StringCutMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.StringCut")
 		</tooltip>
 		<image-uri>ui/images/SRC.png</image-uri>
 	</step>
-		<step id="IfNull">
+	
+	<step id="IfNull">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.IfNull")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.ifnull.IfNullMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.IfNull")
 		</tooltip>
 		<image-uri>ui/images/IFN.png</image-uri>
 	</step>
+	
 	<step id="RssOutput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RssOutput")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.rssoutput.RssOutputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.RssOutput")
 		</tooltip>
 		<image-uri>ui/images/RRO.png</image-uri>
 	</step>
-		<step id="RssInput">
+	
+	<step id="RssInput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RssInput")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.rssinput.RssInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.RssInput")
 		</tooltip>
@@ -1286,7 +1293,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SalesforceInput")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SalesforceInput")
 		</tooltip>
@@ -1298,7 +1305,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Formula")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.formula.FormulaMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@SCRIPTING.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Formula")
 		</tooltip>
@@ -1310,7 +1317,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Janino")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.janino.JaninoMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@SCRIPTING.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Janino")
 		</tooltip>
@@ -1322,7 +1329,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ReservoirSampling")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.reservoirsampling.ReservoirSamplingMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@STATISTICS.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ReservoirSampling")
 		</tooltip>
@@ -1334,14 +1341,14 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.UnivariateStats")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.univariatestats.UnivariateStatsMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@STATISTICS.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.UnivariateStats")
 		</tooltip>
 		<image-uri>ui/images/US.png</image-uri>
 	</step>
 	
-		<step id="UniqueRowsByHashSet,UniqueRowsByHashSetMeta">
+	<step id="UniqueRowsByHashSet,UniqueRowsByHashSetMeta">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.UniqueRowsByHashSet")
 		</description>
@@ -1352,7 +1359,8 @@
 		</tooltip>
 		<image-uri>ui/images/URH.png</image-uri>
 	</step>
-		<step id="HTTPPOST">
+	
+	<step id="HTTPPOST">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.HTTPPOST")
 		</description>

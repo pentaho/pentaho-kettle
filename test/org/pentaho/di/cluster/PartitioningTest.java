@@ -7,7 +7,7 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.cluster.TransSplitter;
 
-public class Partitioning extends BaseCluster {
+public class PartitioningTest extends BaseCluster {
 
 	/**
 	 * This test reads a CSV file in parallel on the cluster, one copy per slave.<br>

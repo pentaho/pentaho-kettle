@@ -32,7 +32,6 @@ public class AndValidator implements JobEntryValidator {
 
   private static final String VALIDATOR_NAME = "and"; //$NON-NLS-1$
 
-  @SuppressWarnings("unchecked")
   public boolean validate(CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
       ValidatorContext context) {
     //    Object o = context.get(KEY_VALIDATORS);

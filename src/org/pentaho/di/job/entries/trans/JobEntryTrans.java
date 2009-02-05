@@ -744,7 +744,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     }
                     catch (KettleException e) {
                     	
-                        log.logError(toString(), Messages.getString("JobTrans.Error.UnablePrepareExec"));
+                        log.logError(toString(), Messages.getString("JobTrans.Error.UnablePrepareExec"), e);
         				result.setNrErrors(1);
 					}
                 }

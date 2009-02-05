@@ -99,7 +99,7 @@
         <precision>-1</precision>
         </field>
       <field>
-        <name>Customer No</name>
+        <name>Customer_No</name>
         <type>Integer</type>
         <format>#</format>
         <currency/>
@@ -109,7 +109,7 @@
         <precision>0</precision>
         </field>
       <field>
-        <name>First Name</name>
+        <name>First_Name</name>
         <type>String</type>
         <format/>
         <currency/>
@@ -119,7 +119,7 @@
         <precision>-1</precision>
         </field>
       <field>
-        <name>Last Name</name>
+        <name>Last_Name</name>
         <type>String</type>
         <format/>
         <currency/>
@@ -139,7 +139,7 @@
         <precision>-1</precision>
         </field>
       <field>
-        <name>Birth Date</name>
+        <name>Birth_Date</name>
         <type>Date</type>
         <format>dd-MM-yyyy</format>
         <currency/>

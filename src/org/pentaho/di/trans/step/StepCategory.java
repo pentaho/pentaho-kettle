@@ -34,6 +34,10 @@ public class StepCategory
 	public static final StepCategory EXPERIMENTAL   = new StepCategory(Messages.getString("BaseStep.Category.Experimental"));
 	public static final StepCategory DEPRECATED     = new StepCategory(Messages.getString("BaseStep.Category.Deprecated"));
 	public static final StepCategory BULK           = new StepCategory(Messages.getString("BaseStep.Category.Bulk"));
+	public static final StepCategory VALIDATION     = new StepCategory(Messages.getString("BaseStep.Category.Validation"));
+	public static final StepCategory STATISTICS     = new StepCategory(Messages.getString("BaseStep.Category.Statistics"));
+	public static final StepCategory UTILITY        = new StepCategory(Messages.getString("BaseStep.Category.Utility"));
+	public static final StepCategory FLOW           = new StepCategory(Messages.getString("BaseStep.Category.Flow"));
 
 	
 	public static final int CATEGORY_USER_DEFINED   = -1;
@@ -50,9 +54,13 @@ public class StepCategory
 	public static final int CATEGORY_EXPERIMENTAL   = 10;
 	public static final int CATEGORY_DEPRECATED     = 11;
 	public static final int CATEGORY_BULK		    = 12;
+	public static final int CATEGORY_VALIDATION		= 13;
+	public static final int CATEGORY_STATISTICS		= 14;
+	public static final int CATEGORY_UTILITY		= 15;
+	public static final int CATEGORY_FLOW    		= 16;
 	
-	public static final StepCategory[] STANDARD_CATEGORIES = new StepCategory[] { INPUT, OUTPUT, TRANSFORM, SCRIPTING, 
-		LOOKUP, JOINS, DATA_WAREHOUSE, JOB, MAPPING, INLINE, EXPERIMENTAL, DEPRECATED, BULK,};
+	public static final StepCategory[] STANDARD_CATEGORIES = new StepCategory[] { INPUT, OUTPUT, TRANSFORM, UTILITY, FLOW, SCRIPTING, 
+		LOOKUP, JOINS, DATA_WAREHOUSE, VALIDATION, STATISTICS, JOB, MAPPING, INLINE, EXPERIMENTAL, DEPRECATED, BULK,};
 
 	private String name;
 	

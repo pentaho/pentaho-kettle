@@ -99,6 +99,9 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
                               
       };*/
 
+    /**
+     *@deprecated Please use StepCategory.STANDARD_CATEGORIES to get the natural order
+     */
     public static final String category_order[] =
     {
         StepCategory.INPUT.getName(),

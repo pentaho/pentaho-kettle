@@ -52,7 +52,7 @@ public class TransPainter
 	public static final String STRING_HOP_TYPE_ERROR            = "HopTypeError";            // $NON-NLS-1$
     
 	public static final String[] magnificationDescriptions = 
-		new String[] { "  100% ", "  75% ", "  50% ", "  25% "};
+		new String[] { "  200% ", "  150% ", "  100% ", "  75% ", "  50% ", "  25% "};
 
 /*	
 	public static final float[] magnifications = 
@@ -509,6 +509,9 @@ public class TransPainter
         	areaOwners.add(new AreaOwner(screen.x, screen.y, iconsize, iconsize, transMeta, stepMeta));
         }
         
+        // Draw a blank rectangle to prevent alpha channel problems...
+        //
+        gc.fillRectangle(screen.x, screen.y, iconsize, iconsize);
         String steptype = stepMeta.getStepID();
         Image im = (Image) images.get(steptype);
         if (im != null) // Draw the icon!
@@ -734,7 +737,7 @@ public class TransPainter
 
     private void drawArrow(GC gc, int line[], Object startObject, Object endObject)
     {
-    	double theta = Math.toRadians(10); // arrowhead sharpness
+    	double theta = Math.toRadians(11); // arrowhead sharpness
         int size = 19 + (linewidth - 1) * 5; // arrowhead length
 
         Point screen_from = real2screen(line[0], line[1], offset);

@@ -150,7 +150,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
         StringBuffer sql=new StringBuffer(128);
         for (int i=0;i<tableNames.length;i++)
         {
-            sql.append("SELECT top 0 * FROM ").append(tableNames[i]).append(" WITH (TABLOCK, REPEATABLEREAD);").append(Const.CR);
+            sql.append("SELECT top 0 * FROM ").append(tableNames[i]).append(" WITH (TABLOCKX, HOLDLOCK);").append(Const.CR);
         }
         return sql.toString();
     }
