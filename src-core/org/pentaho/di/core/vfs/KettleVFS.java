@@ -57,8 +57,7 @@ public class KettleVFS
 		        }
 	        }
         });
-        Runtime.getRuntime().addShutdownHook(thread);
-        
+        Runtime.getRuntime().addShutdownHook(thread); 
     }
     
     private synchronized static void checkHook() {
