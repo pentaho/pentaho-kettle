@@ -96,12 +96,12 @@ public class Const
 	public static final String PATH_SEPARATOR = System.getProperty("path.separator");
 
 	/**
-	 * CR: operating systems specific Cariage Return
+	 * CR: operating systems specific Carriage Return
 	 */
 	public static final String CR = System.getProperty("line.separator");
 
     /**
-     * DOSCR: MS-DOS specific Cariage Return
+     * DOSCR: MS-DOS specific Carriage Return
      */
     public static final String DOSCR = "\n\r";
     
