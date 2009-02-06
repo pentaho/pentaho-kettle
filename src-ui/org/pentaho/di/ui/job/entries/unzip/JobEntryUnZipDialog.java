@@ -99,6 +99,10 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 	private Label wlMovetoDirectory;
 	private TextVar wMovetoDirectory;
 	private FormData fdlMovetoDirectory, fdMovetoDirectory;
+	
+	private Label        wlcreateMoveToDirectory;
+	private Button       wcreateMoveToDirectory;
+	private FormData     fdlcreateMoveToDirectory, fdcreateMoveToDirectory;
 
 	private Label wlWildcard;
 	private TextVar wWildcard;
@@ -677,21 +681,10 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 		props.setLook(wlIfFileExists);
 		fdlIfFileExists = new FormData();
 		fdlIfFileExists.left = new FormAttachment(0, 0);
-		fdlIfFileExists.right = new FormAttachment(middle, 0);
+		fdlIfFileExists.right = new FormAttachment(middle, -margin);
 		fdlIfFileExists.top = new FormAttachment(wDateTimeFormat, margin);
 		wlIfFileExists.setLayoutData(fdlIfFileExists);
 		wIfFileExists = new CCombo(wUnzippedFiles, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		/*wIfFileExists.add(Messages.getString("JobUnZip.Skip.Label"));
-		wIfFileExists.add(Messages.getString("JobUnZip.Overwrite.Label"));
-		wIfFileExists.add(Messages.getString("JobUnZip.Give_Unique_Name.Label"));
-		wIfFileExists.add(Messages.getString("JobUnZip.Fail.Label"));
-		wIfFileExists.add(Messages.getString("JobUnZip.OverwriteIfSizeDifferent.Label"));
-		wIfFileExists.add(Messages.getString("JobUnZip.OverwriteIfSizeEquals.Label"));
-		wIfFileExists.add(Messages.getString("JobUnZip.OverwriteIfZipBigger.Label"));
-		wIfFileExists.add(Messages.getString("JobUnZip.OverwriteIfZipBiggerOrEqual.Label"));
-		wIfFileExists.add(Messages.getString("JobUnZip.OverwriteIfZipSmaller.Label"));
-		wIfFileExists.add(Messages.getString("JobUnZip.OverwriteIfZipSmallerOrEqual.Label"));
-		wIfFileExists.select(0); // +1: starts at -1*/
 		wIfFileExists.setItems(JobEntryUnZip.typeIfFileExistsDesc);
 		wIfFileExists.select(0); // +1: starts at -1
 		props.setLook(wIfFileExists);
@@ -766,7 +759,6 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 		fdbMovetoDirectory.top  = new FormAttachment(wAfterUnZip, margin);
 		wbMovetoDirectory.setLayoutData(fdbMovetoDirectory);
 		
-		
 		wMovetoDirectory.addModifyListener(lsMod);
 		fdMovetoDirectory = new FormData();
 		fdMovetoDirectory.left = new FormAttachment(middle, 0);
@@ -774,7 +766,34 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 		fdMovetoDirectory.right = new FormAttachment(wbMovetoDirectory, -margin);
 		wMovetoDirectory.setLayoutData(fdMovetoDirectory);
 		
-		 fdUnzippedFiles = new FormData();
+		
+		//create move to folder
+		wlcreateMoveToDirectory = new Label(wUnzippedFiles, SWT.RIGHT);
+		wlcreateMoveToDirectory.setText(Messages.getString("JobUnZip.createMoveToFolder.Label"));
+		props.setLook(wlcreateMoveToDirectory);
+		fdlcreateMoveToDirectory = new FormData();
+		fdlcreateMoveToDirectory.left = new FormAttachment(0, 0);
+		fdlcreateMoveToDirectory.top = new FormAttachment(wMovetoDirectory, margin);
+		fdlcreateMoveToDirectory.right = new FormAttachment(middle, -margin);
+		wlcreateMoveToDirectory.setLayoutData(fdlcreateMoveToDirectory);
+		wcreateMoveToDirectory = new Button(wUnzippedFiles, SWT.CHECK);
+		props.setLook(wcreateMoveToDirectory);
+		wcreateMoveToDirectory.setToolTipText(Messages.getString("JobUnZip.createMoveToFolder.Tooltip"));
+		fdcreateMoveToDirectory = new FormData();
+		fdcreateMoveToDirectory.left = new FormAttachment(middle, 0);
+		fdcreateMoveToDirectory.top = new FormAttachment(wMovetoDirectory, margin);
+		fdcreateMoveToDirectory.right = new FormAttachment(100, 0);
+		wcreateMoveToDirectory.setLayoutData(fdcreateMoveToDirectory);
+		wcreateMoveToDirectory.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		});
+		
+		
+		fdUnzippedFiles = new FormData();
         fdUnzippedFiles.left = new FormAttachment(0, margin);
         fdUnzippedFiles.top = new FormAttachment(wSource, margin);
         fdUnzippedFiles.right = new FormAttachment(100, -margin);
@@ -1077,12 +1096,16 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 			wMovetoDirectory.setEnabled(true);
 			wlMovetoDirectory.setEnabled(true);
 			wbMovetoDirectory.setEnabled(true);
+			wcreateMoveToDirectory.setEnabled(true);
+			wlcreateMoveToDirectory.setEnabled(true);
 		}
 		else
 		{
 			wMovetoDirectory.setEnabled(false);
 			wlMovetoDirectory.setEnabled(false);
 			wbMovetoDirectory.setEnabled(false);
+			wcreateMoveToDirectory.setEnabled(false);
+			wlcreateMoveToDirectory.setEnabled(false);
 		}
 	}
 	private void activeSuccessCondition()
@@ -1159,7 +1182,7 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 		}else wSuccessCondition.select(0);
 		
 		wIfFileExists.select(jobEntry.getIfFileExist());
-		
+		wcreateMoveToDirectory.setSelection(jobEntry.isCreateMoveToDirectory());
 	}
 
 	private void cancel()
@@ -1212,6 +1235,7 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 			jobEntry.setSuccessCondition(jobEntry.SUCCESS_IF_NO_ERRORS);	
 		
 		jobEntry.setIfFileExists(wIfFileExists.getSelectionIndex());	
+		jobEntry.setCreateMoveToDirectory(wcreateMoveToDirectory.getSelection());
 		dispose();
 	}
 

@@ -86,6 +86,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	private String nr_limit;
 	private String wildcardSource;
 	private int     iffileexist;
+	private boolean createMoveToDirectory;
 	
 	public  String SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED="success_when_at_least";
 	public  String SUCCESS_IF_ERRORS_LESS="success_if_errors_less";
@@ -151,6 +152,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		wildcardSource=null;
 		iffileexist=IF_FILE_EXISTS_SKIP;
 		success_condition=SUCCESS_IF_NO_ERRORS;
+		createMoveToDirectory=false;
 		setID(-1L);
 		setJobEntryType(JobEntryType.UNZIP);
 	}
@@ -194,6 +196,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("wildcardSource",  wildcardSource));
 		retval.append("      ").append(XMLHandler.addTagValue("success_condition", success_condition));
 		retval.append("      ").append(XMLHandler.addTagValue("iffileexists", getIfFileExistsCode(iffileexist))); 
+		retval.append("      ").append(XMLHandler.addTagValue("create_move_to_directory",  createMoveToDirectory));
 		
 		return retval.toString();
 	}
@@ -224,6 +227,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			success_condition          = XMLHandler.getTagValue(entrynode, "success_condition");
 			if(Const.isEmpty(success_condition)) success_condition=SUCCESS_IF_NO_ERRORS;
 			iffileexist   = getIfFileExistsInt(XMLHandler.getTagValue(entrynode, "iffileexists"));	
+			createMoveToDirectory = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "create_move_to_directory"));
 			
 		}
 		catch(KettleXMLException xe)
@@ -257,6 +261,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			success_condition  = rep.getJobEntryAttributeString(id_jobentry, "success_condition");
 			if(Const.isEmpty(success_condition)) success_condition=SUCCESS_IF_NO_ERRORS;
 			iffileexist    = getIfFileExistsInt(rep.getJobEntryAttributeString(id_jobentry,"iffileexists") );
+			createMoveToDirectory=rep.getJobEntryAttributeBoolean(id_jobentry, "create_move_to_directory");
 		}
 
 
@@ -291,6 +296,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcardSource", wildcardSource);
 			rep.saveJobEntryAttribute(id_job, getID(), "success_condition",    success_condition);
 			rep.saveJobEntryAttribute(id_job, getID(), "iffileexists", getIfFileExistsCode(iffileexist));
+			rep.saveJobEntryAttribute(id_job, getID(), "create_move_to_directory", createMoveToDirectory);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -388,8 +394,15 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 					movetodir = KettleVFS.getFileObject(realMovetodirectory);
 					if (!(movetodir.exists()) || !(movetodir.getType() == FileType.FOLDER))
 					{
-						log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.MoveToDirectoryNotExists.Label"));
-						exitjobentry=true;
+						if(createMoveToDirectory)
+						{
+							movetodir.createFolder();
+							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobUnZip.Log.MoveToFolderCreated",realMovetodirectory));
+						}else
+						{
+							log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.MoveToDirectoryNotExists.Label"));
+							exitjobentry=true;
+						}
 					}
 				}
 			}
@@ -1021,6 +1034,14 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     public void setIfFileExists(int iffileexist)
     {
         this.iffileexist = iffileexist;
+    }
+    public boolean isCreateMoveToDirectory()
+    {
+    	return createMoveToDirectory;
+    }
+    public void setCreateMoveToDirectory(boolean createMoveToDirectory)
+    {
+    	this.createMoveToDirectory=createMoveToDirectory;
     }
 	public void setZipFilename(String zipFilename)
 	{
