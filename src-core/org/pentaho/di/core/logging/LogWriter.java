@@ -535,7 +535,7 @@ public class LogWriter
         {
             throw new IOException("Unable to find appender for file: "+filename+" (exact="+exact+")");
         }
-        return KettleVFS.getFileInputStream( ((Log4jFileAppender)appender).getFile() );
+        return new FileInputStream( ((Log4jFileAppender)appender).getFile().getName().getPathDecoded() );
     }
     
     public boolean isBasic()

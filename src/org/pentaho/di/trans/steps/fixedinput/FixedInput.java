@@ -246,7 +246,7 @@ public class FixedInput extends BaseStep implements StepInterface
 				FileObject fileObject = KettleVFS.getFileObject(data.filename);
 				try
 				{
-					FileInputStream fileInputStream = KettleVFS.getFileInputStream(fileObject);
+					FileInputStream fileInputStream = new FileInputStream(fileObject.getName().getPathDecoded());
 					data.fc = fileInputStream.getChannel();
 					data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
 				}
