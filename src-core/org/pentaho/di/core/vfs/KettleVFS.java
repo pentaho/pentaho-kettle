@@ -265,7 +265,7 @@ public class KettleVFS
 			throw new IOException(Messages.getString("FixedInput.Log.OnlyLocalFilesAreSupported"));
 		}
 				
-		return (FileInputStream)(fileObject.getContent().getInputStream());
+		return new FileInputStream( fileObject.getName().getPathDecoded() );
 	}
 
 }
