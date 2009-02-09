@@ -279,7 +279,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		return result;
 	}
 	
-	public boolean processRowFile(Job parentJob, Result result,String realZipfilename,String realWildcard,String realWildcardExclude, String realTargetdirectory, String realMovetodirectory, boolean createparentfolder)
+	public boolean processRowFile(Job parentJob, Result result,String realZipfilename,String realWildcard,String realWildcardExclude, String realSourceDirectoryOrFile, String realMovetodirectory, boolean createparentfolder)
 	{
 		LogWriter log = LogWriter.getInstance();
 		boolean Fileexists=false;
@@ -300,7 +300,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		
 		try
 		{
-			OriginFile = KettleVFS.getFileObject(realTargetdirectory);
+			OriginFile = KettleVFS.getFileObject(realSourceDirectoryOrFile);
 			orginexist=OriginFile.exists();
 		}catch(Exception e){}finally {if (OriginFile != null )	{try {OriginFile.close();}catch ( IOException ex ) {};}}
 		
@@ -351,7 +351,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					// Let's see if we deal with file or folder
 					String [] filelist =null;
 					
-					File f = new File(realTargetdirectory);
+					File f = new File(realSourceDirectoryOrFile);
 					if(f.isDirectory()){
 						// Target is a directory
 						// Get all the files in the directory...
@@ -364,11 +364,11 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					if(filelist.length==0)
 					{
 						resultat=false;
-						log.logError(toString(), Messages.getString("JobZipFiles.Log.FolderIsEmpty",realTargetdirectory));
-					}else if(!checkContainsFile(realTargetdirectory, filelist))
+						log.logError(toString(), Messages.getString("JobZipFiles.Log.FolderIsEmpty",realSourceDirectoryOrFile));
+					}else if(!checkContainsFile(realSourceDirectoryOrFile, filelist, f.isDirectory()))
 					{
 						resultat=false;
-						log.logError(toString(), Messages.getString("JobZipFiles.Log.NoFilesInFolder",realTargetdirectory));
+						log.logError(toString(), Messages.getString("JobZipFiles.Log.NoFilesInFolder",realSourceDirectoryOrFile));
 					}else{
 						if(ifzipfileexists==0 && Fileexists)
 						{
@@ -410,7 +410,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						
 						if(log.isDetailed())	
 							log.logDetailed(toString(), Messages.getString("JobZipFiles.Files_Found1.Label") +filelist.length+ 
-											Messages.getString("JobZipFiles.Files_Found2.Label") + realTargetdirectory + 
+											Messages.getString("JobZipFiles.Files_Found2.Label") + realSourceDirectoryOrFile + 
 											Messages.getString("JobZipFiles.Files_Found3.Label"));
 						
 						Pattern pattern = null;
@@ -513,8 +513,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 								}
 							}
 							// Get processing File
-							String targetFilename = realTargetdirectory+Const.FILE_SEPARATOR+filelist[i];
-							if(f.isFile()) targetFilename=realTargetdirectory;
+							String targetFilename = realSourceDirectoryOrFile+Const.FILE_SEPARATOR+filelist[i];
+							if(f.isFile()) targetFilename=realSourceDirectoryOrFile;
 							
 							File file = new File(targetFilename);
 	
@@ -524,7 +524,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 								// We can add the file to the Zip Archive
 								if(log.isDebug())
 									log.logDebug(toString(), Messages.getString("JobZipFiles.Add_FilesToZip1.Label")+filelist[i]+
-											Messages.getString("JobZipFiles.Add_FilesToZip2.Label")+realTargetdirectory+
+											Messages.getString("JobZipFiles.Add_FilesToZip2.Label")+realSourceDirectoryOrFile+
 											Messages.getString("JobZipFiles.Add_FilesToZip3.Label"));
 								
 								// Associate a file input stream for the current file
@@ -571,8 +571,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 								if ( ZippedFiles[i] != null)
 								{								
 									// Delete File
-									FileObject fileObjectd = KettleVFS.getFileObject(realTargetdirectory+Const.FILE_SEPARATOR+ZippedFiles[i]);
-									if(f.isFile()) fileObjectd = KettleVFS.getFileObject(realTargetdirectory);		
+									FileObject fileObjectd = KettleVFS.getFileObject(realSourceDirectoryOrFile+Const.FILE_SEPARATOR+ZippedFiles[i]);
+									if(f.isFile()) fileObjectd = KettleVFS.getFileObject(realSourceDirectoryOrFile);		
 									
 									// Here gc() is explicitly called if e.g. createfile is used in the same
 									// job for the same file. The problem is that after creating the file the
@@ -591,14 +591,14 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 										{	
 											resultat = false;
 											log.logError(toString(), Messages.getString("JobZipFiles.Cant_Delete_File1.Label")+
-												realTargetdirectory+Const.FILE_SEPARATOR+ZippedFiles[i]+
+												realSourceDirectoryOrFile+Const.FILE_SEPARATOR+ZippedFiles[i]+
 													Messages.getString("JobZipFiles.Cant_Delete_File2.Label"));
 	
 										}
 										// File deleted
 										if(log.isDebug())
 											log.logDebug(toString(), Messages.getString("JobZipFiles.File_Deleted1.Label") + 
-											realTargetdirectory+Const.FILE_SEPARATOR+ZippedFiles[i] + 
+											realSourceDirectoryOrFile+Const.FILE_SEPARATOR+ZippedFiles[i] + 
 											Messages.getString("JobZipFiles.File_Deleted2.Label"));
 									}
 									else if(afterzip == 2)
@@ -665,16 +665,21 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		{	
 			resultat=true;
 			if (realZipfilename==null) log.logError(toString(), Messages.getString("JobZipFiles.No_ZipFile_Defined.Label"));
-			if (!orginexist) log.logError(toString(), Messages.getString("JobZipFiles.No_FolderCible_Defined.Label",realTargetdirectory));			
+			if (!orginexist) log.logError(toString(), Messages.getString("JobZipFiles.No_FolderCible_Defined.Label",realSourceDirectoryOrFile));			
 		}			
 		//return  a verifier
 		return resultat;
 	}
-	private boolean checkContainsFile(String realTragetDirectory,String []  filelist)
+	private boolean checkContainsFile(String realSourceDirectoryOrFile,String []  filelist, boolean isDirectory)
 	{
 		boolean retval=false;
 		for(int i=0;i<filelist.length;i++){
-			File file=new File(realTragetDirectory  + Const.FILE_SEPARATOR + filelist[i]);
+			File file;
+			if (isDirectory) {
+				file=new File(realSourceDirectoryOrFile  + Const.FILE_SEPARATOR + filelist[i]);
+			} else { // we have already a file in there
+				file=new File(realSourceDirectoryOrFile);
+			}
 			if((file.exists() && file.isFile())) retval=true;
 		}
 		return retval;
