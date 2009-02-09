@@ -254,6 +254,8 @@ public class KettleVFS
      * @param fileObject
      * @return a FileInputStream
      * @throws IOException
+     * @deprecated because of API change in Apache VFS.  As a workaround use FileObject.getName().getPathDecoded();
+     * Then use a regular File() object to create a File Input stream.
      */
 	public static FileInputStream getFileInputStream(FileObject fileObject) throws IOException {
 		
@@ -263,7 +265,7 @@ public class KettleVFS
 			throw new IOException(Messages.getString("FixedInput.Log.OnlyLocalFilesAreSupported"));
 		}
 				
-		return (FileInputStream)((LocalFile)fileObject).getInputStream();
+		return (FileInputStream)(fileObject.getContent().getInputStream());
 	}
 
 }
