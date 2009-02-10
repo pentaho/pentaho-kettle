@@ -618,14 +618,14 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
 
     private void ok()
     {
-        if(Const.isEmpty(wName.getText())) 
-        {
+	   if(Const.isEmpty(wName.getText())) 
+       {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Please give this job entry a name!");
-			mb.setText("Missing name");
+			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
-        }
+       }
         jobEntry.setName(wName.getText());
         jobEntry.setPort(wPort.getText());
         jobEntry.setServerName(wServerName.getText());

@@ -167,6 +167,10 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 	private FormData	 fdAdvancedComp,fdGeneralComp;
 	private FormData     fdTabFolder;
 	
+	private Label        wlcreateMoveToDirectory;
+	private Button       wcreateMoveToDirectory;
+	private FormData     fdlcreateMoveToDirectory, fdcreateMoveToDirectory;
+	
 	private boolean changed;
     public JobEntryZipFileDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -773,6 +777,32 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		fdMovetoDirectory.right = new FormAttachment(wbMovetoDirectory, -margin);
 		wMovetoDirectory.setLayoutData(fdMovetoDirectory);
 		
+		//create moveto folder
+		wlcreateMoveToDirectory = new Label(wSettings, SWT.RIGHT);
+		wlcreateMoveToDirectory.setText(Messages.getString("JobZipFiles.createMoveToDirectory.Label"));
+		props.setLook(wlcreateMoveToDirectory);
+		fdlcreateMoveToDirectory = new FormData();
+		fdlcreateMoveToDirectory.left = new FormAttachment(0, 0);
+		fdlcreateMoveToDirectory.top = new FormAttachment(wMovetoDirectory, margin);
+		fdlcreateMoveToDirectory.right = new FormAttachment(middle, -margin);
+		wlcreateMoveToDirectory.setLayoutData(fdlcreateMoveToDirectory);
+		wcreateMoveToDirectory = new Button(wSettings, SWT.CHECK);
+		props.setLook(wcreateMoveToDirectory);
+		wcreateMoveToDirectory.setToolTipText(Messages.getString("JobZipFiles.createMoveToDirectory.Tooltip"));
+		fdcreateMoveToDirectory = new FormData();
+		fdcreateMoveToDirectory.left = new FormAttachment(middle, 0);
+		fdcreateMoveToDirectory.top = new FormAttachment(wMovetoDirectory, margin);
+		fdcreateMoveToDirectory.right = new FormAttachment(100, 0);
+		wcreateMoveToDirectory.setLayoutData(fdcreateMoveToDirectory);
+		wcreateMoveToDirectory.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		});
+	    
+		
         fdSettings = new FormData();
         fdSettings.left = new FormAttachment(0, margin);
         fdSettings.top = new FormAttachment(wZipFile, margin);
@@ -1012,12 +1042,16 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 			wMovetoDirectory.setEnabled(true);
 			wlMovetoDirectory.setEnabled(true);
 			wbMovetoDirectory.setEnabled(true);
+			wlcreateMoveToDirectory.setEnabled(true);
+			wcreateMoveToDirectory.setEnabled(true);
 		}
 		else
 		{
 			wMovetoDirectory.setEnabled(false);
 			wlMovetoDirectory.setEnabled(false);
 			wbMovetoDirectory.setEnabled(false);
+			wlcreateMoveToDirectory.setEnabled(false);
+			wcreateMoveToDirectory.setEnabled(true);
 		}
 	}
 
@@ -1077,7 +1111,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		
 		if (jobEntry.getDateTimeFormat()!= null) wDateTimeFormat.setText( jobEntry.getDateTimeFormat() );
 		wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
-
+		wcreateMoveToDirectory.setSelection(jobEntry.isCreateMoveToDirectory());
 	}
 
 	private void cancel()
@@ -1119,6 +1153,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		jobEntry.setTimeInFilename( wAddTime.getSelection() );
 		jobEntry.setSpecifyFormat(wSpecifyFormat.getSelection());
 		jobEntry.setDateTimeFormat(wDateTimeFormat.getText());
+		jobEntry.setCreateMoveToDirectory(wcreateMoveToDirectory.getSelection());
 		
 		dispose();
 	}

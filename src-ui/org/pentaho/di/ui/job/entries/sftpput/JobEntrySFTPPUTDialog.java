@@ -712,7 +712,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 	
 	private void ok()
 	{
- 	   if(Const.isEmpty(wName.getText())) 
+ 	  if(Const.isEmpty(wName.getText())) 
       {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
