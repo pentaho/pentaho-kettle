@@ -34,6 +34,8 @@ import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.NamedParams;
+import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -52,11 +54,11 @@ import org.pentaho.di.www.WebResult;
 /**
  * This class executes a JobInfo object.
  * 
- * @author Matt
+ * @author Matt Casters
  * @since  07-apr-2003
  * 
  */
-public class Job extends Thread implements VariableSpace
+public class Job extends Thread implements VariableSpace, NamedParams
 {   
 	private LogWriter log;
 	private JobMeta jobMeta;
@@ -95,6 +97,11 @@ public class Job extends Thread implements VariableSpace
     private Log4jStringAppender stringAppender;
     
     private List<JobListener> jobListeners;
+    
+    /**
+     * Parameters of the job.
+     */
+    private NamedParams namedParams = new NamedParamsDefault();
     
     private boolean finished;
     
@@ -214,7 +221,9 @@ public class Job extends Thread implements VariableSpace
             // initialize from parentjob or null
             //
             variables.initializeVariablesFrom(parentJob);
-            setInternalKettleVariables(variables);                        
+            setInternalKettleVariables(variables);
+            copyParametersFrom(jobMeta);
+            activateParameters();
             
             // Run the job, don't fire the job listeners at the end
             //
@@ -1234,4 +1243,40 @@ public class Job extends Thread implements VariableSpace
 		}
 	}
 
+	public void addParameterDefinition(String key, String description) {
+		namedParams.addParameterDefinition(key, description);		
+	}
+
+	public String getParameterDescription(String key) {
+		return namedParams.getParameterDescription(key);
+	}
+
+	public String getParameterValue(String key) {
+		return namedParams.getParameterValue(key);
+	}
+
+	public String[] listParameters() {
+		return namedParams.listParameters();
+	}
+
+	public void setParameterValue(String key, String value) {
+		namedParams.setParameterValue(key, value);
+	}
+
+	public void clearValues() {
+		namedParams.clearValues();		
+	}
+
+	public void activateParameters() {
+		String[] keys = listParameters();
+		
+		for ( String key : keys )  {
+			String value = getParameterValue(key);
+			setVariable(key, value);
+		}		 		
+	}
+
+	public void copyParametersFrom(NamedParams params) {
+		namedParams.copyParametersFrom(params);
+	}
 }

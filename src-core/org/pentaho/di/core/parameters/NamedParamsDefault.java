@@ -11,6 +11,8 @@
 
 package org.pentaho.di.core.parameters;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -78,7 +80,10 @@ public class NamedParamsDefault implements NamedParams
 	public String[] listParameters() {
 		Set<String> keySet = params.keySet();
 		
-		return keySet.toArray(new String[0]);
+		String[] paramArray = keySet.toArray(new String[0]);
+	    Arrays.sort(paramArray);
+	    
+	    return paramArray;
 	}
 
 	public void setParameterValue(String key, String value) {
@@ -88,15 +93,19 @@ public class NamedParamsDefault implements NamedParams
 		}		
 	}
 
-	public void clearValues() {	
-		String[] keys = listParameters();
-		for ( int idx = 0; idx < keys.length; idx++)  {
-			OneNamedParam theParam = params.get(keys[idx]);
-			if ( theParam != null )  {
-				theParam.value = "";
-			}			
-		}
+	public void clearValues() {
+		params.clear();
 	}
+
+//	public void clearValues() {	
+//		String[] keys = listParameters();
+//		for ( int idx = 0; idx < keys.length; idx++)  {
+//			OneNamedParam theParam = params.get(keys[idx]);
+//			if ( theParam != null )  {
+//				theParam.value = "";
+//			}			
+//		}
+//	}
 
 	public void activateParameters() {
 		// Do nothing here.

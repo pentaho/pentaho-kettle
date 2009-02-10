@@ -71,6 +71,8 @@ public class JobExecutionConfigurationDialog extends Dialog
     private Label wlRemoteHost;
     private TableView wArguments;
     private Label wlArguments;
+    private TableView wParams;
+    private Label wlParams;
     private Label wlVariables;
     private TableView wVariables;
     
@@ -93,6 +95,14 @@ public class JobExecutionConfigurationDialog extends Dialog
         this.parent = parent;
         this.configuration = configuration;
         this.jobMeta  = jobMeta;
+        
+        // Fill the parameters, maybe do this in another place?
+        Map<String, String> params = configuration.getParams();
+        params.clear();
+        String[] paramNames = jobMeta.listParameters();
+        for ( String name : paramNames ) {
+        	params.put(name, "");
+        }        
                 
         props = PropsUI.getInstance();
     }
@@ -269,7 +279,31 @@ public class JobExecutionConfigurationDialog extends Dialog
         fdReplayDate.top    = new FormAttachment(wLogLevel, margin);
         wReplayDate.setLayoutData(fdReplayDate);
 
-        
+        // Named parameters
+        wlParams = new Label(shell, SWT.LEFT);
+        props.setLook(wlParams);
+        wlParams.setText(Messages.getString("JobExecutionConfigurationDialog.Params.Label")); //$NON-NLS-1$
+        wlParams.setToolTipText(Messages.getString("JobExecutionConfigurationDialog.Params.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        FormData fdlParams = new FormData();
+        fdlParams.left   = new FormAttachment(0, 0);
+        fdlParams.right  = new FormAttachment(50, -margin);
+        fdlParams.top    = new FormAttachment(gDetails, margin*2);
+        wlParams.setLayoutData(fdlParams);
+
+        ColumnInfo[] cParams = {
+            new ColumnInfo( Messages.getString("JobExecutionConfigurationDialog.ArgumentsColumn.Argument"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
+            new ColumnInfo( Messages.getString("JobExecutionConfigurationDialog.ArgumentsColumn.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
+          };
+              
+        String[] namedParams = jobMeta.listParameters();
+        int nrParams = namedParams.length; 
+        wParams = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cParams, nrParams, true, null, props);
+        FormData fdParams = new FormData();
+        fdParams.left   = new FormAttachment(0, 0);
+        fdParams.right  = new FormAttachment(50, -margin);
+        fdParams.top    = new FormAttachment(wlParams, margin);        
+        wParams.setLayoutData(fdParams);        
+                
         // Arguments
         wlArguments = new Label(shell, SWT.LEFT);
         props.setLook(wlArguments);
@@ -278,7 +312,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         FormData fdlArguments = new FormData();
         fdlArguments.left   = new FormAttachment(0, 0);
         fdlArguments.right  = new FormAttachment(50, -margin);
-        fdlArguments.top    = new FormAttachment(gDetails, margin*2);
+        fdlArguments.top    = new FormAttachment(wParams, margin*2);
         wlArguments.setLayoutData(fdlArguments);
 
         ColumnInfo[] cArguments = {
@@ -336,20 +370,48 @@ public class JobExecutionConfigurationDialog extends Dialog
         return retval;
     }
 
+    private void getParamsData()
+    {
+        wParams.clearAll(false);
+        List<String> paramNames = new ArrayList<String>( configuration.getParams().keySet() );
+        Collections.sort(paramNames);
+        
+        for (int i=0;i<paramNames.size();i++)
+        {
+        	String paramName = paramNames.get(i);
+        	String paramValue = configuration.getParams().get(paramName);
+        	
+            TableItem tableItem = new TableItem(wParams.table, SWT.NONE);
+            tableItem.setText(1, paramName);
+            tableItem.setText(2, Const.NVL(paramValue, ""));
+        }
+        wParams.removeEmptyRows();
+        wParams.setRowNums();
+        wParams.optWidth(true);
+    }    
+    
+    
     private void getVariablesData()
     {
         wVariables.clearAll(false);
         List<String> variableNames = new ArrayList<String>( configuration.getVariables().keySet() );
         Collections.sort(variableNames);
         
+        List<String> paramNames = new ArrayList<String>( configuration.getParams().keySet() );
+        
         for (int i=0;i<variableNames.size();i++)
         {
         	String variableName = variableNames.get(i);
         	String variableValue = configuration.getVariables().get(variableName);
         	
-            TableItem tableItem = new TableItem(wVariables.table, SWT.NONE);
-            tableItem.setText(1, variableName);
-            tableItem.setText(2, Const.NVL(variableValue, ""));;
+        	if ( ! paramNames.contains(variableName) )  {
+        		//
+        		// Do not put the parameters among the variables.
+        		//
+                TableItem tableItem = new TableItem(wVariables.table, SWT.NONE);
+                tableItem.setText(1, variableName);
+                tableItem.setText(2, Const.NVL(variableValue, ""));
+        	}
         }
         wVariables.removeEmptyRows();
         wVariables.setRowNums();
@@ -395,6 +457,7 @@ public class JobExecutionConfigurationDialog extends Dialog
     	{
     		// OSX bug workaround.
     		//
+    		wParams.applyOSXChanges();
     		wVariables.applyOSXChanges();
     		wArguments.applyOSXChanges();
     	}
@@ -415,6 +478,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         else wLogLevel.setText(LogWriter.getInstance().getLogLevelLongDesc());
         if (configuration.getReplayDate()!=null) wReplayDate.setText(simpleDateFormat.format(configuration.getReplayDate()));
 
+        getParamsData();
         getArgumentsData();
         getVariablesData();
         
@@ -451,6 +515,7 @@ public class JobExecutionConfigurationDialog extends Dialog
             configuration.setLogLevel( LogWriter.getLogLevel(wLogLevel.getText()) );
             
             // The lower part of the dialog...
+            getInfoParameters();
             getInfoVariables();
             getInfoArguments();
         }
@@ -459,6 +524,27 @@ public class JobExecutionConfigurationDialog extends Dialog
             new ErrorDialog(shell, "Error in settings", "There is an error in the dialog settings", e);
         }
     }
+    
+    /**
+     * Get the parameters from the dialog.
+     */
+    private void getInfoParameters()
+    {
+        Map<String,String> map = new HashMap<String, String>();
+    	int nrNonEmptyVariables = wParams.nrNonEmpty(); 
+        for (int i=0;i<nrNonEmptyVariables;i++)
+        {
+            TableItem tableItem = wParams.getNonEmpty(i);
+            String paramName = tableItem.getText(1);
+            String paramValue = tableItem.getText(2);
+            
+            if (!Const.isEmpty(paramName))
+            {
+                map.put(paramName, paramValue);
+            }
+        }
+        configuration.setParams(map);
+    }    
     
     private void getInfoVariables()
     {
@@ -503,8 +589,6 @@ public class JobExecutionConfigurationDialog extends Dialog
         wRemoteHost.setEnabled(enableRemote);
         wlRemoteHost.setEnabled(enableRemote);
     }
-
-    
     
     /**
      * @return the configuration

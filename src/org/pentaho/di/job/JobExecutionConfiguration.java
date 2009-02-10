@@ -48,6 +48,7 @@ public class JobExecutionConfiguration implements Cloneable
     private SlaveServer remoteServer;
     
     private Map<String, String> arguments;
+    private Map<String, String> params;
     private Map<String, String> variables;
     
     private Date     replayDate;
@@ -64,6 +65,7 @@ public class JobExecutionConfiguration implements Cloneable
     	executingRemotely = false;
     	        
         arguments = new HashMap<String, String>();
+        params = new HashMap<String, String>();
         variables = new HashMap<String, String>();
         
         logLevel = LogWriter.LOG_LEVEL_BASIC;
@@ -76,6 +78,9 @@ public class JobExecutionConfiguration implements Cloneable
         try
         {
             JobExecutionConfiguration configuration = (JobExecutionConfiguration) super.clone();
+
+            configuration.params = new HashMap<String, String>();
+            configuration.params.putAll(params);                        
             
             configuration.arguments = new HashMap<String, String>();
             configuration.arguments.putAll(arguments);
@@ -112,6 +117,22 @@ public class JobExecutionConfiguration implements Cloneable
         this.arguments = arguments;
     }
 
+    /**
+     * @param params the parameters to set
+     */
+    public void setParams(Map<String, String> params)
+    {
+        this.params = params;
+    }    
+    
+    /**
+     * @return the parameters.
+     */
+    public Map<String, String> getParams()
+    {
+        return params;
+    }
+    
     /**
      * @param arguments the arguments to set
      */
@@ -292,6 +313,20 @@ public class JobExecutionConfiguration implements Cloneable
         {
             xml.append("    ").append(remoteServer.getXML()).append(Const.CR);
         }
+
+        // Serialize the parameters...
+        //
+        xml.append("    <parameters>").append(Const.CR);
+        List<String> paramNames = new ArrayList<String>(params.keySet());
+        Collections.sort(paramNames);
+        for (String name : paramNames) {
+        	String value = params.get(name);
+        	xml.append("    <parameter>");
+        	xml.append(XMLHandler.addTagValue("name", name, false));
+        	xml.append(XMLHandler.addTagValue("value", value, false));
+        	xml.append("</parameter>").append(Const.CR);
+        }
+        xml.append("    </parameters>").append(Const.CR);           
         
         // Serialize the variables...
         //
@@ -386,6 +421,19 @@ public class JobExecutionConfiguration implements Cloneable
         		arguments.put(name, value);
         	}
         }
+        
+        // Read the parameters...
+        //
+        Node parmsNode = XMLHandler.getSubNode(trecNode, "parameters");
+        int nrParams = XMLHandler.countNodes(argsNode, "parameter");
+        for (int i=0;i<nrParams;i++) {
+        	Node parmNode = XMLHandler.getSubNodeByNr(parmsNode, "parameter", i);
+        	String name = XMLHandler.getTagValue(parmNode, "name");
+        	String value = XMLHandler.getTagValue(parmNode, "value");
+        	if (!Const.isEmpty(name) ) {
+        		params.put(name, value);
+        	}
+        }      
         
         replayDate = XMLHandler.stringToDate( XMLHandler.getTagValue(trecNode, "replay_date") );
         safeModeEnabled = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "safe_mode"));

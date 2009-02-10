@@ -646,7 +646,7 @@ public class TransDialog extends Dialog
         wlFields.setLayoutData(fdlFields);
         
         final int FieldsCols=2;
-        final int FieldsRows=10;  // TODO get the real number of parameters?
+        final int FieldsRows=100;  // TODO get the real number of parameters?
         
         ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
         colinf[0]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$

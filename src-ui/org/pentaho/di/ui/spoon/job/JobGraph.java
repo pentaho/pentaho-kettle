@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -2684,6 +2685,14 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
             job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getDirectory().getPath(), spoon);
             job.getJobMeta().setArguments(jobMeta.getArguments());
             job.shareVariablesWith(jobMeta);
+            
+            // Set the named parameters
+            Map<String, String> paramMap = executionConfiguration.getParams();
+            Set<String> keys = paramMap.keySet();
+            for ( String key : keys )  {
+            	job.getJobMeta().setParameterValue(key, Const.NVL(paramMap.get(key), ""));
+            }                        
+            
             log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.StartingJob")); //$NON-NLS-1$
             job.start();
             jobGridDelegate.previousNrItems = -1;

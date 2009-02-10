@@ -28,6 +28,8 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.NamedParams;
+import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryLoader;
@@ -61,6 +63,7 @@ public class Kitchen
 		
 		StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionDirname, optionFilename, optionLoglevel;
         StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListjobs, optionListrep, optionNorep, optionVersion;
+        NamedParams optionParams = new NamedParamsDefault();
 
 		CommandLineOption options[] = new CommandLineOption[] 
             {
@@ -78,6 +81,7 @@ public class Kitchen
 			    new CommandLineOption("listrep", Messages.getString("Kitchen.CmdLine.ListAvailableReps"), optionListrep=new StringBuffer(), true, false),
 		        new CommandLineOption("norep", Messages.getString("Kitchen.CmdLine.NoRep"), optionNorep=new StringBuffer(), true, false),
                 new CommandLineOption("version", Messages.getString("Kitchen.CmdLine.Version") , optionVersion=new StringBuffer(), true, false),
+                new CommandLineOption("param", Messages.getString("Pan.ComdLine.Param") , optionParams, true),
             };
 
 		if (args.size()==0 ) 
@@ -350,7 +354,21 @@ public class Kitchen
             }
             job.initializeVariablesFrom(null);
             job.getJobMeta().setInternalKettleVariables(job);
+            job.copyParametersFrom(job.getJobMeta());
             
+			// Map the command line named parameters to the actual named parameters. Skip for
+			// the moment any extra command line parameter not known in the job.
+			String[] jobParams = job.listParameters();
+			for ( String param : jobParams )  {
+				String value = optionParams.getParameterValue(param);
+				if ( value != null )  {
+					job.setParameterValue(param, value);
+				}
+			}
+			// Put the parameters over the already defined variable space. Parameters
+			// get priority.
+			job.activateParameters();            
+                       
 			result = job.execute(); // Execute the selected job.		
 			job.endProcessing(Database.LOG_STATUS_END, result);  // The bookkeeping...
 		}

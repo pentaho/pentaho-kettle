@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
@@ -54,6 +55,8 @@ import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -62,7 +65,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 /**
  * Allows you to edit the Job settings.  Just pass a JobInfo object.
  * 
- * @author Matt
+ * @author Matt Casters
  * @since  02-jul-2003
  */
 public class JobDialog extends Dialog
@@ -72,7 +75,7 @@ public class JobDialog extends Dialog
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 
-	private CTabItem     wJobTab, wLogTab;
+	private CTabItem     wJobTab, wParamTab, wLogTab;
 
 	private PropsUI        props;
 		
@@ -124,6 +127,9 @@ public class JobDialog extends Dialog
     
     private TextVar wSharedObjectsFile;
     private boolean sharedObjectsFileChanged;
+
+    // param tab
+	private TableView    wParamFields;
 
 	// Job description
 	private Text         wJobdescription;
@@ -202,6 +208,7 @@ public class JobDialog extends Dialog
 		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
 		
 		addJobTab();
+		addParamTab();
 		addLogTab();
 
 		fdTabFolder = new FormData();
@@ -535,6 +542,68 @@ public class JobDialog extends Dialog
 		/////////////////////////////////////////////////////////////
 	}
 
+    private void addParamTab()
+    {
+        //////////////////////////
+        // START OF PARAM TAB
+        ///
+        wParamTab=new CTabItem(wTabFolder, SWT.NONE);
+        wParamTab.setText(Messages.getString("JobDialog.ParamTab.Label")); //$NON-NLS-1$
+
+        FormLayout paramLayout = new FormLayout ();
+        paramLayout.marginWidth  = Const.MARGIN;
+        paramLayout.marginHeight = Const.MARGIN;
+        
+        Composite wParamComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wParamComp);
+        wParamComp.setLayout(paramLayout);
+
+        Label wlFields = new Label(wParamComp, SWT.RIGHT);
+        wlFields.setText(Messages.getString("JobDialog.Parameters.Label")); //$NON-NLS-1$
+        props.setLook(wlFields);
+        FormData fdlFields = new FormData();
+        fdlFields.left = new FormAttachment(0, 0);
+        fdlFields.top  = new FormAttachment(0, 0);
+        wlFields.setLayoutData(fdlFields);
+        
+        final int FieldsCols=2;
+        final int FieldsRows=100;  // TODO get the real number of parameters?
+        
+        ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
+        colinf[0]=new ColumnInfo(Messages.getString("JobDialog.ColumnInfo.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        colinf[1]=new ColumnInfo(Messages.getString("JobDialog.ColumnInfo.Description.Label"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        //colinf[2]=new ColumnInfo(Messages.getString("JobDialog.ColumnInfo.Field.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        
+        wParamFields=new TableView(jobMeta, wParamComp, 
+                              SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
+                              colinf, 
+                              FieldsRows,  
+                              lsMod,
+                              props
+                              );
+       
+        FormData fdFields = new FormData();
+        fdFields.left  = new FormAttachment(0, 0);
+        fdFields.top   = new FormAttachment(wlFields, margin);
+        fdFields.right = new FormAttachment(100, 0);
+        fdFields.bottom= new FormAttachment(100, 0);
+        wParamFields.setLayoutData(fdFields);
+
+        FormData fdDepComp = new FormData();
+        fdDepComp.left  = new FormAttachment(0, 0);
+        fdDepComp.top   = new FormAttachment(0, 0);
+        fdDepComp.right = new FormAttachment(100, 0);
+        fdDepComp.bottom= new FormAttachment(100, 0);
+        wParamComp.setLayoutData(fdDepComp);
+        
+        wParamComp.layout();
+        wParamTab.setControl(wParamComp);
+
+        /////////////////////////////////////////////////////////////
+        /// END OF PARAM TAB
+        /////////////////////////////////////////////////////////////
+    }	
+		
 	private void addLogTab()
 	{
 		//////////////////////////
@@ -755,6 +824,20 @@ public class JobDialog extends Dialog
         wBatchTrans.setSelection(jobMeta.isBatchIdPassed());
         wLogfield.setSelection(jobMeta.isLogfieldUsed());
         
+		// The named parameters
+		String[] parameters = jobMeta.listParameters();
+		for (int idx=0;idx<parameters.length;idx++)
+		{
+			TableItem item = wParamFields.table.getItem(idx);
+			
+			String description = jobMeta.getParameterDescription(parameters[idx]);
+						
+			item.setText(1, parameters[idx]);
+			item.setText(2, Const.NVL(description, ""));
+		}        
+		wParamFields.setRowNums();
+		wParamFields.optWidth(true);
+        
         wSharedObjectsFile.setText(Const.NVL(jobMeta.getSharedObjectsFile(), ""));
         sharedObjectsFileChanged=false;
         
@@ -799,6 +882,16 @@ public class JobDialog extends Dialog
 		}
 		jobMeta.setLogConnection( jobMeta.findDatabase(wLogconnection.getText()) );
         jobMeta.setLogTable( wLogtable.getText() );
+        
+		// Clear and add parameters
+		jobMeta.clearValues();
+    	int nrNonEmptyFields = wParamFields.nrNonEmpty(); 
+		for (int i=0;i<nrNonEmptyFields;i++)
+		{
+			TableItem item = wParamFields.getNonEmpty(i);
+
+			jobMeta.addParameterDefinition(item.getText(1), item.getText(2));
+		}		        
         
         jobMeta.setUseBatchId( wBatch.getSelection());
         jobMeta.setBatchIdPassed( wBatchTrans.getSelection());

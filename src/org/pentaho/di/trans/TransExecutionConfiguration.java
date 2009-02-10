@@ -129,14 +129,6 @@ public class TransExecutionConfiguration implements Cloneable
     }
 
     /**
-     * @return the parameters
-     */
-    public Map<String, String> getParms()
-    {
-        return params;
-    }
-
-    /**
      * @param params the parameters to set
      */
     public void setParams(Map<String, String> params)
