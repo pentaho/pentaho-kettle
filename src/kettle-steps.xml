@@ -1371,4 +1371,26 @@
 		</tooltip>
 		<image-uri>ui/images/HTP.png</image-uri>
 	</step>
+		<step id="SetValueConstant">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SetValueConstant")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.setvalueconstant.SetValueConstantMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SetValueConstant")
+		</tooltip>
+		<image-uri>ui/images/SVC.png</image-uri>
+	</step>
+		<step id="SetValueField">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SetValueField")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.setvaluefield.SetValueFieldMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SetValueField")
+		</tooltip>
+		<image-uri>ui/images/SVF.png</image-uri>
+	</step>
 </steps>
