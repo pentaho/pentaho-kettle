@@ -330,7 +330,58 @@ public class TransExecutionConfigurationDialog extends Dialog
         fdReplayDate.right  = new FormAttachment(100, 0);
         fdReplayDate.top    = new FormAttachment(wLogLevel, margin);
         wReplayDate.setLayoutData(fdReplayDate);
+      
+        // Variables
+        wlVariables = new Label(shell, SWT.LEFT);
+        props.setLook(wlVariables);
+        wlVariables.setText(Messages.getString("TransExecutionConfigurationDialog.Variables.Label")); //$NON-NLS-1$
+        wlVariables.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.Variables.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        FormData fdlVariables = new FormData();
+        fdlVariables.left   = new FormAttachment(50, margin);
+        fdlVariables.right  = new FormAttachment(100, 0);
+        fdlVariables.top    = new FormAttachment(gDetails, margin*2);
+        wlVariables.setLayoutData(fdlVariables);
 
+        ColumnInfo[] cVariables = {
+            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.VariablesColumn.Argument"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Stepname
+            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.VariablesColumn.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
+          };
+              
+        int nrVariables = configuration.getVariables() !=null ? configuration.getVariables().size() : 0; 
+        wVariables = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, false, null, props);
+        FormData fdVariables = new FormData();
+        fdVariables.left   = new FormAttachment(50, margin);
+        fdVariables.right  = new FormAttachment(100, 0);
+        fdVariables.top    = new FormAttachment(wlVariables, margin);
+        fdVariables.bottom = new FormAttachment(wOK, -margin*2);
+        wVariables.setLayoutData(fdVariables);        
+        
+        // Arguments
+        wlArguments = new Label(shell, SWT.LEFT);
+        props.setLook(wlArguments);
+        wlArguments.setText(Messages.getString("TransExecutionConfigurationDialog.Arguments.Label")); //$NON-NLS-1$
+        wlArguments.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.Arguments.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        FormData fdlArguments = new FormData();
+        fdlArguments.left   = new FormAttachment(0, 0);
+        fdlArguments.right  = new FormAttachment(50, -margin);
+        fdlArguments.top    = new FormAttachment(wVariables, 0, SWT.CENTER);
+        wlArguments.setLayoutData(fdlArguments);
+
+        ColumnInfo[] cArguments = {
+            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.ArgumentsColumn.Argument"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
+            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.ArgumentsColumn.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
+          };
+              
+        int nrArguments = configuration.getArguments() !=null ? configuration.getArguments().size() : 0; 
+        wArguments = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, true, null, props);
+        FormData fdArguments = new FormData();
+        fdArguments.left   = new FormAttachment(0, 0);
+        fdArguments.right  = new FormAttachment(50, -margin);
+        fdArguments.top    = new FormAttachment(wlArguments, margin);
+        fdArguments.bottom = new FormAttachment(wOK, -margin*2);
+        wArguments.setLayoutData(fdArguments);
+        
+        
         // Named parameters
         wlParams = new Label(shell, SWT.LEFT);
         props.setLook(wlParams);
@@ -354,59 +405,8 @@ public class TransExecutionConfigurationDialog extends Dialog
         fdParams.left   = new FormAttachment(0, 0);
         fdParams.right  = new FormAttachment(50, -margin);
         fdParams.top    = new FormAttachment(wlParams, margin);        
-        wParams.setLayoutData(fdParams);        
-        
-        // Arguments
-        wlArguments = new Label(shell, SWT.LEFT);
-        props.setLook(wlArguments);
-        wlArguments.setText(Messages.getString("TransExecutionConfigurationDialog.Arguments.Label")); //$NON-NLS-1$
-        wlArguments.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.Arguments.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
-        FormData fdlArguments = new FormData();
-        fdlArguments.left   = new FormAttachment(0, 0);
-        fdlArguments.right  = new FormAttachment(50, -margin);
-        fdlArguments.top    = new FormAttachment(wParams, margin*2);
-        //fdlArguments.bottom = new FormAttachment(wOK, -margin*2);
-        wlArguments.setLayoutData(fdlArguments);
-
-        ColumnInfo[] cArguments = {
-            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.ArgumentsColumn.Argument"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
-            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.ArgumentsColumn.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
-          };
-              
-        int nrArguments = configuration.getArguments() !=null ? configuration.getArguments().size() : 0; 
-        wArguments = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, true, null, props);
-        FormData fdArguments = new FormData();
-        fdArguments.left   = new FormAttachment(0, 0);
-        fdArguments.right  = new FormAttachment(50, -margin);
-        fdArguments.top    = new FormAttachment(wlArguments, margin);
-        fdArguments.bottom = new FormAttachment(wOK, -margin*2);
-        wArguments.setLayoutData(fdArguments);
-
-        
-        // Variables
-        wlVariables = new Label(shell, SWT.LEFT);
-        props.setLook(wlVariables);
-        wlVariables.setText(Messages.getString("TransExecutionConfigurationDialog.Variables.Label")); //$NON-NLS-1$
-        wlVariables.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.Variables.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
-        FormData fdlVariables = new FormData();
-        fdlVariables.left   = new FormAttachment(50, margin);
-        fdlVariables.right  = new FormAttachment(100, 0);
-        fdlVariables.top    = new FormAttachment(gDetails, margin*2);
-        wlVariables.setLayoutData(fdlVariables);
-
-        ColumnInfo[] cVariables = {
-            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.VariablesColumn.Argument"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Stepname
-            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.VariablesColumn.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
-          };
-              
-        int nrVariables = configuration.getVariables() !=null ? configuration.getVariables().size() : 0; 
-        wVariables = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, false, null, props);
-        FormData fdVariables = new FormData();
-        fdVariables.left   = new FormAttachment(50, margin);
-        fdVariables.right  = new FormAttachment(100, 0);
-        fdVariables.top    = new FormAttachment(wlParams, margin);
-        fdVariables.bottom = new FormAttachment(wOK, -margin*2);
-        wVariables.setLayoutData(fdVariables);
+        fdParams.bottom = new FormAttachment(wlArguments, -margin * 2);
+        wParams.setLayoutData(fdParams);                
         
         getData();
         
