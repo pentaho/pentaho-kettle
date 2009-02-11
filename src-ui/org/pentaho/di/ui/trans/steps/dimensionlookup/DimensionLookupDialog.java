@@ -1089,6 +1089,8 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
 	private void getInfo(DimensionLookupMeta in)
 	{
+		in.setUpdate( wUpdate.getSelection() );
+		
 		//Table ktable = wKey.table;
 		int nrkeys = wKey.nrNonEmpty();
 		int nrfields = wUpIns.nrNonEmpty();
@@ -1145,8 +1147,6 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		in.setDateField( wDatefield.getText() );
 		in.setDateFrom( wFromdate.getText() );
 		in.setDateTo( wTodate.getText() );
-
-		in.setUpdate( wUpdate.getSelection() );
 
 		in.setCommitSize( Const.toInt(wCommit.getText(), 0) );
         in.setCacheSize( Const.toInt(wCacheSize.getText(), -1) );

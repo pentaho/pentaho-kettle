@@ -64,8 +64,20 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	public final static int		TYPE_UPDATE_DIM_INSERT			= 0;
 	public final static int		TYPE_UPDATE_DIM_UPDATE			= 1;
 	public final static int		TYPE_UPDATE_DIM_PUNCHTHROUGH	= 2;
+	public final static int		TYPE_UPDATE_DATE_INSUP		    = 3;
+	public final static int		TYPE_UPDATE_DATE_INSERTED		= 4;
+	public final static int		TYPE_UPDATE_DATE_UPDATED		= 5;
+	public final static int		TYPE_UPDATE_LAST_VERSION		= 6;
 
-	public final static String	typeDesc[]						= { Messages.getString("DimensionLookupMeta.TypeDesc.Insert"), Messages.getString("DimensionLookupMeta.TypeDesc.Update"), Messages.getString("DimensionLookupMeta.TypeDesc.PunchThrough") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	public final static String	typeDesc[]						= { 
+		Messages.getString("DimensionLookupMeta.TypeDesc.Insert"),               //$NON-NLS-1$ 
+		Messages.getString("DimensionLookupMeta.TypeDesc.Update"),               //$NON-NLS-1$
+		Messages.getString("DimensionLookupMeta.TypeDesc.PunchThrough"),         //$NON-NLS-1$
+		Messages.getString("DimensionLookupMeta.TypeDesc.DateInsertedOrUpdated"),         //$NON-NLS-1$
+		Messages.getString("DimensionLookupMeta.TypeDesc.DateInserted"),         //$NON-NLS-1$
+		Messages.getString("DimensionLookupMeta.TypeDesc.DateUpdated"),          //$NON-NLS-1$
+		Messages.getString("DimensionLookupMeta.TypeDesc.LastVersion"),          //$NON-NLS-1$
+		};
 
 	public final static String	typeDescLookup[]				= ValueMeta.getTypes();
 
@@ -544,6 +556,16 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			return ValueMeta.getTypeDesc(t);
 		else
 			return typeDesc[t];
+	}
+	
+	public final static boolean isUpdateTypeWithoutArgument(int type) {
+		switch(type) {
+		case TYPE_UPDATE_DATE_INSUP	 :
+		case TYPE_UPDATE_DATE_INSERTED :
+		case TYPE_UPDATE_DATE_UPDATED :
+		case TYPE_UPDATE_LAST_VERSION : return true;
+		default: return false;
+		}
 	}
 
 	private void readData(Node stepnode, List<? extends SharedObjectInterface> databases) throws KettleXMLException
@@ -1477,7 +1499,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 							//
                             ValueMetaInterface vdateto = new ValueMeta(dateTo, ValueMetaInterface.TYPE_DATE);
 							fields.addValueMeta(vdateto);
-
+							
 							String errors = ""; //$NON-NLS-1$
 
 							// Then the keys
@@ -1516,6 +1538,21 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 									if (errors.length() > 0)
 										errors += ", "; //$NON-NLS-1$
 									errors += fieldStream[i];
+								}
+							}
+							
+							// Finally, the special update fields...
+							//
+							for (int i=0;i<fieldUpdate.length;i++) {
+								ValueMetaInterface valueMeta = null;
+								switch(fieldUpdate[i]) {
+								case TYPE_UPDATE_DATE_INSUP    :
+								case TYPE_UPDATE_DATE_INSERTED :
+								case TYPE_UPDATE_DATE_UPDATED  : valueMeta = new ValueMeta(fieldLookup[i], ValueMetaInterface.TYPE_DATE); break;
+								case TYPE_UPDATE_LAST_VERSION  : valueMeta = new ValueMeta(fieldLookup[i], ValueMetaInterface.TYPE_BOOLEAN); break;
+								}
+								if (valueMeta!=null) {
+									fields.addValueMeta(valueMeta);
 								}
 							}
 

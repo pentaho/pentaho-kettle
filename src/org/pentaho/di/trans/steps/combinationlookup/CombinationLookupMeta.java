@@ -97,6 +97,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	/** Which method to use for the creation of the tech key */
 	private String techKeyCreation = null;
 
+	private String lastUpdateField;
+	
 	public static String CREATION_METHOD_AUTOINC  = "autoinc";
 	public static String CREATION_METHOD_SEQUENCE = "sequence";
 	public static String CREATION_METHOD_TABLEMAX = "tablemax";
@@ -388,6 +390,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 			Node retkey = XMLHandler.getSubNode(fields, "return"); //$NON-NLS-1$
 			technicalKeyField = XMLHandler.getTagValue(retkey, "name"); //$NON-NLS-1$
 			useAutoinc = !"N".equalsIgnoreCase(XMLHandler.getTagValue(retkey, "use_autoinc")); //$NON-NLS-1$ //$NON-NLS-2$
+            lastUpdateField = XMLHandler.getTagValue(stepnode, "last_update_field"); //$NON-NLS-1$
 
 			setTechKeyCreation(XMLHandler.getTagValue(retkey, "creation_method")); //$NON-NLS-1$
 		}
@@ -475,6 +478,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
 		// If sequence is empty: use auto-increment field!
 		retval.append("      ").append(XMLHandler.addTagValue("sequence", sequenceFrom)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("last_update_field", lastUpdateField)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		return retval.toString();
 	}
@@ -508,6 +512,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 			useAutoinc         = rep.getStepAttributeBoolean(id_step, "use_autoinc"); //$NON-NLS-1$
 			sequenceFrom       = rep.getStepAttributeString (id_step, "sequence"); //$NON-NLS-1$
 			techKeyCreation    = rep.getStepAttributeString (id_step, "creation_method"); //$NON-NLS-1$
+			lastUpdateField    = rep.getStepAttributeString (id_step, "last_update_field"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -542,6 +547,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
 			// For the moment still save 'use_autoinc' for backwards compatibility (Sven Boden).
 			rep.saveStepAttribute(id_transformation, id_step, "use_autoinc",         useAutoinc); //$NON-NLS-1$
+
+			rep.saveStepAttribute(id_transformation, id_step, "last_update_field",         lastUpdateField); //$NON-NLS-1$
 
 			// Also, save the step-database relationship!
 			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
@@ -770,6 +777,13 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
                             vhashfield.setPrecision(0);
 							doHash = true;
 						}
+						
+						// Then the last update field (optional)
+                        ValueMetaInterface vLastUpdateField = null;
+						if (!Const.isEmpty(lastUpdateField))
+						{
+							vLastUpdateField = new ValueMeta(lastUpdateField, ValueMetaInterface.TYPE_DATE);
+						}
 
 						if ( ! db.checkTableExists(schemaTable) )
 						{
@@ -812,6 +826,11 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 							if ( doHash == true )
 							{
 								fields.addValueMeta(vhashfield);
+							}
+							
+							if ( vLastUpdateField!=null ) 
+							{
+								fields.addValueMeta(vLastUpdateField);
 							}
 						}
 						else
@@ -867,6 +886,11 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 							{
 								// Add hash field
 								fields.addValueMeta(vhashfield);
+							}
+							
+							if (vLastUpdateField!=null && tabFields.searchValueMeta( vLastUpdateField.getName()) == null)
+							{
+								fields.addValueMeta(vLastUpdateField);
 							}
 						}
 
@@ -1102,4 +1126,18 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     {
         this.schemaName = schemaName;
     }
+
+	/**
+	 * @return the lastUpdateField
+	 */
+	public String getLastUpdateField() {
+		return lastUpdateField;
+	}
+
+	/**
+	 * @param lastUpdateField the lastUpdateField to set
+	 */
+	public void setLastUpdateField(String lastUpdateField) {
+		this.lastUpdateField = lastUpdateField;
+	}
 }

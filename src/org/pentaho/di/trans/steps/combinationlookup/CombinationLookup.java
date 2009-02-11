@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -544,6 +545,14 @@ public class CombinationLookup extends BaseStep implements StepInterface
                     comma=true;
                 }
                 
+                if (!Const.isEmpty(meta.getLastUpdateField()))
+                {
+                    if (comma) sql += ", ";
+                    sql += databaseMeta.quoteField(meta.getLastUpdateField());
+                    data.insertRowMeta.addValueMeta( new ValueMeta(meta.getLastUpdateField(), ValueMetaInterface.TYPE_DATE));
+                    comma=true;
+                }
+                
                 for (int i=0;i<meta.getKeyLookup().length;i++)
                 {
                     if (comma) sql += ", "; 
@@ -562,6 +571,12 @@ public class CombinationLookup extends BaseStep implements StepInterface
                     comma=true;
                 }
                 if (meta.useHash())
+                {
+                    if (comma) sql+=',';
+                    sql += '?';
+                    comma=true;
+                }
+                if (!Const.isEmpty(meta.getLastUpdateField()));
                 {
                     if (comma) sql+=',';
                     sql += '?';
@@ -613,6 +628,11 @@ public class CombinationLookup extends BaseStep implements StepInterface
             if (meta.useHash())
             {
                 insertRow[insertIndex] = val_crc;
+                insertIndex++;
+            }
+            if (!Const.isEmpty(meta.getLastUpdateField()))
+            {
+                insertRow[insertIndex] = new Date();
                 insertIndex++;
             }
             for (int i=0;i<data.keynrs.length;i++)

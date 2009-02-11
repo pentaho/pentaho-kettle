@@ -55,19 +55,19 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.combinationlookup.CombinationLookupMeta;
+import org.pentaho.di.trans.steps.combinationlookup.Messages;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.trans.steps.combinationlookup.CombinationLookupMeta;
-import org.pentaho.di.trans.steps.combinationlookup.Messages;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 
 
@@ -115,6 +115,9 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
 	private Label        wlHashfield;
 	private Text         wHashfield;
+	
+	private Label        wlLastUpdateField;
+	private Text         wLastUpdateField;
 
 	private Button       wGet, wCreate;
 	private Listener     lsGet, lsCreate;	
@@ -335,14 +338,32 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
 		setButtonPositions(new Button[] { wOK, wCancel , wGet, wCreate}, margin, null);
 
-		// Technical key field:
+		// Last update field:
+		wlLastUpdateField=new Label(shell, SWT.RIGHT);
+		wlLastUpdateField.setText(Messages.getString("CombinationLookupDialog.LastUpdateField.Label")); //$NON-NLS-1$
+ 		props.setLook(wlLastUpdateField);
+		FormData fdlLastUpdateField = new FormData();
+		fdlLastUpdateField.left  = new FormAttachment(0, 0);
+		fdlLastUpdateField.right = new FormAttachment(middle, -margin);
+		fdlLastUpdateField.bottom= new FormAttachment(wOK, -2*margin);
+		wlLastUpdateField.setLayoutData(fdlLastUpdateField);
+		wLastUpdateField=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wLastUpdateField);
+		wLastUpdateField.addModifyListener(lsMod);
+		FormData fdLastUpdateField = new FormData();
+		fdLastUpdateField.left  = new FormAttachment(middle, 0);
+		fdLastUpdateField.right = new FormAttachment(100, 0);
+		fdLastUpdateField.bottom= new FormAttachment(wOK, -2*margin);
+		wLastUpdateField.setLayoutData(fdLastUpdateField);
+
+		// Hash field:
 		wlHashfield=new Label(shell, SWT.RIGHT);
 		wlHashfield.setText(Messages.getString("CombinationLookupDialog.Hashfield.Label")); //$NON-NLS-1$
  		props.setLook(wlHashfield);
 		FormData fdlHashfield = new FormData();
 		fdlHashfield.left  = new FormAttachment(0, 0);
 		fdlHashfield.right = new FormAttachment(middle, -margin);
-		fdlHashfield.bottom= new FormAttachment(wOK, -2*margin);
+		fdlHashfield.bottom= new FormAttachment(wLastUpdateField, -margin);
 		wlHashfield.setLayoutData(fdlHashfield);
 		wHashfield=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wHashfield);
@@ -350,7 +371,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		FormData fdHashfield = new FormData();
 		fdHashfield.left  = new FormAttachment(middle, 0);
 		fdHashfield.right = new FormAttachment(100, 0);
-		fdHashfield.bottom= new FormAttachment(wOK, -2*margin);
+		fdHashfield.bottom= new FormAttachment(wLastUpdateField, -margin);
 		wHashfield.setLayoutData(fdHashfield);
 
 		// Output the input rows or one (1) log-record?
@@ -769,6 +790,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
 		wCommit.setText(""+input.getCommitSize()); //$NON-NLS-1$
 		wCachesize.setText(""+input.getCacheSize()); //$NON-NLS-1$
+		
+		wLastUpdateField.setText( Const.NVL( input.getLastUpdateField(), "") );
 
 		wKey.setRowNums();
 		wKey.optWidth(true);
@@ -850,6 +873,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
 		in.setCommitSize( Const.toInt(wCommit.getText(), 0) );
 		in.setCacheSize( Const.toInt(wCachesize.getText(), 0) );
+		
+		in.setLastUpdateField( wLastUpdateField.getText() );
 	}
 
 	private void getTableName()
