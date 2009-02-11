@@ -1393,4 +1393,15 @@
 		</tooltip>
 		<image-uri>ui/images/SVF.png</image-uri>
 	</step>
+		<step id="ExecProcess">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ExecProcess")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.execprocess.ExecProcessMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ExecProcess")
+		</tooltip>
+		<image-uri>ui/images/RPL.png</image-uri>
+	</step>
 </steps>
