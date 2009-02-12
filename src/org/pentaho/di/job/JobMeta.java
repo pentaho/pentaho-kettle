@@ -489,12 +489,49 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			// The ID has to be assigned, even when it's a new item...
 			rep.insertJob(getID(), directory.getID(), getName(), logConnection == null ? -1 : logConnection.getID(), logTable,
 					modifiedUser, modifiedDate, useBatchId, batchIdPassed, logfieldUsed, sharedObjectsFile, description,
-					extendedDescription, jobVersion, jobStatus, created_user, created_date);
+					extendedDescription, jobVersion, jobStatus, created_user, created_date);					
+			
 		} catch (KettleDatabaseException dbe) {
 			throw new KettleException(Messages.getString("JobMeta.Exception.UnableToSaveJobToRepository"), dbe); //$NON-NLS-1$
 		}
 	}
 
+    /**
+     * Save the parameters of this job to the repository.
+     * 
+     * @param rep The repository to save to.
+     * 
+     * @throws KettleException Upon any error.
+     */
+    private void saveRepParameters(Repository rep) throws KettleException
+    {
+    	String[] paramKeys = listParameters();
+    	for (int idx = 0; idx < paramKeys.length; idx++)  {
+    		String desc = getParameterDescription(paramKeys[idx]);
+    		rep.insertJobParameter(getID(), idx, paramKeys[idx], desc);
+    	}
+    }
+	
+    /**
+     * Load the parameters of this job from the repository. The current 
+     * ones already loaded will be erased.
+     * 
+     * @param rep The repository to load from.
+     * 
+     * @throws KettleException Upon any error.
+     */
+    private void loadRepParameters(Repository rep) throws KettleException
+    {
+    	clearValues();
+
+    	int count = rep.countJobParameter(getID());
+    	for (int idx = 0; idx < count; idx++)  {
+    		String key  = rep.getJobParameterKey(getID(), idx);
+    		String desc = rep.getJobParameterDescription(getID(), idx);
+    		addParameterDefinition(key, desc);
+    	}
+    }        
+	
 	public boolean showReplaceWarning(Repository rep) {
 		if (getID() < 0) {
 			try {
@@ -1193,6 +1230,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 					monitor.worked(1);
 			}
 
+			saveRepParameters(rep);
+			
 			// Commit this transaction!!
 			rep.commit();
 
@@ -1369,7 +1408,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 						if (monitor != null)
 							monitor.worked(1);
 					}
-	
+
+					loadRepParameters(rep);
+					
 					// Finally, clear the changed flags...
 					clearChanged();
 					if (monitor != null)

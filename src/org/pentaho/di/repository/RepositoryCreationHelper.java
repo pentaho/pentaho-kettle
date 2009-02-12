@@ -628,6 +628,59 @@ public class RepositoryCreationHelper {
 		}
 		if (monitor!=null) monitor.worked(1);
 
+		
+		//////////////////////////////////////////////////////////////////////////////////
+		//
+		// R_JOB_ATTRIBUTE
+		//
+		// Create table...
+		table = new RowMeta();
+		tablename = Repository.TABLE_R_JOB_ATTRIBUTE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
+		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_ATTRIBUTE_ID_JOB_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_INTEGER, 18, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
+		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_JOB_ATTRIBUTE_ID_JOB_ATTRIBUTE, false);
+
+		if (!Const.isEmpty(sql))
+		{
+	        statements.add(sql);
+			if (!dryrun) {
+	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+				database.execStatements(sql);
+	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+			}
+			try
+			{
+				indexname = "IDX_TRANS_ATTRIBUTE_LOOKUP";
+				keyfield = new String[] { Repository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, Repository.FIELD_TRANS_ATTRIBUTE_CODE, Repository.FIELD_TRANS_ATTRIBUTE_NR };
+
+				if (!database.checkIndexExists(schemaTable, keyfield))
+				{
+					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
+		        	statements.add(sql);
+		        	if (!dryrun) {
+	                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+						database.execStatements(sql);
+	                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
+		        	}
+				}
+			}
+			catch(KettleException kdbe)
+			{
+				// Ignore this one: index is not properly detected, it already exists...
+			}
+		}
+		else
+		{
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+		}
+		if (monitor!=null) monitor.worked(1);		
+		
 		//////////////////////////////////////////////////////////////////////////////////
 		//
 		// R_DEPENDENCY

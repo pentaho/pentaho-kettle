@@ -159,6 +159,14 @@ public class Repository
 	public static final String FIELD_TRANS_ATTRIBUTE_VALUE_NUM = "VALUE_NUM";
 	public static final String FIELD_TRANS_ATTRIBUTE_VALUE_STR = "VALUE_STR";
 	
+	public static final String TABLE_R_JOB_ATTRIBUTE        = "R_JOB_ATTRIBUTE";
+	public static final String FIELD_JOB_ATTRIBUTE_ID_JOB_ATTRIBUTE = "ID_JOB_ATTRIBUTE";
+	public static final String FIELD_JOB_ATTRIBUTE_ID_JOB = "ID_JOB";
+	public static final String FIELD_JOB_ATTRIBUTE_NR = "NR";
+	public static final String FIELD_JOB_ATTRIBUTE_CODE = "CODE";
+	public static final String FIELD_JOB_ATTRIBUTE_VALUE_NUM = "VALUE_NUM";
+	public static final String FIELD_JOB_ATTRIBUTE_VALUE_STR = "VALUE_STR";
+	
 	public static final String TABLE_R_DEPENDENCY             = "R_DEPENDENCY";
 	public static final String FIELD_DEPENDENCY_ID_DEPENDENCY = "ID_DEPENDENCY";
 	public static final String FIELD_DEPENDENCY_ID_TRANSFORMATION = "ID_TRANSFORMATION";
@@ -427,6 +435,7 @@ public class Repository
     		, TABLE_R_STEP_TYPE
     		, TABLE_R_TRANSFORMATION
     		, TABLE_R_TRANS_ATTRIBUTE
+    		, TABLE_R_JOB_ATTRIBUTE
     		, TABLE_R_TRANS_CLUSTER
     		, TABLE_R_TRANS_HOP
     		, TABLE_R_TRANS_NOTE
@@ -457,6 +466,9 @@ public class Repository
 	private PreparedStatement	psStepAttributesInsert;
     private PreparedStatement   psTransAttributesLookup;
     private PreparedStatement   psTransAttributesInsert;
+    
+    private PreparedStatement   psJobAttributesLookup;
+    private PreparedStatement   psJobAttributesInsert;
 	
 	private List<Object[]>           stepAttributesBuffer;
 	private RowMetaInterface         stepAttributesRowMeta;
@@ -1251,11 +1263,16 @@ public class Repository
 	{
 		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_ATTRIBUTE), quote(FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE));
 	}
-
+	
     public synchronized long getNextTransAttributeID() throws KettleException
     {
         return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_ATTRIBUTE), quote(FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE));
     }
+
+    public synchronized long getNextJobAttributeID() throws KettleException
+    {
+        return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_ATTRIBUTE), quote(FIELD_JOB_ATTRIBUTE_ID_JOB_ATTRIBUTE));                                                                                                         
+    }    
     
     public synchronized long getNextDatabaseAttributeID() throws KettleException
     {
@@ -1708,6 +1725,35 @@ public class Repository
         return id;
     }
 
+    public synchronized long insertJobAttribute(long id_job, long nr, String code, long value_num, String value_str) throws KettleException
+    {
+        long id = getNextJobAttributeID();
+
+        RowMetaAndData table = new RowMetaAndData();
+
+        table.addValue(new ValueMeta(FIELD_JOB_ATTRIBUTE_ID_JOB_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+        table.addValue(new ValueMeta(FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
+        table.addValue(new ValueMeta(FIELD_JOB_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER), new Long(nr));
+        table.addValue(new ValueMeta(FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
+        table.addValue(new ValueMeta(FIELD_JOB_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_INTEGER), new Long(value_num));
+        table.addValue(new ValueMeta(FIELD_JOB_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
+
+        /* If we have prepared the insert, we don't do it again.
+         * We asume that all the step insert statements come one after the other.
+         */
+        
+        if (psJobAttributesInsert == null)
+        {
+            String sql = database.getInsertStatement(TABLE_R_JOB_ATTRIBUTE, table.getRowMeta());
+            psJobAttributesInsert = database.prepareSQL(sql);
+        }
+        database.setValues(table, psJobAttributesInsert);
+        database.insertRow(psJobAttributesInsert, useBatchProcessing);
+        
+        if (log.isDebug()) log.logDebug(toString(), "saved job attribute ["+code+"]");
+        
+        return id;
+    }    
 
 	public synchronized void insertStepDatabase(long id_transformation, long id_step, long id_database)
 			throws KettleException
@@ -3237,6 +3283,19 @@ public class Repository
         psTransAttributesLookup = null;
     }
 
+    public synchronized void setLookupJobAttribute() throws KettleException
+    {
+        String sql = "SELECT "+quote(FIELD_JOB_ATTRIBUTE_VALUE_STR)+", "+quote(FIELD_JOB_ATTRIBUTE_VALUE_NUM)+
+        	" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_ATTRIBUTE)+" WHERE "+quote(FIELD_JOB_ATTRIBUTE_ID_JOB)+" = ?  AND "+quote(FIELD_JOB_ATTRIBUTE_CODE)+" = ? AND "+FIELD_JOB_ATTRIBUTE_NR+" = ? ";
+
+        psJobAttributesLookup = database.prepareSQL(sql);
+    }
+    
+    public synchronized void closeJobAttributeLookupPreparedStatement() throws KettleException
+    {
+        database.closePreparedStatement(psTransAttributesLookup);
+        psJobAttributesLookup = null;
+    }    
 
 	public synchronized void closeStepAttributeLookupPreparedStatement() throws KettleException
 	{
@@ -3288,6 +3347,19 @@ public class Repository
         if (r==null) return null;
         return new RowMetaAndData(database.getReturnRowMeta(), r);
     }
+    
+    public RowMetaAndData getJobAttributeRow(long id_job, int nr, String code) throws KettleException
+    {
+        RowMetaAndData par = new RowMetaAndData();
+        par.addValue(new ValueMeta(FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
+        par.addValue(new ValueMeta(FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
+        par.addValue(new ValueMeta(FIELD_JOB_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER), new Long(nr));
+
+        database.setValues(par, psJobAttributesLookup);
+        Object[] r = database.getLookup(psJobAttributesLookup);
+        if (r==null) return null;
+        return new RowMetaAndData(database.getReturnRowMeta(), r);
+    }    
 
 	public synchronized long getStepAttributeInteger(long id_step, int nr, String code) throws KettleException
 	{
@@ -3440,6 +3512,72 @@ public class Repository
         return database.getRows(sql, 0);
     }
 
+    // JOB ATTRIBUTES: get
+    
+    public synchronized String getJobAttributeString(long id_job, int nr, String code) throws KettleException
+    {
+        RowMetaAndData r = null;
+        r = getTransAttributeRow(id_job, nr, code);
+        if (r == null)
+            return null;
+        return r.getString(FIELD_JOB_ATTRIBUTE_VALUE_STR, null);
+    }
+
+    public synchronized boolean getJobAttributeBoolean(long id_job, int nr, String code) throws KettleException
+    {
+        RowMetaAndData r = null;
+        r = getTransAttributeRow(id_job, nr, code);
+        if (r == null)
+            return false;
+        return r.getBoolean(FIELD_JOB_ATTRIBUTE_VALUE_STR, false);
+    }
+
+    public synchronized double getJobAttributeNumber(long id_job, int nr, String code) throws KettleException
+    {
+        RowMetaAndData r = null;
+        r = getJobAttributeRow(id_job, nr, code);
+        if (r == null)
+            return 0.0;
+        return r.getNumber(FIELD_JOB_ATTRIBUTE_VALUE_NUM, 0.0);
+    }
+
+    public synchronized long getJobAttributeInteger(long id_job, int nr, String code) throws KettleException
+    {
+        RowMetaAndData r = null;
+        r = getJobAttributeRow(id_job, nr, code);
+        if (r == null)
+            return 0L;
+        return r.getInteger(FIELD_JOB_ATTRIBUTE_VALUE_NUM, 0L);
+    }
+    
+    public synchronized int countNrJobAttributes(long id_job, String code) throws KettleException
+    {
+        String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_ATTRIBUTE)+" WHERE "+quote(FIELD_JOB_ATTRIBUTE_ID_JOB)+" = ? AND "+quote(FIELD_JOB_ATTRIBUTE_CODE)+" = ?";
+        RowMetaAndData table = new RowMetaAndData();
+        table.addValue(new ValueMeta(FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
+        table.addValue(new ValueMeta(FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
+        RowMetaAndData r = database.getOneRow(sql, table.getRowMeta(), table.getData());
+        if (r == null|| r.getData()==null)
+            return 0;
+        
+        return (int) r.getInteger(0, 0L);
+    }
+
+    public synchronized List<Object[]> getJobAttributes(long id_job, String code, long nr) throws KettleException
+    {
+        String sql = "SELECT *"+
+        	" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_ATTRIBUTE)+
+        	" WHERE "+quote(FIELD_JOB_ATTRIBUTE_ID_JOB)+" = ? AND "+quote(FIELD_JOB_ATTRIBUTE_CODE)+" = ? AND "+quote(FIELD_JOB_ATTRIBUTE_NR)+" = ?"+
+        	" ORDER BY "+quote(FIELD_JOB_ATTRIBUTE_VALUE_NUM);
+        
+        RowMetaAndData table = new RowMetaAndData();
+        table.addValue(new ValueMeta(FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
+        table.addValue(new ValueMeta(FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
+        table.addValue(new ValueMeta(FIELD_JOB_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER), new Long(nr));
+        
+        return database.getRows(sql, 0);
+    }    
+    
 	// JOBENTRY ATTRIBUTES: SAVE
 
 	// WANTED: throw extra exceptions to locate storage problems (strings too long etc)
@@ -3672,6 +3810,12 @@ public class Repository
         String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = " + id_transformation;
         database.execStatement(sql);
     }
+
+    public synchronized void delJobAttributes(long id_job) throws KettleException
+    {
+        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(FIELD_JOB_ATTRIBUTE_ID_JOB)+" = " + id_job;
+        database.execStatement(sql);
+    }   
     
     public synchronized void delPartitionSchemas(long id_transformation) throws KettleException
     {
@@ -3997,6 +4141,7 @@ public class Repository
 		delJobEntries(id_job);
 		delJobEntryCopies(id_job);
 		delJobHops(id_job);
+		delJobAttributes(id_job);
 		delJob(id_job);
 
 		// log.logBasic(toString(), "All deleted on job with ID_JOB: "+id_job);
@@ -4470,4 +4615,57 @@ public class Repository
 	    insertTransAttribute(id_transformation, nr, TRANS_ATTRIBUTE_PARAM_KEY, 0, key != null ? key : "");		
 	    insertTransAttribute(id_transformation, nr, TRANS_ATTRIBUTE_PARAM_DESCRIPTION, 0, description != null ? description : "");
 	}
+	
+	/**
+	 * Count the number of parameters of a job.
+	 * 
+	 * @param id_job job id
+	 * @return the number of transactions
+	 * 
+	 * @throws KettleException Upon any error.
+	 */
+	public int countJobParameter(long id_job) throws KettleException  {
+		return countNrTransAttributes(id_job, JOB_ATTRIBUTE_PARAM_KEY);
+	}
+	
+	/**
+	 * Get a job parameter key. You can count the number of parameters up front.
+	 * 
+	 * @param id_job job id
+	 * @param nr number of the parameter 
+	 * @return they key/name of specified parameter
+	 * 
+	 * @throws KettleException Upon any error.
+	 */
+	public String getJobParameterKey(long id_job, int nr) throws KettleException  {
+ 		return getJobAttributeString(id_job, nr, JOB_ATTRIBUTE_PARAM_KEY);		
+	}
+
+	/**
+	 * Get a job parameter description. You can count the number of parameters up front. 
+	 * 
+	 * @param id_job job id
+	 * @param nr number of the parameter
+	 * @return
+	 * 
+	 * @throws KettleException Upon any error.
+	 */
+	public String getJobParameterDescription(long id_job, int nr) throws KettleException  {
+ 		return getTransAttributeString(id_job, nr, JOB_ATTRIBUTE_PARAM_DESCRIPTION);		
+	}
+	
+	/**
+	 * Insert a parameter for a job in the repository.
+	 * 
+	 * @param id_job job id
+	 * @param nr number of the parameter to insert
+	 * @param key key to insert
+	 * @param description description to insert
+	 * 
+	 * @throws KettleException Upon any error.
+	 */
+	public void insertJobParameter(long id_job, long nr, String key, String description) throws KettleException {
+	    insertTransAttribute(id_job, nr, JOB_ATTRIBUTE_PARAM_KEY, 0, key != null ? key : "");		
+	    insertTransAttribute(id_job, nr, JOB_ATTRIBUTE_PARAM_DESCRIPTION, 0, description != null ? description : "");
+	}	
 }
