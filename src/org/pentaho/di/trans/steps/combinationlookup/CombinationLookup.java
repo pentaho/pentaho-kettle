@@ -576,7 +576,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
                     sql += '?';
                     comma=true;
                 }
-                if (!Const.isEmpty(meta.getLastUpdateField()));
+                if (!Const.isEmpty(meta.getLastUpdateField()))
                 {
                     if (comma) sql+=',';
                     sql += '?';
