@@ -352,6 +352,8 @@ public class NumberRangeDialog extends BaseStepDialog implements
 			String fallBackValue = fallBackValueControl.getText();
 			input.setFallBackValue(fallBackValue);
 			
+			input.setOutputField(outputFieldControl.getText());
+			
 			int count = rulesControl.nrNonEmpty();
 			for (int i = 0; i < count; i++) 
 			{

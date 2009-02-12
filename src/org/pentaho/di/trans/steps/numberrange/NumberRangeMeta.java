@@ -283,6 +283,11 @@ public class NumberRangeMeta extends BaseStepMeta implements
 		{
 			return outputField;
 		}
+	 	
+	 	public void setOutputField(String outputField) 
+	 	{
+			this.outputField = outputField;
+		}
 	 
 	 	public List<NumberRangeRule> getRules() 
 	 	{
