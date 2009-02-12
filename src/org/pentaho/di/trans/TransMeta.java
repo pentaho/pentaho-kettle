@@ -2067,7 +2067,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     private void loadRepParameters(Repository rep) throws KettleException
     {
-    	clearValues();
+    	eraseParameters();
 
     	int count = rep.countTransParameter(getId());
     	for (int idx = 0; idx < count; idx++)  {
@@ -6412,8 +6412,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		namedParams.setParameterValue(key, value);
 	}
 
-	public void clearValues() {
-		namedParams.clearValues();		
+	public void eraseParameters() {
+		namedParams.eraseParameters();		
+	}
+	
+	public void clearParameters() {
+		namedParams.clearParameters();		
 	}
 
 	public void copyParametersFrom(NamedParams params) {

@@ -522,7 +522,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
      */
     private void loadRepParameters(Repository rep) throws KettleException
     {
-    	clearValues();
+    	eraseParameters();
 
     	int count = rep.countJobParameter(getID());
     	for (int idx = 0; idx < count; idx++)  {
@@ -2923,10 +2923,14 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		namedParams.setParameterValue(key, value);
 	}
 
-	public void clearValues() {
-		namedParams.clearValues();		
+	public void eraseParameters() {
+		namedParams.eraseParameters();		
 	}
 
+	public void clearParameters() {
+		namedParams.clearParameters();		
+	}	
+	
 	public void copyParametersFrom(NamedParams params) {
 		namedParams.copyParametersFrom(params);		
 	}	

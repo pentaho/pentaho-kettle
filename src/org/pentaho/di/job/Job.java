@@ -1263,9 +1263,13 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		namedParams.setParameterValue(key, value);
 	}
 
-	public void clearValues() {
-		namedParams.clearValues();		
+	public void eraseParameters() {
+		namedParams.eraseParameters();		
 	}
+	
+	public void clearParameters() {
+		namedParams.clearParameters();		
+	}	
 
 	public void activateParameters() {
 		String[] keys = listParameters();
