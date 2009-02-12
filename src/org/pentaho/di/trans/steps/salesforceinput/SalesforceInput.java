@@ -131,16 +131,16 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		String timeout= environmentSubstitute(meta.getTimeOut()); 
 		
 		// connect and return binding
-		SoapBindingStub binding=getBinding(data.URL,username, password, module, condition,timeout);
+		data.binding=getBinding(data.URL,username, password, module, condition,timeout);
 		
-		if(binding==null)  throw new KettleException(Messages.getString("SalesforceInput.Exception.CanNotGetBiding"));
+		if(data.binding==null)  throw new KettleException(Messages.getString("SalesforceInput.Exception.CanNotGetBiding"));
 		
 
 	    try{
 	    	
 			// check if Object is queryable
 			
-		    DescribeSObjectResult describeSObjectResult = binding.describeSObject(module);
+		    DescribeSObjectResult describeSObjectResult = data.binding.describeSObject(module);
 		        
 		    if (describeSObjectResult == null) throw new KettleException(Messages.getString("SalesforceInput.ErrorGettingObject"));
 		        
@@ -152,19 +152,18 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		    if (log.isDetailed()) logDetailed(Messages.getString("SalesforceInput.Log.SQLString") + " : " +  SQLString);        
 		    
 		    if(meta.includeSQL()) data.SQL=SQLString;
-	    	if(meta.includeTimestamp()) data.Timestamp= binding.getServerTimestamp().toString();
-	 		if(log.isDebug()) Messages.getString("SalesforceInput.Log.ServerTimestamp",""+binding.getServerTimestamp());
+	    	if(meta.includeTimestamp()) data.Timestamp= data.binding.getServerTimestamp().toString();
+	 		if(log.isDebug()) Messages.getString("SalesforceInput.Log.ServerTimestamp",""+data.binding.getServerTimestamp());
 			
 	    	// return query result
-	        data.qr = binding.query(SQLString);
+	        data.qr = data.binding.query(SQLString);
 	        
-	        if(data.qr==null) data.limitReached = true;	
-	        else{
-	        	if(data.qr.getRecords()==null) data.limitReached = true;
-	        	else {
-	        		data.recordcount=data.qr.getRecords().length;
-	        		data.limitReached = false;	
-	        	}
+	        data.limitReached = true;
+	        
+	        if(data.qr.getSize()>0) 
+	        {
+	        	data.recordcount=data.qr.getRecords().length;
+	        	data.limitReached = false;	
 	        }
 	        
 	        if (log.isDetailed()) logDetailed(Messages.getString("SalesforceInput.Log.RecordCount") + " : " +  data.recordcount);      
@@ -277,13 +276,13 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		{
 	      return null;
 		} 
-		
+
 		// Build an empty row based on the meta-data		  
 		Object[] outputRowData=buildEmptyRow();
 
 		try{
 			SObject con = data.qr.getRecords()[(int)data.rownr];
-			if(con==null) return null;
+	
 			for (int i=0;i<data.nrfields;i++)
 			{
 					
@@ -320,8 +319,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 					{
 						outputRowData[i] = data.previousRow[i];
 					}
-				}
-					
+				}		
 			}  // End of loop over fields...
 			
 			int rowIndex = data.nrfields;
@@ -364,12 +362,15 @@ public class SalesforceInput extends BaseStep implements StepInterface
             if (data.limit>0 && data.rownr>=data.limit-1)  data.limitReached = true;
             
             data.rownr++;
-            
+            // check the done attribute on the QueryResult and call QueryMore 
+            // with the QueryLocator if there are more records to be retrieved
+            if(!data.qr.isDone()) data.qr=data.binding.queryMore(data.qr.getQueryLocator());
 		 }
 		 catch (Exception e)
 		 {
 			throw new KettleException(Messages.getString("SalesforceInput.Exception.CanNotReadFromSalesforce"), e);
 		 }
+		
 		return outputRowData;
 	}
  /* build the SQL statement to send to 
@@ -422,8 +423,17 @@ public class SalesforceInput extends BaseStep implements StepInterface
 	{
 		meta=(SalesforceInputMeta)smi;
 		data=(SalesforceInputData)sdi;
-		try{
-		if(!data.qr.isDone()) data.qr.setDone(true);
+		try
+		{
+			if(!data.qr.isDone()) 
+			{
+				data.qr.setDone(true);
+				data.qr=null;
+			}
+			if(data.binding!=null) data.binding=null;
+			if(data.outputRowMeta!=null) data.outputRowMeta=null;
+			if(data.convertRowMeta!=null) data.convertRowMeta=null;
+			if(data.previousRow!=null) data.previousRow=null;
 		}catch(Exception e){};
 		super.dispose(smi, sdi);
 	}

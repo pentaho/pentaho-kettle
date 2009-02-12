@@ -21,6 +21,7 @@ import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
 import com.sforce.soap.partner.QueryResult;
+import com.sforce.soap.partner.SoapBindingStub;
 
 /*
  * @author Samatar
@@ -43,6 +44,7 @@ public class SalesforceInputData extends BaseStepData implements StepDataInterfa
     public String Module;
     public String SQL;
     public String Timestamp;
+	public SoapBindingStub binding;
 
 	/**
 	 * 
