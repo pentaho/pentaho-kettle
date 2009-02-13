@@ -81,6 +81,28 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 	public final static String	typeDescLookup[]				= ValueMeta.getTypes();
 
+    public static final int     START_DATE_ALTERNATIVE_NONE           = 0;
+    public static final int     START_DATE_ALTERNATIVE_SYSDATE        = 1;
+    public static final int     START_DATE_ALTERNATIVE_START_OF_TRANS = 2;
+    public static final int     START_DATE_ALTERNATIVE_NULL           = 3;
+    public static final int     START_DATE_ALTERNATIVE_COLUMN_VALUE   = 4;
+    
+    private static final String[] startDateAlternativeCodes = { 
+    		"none",           // $NON-NLS-1$ 
+    		"sysdate",        // $NON-NLS-1$ 
+    		"trans_start",    // $NON-NLS-1$ 
+    		"null",           // $NON-NLS-1$ 
+    		"column_value",   // $NON-NLS-1$
+    	};
+    
+    private static final String[] startDateAlternativeDescs = { 
+    		Messages.getString("DimensionLookupMeta.StartDateAlternative.None.Label"),
+    		Messages.getString("DimensionLookupMeta.StartDateAlternative.Sysdate.Label"),
+    		Messages.getString("DimensionLookupMeta.StartDateAlternative.TransStart.Label"),
+    		Messages.getString("DimensionLookupMeta.StartDateAlternative.Null.Label"),
+    		Messages.getString("DimensionLookupMeta.StartDateAlternative.ColumnValue.Label"),
+    	};
+    
     /** The lookup schema name*/
     private String             schemaName;
 
@@ -150,6 +172,16 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     
     /** The size of the cache in ROWS : -1 means: not set, 0 means: cache all */
     private int                 cacheSize;
+    
+    /** Flag to indicate we're going to use an alternative start date */
+    private boolean             usingStartDateAlternative;
+    
+    /** The type of alternative */
+    private int                 startDateAlternative;
+    
+    /** The field name in case we select the column value option as an alternative start date */
+    private String              startDateFieldName;
+    
     
 	public DimensionLookupMeta()
 	{
@@ -558,6 +590,37 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			return typeDesc[t];
 	}
 	
+	public final static int getStartDateAlternative(String string)
+	{
+		for (int i = 0; i < startDateAlternativeCodes.length; i++)
+		{
+			if (startDateAlternativeCodes[i].equalsIgnoreCase(string)) return i;
+		}
+		for (int i = 0; i < startDateAlternativeDescs.length; i++)
+		{
+			if (startDateAlternativeDescs[i].equalsIgnoreCase(string)) return i;
+		}
+		return START_DATE_ALTERNATIVE_NONE;
+	}
+
+	public final static String getStartDateAlternativeCode(int alternative)
+	{
+		return startDateAlternativeCodes[alternative];
+	}
+	
+	public final static String getStartDateAlternativeDesc(int alternative)
+	{
+		return startDateAlternativeDescs[alternative];
+	}
+	
+	public static final String[] getStartDateAlternativeCodes() {
+		return startDateAlternativeCodes;
+	}
+	
+	public static final String[] getStartDateAlternativeDescriptions() {
+		return startDateAlternativeDescs;
+	}
+	
 	public final static boolean isUpdateTypeWithoutArgument(int type) {
 		switch(type) {
 		case TYPE_UPDATE_DATE_INSUP	 :
@@ -639,6 +702,10 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			setTechKeyCreation(XMLHandler.getTagValue(fields, "return", "creation_method")); //$NON-NLS-1$
             
             cacheSize = Const.toInt(XMLHandler.getTagValue(stepnode, "cache_size"), -1); //$NON-NLS-1$
+            
+            usingStartDateAlternative = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_start_date_alternative")); //$NON-NLS-1$
+            startDateAlternative = getStartDateAlternative(XMLHandler.getTagValue(stepnode, "start_date_alternative")); //$NON-NLS-1$
+            startDateFieldName = XMLHandler.getTagValue(stepnode, "start_date_field_name"); //$NON-NLS-1$ 
 		}
 		catch (Exception e)
 		{
@@ -820,6 +887,10 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
         retval.append("      ").append(XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
 
+        retval.append("      ").append(XMLHandler.addTagValue("use_start_date_alternative", usingStartDateAlternative)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("start_date_alternative", getStartDateAlternativeCode(startDateAlternative))); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("start_date_field_name", startDateFieldName)); //$NON-NLS-1$ //$NON-NLS-2$
+
         return retval.toString();
 	}
 
@@ -868,6 +939,10 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			maxYear = (int) rep.getStepAttributeInteger(id_step, "max_year"); //$NON-NLS-1$
 
             cacheSize = (int) rep.getStepAttributeInteger(id_step, "cache_size"); //$NON-NLS-1$
+            
+            usingStartDateAlternative = rep.getStepAttributeBoolean(id_step, "use_start_date_alternative"); //$NON-NLS-1$
+            startDateAlternative = getStartDateAlternative(rep.getStepAttributeString(id_step, "start_date_alternative")); //$NON-NLS-1$
+            startDateFieldName = rep.getStepAttributeString(id_step, "start_date_field_name"); //$NON-NLS-1$ 
 		}
 		catch (Exception e)
 		{
@@ -918,8 +993,14 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
             rep.saveStepAttribute(id_transformation, id_step, "cache_size", cacheSize); //$NON-NLS-1$
 
+            rep.saveStepAttribute(id_transformation, id_step, "use_start_date_alternative", usingStartDateAlternative); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "start_date_alternative", getStartDateAlternativeCode(startDateAlternative)); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "start_date_field_name", startDateFieldName); //$NON-NLS-1$ 
+
             // Also, save the step-database relationship!
             if (databaseMeta != null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
+            
+            
         }
         catch (KettleDatabaseException dbe)
         {
@@ -1789,4 +1870,46 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     {
         this.cacheSize = cacheSize;
     }
+
+	/**
+	 * @return the usingStartDateAlternative
+	 */
+	public boolean isUsingStartDateAlternative() {
+		return usingStartDateAlternative;
+	}
+
+	/**
+	 * @param usingStartDateAlternative the usingStartDateAlternative to set
+	 */
+	public void setUsingStartDateAlternative(boolean usingStartDateAlternative) {
+		this.usingStartDateAlternative = usingStartDateAlternative;
+	}
+
+	/**
+	 * @return the startDateAlternative
+	 */
+	public int getStartDateAlternative() {
+		return startDateAlternative;
+	}
+
+	/**
+	 * @param startDateAlternative the startDateAlternative to set
+	 */
+	public void setStartDateAlternative(int startDateAlternative) {
+		this.startDateAlternative = startDateAlternative;
+	}
+
+	/**
+	 * @return the startDateFieldName
+	 */
+	public String getStartDateFieldName() {
+		return startDateFieldName;
+	}
+
+	/**
+	 * @param startDateFieldName the startDateFieldName to set
+	 */
+	public void setStartDateFieldName(String startDateFieldName) {
+		this.startDateFieldName = startDateFieldName;
+	}
 }

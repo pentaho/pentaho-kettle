@@ -111,6 +111,16 @@ public class DimensionLookup extends BaseStep implements StepInterface
             data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
                         
+            // The start date value column (if applicable)
+            //
+            data.startDateFieldIndex = -1;
+            if (data.startDateChoice==DimensionLookupMeta.START_DATE_ALTERNATIVE_COLUMN_VALUE) {
+            	data.startDateFieldIndex = getInputRowMeta().indexOfValue(meta.getStartDateFieldName());
+            	if (data.startDateFieldIndex<0) {
+            		throw new KettleStepException(Messages.getString("DimensionLookup.Exception.StartDateValueColumnNotFound", meta.getStartDateFieldName()));
+            	}
+            }
+            
             // Lookup values
             data.keynrs = new int[meta.getKeyStream().length];
             for (int i=0;i<meta.getKeyStream().length;i++)
@@ -552,14 +562,24 @@ public class DimensionLookup extends BaseStep implements StepInterface
         
         data.lookupRowMeta = new RowMeta();
     
-        /* 
+        /* DEFAULT, SYSDATE, START_TRANS, COLUMN_VALUE : 
+         * 
          * SELECT <tk>, <version>, ... , 
          * FROM <table> 
          * WHERE key1=keys[1] 
          * AND key2=keys[2] ...
-         * AND <datefield> BETWEEN <datefrom> AND <dateto>
+         * AND <datefrom> <= <datefield> 
+         * AND <dateto> >    <datefield>  
          * ;
          * 
+         * NULL :
+         * 
+         * SELECT <tk>, <version>, ... , 
+         * FROM <table> 
+         * WHERE key1=keys[1] 
+         * AND key2=keys[2] ...
+         * AND ( <datefrom> is null OR <datefrom> <= <datefield> ) 
+         * AND <dateto> >= <datefield> 
          */
         String sql = "SELECT "+databaseMeta.quoteField(meta.getKeyField())+", "+databaseMeta.quoteField(meta.getVersionField());
         
@@ -592,9 +612,30 @@ public class DimensionLookup extends BaseStep implements StepInterface
             data.lookupRowMeta.addValueMeta( rowMeta.getValueMeta(data.keynrs[i]) );
         }
         
-        sql += " AND ? >= "+databaseMeta.quoteField(meta.getDateFrom())+" AND ? < "+databaseMeta.quoteField(meta.getDateTo());
-        data.lookupRowMeta.addValueMeta( new ValueMeta(meta.getDateFrom(), ValueMetaInterface.TYPE_DATE) );
-        data.lookupRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE) );
+        String dateFromField = databaseMeta.quoteField(meta.getDateFrom());
+        String dateToField = databaseMeta.quoteField(meta.getDateTo());
+        
+        if (meta.isUsingStartDateAlternative() && 
+        		( meta.getStartDateAlternative()==DimensionLookupMeta.START_DATE_ALTERNATIVE_NULL) ||
+        		( meta.getStartDateAlternative()==DimensionLookupMeta.START_DATE_ALTERNATIVE_COLUMN_VALUE)
+        	)
+        		{
+        	// Null as a start date is possible...
+        	//
+	        sql += " AND ( "+dateFromField+" IS NULL OR "+dateFromField+" <= ? )"+Const.CR;
+	        sql += " AND "+dateToField+" >= ?"+Const.CR;
+	        
+	        data.lookupRowMeta.addValueMeta( new ValueMeta(meta.getDateFrom(), ValueMetaInterface.TYPE_DATE) );
+	        data.lookupRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE) );
+        } else {
+        	// Null as a start date is NOT possible
+        	//
+	        sql += " AND ? >= "+dateFromField+Const.CR;
+	        sql += " AND ? < "+dateToField+Const.CR;
+	        
+	        data.lookupRowMeta.addValueMeta( new ValueMeta(meta.getDateFrom(), ValueMetaInterface.TYPE_DATE) );
+	        data.lookupRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE) );
+        }
     
         try
         {
@@ -813,7 +854,17 @@ public class DimensionLookup extends BaseStep implements StepInterface
         // Caller is responsible for setting proper version number depending
         // on if newEntry == true
         insertRow[insertIndex++] = versionNr;
-        insertRow[insertIndex++] = dateFrom;
+        
+        switch(data.startDateChoice) {
+        case DimensionLookupMeta.START_DATE_ALTERNATIVE_NONE           : insertRow[insertIndex++] = dateFrom; break;
+        case DimensionLookupMeta.START_DATE_ALTERNATIVE_SYSDATE        : insertRow[insertIndex++] = new Date(); break;
+        case DimensionLookupMeta.START_DATE_ALTERNATIVE_START_OF_TRANS : insertRow[insertIndex++] = getTrans().getStartDate(); break; 
+        case DimensionLookupMeta.START_DATE_ALTERNATIVE_NULL           : insertRow[insertIndex++] = null; break;
+        case DimensionLookupMeta.START_DATE_ALTERNATIVE_COLUMN_VALUE   : insertRow[insertIndex++] = inputRowMeta.getDate(row, data.startDateFieldIndex); break;
+        default: 
+        	throw new KettleStepException(Messages.getString("DimensionLookup.Exception.IllegalStartDateSelection", Integer.toString(data.startDateChoice)));
+        }
+
         insertRow[insertIndex++] = dateTo;
         
         for (int i=0;i<data.keynrs.length;i++)
@@ -1353,6 +1404,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
 
 			data.realSchemaName=environmentSubstitute(meta.getSchemaName());
 			data.realTableName=environmentSubstitute(meta.getTableName());
+			
+			data.startDateChoice = DimensionLookupMeta.START_DATE_ALTERNATIVE_NONE;
+			if (meta.isUsingStartDateAlternative()) data.startDateChoice = meta.getStartDateAlternative();
 			
 			data.db=new Database(meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);

@@ -60,19 +60,19 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.dimensionlookup.DimensionLookupMeta;
+import org.pentaho.di.trans.steps.dimensionlookup.Messages;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.trans.steps.dimensionlookup.DimensionLookupMeta;
-import org.pentaho.di.trans.steps.dimensionlookup.Messages;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 
 
@@ -130,9 +130,15 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	private Label        wlFromdate;
 	private Text         wFromdate;
 
+	private Label        wlUseAltStartDate;
+	private Button       wUseAltStartDate;
+	private CCombo       wAltStartDate;
+	private Text         wAltStartDateField;
+	
 	private Label        wlMinyear;
 	private Text         wMinyear;	
 
+	
 	private Label        wlTodate;
 	private Text         wTodate;
 
@@ -588,6 +594,52 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		wMaxyear.setLayoutData(fdMaxyear);
 		wMaxyear.setToolTipText(Messages.getString("DimensionLookupDialog.Maxyear.ToolTip")); //$NON-NLS-1$
 		
+		// Add a line with an option to specify an alternative start date...
+		//
+		wlUseAltStartDate=new Label(shell, SWT.RIGHT);
+		wlUseAltStartDate.setText(Messages.getString("DimensionLookupDialog.UseAlternativeStartDate.Label")); //$NON-NLS-1$
+		props.setLook(wlUseAltStartDate); 	
+		FormData fdlUseAltStartDate=new FormData();
+		fdlUseAltStartDate.left  = new FormAttachment(0, 0);
+		fdlUseAltStartDate.right = new FormAttachment(middle, -margin);
+		fdlUseAltStartDate.bottom = new FormAttachment(wTodate, -2 * margin);
+		wlUseAltStartDate.setLayoutData(fdlUseAltStartDate); 
+		wUseAltStartDate=new Button(shell, SWT.CHECK);
+ 		props.setLook(wUseAltStartDate);
+		wUseAltStartDate.setToolTipText(Messages.getString("DimensionLookupDialog.UseAlternativeStartDate.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$		
+		FormData fdUseAltStartDate=new FormData();
+		fdUseAltStartDate.left = new FormAttachment(middle, 0);
+		fdUseAltStartDate.bottom  = new FormAttachment(wTodate, -2 * margin);
+		wUseAltStartDate.setLayoutData(fdUseAltStartDate);
+        wUseAltStartDate.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setFlags(); } });
+        
+		// The choice...
+		//
+		wAltStartDate=new CCombo(shell, SWT.BORDER);
+ 		props.setLook(wAltStartDate);
+ 		// All options except for "No alternative"...
+ 		wAltStartDate.removeAll();
+ 		for (int i=1;i<DimensionLookupMeta.getStartDateAlternativeDescriptions().length;i++) {
+ 			wAltStartDate.add(DimensionLookupMeta.getStartDateAlternativeDescriptions()[i]);
+ 		}
+ 		wAltStartDate.setText(Messages.getString("DimensionLookupDialog.AlternativeStartDate.SelectItemDefault"));
+		wAltStartDate.setToolTipText(Messages.getString("DimensionLookupDialog.AlternativeStartDate.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$		
+		FormData fdAltStartDate=new FormData();
+		fdAltStartDate.left = new FormAttachment(wUseAltStartDate, 2*margin);
+		fdAltStartDate.right = new FormAttachment(wUseAltStartDate, 200);
+		fdAltStartDate.bottom  = new FormAttachment(wTodate, -2 * margin);
+		wAltStartDate.setLayoutData(fdAltStartDate);
+		wAltStartDate.addModifyListener(new ModifyListener() { public void modifyText(ModifyEvent arg0) { setFlags(); } });
+		wAltStartDateField=new Text(shell, SWT.SINGLE | SWT.BORDER);
+ 		props.setLook(wAltStartDateField);
+		wAltStartDateField.setToolTipText(Messages.getString("DimensionLookupDialog.AlternativeStartDateField.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$		
+		FormData fdAltStartDateField=new FormData();
+		fdAltStartDateField.left = new FormAttachment(wAltStartDate, 2*margin);
+		fdAltStartDateField.right = new FormAttachment(100, 0);
+		fdAltStartDateField.bottom  = new FormAttachment(wTodate, -2 * margin);
+		wAltStartDateField.setLayoutData(fdAltStartDateField);
+		
+		
 		// Fromdate line
 		//
 		//  0 [wlFromdate] middle [wFromdate] (100-middle)/3 [wlMinyear] 2*(100-middle)/3 [wMinyear] 100%
@@ -598,7 +650,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		FormData fdlFromdate=new FormData();
 		fdlFromdate.left = new FormAttachment(0, 0);
 		fdlFromdate.right= new FormAttachment(middle, -margin);
-		fdlFromdate.bottom  = new FormAttachment(wTodate, -margin);
+		fdlFromdate.bottom  = new FormAttachment(wAltStartDate, -margin);
 		wlFromdate.setLayoutData(fdlFromdate);
 		wFromdate=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFromdate);
@@ -606,7 +658,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		FormData fdFromdate=new FormData();
 		fdFromdate.left = new FormAttachment(middle, 0);
 		fdFromdate.right= new FormAttachment(middle+(100-middle)/3, -margin);
-		fdFromdate.bottom  = new FormAttachment(wTodate, -margin);
+		fdFromdate.bottom  = new FormAttachment(wAltStartDate, -margin);
 		wFromdate.setLayoutData(fdFromdate);
 
 		// Minyear line
@@ -616,7 +668,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		FormData fdlMinyear=new FormData();
 		fdlMinyear.left  = new FormAttachment(wFromdate, margin);
 		fdlMinyear.right = new FormAttachment(middle+2*(100-middle)/3, -margin);
-		fdlMinyear.bottom = new FormAttachment(wTodate, -margin);
+		fdlMinyear.bottom = new FormAttachment(wAltStartDate, -margin);
 		wlMinyear.setLayoutData(fdlMinyear);
 		wMinyear=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wMinyear);
@@ -624,7 +676,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		FormData fdMinyear=new FormData();
 		fdMinyear.left = new FormAttachment(wlMinyear, margin);
 		fdMinyear.right= new FormAttachment(100, 0);
-		fdMinyear.bottom = new FormAttachment(wTodate, -margin);
+		fdMinyear.bottom = new FormAttachment(wAltStartDate, -margin);
 		wMinyear.setLayoutData(fdMinyear);
 		wMinyear.setToolTipText(Messages.getString("DimensionLookupDialog.Minyear.ToolTip")); //$NON-NLS-1$
 
@@ -890,7 +942,14 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         	setSequence();
         	setTableMax();
         }
+        
+        // The alternative start date
+        //
+        wAltStartDate.setEnabled(wUseAltStartDate.getSelection());
+        int alternative = DimensionLookupMeta.getStartDateAlternative(wAltStartDate.getText());
+        wAltStartDateField.setEnabled( alternative==DimensionLookupMeta.START_DATE_ALTERNATIVE_COLUMN_VALUE ); 
 	}
+	
 	protected void setComboBoxes()
     {
         // Something was changed in the row.
@@ -1054,6 +1113,14 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
 		ci = transMeta.findDatabase(wConnection.getText());
 
+		// The alternative start date...
+		//
+		wUseAltStartDate.setSelection(input.isUsingStartDateAlternative());
+		if (input.isUsingStartDateAlternative()) {
+			wAltStartDate.setText(DimensionLookupMeta.getStartDateAlternativeDesc(input.getStartDateAlternative()));
+		}
+		wAltStartDateField.setText(Const.NVL(input.getStartDateFieldName(), ""));
+		
         setFlags();
 
 		wStepname.selectAll();
@@ -1152,6 +1219,10 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         in.setCacheSize( Const.toInt(wCacheSize.getText(), -1) );
 		in.setMinYear( Const.toInt(wMinyear.getText(), Const.MIN_YEAR) );
 		in.setMaxYear( Const.toInt(wMaxyear.getText(), Const.MAX_YEAR) );
+		
+		in.setUsingStartDateAlternative( wUseAltStartDate.getSelection() );
+		in.setStartDateAlternative( DimensionLookupMeta.getStartDateAlternative(wAltStartDate.getText()));
+		in.setStartDateFieldName( wAltStartDateField.getText() );
 	}
 
 	private void getTableName()

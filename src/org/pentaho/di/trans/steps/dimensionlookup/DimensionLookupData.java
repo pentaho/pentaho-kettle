@@ -68,6 +68,10 @@ public class DimensionLookupData extends BaseStepData implements StepDataInterfa
     public String realTableName;
     public String realSchemaName;
 
+	public int startDateChoice;
+
+	public int startDateFieldIndex;
+
 	/**
 	 * 
 	 */
