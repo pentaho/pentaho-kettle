@@ -522,10 +522,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
         int inputIndex = 0;
         
         // Then the technical key...
-        outputRow[outputIndex] = returnRow[inputIndex];
-        outputIndex++;
-        inputIndex++;
-        //skip the version        
+        outputRow[outputIndex++] = data.returnRowMeta.getInteger(returnRow, inputIndex++);
+        
+        //skip the version in the input        
         inputIndex++;
         
         // Then get the "extra fields"...
