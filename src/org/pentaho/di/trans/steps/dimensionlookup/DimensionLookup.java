@@ -758,7 +758,11 @@ public class DimensionLookup extends BaseStep implements StepInterface
             RowMetaInterface updateRowMeta = new RowMeta();
             
             String sql_upd="UPDATE "+data.schemaTable+Const.CR;
-            sql+="SET "+databaseMeta.quoteField(meta.getDateTo())+" = ?"+Const.CR;
+
+            // The end of the date range
+            //
+            sql_upd+="SET "+databaseMeta.quoteField(meta.getDateTo())+" = ?"+Const.CR;
+            updateRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE));
             
 			// The special update fields...
 			//
@@ -770,12 +774,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION  : valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_BOOLEAN); break;
 				}
 				if (valueMeta!=null) {
-					sql_upd+=", "+databaseMeta.quoteField(valueMeta.getName());
+					sql_upd+=", "+databaseMeta.quoteField(valueMeta.getName())+" = ?"+Const.CR;
 					updateRowMeta.addValueMeta(valueMeta);
 				}
 			}
-
-            updateRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE));
             
             sql_upd+="WHERE ";
             for (int i=0;i<meta.getKeyLookup().length;i++)
