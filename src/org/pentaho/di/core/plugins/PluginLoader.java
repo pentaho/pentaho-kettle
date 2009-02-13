@@ -219,7 +219,6 @@ public class PluginLoader
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public <E extends Plugin> Collection<E> getDefinedPlugins(Class<E> pluginType)
 			throws KettleConfigException
 	{
@@ -411,7 +410,6 @@ public class PluginLoader
 		// which object we should instantiate!
 		if (JobEntryInterface.class.isAssignableFrom(pluginClass))
 		{
-			@SuppressWarnings("unchecked")
 			Set<JobPlugin> jps = (Set<JobPlugin>) this.plugins.get(Job.class);
 
 			JobPlugin plg = new JobPlugin(Plugin.TYPE_PLUGIN, id, description, tooltip, parent.getName()
@@ -440,7 +438,6 @@ public class PluginLoader
 			sp.setLocalizedDescriptions(localizedDescriptions);
 			sp.setLocalizedTooltips(localizedTooltips);
 
-			@SuppressWarnings("unchecked")
 			Set<StepPlugin> sps = (Set<StepPlugin>) this.plugins.get(Step.class);
 			sps.add(sp);
 		}
@@ -455,7 +452,6 @@ public class PluginLoader
 		{
 			Job jobAnnot = (Job) annot;
 			String[] libs = getLibs(directory);
-			@SuppressWarnings("unchecked")
 			Set<JobPlugin> jps = (Set<JobPlugin>) this.plugins.get(Job.class);
 			JobPlugin pg = new JobPlugin(Plugin.TYPE_PLUGIN, jobAnnot.id(), jobAnnot.type().getDescription(),
 					jobAnnot.tooltip(), directory.getURL().getFile(), libs, jobAnnot.image(), match.getName(), jobAnnot.categoryDescription());
@@ -468,7 +464,6 @@ public class PluginLoader
 		{
 			Step jobAnnot = (Step) annot;
 			String[] libs = getLibs(directory);
-			@SuppressWarnings("unchecked")
 			Set<StepPlugin> jps = (Set<StepPlugin>) this.plugins.get(Step.class);
 			StepPlugin pg = new StepPlugin(Plugin.TYPE_PLUGIN, jobAnnot.name(), jobAnnot.description(),
 					jobAnnot.tooltip(), directory.getURL().getFile(), libs, jobAnnot.image(),
