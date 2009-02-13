@@ -97,6 +97,11 @@ public class Trans implements VariableSpace, NamedParams
 
     /** The job that's launching this transformation. This gives us access to the whole chain, including the parent variables, etc. */
     private Job parentJob;
+    
+    /**
+     * The transformation that is executing this transformation in case of mappings.
+     */
+    private Trans parentTrans;
 
 	/**
 	 * Indicates that we want to monitor the running transformation in a GUI
@@ -2853,5 +2858,19 @@ public class Trans implements VariableSpace, NamedParams
 
 	public void copyParametersFrom(NamedParams params) {
 		namedParams.copyParametersFrom(params);
+	}
+
+	/**
+	 * @return the parentTrans
+	 */
+	public Trans getParentTrans() {
+		return parentTrans;
+	}
+
+	/**
+	 * @param parentTrans the parentTrans to set
+	 */
+	public void setParentTrans(Trans parentTrans) {
+		this.parentTrans = parentTrans;
 	}
 }
