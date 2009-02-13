@@ -128,23 +128,35 @@ public class SetVariable extends BaseStep implements StepInterface
         }
         
         
-        VariableSpace transVariableSpace = null;
         Job parentJob = null;
-        // OK, where do we set this value...
+        
+        // We always set the variable in this step and in the parent transformation...
+        //
+        setVariable(varname, value);
+
+        // Set variable in the transformation
+        //
+        Trans trans = getTrans();
+        trans.setVariable(varname, value);
+
+        // Make a link between the transformation and the parent transformation (in a sub-transformation)
+        //
+        while (trans.getParentTrans()!=null) {
+        	trans = trans.getParentTrans();
+        	trans.setVariable(varname, value);
+        }
+        
+        // The trans object we have now is the trans being executed by a job.
+        // It has one or more parent jobs.
+        // Below we see where we need to this value as well...  
+        //
         switch(meta.getVariableType()[i])
         {
         case SetVariableMeta.VARIABLE_TYPE_JVM: 
 
             System.setProperty(varname, value);
-            
-            setVariable(varname, value);
 
-            // Set variable in the transformation
-            //
-            transVariableSpace = getTrans();  
-            transVariableSpace.setVariable(varname, value);
-
-            parentJob = getTrans().getParentJob();
+            parentJob = trans.getParentJob();
             while (parentJob!=null)
             {                           
                 parentJob.setVariable(varname, value);
@@ -154,16 +166,9 @@ public class SetVariable extends BaseStep implements StepInterface
             break;
         case SetVariableMeta.VARIABLE_TYPE_ROOT_JOB:
             {
-                setVariable(varname, value);
-
-                // Set variable in the transformation
-                //
-                transVariableSpace = getTrans();  
-                transVariableSpace.setVariable(varname, value);
-
                 // Comments by SB
                 // VariableSpace rootJob = null;
-                parentJob = getTrans().getParentJob();
+                parentJob = trans.getParentJob();
                 while (parentJob!=null)
                 {                           
                     parentJob.setVariable(varname, value);
@@ -180,18 +185,9 @@ public class SetVariable extends BaseStep implements StepInterface
             break;
         case SetVariableMeta.VARIABLE_TYPE_GRAND_PARENT_JOB:
             {
-            	// Set variable in this step
-            	//
-                setVariable(varname, value); 
-                
-                // Set variable in the transformation
-                //
-                transVariableSpace = getTrans();  
-                transVariableSpace.setVariable(varname, value);
-                
                 // Set the variable in the parent job 
                 //
-                parentJob = getTrans().getParentJob();
+                parentJob = trans.getParentJob();
                 if (parentJob!=null)
                 {
                 	parentJob.setVariable(varname, value);
@@ -203,7 +199,7 @@ public class SetVariable extends BaseStep implements StepInterface
 
                 // Set the variable on the grand-parent job
                 //
-                VariableSpace gpJob = getTrans().getParentJob().getParentJob();
+                VariableSpace gpJob = trans.getParentJob().getParentJob();
                 if (gpJob!=null)
                 {
                     gpJob.setVariable(varname, value);
@@ -217,18 +213,9 @@ public class SetVariable extends BaseStep implements StepInterface
             break;
         case SetVariableMeta.VARIABLE_TYPE_PARENT_JOB:
             {                        
-            	// Set variable in this step
-            	//
-                setVariable(varname, value); 
-                
-                // Set variable in the transformation
-                //
-                transVariableSpace = getTrans();  
-                transVariableSpace.setVariable(varname, value);
-                
                 // Set the variable in the parent job 
                 //
-                parentJob = getTrans().getParentJob();
+                parentJob = trans.getParentJob();
                 if (parentJob!=null)
                 {
                 	parentJob.setVariable(varname, value);
@@ -241,7 +228,8 @@ public class SetVariable extends BaseStep implements StepInterface
         }               
         
         logBasic(Messages.getString("SetVariable.Log.SetVariableToValue",meta.getVariableName()[i],value));
-}
+	}
+
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(SetVariableMeta)smi;
