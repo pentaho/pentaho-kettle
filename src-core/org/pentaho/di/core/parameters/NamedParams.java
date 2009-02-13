@@ -66,7 +66,7 @@ public interface NamedParams
     /**
      * Clear the values.
      */
-    void clearValues();
+    void eraseParameters();
     
     /**
      * Copy params to these named parameters (clearing out first).
@@ -79,4 +79,9 @@ public interface NamedParams
      * Activate the currently set parameters
      */
     void activateParameters();
+    
+    /**
+     * Clear all parameters
+     */
+    public void clearParameters();
 }

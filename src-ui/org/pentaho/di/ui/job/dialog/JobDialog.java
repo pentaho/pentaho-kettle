@@ -884,7 +884,7 @@ public class JobDialog extends Dialog
         jobMeta.setLogTable( wLogtable.getText() );
         
 		// Clear and add parameters
-		jobMeta.clearValues();
+		jobMeta.eraseParameters();
     	int nrNonEmptyFields = wParamFields.nrNonEmpty(); 
 		for (int i=0;i<nrNonEmptyFields;i++)
 		{

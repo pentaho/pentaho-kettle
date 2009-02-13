@@ -1836,7 +1836,7 @@ public class TransDialog extends Dialog
 		}
 		
 		// Clear and add parameters
-		transMeta.clearValues();
+		transMeta.eraseParameters();
     	nrNonEmptyFields = wParamFields.nrNonEmpty(); 
 		for (int i=0;i<nrNonEmptyFields;i++)
 		{
