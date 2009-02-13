@@ -87,6 +87,11 @@ public class Trans implements VariableSpace
 
     /** The job that's launching this transformation. This gives us access to the whole chain, including the parent variables, etc. */
     private Job parentJob;
+    
+    /**
+     * The transformation that is executing this transformation in case of mappings.
+     */
+    private Trans parentTrans;
 
 	/**
 	 * Indicates that we want to monitor the running transformation in a GUI
@@ -2499,5 +2504,19 @@ public class Trans implements VariableSpace
             errors+=1;
             log.logError(transName, "Unable to contact slave server '"+remoteSlaveServer.getName()+"' to clean up transformation : "+e.toString());
         }
+	}
+
+	/**
+	 * @return the parentTrans
+	 */
+	public Trans getParentTrans() {
+		return parentTrans;
+	}
+
+	/**
+	 * @param parentTrans the parentTrans to set
+	 */
+	public void setParentTrans(Trans parentTrans) {
+		this.parentTrans = parentTrans;
 	}
 }

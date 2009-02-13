@@ -122,6 +122,10 @@ public class Mapping extends BaseStep implements StepInterface
 		//
         data.mappingTrans = new Trans(data.mappingTransMeta);
         
+        // Leave a path up so that we can set variables in sub-transformations...
+        //
+        data.mappingTrans.setParentTrans(getTrans());
+        
         // Pass down the safe mode flag to the mapping...
         //
         data.mappingTrans.setSafeModeEnabled(getTrans().isSafeModeEnabled());
