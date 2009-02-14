@@ -102,7 +102,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 	        SessionHeader sh = new SessionHeader();
 	        sh.setSessionId(loginResult.getSessionId());
 	        binding.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(), "SessionHeader", sh);
-	        
+	       
 	        // Return the user Infos
 	        userInfo = binding.getUserInfo();
 	        if (log.isDebug()) 
@@ -154,16 +154,16 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		    if(meta.includeSQL()) data.SQL=SQLString;
 	    	if(meta.includeTimestamp()) data.Timestamp= data.binding.getServerTimestamp().toString();
 	 		if(log.isDebug()) Messages.getString("SalesforceInput.Log.ServerTimestamp",""+data.binding.getServerTimestamp());
-			
+	 		
 	    	// return query result
 	        data.qr = data.binding.query(SQLString);
 	        
 	        data.limitReached = true;
-	        
-	        if(data.qr.getSize()>0) 
+	        data.recordcount=data.qr.getSize();
+	        if(data.recordcount>0) 
 	        {
-	        	data.recordcount=data.qr.getRecords().length;
 	        	data.limitReached = false;	
+	        	data.nrRecords=data.qr.getRecords().length;
 	        }
 	        
 	        if (log.isDetailed()) logDetailed(Messages.getString("SalesforceInput.Log.RecordCount") + " : " +  data.recordcount);      
@@ -191,8 +191,6 @@ public class SalesforceInput extends BaseStep implements StepInterface
 				 throw new KettleException(Messages.getString("SalesforceInputDialog.UsernameMissing.DialogMessage"));
 			 }
 			 
-			data.recordcount=0;
-			data.rownr = 0;	
 			data.limit=Const.toLong(environmentSubstitute(meta.getRowLimit()),0);
 			data.URL=environmentSubstitute(meta.getTargetURL());
 			data.Module=environmentSubstitute(meta.getModule());
@@ -247,7 +245,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		    
 		    return true; 
 		} 
-		catch(Exception e)
+		catch(KettleException e)
 		{
 			if (getStepMeta().isDoingErrorHandling())
 			{
@@ -257,6 +255,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			else
 			{
 				logError(Messages.getString("SalesforceInput.log.Exception", e.getMessage()));
+                logError(Const.getStackTracker(e));
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -281,8 +280,8 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		Object[] outputRowData=buildEmptyRow();
 
 		try{
-			SObject con = data.qr.getRecords()[(int)data.rownr];
-	
+			SObject con = data.qr.getRecords()[(int)data.recordIndex];
+
 			for (int i=0;i<data.nrfields;i++)
 			{
 					
@@ -357,14 +356,44 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			RowMetaInterface irow = getInputRowMeta();
 			
 			data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
-            
-            // check for limit rows
-            if (data.limit>0 && data.rownr>=data.limit-1)  data.limitReached = true;
-            
+          
             data.rownr++;
-            // check the done attribute on the QueryResult and call QueryMore 
-            // with the QueryLocator if there are more records to be retrieved
-            if(!data.qr.isDone()) data.qr=data.binding.queryMore(data.qr.getQueryLocator());
+            data.recordIndex++;
+            
+			// check for limit rows
+            if (data.limit>0 && data.rownr>=data.limit-1)
+            {
+            	// User specified limit and we reached it 
+            	// We end here 
+            	data.limitReached = true;
+            }else
+            {
+				if(data.rownr>=data.nrRecords)
+				{
+					// We retrieved all records available here
+					// maybe we need to query more again ...
+					if(log.isDetailed()) log.logDetailed(toString(), 
+							Messages.getString("SalesforceInput.Log.NeedQueryMore",""+data.rownr));
+	
+					// check the done attribute on the QueryResult and call QueryMore 
+					// with the QueryLocator if there are more records to be retrieved
+					if(!data.qr.isDone()) 
+					{
+						data.qr=data.binding.queryMore(data.qr.getQueryLocator());
+						int nr=data.qr.getRecords().length;
+						data.nrRecords+=nr;
+						if(log.isDetailed()) log.logDetailed(toString(), 
+								Messages.getString("SalesforceInput.Log.QueryMoreRetrieved",""+nr));
+						
+						// We need here to initialize recordIndex
+						data.recordIndex=0;
+					}else
+					{
+						// Query is done .. we finished !
+						return null;
+					}
+				}
+            }
 		 }
 		 catch (Exception e)
 		 {

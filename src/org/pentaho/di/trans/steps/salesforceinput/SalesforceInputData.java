@@ -45,6 +45,12 @@ public class SalesforceInputData extends BaseStepData implements StepDataInterfa
     public String SQL;
     public String Timestamp;
 	public SoapBindingStub binding;
+	// We store here the number of records
+	// available before we call query more if needed
+	public int nrRecords;
+	// We use this variable to query more
+	// we initialize it each time we call query more
+	public int recordIndex;
 
 	/**
 	 * 
@@ -61,5 +67,8 @@ public class SalesforceInputData extends BaseStepData implements StepDataInterfa
 		SQL=null;
 		Timestamp=null;
 		limit=0;
+		nrRecords=0;
+		recordIndex=0;
+		rownr = 0;	
 	}
 }
