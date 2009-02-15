@@ -508,7 +508,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     	String[] paramKeys = listParameters();
     	for (int idx = 0; idx < paramKeys.length; idx++)  {
     		String desc = getParameterDescription(paramKeys[idx]);
-    		rep.insertJobParameter(getID(), idx, paramKeys[idx], desc);
+    		String defValue = getParameterDefault(paramKeys[idx]);
+    		rep.insertJobParameter(getID(), idx, paramKeys[idx], defValue, desc);
     	}
     }
 	
@@ -527,8 +528,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     	int count = rep.countJobParameter(getID());
     	for (int idx = 0; idx < count; idx++)  {
     		String key  = rep.getJobParameterKey(getID(), idx);
+    		String defValue = rep.getJobParameterDefault(getID(), idx);
     		String desc = rep.getJobParameterDescription(getID(), idx);
-    		addParameterDefinition(key, desc);
+    		addParameterDefinition(key, defValue, desc);
     	}
     }        
 	
@@ -619,6 +621,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         	retval.append("            ").append(XMLHandler.openTag("name")); //$NON-NLS-1$
         	retval.append(parameters[idx]);
         	retval.append(XMLHandler.closeTag("name")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+        	retval.append("            ").append(XMLHandler.openTag("default_value")); //$NON-NLS-1$
+        	retval.append(getParameterDefault(parameters[idx]));
+        	retval.append(XMLHandler.closeTag("default_value")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
         	retval.append("            ").append(XMLHandler.openTag("description")); //$NON-NLS-1$
         	retval.append(getParameterDescription(parameters[idx]));
         	retval.append(XMLHandler.closeTag("description")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
@@ -824,9 +829,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
                 Node paramNode = XMLHandler.getSubNodeByNr(paramsNode, "parameter", i); //$NON-NLS-1$
 
                 String paramName = XMLHandler.getTagValue(paramNode, "name"); //$NON-NLS-1$
+                String defValue = XMLHandler.getTagValue(paramNode, "default_value"); //$NON-NLS-1$
                 String descr = XMLHandler.getTagValue(paramNode, "description"); //$NON-NLS-1$
                 
-                addParameterDefinition(paramName, descr);
+                addParameterDefinition(paramName, defValue, descr);
             }            			
 			
 			// 
@@ -2899,17 +2905,28 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		
 		for ( String key : keys )  {
 			String value = getParameterValue(key);
-			setVariable(key, value);
+			String defValue = getParameterDefault(key);
+			
+			if ( Const.isEmpty(value) )  {
+				setVariable(key, defValue);
+			}
+			else  {
+				setVariable(key, value);
+			}
 		}		 		
 	}
 
-	public void addParameterDefinition(String key, String description) {
-		namedParams.addParameterDefinition(key, description);		
+	public void addParameterDefinition(String key, String defValue, String description) {
+		namedParams.addParameterDefinition(key, defValue, description);		
 	}
 
 	public String getParameterDescription(String key) {
 		return namedParams.getParameterDescription(key);
 	}
+	
+	public String getParameterDefault(String key) {
+		return namedParams.getParameterDefault(key);
+	}		
 
 	public String getParameterValue(String key) {
 		return namedParams.getParameterValue(key);
@@ -2933,5 +2950,5 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	
 	public void copyParametersFrom(NamedParams params) {
 		namedParams.copyParametersFrom(params);		
-	}	
+	}
 }

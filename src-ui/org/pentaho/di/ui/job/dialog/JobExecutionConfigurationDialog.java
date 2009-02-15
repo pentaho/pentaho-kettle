@@ -342,8 +342,9 @@ public class JobExecutionConfigurationDialog extends Dialog
         wlParams.setLayoutData(fdlParams);
 
         ColumnInfo[] cParams = {
-            new ColumnInfo( Messages.getString("JobExecutionConfigurationDialog.ArgumentsColumn.Argument"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
-            new ColumnInfo( Messages.getString("JobExecutionConfigurationDialog.ArgumentsColumn.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
+            new ColumnInfo( Messages.getString("JobExecutionConfigurationDialog.ParamsColumn.Argument"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Argument
+            new ColumnInfo( Messages.getString("JobExecutionConfigurationDialog.ParamsColumn.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), // Actual value
+            new ColumnInfo( Messages.getString("JobExecutionConfigurationDialog.ParamsColumn.Default"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), // Default value
           };
               
         String[] namedParams = jobMeta.listParameters();
@@ -382,10 +383,12 @@ public class JobExecutionConfigurationDialog extends Dialog
         {
         	String paramName = paramNames.get(i);
         	String paramValue = configuration.getParams().get(paramName);
+        	String defaultValue = jobMeta.getParameterDefault(paramName);
         	
             TableItem tableItem = new TableItem(wParams.table, SWT.NONE);
             tableItem.setText(1, paramName);
             tableItem.setText(2, Const.NVL(paramValue, ""));
+            tableItem.setText(3, Const.NVL(defaultValue, ""));
         }
         wParams.removeEmptyRows();
         wParams.setRowNums();
@@ -539,11 +542,13 @@ public class JobExecutionConfigurationDialog extends Dialog
             TableItem tableItem = wParams.getNonEmpty(i);
             String paramName = tableItem.getText(1);
             String paramValue = tableItem.getText(2);
+            String defaultValue = tableItem.getText(3);
             
-            if (!Const.isEmpty(paramName))
-            {
-                map.put(paramName, paramValue);
+            if ( Const.isEmpty(paramValue) )  {
+            	paramValue = Const.NVL(defaultValue, "");
             }
+            
+            map.put(paramName, paramValue);            
         }
         configuration.setParams(map);
     }    

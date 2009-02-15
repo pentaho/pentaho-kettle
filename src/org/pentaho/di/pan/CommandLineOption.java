@@ -367,7 +367,7 @@ public class CommandLineOption
 							val = parameterString.substring(pos+1);
 							key = key.trim();
 							
-							option.arrayParams.addParameterDefinition(key, "runtime");
+							option.arrayParams.addParameterDefinition(key, "", "runtime");
 							option.arrayParams.setParameterValue(key, val);						
 						}
 						else  {

@@ -645,13 +645,14 @@ public class TransDialog extends Dialog
         fdlFields.top  = new FormAttachment(0, 0);
         wlFields.setLayoutData(fdlFields);
         
-        final int FieldsCols=2;
+        final int FieldsCols=3;
         final int FieldsRows=100;  // TODO get the real number of parameters?
         
         ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-        colinf[0]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-        colinf[1]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Description.Label"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-        //colinf[2]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Field.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        colinf[0]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Parameter.Label"),   ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        colinf[1]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Default.Label"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        colinf[2]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Description.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+    
         
         wParamFields=new TableView(transMeta, wParamComp, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -1664,10 +1665,12 @@ public class TransDialog extends Dialog
 		{
 			TableItem item = wParamFields.table.getItem(idx);
 			
+			String defValue = transMeta.getParameterDefault(parameters[idx]);
 			String description = transMeta.getParameterDescription(parameters[idx]);
 						
 			item.setText(1, parameters[idx]);
-			item.setText(2, Const.NVL(description, ""));
+			item.setText(2, Const.NVL(defValue, ""));
+			item.setText(3, Const.NVL(description, ""));
 		}
 				
 		wSizeRowset.setText(Integer.toString(transMeta.getSizeRowset()));
@@ -1842,7 +1845,7 @@ public class TransDialog extends Dialog
 		{
 			TableItem item = wParamFields.getNonEmpty(i);
 
-			transMeta.addParameterDefinition(item.getText(1), item.getText(2));
+			transMeta.addParameterDefinition(item.getText(1), item.getText(2), item.getText(3));
 		}		
 		
 		transMeta.setSizeRowset( Const.toInt( wSizeRowset.getText(), Const.ROWS_IN_ROWSET) );

@@ -1243,13 +1243,17 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		}
 	}
 
-	public void addParameterDefinition(String key, String description) {
-		namedParams.addParameterDefinition(key, description);		
+	public void addParameterDefinition(String key, String defValue, String description) {
+		namedParams.addParameterDefinition(key, defValue, description);		
 	}
 
 	public String getParameterDescription(String key) {
 		return namedParams.getParameterDescription(key);
 	}
+	
+	public String getParameterDefault(String key) {
+		return namedParams.getParameterDefault(key);
+	}	
 
 	public String getParameterValue(String key) {
 		return namedParams.getParameterValue(key);
@@ -1276,7 +1280,14 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		
 		for ( String key : keys )  {
 			String value = getParameterValue(key);
-			setVariable(key, value);
+			String defValue = getParameterDefault(key);
+			
+			if ( Const.isEmpty(value) )  {
+				setVariable(key, defValue);
+			}
+			else  {
+				setVariable(key, value);
+			}
 		}		 		
 	}
 

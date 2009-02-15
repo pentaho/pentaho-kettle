@@ -32,9 +32,24 @@ public class NamedParamsDefault implements NamedParams
 	 * Target class for the parameter keys.
 	 */
 	class OneNamedParam {
+		/**
+		 * key of this parameter
+		 */
 		public String key;
+		
+		/**
+		 * Description of the parameter
+		 */
 		public String description;
-		public String defaultValue;    // not used for the moment.
+		
+		/**
+		 * Default value for this parameter
+		 */
+		public String defaultValue;
+		
+		/**
+		 * Actual value of the parameter.
+		 */
 		public String value;
 	}
 	
@@ -44,10 +59,11 @@ public class NamedParamsDefault implements NamedParams
 	public NamedParamsDefault() {	
 	}
 	
-	public void addParameterDefinition(String key, String description) {
+	public void addParameterDefinition(String key, String defValue, String description) {
 		OneNamedParam oneParam = new OneNamedParam();
 		
 		oneParam.key = key;
+		oneParam.defaultValue = defValue;
 		oneParam.description = description;
 		oneParam.value = "";
 		
@@ -75,6 +91,17 @@ public class NamedParamsDefault implements NamedParams
 		
 		return value;
 	}
+	
+	public String getParameterDefault(String key) {
+		String value = null;
+		
+		OneNamedParam theParam = params.get(key);
+		if ( theParam != null )  {
+			value = theParam.defaultValue;
+		}
+		
+		return value;
+	}	
 
 	public String[] listParameters() {
 		Set<String> keySet = params.keySet();
@@ -96,15 +123,15 @@ public class NamedParamsDefault implements NamedParams
 		params.clear();
 	}
 
-//	public void clearValues() {	
-//		String[] keys = listParameters();
-//		for ( int idx = 0; idx < keys.length; idx++)  {
-//			OneNamedParam theParam = params.get(keys[idx]);
-//			if ( theParam != null )  {
-//				theParam.value = "";
-//			}			
-//		}
-//	}
+	public void clearParameters() {	
+		String[] keys = listParameters();
+		for ( int idx = 0; idx < keys.length; idx++)  {
+			OneNamedParam theParam = params.get(keys[idx]);
+			if ( theParam != null )  {
+				theParam.value = "";
+			}			
+		}
+	}
 
 	public void activateParameters() {
 		// Do nothing here.
@@ -116,15 +143,12 @@ public class NamedParamsDefault implements NamedParams
 			String[] keys = aParam.listParameters();
 			for ( int idx = 0; idx < keys.length; idx++)  {
 				String desc  = aParam.getParameterDescription(keys[idx]);
+				String defValue = aParam.getParameterDefault(keys[idx]);
 				String value = aParam.getParameterValue(keys[idx]);
 				
-				addParameterDefinition(keys[idx], desc);
+				addParameterDefinition(keys[idx], defValue, desc);
 				setParameterValue(keys[idx], value);
 			}
 		}
-	}
-
-	public void clearParameters() {
-		params.clear();
 	}
 }

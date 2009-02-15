@@ -2053,7 +2053,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     	String[] paramKeys = listParameters();
     	for (int idx = 0; idx < paramKeys.length; idx++)  {
     		String desc = getParameterDescription(paramKeys[idx]);
-    		rep.insertTransParameter(getId(), idx, paramKeys[idx], desc);
+    		String defValue = getParameterDefault(paramKeys[idx]);    		
+    		rep.insertTransParameter(getId(), idx, paramKeys[idx], defValue, desc);
     	}
     }
     
@@ -2072,8 +2073,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     	int count = rep.countTransParameter(getId());
     	for (int idx = 0; idx < count; idx++)  {
     		String key  = rep.getTransParameterKey(getId(), idx);
+    		String defValue = rep.getTransParameterDefault(getId(), idx);
     		String desc = rep.getTransParameterDescription(getId(), idx);
-    		addParameterDefinition(key, desc);
+    		addParameterDefinition(key, defValue, desc);
     	}
     }    
 
@@ -2662,6 +2664,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         	retval.append("            ").append(XMLHandler.openTag("name")); //$NON-NLS-1$
         	retval.append(parameters[idx]);
         	retval.append(XMLHandler.closeTag("name")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+        	retval.append("            ").append(XMLHandler.openTag("default_value")); //$NON-NLS-1$
+        	retval.append(getParameterDefault(parameters[idx]));
+        	retval.append(XMLHandler.closeTag("default_value")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
         	retval.append("            ").append(XMLHandler.openTag("description")); //$NON-NLS-1$
         	retval.append(getParameterDescription(parameters[idx]));
         	retval.append(XMLHandler.closeTag("description")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
@@ -3200,9 +3205,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 Node paramNode = XMLHandler.getSubNodeByNr(paramsNode, "parameter", i); //$NON-NLS-1$
 
                 String paramName = XMLHandler.getTagValue(paramNode, "name"); //$NON-NLS-1$
+                String defValue = XMLHandler.getTagValue(paramNode, "default_value"); //$NON-NLS-1$
                 String descr = XMLHandler.getTagValue(paramNode, "description"); //$NON-NLS-1$
                 
-                addParameterDefinition(paramName, descr);
+                addParameterDefinition(paramName, defValue, descr);
             }            
 
             // Read the partitioning schemas
@@ -6388,14 +6394,25 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		
 		for ( String key : keys )  {
 			String value = getParameterValue(key);
-			setVariable(key, value);
+			String defValue = getParameterDefault(key);
+			
+			if ( Const.isEmpty(value) )  {
+				setVariable(key, defValue);
+			}
+			else  {
+				setVariable(key, value);
+			}
 		}		 		
 	}
 
-	public void addParameterDefinition(String key, String description) {
-		namedParams.addParameterDefinition(key, description);		
+	public void addParameterDefinition(String key, String defValue, String description) {
+		namedParams.addParameterDefinition(key, defValue, description);		
 	}
 
+	public String getParameterDefault(String key) {
+		return namedParams.getParameterDefault(key);
+	}	
+	
 	public String getParameterDescription(String key) {
 		return namedParams.getParameterDescription(key);
 	}

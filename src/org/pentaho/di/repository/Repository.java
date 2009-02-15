@@ -396,9 +396,11 @@ public class Repository
 	public static final String FIELD_TRANS_SLAVE_ID_SLAVE = "ID_SLAVE";
 
 	private static final String TRANS_ATTRIBUTE_PARAM_KEY         = "PARAM_KEY";
+	private static final String TRANS_ATTRIBUTE_PARAM_DEFAULT     = "PARAM_DEFAULT";
 	private static final String TRANS_ATTRIBUTE_PARAM_DESCRIPTION = "PARAM_DESC";
 	
 	private static final String JOB_ATTRIBUTE_PARAM_KEY           = "PARAM_KEY";
+	private static final String JOB_ATTRIBUTE_PARAM_DEFAULT       = "PARAM_DEFAULT";
 	private static final String JOB_ATTRIBUTE_PARAM_DESCRIPTION   = "PARAM_DESC";	
 
     public static final String repositoryTableNames[] = new String[] 
@@ -4589,6 +4591,19 @@ public class Repository
 	}
 
 	/**
+	 * Get a transformation parameter default. You can count the number of parameters up front. 
+	 * 
+	 * @param id_transformation transformation id
+	 * @param nr number of the parameter
+	 * @return
+	 * 
+	 * @throws KettleException Upon any error.
+	 */
+	public String getTransParameterDefault(long id_transformation, int nr) throws KettleException  {
+ 		return getTransAttributeString(id_transformation, nr, TRANS_ATTRIBUTE_PARAM_DEFAULT);		
+	}	
+	
+	/**
 	 * Get a transformation parameter description. You can count the number of parameters up front. 
 	 * 
 	 * @param id_transformation transformation id
@@ -4607,12 +4622,14 @@ public class Repository
 	 * @param id_transformation transformation id
 	 * @param nr number of the parameter to insert
 	 * @param key key to insert
+	 * @param defValue default value
 	 * @param description description to insert
 	 * 
 	 * @throws KettleException Upon any error.
 	 */
-	public void insertTransParameter(long id_transformation, long nr, String key, String description) throws KettleException {
+	public void insertTransParameter(long id_transformation, long nr, String key, String defValue, String description) throws KettleException {
 	    insertTransAttribute(id_transformation, nr, TRANS_ATTRIBUTE_PARAM_KEY, 0, key != null ? key : "");		
+	    insertTransAttribute(id_transformation, nr, TRANS_ATTRIBUTE_PARAM_DEFAULT, 0, defValue != null ? defValue : "");
 	    insertTransAttribute(id_transformation, nr, TRANS_ATTRIBUTE_PARAM_DESCRIPTION, 0, description != null ? description : "");
 	}
 	
@@ -4642,6 +4659,19 @@ public class Repository
 	}
 
 	/**
+	 * Get a job parameter default. You can count the number of parameters up front. 
+	 * 
+	 * @param id_job job id
+	 * @param nr number of the parameter
+	 * @return
+	 * 
+	 * @throws KettleException Upon any error.
+	 */
+	public String getJobParameterDefault(long id_job, int nr) throws KettleException  {
+ 		return getTransAttributeString(id_job, nr, JOB_ATTRIBUTE_PARAM_DEFAULT);		
+	}	
+	
+	/**
 	 * Get a job parameter description. You can count the number of parameters up front. 
 	 * 
 	 * @param id_job job id
@@ -4660,12 +4690,14 @@ public class Repository
 	 * @param id_job job id
 	 * @param nr number of the parameter to insert
 	 * @param key key to insert
+	 * @param defValue default value for key
 	 * @param description description to insert
 	 * 
 	 * @throws KettleException Upon any error.
 	 */
-	public void insertJobParameter(long id_job, long nr, String key, String description) throws KettleException {
-	    insertTransAttribute(id_job, nr, JOB_ATTRIBUTE_PARAM_KEY, 0, key != null ? key : "");		
+	public void insertJobParameter(long id_job, long nr, String key, String defValue, String description) throws KettleException {
+	    insertTransAttribute(id_job, nr, JOB_ATTRIBUTE_PARAM_KEY, 0, key != null ? key : "");
+	    insertTransAttribute(id_job, nr, JOB_ATTRIBUTE_PARAM_DEFAULT, 0, defValue != null ? defValue : "");
 	    insertTransAttribute(id_job, nr, JOB_ATTRIBUTE_PARAM_DESCRIPTION, 0, description != null ? description : "");
 	}	
 }

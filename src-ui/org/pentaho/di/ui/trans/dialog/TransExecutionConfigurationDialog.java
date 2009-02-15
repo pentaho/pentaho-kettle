@@ -368,8 +368,8 @@ public class TransExecutionConfigurationDialog extends Dialog
         wlArguments.setLayoutData(fdlArguments);
 
         ColumnInfo[] cArguments = {
-            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.ArgumentsColumn.Argument"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
-            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.ArgumentsColumn.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
+            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.ArgumentsColumn.Argument"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Argument name
+            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.ArgumentsColumn.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), // Actual value
           };
               
         int nrArguments = configuration.getArguments() !=null ? configuration.getArguments().size() : 0; 
@@ -394,8 +394,9 @@ public class TransExecutionConfigurationDialog extends Dialog
         wlParams.setLayoutData(fdlParams);
 
         ColumnInfo[] cParams = {
-            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.ArgumentsColumn.Argument"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
-            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.ArgumentsColumn.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
+            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.ParamsColumn.Argument"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
+            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.ParamsColumn.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
+            new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.ParamsColumn.Default"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //Preview size
           };
               
         String[] namedParams = transMeta.listParameters();
@@ -436,10 +437,12 @@ public class TransExecutionConfigurationDialog extends Dialog
         {
         	String paramName = paramNames.get(i);
         	String paramValue = configuration.getParams().get(paramName);
+        	String defaultValue = transMeta.getParameterDefault(paramName);
         	
             TableItem tableItem = new TableItem(wParams.table, SWT.NONE);
             tableItem.setText(1, paramName);
             tableItem.setText(2, Const.NVL(paramValue, ""));
+            tableItem.setText(3, Const.NVL(defaultValue, ""));
         }
         wParams.removeEmptyRows();
         wParams.setRowNums();
@@ -595,11 +598,13 @@ public class TransExecutionConfigurationDialog extends Dialog
             TableItem tableItem = wParams.getNonEmpty(i);
             String paramName = tableItem.getText(1);
             String paramValue = tableItem.getText(2);
+            String defaultValue = tableItem.getText(3);
             
-            if (!Const.isEmpty(paramName))
-            {
-                map.put(paramName, paramValue);
+            if ( Const.isEmpty(paramValue) )  {
+            	paramValue = Const.NVL(defaultValue, "");
             }
+            
+            map.put(paramName, paramValue);
         }
         configuration.setParams(map);
     }
