@@ -26,9 +26,10 @@ public interface NamedParams
 	 * TODO: default, throw exception
 	 * 
 	 * @param key Name of the parameter.
+	 * @param defValue default value.
 	 * @param description Description of the parameter. 
 	 */
-	void addParameterDefinition(String key, String description);
+	void addParameterDefinition(String key, String defValue, String description);
 	    
 	/**
 	 * Set the value of a parameter.
@@ -55,6 +56,16 @@ public interface NamedParams
 	 * @return null when not defined.
 	 */
 	String getParameterDescription(String key);
+
+	/**
+	 * Get the default value of a parameter.
+	 * 
+	 * @param key Key to get value for.
+     *
+	 * @return null when not defined.
+	 */
+	String getParameterDefault(String key);
+	
 	
     /**
      * List the parameters.
