@@ -566,13 +566,14 @@ public class JobDialog extends Dialog
         fdlFields.top  = new FormAttachment(0, 0);
         wlFields.setLayoutData(fdlFields);
         
-        final int FieldsCols=2;
+        final int FieldsCols=3;
         final int FieldsRows=100;  // TODO get the real number of parameters?
         
         ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
         colinf[0]=new ColumnInfo(Messages.getString("JobDialog.ColumnInfo.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-        colinf[1]=new ColumnInfo(Messages.getString("JobDialog.ColumnInfo.Description.Label"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-
+        colinf[1]=new ColumnInfo(Messages.getString("JobDialog.ColumnInfo.Default.Label"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$        
+        colinf[2]=new ColumnInfo(Messages.getString("JobDialog.ColumnInfo.Description.Label"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        
         wParamFields=new TableView(jobMeta, wParamComp, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
                               colinf, 
@@ -830,8 +831,10 @@ public class JobDialog extends Dialog
 			TableItem item = wParamFields.table.getItem(idx);
 			
 			String description = jobMeta.getParameterDescription(parameters[idx]);
+			String defValue = jobMeta.getParameterDefault(parameters[idx]);
 						
 			item.setText(1, parameters[idx]);
+			item.setText(3, Const.NVL(defValue, ""));
 			item.setText(2, Const.NVL(description, ""));
 		}        
 		wParamFields.setRowNums();
@@ -889,7 +892,7 @@ public class JobDialog extends Dialog
 		{
 			TableItem item = wParamFields.getNonEmpty(i);
 
-			jobMeta.addParameterDefinition(item.getText(1), item.getText(2));
+			jobMeta.addParameterDefinition(item.getText(1), item.getText(2), item.getText(3));
 		}		        
         
         jobMeta.setUseBatchId( wBatch.getSelection());
