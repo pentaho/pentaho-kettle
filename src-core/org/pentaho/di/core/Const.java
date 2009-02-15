@@ -1540,22 +1540,42 @@ public class Const
 
     /**
      * Sets the first character of each word in upper-case.
-	 * 	@param input string
+     * @param string The strings to convert to initcap
      * @return the input string but with the first character of each word converted to upper-case.
      */
-   
-  public static String initCap(String input) {
-		
-		java.util.regex.Pattern p = java.util.regex.Pattern.compile ("((\\w|')+)");
-		java.util.regex.Matcher m = p.matcher (input);
-		StringBuffer sb = new StringBuffer ();
-		while (m.find ())
-			m.appendReplacement (sb, Character.toUpperCase(m.group().charAt(0))+m.group().substring(1).toLowerCase());
-		m.appendTail (sb);
-		return sb.toString();
-	}
+    public static final String initCap(String string)
+    {
+        StringBuffer change=new StringBuffer(string);
+        boolean new_word;
+        int i;
+        char lower, upper, ch;
+            
+        new_word=true;
+        for (i=0 ; i<string.length() ; i++)
+        {
+            lower=change.substring(i,i+1).toLowerCase().charAt(0); // Lowercase is default.
+            upper=change.substring(i,i+1).toUpperCase().charAt(0); // Uppercase for new words.
+            ch=upper;
+    
+            if (new_word)
+            { 
+              change.setCharAt(i, upper);
+            }
+            else
+            {          
+              change.setCharAt(i, lower);  
+            }
 
-
+            new_word = false;
+    
+            // Cast to (int) is required for extended characters (SB)
+            if ( !Character.isLetterOrDigit((int)ch) && 
+                 ch!='_'
+               ) new_word = true;
+        }
+    
+        return change.toString();
+    }
  
     /**
      * Create a valid filename using a name
