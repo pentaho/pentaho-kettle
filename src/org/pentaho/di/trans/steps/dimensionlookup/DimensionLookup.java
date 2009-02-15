@@ -120,7 +120,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             		throw new KettleStepException(Messages.getString("DimensionLookup.Exception.StartDateValueColumnNotFound", meta.getStartDateFieldName()));
             	}
             }
-            
+          
             // Lookup values
             data.keynrs = new int[meta.getKeyStream().length];
             for (int i=0;i<meta.getKeyStream().length;i++)

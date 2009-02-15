@@ -572,8 +572,7 @@ public class JobDialog extends Dialog
         ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
         colinf[0]=new ColumnInfo(Messages.getString("JobDialog.ColumnInfo.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
         colinf[1]=new ColumnInfo(Messages.getString("JobDialog.ColumnInfo.Description.Label"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-        //colinf[2]=new ColumnInfo(Messages.getString("JobDialog.ColumnInfo.Field.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-        
+
         wParamFields=new TableView(jobMeta, wParamComp, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
                               colinf, 
