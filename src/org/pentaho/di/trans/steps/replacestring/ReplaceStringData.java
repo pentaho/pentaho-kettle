@@ -12,6 +12,8 @@
 */
 package org.pentaho.di.trans.steps.replacestring;
 
+import java.util.regex.Pattern;
+
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -33,7 +35,7 @@ public class ReplaceStringData extends BaseStepData implements StepDataInterface
 	
 	public String replaceByString[];
 	
-	public int wholeWordl[];
+	public int wholeWord[];
 	
 	public int caseSensitive[];
 	
@@ -46,6 +48,8 @@ public class ReplaceStringData extends BaseStepData implements StepDataInterface
 	public RowMetaInterface outputRowMeta;
 	
 	public int inputFieldsNr;
+
+    public Pattern[] patterns;
 	
 	
 	/**
