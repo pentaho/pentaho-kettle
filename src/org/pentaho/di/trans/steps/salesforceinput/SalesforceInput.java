@@ -242,7 +242,10 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		    {
 		    	if(log.isDetailed()) logDetailed(Messages.getString("SalesforceInput.log.LineRow",""+ getLinesInput()));
 		    }
-		    
+	          
+            data.rownr++;
+            data.recordIndex++;
+            
 		    return true; 
 		} 
 		catch(KettleException e)
@@ -280,6 +283,43 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		Object[] outputRowData=buildEmptyRow();
 
 		try{
+			
+			// check for limit rows
+            if (data.limit>0 && data.rownr>=data.limit-1)
+            {
+            	// User specified limit and we reached it 
+            	// We end here 
+            	data.limitReached = true;
+            	return null;
+            }else
+            {
+				if(data.rownr>=data.nrRecords)
+				{
+					// We retrieved all records available here
+					// maybe we need to query more again ...
+					if(log.isDetailed()) log.logDetailed(toString(), 
+							Messages.getString("SalesforceInput.Log.NeedQueryMore",""+data.rownr));
+	
+					// check the done attribute on the QueryResult and call QueryMore 
+					// with the QueryLocator if there are more records to be retrieved
+					if(!data.qr.isDone()) 
+					{
+						data.qr=data.binding.queryMore(data.qr.getQueryLocator());
+						int nr=data.qr.getRecords().length;
+						data.nrRecords+=nr;
+						if(log.isDetailed()) log.logDetailed(toString(), 
+								Messages.getString("SalesforceInput.Log.QueryMoreRetrieved",""+nr));
+						
+						// We need here to initialize recordIndex
+						data.recordIndex=0;
+					}else
+					{
+						// Query is done .. we finished !
+						return null;
+					}
+				}
+            }
+			
 			SObject con = data.qr.getRecords()[(int)data.recordIndex];
 
 			for (int i=0;i<data.nrfields;i++)
@@ -356,44 +396,6 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			RowMetaInterface irow = getInputRowMeta();
 			
 			data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
-          
-            data.rownr++;
-            data.recordIndex++;
-            
-			// check for limit rows
-            if (data.limit>0 && data.rownr>=data.limit-1)
-            {
-            	// User specified limit and we reached it 
-            	// We end here 
-            	data.limitReached = true;
-            }else
-            {
-				if(data.rownr>=data.nrRecords)
-				{
-					// We retrieved all records available here
-					// maybe we need to query more again ...
-					if(log.isDetailed()) log.logDetailed(toString(), 
-							Messages.getString("SalesforceInput.Log.NeedQueryMore",""+data.rownr));
-	
-					// check the done attribute on the QueryResult and call QueryMore 
-					// with the QueryLocator if there are more records to be retrieved
-					if(!data.qr.isDone()) 
-					{
-						data.qr=data.binding.queryMore(data.qr.getQueryLocator());
-						int nr=data.qr.getRecords().length;
-						data.nrRecords+=nr;
-						if(log.isDetailed()) log.logDetailed(toString(), 
-								Messages.getString("SalesforceInput.Log.QueryMoreRetrieved",""+nr));
-						
-						// We need here to initialize recordIndex
-						data.recordIndex=0;
-					}else
-					{
-						// Query is done .. we finished !
-						return null;
-					}
-				}
-            }
 		 }
 		 catch (Exception e)
 		 {
