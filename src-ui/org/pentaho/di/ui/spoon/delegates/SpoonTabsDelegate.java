@@ -399,8 +399,6 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			
 			if (item.equals(entry.getTabItem()))
 			{
-				spoon.enableMainEntries(true, false);
-
 				if (isTrans || entry.getObject() instanceof JobGraph)
 				{
 					EngineMetaInterface meta = entry.getObject().getMeta();

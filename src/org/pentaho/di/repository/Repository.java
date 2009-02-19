@@ -1658,6 +1658,7 @@ public class Repository
 		table.addValue(new ValueMeta(FIELD_STEP_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_y));
 		table.addValue(new ValueMeta(FIELD_STEP_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(gui_draw));
 
+		database.prepareInsert(table.getRowMeta(), TABLE_R_STEP);
 		database.setValuesInsert(table);
 		database.insertRow();
 		database.closeInsert();

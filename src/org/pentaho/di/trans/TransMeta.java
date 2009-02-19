@@ -49,6 +49,7 @@ import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
+import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
@@ -2053,8 +2054,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     	String[] paramKeys = listParameters();
     	for (int idx = 0; idx < paramKeys.length; idx++)  {
     		String desc = getParameterDescription(paramKeys[idx]);
-    		String defValue = getParameterDefault(paramKeys[idx]);    		
-    		rep.insertTransParameter(getId(), idx, paramKeys[idx], defValue, desc);
+    		String defaultValue = getParameterDefault(paramKeys[idx]);
+    		rep.insertTransParameter(getId(), idx, paramKeys[idx], defaultValue, desc);
     	}
     }
     
@@ -2073,9 +2074,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     	int count = rep.countTransParameter(getId());
     	for (int idx = 0; idx < count; idx++)  {
     		String key  = rep.getTransParameterKey(getId(), idx);
-    		String defValue = rep.getTransParameterDefault(getId(), idx);
+    		String def  = rep.getTransParameterDefault(getId(), idx);
     		String desc = rep.getTransParameterDescription(getId(), idx);
-    		addParameterDefinition(key, defValue, desc);
+    		addParameterDefinition(key, def, desc);
     	}
     }    
 
@@ -2664,9 +2665,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         	retval.append("            ").append(XMLHandler.openTag("name")); //$NON-NLS-1$
         	retval.append(parameters[idx]);
         	retval.append(XMLHandler.closeTag("name")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-        	retval.append("            ").append(XMLHandler.openTag("default_value")); //$NON-NLS-1$
-        	retval.append(getParameterDefault(parameters[idx]));
-        	retval.append(XMLHandler.closeTag("default_value")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
         	retval.append("            ").append(XMLHandler.openTag("description")); //$NON-NLS-1$
         	retval.append(getParameterDescription(parameters[idx]));
         	retval.append(XMLHandler.closeTag("description")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
@@ -2887,6 +2885,20 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       */
     public TransMeta(String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException
     {
+    	this(fname, rep, setInternalVariables, parentVariableSpace, null);
+    }
+ 
+    /**
+     * Parse a file containing the XML that describes the transformation.
+     *
+     * @param fname The filename
+     * @param rep The repository to load the default set of connections from, null if no repository is available
+     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
+     * @param parentVariableSpace the parent variable space to use during TransMeta construction
+     * @param prompter the changed/replace listener or null if there is none
+     */
+    public TransMeta(String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException
+    {
         // OK, try to load using the VFS stuff...
         Document doc=null;
         try
@@ -2908,7 +2920,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             Node transnode = XMLHandler.getSubNode(doc, XML_TAG); //$NON-NLS-1$
 
             // Load from this node...
-            loadXML(transnode, rep, setInternalVariables, parentVariableSpace);
+            loadXML(transnode, rep, setInternalVariables, parentVariableSpace, prompter);
 
             setFilename(fname);
         }
@@ -2954,6 +2966,21 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @throws KettleXMLException
      */
     public void loadXML(Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException
+    {
+    	loadXML(transnode, rep, setInternalVariables, parentVariableSpace, null);
+    }
+    
+    /**
+     * Parse a file containing the XML that describes the transformation.
+     *
+     * @param transnode The XML node to load from
+     * @param rep The repository to load the default list of database connections from (null if no repository is available)
+     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
+     * @param parentVariableSpace the parent variable space to use during TransMeta construction
+     * @param prompter the changed/replace listener or null if there is none
+     * @throws KettleXMLException
+     */
+    public void loadXML(Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException
     {
         Props props = null;
         if (Props.isInitialized())
@@ -3007,25 +3034,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                         boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
                         if (askOverwrite)
                         {
-                        	// TODO: fix with a listener in the core/engine library that gets optionally injected by Spoon/UI
-                        	/*
-                    		MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-                        	if( SpoonFactory.getInstance() != null ) {
-                        		Object res[] = SpoonFactory.getInstance().messageDialogWithToggle(Messages.getString("TransMeta.Message.Warning"),  
-                        						null,
-                        						Messages.getString("TransMeta.Message.OverwriteConnectionYN",dbcon.getName()),
-                        						Const.WARNING,
-                        						new String[] { Messages.getString("System.Button.Yes"), //$NON-NLS-1$ 
-                             						   Messages.getString("System.Button.No") },//$NON-NLS-1$
-                        						1,
-                        						Messages.getString("TransMeta.Message.DoNotShowWarning"),
-                        						!props.askAboutReplacingDatabaseConnections() );
-                        		int idx = ((Integer)res[0]).intValue();
-                        		boolean toggleState = ((Boolean)res[1]).booleanValue();
-                                props.setAskAboutReplacingDatabaseConnections(!toggleState);
-                                overwrite = ((idx&0xFF)==0); // Yes means: overwrite
-                            }
-                            */
+                        	if (prompter!=null) {
+	                        	overwrite = prompter.overwritePrompt(
+	                        			Messages.getString("TransMeta.Message.OverwriteConnectionYN",dbcon.getName()),
+	                        			Messages.getString("TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage"),
+	                        			Props.STRING_ASK_ABOUT_REPLACING_DATABASES
+	                        		);
+                        	}
                         }
     
                         if (overwrite)
@@ -3205,10 +3220,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 Node paramNode = XMLHandler.getSubNodeByNr(paramsNode, "parameter", i); //$NON-NLS-1$
 
                 String paramName = XMLHandler.getTagValue(paramNode, "name"); //$NON-NLS-1$
-                String defValue = XMLHandler.getTagValue(paramNode, "default_value"); //$NON-NLS-1$
+                String defaultValue = XMLHandler.getTagValue(paramNode, "default"); //$NON-NLS-1$
                 String descr = XMLHandler.getTagValue(paramNode, "description"); //$NON-NLS-1$
                 
-                addParameterDefinition(paramName, defValue, descr);
+                addParameterDefinition(paramName, defaultValue, descr);
             }            
 
             // Read the partitioning schemas
@@ -6394,27 +6409,20 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		
 		for ( String key : keys )  {
 			String value = getParameterValue(key);
-			String defValue = getParameterDefault(key);
-			
-			if ( Const.isEmpty(value) )  {
-				setVariable(key, defValue);
-			}
-			else  {
-				setVariable(key, value);
-			}
+			setVariable(key, value);
 		}		 		
 	}
 
-	public void addParameterDefinition(String key, String defValue, String description) {
-		namedParams.addParameterDefinition(key, defValue, description);		
+	public void addParameterDefinition(String key, String defaultValue, String description) {
+		namedParams.addParameterDefinition(key, defaultValue, description);		
 	}
 
-	public String getParameterDefault(String key) {
-		return namedParams.getParameterDefault(key);
-	}	
-	
 	public String getParameterDescription(String key) {
 		return namedParams.getParameterDescription(key);
+	}
+	
+	public String getParameterDefault(String key) {
+		return namedParams.getParameterDefault(key);
 	}
 
 	public String getParameterValue(String key) {
@@ -6440,4 +6448,5 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	public void copyParametersFrom(NamedParams params) {
 		namedParams.copyParametersFrom(params);		
 	}
+
 }

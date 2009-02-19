@@ -859,7 +859,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 							overwrite = prompter.overwritePrompt(
 									Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon.getName()), 
 									Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage"),
-									Props.STRING_ASK_ABOUT_REPLACING_DATABASES);
+									Props.STRING_ASK_ABOUT_REPLACING_DATABASES
+								);
 						}
 	
 						if (overwrite) {
