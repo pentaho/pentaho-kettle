@@ -3816,7 +3816,7 @@ public class Repository
 
     public synchronized void delJobAttributes(long id_job) throws KettleException
     {
-        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(FIELD_JOB_ATTRIBUTE_ID_JOB)+" = " + id_job;
+        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_ATTRIBUTE)+" WHERE "+quote(FIELD_JOB_ATTRIBUTE_ID_JOB)+" = " + id_job;
         database.execStatement(sql);
     }   
     
