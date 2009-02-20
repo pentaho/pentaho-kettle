@@ -73,8 +73,8 @@ public class TransPainter
     private Color        black;
     private Color        red;
     private Color        yellow;
-    // private Color        orange;
-    // private Color        green;
+    private Color        orange;
+    private Color        green;
     private Color        blue;
     // private Color        magenta;
     private Color        gray;
@@ -124,8 +124,8 @@ public class TransPainter
         this.black          = GUIResource.getInstance().getColorBlack();
         this.red            = GUIResource.getInstance().getColorRed();
         this.yellow         = GUIResource.getInstance().getColorYellow();
-        // this.orange         = GUIResource.getInstance().getColorOrange();
-        // this.green          = GUIResource.getInstance().getColorGreen();
+        this.orange         = GUIResource.getInstance().getColorOrange();
+        this.green          = GUIResource.getInstance().getColorGreen();
         this.blue           = GUIResource.getInstance().getColorBlue();
         // this.magenta        = GUIResource.getInstance().getColorMagenta();
         this.gray           = GUIResource.getInstance().getColorGray();
@@ -585,7 +585,7 @@ public class TransPainter
     private void drawLine(GC gc, StepMeta fs, StepMeta ts, TransHopMeta hi, boolean is_candidate)
     {
         StepMetaInterface fsii = fs.getStepMetaInterface();
-        StepMetaInterface tsii = ts.getStepMetaInterface();
+        // StepMetaInterface tsii = ts.getStepMetaInterface();
 
         int line[] = getLine(fs, ts);
 
@@ -602,7 +602,7 @@ public class TransPainter
             if (hi.isEnabled())
             {
                 String[] targetSteps = fsii.getTargetSteps();
-                String[] infoSteps = tsii.getInfoSteps();
+                // String[] infoSteps = tsii.getInfoSteps();
 
                 if (fs.isSendingErrorRowsToStep(ts))
                 {
@@ -614,34 +614,39 @@ public class TransPainter
                 {
                     if (targetSteps == null) // Normal link: distribute or copy data...
                     {
-                        boolean distributes = fs.isDistributes();
-                        if (ts.getStepPartitioningMeta().isMethodMirror()) distributes=false;
-                        
-                        // Or perhaps it's an informational link: draw different
-                        // color...
-                        if (Const.indexOfString(fs.getName(), infoSteps) >= 0)
-                        {
-                            if (distributes)
-                                col = black;
-                            else
-                                col = black;
-                        }
-                        else
-                        {
-                            col = black;
-                        }
+                    	col = black;
                     }
                     else
                     {
                         // Visual check to see if the target step is specified...
-                        if (Const.indexOfString(ts.getName(), fsii.getTargetSteps()) >= 0)
-                        {
-                            col = black;
-                        }
-                        else
-                        {
-                            linestyle = SWT.LINE_DOT;
-                            col = red;
+                    	//
+                        // Draw different color for Filter steps
+                        // Those can point to 2 different target steps
+                        // Index 0 is green (true)
+                        // Index 1 is red (false)
+                        //
+                        if (targetSteps.length==2) {
+                        	int index = Const.indexOfString(ts.getName(), targetSteps);
+                        	if (index==0) {
+                        		col = green;
+                        	} else if (index==1) {
+                        		col = red;
+                        	} else {
+                                linestyle = SWT.LINE_DASH;
+                                activeLinewidth= 2;
+                        		col = orange; // Index not found / -1  TODO : figure out a way to put an error icon with tooltip on this hop.
+                        	}
+                        } else { 
+	                        if (Const.indexOfString(ts.getName(), targetSteps) >= 0)
+	                        {
+	                            col = black;
+	                        }
+	                        else
+	                        {
+	                            linestyle = SWT.LINE_DOT;
+                                activeLinewidth= 2;
+	                            col = orange;         // TODO : figure out a way to put an error icon with tooltip on this hop.
+	                        }
                         }
                     }
                 }
