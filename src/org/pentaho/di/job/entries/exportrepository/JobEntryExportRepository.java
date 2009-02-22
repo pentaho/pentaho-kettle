@@ -430,24 +430,23 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		
 		retval=realfilename.substring(0, lastindexOfDot);
 		
-		
-		SimpleDateFormat daf     = new SimpleDateFormat();
+		SimpleDateFormat daf = new SimpleDateFormat();
 		Date now = new Date();
 		
-		if(SpecifyFormat && !Const.isEmpty(date_time_format))
+		if(isSpecifyFormat() && !Const.isEmpty(getDateTimeFormat()))
 		{
-			daf.applyPattern(date_time_format);
+			daf.applyPattern(getDateTimeFormat());
 			String dt = daf.format(now);
 			retval+=dt;
 		}else
 		{
-			if (add_date)
+			if (isAddDate())
 			{
 				daf.applyPattern("yyyyMMdd");
 				String d = daf.format(now);
 				retval+="_"+d;
 			}
-			if (add_time)
+			if (isAddTime())
 			{
 				daf.applyPattern("HHmmssSSS");
 				String t = daf.format(now);
@@ -456,7 +455,6 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		}
 		retval+=realfilename.substring(lastindexOfDot, lenstring);
 		return retval;
-
 	}
 	public String buildUniqueFilename(String filename)
 	{
@@ -483,11 +481,14 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		result.setResult( false );
 		
 		String realrepName=environmentSubstitute(repositoryname);
-		String realoutfilename=environmentSubstitute(targetfilename);
 		String realusername= environmentSubstitute(username);
 		String realpassword= environmentSubstitute(password);
 		String realfoldername=environmentSubstitute(directoryPath);
 		
+		String realoutfilename=environmentSubstitute(targetfilename);
+		if(export_type.equals(Export_All) || export_type.equals(Export_Jobs)
+				|| export_type.equals(Export_Trans) || export_type.equals(Export_One_Folder))
+			realoutfilename=buildFilename(realoutfilename);
 		
 		NrErrors=0;
 		successConditionBroken=false;
@@ -638,7 +639,11 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 			log.logError(toString(), "Stack trace: "+Const.CR+Const.getStackTracker(e));
 		}finally
 		{
-			if(this.repo!=null) this.repo.disconnect();
+			if(this.repo!=null) 
+			{
+				this.repo.disconnect();
+				this.repo=null;
+			}
 			if(this.repinfo!=null) this.repinfo=null;
 			if(this.userinfo!=null) this.userinfo=null;
 			if(this.repsinfo!=null) 
@@ -646,7 +651,10 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 				this.repsinfo.clear();
 				this.repsinfo=null;
 			}
-			if(this.file!=null) try{this.file.close();}catch(Exception e){}
+			if(this.file!=null) try{
+				this.file.close();
+				this.file=null;
+				}catch(Exception e){}
 		}
 
 		// Success Condition
