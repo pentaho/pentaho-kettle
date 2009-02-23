@@ -87,7 +87,12 @@ public class ReservoirSampling extends BaseStep
     // Handle the first row
     if (first) {
       first = false;
-     
+      if (r==null)          // no input to be expected...
+      {
+          setOutputDone();
+          return false;
+      }
+
       // Initialize the data object
       m_data.setOutputRowMeta(getInputRowMeta().clone());
       String sampleSize = getTransMeta().environmentSubstitute(m_meta.getSampleSize());
