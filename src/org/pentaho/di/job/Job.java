@@ -418,7 +418,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
         Thread.currentThread().setContextClassLoader(jei.getClass().getClassLoader());
         // Execute this entry...
         JobEntryInterface cloneJei = (JobEntryInterface)jei.clone();
-        ((VariableSpace)cloneJei).copyVariablesFrom(this);        
+        ((VariableSpace)cloneJei).copyVariablesFrom(this);
         final Result result = cloneJei.execute(prevResult, nr, rep, this);
 
         Thread.currentThread().setContextClassLoader(cl);
@@ -1283,10 +1283,10 @@ public class Job extends Thread implements VariableSpace, NamedParams
 			String defValue = getParameterDefault(key);
 			
 			if ( Const.isEmpty(value) )  {
-				setVariable(key, defValue);
+				setVariable(key, Const.NVL(defValue, ""));
 			}
 			else  {
-				setVariable(key, value);
+				setVariable(key, Const.NVL(value, ""));
 			}
 		}		 		
 	}
