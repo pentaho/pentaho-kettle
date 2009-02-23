@@ -834,8 +834,8 @@ public class JobDialog extends Dialog
 			String defValue = jobMeta.getParameterDefault(parameters[idx]);
 						
 			item.setText(1, parameters[idx]);
-			item.setText(3, Const.NVL(defValue, ""));
-			item.setText(2, Const.NVL(description, ""));
+			item.setText(2, Const.NVL(defValue, ""));
+			item.setText(3, Const.NVL(description, ""));
 		}        
 		wParamFields.setRowNums();
 		wParamFields.optWidth(true);
