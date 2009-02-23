@@ -2859,10 +2859,10 @@ public class Trans implements VariableSpace, NamedParams
 			String defValue = getParameterDefault(key);
 			
 			if ( Const.isEmpty(value) )  {
-				setVariable(key, defValue);
+				setVariable(key, Const.NVL(defValue, ""));
 			}
 			else  {
-				setVariable(key, value);
+				setVariable(key, Const.NVL(value, ""));
 			}
 		}		 			 		
 	}
