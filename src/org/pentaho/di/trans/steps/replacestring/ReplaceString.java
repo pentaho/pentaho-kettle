@@ -140,7 +140,7 @@ public class ReplaceString extends BaseStep implements StepInterface {
                 data.replaceByString = new String[numFields];
 
                 data.patterns[i] = buildPattern(
-                        meta.getUseRegEx()[i] == ReplaceStringMeta.USE_REGEX_YES,
+                        meta.getUseRegEx()[i] != ReplaceStringMeta.USE_REGEX_YES,
                         meta.getCaseSensitive()[i] == ReplaceStringMeta.CASE_SENSITIVE_YES,
                         meta.getWholeWord()[i] == ReplaceStringMeta.WHOLE_WORD_YES,
                         meta.getReplaceString()[i]);
