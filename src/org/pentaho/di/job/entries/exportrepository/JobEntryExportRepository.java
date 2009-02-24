@@ -422,13 +422,11 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		String retval="";
 		if(Const.isEmpty(filename)) return null;
 		
-		// Replace possible environment variables...
-		String realfilename=filename;
-		int lenstring=realfilename.length();
-		int lastindexOfDot=realfilename.lastIndexOf('.');
+		int lenstring=filename.length();
+		int lastindexOfDot=filename.lastIndexOf('.');
 		if(lastindexOfDot==-1) lastindexOfDot=lenstring;
 		
-		retval=realfilename.substring(0, lastindexOfDot);
+		retval=filename.substring(0, lastindexOfDot);
 		
 		SimpleDateFormat daf = new SimpleDateFormat();
 		Date now = new Date();
@@ -453,25 +451,22 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 				retval+="_"+t;
 			}
 		}
-		retval+=realfilename.substring(lastindexOfDot, lenstring);
+		retval+=filename.substring(lastindexOfDot, lenstring);
 		return retval;
 	}
 	public String buildUniqueFilename(String filename)
 	{
 		String retval="";
 		if(Const.isEmpty(filename)) return null;
-		
-		// Replace possible environment variables...
-		String realfilename=filename;
-		int lenstring=realfilename.length();
-		int lastindexOfDot=realfilename.lastIndexOf('.');
+
+		int lenstring=filename.length();
+		int lastindexOfDot=filename.lastIndexOf('.');
 		if(lastindexOfDot==-1) lastindexOfDot=lenstring;
-		retval=realfilename.substring(0, lastindexOfDot);
+		retval=filename.substring(0, lastindexOfDot);
 		retval+=StringUtil.getFormattedDateTimeNow();
-		retval+=realfilename.substring(lastindexOfDot, lenstring);
+		retval+=filename.substring(lastindexOfDot, lenstring);
 		
 		return retval;
-
 	}
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
@@ -481,8 +476,8 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		result.setResult( false );
 		
 		String realrepName=environmentSubstitute(repositoryname);
-		String realusername= environmentSubstitute(username);
-		String realpassword= environmentSubstitute(password);
+		String realusername=environmentSubstitute(username);
+		String realpassword=environmentSubstitute(password);
 		String realfoldername=environmentSubstitute(directoryPath);
 		
 		String realoutfilename=environmentSubstitute(targetfilename);

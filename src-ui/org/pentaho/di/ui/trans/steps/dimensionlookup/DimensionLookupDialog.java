@@ -34,6 +34,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -104,7 +105,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     private Text         wCacheSize;
 
 	private Label        wlTk;
-	private Text         wTk;
+	private CCombo        wTk;
 
 	private Label        wlTkRename;
 	private Text         wTkRename;
@@ -122,25 +123,25 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	private Text         wSeq;    	
 
 	private Label        wlVersion;
-	private Text         wVersion;
+	private CCombo       wVersion;
 
 	private Label        wlDatefield;
-	private Text         wDatefield;
+	private CCombo       wDatefield;
 
 	private Label        wlFromdate;
-	private Text         wFromdate;
+	private CCombo       wFromdate;
 
 	private Label        wlUseAltStartDate;
 	private Button       wUseAltStartDate;
 	private CCombo       wAltStartDate;
-	private Text         wAltStartDateField;
+	private CCombo       wAltStartDateField;
 	
 	private Label        wlMinyear;
 	private Text         wMinyear;	
 
 	
 	private Label        wlTodate;
-	private Text         wTodate;
+	private CCombo       wTodate;
 
 	private Label        wlMaxyear;
 	private Text         wMaxyear;
@@ -167,6 +168,10 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	private ColumnInfo[] ciKey;
 	
     private Map<String, Integer> inputFields;
+    
+    private boolean gotPreviousFields=false;
+    
+    private boolean gotTableFields=false;
     
 	/**
 	 * List of ColumnInfo that should have the field names of the selected database table
@@ -566,7 +571,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdlTodate.right = new FormAttachment(middle, -margin);
 		fdlTodate.bottom= new FormAttachment(wOK, -2 * margin);		
 		wlTodate.setLayoutData(fdlTodate); 
-		wTodate=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTodate=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTodate);
 		wTodate.addModifyListener(lsMod);
 		FormData fdTodate=new FormData();
@@ -574,6 +579,23 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdTodate.right  = new FormAttachment(middle+(100-middle)/3, -margin);
 		fdTodate.bottom = new FormAttachment(wOK, -2 * margin); 
 		wTodate.setLayoutData(fdTodate); 
+		wTodate.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getFieldsFromTable();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );
+
 		
 		// Maxyear line
 		wlMaxyear=new Label(shell, SWT.RIGHT);
@@ -630,7 +652,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdAltStartDate.bottom  = new FormAttachment(wTodate, -2 * margin);
 		wAltStartDate.setLayoutData(fdAltStartDate);
 		wAltStartDate.addModifyListener(new ModifyListener() { public void modifyText(ModifyEvent arg0) { setFlags(); } });
-		wAltStartDateField=new Text(shell, SWT.SINGLE | SWT.BORDER);
+		wAltStartDateField=new CCombo(shell, SWT.SINGLE | SWT.BORDER);
  		props.setLook(wAltStartDateField);
 		wAltStartDateField.setToolTipText(Messages.getString("DimensionLookupDialog.AlternativeStartDateField.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$		
 		FormData fdAltStartDateField=new FormData();
@@ -638,7 +660,22 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdAltStartDateField.right = new FormAttachment(100, 0);
 		fdAltStartDateField.bottom  = new FormAttachment(wTodate, -2 * margin);
 		wAltStartDateField.setLayoutData(fdAltStartDateField);
-		
+		wAltStartDateField.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getFieldsFromTable();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );
 		
 		// Fromdate line
 		//
@@ -652,7 +689,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdlFromdate.right= new FormAttachment(middle, -margin);
 		fdlFromdate.bottom  = new FormAttachment(wAltStartDate, -margin);
 		wlFromdate.setLayoutData(fdlFromdate);
-		wFromdate=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFromdate=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFromdate);
 		wFromdate.addModifyListener(lsMod);
 		FormData fdFromdate=new FormData();
@@ -660,6 +697,22 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdFromdate.right= new FormAttachment(middle+(100-middle)/3, -margin);
 		fdFromdate.bottom  = new FormAttachment(wAltStartDate, -margin);
 		wFromdate.setLayoutData(fdFromdate);
+		wFromdate.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getFieldsFromTable();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );
 
 		// Minyear line
 		wlMinyear=new Label(shell, SWT.RIGHT);
@@ -689,7 +742,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdlDatefield.right= new FormAttachment(middle, -margin);
 		fdlDatefield.bottom = new FormAttachment(wMinyear, -margin);
 		wlDatefield.setLayoutData(fdlDatefield);
-		wDatefield=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wDatefield=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wDatefield);
 		wDatefield.addModifyListener(lsMod);
 		FormData fdDatefield=new FormData();
@@ -697,6 +750,22 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdDatefield.bottom = new FormAttachment(wMinyear, -margin);
 		fdDatefield.right  = new FormAttachment(100, 0);
 		wDatefield.setLayoutData(fdDatefield);
+		wDatefield.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getFields();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );
 
 		// Version key field:
 		wlVersion=new Label(shell, SWT.RIGHT);
@@ -707,7 +776,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdlVersion.right   = new FormAttachment(middle, -margin);
 		fdlVersion.bottom  = new FormAttachment(wDatefield, -margin);
 		wlVersion.setLayoutData(fdlVersion);
-		wVersion=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wVersion=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wVersion);
 		wVersion.addModifyListener(lsMod);
 		FormData fdVersion=new FormData();
@@ -715,6 +784,22 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdVersion.bottom = new FormAttachment(wDatefield, -margin);
 		fdVersion.right  = new FormAttachment(100, 0);
 		wVersion.setLayoutData(fdVersion);
+		wVersion.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getFieldsFromTable();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );
 
 		////////////////////////////////////////////////////
 		// The key creation box
@@ -801,7 +886,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdlTk.bottom  = new FormAttachment(gTechGroup, -margin);
 		
 		wlTk.setLayoutData(fdlTk);
-		wTk=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTk=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTk);
 		wTk.addModifyListener(lsMod);
 		FormData fdTk=new FormData();
@@ -810,6 +895,22 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdTk.bottom  = new FormAttachment(gTechGroup, -margin);		
 		fdTk.right= new FormAttachment(50+middle/2, 0);
 		wTk.setLayoutData(fdTk);
+		wTk.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getFieldsFromTable();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );
 
 		wlTkRename.setText(Messages.getString("DimensionLookupDialog.NewName.Label")); //$NON-NLS-1$
  		props.setLook(wlTkRename);
@@ -1008,7 +1109,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), Messages.getString("DimensionLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug(toString(), Messages.getString("DimensionLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		if (input.getKeyStream()!=null)
 		for (i=0;i<input.getKeyStream().length;i++)
@@ -1172,7 +1273,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			in.getKeyStream()[i] = item.getText(2);
 		}
 
-		log.logDebug(toString(), Messages.getString("DimensionLookupDialog.Log.FoundFields",String.valueOf(nrfields))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) log.logDebug(toString(), Messages.getString("DimensionLookupDialog.Log.FoundFields",String.valueOf(nrfields))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrfields;i++)
 		{
 			TableItem item        = wUpIns.getNonEmpty(i);
@@ -1389,7 +1490,73 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			}
 		}
 	}
-
+	 private void getFields()
+	 {
+		if(!gotPreviousFields)
+		{
+		 try{
+			 String field=wDatefield.getText();
+			 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+			 if(r!=null) 
+			 {
+				 wDatefield.setItems(r.getFieldNames());
+				 
+			 }
+			 if(field!=null) wDatefield.setText(field);
+		 	}catch(KettleException ke){
+				new ErrorDialog(shell, Messages.getString("DimensionLookupDialog.ErrorGettingFields.Title"),
+						 Messages.getString("DimensionLookupDialog.ErrorGettingFields.Message"), ke);
+			}
+		 	gotPreviousFields=true;
+		}
+	 }
+	 private void getFieldsFromTable(){
+			if(!gotTableFields)
+			{
+				if (!Const.isEmpty(wTable.getText())) {
+					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
+					if (ci != null) {
+						Database db = new Database(ci);
+						try {
+							db.connect();
+							String schemaTable = ci	.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema.getText()), 
+									transMeta.environmentSubstitute(wTable.getText()));
+							RowMetaInterface r = db.getTableFields(schemaTable);
+							if (null != r) {
+								String[] fieldNames = r.getFieldNames();
+								if (null != fieldNames) {
+									// Version
+									String version =wVersion.getText();
+									wVersion.setItems(fieldNames);
+									if(version!=null) wVersion.setText(version);
+									// from date
+									String fromdate =wFromdate.getText();
+									wFromdate.setItems(fieldNames);
+									if(fromdate!=null) wFromdate.setText(fromdate);
+									// to date
+									String todate =wTodate.getText();
+									wTodate.setItems(fieldNames);
+									if(todate!=null) wTodate.setText(todate);
+									// tk
+									String tk =wTk.getText();
+									wTk.setItems(fieldNames);
+									if(tk!=null) wTk.setText(tk);
+									// AltStartDateField
+									String sd =wAltStartDateField.getText();
+									wAltStartDateField.setItems(fieldNames);
+									if(sd!=null) wAltStartDateField.setText(sd);
+								}
+							}
+						} catch (Exception e) {
+							
+							// ignore any errors here. drop downs will not be
+							// filled, but no problem for the user
+						}
+					}
+				}
+				gotTableFields=true;
+			}
+		}
 	/**
 	 * Get the fields from the previous step and use them as "keys". Only 
 	 * get the the fields which are not yet in use as key, or in the field 

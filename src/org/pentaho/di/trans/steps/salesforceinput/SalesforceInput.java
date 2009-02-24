@@ -138,7 +138,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 
 	    try{
 	    	
-			// check if Object is queryable
+			// check if we can query this Object
 			
 		    DescribeSObjectResult describeSObjectResult = data.binding.describeSObject(module);
 		        
@@ -324,7 +324,6 @@ public class SalesforceInput extends BaseStep implements StepInterface
 
 			for (int i=0;i<data.nrfields;i++)
 			{
-					
 				String value=null;
 				if(con.get_any()[i]!=null) value=con.get_any()[i].getValue();
 				
@@ -350,7 +349,6 @@ public class SalesforceInput extends BaseStep implements StepInterface
 				ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(i);
 				outputRowData[i] = targetValueMeta.convertData(sourceValueMeta, value);
 	    
-	        
 				// Do we need to repeat this field if it is null?
 				if (meta.getInputFields()[i].isRepeated())
 				{

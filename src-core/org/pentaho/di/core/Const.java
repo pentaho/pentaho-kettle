@@ -1538,6 +1538,7 @@ public class Const
         return new byte[size];
     }
 
+
     /**
      * Sets the first character of each word in upper-case.
      * @param string The strings to convert to initcap
