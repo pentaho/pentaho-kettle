@@ -332,10 +332,23 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
 			arguments = new String[argnr];
 
-			// Read them all...
+			// Read all arguments ...
 			for (int a = 0; a < argnr; a++) {
 				arguments[a] = rep.getJobEntryAttributeString(id_jobentry, a, "argument");
 			}
+
+			// How many arguments?
+			int parameternr = rep.countNrJobEntryAttributes(id_jobentry, "parameter_name");
+			parameters = new String[parameternr];
+			parameterFieldNames = new String[parameternr];
+			parameterValues = new String[parameternr];
+
+			// Read all parameters ...
+			for (int a = 0; a < parameternr; a++) {
+				parameters[a] = rep.getJobEntryAttributeString(id_jobentry, a, "parameter_name");
+				parameterFieldNames[a] = rep.getJobEntryAttributeString(id_jobentry, a, "parameter_stream_name");
+				parameterValues[a] = rep.getJobEntryAttributeString(id_jobentry, a, "parameter_value");
+			}					
 		} catch (KettleDatabaseException dbe) {
 			throw new KettleException("Unable to load job entry of type 'job' from the repository with id_jobentry=" + id_jobentry, dbe);
 		}
@@ -386,6 +399,17 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 					rep.saveJobEntryAttribute(id_job, getID(), i, "argument", arguments[i]);
 				}
 			}
+			
+			// save the parameters...
+			if (parameters!=null)
+			{
+				for (int i=0;i<parameters.length;i++)
+				{
+					rep.saveJobEntryAttribute(id_job, getID(), i, "parameter_name", parameters[i]);
+					rep.saveJobEntryAttribute(id_job, getID(), i, "parameter_stream_name", Const.NVL(parameterFieldNames[i], ""));
+					rep.saveJobEntryAttribute(id_job, getID(), i, "parameter_value", Const.NVL(parameterValues[i], ""));
+				}
+			}			
 		}
 		catch(KettleDatabaseException dbe)
 		{
