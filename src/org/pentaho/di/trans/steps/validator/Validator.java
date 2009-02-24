@@ -227,11 +227,6 @@ public class Validator extends BaseStep implements StepInterface
             	if (meta.isValidatingAll()) exceptions.add(exception); else throw exception;
             }
             
-            // Check if the field is either numeric, a date or a string containing only digits...
-            //
-            if (field.isOnlyNumericAllowed()) {
-            }
-            
             // Check the data type!
             //
             if (field.isDataTypeVerified() && field.getDataType()!=ValueMetaInterface.TYPE_NONE) {
@@ -256,7 +251,7 @@ public class Validator extends BaseStep implements StepInterface
             		!Const.isEmpty(field.getStartString()) ||
             		!Const.isEmpty(field.getEndString()) ||
             		!Const.isEmpty(field.getStartStringNotAllowed()) ||
-            		!Const.isEmpty(field.getStartStringNotAllowed()) ||
+            		!Const.isEmpty(field.getEndStringNotAllowed()) ||
             		field.isOnlyNumericAllowed() ||
             		data.patternExpected[i]!=null ||
             		data.patternDisallowed[i]!=null
@@ -336,7 +331,7 @@ public class Validator extends BaseStep implements StepInterface
 	
 	            	// Ends with string value
 	            	//
-	            	if (!Const.isEmpty(field.getEndStringNotAllowed()) && !stringValue.endsWith(field.getEndStringNotAllowed())) {
+	            	if (!Const.isEmpty(field.getEndStringNotAllowed()) && stringValue.endsWith(field.getEndStringNotAllowed())) {
 	            		KettleValidatorException exception = new KettleValidatorException(field, KettleValidatorException.ERROR_ENDS_WITH_STRING, Messages.getString("Validator.Exception.EndsWithString", field.getFieldName(), valueMeta.getString(valueData), field.getEndStringNotAllowed()), field.getFieldName());
 	                	if (meta.isValidatingAll()) exceptions.add(exception); else throw exception;
 	            	}
