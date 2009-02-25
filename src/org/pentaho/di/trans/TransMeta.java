@@ -6210,7 +6210,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     
 	public String exportResources(VariableSpace space,  Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
 	  try {
-      FileObject fileObject = KettleVFS.getFileObject(getFilename());
+      FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(getFilename()));
       String exportFileName = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), "ktr"); //$NON-NLS-1$
   		ResourceDefinition definition = definitions.get(exportFileName);
   		if (definition==null) {

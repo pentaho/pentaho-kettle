@@ -621,7 +621,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		return startDateAlternativeDescs;
 	}
 	
-	public final static boolean isUpdateTypeWithoutArgument(int type) {
+	public final static boolean isUpdateTypeWithoutArgument(boolean update, int type) {
+		if (!update) return false; // doesn't apply
+		
 		switch(type) {
 		case TYPE_UPDATE_DATE_INSUP	 :
 		case TYPE_UPDATE_DATE_INSERTED :

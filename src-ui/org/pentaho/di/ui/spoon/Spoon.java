@@ -145,6 +145,9 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.UserInfo;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.resource.SimpleResourceNaming;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
@@ -3594,6 +3597,32 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public boolean exportXMLFile() {
 		return saveXMLFile(true);
+	}
+	
+	/**
+	 * Export this job or transformation including all depending resources to a single zip file.
+	 */
+	public void exportAllXMLFile() {
+		Map<String, ResourceDefinition> definitions = new HashMap<String, ResourceDefinition>();
+		ResourceNamingInterface namingInterface = new SimpleResourceNaming();
+		
+		try {
+			TransMeta transMeta = getActiveTransformation();
+			if (transMeta != null) {
+				String exportResources = transMeta.exportResources(transMeta, definitions, namingInterface);
+				System.out.println("Resources : "+exportResources);
+			}
+	
+			JobMeta jobMeta = getActiveJob();
+			if (jobMeta != null) {
+				String exportResources = jobMeta.exportResources(jobMeta, definitions, namingInterface);
+				System.out.println("Resources : "+exportResources);
+			}
+		}
+		catch(Exception e) {
+			new ErrorDialog(shell, "Error", "Error exporting current file", e);
+		}
+		
 	}
 
 	public boolean saveXMLFile(boolean export) {

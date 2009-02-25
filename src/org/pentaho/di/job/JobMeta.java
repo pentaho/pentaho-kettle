@@ -2734,9 +2734,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			ResourceNamingInterface namingInterface) throws KettleException {
 		String resourceName = null;
 		try {
-			FileObject fileObject = KettleVFS.getFileObject(getFilename());
-			resourceName = namingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName()
-					.getPath(), "kjb"); //$NON-NLS-1$
+			FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(getFilename()));
+			resourceName = namingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), "kjb"); //$NON-NLS-1$
 			ResourceDefinition definition = definitions.get(resourceName);
 			if (definition == null) {
 				// If we do this once, it will be plenty :-)

@@ -22,6 +22,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -70,7 +71,6 @@ public class Mapping extends BaseStep implements StepInterface
 						//
 						inputRowSets.remove(rowSet);
 						mappingInputs[0].getInputRowSets().add(rowSet);
-						
 					} else {
 						// Difficult to see what's going on here.
 						// TODO: figure out where this RowSet needs to go and where it comes from.
@@ -508,5 +508,37 @@ public class Mapping extends BaseStep implements StepInterface
             }
         }
         return size;
+    }
+    
+    public Trans getMappingTrans() {
+    	return data.mappingTrans;
+    }
+    
+    /**
+     * For preview of the main data path, make sure we pass the row listener down to the Mapping Output step...
+     */
+    public void addRowListener(RowListener rowListener)
+    {
+        MappingOutput[] mappingOutputs = data.mappingTrans.findMappingOutput();
+        if (mappingOutputs==null || mappingOutputs.length==0) return; // Nothing to do here...
+        
+    	// Simple case: one output mapping step : add the row listener over there
+    	//
+        /*
+        if (mappingOutputs.length==1) {
+        	mappingOutputs[0].addRowListener(rowListener);
+        } else {
+        	// Find the main data path...
+        	//
+        	
+        	
+        }
+        */
+        
+        // Add the row listener to all the outputs in the mapping...
+        //
+        for (MappingOutput mappingOutput : mappingOutputs) {
+        	mappingOutput.addRowListener(rowListener);
+        }
     }
 }

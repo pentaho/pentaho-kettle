@@ -13,6 +13,7 @@ align="vertical" >
                     <menuitem value="file-open-from-vfs" label="%Spoon.Menu.File.OpenVFS"/>
                     <menuitem value="file-import-from-xml" acceltext="CTRL-I"  accesskey="ctrl-i" label="%Spoon.Menu.File.Import"/>
 					<menuitem value="file-export-to-xml" label="%Spoon.Menu.File.Export"/>
+					<menuitem value="file-export-all-to-xml" label="%Spoon.Menu.File.ExportAll"/>
                     <menuitem value="file-save" acceltext="CTRL-S"  accesskey="ctrl-s" label="%Spoon.Menu.File.Save"/>
                     <menuitem value="file-save-as" label="%Spoon.Menu.File.SaveAs"/>
                     <menuitem value="file-save-as-vfs" label="%Spoon.Menu.File.SaveAsVFS"/>

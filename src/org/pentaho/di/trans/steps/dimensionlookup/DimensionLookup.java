@@ -137,7 +137,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             data.fieldnrs = new int[meta.getFieldStream().length];
             for (int i=0;meta.getFieldStream()!=null && i<meta.getFieldStream().length;i++)
             {
-            	if (!DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.getFieldUpdate()[i])) {
+            	if (!DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.isUpdate(), meta.getFieldUpdate()[i])) {
 	                data.fieldnrs[i]=data.outputRowMeta.indexOfValue(meta.getFieldStream()[i]);
 	                if (data.fieldnrs[i] < 0) 
 	                {
@@ -238,7 +238,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
 			data.valueDateNow = rowMeta.getDate(row, data.datefieldnr);
 		}
 		
-        // Construct the 
+        // Construct the lookup row...
+		//
 		for (int i=0;i<meta.getKeyStream().length;i++)
 		{
 			try
@@ -586,7 +587,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
         {
             for (int i=0;i<meta.getFieldLookup().length;i++)
             {
-                if (!Const.isEmpty(meta.getFieldLookup()[i]) && !DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.getFieldUpdate()[i])) // Don't retrieve the fields without input
+                if (!Const.isEmpty(meta.getFieldLookup()[i]) && !DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.isUpdate(), meta.getFieldUpdate()[i])) // Don't retrieve the fields without input
                 {
                     sql+=", "+databaseMeta.quoteField(meta.getFieldLookup()[i]);
                     
@@ -712,7 +713,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             {
             	// Ignore last_version, last_updated etc, they are handled below (at the back of the row).
             	//
-                if (!DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.getFieldUpdate()[i])) { 
+                if (!DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.isUpdate(), meta.getFieldUpdate()[i])) { 
 	                sql+=", "+databaseMeta.quoteField(meta.getFieldLookup()[i]);
 	                insertRowMeta.addValueMeta( inputRowMeta.getValueMeta( data.fieldnrs[i] ));
                 }
@@ -750,7 +751,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             {
         		// Ignore last_version, last_updated, etc.  These are handled below...
         		//
-            	if (!DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.getFieldUpdate()[i])) { 
+            	if (!DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.isUpdate(), meta.getFieldUpdate()[i])) { 
             		sql+=", ?";
             	}
             }
@@ -981,7 +982,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             boolean comma=false;
             for (int i=0;i<meta.getFieldLookup().length;i++)
             {
-            	if (!DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.getFieldUpdate()[i])) 
+            	if (!DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.isUpdate(), meta.getFieldUpdate()[i])) 
             	{
 	                if (comma) sql+=", "; else sql+="  ";
 	                comma=true;

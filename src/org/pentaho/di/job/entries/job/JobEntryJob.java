@@ -1025,7 +1025,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			// First load the job meta data...
 			//
 			copyVariablesFrom(space);  // To make sure variables are available.
-			JobMeta jobMeta = getJobMeta(null, null);
+			JobMeta jobMeta = getJobMeta(null, space);
 
 			// Also go down into the job and export the files there. (going down recursively)
 			//

@@ -60,6 +60,8 @@ import org.pentaho.di.trans.steps.validator.Validation;
 import org.pentaho.di.trans.steps.validator.ValidatorMeta;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.widget.InUseText;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ValidatorDialog extends BaseStepDialog implements StepDialogInterface
@@ -89,9 +91,9 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 
 	private java.util.List<Validation> selectionList;
 	private Label wlMaxLength;
-	private Text wMaxLength;
+	private InUseText wMaxLength;
 	private Label wlMinLength;
-	private Text wMinLength;
+	private InUseText wMinLength;
 	private Group wgData;
 	private Group wgType;
 	private Label wlDataTypeVerified;
@@ -99,15 +101,15 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 	private Label wlDataType;
 	private Combo wDataType;
 	private Label wlConversionMask;
-	private Text wConversionMask;
+	private InUseText wConversionMask;
 	private Label wlDecimalSymbol;
-	private Text wDecimalSymbol;
+	private InUseText wDecimalSymbol;
 	private Label wlGroupingSymbol;
-	private Text wGroupingSymbol;
+	private InUseText wGroupingSymbol;
 	private Label wlMaxValue;
-	private Text wMaxValue;
+	private InUseText wMaxValue;
 	private Label wlMinValue;
-	private Text wMinValue;
+	private InUseText wMinValue;
 	private Label wlAllowedValues;
 	private List wAllowedValues;
 	private Label wlSourceValues;
@@ -125,21 +127,21 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 	private Button wNew;
 	
 	private Label wlStartStringExpected;
-	private Text wStartStringExpected;
+	private InUseText wStartStringExpected;
 	private Label wlEndStringExpected;
-	private Text wEndStringExpected;
+	private InUseText wEndStringExpected;
 	private Label wlStartStringDisallowed;
-	private Text wStartStringDisallowed;
+	private InUseText wStartStringDisallowed;
 	private Label wlEndStringDisallowed;
-	private Text wEndStringDisallowed;
+	private InUseText wEndStringDisallowed;
 	private Label wlRegExpExpected;
-	private Text wRegExpExpected;
+	private InUseText wRegExpExpected;
 	private Label wlRegExpDisallowed;
-	private Text wRegExpDisallowed;
+	private InUseText wRegExpDisallowed;
 	private Label wlErrorCode;
-	private Text wErrorCode;
+	private InUseText wErrorCode;
 	private Label wlErrorDescription;
-	private Text wErrorDescription;
+	private InUseText wErrorDescription;
 
 	public ValidatorDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -184,6 +186,8 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
+		Rectangle imageBounds = GUIResource.getInstance().getImageInfoHop().getBounds();
+		
 		// Stepname line
 		//
 		wlStepname=new Label(shell, SWT.RIGHT);
@@ -271,6 +275,8 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
         compLayout.marginWidth  = 3;
         compLayout.marginHeight = 3;
         wComp.setLayout(compLayout);
+        
+        int extra = imageBounds.width;
 		
 		// Description (list key)
 		//
@@ -285,7 +291,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wDescription=new Text(wComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wDescription);
 		FormData fdDescription = new FormData();
-		fdDescription.left = new FormAttachment(middle, margin);
+		fdDescription.left = new FormAttachment(middle, margin+extra);
 		fdDescription.right= new FormAttachment(100, 0);
 		fdDescription.top  = new FormAttachment(0, 0);
 		wDescription.setLayoutData(fdDescription);
@@ -318,7 +324,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wFieldName=new CCombo(wComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFieldName);
 		FormData fdFieldName = new FormData();
-		fdFieldName.left = new FormAttachment(middle, margin);
+		fdFieldName.left = new FormAttachment(middle, margin+extra);
 		fdFieldName.right= new FormAttachment(100, 0);
 		fdFieldName.top  = new FormAttachment(wDescription, margin);
 		wFieldName.setLayoutData(fdFieldName);
@@ -342,7 +348,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlErrorCode.right= new FormAttachment(middle, -margin);
 		fdlErrorCode.top  = new FormAttachment(wFieldName, margin);
 		wlErrorCode.setLayoutData(fdlErrorCode);
-		wErrorCode=new Text(wComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wErrorCode=new InUseText(wComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wErrorCode);
 		FormData fdErrorCode = new FormData();
 		fdErrorCode.left = new FormAttachment(middle, margin);
@@ -360,7 +366,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlErrorDescription.right= new FormAttachment(middle, -margin);
 		fdlErrorDescription.top  = new FormAttachment(wErrorCode, margin);
 		wlErrorDescription.setLayoutData(fdlErrorDescription);
-		wErrorDescription=new Text(wComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wErrorDescription=new InUseText(wComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wErrorDescription);
 		FormData fdErrorDescription = new FormData();
 		fdErrorDescription.left = new FormAttachment(middle, margin);
@@ -396,7 +402,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wDataTypeVerified=new Button(wgType, SWT.CHECK);
  		props.setLook(wDataTypeVerified);
 		FormData fddataTypeVerified = new FormData();
-		fddataTypeVerified.left = new FormAttachment(middle, margin);
+		fddataTypeVerified.left = new FormAttachment(middle, margin+extra);
 		fddataTypeVerified.right= new FormAttachment(100, 0);
 		fddataTypeVerified.top  = new FormAttachment(0, 0);
 		wDataTypeVerified.setLayoutData(fddataTypeVerified);
@@ -415,7 +421,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wDataType.setItems(ValueMeta.getTypes());
  		props.setLook(wDataType);
 		FormData fdDataType = new FormData();
-		fdDataType.left = new FormAttachment(middle, margin);
+		fdDataType.left = new FormAttachment(middle, margin+extra);
 		fdDataType.right= new FormAttachment(100, 0);
 		fdDataType.top  = new FormAttachment(wDataTypeVerified, margin);
 		wDataType.setLayoutData(fdDataType);
@@ -430,7 +436,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlConversionMask.right= new FormAttachment(middle, -margin);
 		fdlConversionMask.top  = new FormAttachment(wDataType, margin);
 		wlConversionMask.setLayoutData(fdlConversionMask);
-		wConversionMask=new Text(wgType, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wConversionMask=new InUseText(wgType, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wConversionMask);
 		FormData fdConversionMask = new FormData();
 		fdConversionMask.left = new FormAttachment(middle, margin);
@@ -449,7 +455,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlDecimalSymbol.right= new FormAttachment(middle, -margin);
 		fdlDecimalSymbol.top  = new FormAttachment(wConversionMask, margin);
 		wlDecimalSymbol.setLayoutData(fdlDecimalSymbol);
-		wDecimalSymbol=new Text(wgType, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wDecimalSymbol=new InUseText(wgType, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wDecimalSymbol);
 		FormData fdDecimalSymbol = new FormData();
 		fdDecimalSymbol.left = new FormAttachment(middle, margin);
@@ -467,7 +473,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlGroupingSymbol.right= new FormAttachment(middle, -margin);
 		fdlGroupingSymbol.top  = new FormAttachment(wDecimalSymbol, margin);
 		wlGroupingSymbol.setLayoutData(fdlGroupingSymbol);
-		wGroupingSymbol=new Text(wgType, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wGroupingSymbol=new InUseText(wgType, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wGroupingSymbol);
 		FormData fdGroupingSymbol = new FormData();
 		fdGroupingSymbol.left = new FormAttachment(middle, margin);
@@ -508,7 +514,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wNullAllowed=new Button(wgData, SWT.CHECK);
  		props.setLook(wNullAllowed);
 		FormData fdNullAllowed = new FormData();
-		fdNullAllowed.left = new FormAttachment(middle, margin);
+		fdNullAllowed.left = new FormAttachment(middle, margin+extra);
 		fdNullAllowed.right= new FormAttachment(100, 0);
 		fdNullAllowed.top  = new FormAttachment(0, 0);
 		wNullAllowed.setLayoutData(fdNullAllowed);
@@ -526,7 +532,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wOnlyNullAllowed=new Button(wgData, SWT.CHECK);
  		props.setLook(wOnlyNullAllowed);
 		FormData fdOnlyNullAllowed = new FormData();
-		fdOnlyNullAllowed.left = new FormAttachment(middle, margin);
+		fdOnlyNullAllowed.left = new FormAttachment(middle, margin+extra);
 		fdOnlyNullAllowed.right= new FormAttachment(100, 0);
 		fdOnlyNullAllowed.top  = new FormAttachment(wNullAllowed, margin);
 		wOnlyNullAllowed.setLayoutData(fdOnlyNullAllowed);
@@ -544,7 +550,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wOnlyNumeric=new Button(wgData, SWT.CHECK);
  		props.setLook(wOnlyNumeric);
 		FormData fdOnlyNumeric = new FormData();
-		fdOnlyNumeric.left = new FormAttachment(middle, margin);
+		fdOnlyNumeric.left = new FormAttachment(middle, margin+extra);
 		fdOnlyNumeric.right= new FormAttachment(100, 0);
 		fdOnlyNumeric.top  = new FormAttachment(wOnlyNullAllowed, margin);
 		wOnlyNumeric.setLayoutData(fdOnlyNumeric);
@@ -559,7 +565,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlMaxLength.right= new FormAttachment(middle, -margin);
 		fdlMaxLength.top  = new FormAttachment(wOnlyNumeric, margin);
 		wlMaxLength.setLayoutData(fdlMaxLength);
-		wMaxLength=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wMaxLength=new InUseText(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wMaxLength);
 		FormData fdMaxLength = new FormData();
 		fdMaxLength.left = new FormAttachment(middle, margin);
@@ -577,7 +583,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlMinLength.right= new FormAttachment(middle, -margin);
 		fdlMinLength.top  = new FormAttachment(wMaxLength, margin);
 		wlMinLength.setLayoutData(fdlMinLength);
-		wMinLength=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wMinLength=new InUseText(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wMinLength);
 		FormData fdMinLength = new FormData();
 		fdMinLength.left = new FormAttachment(middle, margin);
@@ -595,7 +601,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlMaxValue.right= new FormAttachment(middle, -margin);
 		fdlMaxValue.top  = new FormAttachment(wMinLength, margin);
 		wlMaxValue.setLayoutData(fdlMaxValue);
-		wMaxValue=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wMaxValue=new InUseText(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wMaxValue);
 		FormData fdMaxValue = new FormData();
 		fdMaxValue.left = new FormAttachment(middle, margin);
@@ -613,7 +619,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlMinValue.right= new FormAttachment(middle, -margin);
 		fdlMinValue.top  = new FormAttachment(wMaxValue, margin);
 		wlMinValue.setLayoutData(fdlMinValue);
-		wMinValue=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wMinValue=new InUseText(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wMinValue);
 		FormData fdMinValue = new FormData();
 		fdMinValue.left = new FormAttachment(middle, margin);
@@ -631,7 +637,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlStartStringExpected.right= new FormAttachment(middle, -margin);
 		fdlStartStringExpected.top  = new FormAttachment(wMinValue, margin);
 		wlStartStringExpected.setLayoutData(fdlStartStringExpected);
-		wStartStringExpected=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wStartStringExpected=new InUseText(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wStartStringExpected);
 		FormData fdStartStringExpected = new FormData();
 		fdStartStringExpected.left = new FormAttachment(middle, margin);
@@ -649,7 +655,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlEndStringExpected.right= new FormAttachment(middle, -margin);
 		fdlEndStringExpected.top  = new FormAttachment(wStartStringExpected, margin);
 		wlEndStringExpected.setLayoutData(fdlEndStringExpected);
-		wEndStringExpected=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wEndStringExpected=new InUseText(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wEndStringExpected);
 		FormData fdEndStringExpected = new FormData();
 		fdEndStringExpected.left = new FormAttachment(middle, margin);
@@ -667,7 +673,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlStartStringDisallowed.right= new FormAttachment(middle, -margin);
 		fdlStartStringDisallowed.top  = new FormAttachment(wEndStringExpected, margin);
 		wlStartStringDisallowed.setLayoutData(fdlStartStringDisallowed);
-		wStartStringDisallowed=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wStartStringDisallowed=new InUseText(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wStartStringDisallowed);
 		FormData fdStartStringDisallowed = new FormData();
 		fdStartStringDisallowed.left = new FormAttachment(middle, margin);
@@ -685,7 +691,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlEndStringDisallowed.right= new FormAttachment(middle, -margin);
 		fdlEndStringDisallowed.top  = new FormAttachment(wStartStringDisallowed, margin);
 		wlEndStringDisallowed.setLayoutData(fdlEndStringDisallowed);
-		wEndStringDisallowed=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wEndStringDisallowed=new InUseText(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wEndStringDisallowed);
 		FormData fdEndStringDisallowed = new FormData();
 		fdEndStringDisallowed.left = new FormAttachment(middle, margin);
@@ -703,7 +709,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlRegExpExpected.right= new FormAttachment(middle, -margin);
 		fdlRegExpExpected.top  = new FormAttachment(wEndStringDisallowed, margin);
 		wlRegExpExpected.setLayoutData(fdlRegExpExpected);
-		wRegExpExpected=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wRegExpExpected=new InUseText(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wRegExpExpected);
 		FormData fdRegExpExpected = new FormData();
 		fdRegExpExpected.left = new FormAttachment(middle, margin);
@@ -721,7 +727,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlRegExpDisallowed.right= new FormAttachment(middle, -margin);
 		fdlRegExpDisallowed.top  = new FormAttachment(wRegExpExpected, margin);
 		wlRegExpDisallowed.setLayoutData(fdlRegExpDisallowed);
-		wRegExpDisallowed=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wRegExpDisallowed=new InUseText(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wRegExpDisallowed);
 		FormData fdRegExpDisallowed = new FormData();
 		fdRegExpDisallowed.left = new FormAttachment(middle, margin);
@@ -762,7 +768,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wAllowedValues=new List(wgData, SWT.MULTI | SWT.LEFT | SWT.BORDER);
  		props.setLook(wAllowedValues);
  		FormData fdAllowedValues = new FormData();
- 		fdAllowedValues.left   = new FormAttachment(middle, margin);
+ 		fdAllowedValues.left   = new FormAttachment(middle, margin+extra);
  		fdAllowedValues.right  = new FormAttachment(wbRemoveAllowed, -20);
  		fdAllowedValues.top    = new FormAttachment(wRegExpDisallowed, margin);
  		fdAllowedValues.bottom = new FormAttachment(wRegExpDisallowed, 150);
@@ -781,7 +787,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wSourceValues=new Button(wgData, SWT.CHECK);
  		props.setLook(wSourceValues);
 		FormData fdSourceValues = new FormData();
-		fdSourceValues.left = new FormAttachment(middle, margin);
+		fdSourceValues.left = new FormAttachment(middle, margin+extra);
 		fdSourceValues.right= new FormAttachment(100, 0);
 		fdSourceValues.top  = new FormAttachment(wAllowedValues, margin);
 		wSourceValues.setLayoutData(fdSourceValues);
@@ -806,14 +812,14 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wSourceStep=new Combo(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSourceStep);
 		FormData fdSourceStep = new FormData();
-		fdSourceStep.left = new FormAttachment(middle, margin);
+		fdSourceStep.left = new FormAttachment(middle, margin+extra);
 		fdSourceStep.right= new FormAttachment(100, 0);
 		fdSourceStep.top  = new FormAttachment(wSourceValues, margin);
 		wSourceStep.setLayoutData(fdSourceStep);
 		wSourceStep.addFocusListener(new FocusAdapter() { public void focusGained(org.eclipse.swt.events.FocusEvent e) { getSteps(); } } );
 		wSourceStep.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { getSteps(); } } );
 		
-		// Source allowed values : source step
+		// Source allowed values : source field
 		//
 		wlSourceField=new Label(wgData, SWT.RIGHT);
 		wlSourceField.setText(Messages.getString("ValidatorDialog.SourceField.Label")); //$NON-NLS-1$
@@ -826,7 +832,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wSourceField=new Combo(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSourceField);
 		FormData fdSourceField = new FormData();
-		fdSourceField.left = new FormAttachment(middle, margin);
+		fdSourceField.left = new FormAttachment(middle, margin+extra);
 		fdSourceField.right= new FormAttachment(100, 0);
 		fdSourceField.top  = new FormAttachment(wSourceStep, margin);
 		wSourceField.setLayoutData(fdSourceField);

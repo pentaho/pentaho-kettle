@@ -59,6 +59,7 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
     //
     assert prefix != null;
     assert extension != null;
+    
     String uniqueId = this.getFileNameUniqueIdentifier();
     String lookup = (originalFilePath != null ? originalFilePath : "") + "/" + prefix;  //$NON-NLS-1$ //$NON-NLS-2$
     String rtn = namedResources.get(lookup);
@@ -70,9 +71,10 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
       }
       rtn = (fileSystemPrefix != null ? fileSystemPrefix : "") + //$NON-NLS-1$ 
           (fixedPath != null ? fixedPath + (fixedPath.endsWith("/") ? "" : "/")  : "") + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-          fixFileName(prefix) + 
-          (uniqueId != null ? "_" + uniqueId : "") +  //$NON-NLS-1$ //$NON-NLS-2$
-          (extension.charAt(0) == '.' ? extension : "." + extension); //$NON-NLS-1$
+          fixFileName(prefix, extension) + 
+          (uniqueId != null ? "_" + uniqueId : ""); //$NON-NLS-1$ //$NON-NLS-2$
+      rtn += (extension.charAt(0) == '.' ? extension : "." + extension); //$NON-NLS-1$ //$NON-NLS-2$
+      
       namedResources.put(lookup, rtn); // Keep track of already generated object names...
     }
     return rtn;
@@ -124,12 +126,17 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
    * characters for a file name into one that's more conducive to being a
    * file name.
    * @param name The name to fix up.
+ * @param extension the requested extension to see if we don't end up with 2 extensions (export of XML to XML) 
    * @return
    */
-  protected String fixFileName(String name) {
-    StringBuffer buff = new StringBuffer(name.length());
+  protected String fixFileName(String name, String extension) {
+	int length=name.length();
+	if (name.endsWith("."+extension)) length-=1+extension.length();
+	else if (name.endsWith(extension)) length-=extension.length();
+	
+    StringBuffer buff = new StringBuffer(length);
     char ch;
-    for (int i=0; i<name.length(); i++) {
+    for (int i=0; i<length; i++) {
       ch = name.charAt(i);
       if ( (ch <='/') || (ch>=':' && ch<='?') || (ch>='[' && ch<='`') || (ch>='{' && ch<='~') ) {
         buff.append('_');

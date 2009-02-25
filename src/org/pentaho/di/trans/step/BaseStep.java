@@ -58,6 +58,9 @@ import org.pentaho.di.trans.StepPluginMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.cluster.TransSplitter;
+import org.pentaho.di.trans.steps.mapping.Mapping;
+import org.pentaho.di.trans.steps.mappinginput.MappingInput;
+import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 
 public class BaseStep extends Thread implements VariableSpace, StepInterface
 {
@@ -1738,6 +1741,37 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
             if (rs.getOriginStepName().equalsIgnoreCase(from) && rs.getDestinationStepName().equalsIgnoreCase(to)
                     && rs.getOriginStepCopy() == fromcopy && rs.getDestinationStepCopy() == tocopy) return rs;
         }
+        
+        // See if the rowset is part of the output of a mapping source step...
+        //
+        // Lookup step "From"
+        //
+        StepMeta mappingStep = transMeta.findStep(from);
+        
+        // See if it's a mapping
+        //
+        if (mappingStep!=null && mappingStep.isMapping()) {
+        
+        	// In this case we can cast the step thread to a Mapping...
+        	//
+        	List<BaseStep> baseSteps = trans.findBaseSteps(from);
+        	if (baseSteps.size()==1) {
+	        	Mapping mapping = (Mapping) baseSteps.get(0);
+	        	
+	        	// Find the appropriate rowset in the mapping...
+	        	// The rowset in question has been passed over to a Mapping Input step inside the Mapping transformation. 
+	            //
+	        	MappingOutput[] outputs = mapping.getMappingTrans().findMappingOutput();
+	        	for (MappingOutput output: outputs) {
+	        		for (RowSet rs : output.getOutputRowSets()) {
+	        			// The destination is what counts here...
+	        			//
+	        			if (rs.getDestinationStepName().equalsIgnoreCase(to)) return rs;
+	        		}
+	        	}
+        	}
+        }
+        
         return null;
     }
 	
@@ -1745,6 +1779,15 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 		return findOutputRowSet(getStepname(), getCopy(), targetStep, 0);
 	}
 
+	/**
+	 * Find an output rowset in a running transformation.  It will also look at the "to" step to see if this is a mapping.
+	 * If it is, it will find the appropriate rowset in that transformation.  
+	 * @param from
+	 * @param fromcopy
+	 * @param to
+	 * @param tocopy
+	 * @return The rowset or null if none is found.
+	 */
     public RowSet findOutputRowSet(String from, int fromcopy, String to, int tocopy)
     {
         for (RowSet rs : outputRowSets)
@@ -1752,6 +1795,39 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
             if (rs.getOriginStepName().equalsIgnoreCase(from) && rs.getDestinationStepName().equalsIgnoreCase(to)
                     && rs.getOriginStepCopy() == fromcopy && rs.getDestinationStepCopy() == tocopy) return rs;
         }
+        
+        // See if the rowset is part of the input of a mapping target step...
+        //
+        // Lookup step "To"
+        //
+        StepMeta mappingStep = transMeta.findStep(to);
+        
+        // See if it's a mapping
+        //
+        if (mappingStep!=null && mappingStep.isMapping()) {
+        
+        	// In this case we can cast the step thread to a Mapping...
+        	//
+        	List<BaseStep> baseSteps = trans.findBaseSteps(to);
+        	if (baseSteps.size()==1) {
+	        	Mapping mapping = (Mapping) baseSteps.get(0);
+	        	
+	        	// Find the appropriate rowset in the mapping...
+	        	// The rowset in question has been passed over to a Mapping Input step inside the Mapping transformation. 
+	            //
+	        	MappingInput[] inputs= mapping.getMappingTrans().findMappingInput();
+	        	for (MappingInput input : inputs) {
+	        		for (RowSet rs : input.getInputRowSets()) {
+	        			// The source step is what counts in this case...
+	        			//
+	                    if (rs.getOriginStepName().equalsIgnoreCase(from)) return rs;
+	        		}
+	        	}
+        	}
+        }
+        
+        // Still nothing found!
+        //
         return null;
     }
 

@@ -754,6 +754,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		
 	}
+	
     public static String getFilename(FileObject fileObject)
     {
         FileName fileName = fileObject.getName();
@@ -767,6 +768,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
         if(!"/".equals(Const.FILE_SEPARATOR)) fileString = Const.replace(fileString, "/", Const.FILE_SEPARATOR);
         return fileString;
     }
+    
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
 	{
 		return new AccessInput(stepMeta, stepDataInterface, cnr, tr, trans);

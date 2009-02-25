@@ -309,7 +309,9 @@ public class AccessInput extends BaseStep implements StepInterface
 			}
 			
 			// Read mdb file
-        	data.d = Database.open(new File(AccessInputMeta.getFilename(data.file)));	
+			data.file.getName().getPathDecoded();
+			
+        	data.d = Database.open(new File(AccessInputMeta.getFilename(data.file)), true);	// Read-only
 
         	// Get table
         	String realTableName=environmentSubstitute(meta.getTableName());
