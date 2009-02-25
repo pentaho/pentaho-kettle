@@ -507,7 +507,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		wlPrevToParams.setLayoutData(fdlPrevToParams);
 		wPrevToParams = new Button(shell, SWT.CHECK);
 		props.setLook(wPrevToParams);
-		wPrevToParams.setSelection(jobEntry.argFromPrevious); /// TODO SB
+		wPrevToParams.setSelection(jobEntry.paramsFromPrevious);
 		wPrevToParams.setToolTipText(Messages.getString("JobJob.PrevToParams.Tooltip"));
 		fdPrevToParams = new FormData();
 		fdPrevToParams.left = new FormAttachment(middle, 0);
@@ -926,10 +926,9 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 					ti.setText(3, Const.NVL(jobEntry.parameterValues[i], ""));
 				}
 			}
-			wFields.setRowNums();
-			wFields.optWidth(true);
-		}
-		
+			wParameters.setRowNums();
+			wParameters.optWidth(true);
+		}		
 		
 		wPrevious.setSelection(jobEntry.argFromPrevious);
 		wPrevToParams.setSelection(jobEntry.paramsFromPrevious);
