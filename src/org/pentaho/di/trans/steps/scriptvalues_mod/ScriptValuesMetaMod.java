@@ -322,9 +322,11 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				if (replace[i]) {
 					// Look up the field to replace...
 					v = row.searchValueMeta(name[i]);
-					if (v==null) {
+					if (v==null && Const.isEmpty(rename[i])) {
 						throw new KettleStepException(Messages.getString("ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", name[i]));
 					}
+					v= row.searchValueMeta(rename[i]);
+					
 					// Change the data type to match what's specified...
 					//
 					v.setType(type[i]);

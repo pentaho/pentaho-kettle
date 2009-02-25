@@ -38,6 +38,7 @@ import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.compatibility.ValueUsedListener;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
@@ -153,6 +154,15 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
       for (int i=0;i<meta.getName().length;i++) {
     	  if (meta.getReplace()[i]) {
     		  data.replaceIndex[i] = rowMeta.indexOfValue(meta.getName()[i]);
+    		  if (data.replaceIndex[i]<0) {
+    			  if (Const.isEmpty(meta.getName()[i])) {
+    				  throw new KettleStepException(Messages.getString("ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getName()[i]));
+    			  }
+    			  data.replaceIndex[i] = rowMeta.indexOfValue(meta.getRename()[i]);
+    			  if (data.replaceIndex[i]<0) {
+    				  throw new KettleStepException(Messages.getString("ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getRename()[i]));
+    			  }
+    		  }
     	  } else {
     		  data.replaceIndex[i] = -1;
     	  }
