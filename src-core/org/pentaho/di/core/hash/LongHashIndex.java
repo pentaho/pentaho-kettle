@@ -54,7 +54,7 @@ public class LongHashIndex {
 		return size==0;
 	}
 	
-	 public Long get(Long key) throws KettleValueException {
+	 public Long get(long key) throws KettleValueException {
 		int hashCode = generateHashCode(key);
 
 		int indexPointer = hashCode & (index.length - 1);
@@ -69,7 +69,7 @@ public class LongHashIndex {
 		return null;
 	}
 	 
-    public void put(Long key, Long value) throws KettleValueException {
+    public void put(long key, Long value) throws KettleValueException {
 		int hashCode = generateHashCode(key);
 		int indexPointer = hashCode & (index.length - 1);
 		
@@ -179,8 +179,8 @@ public class LongHashIndex {
 	
 	private static final class LongHashIndexEntry {
 		private int hashCode;
-		private Long key;
-		private Long value;
+		private long key;
+		private long value;
 		private LongHashIndexEntry nextEntry;
 		
 		/**
@@ -196,9 +196,9 @@ public class LongHashIndex {
 			this.nextEntry = nextEntry;
 		}
 		
-        public boolean equalsKey(Long cmpKey)
+        public boolean equalsKey(long cmpKey)
         {
-            return key.equals(cmpKey);
+            return key == cmpKey;
         }
         
         /**
@@ -207,12 +207,12 @@ public class LongHashIndex {
          */
         public boolean equals(LongHashIndexEntry entry)
         {
-            return entry.key.equals(key);
+            return entry.key == key;
         } 
 
-        public boolean equalsValue(Long cmpValue)
+        public boolean equalsValue(long cmpValue)
         {
-            return value.equals(cmpValue);
+            return value == cmpValue;
         }
 	}
 }
