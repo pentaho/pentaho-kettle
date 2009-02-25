@@ -23,6 +23,8 @@ import org.apache.commons.vfs.VFS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -33,6 +35,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -43,6 +46,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
@@ -124,6 +128,10 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 	private Label wlPrevious;
 	private Button wPrevious;
 	private FormData fdlPrevious, fdPrevious;
+	
+	private Label wlPrevToParams;
+	private Button wPrevToParams;
+	private FormData fdlPrevToParams, fdPrevToParams;		
 
 	private Label wlEveryRow;
 	private Button wEveryRow;
@@ -144,6 +152,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 	private Label wlFields;
 	private TableView wFields;
 	private FormData fdlFields, fdFields;
+	
+	private TableView wParameters;
 
 	private Label wlSlaveServer;
 	private ComboVar wSlaveServer;
@@ -185,6 +195,9 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
 	public JobEntryInterface open()
 	{
+		CTabFolder   wTabFolder;
+		FormData     fdTabFolder;
+
 		Shell parent = getParent();
 		display = parent.getDisplay();
 
@@ -493,13 +506,38 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 				wFields.setEnabled(!jobEntry.argFromPrevious);
 			}
 		});
+		
+		wlPrevToParams = new Label(shell, SWT.RIGHT);
+		wlPrevToParams.setText(Messages.getString("JobTrans.PrevToParams.Label"));
+		props.setLook(wlPrevToParams);
+		fdlPrevToParams = new FormData();
+		fdlPrevToParams.left = new FormAttachment(0, 0);
+		fdlPrevToParams.top = new FormAttachment(wPrevious, margin * 3);
+		fdlPrevToParams.right = new FormAttachment(middle, -margin);
+		wlPrevToParams.setLayoutData(fdlPrevToParams);
+		wPrevToParams = new Button(shell, SWT.CHECK);
+		props.setLook(wPrevToParams);
+		wPrevToParams.setSelection(jobEntry.paramsFromPrevious);
+		wPrevToParams.setToolTipText(Messages.getString("JobTrans.PrevToParams.Tooltip"));
+		fdPrevToParams = new FormData();
+		fdPrevToParams.left = new FormAttachment(middle, 0);
+		fdPrevToParams.top = new FormAttachment(wPrevious, margin * 3);
+		fdPrevToParams.right = new FormAttachment(100, 0);
+		wPrevToParams.setLayoutData(fdPrevToParams);
+		wPrevToParams.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		});		
 
 		wlEveryRow = new Label(shell, SWT.RIGHT);
 		wlEveryRow.setText(Messages.getString("JobTrans.ExecForEveryInputRow.Label"));
 		props.setLook(wlEveryRow);
 		fdlEveryRow = new FormData();
 		fdlEveryRow.left = new FormAttachment(0, 0);
-		fdlEveryRow.top = new FormAttachment(wPrevious, margin);
+		fdlEveryRow.top = new FormAttachment(wPrevToParams, margin);
 		fdlEveryRow.right = new FormAttachment(middle, -margin);
 		wlEveryRow.setLayoutData(fdlEveryRow);
 		wEveryRow = new Button(shell, SWT.CHECK);
@@ -507,7 +545,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		wEveryRow.setToolTipText(Messages.getString("JobTrans.ExecForEveryInputRow.Tooltip"));
 		fdEveryRow = new FormData();
 		fdEveryRow.left = new FormAttachment(middle, 0);
-		fdEveryRow.top = new FormAttachment(wPrevious, margin);
+		fdEveryRow.top = new FormAttachment(wPrevToParams, margin);
 		fdEveryRow.right = new FormAttachment(100, 0);
 		wEveryRow.setLayoutData(fdEveryRow);
 
@@ -625,14 +663,52 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdFollowingAbortRemotely.right = new FormAttachment(100, 0);
 		wFollowingAbortRemotely.setLayoutData(fdFollowingAbortRemotely);
 		
-		wlFields = new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("JobTrans.Fields.Label"));
-		props.setLook(wlFields);
-		fdlFields = new FormData();
-		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top = new FormAttachment(wFollowingAbortRemotely, margin);
-		wlFields.setLayoutData(fdlFields);
+//		wlFields = new Label(shell, SWT.NONE);
+//		wlFields.setText(Messages.getString("JobTrans.Fields.Label"));
+//		props.setLook(wlFields);
+//		fdlFields = new FormData();
+//		fdlFields.left = new FormAttachment(0, 0);
+//		fdlFields.top = new FormAttachment(wFollowingAbortRemotely, margin);
+//		wlFields.setLayoutData(fdlFields);
+//
+//		final int FieldsCols = 1;
+//		int rows = jobEntry.arguments == null ? 1 : (jobEntry.arguments.length == 0 ? 0
+//				: jobEntry.arguments.length);
+//		final int FieldsRows = rows;
+//
+//		ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
+//		colinf[0] = new ColumnInfo(Messages.getString("JobTrans.Fields.Argument.Label"),
+//				ColumnInfo.COLUMN_TYPE_TEXT, false);
+//		colinf[0].setUsingVariables(true);
+//
+//		wFields = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
+//				FieldsRows, lsMod, props);
+//
+//		fdFields = new FormData();
+//		fdFields.left = new FormAttachment(0, 0);
+//		fdFields.top = new FormAttachment(wlFields, margin);
+//		fdFields.right = new FormAttachment(100, 0);
+//		fdFields.bottom = new FormAttachment(100, -50);
+//		wFields.setLayoutData(fdFields);
+//
+//		wlFields.setEnabled(!jobEntry.argFromPrevious);
+//		wFields.setEnabled(!jobEntry.argFromPrevious);
 
+		wTabFolder = new CTabFolder(shell, SWT.BORDER);
+		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
+	
+		// The Argument tab
+		CTabItem wFieldTab = new CTabItem(wTabFolder, SWT.NONE);
+		wFieldTab.setText(Messages.getString("JobTrans.Fields.Argument.Label")); //$NON-NLS-1$
+        
+        FormLayout fieldLayout = new FormLayout();
+        fieldLayout.marginWidth  = Const.MARGIN;
+        fieldLayout.marginHeight = Const.MARGIN;
+        
+		Composite wFieldComp = new Composite(wTabFolder, SWT.NONE);
+		props.setLook(wFieldComp);
+		wFieldComp.setLayout(fieldLayout);
+				
 		final int FieldsCols = 1;
 		int rows = jobEntry.arguments == null ? 1 : (jobEntry.arguments.length == 0 ? 0
 				: jobEntry.arguments.length);
@@ -643,26 +719,87 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 				ColumnInfo.COLUMN_TYPE_TEXT, false);
 		colinf[0].setUsingVariables(true);
 
-		wFields = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
+		wFields = new TableView(jobMeta, wFieldComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
 				FieldsRows, lsMod, props);
+		
+        FormData fdFields = new FormData();
+        fdFields.left  = new FormAttachment(0, 0);
+        fdFields.top   = new FormAttachment(0, margin);
+        fdFields.right = new FormAttachment(100, 0);
+        fdFields.bottom= new FormAttachment(100, 0);
+        wFields.setLayoutData(fdFields);
 
-		fdFields = new FormData();
-		fdFields.left = new FormAttachment(0, 0);
-		fdFields.top = new FormAttachment(wlFields, margin);
-		fdFields.right = new FormAttachment(100, 0);
-		fdFields.bottom = new FormAttachment(100, -50);
-		wFields.setLayoutData(fdFields);
+        FormData fdFieldsComp = new FormData();
+        fdFieldsComp.left  = new FormAttachment(0, 0);
+        fdFieldsComp.top   = new FormAttachment(0, 0);
+        fdFieldsComp.right = new FormAttachment(100, 0);
+        fdFieldsComp.bottom= new FormAttachment(100, 0);
+        wFieldComp.setLayoutData(fdFieldsComp);
+        
+        wFieldComp.layout();
+        wFieldTab.setControl(wFieldComp);		
 
-		wlFields.setEnabled(!jobEntry.argFromPrevious);
-		wFields.setEnabled(!jobEntry.argFromPrevious);
+		// The parameters tab
+		CTabItem wParametersTab = new CTabItem(wTabFolder, SWT.NONE);
+		wParametersTab.setText(Messages.getString("JobTrans.Fields.Parameters.Label")); //$NON-NLS-1$
+        
+        fieldLayout = new FormLayout();
+        fieldLayout.marginWidth  = Const.MARGIN;
+        fieldLayout.marginHeight = Const.MARGIN;
+        
+		Composite wParameterComp = new Composite(wTabFolder, SWT.NONE);
+		props.setLook(wParameterComp);
+		wParameterComp.setLayout(fieldLayout);
+				
+		final int ParameterCols = 3;
+		rows = 100;
+		final int parameterRows = rows;
 
+	    colinf = new ColumnInfo[ParameterCols];
+		colinf[0] = new ColumnInfo(Messages.getString("JobTrans.Parameters.Parameter.Label"),
+				ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinf[1] = new ColumnInfo(Messages.getString("JobTrans.Parameters.ColumnName.Label"),
+				ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinf[2] = new ColumnInfo(Messages.getString("JobTrans.Parameters.Value.Label"),
+				ColumnInfo.COLUMN_TYPE_TEXT, false);		
+		colinf[2].setUsingVariables(true);
+
+		wParameters = new TableView(jobMeta, wParameterComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
+				parameterRows, lsMod, props);
+				
+        FormData fdParameters = new FormData();
+        fdParameters.left  = new FormAttachment(0, 0);
+        fdParameters.top   = new FormAttachment(0, margin);
+        fdParameters.right = new FormAttachment(100, 0);
+        fdParameters.bottom= new FormAttachment(100, 0);
+        wParameters.setLayoutData(fdParameters);
+
+        FormData fdParametersComp = new FormData();
+        fdParametersComp.left  = new FormAttachment(0, 0);
+        fdParametersComp.top   = new FormAttachment(0, 0);
+        fdParametersComp.right = new FormAttachment(100, 0);
+        fdParametersComp.bottom= new FormAttachment(100, 0);
+        wParameterComp.setLayoutData(fdParametersComp);
+        
+        wParameterComp.layout();
+        wParametersTab.setControl(wParameterComp);		        
+        
+		fdTabFolder = new FormData();
+		fdTabFolder.left  = new FormAttachment(0, 0);
+		fdTabFolder.top   = new FormAttachment(wFollowingAbortRemotely, 0);
+		fdTabFolder.right = new FormAttachment(100, 0);
+		fdTabFolder.bottom= new FormAttachment(100, -50);
+		wTabFolder.setLayoutData(fdTabFolder);
+			
+		wTabFolder.setSelection(0);	
+		
 		// Some buttons
 		wOK = new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK"));
 		wCancel = new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFields);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTabFolder);
 
 		// Add listeners
 		lsCancel = new Listener()
@@ -850,23 +987,44 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 			wTransname.setText(jobEntry.getTransname());
 		if (jobEntry.getFilename() != null)
 			wFilename.setText(jobEntry.getFilename());
+		
+		// Arguments
 		if (jobEntry.arguments != null)
 		{
 			for (int i = 0; i < jobEntry.arguments.length; i++)
 			{
 				TableItem ti = wFields.table.getItem(i);
-				if (jobEntry.arguments[i] != null)
+				if (jobEntry.arguments[i] != null)  {
 					ti.setText(1, jobEntry.arguments[i]);
+				}
 			}
 			wFields.setRowNums();
 			wFields.optWidth(true);
 		}
+		
+		// Parameters
+		if (jobEntry.parameters != null)
+		{
+			for (int i = 0; i < jobEntry.parameters.length; i++)
+			{
+				TableItem ti = wParameters.table.getItem(i);
+				if (! Const.isEmpty(jobEntry.parameters[i]) )  {
+					ti.setText(1, Const.NVL(jobEntry.parameters[i], ""));
+					ti.setText(2, Const.NVL(jobEntry.parameterFieldNames[i], ""));
+					ti.setText(3, Const.NVL(jobEntry.parameterValues[i], ""));
+				}
+			}
+			wParameters.setRowNums();
+			wParameters.optWidth(true);
+		}				
+		
 		if (jobEntry.logfile != null)
 			wLogfile.setText(jobEntry.logfile);
 		if (jobEntry.logext != null)
 			wLogext.setText(jobEntry.logext);
 
 		wPrevious.setSelection(jobEntry.argFromPrevious);
+		wPrevToParams.setSelection(jobEntry.paramsFromPrevious);
 		wEveryRow.setSelection(jobEntry.execPerRow);
 		wSetLogfile.setSelection(jobEntry.setLogfile);
 		wAddDate.setSelection(jobEntry.addDate);
@@ -912,8 +1070,9 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		for (int i = 0; i < nritems; i++)
 		{
 			String arg = wFields.getNonEmpty(i).getText(1);
-			if (arg != null && arg.length() != 0)
+			if (arg != null && arg.length() != 0)  {
 				nr++;
+			}
 		}
 		jobEntry.arguments = new String[nr];
 		nr = 0;
@@ -926,6 +1085,46 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 				nr++;
 			}
 		}
+		
+		// Do the parameters
+		nritems = wParameters.nrNonEmpty();
+		nr = 0;
+		for (int i = 0; i < nritems; i++)
+		{
+			String param = wParameters.getNonEmpty(i).getText(1);
+			if (param != null && param.length() != 0)  {
+				nr++;
+			}
+		}
+		jobEntry.parameters          = new String[nr];
+		jobEntry.parameterFieldNames = new String[nr];
+		jobEntry.parameterValues     = new String[nr];
+		nr = 0;
+		for (int i = 0; i < nritems; i++)
+		{
+			String param = wParameters.getNonEmpty(i).getText(1);
+			String fieldName = wParameters.getNonEmpty(i).getText(2);
+			String value = wParameters.getNonEmpty(i).getText(3);
+			
+			jobEntry.parameters[nr] = param;
+			
+			if ( ! Const.isEmpty(Const.trim(fieldName)) )  {
+				jobEntry.parameterFieldNames[nr] = fieldName;				
+			}
+			else  {
+				jobEntry.parameterFieldNames[nr] = "";
+			}
+
+			if ( ! Const.isEmpty(Const.trim(value)) )  {
+				jobEntry.parameterValues[nr] = value;				
+			}
+			else  {
+				jobEntry.parameterValues[nr] = "";
+			}			
+			
+			nr++;
+		}	
+		
 		jobEntry.logfile = wLogfile.getText();
 		jobEntry.logext = wLogext.getText();
 		jobEntry.loglevel = wLoglevel.getSelectionIndex();
