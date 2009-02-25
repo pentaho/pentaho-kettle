@@ -37,6 +37,8 @@ import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.NamedParams;
+import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -63,9 +65,8 @@ import org.w3c.dom.Node;
 /**
  * This is the job entry that defines a transformation to be run.
  *
- * @author Matt
- * @since 1-10-2003, rewritten on 18-06-2004
- *
+ * @author Matt Casters
+ * @since 1-Oct-2003, rewritten on 18-June-2004
  */
 @org.pentaho.di.core.annotations.Job
 (
@@ -83,7 +84,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
 	public  String  arguments[];
 	public  boolean argFromPrevious;
+	public  boolean paramsFromPrevious;
     public  boolean execPerRow;
+    
+    public  String  parameters[];
+    public  String  parameterFieldNames[];
+    public  String  parameterValues[];
 
     public  boolean clearResultRows;
     public  boolean clearResultFiles;
@@ -227,13 +233,30 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("set_append_logfile",     setAppendLogfile));
 		retval.append("      ").append(XMLHandler.addTagValue("wait_until_finished",     waitingToFinish));
 		retval.append("      ").append(XMLHandler.addTagValue("follow_abort_remote",     followingAbortRemotely));
-
+		
 		if (arguments!=null)
 		for (int i=0;i<arguments.length;i++)
 		{
+			// This is a very very bad way of making an XML file, don't use it (or copy it). Sven Boden
 			retval.append("      ").append(XMLHandler.addTagValue("argument"+i, arguments[i]));
 		}
-
+		
+		if (parameters!=null)  {
+			retval.append("      ").append(XMLHandler.openTag("parameters"));
+			for (int i=0;i<parameters.length;i++)
+			{
+				// This is a better way of making the XML file than the arguments.
+				retval.append("            ").append(XMLHandler.openTag("parameter"));
+				
+				retval.append("            ").append(XMLHandler.addTagValue("name", parameters[i]));
+				retval.append("            ").append(XMLHandler.addTagValue("stream_name", parameterFieldNames[i]));
+				retval.append("            ").append(XMLHandler.addTagValue("value", parameterValues[i]));
+				
+				retval.append("            ").append(XMLHandler.closeTag("parameter"));
+			}
+			retval.append("      ").append(XMLHandler.closeTag("parameters"));
+		}
+		
 		return retval.toString();
 	}
 
@@ -275,7 +298,25 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			arguments = new String[argnr];
 
 			// Read them all...
-			for (int a=0;a<argnr;a++) arguments[a]=XMLHandler.getTagValue(entrynode, "argument"+a);
+			for (int a=0;a<argnr;a++)  {
+				arguments[a]=XMLHandler.getTagValue(entrynode, "argument"+a);	
+			}
+			
+			Node fields = XMLHandler.getSubNode(entrynode, "parameters");   //$NON-NLS-1$
+			int nrRows  = XMLHandler.countNodes(fields, "parameter");       //$NON-NLS-1$
+			
+			parameters = new String[nrRows];
+			parameterFieldNames = new String[nrRows];
+			parameterValues = new String[nrRows];
+			
+			for (int i=0;i<nrRows;i++)
+			{
+				Node knode = XMLHandler.getSubNodeByNr(fields, "parameter", i);         //$NON-NLS-1$
+				
+				parameters         [i] = XMLHandler.getTagValue(knode, "name");        //$NON-NLS-1$
+				parameterFieldNames[i] = XMLHandler.getTagValue(knode, "stream_name"); //$NON-NLS-1$
+				parameterValues    [i] = XMLHandler.getTagValue(knode, "value");       //$NON-NLS-1$
+			}				
 		}
 		catch(KettleException e)
 		{
@@ -312,10 +353,23 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
 			arguments = new String[argnr];
 
-			// Read them all...
+			// Read all arguments...
 			for (int a = 0; a < argnr; a++) {
 				arguments[a] = rep.getJobEntryAttributeString(id_jobentry, a, "argument");
 			}
+			
+			// How many arguments?
+			int parameternr = rep.countNrJobEntryAttributes(id_jobentry, "parameter_name");
+			parameters = new String[parameternr];
+			parameterFieldNames = new String[parameternr];
+			parameterValues = new String[parameternr];
+
+			// Read all parameters ...
+			for (int a = 0; a < parameternr; a++) {
+				parameters[a] = rep.getJobEntryAttributeString(id_jobentry, a, "parameter_name");
+				parameterFieldNames[a] = rep.getJobEntryAttributeString(id_jobentry, a, "parameter_stream_name");
+				parameterValues[a] = rep.getJobEntryAttributeString(id_jobentry, a, "parameter_value");
+			}								
 		} catch (KettleDatabaseException dbe) {
 			throw new KettleException("Unable to load job entry of type 'trans' from the repository for id_jobentry=" + id_jobentry, dbe);
 		}
@@ -353,12 +407,24 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getID(), "wait_until_finished", waitingToFinish);
 			rep.saveJobEntryAttribute(id_job, getID(), "follow_abort_remote", followingAbortRemotely);
 
-			// save the arguments...
+			// Save the arguments...
 			if (arguments != null) {
 				for (int i = 0; i < arguments.length; i++) {
 					rep.saveJobEntryAttribute(id_job, getID(), i, "argument", arguments[i]);
 				}
 			}
+			
+			// Save the parameters...
+			if (parameters!=null)
+			{
+				for (int i=0;i<parameters.length;i++)
+				{
+					rep.saveJobEntryAttribute(id_job, getID(), i, "parameter_name", parameters[i]);
+					rep.saveJobEntryAttribute(id_job, getID(), i, "parameter_stream_name", Const.NVL(parameterFieldNames[i], ""));
+					rep.saveJobEntryAttribute(id_job, getID(), i, "parameter_value", Const.NVL(parameterValues[i], ""));
+				}
+			}			
+			
 		} catch (KettleDatabaseException dbe) {
 			throw new KettleException("Unable to save job entry of type 'trans' to the repository for id_job=" + id_job, dbe);
 		}
@@ -476,10 +542,29 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             }
         }
 
+        NamedParams namedParam = new NamedParamsDefault();
+        if ( parameters != null )  {
+        	for ( int idx = 0; idx < parameters.length; idx++ )
+            {
+        		if ( !Const.isEmpty(parameters[idx]) )  {
+        			// We have a parameter
+        			
+        			namedParam.addParameterDefinition(parameters[idx], "", "Job entry runtime");
+        			if ( Const.isEmpty(Const.trim(parameterFieldNames[idx])) )  {
+        				namedParam.setParameterValue(parameters[idx], 
+			                     Const.NVL(environmentSubstitute(parameterValues[idx]), ""));            				
+        			}            				            		
+        			else  {
+        				// something filled in, in the field column but we have no incoming stream. yet.
+        				namedParam.setParameterValue(parameters[idx], "");
+        			}
+        		}                                
+            }
+        }
+                
         RowMetaAndData resultRow = null;
         boolean first = true;
         List<RowMetaAndData> rows = new ArrayList<RowMetaAndData>(result.getRows());
-
         while( ( first && !execPerRow ) || ( execPerRow && rows!=null && iteration<rows.size() && result.getNrErrors()==0 ) && !parentJob.isStopped() )
         {
             if (execPerRow)
@@ -545,6 +630,30 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                         //
                         transMeta.getPreviousResult().getRows().addAll(newList);
                     }
+
+                	if ( parameters != null )  {
+                		for ( int idx = 0; idx < parameters.length; idx++ )
+                		{
+                			if ( !Const.isEmpty(parameters[idx]) )  {
+                				// We have a parameter
+                				if ( Const.isEmpty(Const.trim(parameterFieldNames[idx])) )  {
+                					namedParam.setParameterValue(parameters[idx], 
+                							Const.NVL(environmentSubstitute(parameterValues[idx]), ""));            				
+                				}            				            		
+                				else  {
+                					String fieldValue = "";
+                					
+                					if (resultRow!=null)  {
+                						fieldValue = resultRow.getString(parameterFieldNames[idx], "");
+                					}
+                					// Get the value from the input stream
+                					namedParam.setParameterValue(parameters[idx], 
+                							                     Const.NVL(fieldValue, ""));
+                				}
+                			}                                    	
+                		}
+                	}                    
+                    
                 }
                 else
                 {
@@ -565,6 +674,32 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     {
                     	// do nothing
                     }
+                    
+                    if ( paramsFromPrevious )  { // Copy the input the parameters
+                    	
+                    	if ( parameters != null )  {
+                    		for ( int idx = 0; idx < parameters.length; idx++ )
+                    		{
+                    			if ( !Const.isEmpty(parameters[idx]) )  {
+                    				// We have a parameter
+                    				if ( Const.isEmpty(Const.trim(parameterFieldNames[idx])) )  {
+                    					namedParam.setParameterValue(parameters[idx], 
+                    							Const.NVL(environmentSubstitute(parameterValues[idx]), ""));            				
+                    				}            				            		
+                    				else  {
+                    					String fieldValue = "";
+                    					
+                    					if (resultRow!=null)  {
+                    						fieldValue = resultRow.getString(parameterFieldNames[idx], "");
+                    					}
+                    					// Get the value from the input stream
+                    					namedParam.setParameterValue(parameters[idx], 
+                    							                     Const.NVL(fieldValue, ""));
+                    				}
+                    			}                                    	
+                    		}
+                    	}
+                    }                    
                 }
 
                 // Execute this transformation across a cluster of servers
@@ -1013,5 +1148,4 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	public void setFollowingAbortRemotely(boolean followingAbortRemotely) {
 		this.followingAbortRemotely = followingAbortRemotely;
 	}
-
 }
