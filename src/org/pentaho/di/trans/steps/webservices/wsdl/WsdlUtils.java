@@ -32,6 +32,7 @@ import javax.wsdl.extensions.soap.SOAPBinding;
 import javax.wsdl.extensions.soap.SOAPBody;
 import javax.wsdl.extensions.soap.SOAPHeader;
 import javax.wsdl.extensions.soap.SOAPOperation;
+import javax.wsdl.extensions.soap12.SOAP12Address;
 
 /**
  * Utilities for getting extensibility elements.
@@ -73,7 +74,11 @@ final class WsdlUtils {
      */
     protected static String getSOAPAddress(Port p) {
         ExtensibilityElement e = findExtensibilityElement(p, SOAP_PORT_ADDRESS_NAME);
-        return ((SOAPAddress) e).getLocationURI();
+        if (e instanceof SOAPAddress) {
+        	return ((SOAPAddress) e).getLocationURI();
+        } else {
+        	return ((SOAP12Address)e).getLocationURI();
+        }
     }
 
     /**
