@@ -162,6 +162,17 @@ public class Mapping extends BaseStep implements StepInterface
         catch(KettleException e) {
         	throw new KettleException(Messages.getString("Mapping.Exception.UnableToPrepareExecutionOfMapping"), e);
         }
+
+		// If there is no read/write logging step set, we can insert the data from the first mapping input/output step...
+		//
+		MappingInput[] mappingInputs = data.mappingTrans.findMappingInput();
+		if (data.mappingTransMeta.getReadStep()==null && mappingInputs!=null && mappingInputs.length>=1) {
+			data.mappingTransMeta.setReadStep(mappingInputs[0].getStepMeta());
+		}
+		MappingOutput[] mappingOutputs = data.mappingTrans.findMappingOutput();
+		if (data.mappingTransMeta.getWriteStep()==null && mappingOutputs!=null && mappingOutputs.length>=1) {
+			data.mappingTransMeta.setWriteStep(mappingOutputs[0].getStepMeta());
+		}
         
         // Before we add rowsets and all, we should note that the mapping step did not receive ANY input and output rowsets.
         // This is an exception to the general rule, built into Trans.prepareExecution()
@@ -330,7 +341,7 @@ public class Mapping extends BaseStep implements StepInterface
                 	// Set the parameters statically or dynamically
             		//
             		setMappingParameters();
-                    
+            		
             		// OK, now prepare the execution of the mapping.
             		// This includes the allocation of RowSet buffers, the creation of the sub-transformation threads, etc.
             		//
