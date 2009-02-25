@@ -294,8 +294,8 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 			if (input.getFieldID()[i]      != null) ti.setText( 2, input.getFieldID()[i]); 
             ti.setText(3, input.getFieldRemoveID()[i] ? "Y" : "N"); //$NON-NLS-1$ //$NON-NLS-2$
             ti.setText(4, ValueMeta.getTypeDesc(input.getFieldType()[i]));
-            ti.setText(5, "" + input.getFieldLength()[i]); //$NON-NLS-1$
-            ti.setText(6, "" + input.getFieldPrecision()[i]); //$NON-NLS-1$
+            if (input.getFieldLength()[i]>=0) ti.setText(5, "" + input.getFieldLength()[i]); //$NON-NLS-1$
+            if (input.getFieldPrecision()[i]>=0) ti.setText(6, "" + input.getFieldPrecision()[i]); //$NON-NLS-1$
 			if (input.getFieldFormat()[i]  != null) ti.setText( 7, input.getFieldFormat()[i]); 
 			if (input.getFieldGroup()[i]   != null) ti.setText( 8, input.getFieldGroup()[i]); 
 			if (input.getFieldDecimal()[i] != null) ti.setText( 9, input.getFieldDecimal()[i]); 

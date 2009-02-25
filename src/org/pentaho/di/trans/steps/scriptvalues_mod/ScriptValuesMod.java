@@ -134,7 +134,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
       logDetailed(Messages.getString("ScriptValuesMod.Log.UsingValuesFromInputStream", String.valueOf(data.fields_used.length))); //$NON-NLS-1$ //$NON-NLS-2$
   }
 
-  private boolean addValues(RowMetaInterface rowMeta, Object[] row) throws KettleValueException {
+  private boolean addValues(RowMetaInterface rowMeta, Object[] row) throws KettleException {
     if (first) {
       first = false;
 
@@ -146,6 +146,17 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
       // Determine the indexes of the fields used!
       //
       determineUsedFields(rowMeta);
+      
+      // Get the indexes of the replaced fields...
+      //
+      data.replaceIndex = new int[meta.getName().length];
+      for (int i=0;i<meta.getName().length;i++) {
+    	  if (meta.getReplace()[i]) {
+    		  data.replaceIndex[i] = rowMeta.indexOfValue(meta.getName()[i]);
+    	  } else {
+    		  data.replaceIndex[i] = -1;
+    	  }
+      }
 
       data.cx = ContextFactory.getGlobal().enterContext();
       data.cx.setOptimizationLevel(9);
@@ -202,7 +213,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
           }
         }
 
-        // also add the meta information for the hole row
+        // also add the meta information for the whole row
         //
         Scriptable jsrowMeta = Context.toObject(rowMeta, data.scope);
         data.scope.put("rowMeta", data.scope, jsrowMeta); //$NON-NLS-1$
@@ -270,7 +281,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 
     // Filling the defined TranVars with the Values from the Row
     // 
-    Object[] outputRow = RowDataUtil.resizeArray(row, rowMeta.size() + meta.getName().length);
+    Object[] outputRow = RowDataUtil.resizeArray(row, data.outputRowMeta.size());
 
     // Keep an index...
     int outputIndex = rowMeta.size();
@@ -356,8 +367,12 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
         bRC = true;
         for (int i = 0; i < meta.getName().length; i++) {
           Object result = data.scope.get(meta.getName()[i], data.scope);
-          outputRow[outputIndex] = getValueFromJScript(result, i);
-          outputIndex++;
+          Object valueData = getValueFromJScript(result, i);
+          if (data.replaceIndex[i]<0) {
+        	  outputRow[outputIndex++] = valueData;
+          } else {
+        	  outputRow[data.replaceIndex[i]] = valueData;
+          }
         }
 
         // Also modify the "in-place" value changes:

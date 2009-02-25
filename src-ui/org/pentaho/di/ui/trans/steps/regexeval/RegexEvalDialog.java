@@ -692,8 +692,8 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 			TableItem ti = wFields.table.getItem(i);
 			if (input.getFieldName()[i]   != null) ti.setText( 1, input.getFieldName()[i]); 
 	              ti.setText(2, ValueMeta.getTypeDesc(input.getFieldType()[i]));
-	              ti.setText(3, ""+input.getFieldLength()[i]);  //$NON-NLS-1$
-	              ti.setText(4, ""+input.getFieldPrecision()[i]);  //$NON-NLS-1$
+	              ti.setText(3, input.getFieldLength()[i]>=0 ? ""+input.getFieldLength()[i] : "");  //$NON-NLS-1$
+	              ti.setText(4, input.getFieldPrecision()[i]>=0 ? (""+input.getFieldPrecision()[i]) : "");  //$NON-NLS-1$
 			if (input.getFieldFormat()[i]  != null) ti.setText(5, input.getFieldFormat()[i]); 
 			if (input.getFieldGroup()[i]   != null) ti.setText(6, input.getFieldGroup()[i]); 
 			if (input.getFieldDecimal()[i] != null) ti.setText(7, input.getFieldDecimal()[i]); 

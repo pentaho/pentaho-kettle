@@ -903,8 +903,8 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
             }
 			item.setText(3, field.getTypeDesc());
 			if (field.getFormat()!=null) item.setText(4, field.getFormat());
-			if (field.getLength()!=-1) item.setText(5, ""+field.getLength());
-			if (field.getPrecision()!=-1) item.setText(6, ""+field.getPrecision());
+			if (field.getLength()>=0) item.setText(5, ""+field.getLength());
+			if (field.getPrecision()>=0) item.setText(6, ""+field.getPrecision());
 			if (field.getCurrencySymbol()!=null) item.setText(7, field.getCurrencySymbol());
 			if (field.getDecimalSymbol()!=null) item.setText(8, field.getDecimalSymbol());
 			if (field.getGroupingSymbol()!=null) item.setText(9, field.getGroupingSymbol());

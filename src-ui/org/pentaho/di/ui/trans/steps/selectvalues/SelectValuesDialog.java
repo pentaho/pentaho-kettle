@@ -543,8 +543,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 					item.setText(1, input.getSelectName()     [i]);
 				if (input.getSelectRename()[i]!=null && !input.getSelectRename()[i].equals(input.getSelectName()[i]))
 					item.setText(2, input.getSelectRename()   [i]);
-				item.setText(3, input.getSelectLength()   [i]==-2?"":""+input.getSelectLength()   [i]); //$NON-NLS-1$ //$NON-NLS-2$
-				item.setText(4, input.getSelectPrecision()[i]==-2?"":""+input.getSelectPrecision()[i]); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText(3, input.getSelectLength()   [i]<0?"":""+input.getSelectLength()   [i]); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText(4, input.getSelectPrecision()[i]<0?"":""+input.getSelectPrecision()[i]); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			wFields.setRowNums();
 			wFields.optWidth(true);
@@ -583,8 +583,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 					item.setText(2, change.getRename());
 				}
 				item.setText( 3, ValueMeta.getTypeDesc( change.getType()) );
-				item.setText( 4, change.getLength()   ==-2?"":""+change.getLength()); //$NON-NLS-1$ //$NON-NLS-2$
-				item.setText( 5, change.getPrecision()==-2?"":""+change.getPrecision()); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText( 4, change.getLength()   <0?"":""+change.getLength()); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText( 5, change.getPrecision()<0?"":""+change.getPrecision()); //$NON-NLS-1$ //$NON-NLS-2$
 				item.setText( 6, change.getStorageType()==ValueMetaInterface.STORAGE_TYPE_NORMAL?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
 				item.setText( 7, Const.NVL(change.getConversionMask(), ""));
 				item.setText( 8, Const.NVL(change.getDecimalSymbol(), ""));

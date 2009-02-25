@@ -138,6 +138,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static final String[] YES_NO_COMBO = new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") };
+	
 	private ModifyListener lsMod;
 	private SashForm     wSash;
 	private FormData     fdSash;
@@ -449,6 +451,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
     		 new ColumnInfo(Messages.getString("ScriptValuesDialogMod.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ), //$NON-NLS-1$
     		 new ColumnInfo(Messages.getString("ScriptValuesDialogMod.ColumnInfo.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
     		 new ColumnInfo(Messages.getString("ScriptValuesDialogMod.ColumnInfo.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+    		 new ColumnInfo(Messages.getString("ScriptValuesDialogMod.ColumnInfo.Replace"),  ColumnInfo.COLUMN_TYPE_CCOMBO,   YES_NO_COMBO ), //$NON-NLS-1$
            };
 		
 		wFields=new TableView(transMeta, wBottom, 
@@ -859,10 +862,10 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				item.setText(3, ValueMeta.getTypeDesc(input.getType()[i]));
 				if (input.getLength()[i]>=0) item.setText(4, ""+input.getLength()[i]); //$NON-NLS-1$
                 if (input.getPrecision()[i]>=0) item.setText(5, ""+input.getPrecision()[i]); //$NON-NLS-1$
+                item.setText(6, input.getReplace()[i] ? YES_NO_COMBO[1] : YES_NO_COMBO[0]); //$NON-NLS-1$
 			}
 		}
-
-		
+	
 		ScriptValuesScript[] jsScripts = input.getJSScripts();
 		if(jsScripts.length>0){
 			for(int i=0;i<jsScripts.length;i++){
@@ -928,6 +931,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 			String sprc = item.getText(5);
 			meta.getLength()   [i]=Const.toInt(slen, -1);
 			meta.getPrecision()[i]=Const.toInt(sprc, -1);
+			meta.getReplace()  [i]=YES_NO_COMBO[1].equalsIgnoreCase(item.getText(6));
 		}
 		
 		//input.setActiveJSScript(strActiveScript);
@@ -1271,7 +1275,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 						ScriptOrFnNode tree = parseVariables(jscx, jsscope, scr, "script", 1, null); 
 						for (int i=0;i<tree.getParamAndVarCount();i++){
 							String varname = tree.getParamOrVarName(i);
-							if (!varname.equalsIgnoreCase("row") && !varname.equalsIgnoreCase("trans_Status") && rowMeta.indexOfValue(varname)<0){
+							if (!varname.equalsIgnoreCase("row") && !varname.equalsIgnoreCase("trans_Status")){
 								int type=ValueMetaInterface.TYPE_STRING;
 								int length=-1, precision=-1;
 								Object result = jsscope.get(varname, jsscope);
@@ -1305,10 +1309,14 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 								}
 								TableItem ti = new TableItem(wFields.table, SWT.NONE);
 								ti.setText(1, varname);
-								ti.setText(2, varname);
+								ti.setText(2, "");
 								ti.setText(3, ValueMeta.getTypeDesc(type));
-								ti.setText(4, ""+length); //$NON-NLS-1$
-								ti.setText(5, ""+precision); //$NON-NLS-1$
+								ti.setText(4, length>=0 ? ( ""+length) : "" ); //$NON-NLS-1$
+								ti.setText(5, precision>=0 ? (""+precision ) : ""); //$NON-NLS-1$
+								
+								// If the variable name exists in the input, suggest to replace the value
+								//
+								ti.setText(6, (rowMeta.indexOfValue(varname)>=0) ? YES_NO_COMBO[1] : YES_NO_COMBO[0]);
 							}
 						}
 						wFields.removeEmptyRows();

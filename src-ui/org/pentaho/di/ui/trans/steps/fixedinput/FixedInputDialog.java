@@ -718,8 +718,8 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     						item.setText( 2,""+ValueMeta.getTypeDesc(field.getType()) );
     						item.setText( 3,""+field.getFormat());
     						item.setText( 4,""+field.getWidth());
-    						item.setText( 5,""+field.getLength());
-    						item.setText( 6,""+field.getPrecision());
+    						item.setText( 5,field.getLength()<0? "" : ""+field.getLength());
+    						item.setText( 6,field.getPrecision()<0 ? "" : ""+field.getPrecision());
     						item.setText( 7,""+field.getCurrency());
     						item.setText( 8,""+field.getDecimal());
     						item.setText( 9,""+field.getGrouping());

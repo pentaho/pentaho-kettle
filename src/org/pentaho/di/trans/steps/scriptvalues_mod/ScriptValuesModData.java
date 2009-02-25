@@ -45,6 +45,7 @@ public class ScriptValuesModData extends BaseStepData implements StepDataInterfa
 	public Value values_used[];
     
     public RowMetaInterface outputRowMeta;
+	public int[]	replaceIndex;
 	
 	/**
 	 * 

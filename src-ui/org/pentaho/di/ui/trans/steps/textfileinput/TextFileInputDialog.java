@@ -2889,8 +2889,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     						item.setText( 2,""+field.getTypeDesc());
     						item.setText( 3,""+field.getFormat());
     						item.setText( 4,""+field.getPosition());
-    						item.setText( 5,""+field.getLength());
-    						item.setText( 6,""+field.getPrecision());
+    						item.setText( 5, field.getLength()<0 ? "" : ""+field.getLength());
+    						item.setText( 6, field.getPrecision()<0 ? "" : ""+field.getPrecision());
     						item.setText( 7,""+field.getCurrencySymbol());
     						item.setText( 8,""+field.getDecimalSymbol());
     						item.setText( 9,""+field.getGroupSymbol());

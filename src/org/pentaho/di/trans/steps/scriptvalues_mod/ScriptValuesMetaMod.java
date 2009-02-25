@@ -42,6 +42,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -82,6 +83,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	private int     type[];
 	private int     length[];
 	private int     precision[];
+	private boolean replace[]; // Replace the specified field.
 	
 	private boolean compatible;
 	
@@ -196,11 +198,12 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	}
 
 	public void allocate(int nrfields){
-		name      = new String[nrfields];
-		rename    = new String[nrfields];
-		type      = new int   [nrfields];
-		length    = new int   [nrfields];
-		precision = new int   [nrfields];
+		name      = new String [nrfields];
+		rename    = new String [nrfields];
+		type      = new int    [nrfields];
+		length    = new int    [nrfields];
+		precision = new int    [nrfields];
+		replace   = new boolean[nrfields];
 	}
 
 	public Object clone()
@@ -218,6 +221,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			retval.type     [i] = type[i];
 			retval.length   [i] = length[i];
 			retval.precision[i] = precision[i];
+			retval.replace  [i] = replace[i];
 		}
 
 		return retval;
@@ -276,6 +280,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				String sprc = XMLHandler.getTagValue(fnode, "precision"); //$NON-NLS-1$
 				length   [i]=Const.toInt(slen, -1);
 				precision[i]=Const.toInt(sprc, -1);
+				replace  [i] = "Y".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "name")); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -301,30 +306,44 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			type     [i] = ValueMetaInterface.TYPE_NUMBER;
 			length   [i] = -1;
 			precision[i] = -1;
+			replace  [i] = false;
 		}
 		
-		compatible=true;
+		compatible=false;
 	}
-
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
+	
+	public void getFields(RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-		for (int i=0;i<this.name.length;i++)
+		for (int i=0;i<name.length;i++)
 		{
-			if (this.name[i]!=null || rename[i]!=null)
+			if (!Const.isEmpty(name[i]))
 			{
 				ValueMetaInterface v;
-				if (rename[i]!=null && rename[i].length()!=0) 
-				{
-					v = new ValueMeta(rename[i], type[i]);
-				} 
-				else
-				{
-					v = new ValueMeta(this.name[i], type[i]); 
-				} 
+				if (replace[i]) {
+					// Look up the field to replace...
+					v = row.searchValueMeta(name[i]);
+					if (v==null) {
+						throw new KettleStepException(Messages.getString("ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", name[i]));
+					}
+					// Change the data type to match what's specified...
+					//
+					v.setType(type[i]);
+				} else {
+					if (rename[i]!=null && rename[i].length()!=0) 
+					{
+						v = new ValueMeta(rename[i], type[i]);
+					} 
+					else
+					{
+						v = new ValueMeta(this.name[i], type[i]); 
+					} 
+				}
 				v.setLength(length[i]);
                 v.setPrecision(precision[i]);
-				v.setOrigin(name);
-				row.addValueMeta( v );
+				v.setOrigin(originStepname);
+				if (!replace[i]) {
+					row.addValueMeta( v );
+				}
 			}
 		}
 	}
@@ -354,6 +373,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			retval.append("        ").append(XMLHandler.addTagValue("type",      ValueMeta.getTypeDesc(type[i]))); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("        ").append(XMLHandler.addTagValue("length",    length[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("        ").append(XMLHandler.addTagValue("precision", precision[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("replace",   replace[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("      </field>"); //$NON-NLS-1$
 		}
 		retval.append("    </fields>"); //$NON-NLS-1$
@@ -399,6 +419,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				type[i]        =  ValueMeta.getType( rep.getStepAttributeString (id_step, i, "field_type") ); //$NON-NLS-1$
 				length[i]      =  (int)rep.getStepAttributeInteger(id_step, i, "field_length"); //$NON-NLS-1$
 				precision[i]   =  (int)rep.getStepAttributeInteger(id_step, i, "field_precision"); //$NON-NLS-1$
+				replace[i]     =       rep.getStepAttributeBoolean(id_step, i, "field_replace"); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -427,6 +448,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc(type[i])); //$NON-NLS-1$
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_length", length[i]); //$NON-NLS-1$
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", precision[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_replace", replace[i]); //$NON-NLS-1$
             }
         }
         catch (Exception e)
@@ -894,5 +916,19 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     {
     	return "org.pentaho.di.ui.trans.steps.scriptvalues_mod.ScriptValuesModDialog";
     }
+
+	/**
+	 * @return the replace
+	 */
+	public boolean[] getReplace() {
+		return replace;
+	}
+
+	/**
+	 * @param replace the replace to set
+	 */
+	public void setReplace(boolean[] replace) {
+		this.replace = replace;
+	}
     
 }
