@@ -635,8 +635,6 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		wFields = new TableView(jobMeta, wFieldComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
 				FieldsRows, lsMod, props);
 		
-		wFields.setEnabled(!wPrevious.getSelection());
-		
         FormData fdFields = new FormData();
         fdFields.left  = new FormAttachment(0, 0);
         fdFields.top   = new FormAttachment(0, margin);
@@ -681,9 +679,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 		wParameters = new TableView(jobMeta, wParameterComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
 				parameterRows, lsMod, props);
-		
-		wParameters.setEnabled(!wPrevious.getSelection());
-		
+				
         FormData fdParameters = new FormData();
         fdParameters.left  = new FormAttachment(0, 0);
         fdParameters.top   = new FormAttachment(0, margin);
