@@ -490,6 +490,7 @@ public class JavaScriptStringTest extends TestCase
         		                ValueMetaInterface.TYPE_STRING});        
         svm.setLength(new int[] { -1, -1, -1, -1 });
         svm.setPrecision(new int[] { -1, -1, -1, -1 });
+        svm.setReplace(new boolean[] { false, false, false, false, });
         svm.setCompatible(true);
 
         String javaScriptStepPid = steploader.getStepPluginID(svm);
@@ -602,6 +603,7 @@ public class JavaScriptStringTest extends TestCase
         		                ValueMetaInterface.TYPE_STRING});        
         svm.setLength(new int[] { -1, -1, -1, -1, -1, -1, -1 });
         svm.setPrecision(new int[] { -1, -1, -1, -1, -1, -1, -1 });
+        svm.setReplace(new boolean[] { false, false, false, false, false, false, false, });
         svm.setCompatible(true);
 
         String javaScriptStepPid = steploader.getStepPluginID(svm);
@@ -685,6 +687,7 @@ public class JavaScriptStringTest extends TestCase
         		                ValueMetaInterface.TYPE_STRING});        
         svm.setLength(new int[] { -1, -1, -1 });
         svm.setPrecision(new int[] { -1, -1, -1 });
+        svm.setReplace(new boolean[] { false, false, false, });
         svm.setCompatible(true);
 
         // Generate a test transformation with an injector and a dummy:
@@ -734,6 +737,7 @@ public class JavaScriptStringTest extends TestCase
         		                ValueMetaInterface.TYPE_INTEGER});        
         svm.setLength(new int[] { -1, -1, -1 });
         svm.setPrecision(new int[] { -1, -1, -1 });
+        svm.setReplace(new boolean[] { false, false, false, });
         svm.setCompatible(true);
 
         // Generate a test transformation with an injector and a dummy:

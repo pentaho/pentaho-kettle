@@ -323,6 +323,7 @@ public class JavaScriptSpecialTest extends TestCase
         svm.setType(new int[] { ValueMetaInterface.TYPE_BOOLEAN });
         svm.setLength(new int[] { -1 });
         svm.setPrecision(new int[] { -1 });
+        svm.setReplace(new boolean[] { false });
         svm.setCompatible(false);
 
         String javaScriptStepPid = steploader.getStepPluginID(svm);
@@ -540,6 +541,7 @@ public class JavaScriptSpecialTest extends TestCase
         		                ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_NUMBER, ValueMeta.TYPE_STRING,});
         svm.setLength(new int[] { -1, -1, -1, -1, -1, -1, -1 } );
         svm.setPrecision(new int[] { -1, -1, -1, -1, -1, -1, -1 });
+        svm.setReplace(new boolean[] { false, false, false, false, false, false, });
         svm.setCompatible(false);
 
         String javaScriptStepPid = steploader.getStepPluginID(svm);
