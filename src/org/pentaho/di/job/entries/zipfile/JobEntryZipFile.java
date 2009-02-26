@@ -283,7 +283,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		return result;
 	}
 	
-	public boolean processRowFile(Job parentJob, Result result,String realZipfilename,String realWildcard,String realWildcardExclude, String realSourceDirectoryOrFile, String realMovetodirectory, boolean createparentfolder)
+	public boolean processRowFile(Job parentJob, Result result,String realZipfilename,
+			String realWildcard,String realWildcardExclude, String realSourceDirectoryOrFile,
+			String realMovetodirectory, boolean createparentfolder)
 	{
 		LogWriter log = LogWriter.getInstance();
 		boolean Fileexists=false;
@@ -301,30 +303,33 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		BufferedOutputStream buff = null;
 		ZipOutputStream out = null;
 		ZipEntry entry =null;
+		String localSourceFilename=realSourceDirectoryOrFile;
 		
 		try
 		{
 			OriginFile = KettleVFS.getFileObject(realSourceDirectoryOrFile);
+			localSourceFilename=KettleVFS.getFilename(OriginFile);
 			orginexist=OriginFile.exists();
 		}catch(Exception e){}finally {if (OriginFile != null )	{try {OriginFile.close();}catch ( IOException ex ) {};}}
 		
+		String localrealZipfilename=realZipfilename;
 		if (realZipfilename!=null  && orginexist)
 		{
             
             FileObject fileObject = null;
 			try {
-				fileObject = KettleVFS.getFileObject(realZipfilename);
-				
+				fileObject = KettleVFS.getFileObject(localrealZipfilename);
+				localrealZipfilename=KettleVFS.getFilename(fileObject);
 				// Check if Zip File exists
 				if (fileObject.exists())
 				{
 					Fileexists =true;
 					if(log.isDebug())
-						log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileExists1.Label")+ realZipfilename 
+						log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileExists1.Label")+ localrealZipfilename 
 											+ Messages.getString("JobZipFiles.Zip_FileExists2.Label"));
 				} 
 				// Let's see if we need to create parent folder of destination zip filename
-				if(createparentfolder){createParentFolder(realZipfilename);}					
+				if(createparentfolder){createParentFolder(localrealZipfilename);}					
 
 				// Let's start the process now
 				if (ifzipfileexists==3 && Fileexists)
@@ -338,7 +343,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					if (addfiletoresult)
 					{
 						// Add file to result files name
-	                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(realZipfilename), parentJob.getJobname(), toString());
+	                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , fileObject, parentJob.getJobname(), toString());
 	                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 					}					
 					resultat = true;
@@ -355,7 +360,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					// Let's see if we deal with file or folder
 					String [] filelist =null;
 					
-					File f = new File(realSourceDirectoryOrFile);
+					File f = new File(localSourceFilename);
 					if(f.isDirectory()){
 						// Target is a directory
 						// Get all the files in the directory...
@@ -368,11 +373,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					if(filelist.length==0)
 					{
 						resultat=false;
-						log.logError(toString(), Messages.getString("JobZipFiles.Log.FolderIsEmpty",realSourceDirectoryOrFile));
-					}else if(!checkContainsFile(realSourceDirectoryOrFile, filelist, f.isDirectory()))
+						log.logError(toString(), Messages.getString("JobZipFiles.Log.FolderIsEmpty",
+								localSourceFilename));
+					}else if(!checkContainsFile(localSourceFilename, filelist, f.isDirectory()))
 					{
 						resultat=false;
-						log.logError(toString(), Messages.getString("JobZipFiles.Log.NoFilesInFolder",realSourceDirectoryOrFile));
+						log.logError(toString(), Messages.getString("JobZipFiles.Log.NoFilesInFolder",
+								localSourceFilename));
 					}else{
 						if(ifzipfileexists==0 && Fileexists)
 						{
@@ -380,21 +387,21 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 							//Format Date
 							
 							//do we have already a .zip at the end?
-							if (realZipfilename.toLowerCase().endsWith(".zip")) {
+							if (localrealZipfilename.toLowerCase().endsWith(".zip")) {
 								//strip this off
-								realZipfilename = realZipfilename.substring(0, realZipfilename.length()-4);
+								localrealZipfilename = localrealZipfilename.substring(0, localrealZipfilename.length()-4);
 							}
 							
-							realZipfilename=realZipfilename + "_" + StringUtil.getFormattedDateTimeNow(true) +".zip";		
+							localrealZipfilename+= "_" + StringUtil.getFormattedDateTimeNow(true) +".zip";		
 							if(log.isDebug())
-								log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileNameChange1.Label") + realZipfilename + 
+								log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileNameChange1.Label") + localrealZipfilename + 
 													Messages.getString("JobZipFiles.Zip_FileNameChange1.Label"));
 						}
 						else if(ifzipfileexists==1 && Fileexists)
 						{
 							// the zip file exists and user want to append						
 							// get a temp file
-							fileZip = new File(realZipfilename);
+							fileZip = new File(localrealZipfilename);
 							tempFile = File.createTempFile(fileZip.getName(), null);
 					        
 							// delete it, otherwise we cannot rename existing zip to it.
@@ -408,13 +415,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 											+ tempFile.getAbsolutePath() + Messages.getString("JobZipFiles.Cant_Rename_Temp3.Label"));
 							}						
 							if(log.isDebug())
-								log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileAppend1.Label") + realZipfilename + 
+								log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileAppend1.Label") + localrealZipfilename + 
 											Messages.getString("JobZipFiles.Zip_FileAppend2.Label"));
 						}				
 						
 						if(log.isDetailed())	
 							log.logDetailed(toString(), Messages.getString("JobZipFiles.Files_Found1.Label") +filelist.length+ 
-											Messages.getString("JobZipFiles.Files_Found2.Label") + realSourceDirectoryOrFile + 
+											Messages.getString("JobZipFiles.Files_Found2.Label") + localSourceFilename + 
 											Messages.getString("JobZipFiles.Files_Found3.Label"));
 						
 						Pattern pattern = null;
@@ -431,7 +438,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						
 						// Prepare Zip File
 						buffer = new byte[18024];
-						dest = new FileOutputStream(realZipfilename);
+						dest = new FileOutputStream(localrealZipfilename);
 						buff = new BufferedOutputStream(dest);
 						out = new ZipOutputStream(buff);
 						
@@ -517,8 +524,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 								}
 							}
 							// Get processing File
-							String targetFilename = realSourceDirectoryOrFile+Const.FILE_SEPARATOR+filelist[i];
-							if(f.isFile()) targetFilename=realSourceDirectoryOrFile;
+							String targetFilename = localSourceFilename+Const.FILE_SEPARATOR+filelist[i];
+							if(f.isFile()) targetFilename=localSourceFilename;
 							
 							File file = new File(targetFilename);
 	
@@ -528,7 +535,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 								// We can add the file to the Zip Archive
 								if(log.isDebug())
 									log.logDebug(toString(), Messages.getString("JobZipFiles.Add_FilesToZip1.Label")+filelist[i]+
-											Messages.getString("JobZipFiles.Add_FilesToZip2.Label")+realSourceDirectoryOrFile+
+											Messages.getString("JobZipFiles.Add_FilesToZip2.Label")+localSourceFilename+
 											Messages.getString("JobZipFiles.Add_FilesToZip3.Label"));
 								
 								// Associate a file input stream for the current file
@@ -575,8 +582,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 								if ( ZippedFiles[i] != null)
 								{								
 									// Delete File
-									FileObject fileObjectd = KettleVFS.getFileObject(realSourceDirectoryOrFile+Const.FILE_SEPARATOR+ZippedFiles[i]);
-									if(f.isFile()) fileObjectd = KettleVFS.getFileObject(realSourceDirectoryOrFile);		
+									FileObject fileObjectd = KettleVFS.getFileObject(localSourceFilename+Const.FILE_SEPARATOR+ZippedFiles[i]);
+									if(f.isFile()) fileObjectd = KettleVFS.getFileObject(localSourceFilename);		
 									
 									// Here gc() is explicitly called if e.g. createfile is used in the same
 									// job for the same file. The problem is that after creating the file the
@@ -595,14 +602,14 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 										{	
 											resultat = false;
 											log.logError(toString(), Messages.getString("JobZipFiles.Cant_Delete_File1.Label")+
-												realSourceDirectoryOrFile+Const.FILE_SEPARATOR+ZippedFiles[i]+
+													localSourceFilename+Const.FILE_SEPARATOR+ZippedFiles[i]+
 													Messages.getString("JobZipFiles.Cant_Delete_File2.Label"));
 	
 										}
 										// File deleted
 										if(log.isDebug())
 											log.logDebug(toString(), Messages.getString("JobZipFiles.File_Deleted1.Label") + 
-											realSourceDirectoryOrFile+Const.FILE_SEPARATOR+ZippedFiles[i] + 
+													localSourceFilename+Const.FILE_SEPARATOR+ZippedFiles[i] + 
 											Messages.getString("JobZipFiles.File_Deleted2.Label"));
 									}
 									else if(afterzip == 2)
@@ -631,7 +638,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						if (addfiletoresult)
 						{
 							// Add file to result files name
-		                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(realZipfilename), parentJob.getJobname(), toString());
+		                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , fileObject, parentJob.getJobname(), toString());
 		                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 						}
 						
@@ -641,7 +648,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			}
 			catch (Exception e) 
 			{
-       			log.logError(toString(), Messages.getString("JobZipFiles.Cant_CreateZipFile1.Label") +realZipfilename+
+       			log.logError(toString(), Messages.getString("JobZipFiles.Cant_CreateZipFile1.Label") +localrealZipfilename+
 		       							 Messages.getString("JobZipFiles.Cant_CreateZipFile2.Label") + e.getMessage());
        			resultat = false;
 			}
@@ -666,8 +673,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		else
 		{	
 			resultat=true;
-			if (realZipfilename==null) log.logError(toString(), Messages.getString("JobZipFiles.No_ZipFile_Defined.Label"));
-			if (!orginexist) log.logError(toString(), Messages.getString("JobZipFiles.No_FolderCible_Defined.Label",realSourceDirectoryOrFile));			
+			if (localrealZipfilename==null) log.logError(toString(), Messages.getString("JobZipFiles.No_ZipFile_Defined.Label"));
+			if (!orginexist) log.logError(toString(), Messages.getString("JobZipFiles.No_FolderCible_Defined.Label",localSourceFilename));			
 		}			
 		//return  a verifier
 		return resultat;
@@ -802,13 +809,11 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						{
 							log.logError(toString(),"destination zip filename is empty! Ignoring row...");
 						}
-						
 					}
 					else
 					{
 						log.logError(toString(),"Target directory is empty! Ignoring row...");
 					}
-	
 				}	
 			}catch(Exception e){log.logError(toString(),"Erreur during process!");}
 		}

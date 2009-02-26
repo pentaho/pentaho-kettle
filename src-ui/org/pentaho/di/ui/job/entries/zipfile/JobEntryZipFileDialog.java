@@ -593,7 +593,9 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 				{
 					JobEntryZipFile jobEntry = new JobEntryZipFile();
 					String filename[] = new String[1];
-					filename[0]=jobEntry.getFullFilename(wZipFilename.getText(),wAddDate.getSelection(),wAddTime.getSelection(), wSpecifyFormat.getSelection(),wDateTimeFormat.getText());
+					filename[0]=jobEntry.getFullFilename(wZipFilename.getText(),
+							wAddDate.getSelection(),wAddTime.getSelection(), 
+							wSpecifyFormat.getSelection(),wDateTimeFormat.getText());
 					if (filename!=null && filename.length>0)
 					{
 						EnterSelectionDialog esd = new EnterSelectionDialog(shell, filename, Messages.getString("JobZipFiles.SelectOutputFiles.DialogTitle"), Messages.getString("JobZipFiles.SelectOutputFiles.DialogMessage"));
