@@ -2692,7 +2692,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
             for ( String key : keys )  {
             	job.getJobMeta().setParameterValue(key, Const.NVL(paramMap.get(key), ""));
             } 
-            jobMeta.activateParameters();
+            job.getJobMeta().activateParameters();
             
             log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.StartingJob")); //$NON-NLS-1$
             job.start();
