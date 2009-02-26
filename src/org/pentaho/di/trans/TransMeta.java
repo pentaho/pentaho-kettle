@@ -2665,6 +2665,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         	retval.append("            ").append(XMLHandler.openTag("name")); //$NON-NLS-1$
         	retval.append(parameters[idx]);
         	retval.append(XMLHandler.closeTag("name")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+        	retval.append("            ").append(XMLHandler.openTag("default")); //$NON-NLS-1$
+        	retval.append(getParameterDefault(parameters[idx]));
+        	retval.append(XMLHandler.closeTag("default")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
         	retval.append("            ").append(XMLHandler.openTag("description")); //$NON-NLS-1$
         	retval.append(getParameterDescription(parameters[idx]));
         	retval.append(XMLHandler.closeTag("description")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
