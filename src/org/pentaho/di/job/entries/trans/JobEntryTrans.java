@@ -631,29 +631,31 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                         transMeta.getPreviousResult().getRows().addAll(newList);
                     }
 
-                	if ( parameters != null )  {
-                		for ( int idx = 0; idx < parameters.length; idx++ )
-                		{
-                			if ( !Const.isEmpty(parameters[idx]) )  {
-                				// We have a parameter
-                				if ( Const.isEmpty(Const.trim(parameterFieldNames[idx])) )  {
-                					namedParam.setParameterValue(parameters[idx], 
-                							Const.NVL(environmentSubstitute(parameterValues[idx]), ""));            				
-                				}            				            		
-                				else  {
-                					String fieldValue = "";
-                					
-                					if (resultRow!=null)  {
-                						fieldValue = resultRow.getString(parameterFieldNames[idx], "");
-                					}
-                					// Get the value from the input stream
-                					namedParam.setParameterValue(parameters[idx], 
-                							                     Const.NVL(fieldValue, ""));
-                				}
-                			}                                    	
-                		}
-                	}                    
-                    
+                    if ( paramsFromPrevious )  { // Copy the input the parameters
+
+                    	if ( parameters != null )  {
+                    		for ( int idx = 0; idx < parameters.length; idx++ )
+                    		{
+                    			if ( !Const.isEmpty(parameters[idx]) )  {
+                    				// We have a parameter
+                    				if ( Const.isEmpty(Const.trim(parameterFieldNames[idx])) )  {
+                    					namedParam.setParameterValue(parameters[idx], 
+                    							Const.NVL(environmentSubstitute(parameterValues[idx]), ""));            				
+                    				}            				            		
+                    				else  {
+                    					String fieldValue = "";
+
+                    					if (resultRow!=null)  {
+                    						fieldValue = resultRow.getString(parameterFieldNames[idx], "");
+                    					}
+                    					// Get the value from the input stream
+                    					namedParam.setParameterValue(parameters[idx], 
+                    							Const.NVL(fieldValue, ""));
+                    				}
+                    			}                                    	
+                    		}
+                    	}
+                    }
                 }
                 else
                 {
@@ -674,9 +676,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     {
                     	// do nothing
                     }
-                    
                     if ( paramsFromPrevious )  { // Copy the input the parameters
-                    	
                     	if ( parameters != null )  {
                     		for ( int idx = 0; idx < parameters.length; idx++ )
                     		{
@@ -688,18 +688,18 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     				}            				            		
                     				else  {
                     					String fieldValue = "";
-                    					
+
                     					if (resultRow!=null)  {
                     						fieldValue = resultRow.getString(parameterFieldNames[idx], "");
                     					}
                     					// Get the value from the input stream
                     					namedParam.setParameterValue(parameters[idx], 
-                    							                     Const.NVL(fieldValue, ""));
+                    							Const.NVL(fieldValue, ""));
                     				}
                     			}                                    	
                     		}
                     	}
-                    }                    
+                    }
                 }
 
                 // Execute this transformation across a cluster of servers
@@ -817,6 +817,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 //
                 else // Local execution...
                 {
+                	transMeta.copyParametersFrom(namedParam);
+                	
                     // Create the transformation from meta-data
                     Trans trans = new Trans(transMeta);
 
@@ -827,7 +829,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     
                     // set the parent job on the transformation, variables are taken from here...
                     trans.setParentJob(parentJob);
-                    trans.setParentVariableSpace(parentJob);
+                    trans.setParentVariableSpace(parentJob);                    
 
                     // First get the root job
                     //
