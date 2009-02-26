@@ -321,7 +321,8 @@ public class WebService extends BaseStep implements StepInterface
 
         try
         {
-            vHttpMethod.setURI(new URI(vURLService, false));
+        	URI uri = new URI(vURLService, false);
+            vHttpMethod.setURI(uri);
             vHttpMethod.setRequestHeader("Content-Type", "text/xml;charset=UTF-8");
             vHttpMethod.setRequestHeader("SOAPAction", "\"" + meta.getOperationNamespace() + "/" + meta.getOperationName() + "\"");
 
@@ -335,37 +336,37 @@ public class WebService extends BaseStep implements StepInterface
             }
             else if (responseCode == 401)
             {
-                throw new KettleStepException(Messages.getString("WebServices.ERROR0011.Authentication"));
+                throw new KettleStepException(Messages.getString("WebServices.ERROR0011.Authentication", vURLService));
             }
             else if (responseCode == 404)
             {
-            	throw new KettleStepException(Messages.getString("WebServices.ERROR0012.NotFound"));
+            	throw new KettleStepException(Messages.getString("WebServices.ERROR0012.NotFound", vURLService));
             }
             else
             {
-            	throw new KettleStepException(Messages.getString("WebServices.ERROR0001.ServerError", Integer.toString(responseCode), Const.NVL(new String(vHttpMethod.getResponseBody()), "")) );
+            	throw new KettleStepException(Messages.getString("WebServices.ERROR0001.ServerError", Integer.toString(responseCode), Const.NVL(new String(vHttpMethod.getResponseBody()), ""), vURLService) );
             }
             requestTime += Const.nanoTime() - currentRequestTime;
         }
         catch (URIException e)
         {
-            throw new KettleStepException(Messages.getString("WebServices.ERROR0002.InvalidURI"));
+            throw new KettleStepException(Messages.getString("WebServices.ERROR0002.InvalidURI", vURLService));
         }
         catch (UnsupportedEncodingException e)
         {
-            throw new KettleStepException(Messages.getString("WebServices.ERROR0003.UnsupportedEncoding"));
+            throw new KettleStepException(Messages.getString("WebServices.ERROR0003.UnsupportedEncoding", vURLService));
         }
         catch (HttpException e)
         {
-            throw new KettleStepException(Messages.getString("WebServices.ERROR0004.HttpException"));
+            throw new KettleStepException(Messages.getString("WebServices.ERROR0004.HttpException", vURLService));
         }
         catch (UnknownHostException e)
         {
-            throw new KettleStepException(Messages.getString("WebServices.ERROR0013.UnknownHost"));
+            throw new KettleStepException(Messages.getString("WebServices.ERROR0013.UnknownHost", vURLService));
         }
         catch (IOException e)
         {
-            throw new KettleStepException(Messages.getString("WebServices.ERROR0005.IOException"));
+            throw new KettleStepException(Messages.getString("WebServices.ERROR0005.IOException", vURLService));
         }
         finally
         {
