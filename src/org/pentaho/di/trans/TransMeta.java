@@ -2665,9 +2665,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         	retval.append("            ").append(XMLHandler.openTag("name")); //$NON-NLS-1$
         	retval.append(parameters[idx]);
         	retval.append(XMLHandler.closeTag("name")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-        	retval.append("            ").append(XMLHandler.openTag("default")); //$NON-NLS-1$
+        	retval.append("            ").append(XMLHandler.openTag("default_value")); //$NON-NLS-1$
         	retval.append(getParameterDefault(parameters[idx]));
-        	retval.append(XMLHandler.closeTag("default")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
+        	retval.append(XMLHandler.closeTag("default_value")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
         	retval.append("            ").append(XMLHandler.openTag("description")); //$NON-NLS-1$
         	retval.append(getParameterDescription(parameters[idx]));
         	retval.append(XMLHandler.closeTag("description")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
@@ -3223,7 +3223,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 Node paramNode = XMLHandler.getSubNodeByNr(paramsNode, "parameter", i); //$NON-NLS-1$
 
                 String paramName = XMLHandler.getTagValue(paramNode, "name"); //$NON-NLS-1$
-                String defaultValue = XMLHandler.getTagValue(paramNode, "default"); //$NON-NLS-1$
+                String defaultValue = XMLHandler.getTagValue(paramNode, "default_value"); //$NON-NLS-1$
                 String descr = XMLHandler.getTagValue(paramNode, "description"); //$NON-NLS-1$
                 
                 addParameterDefinition(paramName, defaultValue, descr);
