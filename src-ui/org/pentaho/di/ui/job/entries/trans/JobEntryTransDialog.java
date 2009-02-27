@@ -151,7 +151,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
 	private Label wlFields;
 	private TableView wFields;
-	private FormData fdlFields, fdFields;
+	// private FormData fdlFields, fdFields;
 	
 	private TableView wParameters;
 
