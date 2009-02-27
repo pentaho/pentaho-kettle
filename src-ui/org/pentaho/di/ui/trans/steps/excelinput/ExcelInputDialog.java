@@ -24,6 +24,7 @@ import jxl.Cell;
 import jxl.CellType;
 import jxl.Sheet;
 import jxl.Workbook;
+import jxl.WorkbookSettings;
 
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.SWT;
@@ -1777,7 +1778,14 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		for (FileObject file : fileList.getFiles()) {
 			try
 			{
-				Workbook workbook = Workbook.getWorkbook(KettleVFS.getInputStream(file));
+				//Apply the workbook's encoding setting to the table fields
+				WorkbookSettings ws = new WorkbookSettings();
+				if (!Const.isEmpty(info.getEncoding()))
+				{
+					ws.setEncoding(info.getEncoding());
+				}
+
+				Workbook workbook = Workbook.getWorkbook(KettleVFS.getInputStream(file), ws);
 
 				int nrSheets = workbook.getNumberOfSheets();
 				for (int j=0;j<nrSheets;j++)
