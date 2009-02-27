@@ -182,6 +182,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     /** The field name in case we select the column value option as an alternative start date */
     private String              startDateFieldName;
     
+    private boolean             preloadingCache;
     
 	public DimensionLookupMeta()
 	{
@@ -704,6 +705,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			setTechKeyCreation(XMLHandler.getTagValue(fields, "return", "creation_method")); //$NON-NLS-1$
             
             cacheSize = Const.toInt(XMLHandler.getTagValue(stepnode, "cache_size"), -1); //$NON-NLS-1$
+            preloadingCache = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "preload_cache")); //$NON-NLS-1$
             
             usingStartDateAlternative = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_start_date_alternative")); //$NON-NLS-1$
             startDateAlternative = getStartDateAlternative(XMLHandler.getTagValue(stepnode, "start_date_alternative")); //$NON-NLS-1$
@@ -759,6 +761,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		versionField = "version"; //$NON-NLS-1$
         
         cacheSize = 5000;
+        preloadingCache = false;
 	}
 
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException 
@@ -888,6 +891,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		retval.append("      ").append(XMLHandler.addTagValue("max_year", maxYear)); //$NON-NLS-1$ //$NON-NLS-2$
 
         retval.append("      ").append(XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("preload_cache", preloadingCache)); //$NON-NLS-1$ //$NON-NLS-2$
 
         retval.append("      ").append(XMLHandler.addTagValue("use_start_date_alternative", usingStartDateAlternative)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      ").append(XMLHandler.addTagValue("start_date_alternative", getStartDateAlternativeCode(startDateAlternative))); //$NON-NLS-1$ //$NON-NLS-2$
@@ -941,6 +945,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			maxYear = (int) rep.getStepAttributeInteger(id_step, "max_year"); //$NON-NLS-1$
 
             cacheSize = (int) rep.getStepAttributeInteger(id_step, "cache_size"); //$NON-NLS-1$
+            preloadingCache = rep.getStepAttributeBoolean(id_step, "preload_cache"); //$NON-NLS-1$
             
             usingStartDateAlternative = rep.getStepAttributeBoolean(id_step, "use_start_date_alternative"); //$NON-NLS-1$
             startDateAlternative = getStartDateAlternative(rep.getStepAttributeString(id_step, "start_date_alternative")); //$NON-NLS-1$
@@ -994,6 +999,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
             rep.saveStepAttribute(id_transformation, id_step, "max_year", maxYear); //$NON-NLS-1$
 
             rep.saveStepAttribute(id_transformation, id_step, "cache_size", cacheSize); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "preload_cache", preloadingCache); //$NON-NLS-1$
 
             rep.saveStepAttribute(id_transformation, id_step, "use_start_date_alternative", usingStartDateAlternative); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "start_date_alternative", getStartDateAlternativeCode(startDateAlternative)); //$NON-NLS-1$
@@ -1913,5 +1919,19 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	 */
 	public void setStartDateFieldName(String startDateFieldName) {
 		this.startDateFieldName = startDateFieldName;
+	}
+
+	/**
+	 * @return the preloadingCache
+	 */
+	public boolean isPreloadingCache() {
+		return preloadingCache;
+	}
+
+	/**
+	 * @param preloadingCache the preloadingCache to set
+	 */
+	public void setPreloadingCache(boolean preloadingCache) {
+		this.preloadingCache = preloadingCache;
 	}
 }

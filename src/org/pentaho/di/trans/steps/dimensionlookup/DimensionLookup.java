@@ -149,20 +149,24 @@ public class DimensionLookup extends BaseStep implements StepInterface
             	 
             }
             
-            // Caching...
-            //
-            if (data.cacheKeyRowMeta==null)
-            {
-            	// KEY : the natural key(s)
-                //
-                data.cacheKeyRowMeta = new RowMeta();
-                for (int i=0;i<data.keynrs.length;i++)
-                {
-                    ValueMetaInterface key = getInputRowMeta().getValueMeta(data.keynrs[i]);
-                    data.cacheKeyRowMeta.addValueMeta( key.clone());
-                }
-                
-                data.cache = new ByteArrayHashMap(meta.getCacheSize()>0 ? meta.getCacheSize() : 5000, data.cacheKeyRowMeta);
+            if (!meta.isUpdate() && meta.isPreloadingCache()) {
+            	preloadCache();
+            } else  {
+	            // Caching...
+	            //
+	            if (data.cacheKeyRowMeta==null)
+	            {
+	            	// KEY : the natural key(s)
+	                //
+	                data.cacheKeyRowMeta = new RowMeta();
+	                for (int i=0;i<data.keynrs.length;i++)
+	                {
+	                    ValueMetaInterface key = getInputRowMeta().getValueMeta(data.keynrs[i]);
+	                    data.cacheKeyRowMeta.addValueMeta( key.clone());
+	                }
+	                
+	                data.cache = new ByteArrayHashMap(meta.getCacheSize()>0 ? meta.getCacheSize() : 5000, data.cacheKeyRowMeta);
+	            }
             }
 
             if (meta.getDateField()!=null && meta.getDateField().length()>0)
@@ -216,13 +220,76 @@ public class DimensionLookup extends BaseStep implements StepInterface
         return true;
     }
     
-    
+    /**
+     * Pre-load the cache by reading the whole dimension table from disk...
+     * 
+     * @throws in case there is a database or cache problem.
+     */
+	private void preloadCache() throws KettleException{
+		try {
+			DatabaseMeta databaseMeta = meta.getDatabaseMeta();
+			
+			// tk, version, from, to, natural keys, retrieval fields...
+			//
+			String sql = "SELECT "+databaseMeta.quoteField(meta.getKeyField());
+			sql+=", "+databaseMeta.quoteField(meta.getVersionField());
+			sql+=", "+databaseMeta.quoteField(meta.getDateFrom()); // extra info in cache
+			sql+=", "+databaseMeta.quoteField(meta.getDateTo()); // extra info in cache
+			for (int i=0;i<meta.getKeyLookup().length;i++) {
+				sql+=", "+meta.getKeyLookup()[i]; // the natural key field in the table
+			}
+			for (int i=0;i<meta.getFieldLookup().length;i++) {
+				sql+=", "+meta.getFieldLookup()[i]; // the extra fields to retrieve...
+			}
+			
+			sql+=" FROM "+data.schemaTable;
+			logDetailed("Pre-loading cache by reading from database with: "+Const.CR+sql+Const.CR);
+			
+			List<Object[]> rows = data.db.getRows(sql, -1);
+			RowMetaInterface rowMeta = data.db.getReturnRowMeta();
+			
+			data.preloadKeyIndexes = new int[meta.getKeyLookup().length];
+			for (int i=0;i<data.preloadKeyIndexes.length;i++) {
+				data.preloadKeyIndexes[i] = rowMeta.indexOfValue(meta.getKeyLookup()[i]); // the field in the table
+			}
+ 			data.preloadFromDateIndex = rowMeta.indexOfValue(meta.getDateFrom());
+ 			data.preloadToDateIndex = rowMeta.indexOfValue(meta.getDateTo());
+			
+			data.preloadCache = new DimensionCache(rowMeta, data.preloadKeyIndexes, data.preloadFromDateIndex, data.preloadToDateIndex);
+			data.preloadCache.setRowCache(rows);
+
+			logDetailed("Sorting the cache rows...");
+			data.preloadCache.sortRows();
+			logDetailed("Sorting of cached rows finished.");
+			
+			// Also see what indexes to take to populate the lookup row...
+			// We only ever compare indexes and the lookup date in the cache, the rest is not needed...
+			//
+			data.preloadIndexes = new ArrayList<Integer>();
+			for (int i=0;i<meta.getKeyStream().length;i++) {
+				int index = getInputRowMeta().indexOfValue(meta.getKeyStream()[i]);
+				if (index<0) {
+					// Just to be safe...
+					//
+					throw new KettleStepException(Messages.getString("DimensionLookup.Exception.KeyFieldNotFound", meta.getFieldStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$ 
+				}
+				data.preloadIndexes.add(index);
+			}
+			
+			// This is all for now...
+		} catch(Exception e) {
+			throw new KettleException("Error encountered during cache pre-load", e);
+		}
+	}
+
 	private synchronized Object[] lookupValues(RowMetaInterface rowMeta, Object[] row) throws KettleException
 	{
         Object[] outputRow = new Object[data.outputRowMeta.size()];
         
-        Object[] lookupRow = new Object[data.lookupRowMeta.size()];
-		Object[] returnRow = null;
+        RowMetaInterface lookupRowMeta;
+        Object[] lookupRow;
+        
+        Object[] returnRow = null;
         
 		Long technicalKey;
 		Long valueVersion;
@@ -233,54 +300,102 @@ public class DimensionLookup extends BaseStep implements StepInterface
         // Determine the lookup date ("now") if we have a field that carries said date.
 		// If not, the system date is taken.
 		//
-		if (data.datefieldnr>=0)
-		{
-			data.valueDateNow = rowMeta.getDate(row, data.datefieldnr);
+		if (data.datefieldnr>=0) {
+			valueDate = rowMeta.getDate(row, data.datefieldnr);
+		} else {
+			valueDate = data.valueDateNow; // system date in this case.
 		}
 		
-        // Construct the lookup row...
-		//
-		for (int i=0;i<meta.getKeyStream().length;i++)
-		{
-			try
-			{
-				lookupRow[i] = row[data.keynrs[i]];
+		if (!meta.isUpdate() && meta.isPreloadingCache()) {
+			// Obtain a result row from the pre-load cache...
+			// 
+			// Create a row to compare with
+			//
+			RowMetaInterface preloadRowMeta = data.preloadCache.getRowMeta();
+			data.returnRowMeta = data.preloadCache.getRowMeta(); // In this case it's all the same. (simple)
+			lookupRowMeta = preloadRowMeta;
+			lookupRow = new Object[preloadRowMeta.size()];
+			
+			// Assemble the lookup row, convert data if needed...
+			//
+			for (int i=0;i<data.preloadIndexes.size();i++) {
+				int from = data.preloadIndexes.get(i); // Input row index
+				int to   = data.preloadCache.getKeyIndexes()[i]; // Lookup row index
+
+				ValueMetaInterface fromValueMeta = rowMeta.getValueMeta(from); // from data type
+				ValueMetaInterface toValueMeta = data.preloadCache.getRowMeta().getValueMeta(to); // to data type
+				
+				Object fromData = row[from]; // from value
+				Object toData = toValueMeta.convertData(fromValueMeta, fromData); // to value
+
+				// Set the key in the row...
+				//
+				lookupRow[to] = toData;
 			}
-			catch(Exception e) // TODO : remove exception??
-			{
-				throw new KettleStepException(Messages.getString("DimensionLookup.Exception.ErrorDetectedInGettingKey",i+"",data.keynrs[i]+"/"+rowMeta.size(),rowMeta.getString(row))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			
+			// Also set the lookup date on the "end of date range" (toDate) position
+			//
+			lookupRow[data.preloadFromDateIndex] = valueDate;
+			
+			// Look up the row in the pre-load cache...
+			//
+			int index = data.preloadCache.lookupRow(lookupRow);
+			if (index>=0) {
+				returnRow = data.preloadCache.getRow(index);
+			} else {
+				returnRow = null; // Nothing found!
 			}
+			
+			
 		}
-		if (data.datefieldnr>=0) valueDate = rowMeta.getDate(row, data.datefieldnr);
-		else valueDate = data.valueDateNow;
-        lookupRow[meta.getKeyStream().length]=valueDate;  // ? >= date_from
-        lookupRow[meta.getKeyStream().length+1]=valueDate; // ? < date_to
-		
-		if (log.isDebug()) logDebug(Messages.getString("DimensionLookup.Log.LookupRow")+data.lookupRowMeta.getString(lookupRow)); //$NON-NLS-1$ //$NON-NLS-2$
-		
-        // Do the lookup and see if we can find anything in the database.
-        // But before that, let's see if we can find anything in the cache
-        //
-        
-		if (meta.getCacheSize()>=0)
-        {
-            returnRow=getFromCache(lookupRow, valueDate);
-        }
-        
-        if (returnRow==null)
-        {
-            data.db.setValues(data.lookupRowMeta, lookupRow, data.prepStatementLookup);
-            returnRow=data.db.getLookup(data.prepStatementLookup);
-            data.returnRowMeta = data.db.getReturnRowMeta();
-            
-            incrementLinesInput();
-            
-            if (returnRow!=null && meta.getCacheSize()>=0)
-            {
-                addToCache(lookupRow, returnRow);
-            }
-        }
-		
+		else 
+		{
+			lookupRow = new Object[data.lookupRowMeta.size()];
+			lookupRowMeta = data.lookupRowMeta;
+			
+	        // Construct the lookup row...
+			//
+			for (int i=0;i<meta.getKeyStream().length;i++)
+			{
+				try
+				{
+					lookupRow[i] = row[data.keynrs[i]];
+				}
+				catch(Exception e) // TODO : remove exception??
+				{
+					throw new KettleStepException(Messages.getString("DimensionLookup.Exception.ErrorDetectedInGettingKey",i+"",data.keynrs[i]+"/"+rowMeta.size(),rowMeta.getString(row))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				}
+			}
+
+	        lookupRow[meta.getKeyStream().length]=valueDate;  // ? >= date_from
+	        lookupRow[meta.getKeyStream().length+1]=valueDate; // ? < date_to
+			
+			if (log.isDebug()) logDebug(Messages.getString("DimensionLookup.Log.LookupRow")+data.lookupRowMeta.getString(lookupRow)); //$NON-NLS-1$ //$NON-NLS-2$
+			
+	        // Do the lookup and see if we can find anything in the database.
+	        // But before that, let's see if we can find anything in the cache
+	        //
+	        
+			if (meta.getCacheSize()>=0)
+	        {
+	            returnRow=getFromCache(lookupRow, valueDate);
+	        }
+			
+	        if (returnRow==null)
+	        {
+	            data.db.setValues(data.lookupRowMeta, lookupRow, data.prepStatementLookup);
+	            returnRow=data.db.getLookup(data.prepStatementLookup);
+	            data.returnRowMeta = data.db.getReturnRowMeta();
+	            
+	            incrementLinesInput();
+	            
+	            if (returnRow!=null && meta.getCacheSize()>=0)
+	            {
+	                addToCache(lookupRow, returnRow);
+	            }
+	        }
+		}
+        		
 		/* Handle "update = false" first for performance reasons
 		 */
 		if (!meta.isUpdate())
@@ -310,7 +425,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		{
 			if (returnRow==null) // The dimension entry was not found, we need to add it!
 			{
-				if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.NoDimensionEntryFound")+data.lookupRowMeta.getString(lookupRow)+")"); //$NON-NLS-1$ //$NON-NLS-2$
+				if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.NoDimensionEntryFound")+lookupRowMeta.getString(lookupRow)+")"); //$NON-NLS-1$ //$NON-NLS-2$
 				//logDetailed("Entry not found: add value!");
 				// Date range: ]-oo,+oo[ 
 				valueDateFrom = data.min_date;
@@ -516,13 +631,15 @@ public class DimensionLookup extends BaseStep implements StepInterface
         
         // Copy the results to the output row...
         //
-        // First copy the input row values to the output...
+        // First copy the input row values to the output..
+		//
         for (int i=0;i<rowMeta.size();i++) outputRow[i] = row[i];
 
         int outputIndex = rowMeta.size();
         int inputIndex = 0;
         
         // Then the technical key...
+        //
         outputRow[outputIndex++] = data.returnRowMeta.getInteger(returnRow, inputIndex++);
         
         //skip the version in the input        

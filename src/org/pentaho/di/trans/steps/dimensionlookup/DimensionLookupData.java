@@ -13,6 +13,7 @@ package org.pentaho.di.trans.steps.dimensionlookup;
 
 import java.sql.PreparedStatement;
 import java.util.Date;
+import java.util.List;
 
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.hash.ByteArrayHashMap;
@@ -71,6 +72,15 @@ public class DimensionLookupData extends BaseStepData implements StepDataInterfa
 	public int startDateChoice;
 
 	public int startDateFieldIndex;
+
+	public int[]	preloadKeyIndexes;
+
+	public int	preloadFromDateIndex;
+	public int	preloadToDateIndex;
+
+	public DimensionCache	preloadCache;
+
+	public List<Integer>	preloadIndexes;
 
 	/**
 	 * 

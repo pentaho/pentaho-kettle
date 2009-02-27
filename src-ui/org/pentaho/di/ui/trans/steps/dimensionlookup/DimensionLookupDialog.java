@@ -101,6 +101,12 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	private Label        wlCommit;
 	private Text         wCommit;
 
+	private Label        wlUseCache;
+	private Button       wUseCache;
+
+	private Label        wlPreloadCache;
+	private Button       wPreloadCache;
+
     private Label        wlCacheSize;
     private Text         wCacheSize;
 
@@ -355,6 +361,42 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdCommit.right= new FormAttachment(100, 0);
 		wCommit.setLayoutData(fdCommit);
 
+        // Use Cache?
+        wlUseCache=new Label(shell, SWT.RIGHT);
+        wlUseCache.setText(Messages.getString("DimensionLookupDialog.UseCache.Label")); //$NON-NLS-1$
+        props.setLook(wlUseCache);
+        FormData fdlUseCache=new FormData();
+        fdlUseCache.left = new FormAttachment(0, 0);
+        fdlUseCache.right= new FormAttachment(middle, -margin);
+        fdlUseCache.top  = new FormAttachment(wCommit, margin);
+        wlUseCache.setLayoutData(fdlUseCache);
+        wUseCache=new Button(shell, SWT.CHECK);
+        props.setLook(wUseCache);
+        wUseCache.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setFlags(); }});
+        FormData fdUseCache=new FormData();
+        fdUseCache.left = new FormAttachment(middle, 0);
+        fdUseCache.top  = new FormAttachment(wCommit, margin);
+        fdUseCache.right= new FormAttachment(100, 0);
+        wUseCache.setLayoutData(fdUseCache);
+
+        // Cache size ...
+        wlPreloadCache=new Label(shell, SWT.RIGHT);
+        wlPreloadCache.setText(Messages.getString("DimensionLookupDialog.PreloadCache.Label")); //$NON-NLS-1$
+        props.setLook(wlPreloadCache);
+        FormData fdlPreloadCache=new FormData();
+        fdlPreloadCache.left = new FormAttachment(0, 0);
+        fdlPreloadCache.right= new FormAttachment(middle, -margin);
+        fdlPreloadCache.top  = new FormAttachment(wUseCache, margin);
+        wlPreloadCache.setLayoutData(fdlPreloadCache);
+        wPreloadCache=new Button(shell, SWT.CHECK);
+        props.setLook(wPreloadCache);
+        wPreloadCache.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setFlags(); }});
+        FormData fdPreloadCache=new FormData();
+        fdPreloadCache.left = new FormAttachment(middle, 0);
+        fdPreloadCache.top  = new FormAttachment(wUseCache, margin);
+        fdPreloadCache.right= new FormAttachment(100, 0);
+        wPreloadCache.setLayoutData(fdPreloadCache);
+
         // Cache size ...
         wlCacheSize=new Label(shell, SWT.RIGHT);
         wlCacheSize.setText(Messages.getString("DimensionLookupDialog.CacheSize.Label")); //$NON-NLS-1$
@@ -362,14 +404,14 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         FormData fdlCacheSize=new FormData();
         fdlCacheSize.left = new FormAttachment(0, 0);
         fdlCacheSize.right= new FormAttachment(middle, -margin);
-        fdlCacheSize.top  = new FormAttachment(wCommit, margin);
+        fdlCacheSize.top  = new FormAttachment(wPreloadCache, margin);
         wlCacheSize.setLayoutData(fdlCacheSize);
         wCacheSize=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wCacheSize);
         wCacheSize.addModifyListener(lsMod);
         FormData fdCacheSize=new FormData();
         fdCacheSize.left = new FormAttachment(middle, 0);
-        fdCacheSize.top  = new FormAttachment(wCommit, margin);
+        fdCacheSize.top  = new FormAttachment(wPreloadCache, margin);
         fdCacheSize.right= new FormAttachment(100, 0);
         wCacheSize.setLayoutData(fdCacheSize);
 
@@ -1049,6 +1091,15 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         wAltStartDate.setEnabled(wUseAltStartDate.getSelection());
         int alternative = DimensionLookupMeta.getStartDateAlternative(wAltStartDate.getText());
         wAltStartDateField.setEnabled( alternative==DimensionLookupMeta.START_DATE_ALTERNATIVE_COLUMN_VALUE ); 
+        
+        // Caching...
+        //
+        wlPreloadCache.setEnabled(wUseCache.getSelection() && !wUpdate.getSelection());
+        wPreloadCache.setEnabled(wUseCache.getSelection() && !wUpdate.getSelection());
+
+        wlCacheSize.setEnabled(wUseCache.getSelection() && !wPreloadCache.getSelection());
+        wCacheSize.setEnabled(wUseCache.getSelection() && !wPreloadCache.getSelection());
+        
 	}
 	
 	protected void setComboBoxes()
@@ -1200,7 +1251,10 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		}
 				
 		wCommit.setText(""+input.getCommitSize()); //$NON-NLS-1$
-        if (input.getCacheSize()>=-1) wCacheSize.setText(""+input.getCacheSize()); //$NON-NLS-1$
+		
+		wUseCache.setSelection(input.getCacheSize()>=0);
+		wPreloadCache.setSelection(input.isPreloadingCache());
+        if (input.getCacheSize()>=0) wCacheSize.setText(""+input.getCacheSize()); //$NON-NLS-1$
 
 		wMinyear.setText(""+input.getMinYear()); //$NON-NLS-1$
 		wMaxyear.setText(""+input.getMaxYear()); //$NON-NLS-1$
@@ -1317,7 +1371,16 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		in.setDateTo( wTodate.getText() );
 
 		in.setCommitSize( Const.toInt(wCommit.getText(), 0) );
-        in.setCacheSize( Const.toInt(wCacheSize.getText(), -1) );
+		
+        
+        if (wUseCache.getSelection()) {
+        	in.setCacheSize( Const.toInt(wCacheSize.getText(), -1) );
+        } else {
+        	in.setCacheSize(-1);
+        }
+        in.setPreloadingCache(wPreloadCache.getSelection());
+        if (wPreloadCache.getSelection()) in.setCacheSize(0);
+        
 		in.setMinYear( Const.toInt(wMinyear.getText(), Const.MIN_YEAR) );
 		in.setMaxYear( Const.toInt(wMaxyear.getText(), Const.MAX_YEAR) );
 		
