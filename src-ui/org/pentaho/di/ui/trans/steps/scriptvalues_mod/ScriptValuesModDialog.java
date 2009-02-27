@@ -986,6 +986,10 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
                         if (valueMeta.isBoolean()) valueData = Boolean.TRUE;
                         if (valueMeta.isBinary()) valueData = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, };
                         
+                        if (valueMeta.isStorageBinaryString()) {
+                        	valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+                        }
+                        
                         row[i]=valueData;
                         
                         if (wCompatible.getSelection()) {
