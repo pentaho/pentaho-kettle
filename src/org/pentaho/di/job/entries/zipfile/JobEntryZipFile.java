@@ -275,11 +275,11 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
          	{
          		try  {
          			parentfolder.close();
+         			parentfolder=null;
          		}
          		catch ( Exception ex ) {};
          	}
         }	
-		
 		return result;
 	}
 	
@@ -310,7 +310,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			OriginFile = KettleVFS.getFileObject(realSourceDirectoryOrFile);
 			localSourceFilename=KettleVFS.getFilename(OriginFile);
 			orginexist=OriginFile.exists();
-		}catch(Exception e){}finally {if (OriginFile != null )	{try {OriginFile.close();}catch ( IOException ex ) {};}}
+		}catch(Exception e){}finally {if (OriginFile != null )	{try {OriginFile.close();}
+		catch ( IOException ex ) {};}}
 		
 		String localrealZipfilename=realZipfilename;
 		if (realZipfilename!=null  && orginexist)
@@ -595,7 +596,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 									// Here we can move, delete files
 									if (afterzip == 1)
 									{						
-									
 										// Delete File
 										boolean deleted = fileObjectd.delete();
 										if ( ! deleted )
@@ -656,7 +656,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			{
 				if ( fileObject != null )
 				{
-					try  {fileObject.close();}
+					try  {fileObject.close();fileObject=null;}
 					catch ( IOException ex ) {};
 				}
 
@@ -752,6 +752,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 				 {
 					 if(moveToDirectory!=null)
 					 {
+						 realMovetodirectory=KettleVFS.getFilename(moveToDirectory);
 						 try
 						 { 
 							 moveToDirectory.close(); 
@@ -781,7 +782,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			try{
 				for (int iteration=0;iteration<rows.size() && !parentJob.isStopped();iteration++) 
 				{
-	
 					// get arguments from previous job entry
 					RowMetaAndData resultRow = rows.get(iteration);
 					// get target directory
@@ -852,8 +852,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		
 		retval=realfilename.substring(0, lastindexOfDot);
 		
-		
-		SimpleDateFormat daf     = new SimpleDateFormat();
+		final SimpleDateFormat daf     = new SimpleDateFormat();
 		Date now = new Date();
 		
 		if(specify_format && !Const.isEmpty(datetime_folder))

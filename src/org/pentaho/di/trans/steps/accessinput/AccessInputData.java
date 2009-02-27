@@ -67,12 +67,12 @@ public class AccessInputData extends BaseStepData implements StepDataInterface
 		nr_repeats=0;
 		previousRow=null;
 		filenr = 0;
-		
 		fr=null;
 		is=null;
 		d=null;
 		t=null;
 		rw=null;
+		rownr = 1L;
 		totalpreviousfields=0;
 		indexOfFilenameField=-1;
 		readrow=null;

@@ -293,9 +293,6 @@ public class AccessInput extends BaseStep implements StepInterface
 				// Check if file exists!
 			}
 			
-			// Check if file is empty
-			//long fileSize= data.file.getContent().getSize();
-			
 			if(meta.resetRowNumber()) data.rownr=0;
             
 			if (log.isDetailed()) logDetailed(Messages.getString("AccessInput.Log.OpeningFile", data.file.toString()));
@@ -321,8 +318,6 @@ public class AccessInput extends BaseStep implements StepInterface
         		data.t=data.d.getTable(realTableName);
 
 			if (log.isDetailed()) logDetailed(Messages.getString("AccessInput.Log.FileOpened", data.file.toString()));
-
-
 		}
 		catch(Exception e)
 		{
@@ -370,7 +365,6 @@ public class AccessInput extends BaseStep implements StepInterface
 		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
 		            
 		            // Create convert meta-data objects that will contain Date & Number formatters
-		
 		            // For String to <type> conversions, we allocate a conversion meta data row as well...
 					//
 					data.convertRowMeta = data.outputRowMeta.clone();
@@ -380,14 +374,11 @@ public class AccessInput extends BaseStep implements StepInterface
 				}
 				catch(Exception e)
 				{
-					logError("Error initializing step: "+e.toString());
+					logError(Messages.getString("AccessInput.ErrorInit",e.toString()));
 					logError(Const.getStackTracker(e));
 					return false;
 				}
-			} 
-			data.rownr = 1L;
-			data.totalpreviousfields=0;
-			
+			} 			
 			return true;
 		}
 		return false;
