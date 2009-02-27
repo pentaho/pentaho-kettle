@@ -121,6 +121,22 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
         return "SELECT TOP 1 * FROM "+tableName;
     }
     
+    /**
+     * @param tableNames The names of the tables to lock
+     * @return The SQL command to lock database tables for write purposes.
+     *         null is returned in case locking is not supported on the target database.
+     *         null is the default value
+     */
+    public String getSQLLockTables(String tableNames[])
+    {
+        StringBuffer sql=new StringBuffer(128);
+        for (int i=0;i<tableNames.length;i++)
+        {
+            sql.append("SELECT top 0 * FROM ").append(tableNames[i]).append(" WITH (TABLOCKX, HOLDLOCK);").append(Const.CR);
+        }
+        return sql.toString();
+    }
+    
     public String getSQLTableExists(String tablename)
     {
         return  getSQLQueryFields(tablename);
