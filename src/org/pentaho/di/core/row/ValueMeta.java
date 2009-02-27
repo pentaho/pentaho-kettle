@@ -566,10 +566,10 @@ public class ValueMeta implements ValueMetaInterface
 
     private synchronized Date convertStringToDate(String string) throws KettleValueException
     {
+        string = Const.trimToType(string, getTrimType()); // see if  trimming needs to be performed before conversion
+
         if (Const.isEmpty(string)) return null;
         
-        string = trim(string); // see if  trimming needs to be performed before conversion
-
         try
         {
             return getDateFormat().parse(string);
@@ -656,7 +656,7 @@ public class ValueMeta implements ValueMetaInterface
     
     private synchronized Double convertStringToNumber(String string) throws KettleValueException
     {
-        string = trim(string); // see if  trimming needs to be performed before conversion
+        string = Const.trimToType(string, getTrimType()); // see if  trimming needs to be performed before conversion
 
         if (Const.isEmpty(string)) return null;
         
@@ -854,7 +854,7 @@ public class ValueMeta implements ValueMetaInterface
     
     private synchronized Long convertStringToInteger(String string) throws KettleValueException
     {
-        string = trim(string); // see if  trimming needs to be performed before conversion
+        string = Const.trimToType(string, getTrimType()); // see if  trimming needs to be performed before conversion
 
         if (Const.isEmpty(string)) return null;
 
@@ -879,7 +879,7 @@ public class ValueMeta implements ValueMetaInterface
     
     private synchronized BigDecimal convertStringToBigNumber(String string) throws KettleValueException
     {
-        string = trim(string); // see if  trimming needs to be performed before conversion
+        string = Const.trimToType(string, getTrimType()); // see if  trimming needs to be performed before conversion
 
         if (Const.isEmpty(string)) return null;
 
