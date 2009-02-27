@@ -204,6 +204,18 @@ public class ResolverUtil<T>
 				URL eurl = urls.nextElement();
 				String urlPath = eurl.toURI().toString();
 
+				// strip off zip prefix
+				//
+				if (urlPath.startsWith("zip:")) {
+					urlPath = urlPath.substring(4);
+					// add file if necessary
+					//
+					if (!urlPath.startsWith("file:")) {
+						urlPath = "file:" + urlPath;
+					}
+					eurl = new URL(urlPath);
+				} 
+				
 				if (urlPath.indexOf('!') > 0)
 				{
 					urlPath = urlPath.substring(0, urlPath.indexOf('!'));

@@ -232,15 +232,15 @@ public class DimensionLookup extends BaseStep implements StepInterface
 			// tk, version, from, to, natural keys, retrieval fields...
 			//
 			String sql = "SELECT "+databaseMeta.quoteField(meta.getKeyField());
-			sql+=", "+databaseMeta.quoteField(meta.getVersionField());
-			sql+=", "+databaseMeta.quoteField(meta.getDateFrom()); // extra info in cache
-			sql+=", "+databaseMeta.quoteField(meta.getDateTo()); // extra info in cache
+			// sql+=", "+databaseMeta.quoteField(meta.getVersionField());
 			for (int i=0;i<meta.getKeyLookup().length;i++) {
 				sql+=", "+meta.getKeyLookup()[i]; // the natural key field in the table
 			}
 			for (int i=0;i<meta.getFieldLookup().length;i++) {
 				sql+=", "+meta.getFieldLookup()[i]; // the extra fields to retrieve...
 			}
+			sql+=", "+databaseMeta.quoteField(meta.getDateFrom()); // extra info in cache
+			sql+=", "+databaseMeta.quoteField(meta.getDateTo()); // extra info in cache
 			
 			sql+=" FROM "+data.schemaTable;
 			logDetailed("Pre-loading cache by reading from database with: "+Const.CR+sql+Const.CR);
