@@ -154,6 +154,10 @@ public class EnterOptionsDialog extends Dialog
 	private Label wlMaxNrLogLines;
 
 	private Text wMaxNrLogLines;
+	
+	private Label wlMaxNrHistLines;
+
+	private Text wMaxNrHistLines;
 
 	private Label wlMiddlePct;
 
@@ -359,6 +363,7 @@ public class EnterOptionsDialog extends Dialog
 		wMiddlePct.addSelectionListener(lsDef);
 		wDefaultPreview.addSelectionListener(lsDef);
 		wMaxNrLogLines.addSelectionListener(lsDef);
+		wMaxNrHistLines.addSelectionListener(lsDef);
 		wGridSize.addSelectionListener(lsDef);
 
 		// Detect [X] or ALT-F4 or something that kills this window...
@@ -1132,13 +1137,31 @@ public class EnterOptionsDialog extends Dialog
 		fdMaxNrLogLines.top = new FormAttachment(wDefaultPreview, margin);
 		wMaxNrLogLines.setLayoutData(fdMaxNrLogLines);
 
+		// Max Nr of history lines
+		wlMaxNrHistLines = new Label(wGeneralComp, SWT.RIGHT);
+		wlMaxNrHistLines.setText(Messages.getString("EnterOptionsDialog.MaxNrHistLinesSize.Label"));
+		props.setLook(wlMaxNrHistLines);
+		FormData fdlMaxNrHistLines = new FormData();
+		fdlMaxNrHistLines.left = new FormAttachment(0, 0);
+		fdlMaxNrHistLines.right = new FormAttachment(middle, -margin);
+		fdlMaxNrHistLines.top = new FormAttachment(wMaxNrLogLines, margin);
+		wlMaxNrHistLines.setLayoutData(fdlMaxNrHistLines);
+		wMaxNrHistLines = new Text(wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wMaxNrHistLines.setText(Integer.toString(props.getMaxNrLinesInHistory()));
+		props.setLook(wMaxNrHistLines);
+		FormData fdMaxNrHistLines = new FormData();
+		fdMaxNrHistLines.left = new FormAttachment(middle, 0);
+		fdMaxNrHistLines.right = new FormAttachment(100, -margin);
+		fdMaxNrHistLines.top = new FormAttachment(wMaxNrLogLines, margin);
+		wMaxNrHistLines.setLayoutData(fdMaxNrHistLines);
+
 		// Show tips on startup?
 		wlShowTips = new Label(wGeneralComp, SWT.RIGHT);
 		wlShowTips.setText(Messages.getString("EnterOptionsDialog.ShowTipsStartup.Label"));
 		props.setLook(wlShowTips);
 		FormData fdlShowTips = new FormData();
 		fdlShowTips.left = new FormAttachment(0, 0);
-		fdlShowTips.top = new FormAttachment(wMaxNrLogLines, margin);
+		fdlShowTips.top = new FormAttachment(wMaxNrHistLines, margin);
 		fdlShowTips.right = new FormAttachment(middle, -margin);
 		wlShowTips.setLayoutData(fdlShowTips);
 		wShowTips = new Button(wGeneralComp, SWT.CHECK);
@@ -1146,7 +1169,7 @@ public class EnterOptionsDialog extends Dialog
 		wShowTips.setSelection(props.showTips());
 		FormData fdShowTips = new FormData();
 		fdShowTips.left = new FormAttachment(middle, 0);
-		fdShowTips.top = new FormAttachment(wMaxNrLogLines, margin);
+		fdShowTips.top = new FormAttachment(wMaxNrHistLines, margin);
 		fdShowTips.right = new FormAttachment(100, 0);
 		wShowTips.setLayoutData(fdShowTips);
 
@@ -1663,6 +1686,7 @@ public class EnterOptionsDialog extends Dialog
 		props.setDefaultPreviewSize(Const.toInt(wDefaultPreview.getText(), props.getDefaultPreviewSize()));
 
 		props.setMaxNrLinesInLog(Const.toInt(wMaxNrLogLines.getText(), Const.MAX_NR_LOG_LINES));
+		props.setMaxNrLinesInHistory(Const.toInt(wMaxNrHistLines.getText(), Const.MAX_NR_HISTORY_LINES));
 		props.setMaxUndo(Const.toInt(wMaxUndo.getText(), props.getMaxUndo()));
 
 		props.setShowTips(wShowTips.getSelection());

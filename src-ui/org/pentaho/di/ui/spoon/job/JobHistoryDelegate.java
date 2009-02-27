@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -397,7 +398,11 @@ public class JobHistoryDelegate extends SpoonDelegate {
                         {
                             RowMetaInterface rowMeta = database.getReturnRowMeta();
                             rowList.add(new RowMetaAndData(rowMeta, rowData));
-                            rowData = database.getRow(resultSet);
+                            if (rowList.size()<Props.getInstance().getMaxNrLinesInHistory() || Props.getInstance().getMaxNrLinesInHistory()<=0) {
+                            	rowData = database.getRow(resultSet);
+                            } else {
+                            	break;
+                            }
                         }
                         database.closeQuery(resultSet);
 

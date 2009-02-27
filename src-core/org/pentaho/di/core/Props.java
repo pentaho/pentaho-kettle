@@ -128,6 +128,7 @@ public class Props implements Cloneable
     public static final String STRING_REPLACE_DATABASES             = "ReplaceDatabases";
 
     private static final String STRING_MAX_NR_LINES_IN_LOG = "MaxNrOfLinesInLog";
+    private static final String STRING_MAX_NR_LINES_IN_HISTORY = "MaxNrOfLinesInHistory";
 
     protected LogWriter log = LogWriter.getInstance();
 	protected Properties properties;
@@ -685,6 +686,17 @@ public class Props implements Cloneable
     public void setMaxNrLinesInLog(int maxNrLinesInLog)
     {
         properties.setProperty(STRING_MAX_NR_LINES_IN_LOG, Integer.toString(maxNrLinesInLog));
+    }
+
+    public int getMaxNrLinesInHistory()
+    {
+        String lines = properties.getProperty(STRING_MAX_NR_LINES_IN_HISTORY);
+        return Const.toInt(lines, Const.MAX_NR_HISTORY_LINES);
+    }
+    
+    public void setMaxNrLinesInHistory(int maxNrLinesInHistory)
+    {
+        properties.setProperty(STRING_MAX_NR_LINES_IN_HISTORY, Integer.toString(maxNrLinesInHistory));
     }
 
 }

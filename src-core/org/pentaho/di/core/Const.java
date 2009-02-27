@@ -436,6 +436,9 @@ public class Const
     /** The default maximum for the nr of lines in the GUI logs */
     public static final int MAX_NR_LOG_LINES = 5000;
 
+    /** The default maximum for the nr of lines in the history views */
+    public static final int MAX_NR_HISTORY_LINES = 50;
+
     /** UI-agnostic flag for warnings */
     public static final int WARNING = 1;
     

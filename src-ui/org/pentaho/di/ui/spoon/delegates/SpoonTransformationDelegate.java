@@ -48,7 +48,6 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
-import org.pentaho.di.ui.spoon.trans.TransHistory;
 import org.pentaho.di.ui.trans.debug.TransDebugDialog;
 import org.pentaho.di.ui.trans.dialog.TransExecutionConfigurationDialog;
 import org.pentaho.xul.swt.tab.TabItem;
@@ -208,24 +207,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			spoon.setUndoMenu(transMeta);
 			spoon.enableMenus();
 		}
-	}
-
-	public TransHistory findTransHistoryOfTransformation(TransMeta transMeta)
-	{
-		if (transMeta == null)
-			return null;
-
-		// Now loop over the entries in the tab-map
-		for (TabMapEntry mapEntry : spoon.delegates.tabs.getTabs())
-		{
-			if (mapEntry.getObject() instanceof TransHistory)
-			{
-				TransHistory transHistory = (TransHistory) mapEntry.getObject();
-				if (transHistory.getMeta() != null && transHistory.getMeta().equals(transMeta))
-					return transHistory;
-			}
-		}
-		return null;
 	}
 
 	public void tabSelected(TabItem item)
