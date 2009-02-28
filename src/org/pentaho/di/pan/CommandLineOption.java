@@ -341,10 +341,12 @@ public class CommandLineOption
 						//
 						if( idx < args.size() ) 
 						{
-							if( value == null )
-							{
+							if( value == null )  {
 								parameterString = args.get(idx);
 								args.remove(idx);
+							}
+							else  {
+								parameterString = value;
 							}
 						}
 						else if( value != null ) {
@@ -371,18 +373,18 @@ public class CommandLineOption
 							
 							try {
 								option.arrayParams.addParameterDefinition(key, "", "runtime");
+								
+								try {
+									option.arrayParams.setParameterValue(key, val);
+								} catch (UnknownParamException e) {
+									// Do nothing, we added the key right before this statement so nothing
+									// can go wrong.
+								}														
 							} catch (DuplicateParamException e) {
 								if ( log != null )  {
-									log.logError( "Command Line Options", "Parameter '" + key + "' is specified multiple times", new Object[] {optionName});
+									log.logError( "Command Line Options", "Parameter '" + key + "' is specified multiple times, first occurrence is used.", new Object[] {optionName});
 								}
-							}
-							
-							try {
-								option.arrayParams.setParameterValue(key, val);
-							} catch (UnknownParamException e) {
-								// Do nothing, we added the key right before this statement so nothing
-								// can go wrong.
-							}						
+							}							
 						}
 						else  {
 							if( log != null ) {
