@@ -17,6 +17,8 @@
 
 package org.pentaho.di.ui.trans.steps.filterrows;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -142,9 +144,10 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 		StepMeta stepinfo = transMeta.findStep(stepname);
 		if (stepinfo!=null)
 		{
-			for (int i=0;i<transMeta.findNrNextSteps(stepinfo);i++)
+			List<StepMeta> nextSteps = transMeta.findNextSteps(stepinfo);
+			for (int i=0;i<nextSteps.size();i++)
 			{
-				StepMeta stepMeta = transMeta.findNextStep(stepinfo, i);
+				StepMeta stepMeta = nextSteps.get(i);
 				wTrueTo.add(stepMeta.getName());
 			}
 		}
@@ -171,9 +174,10 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 		stepinfo = transMeta.findStep(stepname);
 		if (stepinfo!=null)
 		{
-			for (int i=0;i<transMeta.findNrNextSteps(stepinfo);i++)
+			List<StepMeta> nextSteps = transMeta.findNextSteps(stepinfo);
+			for (int i=0;i<nextSteps.size();i++)
 			{
-				StepMeta stepMeta = transMeta.findNextStep(stepinfo, i);
+				StepMeta stepMeta = nextSteps.get(i);
 				wFalseTo.add(stepMeta.getName());
 			}
 		}

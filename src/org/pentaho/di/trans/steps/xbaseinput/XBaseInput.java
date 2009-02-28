@@ -172,17 +172,23 @@ public class XBaseInput extends BaseStep implements StepInterface
             }
             if ( meta.isAcceptingFilenames() ) 
             {
-            	if ( Const.isEmpty(meta.getAcceptingStepName()) ||
-            		 findInputRowSet(meta.getAcceptingStepName()) == null )
-            	{
-            		logError(Messages.getString("XBaseInput.Log.Error.InvalidAcceptingStepName"));
-                    return false;
+            	try {
+	            	if ( Const.isEmpty(meta.getAcceptingStepName()) ||
+	            		 findInputRowSet(meta.getAcceptingStepName()) == null )
+	            	{
+	            		logError(Messages.getString("XBaseInput.Log.Error.InvalidAcceptingStepName"));
+	                    return false;
+	            	}
+	            	
+	            	if ( Const.isEmpty(meta.getAcceptingField()) )
+	            	{
+	            		logError(Messages.getString("XBaseInput.Log.Error.InvalidAcceptingFieldName"));
+	                    return false;            		
+	            	}
             	}
-            	
-            	if ( Const.isEmpty(meta.getAcceptingField()) )
-            	{
-            		logError(Messages.getString("XBaseInput.Log.Error.InvalidAcceptingFieldName"));
-                    return false;            		
+            	catch(Exception e) {
+            		log.logError(toString(), e.getMessage());
+            		return false;
             	}
             }
             return true;

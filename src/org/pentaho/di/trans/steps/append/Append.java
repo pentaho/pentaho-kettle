@@ -125,9 +125,15 @@ public class Append extends BaseStep implements StepInterface
             }
             else
             {
-            	data.headRowSet = findInputRowSet(meta.getHeadStepName());
-            	data.tailRowSet = findInputRowSet(meta.getTailStepName());
-                return true;
+            	try {
+	            	data.headRowSet = findInputRowSet(meta.getHeadStepName());
+	            	data.tailRowSet = findInputRowSet(meta.getTailStepName());
+	                return true;
+            	}
+            	catch(Exception e) {
+            		log.logError(toString(), e.getMessage());
+            		return false;
+            	}
             }            
         }
         return false;

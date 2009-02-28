@@ -14,7 +14,6 @@ package org.pentaho.di.ui.spoon.delegates;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -22,20 +21,19 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepErrorMeta;
-import org.pentaho.di.trans.step.StepPartitioningMeta;
-import org.pentaho.di.ui.trans.step.StepErrorMetaDialog;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.trans.step.StepErrorMetaDialog;
 
 public class SpoonStepsDelegate extends SpoonDelegate
 {
@@ -53,10 +51,7 @@ public class SpoonStepsDelegate extends SpoonDelegate
 			{
 				stepErrorMeta = new StepErrorMeta(transMeta, stepMeta);
 			}
-			List<StepMeta> targetSteps = new ArrayList<StepMeta>();
-			int nrNext = transMeta.findNrNextSteps(stepMeta);
-			for (int i = 0; i < nrNext; i++)
-				targetSteps.add(transMeta.findNextStep(stepMeta, i));
+			List<StepMeta> targetSteps = transMeta.findNextSteps(stepMeta);
 
 			// now edit this stepErrorMeta object:
 			StepErrorMetaDialog dialog = new StepErrorMetaDialog(spoon.getShell(), stepErrorMeta, transMeta,

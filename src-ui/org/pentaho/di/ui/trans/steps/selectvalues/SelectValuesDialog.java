@@ -734,15 +734,15 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		RowMetaInterface nextStepRequiredFields = null;
 
 		StepMeta stepMeta = new StepMeta(stepname, input);
-		StepMeta[] nextSteps = transMeta.getNextSteps(stepMeta);
-		if (nextSteps.length == 0 || nextSteps.length > 1) {
+		List<StepMeta> nextSteps = transMeta.findNextSteps(stepMeta);
+		if (nextSteps.size()== 0 || nextSteps.size()> 1) {
 			MessageDialog
 					.openError(shell,
 							Messages.getString("SelectValuesDialog.DoMapping.NoNextStepTitle"),
 							Messages.getString("SelectValuesDialog.DoMapping.NoNextStep"));
 			return;
 		}
-		StepMeta outputStepMeta = nextSteps[0];
+		StepMeta outputStepMeta = nextSteps.get(0);
 		StepMetaInterface stepMetaInterface = outputStepMeta
 				.getStepMetaInterface();
 		try {

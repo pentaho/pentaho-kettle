@@ -289,15 +289,15 @@ public class Mapping extends BaseStep implements StepInterface
         		// No target step is specified.
         		// See if we can find the next steps in the transformation..
         		// 
+        		List<StepMeta> nextSteps = getTransMeta().findNextSteps(getStepMeta());
         		
-        		StepMeta[] nextSteps = getTransMeta().getNextSteps(getStepMeta());
     			// Let's send the data to all the next steps we find...
     			// The origin is the mapping output step
     			// The target is all the next steps after this mapping step.
     			//
-    			targetSteps=new StepInterface[nextSteps.length];
+    			targetSteps=new StepInterface[nextSteps.size()];
     			for (int s=0;s<targetSteps.length;s++) {
-    				targetSteps[s] = (StepInterface) getTrans().findRunThread(nextSteps[s].getName());
+    				targetSteps[s] = (StepInterface) getTrans().findRunThread(nextSteps.get(s).getName());
     			}
         	}
         	

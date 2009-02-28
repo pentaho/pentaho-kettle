@@ -339,12 +339,13 @@ public class Trans implements VariableSpace, NamedParams
 			if(log.isDetailed()) 
 				log.logDetailed(toString(), Messages.getString("Trans.Log.AllocateingRowsetsForStep",String.valueOf(i),thisStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 
-			int nrTargets = transMeta.findNrNextSteps(thisStep);
+			List<StepMeta> nextSteps = transMeta.findNextSteps(thisStep);
+			int nrTargets = nextSteps.size();
 
 			for (int n=0;n<nrTargets;n++)
 			{
 				// What's the next step?
-				StepMeta nextStep = transMeta.findNextStep(thisStep, n);
+				StepMeta nextStep = nextSteps.get(n);
 				if (nextStep.isMapping()) continue; // handled and allocated by the mapping step itself.
 				
                 // How many times do we start the source step?
@@ -527,10 +528,11 @@ public class Trans implements VariableSpace, NamedParams
             StepPartitioningMeta nextStepPartitioningMeta = null;
             PartitionSchema nextPartitionSchema = null;
 
-            int nrNext = transMeta.findNrNextSteps(stepMeta);
+            List<StepMeta> nextSteps = transMeta.findNextSteps(stepMeta);
+            int nrNext = nextSteps.size();
 	        for (int p=0;p<nrNext;p++)
 	        {
-	            StepMeta nextStep = transMeta.findNextStep(stepMeta, p);
+	            StepMeta nextStep = nextSteps.get(p);
 	            if (nextStep.isPartitioned()) 
 	            {
 	            	isNextPartitioned = true;

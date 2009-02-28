@@ -1122,9 +1122,9 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
             		// Look up the partitioning of the next step.
             		// This is the case for non-clustered partitioning...
             		//
-            		StepMeta[] nextSteps = transMeta.getNextSteps(stepMeta);
-                    if (nextSteps.length>0) {
-                    	nextStepPartitioningMeta = nextSteps[0].getStepPartitioningMeta();
+            		List<StepMeta> nextSteps = transMeta.findNextSteps(stepMeta);
+                    if (nextSteps.size()>0) {
+                    	nextStepPartitioningMeta = nextSteps.get(0).getStepPartitioningMeta();
                     }
                     
                     // TODO: throw exception if we're not partitioning yet. 
@@ -1730,7 +1730,19 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         return rowData;
 	}
     
-    public RowSet findInputRowSet(String sourceStep) {
+    public RowSet findInputRowSet(String sourceStep) throws KettleStepException {
+    	// Check to see that "sourceStep" only runs in a single copy
+    	// Otherwise you'll see problems during execution.
+    	//
+    	StepMeta sourceStepMeta = transMeta.findStep(sourceStep);
+    	if (sourceStepMeta==null) {
+    		throw new KettleStepException(Messages.getString("BaseStep.Exception.SourceStepToReadFromDoesntExist", sourceStep));
+    	}
+    	
+    	if (sourceStepMeta.getCopies()>1) {
+    		throw new KettleStepException(Messages.getString("BaseStep.Exception.SourceStepToReadFromCantRunInMultipleCopies", sourceStep, Integer.toString(sourceStepMeta.getCopies())));
+    	}
+    	
     	return findInputRowSet(sourceStep, 0, getStepname(), getCopy());
     }
 
@@ -1866,8 +1878,10 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         // How many next steps are there? 0, 1 or more??
         // How many steps do we send output to?
         List<StepMeta> previousSteps = transMeta.findPreviousSteps(stepMeta, true);
+        List<StepMeta> succeedingSteps = transMeta.findNextSteps(stepMeta);
+        
         int nrInput = previousSteps.size();
-        int nrOutput = transMeta.findNrNextSteps(stepMeta);
+        int nrOutput = succeedingSteps.size();
 
         inputRowSets = new ArrayList<RowSet>();
         outputRowSets = new ArrayList<RowSet>();
@@ -1967,7 +1981,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         // And now the output part!
         for (int i = 0; i < nrOutput; i++)
         {
-            nextSteps[i] = transMeta.findNextStep(stepMeta, i);
+            nextSteps[i] = succeedingSteps.get(i);
 
             int prevCopies = stepMeta.getCopies();
             int nextCopies = nextSteps[i].getCopies();

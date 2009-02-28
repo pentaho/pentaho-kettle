@@ -1342,6 +1342,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      *
      * @param stepMeta The originating step
      * @return The number of succeeding steps.
+     * @deprecated just get the next steps as an array
      */
     public int findNrNextSteps(StepMeta stepMeta)
     {
@@ -1361,6 +1362,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param stepMeta The originating step
      * @param nr The location
      * @return The step found.
+     * @deprecated just get the next steps as an array
      */
     public StepMeta findNextStep(StepMeta stepMeta, int nr)
     {
@@ -1384,18 +1386,20 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      *
      * @param stepMeta The destination step
      * @return An array containing the preceding steps.
-     * @deprecated please use method findPreviousSteps
      */
     public StepMeta[] getPrevSteps(StepMeta stepMeta)
     {
-        int nr = findNrPrevSteps(stepMeta, true);
-        StepMeta retval[] = new StepMeta[nr];
-
-        for (int i = 0; i < nr; i++)
+       	List<StepMeta> prevSteps = new ArrayList<StepMeta>();
+        for (int i = 0; i < nrTransHops(); i++) // Look at all the hops;
         {
-            retval[i] = findPrevStep(stepMeta, i, true);
+            TransHopMeta hopMeta = getTransHop(i);
+            if (hopMeta.isEnabled() && hopMeta.getToStep().equals(stepMeta))
+            {
+                prevSteps.add(hopMeta.getFromStep());
+            }
         }
-        return retval;
+        
+        return prevSteps.toArray(new StepMeta[prevSteps.size()]);
     }
 
     /**
@@ -1430,19 +1434,44 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      *
      * @param stepMeta The originating step
      * @return an array of succeeding steps.
+     * @deprecated use findNextSteps instead
      */
     public StepMeta[] getNextSteps(StepMeta stepMeta)
     {
-        int nr = findNrNextSteps(stepMeta);
-        StepMeta retval[] = new StepMeta[nr];
-
-        for (int i = 0; i < nr; i++)
+    	List<StepMeta> nextSteps = new ArrayList<StepMeta>();
+        for (int i = 0; i < nrTransHops(); i++) // Look at all the hops;
         {
-            retval[i] = findNextStep(stepMeta, i);
+            TransHopMeta hi = getTransHop(i);
+            if (hi.isEnabled() && hi.getFromStep().equals(stepMeta))
+            {
+                nextSteps.add(hi.getToStep());
+            }
         }
-        return retval;
+        
+        return nextSteps.toArray(new StepMeta[nextSteps.size()]);
     }
 
+    /**
+     * Retrieve a list of succeeding steps for a certain originating step.
+     *
+     * @param stepMeta The originating step
+     * @return an array of succeeding steps.
+     */
+    public List<StepMeta> findNextSteps(StepMeta stepMeta)
+    {
+    	List<StepMeta> nextSteps = new ArrayList<StepMeta>();
+        for (int i = 0; i < nrTransHops(); i++) // Look at all the hops;
+        {
+            TransHopMeta hi = getTransHop(i);
+            if (hi.isEnabled() && hi.getFromStep().equals(stepMeta))
+            {
+                nextSteps.add(hi.getToStep());
+            }
+        }
+        
+        return nextSteps;
+    }
+    
     /**
      * Retrieve an array of succeeding step names for a certain originating step.
      *

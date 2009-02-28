@@ -2047,6 +2047,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 tip.append("This is done as part of the error handling configuration of the source step.").append(Const.CR);
                 tipImage = GUIResource.getInstance().getImageErrorHop();
             }
+            if (areaOwner.getParent() instanceof StepMeta[] && areaOwner.getOwner().equals(TransPainter.STRING_INFO_STEP_COPIES)) {
+                StepMeta from = ((StepMeta[])(areaOwner.getParent()))[0];
+                StepMeta to   = ((StepMeta[])(areaOwner.getParent()))[1];
+                tip.append("The engine currently does not allow the source step '").append(from.getName()).append("' where you read specifically from (in step '").append(to.getName()).append("') to be run in multiple copies.").append(Const.CR);
+                tip.append("If for performance reasons this is still required, we advice you to insert (for example) a Dummy step (1 copy) to aggregate the data.").append(Const.CR);
+                tipImage = GUIResource.getInstance().getImageStepError();
+          }
             if (hi != null) // We clicked on a HOP!
             {
               // Set the tooltip for the hop:
@@ -3017,6 +3024,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         new ErrorDialog(
             shell,
             Messages.getString("TransLog.Dialog.UnexpectedErrorDuringPreview.Title"), Messages.getString("TransLog.Dialog.UnexpectedErrorDuringPreview.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        	checkErrorVisuals();
       }
     } else {
       MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
@@ -3183,6 +3191,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         } catch (KettleException e) {
           log.logError(trans.getName(), "Preparing transformation execution failed", e);
           initialized = false;
+      	  checkErrorVisuals();
         }
         halted = trans.hasHaltedSteps();
         checkStartThreads();// After init, launch the threads.
@@ -3217,6 +3226,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       setControlStates();
     } catch (KettleException e) {
       log.logError(toString(), "Error starting step threads", e);
+  	  checkErrorVisuals();
     }
 
     // See if we have to fire off the performance graph updater etc.
@@ -3266,49 +3276,57 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         }
         debug = false;
         
-        if (trans.getErrors()>0) {
-        	// Get the logging text and filter it out.  Store it in the stepLogMap...
-        	//
-            stepLogMap = new HashMap<StepMeta, String>();
-            lastLog = null;
-            shell.getDisplay().syncExec(new Runnable() {
+        checkErrorVisuals();
+        
+        shell.getDisplay().asyncExec(new Runnable() { public void run() { redraw(); } });
+      }
+    }
+  }
+
+  private void checkErrorVisuals() {
+      if (trans.getErrors()>0) {
+      	// Get the logging text and filter it out.  Store it in the stepLogMap...
+      	//
+          stepLogMap = new HashMap<StepMeta, String>();
+          lastLog = null;
+          shell.getDisplay().syncExec(new Runnable() {
 			
 				public void run() {
 					lastLog = transLogDelegate.getLoggingText();
 				}
 			});
-            
-            if (!Const.isEmpty(lastLog)) {
-            	String lines[] = lastLog.split(Const.CR);
-            	for (int i=0;i<lines.length && i<30;i++) {
-            		if (lines[i].indexOf(Log4jKettleLayout.ERROR_STRING)>=0) {
-            			// This is an error line, log it!
-            			// Determine to which step it belongs!
-            			//
-            			for (StepMeta stepMeta : transMeta.getSteps()) {
-            				if (lines[i].indexOf(stepMeta.getName())>=0) {
-            					
-            					String line = lines[i];
-            					int index = lines[i].indexOf(") : "); // $NON-NLS-1$   TODO: define this as a more generic marker / constant value
-            					if (index>0) line=lines[i].substring(index+3);
-            					
-            					String str = stepLogMap.get(stepMeta);
-            					if (str==null) {
-            						stepLogMap.put(stepMeta, line);
-            					} else {
-            						stepLogMap.put(stepMeta, str+Const.CR+line);
-            					}
-            				}
-            			}
-            		}
-            	}
-            }
-        } else {
-        	stepLogMap = null;
-        }
-        shell.getDisplay().asyncExec(new Runnable() { public void run() { redraw(); } });
-      }
-    }
+          
+          if (!Const.isEmpty(lastLog)) {
+          	String lines[] = lastLog.split(Const.CR);
+          	for (int i=0;i<lines.length && i<30;i++) {
+          		if (lines[i].indexOf(Log4jKettleLayout.ERROR_STRING)>=0) {
+          			// This is an error line, log it!
+          			// Determine to which step it belongs!
+          			//
+          			for (StepMeta stepMeta : transMeta.getSteps()) {
+          				if (lines[i].indexOf(stepMeta.getName())>=0) {
+          					
+          					String line = lines[i];
+          					int index = lines[i].indexOf(") : "); // $NON-NLS-1$   TODO: define this as a more generic marker / constant value
+          					if (index>0) line=lines[i].substring(index+3);
+          					
+          					String str = stepLogMap.get(stepMeta);
+          					if (str==null) {
+          						stepLogMap.put(stepMeta, line);
+          					} else {
+          						stepLogMap.put(stepMeta, str+Const.CR+line);
+          					}
+          				}
+          			}
+          		}
+          	}
+          }
+      } else {
+      	stepLogMap = null;
+      } 
+      // Redraw the canvas to show the error icons etc.
+      //
+      shell.getDisplay().asyncExec(new Runnable() { public void run() { redraw(); } });
   }
 
   public synchronized void showLastPreviewResults() {

@@ -2673,7 +2673,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	public void verifyCopyDistribute(TransMeta transMeta, StepMeta fr) {
-		int nrNextSteps = transMeta.findNrNextSteps(fr);
+		List<StepMeta> nextSteps = transMeta.findNextSteps(fr);
+		int nrNextSteps = nextSteps.size();
 
 		// don't show it for 3 or more hops, by then you should have had the
 		// message

@@ -50,7 +50,8 @@ public class TransPainter
 	public static final String STRING_HOP_TYPE_COPY             = "HopTypeCopy";             // $NON-NLS-1$
 	public static final String STRING_HOP_TYPE_INFO             = "HopTypeInfo";             // $NON-NLS-1$
 	public static final String STRING_HOP_TYPE_ERROR            = "HopTypeError";            // $NON-NLS-1$
-    
+	public static final String STRING_INFO_STEP_COPIES          = "InfoStepMultipleCopies";  // $NON-NLS-1$
+	
 	public static final String[] magnificationDescriptions = 
 		new String[] { "  200% ", "  150% ", "  100% ", "  75% ", "  50% ", "  25% "};
 
@@ -496,7 +497,7 @@ public class TransPainter
 	            }
             }
         }
-                
+                        
         String name = stepMeta.getName();
 
         if (stepMeta.isSelected())
@@ -592,7 +593,7 @@ public class TransPainter
         Color col;
         int linestyle=SWT.LINE_SOLID;
         int activeLinewidth = linewidth; 
-
+        
         if (is_candidate)
         {
             col = blue;
@@ -658,6 +659,27 @@ public class TransPainter
         }
         if (hi.split) activeLinewidth = linewidth+2;
 
+        // Check to see if the source step is an info step for the target step.
+        //
+        String[] infoSteps = ts.getStepMetaInterface().getInfoSteps();
+        if (!Const.isEmpty(infoSteps)) {
+        	// Check this situation, the source step can't run in multiple copies!
+        	//
+        	for (String infoStep : infoSteps) {
+        		if (fs.getName().equalsIgnoreCase(infoStep)) {
+        			// This is the info step over this hop!
+        			//
+        			if (fs.getCopies()>1) {
+        				// This is not a desirable situation, it will always end in error.
+        				// As such, it's better not to give feedback on it.
+        				// We do this by drawing an error icon over the hop...
+        				//
+        				col=red;
+        			}
+        		}
+        	}
+        }
+        
         gc.setForeground(col);
         gc.setLineStyle(linestyle);
         gc.setLineWidth(activeLinewidth);
@@ -836,6 +858,35 @@ public class TransPainter
 	    		}
 		        mx+=16;
 	        }
+	        
+	        // Check to see if the source step is an info step for the target step.
+	        //
+	        String[] infoSteps = ts.getStepMetaInterface().getInfoSteps();
+	        if (!Const.isEmpty(infoSteps)) {
+	        	// Check this situation, the source step can't run in multiple copies!
+	        	//
+	        	for (String infoStep : infoSteps) {
+	        		if (fs.getName().equalsIgnoreCase(infoStep)) {
+	        			// This is the info step over this hop!
+	        			//
+	        			if (fs.getCopies()>1) {
+	        				// This is not a desirable situation, it will always end in error.
+	        				// As such, it's better not to give feedback on it.
+	        				// We do this by drawing an error icon over the hop...
+	        				//
+	        	        	Image errorHopsIcon = GUIResource.getInstance().getImageErrorHop();
+	        	        	gc.drawImage(errorHopsIcon, mx, my);
+	        	        	if (!shadow) {
+	        	    			areaOwners.add(new AreaOwner(mx, my, errorHopsIcon.getBounds().width, errorHopsIcon.getBounds().height, new StepMeta[] { fs, ts, }, STRING_INFO_STEP_COPIES));
+	        	    		}
+	        		        mx+=16;
+	        				
+	        			}
+	        		}
+	        	}
+	        }
+
+
         }
 
     }
