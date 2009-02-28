@@ -2863,6 +2863,9 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             	transLogDelegate.clearLog();
             }
             
+            // Important: even though transMeta is passed to the Trans constructor, it is not the same object as is in memory
+            // To be able to completely test this, we need to run it as we would normally do in pan
+            //
             trans = new Trans(transMeta, spoon.rep, transMeta.getName(), transMeta.getDirectory().getPath(), transMeta.getFilename());
             trans.setReplayDate(executionConfiguration.getReplayDate());
             trans.setRepository(executionConfiguration.getRepository());

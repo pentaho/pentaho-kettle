@@ -230,6 +230,7 @@ public class Trans implements VariableSpace, NamedParams
 				this.transMeta = new TransMeta(filename, false);
 			}
 			
+			transMeta.initializeVariablesFrom(parentVariableSpace);
 			initializeVariablesFrom(parentVariableSpace);
 			copyParametersFrom(transMeta);
 			
