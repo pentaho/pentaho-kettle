@@ -3925,10 +3925,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			//
 			// Now set up the transformation/job tree
 			//
-			selectionTree = new Tree(variableComposite, SWT.SINGLE /*
-																	 * |
-																	 * SWT.BORDER
-																	 */);
+			selectionTree = new Tree(variableComposite, SWT.SINGLE );
 			props.setLook(selectionTree);
 			selectionTree.setLayout(new FillLayout());
 
@@ -4026,10 +4023,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					TreeItem tiDbTitle = new TreeItem(tiTransName, SWT.NONE);
 					tiDbTitle.setText(STRING_CONNECTIONS);
 					tiDbTitle.setImage(guiResource.getImageBol());
+					
+					String[] dbNames = new String[transMeta.nrDatabases()];
+					for (int i=0;i<dbNames.length;i++) dbNames[i]=transMeta.getDatabase(i).getName();
+					Arrays.sort(dbNames);
 
 					// Draw the connections themselves below it.
-					for (int i = 0; i < transMeta.nrDatabases(); i++) {
-						DatabaseMeta databaseMeta = transMeta.getDatabase(i);
+					for (int i = 0; i < dbNames.length ; i++) {
+						DatabaseMeta databaseMeta = transMeta.findDatabase(dbNames[i]);
 						TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
 						tiDb.setText(databaseMeta.getName());
 						if (databaseMeta.isShared())
@@ -4108,8 +4109,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 					// Put the slaves below it.
 					//
-					for (int i = 0; i < transMeta.getSlaveServers().size(); i++) {
-						SlaveServer slaveServer = transMeta.getSlaveServers().get(i);
+					String[] slaveNames = transMeta.getSlaveServerNames();
+					Arrays.sort(slaveNames);
+					for (int i = 0; i < slaveNames.length ; i++) {
+						SlaveServer slaveServer = transMeta.findSlaveServer(slaveNames[i]);
 						TreeItem tiSlave = new TreeItem(tiSlaveTitle, SWT.NONE);
 						tiSlave.setText(slaveServer.getName());
 						tiSlave.setImage(guiResource.getImageSlave());
