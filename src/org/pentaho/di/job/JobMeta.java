@@ -44,8 +44,10 @@ import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -622,10 +624,14 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         	retval.append(parameters[idx]);
         	retval.append(XMLHandler.closeTag("name")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
         	retval.append("            ").append(XMLHandler.openTag("default_value")); //$NON-NLS-1$
-        	retval.append(getParameterDefault(parameters[idx]));
+        	try {
+				retval.append(getParameterDefault(parameters[idx]));
+			} catch (UnknownParamException e) {	}
         	retval.append(XMLHandler.closeTag("default_value")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
         	retval.append("            ").append(XMLHandler.openTag("description")); //$NON-NLS-1$
-        	retval.append(getParameterDescription(parameters[idx]));
+        	try {
+				retval.append(getParameterDescription(parameters[idx]));
+			} catch (UnknownParamException e) {	}
         	retval.append(XMLHandler.closeTag("description")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
         	retval.append("        ").append(XMLHandler.closeTag("parameter")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
         }        
@@ -2904,8 +2910,18 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		String[] keys = listParameters();
 		
 		for ( String key : keys )  {
-			String value = getParameterValue(key);
-			String defValue = getParameterDefault(key);
+			String value;
+			try {
+				value = getParameterValue(key);
+			} catch (UnknownParamException e) {
+				value = "";
+			}
+			String defValue;
+			try {
+				defValue = getParameterDefault(key);
+			} catch (UnknownParamException e) {
+				defValue = "";
+			}
 			
 			if ( Const.isEmpty(value) )  {
 				setVariable(key, defValue);
@@ -2916,19 +2932,19 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		}		 		
 	}
 
-	public void addParameterDefinition(String key, String defValue, String description) {
+	public void addParameterDefinition(String key, String defValue, String description) throws DuplicateParamException {
 		namedParams.addParameterDefinition(key, defValue, description);		
 	}
 
-	public String getParameterDescription(String key) {
+	public String getParameterDescription(String key) throws UnknownParamException {
 		return namedParams.getParameterDescription(key);
 	}
 	
-	public String getParameterDefault(String key) {
+	public String getParameterDefault(String key) throws UnknownParamException {
 		return namedParams.getParameterDefault(key);
 	}		
 
-	public String getParameterValue(String key) {
+	public String getParameterValue(String key) throws UnknownParamException {
 		return namedParams.getParameterValue(key);
 	}
 
@@ -2936,7 +2952,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return namedParams.listParameters();
 	}
 
-	public void setParameterValue(String key, String value) {
+	public void setParameterValue(String key, String value) throws UnknownParamException {
 		namedParams.setParameterValue(key, value);
 	}
 

@@ -12,7 +12,6 @@
 */
 package org.pentaho.di.core.parameters;
 
-
 /**
  * Interface to implement named parameters.
  * 
@@ -28,45 +27,59 @@ public interface NamedParams
 	 * @param key Name of the parameter.
 	 * @param defValue default value.
 	 * @param description Description of the parameter. 
+	 * 
+	 * @throws DuplicateParamException Upon duplicate parameter definitions
 	 */
-	void addParameterDefinition(String key, String defValue, String description);
+	void addParameterDefinition(String key, String defValue, String description)
+			throws DuplicateParamException;
 	    
 	/**
 	 * Set the value of a parameter.
 	 * 
 	 * @param key key to set value of
 	 * @param value value to set it to.
+	 * 
+	 * @throws UnknownParamException Parameter 'key' is unknown.
 	 */
-    void setParameterValue(String key, String value);
+    void setParameterValue(String key, String value)
+    		throws UnknownParamException;
     
 	/**
 	 * Get the value of a parameter.
 	 * 
 	 * @param key Key to get value for.
+	 * 
+	 * @return value of parameter key.
      *
-	 * @return null when not defined.
+	 * @throws UnknownParamException Parameter 'key' is unknown.
 	 */
-	String getParameterValue(String key);
-
+	String getParameterValue(String key)
+			throws UnknownParamException;
+	
 	/**
 	 * Get the description of a parameter.
 	 * 
 	 * @param key Key to get value for.
-     *
-	 * @return null when not defined.
+	 * 
+	 * @return description of parameter key.
+	 * 
+	 * @throws UnknownParamException Parameter 'key' is unknown.
 	 */
-	String getParameterDescription(String key);
+	String getParameterDescription(String key)
+			throws UnknownParamException;
 
 	/**
 	 * Get the default value of a parameter.
 	 * 
 	 * @param key Key to get value for.
+	 * 
+	 * @return default value for parameter key.
      *
-	 * @return null when not defined.
+	 * @throws UnknownParamException Parameter 'key' is unknown.
 	 */
-	String getParameterDefault(String key);
-	
-	
+	String getParameterDefault(String key)
+			throws UnknownParamException;
+		
     /**
      * List the parameters.
      * 
@@ -94,5 +107,5 @@ public interface NamedParams
     /**
      * Clear all parameters
      */
-    public void clearParameters();
+    void clearParameters();
 }

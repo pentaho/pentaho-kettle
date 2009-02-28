@@ -55,8 +55,10 @@ import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
 import org.pentaho.di.core.row.RowMeta;
@@ -6440,24 +6442,29 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		String[] keys = listParameters();
 		
 		for ( String key : keys )  {
-			String value = getParameterValue(key);
+			String value;
+			try {
+				value = getParameterValue(key);
+			} catch (UnknownParamException e) {
+				value = "";
+			}
 			setVariable(key, value);
 		}		 		
 	}
 
-	public void addParameterDefinition(String key, String defaultValue, String description) {
+	public void addParameterDefinition(String key, String defaultValue, String description) throws DuplicateParamException {
 		namedParams.addParameterDefinition(key, defaultValue, description);		
 	}
 
-	public String getParameterDescription(String key) {
+	public String getParameterDescription(String key) throws UnknownParamException {
 		return namedParams.getParameterDescription(key);
 	}
 	
-	public String getParameterDefault(String key) {
+	public String getParameterDefault(String key) throws UnknownParamException {
 		return namedParams.getParameterDefault(key);
 	}
 
-	public String getParameterValue(String key) {
+	public String getParameterValue(String key) throws UnknownParamException {
 		return namedParams.getParameterValue(key);
 	}
 
@@ -6465,7 +6472,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		return namedParams.listParameters();
 	}
 
-	public void setParameterValue(String key, String value) {
+	public void setParameterValue(String key, String value) throws UnknownParamException {
 		namedParams.setParameterValue(key, value);
 	}
 
@@ -6480,5 +6487,4 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	public void copyParametersFrom(NamedParams params) {
 		namedParams.copyParametersFrom(params);		
 	}
-
 }

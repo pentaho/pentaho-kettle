@@ -43,6 +43,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.DuplicateParamException;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobEntryLoader;
@@ -830,8 +832,18 @@ public class JobDialog extends Dialog
 		{
 			TableItem item = wParamFields.table.getItem(idx);
 			
-			String description = jobMeta.getParameterDescription(parameters[idx]);
-			String defValue = jobMeta.getParameterDefault(parameters[idx]);
+			String description;
+			try {
+				description = jobMeta.getParameterDescription(parameters[idx]);
+			} catch (UnknownParamException e) {
+				description = "";
+			}
+			String defValue;
+			try {
+				defValue = jobMeta.getParameterDefault(parameters[idx]);
+			} catch (UnknownParamException e) {
+				defValue = "";
+			}
 						
 			item.setText(1, parameters[idx]);
 			item.setText(2, Const.NVL(defValue, ""));
@@ -892,7 +904,13 @@ public class JobDialog extends Dialog
 		{
 			TableItem item = wParamFields.getNonEmpty(i);
 
-			jobMeta.addParameterDefinition(item.getText(1), item.getText(2), item.getText(3));
+			try {
+				jobMeta.addParameterDefinition(item.getText(1), item.getText(2), item.getText(3));
+			} catch (DuplicateParamException e) {
+				// Ignore the duplicate parameter.
+				if ( log.isDetailed() ) 
+					log.logDetailed(getClass().getName(), "Duplicate parameter '" + item.getText(1) + "' detected.");
+			}
 		}		        
         
         jobMeta.setUseBatchId( wBatch.getSelection());

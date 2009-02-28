@@ -36,6 +36,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -530,9 +531,14 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             	for ( int idx = 0; idx < parameters.length; idx++ )
                 {
             		if ( !Const.isEmpty(parameters[idx]) )  {
-            			// We have a parameter
             			
-            			namedParam.addParameterDefinition(parameters[idx], "", "Job entry runtime");
+            			// We have a parameter            			
+            			try {
+							namedParam.addParameterDefinition(parameters[idx], "", "Job entry runtime");
+						} catch (DuplicateParamException e) {
+							log.logError(toString(), "Duplicate parameter definition for " + parameters[idx]);
+						}
+						
             			if ( Const.isEmpty(Const.trim(parameterFieldNames[idx])) )  {
             				namedParam.setParameterValue(parameters[idx], 
 				                     Const.NVL(environmentSubstitute(parameterValues[idx]), ""));            				

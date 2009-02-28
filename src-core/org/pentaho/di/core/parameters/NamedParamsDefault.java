@@ -21,7 +21,7 @@ import java.util.Set;
  * 
  * @author Sven Boden
  */
-public class NamedParamsDefault implements NamedParams 
+public class NamedParamsDefault implements NamedParams
 {
 	/**
 	 * Map to store named parameters in.
@@ -59,18 +59,24 @@ public class NamedParamsDefault implements NamedParams
 	public NamedParamsDefault() {	
 	}
 	
-	public void addParameterDefinition(String key, String defValue, String description) {
-		OneNamedParam oneParam = new OneNamedParam();
+	public void addParameterDefinition(String key, String defValue, String description) throws DuplicateParamException {
 		
-		oneParam.key = key;
-		oneParam.defaultValue = defValue;
-		oneParam.description = description;
-		oneParam.value = "";
+		if ( params.get(key) == null )  {
+			OneNamedParam oneParam = new OneNamedParam();
 		
-		params.put(key, oneParam);		
+			oneParam.key = key;
+			oneParam.defaultValue = defValue;
+			oneParam.description = description;
+			oneParam.value = "";
+		
+			params.put(key, oneParam);
+		}
+		else  {
+			throw new DuplicateParamException("Duplicate parameter '" + key + "' detected.");
+		}	
 	}
 
-	public String getParameterDescription(String key) {
+	public String getParameterDescription(String key) throws UnknownParamException {
 		String description = null;
 		
 		OneNamedParam theParam = params.get(key);
@@ -81,7 +87,7 @@ public class NamedParamsDefault implements NamedParams
 		return description;
 	}
 
-	public String getParameterValue(String key) {
+	public String getParameterValue(String key) throws UnknownParamException {
 		String value = null;
 		
 		OneNamedParam theParam = params.get(key);
@@ -92,7 +98,7 @@ public class NamedParamsDefault implements NamedParams
 		return value;
 	}
 	
-	public String getParameterDefault(String key) {
+	public String getParameterDefault(String key) throws UnknownParamException {
 		String value = null;
 		
 		OneNamedParam theParam = params.get(key);
@@ -142,11 +148,30 @@ public class NamedParamsDefault implements NamedParams
 			params.clear();
 			String[] keys = aParam.listParameters();
 			for ( int idx = 0; idx < keys.length; idx++)  {
-				String desc  = aParam.getParameterDescription(keys[idx]);
-				String defValue = aParam.getParameterDefault(keys[idx]);
-				String value = aParam.getParameterValue(keys[idx]);
+				String desc;
+				try {
+					desc = aParam.getParameterDescription(keys[idx]);
+				} catch (UnknownParamException e) {
+					desc = "";
+				}
+				String defValue;
+				try {
+					defValue = aParam.getParameterDefault(keys[idx]);
+				} catch (UnknownParamException e) {
+					defValue = "";
+				}
+				String value;
+				try {
+					value = aParam.getParameterValue(keys[idx]);
+				} catch (UnknownParamException e) {
+					value = "";
+				}
 				
-				addParameterDefinition(keys[idx], defValue, desc);
+				try {
+					addParameterDefinition(keys[idx], defValue, desc);
+				} catch (DuplicateParamException e) {
+					// Do nothing, just overwrite.
+				}
 				setParameterValue(keys[idx], value);
 			}
 		}

@@ -34,8 +34,10 @@ import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -1243,19 +1245,19 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		}
 	}
 
-	public void addParameterDefinition(String key, String defValue, String description) {
+	public void addParameterDefinition(String key, String defValue, String description) throws DuplicateParamException {
 		namedParams.addParameterDefinition(key, defValue, description);		
 	}
 
-	public String getParameterDescription(String key) {
+	public String getParameterDescription(String key) throws UnknownParamException {
 		return namedParams.getParameterDescription(key);
 	}
 	
-	public String getParameterDefault(String key) {
+	public String getParameterDefault(String key) throws UnknownParamException {
 		return namedParams.getParameterDefault(key);
 	}	
 
-	public String getParameterValue(String key) {
+	public String getParameterValue(String key) throws UnknownParamException {
 		return namedParams.getParameterValue(key);
 	}
 
@@ -1263,7 +1265,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		return namedParams.listParameters();
 	}
 
-	public void setParameterValue(String key, String value) {
+	public void setParameterValue(String key, String value) throws UnknownParamException {
 		namedParams.setParameterValue(key, value);
 	}
 
@@ -1279,8 +1281,18 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		String[] keys = listParameters();
 		
 		for ( String key : keys )  {
-			String value = getParameterValue(key);
-			String defValue = getParameterDefault(key);
+			String value;
+			try {
+				value = getParameterValue(key);
+			} catch (UnknownParamException e) {
+				value = "";
+			}
+			String defValue;
+			try {
+				defValue = getParameterDefault(key);
+			} catch (UnknownParamException e) {
+				defValue = "";
+			}
 			
 			if ( Const.isEmpty(value) )  {
 				setVariable(key, Const.NVL(defValue, ""));

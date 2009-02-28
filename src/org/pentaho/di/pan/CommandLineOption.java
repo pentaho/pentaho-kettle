@@ -19,7 +19,9 @@ import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
+import org.pentaho.di.core.parameters.UnknownParamException;
 
 /**
  * This class allows you to define command-line options.
@@ -367,8 +369,20 @@ public class CommandLineOption
 							val = parameterString.substring(pos+1);
 							key = key.trim();
 							
-							option.arrayParams.addParameterDefinition(key, "", "runtime");
-							option.arrayParams.setParameterValue(key, val);						
+							try {
+								option.arrayParams.addParameterDefinition(key, "", "runtime");
+							} catch (DuplicateParamException e) {
+								if ( log != null )  {
+									log.logError( "Command Line Options", "Parameter '" + key + "' is specified multiple times", new Object[] {optionName});
+								}
+							}
+							
+							try {
+								option.arrayParams.setParameterValue(key, val);
+							} catch (UnknownParamException e) {
+								// Do nothing, we added the key right before this statement so nothing
+								// can go wrong.
+							}						
 						}
 						else  {
 							if( log != null ) {

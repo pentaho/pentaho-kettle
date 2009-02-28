@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
@@ -437,7 +438,12 @@ public class TransExecutionConfigurationDialog extends Dialog
         {
         	String paramName = paramNames.get(i);
         	String paramValue = configuration.getParams().get(paramName);
-        	String defaultValue = transMeta.getParameterDefault(paramName);
+        	String defaultValue;
+			try {
+				defaultValue = transMeta.getParameterDefault(paramName);
+			} catch (UnknownParamException e) {
+				defaultValue = "";
+			}
         	
             TableItem tableItem = new TableItem(wParams.table, SWT.NONE);
             tableItem.setText(1, paramName);

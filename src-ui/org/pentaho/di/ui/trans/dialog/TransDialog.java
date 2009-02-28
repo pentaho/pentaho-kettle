@@ -55,6 +55,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.DuplicateParamException;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
@@ -1665,8 +1667,18 @@ public class TransDialog extends Dialog
 		{
 			TableItem item = wParamFields.table.getItem(idx);
 			
-			String defValue = transMeta.getParameterDefault(parameters[idx]);
-			String description = transMeta.getParameterDescription(parameters[idx]);
+			String defValue;
+			try {
+				defValue = transMeta.getParameterDefault(parameters[idx]);
+			} catch (UnknownParamException e) {
+				defValue = "";
+			}
+			String description;
+			try {
+				description = transMeta.getParameterDescription(parameters[idx]);
+			} catch (UnknownParamException e) {
+				description = "";
+			}
 						
 			item.setText(1, parameters[idx]);
 			item.setText(2, Const.NVL(defValue, ""));
@@ -1845,7 +1857,13 @@ public class TransDialog extends Dialog
 		{
 			TableItem item = wParamFields.getNonEmpty(i);
 
-			transMeta.addParameterDefinition(item.getText(1), item.getText(2), item.getText(3));
+			try {
+				transMeta.addParameterDefinition(item.getText(1), item.getText(2), item.getText(3));
+			} catch (DuplicateParamException e) {
+				// Ignore the duplicate parameter.
+				if ( log.isDetailed() ) 
+					log.logDetailed(getClass().getName(), "Duplicate parameter '" + item.getText(1) + "' detected.");
+			}
 		}		
 		
 		transMeta.setSizeRowset( Const.toInt( wSizeRowset.getText(), Const.ROWS_IN_ROWSET) );

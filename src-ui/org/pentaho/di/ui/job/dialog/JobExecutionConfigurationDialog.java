@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.ui.core.PropsUI;
@@ -383,7 +384,13 @@ public class JobExecutionConfigurationDialog extends Dialog
         {
         	String paramName = paramNames.get(i);
         	String paramValue = configuration.getParams().get(paramName);
-        	String defaultValue = jobMeta.getParameterDefault(paramName);
+        	
+        	String defaultValue;
+			try {
+				defaultValue = jobMeta.getParameterDefault(paramName);
+			} catch (UnknownParamException e) {
+				defaultValue = "";
+			}
         	
             TableItem tableItem = new TableItem(wParams.table, SWT.NONE);
             tableItem.setText(1, paramName);
