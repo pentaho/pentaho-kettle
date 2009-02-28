@@ -2027,31 +2027,25 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             }
             if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_HOP_TYPE_COPY)) {
                   StepMeta step = (StepMeta) areaOwner.getParent();
-                  tip.append("The origin step ["+step.getName()+"] is copying all output rows to all target steps").append(Const.CR);
-                  tip.append("Please note that this is different from the default behavior where rows are distributed over the target steps in a round robin fashion").append(Const.CR);
+                  tip.append(Messages.getString("TransGraph.Hop.Tooltip.HopTypeCopy", step.getName(), Const.CR));
                   tipImage = GUIResource.getInstance().getImageCopyHop();
             }
             if (areaOwner.getParent() instanceof StepMeta[] && areaOwner.getOwner().equals(TransPainter.STRING_HOP_TYPE_INFO)) {
                   StepMeta from = ((StepMeta[])(areaOwner.getParent()))[0];
                   StepMeta to   = ((StepMeta[])(areaOwner.getParent()))[1];
-                  tip.append("Rows are being sent to step ["+to.getName()+"] so that they can be used as additional information.").append(Const.CR);
-                  tip.append("That target step specifically reads from step ["+from.getName()+"] and it is treated as a special case.").append(Const.CR);
-                  tip.append("That means that for this source step the normal row reading rules don't apply.").append(Const.CR);
-                  tip.append("Normally a step reads information from all source steps in a round robin fashion.").append(Const.CR);
+                  tip.append(Messages.getString("TransGraph.Hop.Tooltip.HopTypeInfo", to.getName(), from.getName(), Const.CR));
                   tipImage = GUIResource.getInstance().getImageInfoHop();
             }
             if (areaOwner.getParent() instanceof StepMeta[] && areaOwner.getOwner().equals(TransPainter.STRING_HOP_TYPE_ERROR)) {
                 StepMeta from = ((StepMeta[])(areaOwner.getParent()))[0];
                 StepMeta to   = ((StepMeta[])(areaOwner.getParent()))[1];
-                tip.append("Each row that was considered to be a cause for an error by step ["+from.getName()+"] is sent to step ["+to.getName()+"].").append(Const.CR);
-                tip.append("This is done as part of the error handling configuration of the source step.").append(Const.CR);
+                tip.append(Messages.getString("TransGraph.Hop.Tooltip.HopTypeError", from.getName(), to.getName(), Const.CR));
                 tipImage = GUIResource.getInstance().getImageErrorHop();
             }
             if (areaOwner.getParent() instanceof StepMeta[] && areaOwner.getOwner().equals(TransPainter.STRING_INFO_STEP_COPIES)) {
                 StepMeta from = ((StepMeta[])(areaOwner.getParent()))[0];
                 StepMeta to   = ((StepMeta[])(areaOwner.getParent()))[1];
-                tip.append("The engine currently does not allow the source step '").append(from.getName()).append("' where you read specifically from (in step '").append(to.getName()).append("') to be run in multiple copies.").append(Const.CR);
-                tip.append("If for performance reasons this is still required, we advice you to insert (for example) a Dummy step (1 copy) to aggregate the data.").append(Const.CR);
+                tip.append(Messages.getString("TransGraph.Hop.Tooltip.InfoStepCopies", from.getName(), to.getName(), Const.CR));
                 tipImage = GUIResource.getInstance().getImageStepError();
           }
             if (hi != null) // We clicked on a HOP!
