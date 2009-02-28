@@ -1787,7 +1787,21 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         return null;
     }
 	
-	public RowSet findOutputRowSet(String targetStep) {
+	public RowSet findOutputRowSet(String targetStep) throws KettleStepException {
+		
+    	// Check to see that "targetStep" only runs in a single copy
+    	// Otherwise you'll see problems during execution.
+    	//
+    	StepMeta targetStepMeta = transMeta.findStep(targetStep);
+    	if (targetStepMeta==null) {
+    		throw new KettleStepException(Messages.getString("BaseStep.Exception.TargetStepToWriteToDoesntExist", targetStep));
+    	}
+    	
+    	if (targetStepMeta.getCopies()>1) {
+    		throw new KettleStepException(Messages.getString("BaseStep.Exception.TargetStepToWriteToCantRunInMultipleCopies", targetStep, Integer.toString(targetStepMeta.getCopies())));
+    	}
+    	
+
 		return findOutputRowSet(getStepname(), getCopy(), targetStep, 0);
 	}
 

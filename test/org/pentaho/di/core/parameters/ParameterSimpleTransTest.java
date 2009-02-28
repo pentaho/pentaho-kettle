@@ -38,7 +38,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.getvariable.GetVariableMeta;
-import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 
 
 /**

@@ -127,44 +127,50 @@ public class SwitchCase extends BaseStep implements StepInterface
         	data.stringValueMeta = data.valueMeta.clone();
         	data.stringValueMeta.setType(ValueMetaInterface.TYPE_STRING);
         	
-        	boolean ok=true;
-        	for (int i=0;i<meta.getCaseTargetSteps().length;i++) {
-        		if (meta.getCaseTargetSteps()[i]==null) {
-        			logError(Messages.getString("SwitchCase.Log.NoTargetStepSpecifiedForValue", meta.getCaseValues()[i])); //$NON-NLS-1$
-        			ok=false;
-        		} else {
-        			RowSet rowSet = findOutputRowSet(meta.getCaseTargetSteps()[i].getName());
-        			if (rowSet!=null) {
-	            		try {
-	            			Object value = data.valueMeta.convertDataFromString(meta.getCaseValues()[i], data.stringValueMeta, null, null, ValueMeta.TRIM_TYPE_NONE);
-	            			
-	            			// If we have a value and a rowset, we can store the combination in the map
-	            			//
-	            			if (data.valueMeta.isNull(value)) {
-	            				data.nullRowSet = rowSet;
-	            			} else {
-	            				data.outputMap.put(value, rowSet);
-	            			}
-	            			
-	            		}
-	            		catch(Exception e) {
-	            			logError(Messages.getString("SwitchCase.Log.UnableToConvertValue", meta.getCaseValues()[i]), e); //$NON-NLS-1$
+        	try {
+	        	boolean ok=true;
+	        	for (int i=0;i<meta.getCaseTargetSteps().length;i++) {
+	        		if (meta.getCaseTargetSteps()[i]==null) {
+	        			logError(Messages.getString("SwitchCase.Log.NoTargetStepSpecifiedForValue", meta.getCaseValues()[i])); //$NON-NLS-1$
+	        			ok=false;
+	        		} else {
+	        			RowSet rowSet = findOutputRowSet(meta.getCaseTargetSteps()[i].getName());
+	        			if (rowSet!=null) {
+		            		try {
+		            			Object value = data.valueMeta.convertDataFromString(meta.getCaseValues()[i], data.stringValueMeta, null, null, ValueMeta.TRIM_TYPE_NONE);
+		            			
+		            			// If we have a value and a rowset, we can store the combination in the map
+		            			//
+		            			if (data.valueMeta.isNull(value)) {
+		            				data.nullRowSet = rowSet;
+		            			} else {
+		            				data.outputMap.put(value, rowSet);
+		            			}
+		            			
+		            		}
+		            		catch(Exception e) {
+		            			logError(Messages.getString("SwitchCase.Log.UnableToConvertValue", meta.getCaseValues()[i]), e); //$NON-NLS-1$
+		            			ok=false;
+		            		}
+	        			} else {
+	            			logError(Messages.getString("SwitchCase.Log.UnableToFindTargetRowSetForStep", meta.getCaseTargetSteps()[i].getName())); //$NON-NLS-1$
 	            			ok=false;
-	            		}
-        			} else {
-            			logError(Messages.getString("SwitchCase.Log.UnableToFindTargetRowSetForStep", meta.getCaseTargetSteps()[i].getName())); //$NON-NLS-1$
-            			ok=false;
-        			}
-        		}
+	        			}
+	        		}
+	        	}
+	        	
+	        	if (meta.getDefaultTargetStep()!=null) {
+	        		data.defaultRowSet = findOutputRowSet(meta.getDefaultTargetStep().getName());
+	        	} else {
+	        		data.defaultRowSet = null;
+	        	}
+	        	
+	            return ok;
         	}
-        	
-        	if (meta.getDefaultTargetStep()!=null) {
-        		data.defaultRowSet = findOutputRowSet(meta.getDefaultTargetStep().getName());
-        	} else {
-        		data.defaultRowSet = null;
+        	catch(Exception e) {
+        		logError(e.getMessage());
+        		return false;
         	}
-        	
-            return ok;
         }
         return false;
     }
