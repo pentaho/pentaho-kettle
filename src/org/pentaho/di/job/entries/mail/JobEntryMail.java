@@ -917,6 +917,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         messageText.append(Messages.getString("JobMail.Log.Comment.LinesInput") + "          : ").append(result.getNrLinesInput()).append(Const.CR);
         messageText.append(Messages.getString("JobMail.Log.Comment.LinesOutput") + "         : ").append(result.getNrLinesOutput()).append(Const.CR);
         messageText.append(Messages.getString("JobMail.Log.Comment.LinesUpdated") + "        : ").append(result.getNrLinesUpdated()).append(Const.CR);
+        messageText.append(Messages.getString("JobMail.Log.Comment.LinesRejected") + "       : ").append(result.getNrLinesRejected()).append(Const.CR);
         messageText.append(Messages.getString("JobMail.Log.Comment.Status") + "  : ").append(result.getExitStatus()).append(Const.CR);
         messageText.append(Messages.getString("JobMail.Log.Comment.Result") +"               : ").append(result.getResult()).append(Const.CR);
         messageText.append(Const.CR);
