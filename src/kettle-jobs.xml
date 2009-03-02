@@ -809,4 +809,17 @@
 		</tooltip>
 		<image-uri>ui/images/SNMP.png</image-uri>
 	</job>
+		<job id="MAIL_VALIDATOR">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@MAIL_VALIDATOR
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.mailvalidator.JobEntryMailValidator
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.MailValidator.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/MAV.png</image-uri>
+	</job>
 </jobs>

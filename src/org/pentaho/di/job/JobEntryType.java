@@ -81,7 +81,8 @@ public enum JobEntryType
 	WAIT_FOR_SQL(Messages.getString("JobEntry.WaitForSQL.TypeDesc")),
 	EVAL_TABLE_CONTENT(Messages.getString("JobEntry.EvalTableContent.TypeDesc")),
     SIMPLE_EVAL(Messages.getString("JobEntry.SimpleEval.TypeDesc")),
-    SNMP_TRAP(Messages.getString("JobEntry.SNMPTrap.TypeDesc"));
+    SNMP_TRAP(Messages.getString("JobEntry.SNMPTrap.TypeDesc")),
+	MAIL_VALIDATOR(Messages.getString("JobEntry.MailValidator.TypeDesc"));
 
 	private String description;
 	

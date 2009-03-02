@@ -152,8 +152,7 @@ public class MailValidator extends BaseStep implements StepInterface
 	    		
 	    		// Check if address is valid
 	    		MailValidationResult result=MailValidation.isAddressValid(emailaddress,data.realemailSender,	
-	    				data.realdefaultSMTPServer,data.timeout,meta.isSMTPCheck(),
-	    				getTrans().getRunThread(getStepname(),getCopy()));
+	    				data.realdefaultSMTPServer,data.timeout,meta.isSMTPCheck());
 	    		// return result
 	    		mailvalid=result.isValide();
 	    		mailerror=result.getErrorMessage();

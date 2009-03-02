@@ -34,7 +34,6 @@ import javax.naming.directory.InitialDirContext;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.trans.step.BaseStep;
 
 public class MailValidation {
 
@@ -143,7 +142,8 @@ public class MailValidation {
 	 * @param deepCheck (if we want to perform a SMTP check
 	 * @return true or false
 	 */
-	public static MailValidationResult isAddressValid(String address, String senderAddress, String defaultSMTPServer, int timeout, boolean deepCheck, BaseStep basestep) {
+	public static MailValidationResult isAddressValid(String address, String senderAddress, 
+			String defaultSMTPServer, int timeout, boolean deepCheck) {
 
 		MailValidationResult result = new MailValidationResult();
 
@@ -198,7 +198,7 @@ public class MailValidation {
 		// a message [store and forwarder for example] and another [like
 		// the actual mail server] to reject it. This is why we REALLY ought
 		// to take the preference into account.
-		for (int mx = 0; mx < mxList.size() && !basestep.isStopped(); mx++) {
+		for (int mx = 0; mx < mxList.size(); mx++) {
 			boolean valid = false;
 			BufferedReader rdr = null;
 			BufferedWriter wtr = null;
