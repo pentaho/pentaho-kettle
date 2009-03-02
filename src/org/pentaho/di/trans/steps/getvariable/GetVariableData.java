@@ -25,6 +25,8 @@ public class GetVariableData extends BaseStepData implements StepDataInterface
 	public boolean readsRows;
 	public RowMetaInterface outputRowMeta;
 	public RowMetaInterface inputRowMeta;
+	public Object[]	extraData;
+	public RowMetaInterface	conversionMeta;
 
 	/**
 	 * 

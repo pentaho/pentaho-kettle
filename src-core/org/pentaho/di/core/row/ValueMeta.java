@@ -3626,4 +3626,18 @@ public class ValueMeta implements ValueMetaInterface
 	public void setBigNumberFormatting(boolean bigNumberFormatting) {
 		this.bigNumberFormatting = bigNumberFormatting;
 	}
+	
+	/**
+	 * @return The available trim type codes (NOT localized, use for persistence)
+	 */
+	public static String[] getTrimTypeCodes() {
+		return trimTypeCode;
+	}
+
+	/**
+	 * @return The available trim type descriptions (localized)
+	 */
+	public static String[] getTrimTypeDescriptions() {
+		return trimTypeDesc;
+	}
 }

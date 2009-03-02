@@ -58,6 +58,8 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 	private String variableName[];
     private int variableType[];
     private String defaultValue[];
+    
+    private boolean usingFormatting;
 	
 	public SetVariableMeta()
 	{
@@ -221,6 +223,10 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
                 variableType[i] = getVariableType(XMLHandler.getTagValue(fnode, "variable_type")); //$NON-NLS-1$
                 defaultValue[i]  = XMLHandler.getTagValue(fnode, "default_value"); //$NON-NLS-1$
 			}
+
+			// Default to "N" for backward compatibility
+			//
+			usingFormatting  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_formatting")); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -241,6 +247,8 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
             variableType[i] = VARIABLE_TYPE_JVM;
             defaultValue[i]="";
 		}
+		
+		usingFormatting = true;
 	}
 
 	public String getXML()
@@ -259,6 +267,8 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
             retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
 		}
 		retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
+
+		retval.append("    ").append(XMLHandler.addTagValue("use_formatting", usingFormatting));
 
 		return retval.toString();
 	}
@@ -279,6 +289,8 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
                 variableType[i] = getVariableType(rep.getStepAttributeString(id_step, i, "variable_type")); //$NON-NLS-1$
                 defaultValue[i] = 		rep.getStepAttributeString(id_step, i, "default_value");
 			}
+			
+			usingFormatting = rep.getStepAttributeBoolean(id_step, 0, "use_formatting", false); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -299,6 +311,8 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
                 rep.saveStepAttribute(id_transformation, id_step, i, "variable_type",   getVariableTypeCode(variableType[i])); //$NON-NLS-1$
                 rep.saveStepAttribute(id_transformation, id_step, i, "default_value",     defaultValue[i]);
 			}
+			
+            rep.saveStepAttribute(id_transformation, id_step, 0, "use_formatting", usingFormatting);
 		}
 		catch(Exception e)
 		{
@@ -342,5 +356,19 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 	public StepDataInterface getStepData()
 	{
 		return new SetVariableData();
+	}
+
+	/**
+	 * @return the usingFormatting
+	 */
+	public boolean isUsingFormatting() {
+		return usingFormatting;
+	}
+
+	/**
+	 * @param usingFormatting the usingFormatting to set
+	 */
+	public void setUsingFormatting(boolean usingFormatting) {
+		this.usingFormatting = usingFormatting;
 	}
 }

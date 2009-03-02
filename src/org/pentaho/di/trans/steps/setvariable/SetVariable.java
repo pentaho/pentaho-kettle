@@ -105,8 +105,12 @@ public class SetVariable extends BaseStep implements StepInterface
 	    	Object valueData = rowData[index];
 	    	
 	    	// Get variable value
-	
-	        value=valueMeta.getCompatibleString(valueData);
+	    	//
+	    	if (meta.isUsingFormatting()) {
+	    		value=valueMeta.getString(valueData);
+	    	} else {
+	    		value=valueMeta.getCompatibleString(valueData);
+	    	}
         
 		}
 		

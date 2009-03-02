@@ -148,19 +148,19 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		fdlFields.top  = new FormAttachment(wLimit, margin);
 		wlFields.setLayoutData(fdlFields);
 		
-		final int FieldsCols=9;
 		final int FieldsRows=input.getFieldName().length;
 		
-		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("System.Column.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[1]=new ColumnInfo(Messages.getString("System.Column.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
-		colinf[2]=new ColumnInfo(Messages.getString("System.Column.Format"),     ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats());
-		colinf[3]=new ColumnInfo(Messages.getString("System.Column.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[4]=new ColumnInfo(Messages.getString("System.Column.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[5]=new ColumnInfo(Messages.getString("System.Column.Currency"),   ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[6]=new ColumnInfo(Messages.getString("System.Column.Decimal"),    ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[7]=new ColumnInfo(Messages.getString("System.Column.Group"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[8]=new ColumnInfo(Messages.getString("System.Column.Value"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ColumnInfo[] colinf=new ColumnInfo[] { 
+		 new ColumnInfo(Messages.getString("System.Column.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		 new ColumnInfo(Messages.getString("System.Column.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+		 new ColumnInfo(Messages.getString("System.Column.Format"),     ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats()),
+		 new ColumnInfo(Messages.getString("System.Column.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		 new ColumnInfo(Messages.getString("System.Column.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		 new ColumnInfo(Messages.getString("System.Column.Currency"),   ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		 new ColumnInfo(Messages.getString("System.Column.Decimal"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		 new ColumnInfo(Messages.getString("System.Column.Group"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		 new ColumnInfo(Messages.getString("System.Column.Value"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		};
 		
 		wFields=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 

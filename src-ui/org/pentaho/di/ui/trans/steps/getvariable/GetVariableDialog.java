@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -122,8 +123,16 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
 		
 		ColumnInfo[] colinf=new ColumnInfo[]
            {
-    		 new ColumnInfo(Messages.getString("GetVariableDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT, false),
-    	   	 new ColumnInfo(Messages.getString("GetVariableDialog.VariableColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT, false),
+    		 new ColumnInfo(Messages.getString("GetVariableDialog.NameColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT, false),
+    	   	 new ColumnInfo(Messages.getString("GetVariableDialog.VariableColumn.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
+    		 new ColumnInfo(Messages.getString("System.Column.Type"),                      ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+    		 new ColumnInfo(Messages.getString("System.Column.Format"),                    ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats()),
+    		 new ColumnInfo(Messages.getString("System.Column.Length"),                    ColumnInfo.COLUMN_TYPE_TEXT,   false),
+    		 new ColumnInfo(Messages.getString("System.Column.Precision"),                 ColumnInfo.COLUMN_TYPE_TEXT,   false),
+    		 new ColumnInfo(Messages.getString("System.Column.Currency"),                  ColumnInfo.COLUMN_TYPE_TEXT,   false),
+    	     new ColumnInfo(Messages.getString("System.Column.Decimal"),                   ColumnInfo.COLUMN_TYPE_TEXT,   false),
+    		 new ColumnInfo(Messages.getString("System.Column.Group"),                     ColumnInfo.COLUMN_TYPE_TEXT,   false),
+    		 new ColumnInfo(Messages.getString("GetVariableDialog.TrimType.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTrimTypeDescriptions()),
            };
         
         colinf[1].setToolTip(Messages.getString("GetVariableDialog.VariableColumn.Tooltip"));
@@ -192,11 +201,18 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
 		for (int i=0;i<input.getFieldName().length;i++)
 		{
 			TableItem item = wFields.table.getItem(i);
-			String name = input.getFieldName()[i];
-			String type = input.getVariableString()[i];
-			
-			if (name!=null) item.setText(1, name);
-			if (type!=null) item.setText(2, type);
+
+			int index=1;
+			item.setText(index++, Const.NVL(input.getFieldName()[i], ""));
+			item.setText(index++, Const.NVL(input.getVariableString()[i], ""));
+			item.setText(index++, ValueMeta.getTypeDesc(input.getFieldType()[i]));
+			item.setText(index++, Const.NVL(input.getFieldFormat()[i], ""));
+			item.setText(index++, input.getFieldLength()[i]<0?"":(""+input.getFieldLength()[i]));
+			item.setText(index++, input.getFieldPrecision()[i]<0?"":(""+input.getFieldPrecision()[i]));
+			item.setText(index++, Const.NVL(input.getCurrency()[i], ""));
+			item.setText(index++, Const.NVL(input.getDecimal()[i], ""));
+			item.setText(index++, Const.NVL(input.getGroup()[i], ""));
+			item.setText(index++, ValueMeta.getTrimTypeDesc(input.getTrimType()[i]));
 		}
 
 		wFields.setRowNums();
@@ -225,8 +241,18 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
 		for (int i=0;i<count;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
-			input.getFieldName()[i]   = item.getText(1);
-			input.getVariableString()[i]   = item.getText(2);
+			
+			int index=1;
+			input.getFieldName()[i]   = item.getText(index++);
+			input.getVariableString()[i]   = item.getText(index++);
+			input.getFieldType()[i]   = ValueMeta.getType(item.getText(index++));
+            input.getFieldFormat()[i] = item.getText(index++);
+            input.getFieldLength()[i]    = Const.toInt( item.getText(index++), -1);
+            input.getFieldPrecision()[i] = Const.toInt( item.getText(index++), -1);
+            input.getCurrency()[i]    = item.getText(index++);
+            input.getDecimal()[i]     = item.getText(index++);
+            input.getGroup()[i]       = item.getText(index++);
+            input.getTrimType()[i]    = ValueMeta.getTrimTypeByDesc(item.getText(index++));
 		}
 		dispose();
 	}

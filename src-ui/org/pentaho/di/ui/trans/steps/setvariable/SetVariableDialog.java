@@ -68,7 +68,11 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 	private Label        wlStepname;
 	private Text         wStepname;
     private FormData     fdlStepname, fdStepname;
-    
+
+	private Label        wlFormat;
+	private Button       wFormat;
+    private FormData     fdlFormat, fdFormat;
+
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
@@ -132,13 +136,29 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
 
+		wlFormat=new Label(shell, SWT.RIGHT);
+		wlFormat.setText(Messages.getString("SetVariableDialog.Format.Label")); //$NON-NLS-1$
+		wlFormat.setToolTipText(Messages.getString("SetVariableDialog.Format.Tooltip")); //$NON-NLS-1$
+ 		props.setLook(wlFormat);
+		fdlFormat=new FormData();
+		fdlFormat.left = new FormAttachment(0, 0);
+		fdlFormat.right= new FormAttachment(middle, -margin);
+		fdlFormat.top  = new FormAttachment(wStepname, margin);
+		wlFormat.setLayoutData(fdlFormat);
+		wFormat=new Button(shell, SWT.CHECK);
+		wFormat.setToolTipText(Messages.getString("SetVariableDialog.Format.Tooltip")); //$NON-NLS-1$
+ 		props.setLook(wFormat);
+		fdFormat=new FormData();
+		fdFormat.left = new FormAttachment(middle, 0);
+		fdFormat.top  = new FormAttachment(wStepname, margin);
+		wFormat.setLayoutData(fdFormat);
 
 		wlFields=new Label(shell, SWT.NONE);
 		wlFields.setText(Messages.getString("SetVariableDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wStepname, margin);
+		fdlFields.top  = new FormAttachment(wFormat, margin);
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsRows=input.getFieldName().length;
@@ -273,6 +293,8 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
             if (tvv!=null) item.setText(4, tvv);
 		}
 
+        wFormat.setSelection(input.isUsingFormatting());
+        
 		wFields.setRowNums();
 		wFields.optWidth(true);
 		
@@ -303,6 +325,8 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
             input.getVariableType()[i] = SetVariableMeta.getVariableType(item.getText(3));
             input.getDefaultValue()[i] = item.getText(4);
 		}
+		
+		input.setUsingFormatting(wFormat.getSelection());
 		
         // Show a warning (optional)
         //

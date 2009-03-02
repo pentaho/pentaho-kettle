@@ -16,6 +16,7 @@ import java.util.List;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -78,23 +79,33 @@ public class GetVariable extends BaseStep implements StepInterface
 			}
             data.outputRowMeta = data.inputRowMeta.clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+            
+            // Create a copy of the output row metadata to do the data conversion...
+            //
+            data.conversionMeta = data.outputRowMeta.clone();
+            for (ValueMetaInterface valueMeta : data.conversionMeta.getValueMetaList()) {
+            	valueMeta.setType(ValueMetaInterface.TYPE_STRING);
+            }
+
+            // Add the variables to the row...
+            //
+            // Keep the Object[] for speed.  Although this step will always be used in "small" amounts, there's always going to be those cases where performance is required.
+            // 
+            data.extraData = new Object[meta.getFieldName().length];
+            for (int i=0;i<meta.getFieldName().length;i++)
+            {
+            	String newValue = environmentSubstitute(meta.getVariableString()[i]);
+            	if (log.isDetailed()) logDetailed("field ["+meta.getFieldName()[i]+"] has value ["+newValue+"]");
+            	
+            	// Convert the data to the desired data type...
+            	//
+            	ValueMetaInterface targetMeta = data.outputRowMeta.getValueMeta(data.inputRowMeta.size()+i);
+            	ValueMetaInterface sourceMeta = data.conversionMeta.getValueMeta(data.inputRowMeta.size()+i); // String type + conversion masks, symbols, trim type, etc
+            	data.extraData[i] = targetMeta.convertData(sourceMeta, newValue);
+            }
 		}
 		
-        // Add the variables to the row...
-		//
-		// TODO: Maybe keep the Object[] for speed, although this step will always
-		//       be used in "small" amounts.
-        // 
-		Object extraData[] = new Object[meta.getFieldName().length];
-        for (int i=0;i<meta.getFieldName().length;i++)
-        {
-            String newValue = environmentSubstitute(meta.getVariableString()[i]);
-            if ( log.isDetailed() )
-                logDetailed("field ["+meta.getFieldName()[i]+"] has value ["+newValue+"]");
-            extraData[i] = newValue;
-        }
-        
-        rowData = RowDataUtil.addRowData(rowData, data.inputRowMeta.size(), extraData);
+        rowData = RowDataUtil.addRowData(rowData, data.inputRowMeta.size(), data.extraData);
         
         putRow(data.outputRowMeta, rowData);		     
 					
