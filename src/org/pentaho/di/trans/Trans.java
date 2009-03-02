@@ -104,6 +104,11 @@ public class Trans implements VariableSpace, NamedParams
      * The transformation that is executing this transformation in case of mappings.
      */
     private Trans parentTrans;
+    
+    /**
+     * The name of the mapping step that executes this transformation in case this is a mapping 
+     */
+    private String mappingStepName;
 
 	/**
 	 * Indicates that we want to monitor the running transformation in a GUI
@@ -1736,9 +1741,18 @@ public class Trans implements VariableSpace, NamedParams
         //
         StringBuffer string = new StringBuffer();
         
+        // If we're running as a mapping, we get a reference to the calling (parent) transformation as well...
+        //
         if (getParentTrans()!=null) {
     		string.append('[').append(getParentTrans().toString()).append(']').append('.');
         } 
+        
+		// When we run a mapping we also set a mapping step name in there...
+		//
+		if (!Const.isEmpty(mappingStepName)) {
+			string.append('[').append(mappingStepName).append(']').append('.');
+		}
+		
         string.append(transMeta.getName());
         
         return string.toString();
@@ -2911,5 +2925,19 @@ public class Trans implements VariableSpace, NamedParams
 	 */
 	public void setParentTrans(Trans parentTrans) {
 		this.parentTrans = parentTrans;
+	}
+
+	/**
+	 * @return the name of the mapping step that created this transformation
+	 */
+	public String getMappingStepName() {
+		return mappingStepName;
+	}
+
+	/**
+	 * @param mappingStepName the name of the mapping step that created this transformation
+	 */
+	public void setMappingStepName(String mappingStepName) {
+		this.mappingStepName = mappingStepName;
 	}
 }

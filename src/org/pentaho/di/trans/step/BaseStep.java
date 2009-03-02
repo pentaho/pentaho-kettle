@@ -2310,9 +2310,8 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
     	// If the step runs in a mapping (and as such has a "parent transformation", we are going to print the name of the transformation during logging
     	//
     	//
-    	if (getTrans().getParentTrans()!=null) {
-    		Trans trans = getTrans().getParentTrans();
-    		string.append('[').append(trans.toString()).append(']').append('.');
+    	if (!Const.isEmpty(getTrans().getMappingStepName())) {
+    		string.append('[').append(trans.toString()).append(']').append('.'); // Name of the mapping transformation
     	}
     	
     	if (!Const.isEmpty(partitionID)) {
