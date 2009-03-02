@@ -109,6 +109,7 @@ import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
@@ -1760,6 +1761,10 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           XulMenuChoice item = menu.getMenuItemById("trans-graph-entry-newhop"); //$NON-NLS-1$
           menu.addMenuListener("trans-graph-entry-newhop", this, TransGraph.class, "newHop"); //$NON-NLS-1$ //$NON-NLS-2$
           item.setEnabled(sels == 2);
+          
+          item = menu.getMenuItemById("trans-graph-entry-open-mapping"); // $NON-NLS-1$
+          menu.addMenuListener("trans-graph-entry-open-mapping", this, TransGraph.class, "openMapping"); //$NON-NLS-1$ //$NON-NLS-2$
+          item.setEnabled(stepMeta.isMapping());
 
           item = menu.getMenuItemById("trans-graph-entry-align-snap"); //$NON-NLS-1$
           item.setText(Messages.getString("TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME");
@@ -3350,6 +3355,20 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         dialog.open();
       }
     });
+  }
+  
+  /**
+   * Open the transformation mentioned in the mapping...
+   */
+  public void openMapping() {
+	  try {
+		  MappingMeta meta = (MappingMeta) this.currentStep.getStepMetaInterface();
+		  TransMeta mappingMeta = MappingMeta.loadMappingMeta(meta.getFileName(), meta.getTransName(), meta.getDirectoryPath(), spoon.rep, transMeta);
+		  mappingMeta.clearChanged();
+		  spoon.addTransGraph(mappingMeta);
+	  } catch(Exception e) {
+		  new ErrorDialog(shell, Messages.getString("TransGraph.Exception.UnableToLoadMapping.Title"), Messages.getString("TransGraph.Exception.UnableToLoadMapping.Message"), e);
+	  }
   }
 
   /**

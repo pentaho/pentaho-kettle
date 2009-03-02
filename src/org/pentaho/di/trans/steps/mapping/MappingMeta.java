@@ -490,9 +490,10 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
            }
             catch(Exception e)
             {
-                LogWriter.getInstance().logError("Loading Mapping from XML", "Unable to load transformation ["+realFilename+"] : "+e.toString());
-                LogWriter.getInstance().logError("Loading Mapping from XML", Const.getStackTracker(e));
-                throw new KettleException(e);
+                // LogWriter.getInstance().logError("Loading Mapping from XML", "Unable to load transformation ["+realFilename+"] : "+e.toString());
+                // LogWriter.getInstance().logError("Loading Mapping from XML", Const.getStackTracker(e));
+            	
+                throw new KettleException(Messages.getString("MappingMeta.Exception.UnableToLoadMapping"), e);
             }
         }
         else

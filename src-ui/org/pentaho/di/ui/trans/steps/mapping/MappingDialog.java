@@ -515,6 +515,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		};
 
 		wStepname.addSelectionListener(lsDef);
+		wFilename.addSelectionListener(lsDef);
+		wTransName.addSelectionListener(lsDef);
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(new ShellAdapter()
@@ -1423,32 +1425,32 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	{
 		if (Const.isEmpty(wStepname.getText())) return;
 
+		stepname = wStepname.getText(); // return value
+
 		try
 		{
-			stepname = wStepname.getText(); // return value
-
 			loadTransformation();
-
-			mappingMeta.setFileName(wFilename.getText());
-			mappingMeta.setTransName(wTransName.getText());
-			mappingMeta.setDirectoryPath(wTransDir.getText());
-
-			// Load the information on the tabs, optionally do some
-			// verifications...
-			// 
-			collectInformation();
-
-			mappingMeta.setMappingParameters(mappingParameters);
-			mappingMeta.setInputMappings(inputMappings);
-			mappingMeta.setOutputMappings(outputMappings);
-
-			mappingMeta.setChanged(true);
-
-			dispose();
 		} catch (KettleException e)
 		{
 			new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Title"), Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Message"), e);
 		}
+		
+		mappingMeta.setFileName(wFilename.getText());
+		mappingMeta.setTransName(wTransName.getText());
+		mappingMeta.setDirectoryPath(wTransDir.getText());
+
+		// Load the information on the tabs, optionally do some
+		// verifications...
+		// 
+		collectInformation();
+
+		mappingMeta.setMappingParameters(mappingParameters);
+		mappingMeta.setInputMappings(inputMappings);
+		mappingMeta.setOutputMappings(outputMappings);
+
+		mappingMeta.setChanged(true);
+
+		dispose();
 	}
 
 	private void collectInformation()

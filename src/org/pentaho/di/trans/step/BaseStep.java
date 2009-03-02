@@ -2087,37 +2087,37 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 
     public void logMinimal(String s)
     {
-        log.println(LogWriter.LOG_LEVEL_MINIMAL, stepname + "." + stepcopy, s); //$NON-NLS-1$
+        log.println(LogWriter.LOG_LEVEL_MINIMAL, toString(), s); //$NON-NLS-1$
     }
 
     public void logBasic(String s)
     {
-        log.println(LogWriter.LOG_LEVEL_BASIC, stepname + "." + stepcopy, s); //$NON-NLS-1$
+        log.println(LogWriter.LOG_LEVEL_BASIC, toString(), s); //$NON-NLS-1$
     }
 
     public void logError(String s)
     {
-        log.println(LogWriter.LOG_LEVEL_ERROR, stepname + "." + stepcopy, s); //$NON-NLS-1$
+        log.println(LogWriter.LOG_LEVEL_ERROR, toString(), s); //$NON-NLS-1$
     }
 
     public void logError(String s, Throwable e)
     {
-    	log.logError(stepname + "." + stepcopy, s, e); //$NON-NLS-1$
+    	log.logError(toString(), s, e); //$NON-NLS-1$
     }
 
     public void logDetailed(String s)
     {
-        log.println(LogWriter.LOG_LEVEL_DETAILED, stepname + "." + stepcopy, s); //$NON-NLS-1$
+        log.println(LogWriter.LOG_LEVEL_DETAILED, toString(), s); //$NON-NLS-1$
     }
 
     public void logDebug(String s)
     {
-        log.println(LogWriter.LOG_LEVEL_DEBUG, stepname + "." + stepcopy, s); //$NON-NLS-1$
+        log.println(LogWriter.LOG_LEVEL_DEBUG, toString(), s); //$NON-NLS-1$
     }
 
     public void logRowlevel(String s)
     {
-        log.println(LogWriter.LOG_LEVEL_ROWLEVEL, stepname + "." + stepcopy, s); //$NON-NLS-1$
+        log.println(LogWriter.LOG_LEVEL_ROWLEVEL, toString(), s); //$NON-NLS-1$
     }
 
     public int getNextClassNr()
@@ -2305,15 +2305,27 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 
     public String toString()
     {
+    	StringBuffer string = new StringBuffer();
+    	
+    	// If the step runs in a mapping (and as such has a "parent transformation", we are going to print the name of the transformation during logging
+    	//
+    	//
+    	if (getTrans().getParentTrans()!=null) {
+    		Trans trans = getTrans().getParentTrans();
+    		string.append('[').append(trans.toString()).append(']').append('.');
+    	}
+    	
     	if (!Const.isEmpty(partitionID)) {
-    		return stepname + "." + partitionID;  //$NON-NLS-1$
+    		string.append(stepname).append('.').append(partitionID);  //$NON-NLS-1$
     	}
     	else if (clusterSize>1) {
-    		return stepname + "." + slaveNr+"."+getCopy(); //$NON-NLS-1$ //$NON-NLS-2$
+    		string.append(stepname).append('.').append(slaveNr).append('.').append(Integer.toString(getCopy())); //$NON-NLS-1$ //$NON-NLS-2$
     	}
     	else {
-    		return stepname + "." + getCopy(); //$NON-NLS-1$
+    		string.append(stepname).append('.').append(Integer.toString(getCopy())); //$NON-NLS-1$
     	}
+    	
+    	return string.toString();
     }
 
     public Thread getThread()

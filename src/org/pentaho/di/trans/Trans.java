@@ -1731,7 +1731,17 @@ public class Trans implements VariableSpace, NamedParams
 	public String toString()
 	{
         if (transMeta==null || transMeta.getName()==null) return getClass().getSimpleName();
-		return transMeta.getName();
+        
+        // See if there is a parent transformation.  If so, print the name of the parent here as well...
+        //
+        StringBuffer string = new StringBuffer();
+        
+        if (getParentTrans()!=null) {
+    		string.append('[').append(getParentTrans().toString()).append(']').append('.');
+        } 
+        string.append(transMeta.getName());
+        
+        return string.toString();
 	}
 
     public MappingInput[] findMappingInput()
