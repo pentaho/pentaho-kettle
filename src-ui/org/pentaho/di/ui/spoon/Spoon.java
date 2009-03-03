@@ -87,6 +87,7 @@ import org.pentaho.di.core.AddUndoPositionInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.JndiUtil;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ObjectUsageCount;
@@ -483,23 +484,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		shell.setText(APPL_TITLE);
 		staticSpoon = this;
 
-		initJNDI();
+		JndiUtil.initJNDI();
 
 		SpoonFactory.setSpoonInstance(this);
-	}
-
-	private void initJNDI() {
-		String path = ""; //$NON-NLS-1$
-		try {
-			File file = new File("simple-jndi"); //$NON-NLS-1$
-			path = file.getCanonicalPath();
-		} catch (Exception e) {
-			log.logError(toString(), "Error initializing JNDI", e);
-		}
-
-		System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory"); //$NON-NLS-1$ //$NON-NLS-2$
-		System.setProperty("org.osjava.sj.root", path); //$NON-NLS-1$ //$NON-NLS-2$
-		System.setProperty("org.osjava.sj.delimiter", "/"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public void init(TransMeta ti) {

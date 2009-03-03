@@ -21,7 +21,9 @@ import org.pentaho.di.core.exception.KettleException;
  */
 public class NamedParamsException extends KettleException
 {
-    /**
+	private static final long	serialVersionUID	= -6684406077955662033L;
+
+	/**
 	 * Constructs a new throwable with null as its detail message.
 	 */
 	public NamedParamsException()

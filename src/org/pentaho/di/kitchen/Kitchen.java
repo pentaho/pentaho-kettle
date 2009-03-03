@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.JndiUtil;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
@@ -50,6 +51,7 @@ public class Kitchen
 	public static void main(String[] a) throws KettleException
 	{
 		EnvUtil.environmentInit();
+		JndiUtil.initJNDI();
 		
 	    List<String> args = new ArrayList<String>();
 	    for (int i=0;i<a.length;i++)

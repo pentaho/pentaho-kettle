@@ -3026,7 +3026,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         new ErrorDialog(
             shell,
             Messages.getString("TransLog.Dialog.UnexpectedErrorDuringPreview.Title"), Messages.getString("TransLog.Dialog.UnexpectedErrorDuringPreview.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
-        	checkErrorVisuals();
       }
     } else {
       MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
@@ -3034,6 +3033,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       m.setMessage(Messages.getString("TransLog.Dialog.DoNoPreviewWhileRunning.Message")); //$NON-NLS-1$
       m.open();
     }
+    checkErrorVisuals();
   }
 
   public synchronized void showPreview(final TransDebugMeta transDebugMeta, final StepDebugMeta stepDebugMeta,
@@ -3052,6 +3052,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         pausing = true;
 
         setControlStates();
+        checkErrorVisuals();
 
         PreviewRowsDialog previewRowsDialog = new PreviewRowsDialog(shell, transMeta, SWT.APPLICATION_MODAL,
             stepDebugMeta.getStepMeta().getName(), rowBufferMeta, rowBuffer);

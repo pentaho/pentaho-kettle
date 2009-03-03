@@ -11,7 +11,6 @@
 
 package org.pentaho.di.core.parameters;
 
-import org.pentaho.di.core.exception.KettleException;
 
 /**
  * This is a PDI Exception for the named parameters.
@@ -21,7 +20,9 @@ import org.pentaho.di.core.exception.KettleException;
  */
 public class UnknownParamException extends NamedParamsException
 {
-    /**
+	private static final long	serialVersionUID	= -4447368601975248474L;
+
+	/**
 	 * Constructs a new throwable with null as its detail message.
 	 */
 	public UnknownParamException()

@@ -108,7 +108,7 @@
         </field>
       <field>
         <name>Customer No</name>
-        <element/>
+        <element>Customer_No</element>
         <type>Integer</type>
         <format/>
         <currency/>
@@ -120,7 +120,7 @@
         </field>
       <field>
         <name>First Name</name>
-        <element/>
+        <element>First_Name</element>
         <type>String</type>
         <format/>
         <currency/>
@@ -132,7 +132,7 @@
         </field>
       <field>
         <name>Last Name</name>
-        <element/>
+        <element>Last_Name</element>
         <type>String</type>
         <format/>
         <currency/>
@@ -144,7 +144,7 @@
         </field>
       <field>
         <name>Address</name>
-        <element/>
+        <element>Address</element>
         <type>String</type>
         <format/>
         <currency/>
@@ -156,7 +156,7 @@
         </field>
       <field>
         <name>Birth Date</name>
-        <element/>
+        <element>Birth_Date</element>
         <type>Date</type>
         <format>yyyy.MM.dd</format>
         <currency/>

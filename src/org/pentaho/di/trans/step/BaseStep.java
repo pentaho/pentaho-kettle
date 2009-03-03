@@ -616,7 +616,11 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 
     public long getProcessed()
     {
-        return getLinesRead();
+    	if (getLinesRead()>getLinesWritten()) {
+    		return getLinesRead();
+    	} else {
+    		return getLinesWritten();
+    	}
     }
     
 
@@ -2832,9 +2836,9 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	            long lj = stepInterface.getLinesRejected();
 	            long e = stepInterface.getErrors();
 	            if (li > 0 || lo > 0 || lr > 0 || lw > 0 || lu > 0 || lj > 0 || e > 0)
-	                log.logBasic(stepInterface.toString(), Messages.getString("BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lw), String.valueOf(e+lj)));
+	                log.logBasic(stepInterface.toString(), Messages.getString("BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lu), String.valueOf(e+lj)));
 	            else
-	                log.logDetailed(stepInterface.toString(), Messages.getString("BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lw), String.valueOf(e+lj)));
+	                log.logDetailed(stepInterface.toString(), Messages.getString("BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lu), String.valueOf(e+lj)));
 			} catch(Throwable t) {
 				// it's likely an OOME, thus no overhead by Me$$ages.getString(), see above
 				log.logError(stepInterface.toString(), "UnexpectedError: " + t.toString()); //$NON-NLS-1$
