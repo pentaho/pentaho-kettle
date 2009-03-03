@@ -499,8 +499,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 							out.setLevel(Deflater.BEST_SPEED);
 						}
 						// Specify Zipped files (After that we will move,delete them...)
-						String[] ZippedFiles = new String[filelist.length];
-						int FileNum=0;			
+						String[] zippedFiles = new String[filelist.length];
+						int fileNum=0;			
 	
 						// Get the files in the list...
 						for (int i=0;i<filelist.length && !parentJob.isStopped();i++)
@@ -558,8 +558,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 								in.close(); 
 	
 								// Get Zipped File
-								ZippedFiles[FileNum] = filelist[i];
-								FileNum=FileNum+1;
+								zippedFiles[fileNum] = filelist[i];
+								fileNum=fileNum+1;
 							}
 						}						
 						// Close the ZipOutPutStream
@@ -567,7 +567,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						buff.close();
 						dest.close();
 						
-						if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobZipFiles.Log.TotalZippedFiles", ""+ZippedFiles.length));
+						if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobZipFiles.Log.TotalZippedFiles", ""+zippedFiles.length));
 						// Delete Temp File
 						if (tempFile !=null)
 						{
@@ -578,12 +578,12 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						if (afterzip == 1 || afterzip == 2)
 						{	
 							// iterate through the array of Zipped files
-							for (int i = 0; i < ZippedFiles.length; i++) 
+							for (int i = 0; i < zippedFiles.length; i++) 
 							{
-								if ( ZippedFiles[i] != null)
+								if ( zippedFiles[i] != null)
 								{								
 									// Delete File
-									FileObject fileObjectd = KettleVFS.getFileObject(localSourceFilename+Const.FILE_SEPARATOR+ZippedFiles[i]);
+									FileObject fileObjectd = KettleVFS.getFileObject(localSourceFilename+Const.FILE_SEPARATOR+zippedFiles[i]);
 									if(f.isFile()) fileObjectd = KettleVFS.getFileObject(localSourceFilename);		
 									
 									// Here gc() is explicitly called if e.g. createfile is used in the same
@@ -602,14 +602,14 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 										{	
 											resultat = false;
 											log.logError(toString(), Messages.getString("JobZipFiles.Cant_Delete_File1.Label")+
-													localSourceFilename+Const.FILE_SEPARATOR+ZippedFiles[i]+
+													localSourceFilename+Const.FILE_SEPARATOR+zippedFiles[i]+
 													Messages.getString("JobZipFiles.Cant_Delete_File2.Label"));
 	
 										}
 										// File deleted
 										if(log.isDebug())
 											log.logDebug(toString(), Messages.getString("JobZipFiles.File_Deleted1.Label") + 
-													localSourceFilename+Const.FILE_SEPARATOR+ZippedFiles[i] + 
+													localSourceFilename+Const.FILE_SEPARATOR+zippedFiles[i] + 
 											Messages.getString("JobZipFiles.File_Deleted2.Label"));
 									}
 									else if(afterzip == 2)
@@ -617,18 +617,18 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 										// Move File	
 										try
 										{
-											FileObject fileObjectm = KettleVFS.getFileObject(realMovetodirectory + Const.FILE_SEPARATOR+ZippedFiles[i]);
+											FileObject fileObjectm = KettleVFS.getFileObject(realMovetodirectory + Const.FILE_SEPARATOR+zippedFiles[i]);
 											fileObjectd.moveTo(fileObjectm);
 										}
 										catch (IOException e) 
 										{
-											log.logError(toString(), Messages.getString("JobZipFiles.Cant_Move_File1.Label") +ZippedFiles[i]+
+											log.logError(toString(), Messages.getString("JobZipFiles.Cant_Move_File1.Label") +zippedFiles[i]+
 												Messages.getString("JobZipFiles.Cant_Move_File2.Label") + e.getMessage());
 											resultat = false;
 										}
 										// File moved
 										if(log.isDebug())
-											log.logDebug(toString(), Messages.getString("JobZipFiles.File_Moved1.Label") + ZippedFiles[i] + 
+											log.logDebug(toString(), Messages.getString("JobZipFiles.File_Moved1.Label") + zippedFiles[i] + 
 													Messages.getString("JobZipFiles.File_Moved2.Label"));
 									 }
 								}

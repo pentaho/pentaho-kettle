@@ -18,9 +18,11 @@
 
 package org.pentaho.di.trans.steps.excelinput;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -37,6 +39,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -1216,4 +1220,51 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		return Const.isEmpty(sheetName) || ( sheetName.length==1 && Const.isEmpty(sheetName[0]) );
 	}
 	
+	/**
+	 * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively.
+	 * So what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
+	 * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like that.
+
+	 * TODO: create options to configure this behavior 
+	 */
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+		try {
+			// The object that we're modifying here is a copy of the original!
+			// So let's change the filename from relative to absolute by grabbing the file object...
+			// In case the name of the file comes from previous steps, forget about this!
+			//
+			List<String> newFilenames = new ArrayList<String>();
+			
+			if (!acceptingFilenames) {
+				FileInputList fileList = getFileList(space);
+				if (fileList.getFiles().size()>0) {
+					for (FileObject fileObject : fileList.getFiles()) {
+						// From : ${Internal.Transformation.Filename.Directory}/../foo/bar.xls
+						// To   : /home/matt/test/files/foo/bar.xls
+						//
+						// If the file doesn't exist, forget about this effort too!
+						//
+						if (fileObject.exists()) {
+							// Convert to an absolute path and add it to the list.
+							// 
+							newFilenames.add(fileObject.getName().getPath());
+						} else {
+							return null; // it's all or nothing over here! 
+						}
+					}
+					
+					// Still here: set a new list of absolute filenames!
+					//
+					fileName = newFilenames.toArray(new String[newFilenames.size()]);
+					fileMask = new String[newFilenames.size()]; // all null since converted to absolute path.
+					fileRequired = new String[newFilenames.size()]; // all null, turn to "Y" :
+					for (int i=0;i<newFilenames.size();i++) fileRequired[i]="Y";
+				}
+			}
+			return null;
+		} catch (Exception e) {
+			throw new KettleException(e); //$NON-NLS-1$
+		}
+	}
+
 }

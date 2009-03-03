@@ -286,7 +286,7 @@ public class GetXMLDataTest extends TestCase {
 
 		gxdm.setEncoding("UTF-8");
 		gxdm.setIsAFile(false);
-		gxdm.setIsInFields(true);
+		gxdm.setInFields(true);
 		gxdm.setLoopXPath("Level1/Level2/Props");
 		gxdm.setXMLField("field1");
 		gxdm.setInputFields(fields);

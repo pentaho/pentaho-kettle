@@ -258,7 +258,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 			{
 			    first=false;
 			    
-				if(meta.getIsInFields())
+				if(meta.isInFields())
 				{
 					data.inputRowMeta = getInputRowMeta();
 		            data.outputRowMeta = data.inputRowMeta.clone();
@@ -300,7 +300,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 			}
 		   
 		   
-		   if(meta.getIsInFields())
+		   if(meta.isInFields())
 		   {
 			   // get XML field value
 			   String Fieldvalue= getInputRowMeta().getString(data.readrow,data.indexOfXmlField);
@@ -534,7 +534,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		if(first && !meta.getIsInFields())
+		if(first && !meta.isInFields())
 		{
 			data.files = meta.getFiles(this);
 			
@@ -602,7 +602,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 	private Object[] getXMLRow()  throws KettleException
 	{
 
-		if(!meta.getIsInFields())
+		if(!meta.isInFields())
 		{
 			while ((data.nodenr>=data.nodesize ||  data.file==null))
 			{
@@ -622,7 +622,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 		 Object[] r=null;
 		 data.errorInRowButContinue=false;
 		 try{	
-			 if(meta.getIsInFields())
+			 if(meta.isInFields())
 			 {
 			    
 				while ((data.nodenr>=data.nodesize || data.readrow==null))
@@ -638,7 +638,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 				}
 			 }
 			 	
-			if(meta.getIsInFields())
+			if(meta.isInFields())
 				r= processPutRow(data.readrow,(AbstractNode)data.an.get(data.nodenr));
 			else
 				r= processPutRow(null,(AbstractNode)data.an.get(data.nodenr));
@@ -726,7 +726,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 					break;
 				}
 				
-				if(meta.getIsInFields())
+				if(meta.isInFields())
 				{
 					// Add result field to input stream
 	                outputRowData = RowDataUtil.addValueData(outputRowData,data.totalpreviousfields+i, nodevalue);
@@ -803,7 +803,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 					// ensure a leading slash
 					if(!data.prunePath.startsWith("/")) data.prunePath="/"+data.prunePath;
 					// check if other conditions apply that do not allow pruning
-					if(meta.getIsInFields()) data.prunePath=null; // not possible by design, could be changed later on
+					if(meta.isInFields()) data.prunePath=null; // not possible by design, could be changed later on
 				}
 			}
 				

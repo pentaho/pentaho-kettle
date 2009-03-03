@@ -887,13 +887,13 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     	return stepMetaInterface.getResourceDependencies(transMeta, this);
     }
 
-	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
 
 		// The step calls out to the StepMetaInterface...
 		// These can in turn add anything to the map in terms of resources, etc.
 		// Even reference files, etc.  For now it's just XML probably...
 		//
-		return stepMetaInterface.exportResources(space, definitions, resourceNamingInterface);
+		return stepMetaInterface.exportResources(space, definitions, resourceNamingInterface, repository);
 	}
 
 	/**

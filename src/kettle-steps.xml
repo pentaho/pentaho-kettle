@@ -1371,7 +1371,8 @@
 		</tooltip>
 		<image-uri>ui/images/HTP.png</image-uri>
 	</step>
-		<step id="SetValueConstant">
+	
+	<step id="SetValueConstant">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SetValueConstant")
 		</description>
@@ -1382,7 +1383,8 @@
 		</tooltip>
 		<image-uri>ui/images/SVC.png</image-uri>
 	</step>
-		<step id="SetValueField">
+	
+	<step id="SetValueField">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SetValueField")
 		</description>
@@ -1393,7 +1395,8 @@
 		</tooltip>
 		<image-uri>ui/images/SVF.png</image-uri>
 	</step>
-		<step id="ExecProcess">
+	
+	<step id="ExecProcess">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ExecProcess")
 		</description>
@@ -1404,4 +1407,17 @@
 		</tooltip>
 		<image-uri>ui/images/RPL.png</image-uri>
 	</step>
+	
+	<step id="WebServiceLookup">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.WebServiceLookup")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.webservices.WebServiceMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.WebServiceLookup")
+		</tooltip>
+		<image-uri>ui/images/WSL.png</image-uri>
+	</step>
+	
 </steps>

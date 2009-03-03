@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -28,7 +27,6 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -779,35 +777,40 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
   }
   
 	@Override
-	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
 		try {
-  		// Try to load the transformation from repository or file.
-  		// Modify this recursively too...
-  		// 
-  		if (!Const.isEmpty(fileName)) {
-  		  FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName));
-  		  // NOTE: there is no need to clone this step because the caller is responsible for this.
-  			//
-  			// First load the mapping metadata...
-  			//
-  			TransMeta mappingTransMeta = loadMappingMeta(fileName, null, null, null, space);
-  			
-  			String newFilename = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), "ktr");
-  			mappingTransMeta.setFilename(newFilename);
-  
-  			fileName = newFilename; // replace it BEFORE XML generation occurs! 
-  
-  			String xml = mappingTransMeta.getXML();
-  			definitions.put(fileObject.getName().getPath(), new ResourceDefinition(newFilename, xml));
-  			
-  			return newFilename;
-  		}
-  		else {
-  			return null;
-  		}
-    } catch (Exception e) {
-      throw new KettleException(Messages.getString("MappingMeta.Exception.UnableToLoadTransformation",fileName)); //$NON-NLS-1$
-    }
+			// Try to load the transformation from repository or file.
+			// Modify this recursively too...
+			// 
+			// NOTE: there is no need to clone this step because the caller is
+			// responsible for this.
+			//
+			// First load the mapping metadata...
+			//
+			TransMeta mappingTransMeta = loadMappingMeta(fileName, transName, directoryPath, repository, space);
+
+			// Also go down into the mapping transformation and export the files
+			// there. (mapping recursively down)
+			//
+			String proposedNewFilename = mappingTransMeta.exportResources(mappingTransMeta, definitions, resourceNamingInterface, repository);
+
+			// To get a relative path to it, we inject
+			// ${Internal.Job.Filename.Directory}
+			//
+			String newFilename = "${" + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
+
+			// Set the correct filename inside the XML.
+			//
+			mappingTransMeta.setFilename(newFilename);
+
+			// change it in the job entry
+			//
+			fileName = newFilename;
+
+			return proposedNewFilename;
+		} catch (Exception e) {
+			throw new KettleException(Messages.getString("MappingMeta.Exception.UnableToLoadTransformation", fileName)); //$NON-NLS-1$
+		}
 	}
 
 	/**

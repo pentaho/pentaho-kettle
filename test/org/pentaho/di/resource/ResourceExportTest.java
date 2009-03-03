@@ -22,7 +22,8 @@ public class ResourceExportTest extends TestCase {
         
         // Load the job metadata
         //
-        JobMeta jobMeta = new JobMeta(LogWriter.getInstance(), "test/org/pentaho/di/resource/top-job.kjb", null, null);
+        String filename = "test/org/pentaho/di/resource/top-job.kjb";
+        JobMeta jobMeta = new JobMeta(LogWriter.getInstance(), filename, null, null);
         
         // This job meta object references a few transformations, another job and a mapping
         // All these need to be exported
@@ -36,7 +37,7 @@ public class ResourceExportTest extends TestCase {
         
         // We get back the top-level filename: it's the starting point...
         //
-		String topLevelFilename = jobMeta.exportResources(jobMeta, definitions, resourceNaming);
+		String topLevelFilename = jobMeta.exportResources(jobMeta, definitions, resourceNaming, null);
 		
 		System.out.println("Top level filename = "+topLevelFilename);
 		

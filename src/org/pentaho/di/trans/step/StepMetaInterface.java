@@ -251,11 +251,13 @@ public interface StepMetaInterface
     public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepMeta);
     
     /**
-     * 
+     * @param space the variable space to use 
      * @param definitions
      * @param resourceNamingInterface
+     * @param repository The repository to optionally load other resources from (to be converted to XML) 
+     * 
      * @return the filename of the exported resource
      */
-    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException ;
+    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException ;
 
 }

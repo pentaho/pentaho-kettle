@@ -10,7 +10,6 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -24,15 +23,12 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepCategory;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
-@Step(name="WebServiceLookup",image="ui/images/WSL.png",tooltip="BaseStep.TypeTooltipDesc.WebServiceLookup",description="BaseStep.TypeLongDesc.WebServiceLookup",
-		category=StepCategory.CATEGORY_LOOKUP)
 public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
 {
     public static final String XSD_NS_URI = "http://www.w3.org/2001/XMLSchema";

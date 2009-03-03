@@ -1061,46 +1061,35 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
      * Then we're going to give it a new filename, modify that filename in this entries.
      * The parent caller will have made a copy of it, so it should be OK to do so.
      */
-    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface) throws KettleException {
+    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository) throws KettleException {
 		// Try to load the transformation from repository or file.
 		// Modify this recursively too...
 		//
-		if (!Const.isEmpty(filename)) {
-			// AGAIN: there is no need to clone this job entry because the caller is responsible for this.
-			//
-			// First load the transformation metadata...
-			//
-			//Had to add this to support variable replacement here as well. asilva 9/07/07
-			copyVariablesFrom(space);
-			TransMeta transMeta = getTransMeta(null);
-			
+		// AGAIN: there is no need to clone this job entry because the caller is responsible for this.
+		//
+		// First load the transformation metadata...
+		//
+		copyVariablesFrom(space);
+		TransMeta transMeta = getTransMeta(repository);
 
-			// Also go down into the transformation and export the files there. (mapping recursively down)
-			//
-			String newFilename = transMeta.exportResources(transMeta, definitions, namingInterface);
+		// Also go down into the transformation and export the files there. (mapping recursively down)
+		//
+		String proposedNewFilename = transMeta.exportResources(transMeta, definitions, namingInterface, repository);
+		
+		// To get a relative path to it, we inject ${Internal.Job.Filename.Directory} 
+		//
+		String newFilename = "${"+Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY+"}/"+proposedNewFilename;
 
-			// Set the correct filename inside the XML.
-			// Replace if BEFORE XML generation occurs.
-			transMeta.setFilename(newFilename);
+		// Set the correct filename inside the XML.
+		//
+		transMeta.setFilename(newFilename);
 
-			// change it in the job entry
-			//
-			filename = newFilename;
+		// change it in the job entry
+		//
+		filename = newFilename;
 
-			//
-			// Don't save it, that has already been done a few lines above, in transMeta.exportResources()
-			//
-			// String xml = transMeta.getXML();
-			// definitions.put(newFilename, new ResourceDefinition(newFilename, xml));
-			//
-
-
-			return newFilename;
-		}
-		else {
-			return null;
-		}
-    }
+		return proposedNewFilename;
+	}
 
   protected String getLogfile()
   {

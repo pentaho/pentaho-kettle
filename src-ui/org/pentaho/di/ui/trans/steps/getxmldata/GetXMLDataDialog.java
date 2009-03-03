@@ -1678,7 +1678,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wuseToken.setSelection(in.isuseToken());
 		wIgnoreEmptyFile.setSelection(in.isIgnoreEmptyFile());
 		wdoNotFailIfNoFile.setSelection(in.isdoNotFailIfNoFile());
-		wXMLStreamField.setSelection(in.getIsInFields());
+		wXMLStreamField.setSelection(in.isInFields());
 		wXMLIsAFile.setSelection(in.getIsAFile());
 		
 		if (in.getXMLField()!=null) wXMLField.setText(in.getXMLField());
@@ -1781,7 +1781,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		in.setIgnoreEmptyFile(wIgnoreEmptyFile.getSelection() );
 		in.setdoNotFailIfNoFile(wdoNotFailIfNoFile.getSelection());
 		
-		in.setIsInFields(wXMLStreamField.getSelection());
+		in.setInFields(wXMLStreamField.getSelection());
 		in.setIsAFile(wXMLIsAFile.getSelection());
 		in.setXMLField(wXMLField.getText());
 		

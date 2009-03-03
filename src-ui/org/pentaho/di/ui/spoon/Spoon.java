@@ -146,9 +146,8 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.resource.ResourceDefinition;
-import org.pentaho.di.resource.ResourceNamingInterface;
-import org.pentaho.di.resource.SimpleResourceNaming;
+import org.pentaho.di.resource.ResourceExportInterface;
+import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
@@ -180,6 +179,7 @@ import org.pentaho.di.ui.core.dialog.EnterOptionsDialog;
 import org.pentaho.di.ui.core.dialog.EnterSearchDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterStringsDialog;
+import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.dialog.ShowBrowserDialog;
@@ -3591,26 +3591,43 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 * Export this job or transformation including all depending resources to a single zip file.
 	 */
 	public void exportAllXMLFile() {
-		Map<String, ResourceDefinition> definitions = new HashMap<String, ResourceDefinition>();
-		ResourceNamingInterface namingInterface = new SimpleResourceNaming();
+
+		ResourceExportInterface resourceExportInterface = getActiveTransformation();
+		if (resourceExportInterface==null) resourceExportInterface=getActiveJob();
+		if (resourceExportInterface==null) return; // nothing to do here, prevent an NPE
 		
-		try {
-			TransMeta transMeta = getActiveTransformation();
-			if (transMeta != null) {
-				String exportResources = transMeta.exportResources(transMeta, definitions, namingInterface);
-				System.out.println("Resources : "+exportResources);
-			}
-	
-			JobMeta jobMeta = getActiveJob();
-			if (jobMeta != null) {
-				String exportResources = jobMeta.exportResources(jobMeta, definitions, namingInterface);
-				System.out.println("Resources : "+exportResources);
+		// Ask the user for a zip file to export to:
+		//
+		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+		dialog.setText(Messages.getString("Spoon.ExportResourceSelectZipFile"));
+		dialog.setFilterExtensions(new String[] {"*.zip;*.ZIP", "*"});
+		dialog.setFilterNames(new String[] { Messages.getString("System.FileType.ZIPFiles"), Messages.getString("System.FileType.AllFiles"), });
+		if (dialog.open()!=null)
+		{
+			String zipFilename = dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName();
+
+			try {
+				String launchFile = ResourceUtil.serializeResourceExportInterface(zipFilename, resourceExportInterface, (VariableSpace)resourceExportInterface, rep);
+				String message = "This resource can be executed in the exported zip file ["+zipFilename+"]"+Const.CR;
+				message+="You can do this by running kitchen with the following command:"+Const.CR+Const.CR;
+				if (Const.isWindows()) {
+					message+="Kitchen.bat /file:\"";
+				} else {
+					message+="sh kitchen.sh -file='";
+				}
+				message+=launchFile;
+				if (Const.isWindows()) {
+					message+="\"";
+				} else {
+					message+="'";
+				}
+				EnterTextDialog enterTextDialog = new EnterTextDialog(shell, "Resource serialized", "This resource was serialized succesfully!", message);
+				enterTextDialog.setReadOnly();
+				enterTextDialog.open();
+			} catch(Exception e) {
+				new ErrorDialog(shell, "Error", "Error exporting current file", e);
 			}
 		}
-		catch(Exception e) {
-			new ErrorDialog(shell, "Error", "Error exporting current file", e);
-		}
-		
 	}
 
 	public boolean saveXMLFile(boolean export) {

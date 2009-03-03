@@ -273,7 +273,6 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
       retval.append("      ").append(XMLHandler.addTagValue("type", getTypeCode()));
     if (pluginID != null)
       retval.append("      ").append(XMLHandler.addTagValue("type", pluginID));
-    retval.append("      ").append(XMLHandler.addTagValue("launch_in_parallel", getDescription()));
 
     return retval.toString();
   }
@@ -484,18 +483,19 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 	}
 
   /**
-   * Get a list of all the resource dependencies that the step is depending on.
-   *
-   * @return a list of all the resource dependencies that the step is depending on
-   */
-    public List<ResourceReference> getResourceDependencies(JobMeta jobMeta)
-  {
-    	return new ArrayList<ResourceReference>(5); // default: return an empty resource dependency list. Lower the initial capacity
-  }
+	 * Get a list of all the resource dependencies that the step is depending
+	 * on.
+	 * 
+	 * @return a list of all the resource dependencies that the step is
+	 *         depending on
+	 */
+	public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
+		return new ArrayList<ResourceReference>(5); // default: return an empty resource dependency list. Lower the initial capacity
+	}
 
-    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface) throws KettleException {
-    return null;
-  }
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository) throws KettleException {
+		return null;
+	}
 
   public String getConfigId()
   {

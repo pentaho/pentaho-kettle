@@ -291,7 +291,7 @@ public class BaseStepMeta implements Cloneable
       return references;
     }
     
-    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
+    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
     	return null;
     }
     

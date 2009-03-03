@@ -6242,45 +6242,76 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     	return resourceReferences;
     }
     
-	public String exportResources(VariableSpace space,  Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
-	  try {
-      FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(getFilename()));
-      String exportFileName = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), "ktr"); //$NON-NLS-1$
-  		ResourceDefinition definition = definitions.get(exportFileName);
-  		if (definition==null) {
-  			// If we do this once, it will be plenty :-)
-  			//
-  			TransMeta transMeta = (TransMeta) this.realClone(false);
-  			// transMeta.copyVariablesFrom(space);
-  			
-  			// Add used resources, modify transMeta accordingly
-  			// Go through the list of steps, etc.
-  			// These critters change the steps in the cloned TransMeta 
-  			// At the end we make a new XML version of it in "exported" format...
-  			
-  			// loop over steps, databases will be exported to XML anyway. 
-  			//
-  			for (StepMeta stepMeta : transMeta.getSteps()) {
-  				stepMeta.exportResources(space, definitions, resourceNamingInterface);
-  			}
-  
-  			// Change the filename, calling this sets internal variables inside of the transformation.
-  			//
-  			transMeta.setFilename(exportFileName);
-  
-  			// At the end, add ourselves to the map...
-  			//
-  			String transMetaContent = transMeta.getXML();
-  			
-  			definition = new ResourceDefinition(exportFileName, transMetaContent);
-  			definitions.put(fileObject.getName().getPath(), definition);
-  		}
-      return exportFileName;
-    } catch (FileSystemException e) {
-      throw new KettleException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename()), e); //$NON-NLS-1$
-    } catch (IOException e) {
-      throw new KettleException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename()), e); //$NON-NLS-1$
-    }
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+		try {
+			// Handle naming for both repository and XML bases resources...
+			//
+			String baseName;
+			String originalPath;
+			String fullname;
+			String extension="ktr";
+			if (Const.isEmpty(getFilename())) {
+				// Assume repository...
+				//
+				originalPath = directory.getPath();
+				baseName = getName();
+				fullname = directory.getPath()+( directory.getPath().endsWith(RepositoryDirectory.DIRECTORY_SEPARATOR) ? "" : RepositoryDirectory.DIRECTORY_SEPARATOR ) +getName()+"."+extension; // $NON-NLS-1$ // $NON-NLS-2$  
+			} else {
+				// Assume file
+				//
+				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(getFilename()));
+				originalPath = fileObject.getParent().getName().getPath();
+				baseName = fileObject.getName().getBaseName();
+				fullname = fileObject.getName().getPath();
+			}
+			
+			String exportFileName = resourceNamingInterface.nameResource(baseName, originalPath, extension);
+			ResourceDefinition definition = definitions.get(exportFileName);
+			if (definition == null) {
+				// If we do this once, it will be plenty :-)
+				//
+				TransMeta transMeta = (TransMeta) this.realClone(false);
+				// transMeta.copyVariablesFrom(space);
+
+				// Add used resources, modify transMeta accordingly
+				// Go through the list of steps, etc.
+				// These critters change the steps in the cloned TransMeta
+				// At the end we make a new XML version of it in "exported"
+				// format...
+
+				// loop over steps, databases will be exported to XML anyway.
+				//
+				for (StepMeta stepMeta : transMeta.getSteps()) {
+					stepMeta.exportResources(space, definitions, resourceNamingInterface, repository);
+				}
+
+				// Change the filename, calling this sets internal variables
+				// inside of the transformation.
+				//
+				transMeta.setFilename(exportFileName);
+
+				// At the end, add ourselves to the map...
+				//
+				String transMetaContent = transMeta.getXML();
+
+				definition = new ResourceDefinition(exportFileName, transMetaContent);
+
+	  			// Also remember the original filename (if any), including variables etc.
+	  			//
+				if (Const.isEmpty(this.getFilename())) { // Repository
+					definition.setOrigin(fullname);
+				} else {
+					definition.setOrigin(this.getFilename());
+				}
+
+				definitions.put(fullname, definition);
+			}
+			return exportFileName;
+		} catch (FileSystemException e) {
+			throw new KettleException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename()), e); //$NON-NLS-1$
+		} catch (IOException e) {
+			throw new KettleException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename()), e); //$NON-NLS-1$
+		}
 	}
 
 	/**

@@ -14,11 +14,13 @@
 
 package org.pentaho.di.trans.steps.getxmldata;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Node;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -33,6 +35,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -84,10 +88,10 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     private String encoding;
     
     /**  Is In fields     */
-    private  String XmlField;
+    private  String xmlField;
     
     /**  Is In fields     */
-    private  boolean IsInFields;
+    private  boolean inFields;
     
     /**  Is a File     */
     private  boolean IsAFile;
@@ -192,31 +196,31 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
      */
     public String getXMLField()
     {
-        return XmlField;
+        return xmlField;
     }
     
     /**
      * Set XML field.
      */ 
-    public void setXMLField(String XmlField)
+    public void setXMLField(String xmlField)
     {
-        this.XmlField = XmlField;
+        this.xmlField = xmlField;
     }
     
     /**  
      * Get the IsInFields.
      */
-    public boolean getIsInFields()
+    public boolean isInFields()
     {
-        return IsInFields;
+        return inFields;
     }
     
     /**  
-     * Set the IsInFields.
+     * @param inFields set the inFields.
      */
-    public void setIsInFields(boolean IsInFields)
+    public void setInFields(boolean inFields)
     {
-        this.IsInFields = IsInFields;
+        this.inFields = inFields;
     }
 
     /**
@@ -551,10 +555,10 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("limit", rowLimit));
         retval.append("    ").append(XMLHandler.addTagValue("loopxpath", loopxpath));
         
-        retval.append("    ").append(XMLHandler.addTagValue("IsInFields", IsInFields));
+        retval.append("    ").append(XMLHandler.addTagValue("IsInFields", inFields));
         retval.append("    ").append(XMLHandler.addTagValue("IsAFile", IsAFile));
         
-        retval.append("    ").append(XMLHandler.addTagValue("XmlField", XmlField));
+        retval.append("    ").append(XMLHandler.addTagValue("XmlField", xmlField));
         retval.append("    ").append(XMLHandler.addTagValue("prunePath", prunePath));
         
         return retval.toString();
@@ -625,10 +629,10 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
             // Do we skip rows before starting to read
 			loopxpath = XMLHandler.getTagValue(stepnode, "loopxpath");
 			
-			IsInFields = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "IsInFields"));
+			inFields = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "IsInFields"));
 			IsAFile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "IsAFile"));
 			
-			XmlField = XMLHandler.getTagValue(stepnode, "XmlField");
+			xmlField = XMLHandler.getTagValue(stepnode, "XmlField");
 			prunePath = XMLHandler.getTagValue(stepnode, "prunePath");
 		}
 		catch(Exception e)
@@ -681,8 +685,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 
 		rowLimit = 0;
 		
-		IsInFields = false;
-		XmlField = "";
+		inFields = false;
+		xmlField = "";
 		prunePath = "";
 	}
 	
@@ -780,10 +784,10 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
                 
 				inputFields[i] = field;
 			}
-			IsInFields = rep.getStepAttributeBoolean (id_step, "IsInFields");
+			inFields = rep.getStepAttributeBoolean (id_step, "IsInFields");
 			IsAFile    = rep.getStepAttributeBoolean (id_step, "IsAFile");
 			
-			XmlField   = rep.getStepAttributeString (id_step, "XmlField");
+			xmlField   = rep.getStepAttributeString (id_step, "XmlField");
 			prunePath   = rep.getStepAttributeString (id_step, "prunePath");
 		}
 		catch(Exception e)
@@ -839,10 +843,10 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type",     field.getTrimTypeCode());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",        field.isRepeated());
 			}
-			rep.saveStepAttribute(id_transformation, id_step, "IsInFields",       IsInFields);
+			rep.saveStepAttribute(id_transformation, id_step, "IsInFields",       inFields);
 			rep.saveStepAttribute(id_transformation, id_step, "IsAFile",       IsAFile);
 			
-            rep.saveStepAttribute(id_transformation, id_step, "XmlField",        XmlField);
+            rep.saveStepAttribute(id_transformation, id_step, "XmlField",        xmlField);
             rep.saveStepAttribute(id_transformation, id_step, "prunePath",        prunePath);
 			
 		}
@@ -887,7 +891,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}		
 		
-		if(getIsInFields())
+		if(isInFields())
 		{
 			 if (Const.isEmpty(getXMLField()))
 			 {
@@ -931,6 +935,53 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     {
         return true;
     }
+
+	/**
+	 * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively.
+	 * So what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
+	 * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like that.
+
+	 * TODO: create options to configure this behavior 
+	 */
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+		try {
+			// The object that we're modifying here is a copy of the original!
+			// So let's change the filename from relative to absolute by grabbing the file object...
+			// In case the name of the file comes from previous steps, forget about this!
+			//
+			List<String> newFilenames = new ArrayList<String>();
+			
+			if (!isInFields()) {
+				FileInputList fileList = getFiles(space);
+				if (fileList.getFiles().size()>0) {
+					for (FileObject fileObject : fileList.getFiles()) {
+						// From : ${Internal.Transformation.Filename.Directory}/../foo/bar.xml
+						// To   : /home/matt/test/files/foo/bar.xml
+						//
+						// If the file doesn't exist, forget about this effort too!
+						//
+						if (fileObject.exists()) {
+							// Convert to an absolute path and add it to the list.
+							// 
+							newFilenames.add(fileObject.getName().getPath());
+						} else {
+							return null; // it's all or nothing over here! 
+						}
+					}
+					
+					// Still here: set a new list of absolute filenames!
+					//
+					fileName = newFilenames.toArray(new String[newFilenames.size()]);
+					fileMask = new String[newFilenames.size()]; // all null since converted to absolute path.
+					fileRequired = new String[newFilenames.size()]; // all null, turn to "Y" :
+					for (int i=0;i<newFilenames.size();i++) fileRequired[i]="Y";
+				}
+			}
+			return null;
+		} catch (Exception e) {
+			throw new KettleException(e); //$NON-NLS-1$
+		}
+	}
 
 
 }

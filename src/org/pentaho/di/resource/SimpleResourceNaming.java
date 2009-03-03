@@ -61,7 +61,7 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
     assert extension != null;
     
     String uniqueId = this.getFileNameUniqueIdentifier();
-    String lookup = (originalFilePath != null ? originalFilePath : "") + "/" + prefix;  //$NON-NLS-1$ //$NON-NLS-2$
+    String lookup = (originalFilePath != null ? originalFilePath : "") + "/" + prefix + "." + extension;  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     String rtn = namedResources.get(lookup);
     if (rtn == null) {
       // Never generated a name for this... Generate a new file name

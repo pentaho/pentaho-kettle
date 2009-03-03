@@ -129,9 +129,11 @@ public interface JobEntryInterface
 	 * @param space The variable space to resolve (environment) variables with.
 	 * @param definitions The map containing the filenames and content
 	 * @param namingInterface The resource naming interface allows the object to name appropriately
+	 * @param repository The repository to load resources from
+	 * 
 	 * @return The filename for this object. (also contained in the definitions map)
 	 * @throws KettleException in case something goes wrong during the export
 	 */
-	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface) throws KettleException;
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository) throws KettleException;
 
 }

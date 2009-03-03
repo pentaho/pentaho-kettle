@@ -16,6 +16,8 @@ public class ResourceDefinition {
 	private String filename;
 	private String content;
 	
+	private String origin;
+	
 	/**
 	 * @param filename
 	 * @param content
@@ -52,5 +54,19 @@ public class ResourceDefinition {
 	 */
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	/**
+	 * @return the origin of the resource as entered by the user. (optional)
+	 */
+	public String getOrigin() {
+		return origin;
+	}
+
+	/**
+	 * @param origin the origin of the resource as entered by the user. (optional)
+	 */
+	public void setOrigin(String origin) {
+		this.origin = origin;
 	}
 }

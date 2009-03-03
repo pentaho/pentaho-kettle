@@ -2736,12 +2736,31 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return resourceReferences;
 	}
 
-	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions,
-			ResourceNamingInterface namingInterface) throws KettleException {
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository) throws KettleException {
 		String resourceName = null;
 		try {
-			FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(getFilename()));
-			resourceName = namingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), "kjb"); //$NON-NLS-1$
+			// Handle naming for both repository and XML bases resources...
+			//
+			String baseName;
+			String originalPath;
+			String fullname;
+			String extension="kjb";
+			if (Const.isEmpty(getFilename())) {
+				// Assume repository...
+				//
+				originalPath = directory.getPath();
+				baseName = getName();
+				fullname = directory.getPath()+( directory.getPath().endsWith(RepositoryDirectory.DIRECTORY_SEPARATOR) ? "" : RepositoryDirectory.DIRECTORY_SEPARATOR ) +getName()+"."+extension; // $NON-NLS-1$ // $NON-NLS-2$  
+			} else {
+				// Assume file
+				//
+				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(getFilename()));
+				originalPath = fileObject.getParent().getName().getPath();
+				baseName = fileObject.getName().getBaseName();
+				fullname = fileObject.getName().getPath();
+			}
+			
+			resourceName = namingInterface.nameResource(baseName, originalPath, extension); //$NON-NLS-1$
 			ResourceDefinition definition = definitions.get(resourceName);
 			if (definition == null) {
 				// If we do this once, it will be plenty :-)
@@ -2757,7 +2776,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				// loop over steps, databases will be exported to XML anyway.
 				//
 				for (JobEntryCopy jobEntry : jobMeta.jobcopies) {
-					jobEntry.getEntry().exportResources(jobMeta, definitions, namingInterface);
+					jobEntry.getEntry().exportResources(jobMeta, definitions, namingInterface, repository);
 				}
 
 				// At the end, add ourselves to the map...
@@ -2765,7 +2784,16 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				String jobMetaContent = jobMeta.getXML();
 
 				definition = new ResourceDefinition(resourceName, jobMetaContent);
-				definitions.put(fileObject.getName().getPath(), definition);
+				
+	  			// Also remember the original filename (if any), including variables etc.
+	  			//
+				if (Const.isEmpty(this.getFilename())) { // Repository
+					definition.setOrigin(fullname);
+				} else {
+					definition.setOrigin(this.getFilename());
+				}
+
+				definitions.put(fullname, definition);
 			}
 		} catch (FileSystemException e) {
 			throw new KettleException(Messages.getString("JobMeta.Exception.AnErrorOccuredReadingJob", getFilename()), e);

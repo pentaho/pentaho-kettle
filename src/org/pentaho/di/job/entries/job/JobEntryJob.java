@@ -1021,41 +1021,34 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
      * Then we're going to give it a new filename, modify that filename in this entries.
      * The parent caller will have made a copy of it, so it should be OK to do so.
      */
-    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface) throws KettleException {
+    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository) throws KettleException {
 		// Try to load the transformation from repository or file.
 		// Modify this recursively too...
 		//
-		if (!Const.isEmpty(filename)) {
-			// AGAIN: there is no need to clone this job entry because the caller is responsible for this.
-			//
-			// First load the job meta data...
-			//
-			copyVariablesFrom(space);  // To make sure variables are available.
-			JobMeta jobMeta = getJobMeta(null, space);
+		// AGAIN: there is no need to clone this job entry because the caller is responsible for this.
+		//
+		// First load the job meta data...
+		//
+		copyVariablesFrom(space);  // To make sure variables are available.
+		JobMeta jobMeta = getJobMeta(repository, space);
 
-			// Also go down into the job and export the files there. (going down recursively)
-			//
-			String newFilename = jobMeta.exportResources(jobMeta, definitions, namingInterface);
+		// Also go down into the job and export the files there. (going down recursively)
+		//
+		String proposedNewFilename = jobMeta.exportResources(jobMeta, definitions, namingInterface, repository);
 
-			// Set the filename in the job
-			//
-			jobMeta.setFilename(newFilename);
+		// To get a relative path to it, we inject ${Internal.Job.Filename.Directory} 
+		//
+		String newFilename = "${"+Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY+"}/"+proposedNewFilename;
 
-			// change it in the job entry
-			//
-			filename = newFilename;
+		// Set the filename in the job
+		//
+		jobMeta.setFilename(newFilename);
 
-			//
-			// Don't save it, that has already been done a few lines above, in jobMeta.exportResources()
-			//
-			// String xml = jobMeta.getXML();
-			// definitions.put(newFilename, new ResourceDefinition(newFilename, xml));
+		// change it in the job entry
+		//
+		filename = newFilename;
 
-			return newFilename;
-		}
-		else {
-			return null;
-		}
+		return proposedNewFilename;
     }
 
     @Override
