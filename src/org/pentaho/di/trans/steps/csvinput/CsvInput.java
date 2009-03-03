@@ -331,6 +331,13 @@ public class CsvInput extends BaseStep implements StepInterface
 		}
 	}
 
+	/**
+	 * Check to see if the buffer size is large enough given the data.endBuffer pointer.<br>
+	 * Resize the buffer if there is not enough room.
+	 * 
+	 * @return false if everything is OK, true if there is a problem and we should stop.
+	 * @throws IOException in case there is a I/O problem (read error)
+	 */
 	private boolean checkBufferSize() throws IOException {
 		if (data.endBuffer>=data.bufferSize) {
 			// Oops, we need to read more data...
@@ -339,10 +346,12 @@ public class CsvInput extends BaseStep implements StepInterface
 			data.resizeByteBufferArray();
 			
 			// Also read another chunk of data, now that we have the space for it...
-			if (!data.readBufferFromFile()) {
-				// TODO handle EOF properly for EOF in the middle of the row, etc.
-				return true;
-			}
+			//
+			int n = data.readBufferFromFile();
+
+			// If we didn't manage to read something, we return true to indicate we're done
+			//  
+			return n<0;
 		}
 		return false;
 	}
@@ -562,26 +571,29 @@ public class CsvInput extends BaseStep implements StepInterface
 			// See if we reached the end of the line.
 			// If not, we need to skip the remaining items on the line until the next newline...
 			//
-			if (!newLineFound) 
+			if (!newLineFound && !checkBufferSize()) 
 			{
 				do {
+					data.endBuffer++;
+					data.totalBytesRead++;
+				
 					if (checkBufferSize()) {
 						break; // nothing more to read.
 					}
-					data.endBuffer++;
-					data.totalBytesRead++;
 					
 					// TODO: if we're using quoting we might be dealing with a very dirty file with quoted newlines in trailing fields. (imagine that)
 					// In that particular case we want to use the same logic we use above (refactored a bit) to skip these fields.
 					
 				} while (data.byteBuffer[data.endBuffer]!='\n' && data.byteBuffer[data.endBuffer]!='\r');
 				
-				while (data.byteBuffer[data.endBuffer]=='\n' || data.byteBuffer[data.endBuffer]=='\r') {
-					if (checkBufferSize()) {
-						break; // nothing more to read.
+				if (!checkBufferSize()) {
+					while (data.byteBuffer[data.endBuffer]=='\n' || data.byteBuffer[data.endBuffer]=='\r') {
+						data.endBuffer++;
+						data.totalBytesRead++;
+						if (checkBufferSize()) {
+							break; // nothing more to read.
+						}
 					}
-					data.endBuffer++;
-					data.totalBytesRead++;
 				}
 				
 				// Make sure we start at the right position the next time around.

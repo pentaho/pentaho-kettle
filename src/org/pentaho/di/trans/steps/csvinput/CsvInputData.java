@@ -88,7 +88,7 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 		//
 		bufferSize = endBuffer-startBuffer;
 		int newSize = bufferSize+preferredBufferSize;
-		byte[] newByteBuffer = new byte[newSize];
+		byte[] newByteBuffer = new byte[newSize+100];
 		
 		// copy over the old data...
 		System.arraycopy(byteBuffer, startBuffer, newByteBuffer, 0, bufferSize);
@@ -102,7 +102,7 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 		endBuffer = bufferSize;
 	}
 
-	public boolean readBufferFromFile() throws IOException {
+	public int readBufferFromFile() throws IOException {
 		// See if the line is not longer than the buffer.
 		// In that case we need to increase the size of the byte buffer.
 		// Since this method doesn't get called every other character, I'm sure we can spend a bit of time here without major performance loss.
@@ -113,10 +113,8 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 		
 		bb.position(endBuffer);
 		int n = fc.read( bb );
-		if( n == -1) {
-			return false;
-		}
-		else {
+		if( n>=0) {
+
 			// adjust the highest used position...
 			//
 			bufferSize = endBuffer+n; 
@@ -133,9 +131,9 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 			//
 			bb.position(endBuffer);
 			bb.get( byteBuffer, endBuffer, n);
-
-			return true;
 		} 
+		
+		return n;
 	}
 
 	private void resizeByteBuffer(int newSize) {
@@ -162,14 +160,12 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 			resizeByteBufferArray();
 			
 			// Also read another chunk of data, now that we have the space for it...
-			if (!readBufferFromFile()) {
-				// Break out of the loop if we don't have enough buffer space to continue...
-				//
-				if (endBuffer>=bufferSize) 
-				{
-					return true;
-				}
-			}
+			//
+			int n =readBufferFromFile();
+			
+			// Return true we didn't manage to read anything and we reached the end of the buffer...
+			//
+			return n<0;
 		}
 		
 		return false;
