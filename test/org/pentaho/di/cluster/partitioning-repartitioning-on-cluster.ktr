@@ -7,6 +7,8 @@
     <trans_version/>
     <trans_status>0</trans_status>
     <directory>&#47;</directory>
+    <parameters>
+    </parameters>
     <log>
       <read/>
       <write/>
@@ -42,13 +44,28 @@
     <partitionschemas>
         <partitionschema>
           <name>A</name>
-          <dynamic>Y</dynamic>
-          <partitions_per_slave>2</partitions_per_slave>
+          <partition>            <id>A1</id>
+          </partition>          <partition>            <id>A2</id>
+          </partition>          <partition>            <id>A3</id>
+          </partition>          <dynamic>N</dynamic>
+          <partitions_per_slave/>
         </partitionschema>
         <partitionschema>
           <name>B</name>
-          <dynamic>Y</dynamic>
-          <partitions_per_slave>3</partitions_per_slave>
+          <partition>            <id>B01</id>
+          </partition>          <partition>            <id>B02</id>
+          </partition>          <partition>            <id>B03</id>
+          </partition>          <partition>            <id>B04</id>
+          </partition>          <partition>            <id>B05</id>
+          </partition>          <partition>            <id>B06</id>
+          </partition>          <partition>            <id>B07</id>
+          </partition>          <partition>            <id>B08</id>
+          </partition>          <partition>            <id>B09</id>
+          </partition>          <partition>            <id>B10</id>
+          </partition>          <partition>            <id>B11</id>
+          </partition>          <partition>            <id>B12</id>
+          </partition>          <dynamic>N</dynamic>
+          <partitions_per_slave/>
         </partitionschema>
     </partitionschemas>
     <slaveservers>
@@ -356,6 +373,14 @@
       <field>
         <name>partition</name>
         <variable>${Internal.Step.Partition.Number}</variable>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
       </field>
     </fields>
      <cluster_schema>test-cluster</cluster_schema>
