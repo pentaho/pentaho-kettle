@@ -189,12 +189,12 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
                 	}
                 	else {
                 		Scriptable jsarg;
-                		if (valueData!=null) {
-                			jsarg = Context.toObject(valueMeta.convertToNormalStorageType(valueData), data.scope);
-                		}
-                		else {
-                			jsarg = null;
-                		}
+                    	Object normalStorageValueData = valueMeta.convertToNormalStorageType(valueData); 
+                        if (normalStorageValueData != null) {
+                          jsarg = Context.toObject(normalStorageValueData, data.scope);
+                        } else {
+                          jsarg = null;
+                        }
 	                    data.scope.put(valueMeta.getName(), data.scope, jsarg);
                 	}
                 }
@@ -332,14 +332,14 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 	                    data.scope.put(valueMeta.getName(), data.scope, jsarg);
                     }
                     else {
-	                    Scriptable jsarg;
-	                    if (valueData!=null) {
-	                    	jsarg = Context.toObject(valueMeta.convertToNormalStorageType(valueData), data.scope);
-	                    }
-	                    else {
-	                    	jsarg = null;
-	                    }
-	                    data.scope.put(valueMeta.getName(), data.scope, jsarg);
+                    	Object normalStorageValueData = valueMeta.convertToNormalStorageType(valueData); 
+                        Scriptable jsarg;
+                        if (normalStorageValueData != null) {
+                          jsarg = Context.toObject(normalStorageValueData, data.scope);
+                        } else {
+                          jsarg = null;
+                        }
+                        data.scope.put(valueMeta.getName(), data.scope, jsarg);
                     }
                 }
 
