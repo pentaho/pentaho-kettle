@@ -18,6 +18,7 @@ import java.util.List;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.JndiUtil;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMeta;
@@ -73,13 +74,15 @@ public class Carte
         // Repeating the registration over and over every few minutes might harden this sort of problems.
         //
         if (config.isReportingToMasters()) {
-	        for (SlaveServer master : config.getMasters()) {
+        	final SlaveServer client = new SlaveServer("Dynamic slave ["+hostname+":"+port+"]", hostname, ""+port, slaveServer.getUsername(), slaveServer.getPassword());
+	        for (final SlaveServer master : config.getMasters()) {
 	        	// Here we use the username/password specified in the slave server section of the configuration.
 	        	// This doesn't have to be the same pair as the one used on the master!
 	        	//
-	        	SlaveServer client = new SlaveServer("Dynamic slave ["+hostname+":"+port+"]", hostname, ""+port, slaveServer.getUsername(), slaveServer.getPassword());
 	        	SlaveServerDetection slaveServerDetection = new SlaveServerDetection(client);
 	        	master.sendXML(slaveServerDetection.getXML(), RegisterSlaveServlet.CONTEXT_PATH+"/");
+	        	
+	        	// Open a Keep-alive 
 	        }
         }
         
@@ -138,6 +141,8 @@ public class Carte
 	private static void init() throws Exception
     {
         EnvUtil.environmentInit();
+        JndiUtil.initJNDI();
+        
         LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
         
 		try 
