@@ -192,9 +192,10 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
             Scriptable jsarg = Context.toObject(data.values_used[i], data.scope);
             data.scope.put(valueMeta.getName(), data.scope, jsarg);
           } else {
+          	Object normalStorageValueData = valueMeta.convertToNormalStorageType(valueData); 
             Scriptable jsarg;
-            if (valueData != null) {
-              jsarg = Context.toObject(valueMeta.convertToNormalStorageType(valueData), data.scope);
+            if (normalStorageValueData != null) {
+              jsarg = Context.toObject(normalStorageValueData, data.scope);
             } else {
               jsarg = null;
             }
@@ -311,9 +312,10 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
             Scriptable jsarg = Context.toObject(data.values_used[i], data.scope);
             data.scope.put(valueMeta.getName(), data.scope, jsarg);
           } else {
+          	Object normalStorageValueData = valueMeta.convertToNormalStorageType(valueData); 
             Scriptable jsarg;
-            if (valueData != null) {
-              jsarg = Context.toObject(valueMeta.convertToNormalStorageType(valueData), data.scope);
+            if (normalStorageValueData != null) {
+              jsarg = Context.toObject(normalStorageValueData, data.scope);
             } else {
               jsarg = null;
             }
