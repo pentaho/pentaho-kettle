@@ -1055,7 +1055,7 @@ public class Translator2
 	        	} else if (todo.size()>10) {
 	        		item.setBackground(GUIResource.getInstance().getColorYellow());
 	        	} else if (todo.size()>5) {
-	        		item.setBackground(GUIResource.getInstance().getColorGray());
+	        		item.setBackground(GUIResource.getInstance().getColorBlue());
 	        	} else if (todo.size()>0) {
 	        		item.setBackground(GUIResource.getInstance().getColorGreen());
 	        	}
