@@ -1195,7 +1195,15 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	                // OK, now get the target partition based on the partition nr...
 	                // This should be very fast
                 	//
-	                selectedRowSet = partitionNrRowSetList[partitionNr];
+	                if (partitionNr<partitionNrRowSetList.length) {
+	                	selectedRowSet = partitionNrRowSetList[partitionNr];
+	                } else {
+	                	String rowsets = "";
+	                	for (RowSet rowSet : partitionNrRowSetList) {
+	                		rowsets+="["+rowSet.toString()+"] ";
+	                	}
+	                	throw new KettleStepException("Internal error: the referenced partition nr '"+partitionNr+"' is higher than the maximum of '"+(partitionNrRowSetList.length-1)+".  The available row sets are: {"+rowsets+"}");
+	                }
                 }
                 else {
                 	// Local partitioning...
