@@ -111,7 +111,7 @@ public class AddTransServlet extends HttpServlet
             Trans oldOne = transformationMap.getTransformation(trans.getName());
             if ( oldOne!=null)
             {
-            	if (!oldOne.isFinished()) {
+            	if (!oldOne.isStopped() && !oldOne.isFinished()) {
 	                if ( oldOne.isRunning() || oldOne.isPreparing() || oldOne.isInitializing() )
 	                {
 	                    throw new Exception("A transformation with the same name exists and is not idle."+Const.CR+"Please stop the transformation first.");

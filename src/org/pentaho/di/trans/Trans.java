@@ -1999,6 +1999,11 @@ public class Trans implements VariableSpace, NamedParams
     {
         String message;
         
+        if (isStopped()) 
+        {
+        	message = STRING_STOPPED;
+        }
+        else
         if (running)
         {
             if (isFinished())
