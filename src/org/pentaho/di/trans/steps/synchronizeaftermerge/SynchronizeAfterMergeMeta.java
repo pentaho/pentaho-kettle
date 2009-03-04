@@ -30,6 +30,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -1053,8 +1054,11 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
         }
     }
     
-    public RowMetaInterface getRequiredFields() throws KettleException
+    public RowMetaInterface getRequiredFields(VariableSpace space) throws KettleException
     {
+		String realTableName = space.environmentSubstitute(tableName);
+		String realSchemaName = space.environmentSubstitute(schemaName);
+
         if (databaseMeta!=null)
         {
             Database db = new Database(databaseMeta);
@@ -1062,9 +1066,9 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
             {
                 db.connect();
                 
-                if (!Const.isEmpty(tableName))
+                if (!Const.isEmpty(realTableName))
                 {
-                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(realSchemaName, realTableName);
 
                     // Check if this table exists...
                     if (db.checkTableExists(schemaTable))

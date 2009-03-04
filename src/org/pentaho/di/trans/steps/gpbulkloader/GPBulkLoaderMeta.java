@@ -659,8 +659,8 @@ public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
             {
                 ValueMetaInterface v = prev.searchValueMeta(fieldStream[i]);
 
-                DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
-                        .getDatabaseName(), transMeta.environmentSubstitute(tableName), fieldTable[i], fieldStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta.getDatabaseName(), 
+                		transMeta.environmentSubstitute(tableName), fieldTable[i], fieldStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 impact.add(ii);
             }
         }
@@ -688,8 +688,11 @@ public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public RowMetaInterface getRequiredFields() throws KettleException
+    public RowMetaInterface getRequiredFields(VariableSpace space) throws KettleException
     {
+    	String realTableName = space.environmentSubstitute(tableName);
+    	String realSchemaName = space.environmentSubstitute(schemaName);
+    	
         if (databaseMeta!=null)
         {
             Database db = new Database(databaseMeta);
@@ -697,9 +700,9 @@ public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
             {
                 db.connect();
 
-                if (!Const.isEmpty(tableName))
+                if (!Const.isEmpty(realTableName))
                 {
-                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(realSchemaName, realTableName);
 
                     // Check if this table exists...
                     if (db.checkTableExists(schemaTable))

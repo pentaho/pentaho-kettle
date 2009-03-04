@@ -3609,6 +3609,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			try {
 				String launchFile = ResourceUtil.serializeResourceExportInterface(zipFilename, resourceExportInterface, (VariableSpace)resourceExportInterface, rep);
 				String message = "This resource can be executed in the exported zip file ["+zipFilename+"]"+Const.CR;
+				message += "Important: relative paths to referenced input files don't work anymore!"+Const.CR;
+				message +=" We had the choice to either put the files inside the zip archive OR change the references to an absolute path in the various steps."+Const.CR;
+				message += "Because of time and functionality constraints, we opted to change the references.  Later we will add options to tweak this behavior"+Const.CR+Const.CR;
+				message += "This resource can be executed in the exported zip file ["+zipFilename+"]"+Const.CR;
 				message+="You can do this by running kitchen with the following command:"+Const.CR+Const.CR;
 				if (Const.isWindows()) {
 					message+="Kitchen.bat /file:\"";
@@ -3621,6 +3625,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				} else {
 					message+="'";
 				}
+				message += Const.CR+"Please note that you can open this file with File/Open file from URL.  Enter this URL to open it:"+Const.CR+Const.CR;
+				message += launchFile+Const.CR+Const.CR;
+				
 				EnterTextDialog enterTextDialog = new EnterTextDialog(shell, "Resource serialized", "This resource was serialized succesfully!", message);
 				enterTextDialog.setReadOnly();
 				enterTextDialog.open();
@@ -5606,11 +5613,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 * @param stepMeta
 	 *            The target step to map against.
 	 */
-	public void generateMapping(TransMeta transMeta, StepMeta stepMeta) {
+	@SuppressWarnings("deprecation") // retry of required fields acquisition
+	public void generateFieldMapping(TransMeta transMeta, StepMeta stepMeta) {
 		try {
 			if (stepMeta != null) {
 				StepMetaInterface smi = stepMeta.getStepMetaInterface();
-				RowMetaInterface targetFields = smi.getRequiredFields();
+				RowMetaInterface targetFields = smi.getRequiredFields(transMeta);
+				if (targetFields.isEmpty()) smi.getRequiredFields(); // retry, get rid of this method in 4.x
 				RowMetaInterface sourceFields = transMeta.getPrevStepFields(stepMeta);
 
 				// Build the mapping: let the user decide!!
@@ -5642,12 +5651,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					// object
 
 					String stepName = stepMeta.getName() + " Mapping";
-					stepName = transMeta.getAlternativeStepname(stepName); // if
-					// it's
-					// already
-					// there,
-					// rename
-					// it.
+					stepName = transMeta.getAlternativeStepname(stepName); // if it's already there, rename it.
 
 					StepMeta newStep = new StepMeta("SelectValues", stepName, svm);
 					newStep.setLocation(stepMeta.getLocation().x + 20, stepMeta.getLocation().y + 20);
@@ -5661,10 +5665,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					refreshGraph();
 				}
 			} else {
-				System.out.println("No target to do mapping against!");
+				throw new KettleException("There is no target to do a field mapping against!");
 			}
 		} catch (KettleException e) {
-			new ErrorDialog(shell, "Error creating mapping", "There was an error when Kettle tried to generate a mapping against the target step", e);
+			new ErrorDialog(shell, "Error creating mapping", "There was an error when Kettle tried to generate a field mapping against the target step", e);
 		}
 	}
 

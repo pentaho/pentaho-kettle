@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
@@ -60,6 +61,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
+import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -782,4 +784,33 @@ public class BaseStepDialog extends Dialog {
 						Messages.getString("BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage"),ke);
 			}
 	 }
+  
+	/**
+	 * Create a new field mapping between source and target steps.
+	 * 
+	 * @param shell the shell of the parent window
+	 * @param sourceFields the source fields
+	 * @param targetFields the target fields
+	 * @param fieldMapping the list of source to target mappings to default to (can be empty but not null)
+	 * 
+	 * @throws KettleException in case something goes wrong during the field mapping
+	 * 
+	 */
+	public static final void generateFieldMapping(Shell shell, RowMetaInterface sourceFields, RowMetaInterface targetFields, List<SourceToTargetMapping> fieldMapping) throws KettleException {
+		// Build the mapping: let the user decide!!
+		String[] source = sourceFields.getFieldNames();
+		for (int i = 0; i < source.length; i++) {
+			ValueMetaInterface v = sourceFields.getValueMeta(i);
+			source[i] += EnterMappingDialog.STRING_ORIGIN_SEPARATOR + v.getOrigin() + ")";
+		}
+		String[] target = targetFields.getFieldNames();
+
+		EnterMappingDialog dialog = new EnterMappingDialog(shell, source, target, fieldMapping);
+		List<SourceToTargetMapping> newMapping = dialog.open();
+		if (newMapping!=null) {
+			fieldMapping.clear();
+			fieldMapping.addAll(newMapping);
+		}
+	}
+
 }

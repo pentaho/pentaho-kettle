@@ -238,8 +238,26 @@ public class BaseStepMeta implements Cloneable
      * This default implementation returns an empty row meaning that no fields are required for this step to operate.
      * @return the required fields for this steps meta data.
      * @throws KettleException in case the required fields can't be determined
+     * @deprecated
      */
     public RowMetaInterface getRequiredFields() throws KettleException
+    {
+        return new RowMeta();
+    }
+
+    /**
+     * The natural way of data flow in a transformation is source-to-target.
+     * However, this makes mapping to target tables difficult to do.
+     * To help out here, we supply information to the transformation meta-data model about which fields are required for a step.
+     * This allows us to automate certain tasks like the mapping to pre-defined tables.
+     * The Table Output step in this case will output the fields in the target table using this method. 
+     * 
+     * This default implementation returns an empty row meaning that no fields are required for this step to operate.
+     * @param space the variable space to use to do variable substitution.
+     * @return the required fields for this steps meta data.
+     * @throws KettleException in case the required fields can't be determined
+     */
+    public RowMetaInterface getRequiredFields(VariableSpace space) throws KettleException
     {
         return new RowMeta();
     }

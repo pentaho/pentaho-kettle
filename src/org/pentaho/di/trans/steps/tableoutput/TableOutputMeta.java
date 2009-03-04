@@ -891,8 +891,11 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		return retval;
 	}
 
-    public RowMetaInterface getRequiredFields() throws KettleException
+    public RowMetaInterface getRequiredFields(VariableSpace space) throws KettleException
     {
+    	String realTableName = space.environmentSubstitute(tablename);
+    	String realSchemaName = space.environmentSubstitute(schemaName);
+    	
         if (databaseMeta!=null)
         {
             Database db = new Database(databaseMeta);
@@ -900,9 +903,9 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
             {
                 db.connect();
                 
-                if (!Const.isEmpty(tablename))
+                if (!Const.isEmpty(realTableName))
                 {
-                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(realSchemaName, realTableName);
                     
                     // Check if this table exists...
                     if (db.checkTableExists(schemaTable))

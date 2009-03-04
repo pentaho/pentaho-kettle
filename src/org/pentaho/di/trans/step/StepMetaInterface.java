@@ -220,9 +220,23 @@ public interface StepMetaInterface
      *   
      * @return the required fields for this steps metadata.
      * @throws KettleException in case the required fields can't be determined.
+     * @deprecated please use the method with the variable space in it so we can do variable substitution.
      */
     public RowMetaInterface getRequiredFields() throws KettleException;
     
+    /**
+     * The natural way of data flow in a transformation is source-to-target.
+     * However, this makes mapping to target tables difficult to do.
+     * To help out here, we supply information to the transformation meta-data model about which fields are required for a step.
+     * This allows us to automate certain tasks like the mapping to pre-defined tables.
+     * The Table Output step in this case will output the fields in the target table using this method. 
+     * 
+     * @param space the variable space to reference
+     * @return the required fields for this steps metadata.
+     * @throws KettleException in case the required fields can't be determined.
+     */
+    public RowMetaInterface getRequiredFields(VariableSpace space) throws KettleException;
+ 
     /**
      * This method returns all the database connections that are used by the step.
      * @return an array of database connections meta-data.

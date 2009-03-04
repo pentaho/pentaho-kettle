@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -49,11 +50,11 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-
-import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.SourceToTargetMapping;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -64,16 +65,18 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.tableoutput.Messages;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
+import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.core.database.Database;
 
 
 /**
@@ -161,6 +164,10 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	
 	private Button       wGetFields;
 	private FormData     fdGetFields;
+	
+	private Button       wDoMapping;
+	private FormData     fdDoMapping;
+	
 	    
     private TableOutputMeta input;
     
@@ -751,10 +758,20 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdGetFields.right = new FormAttachment(100, 0);
 		wGetFields.setLayoutData(fdGetFields);
 		
+		wDoMapping = new Button(wFieldsComp, SWT.PUSH);
+		wDoMapping.setText(Messages.getString("TableOutputDialog.DoMapping.Button")); //$NON-NLS-1$
+		fdDoMapping = new FormData();
+		fdDoMapping.top   = new FormAttachment(wGetFields, margin);
+		fdDoMapping.right = new FormAttachment(100, 0);
+		wDoMapping.setLayoutData(fdDoMapping);
+
+		wDoMapping.addListener(SWT.Selection, new Listener() { 	public void handleEvent(Event arg0) { generateMappings();}});
+
+		
 		FormData fdFields=new FormData();
 		fdFields.left  = new FormAttachment(0, 0);
 		fdFields.top   = new FormAttachment(wlFields, margin);
-		fdFields.right = new FormAttachment(wGetFields, -margin);
+		fdFields.right = new FormAttachment(wDoMapping, -margin);
 		fdFields.bottom= new FormAttachment(100, -2 * margin);
 		wFields.setLayoutData(fdFields);
 		
@@ -892,6 +909,108 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		 	gotPreviousFields=true;
 		}
 	 }
+	 
+		/**
+		 * Reads in the fields from the previous steps and from the ONE next step and opens an 
+		 * EnterMappingDialog with this information. After the user did the mapping, those information 
+		 * is put into the Select/Rename table.
+		 */
+		private void generateMappings() {
+
+			// Determine the source and target fields...
+			//
+			RowMetaInterface sourceFields;
+			RowMetaInterface targetFields;
+
+			try {
+				sourceFields = transMeta.getPrevStepFields(stepMeta);
+			} catch(KettleException e) {
+				new ErrorDialog(shell, Messages.getString("TableOutputDialog.DoMapping.UnableToFindSourceFields.Title"), Messages.getString("TableOutputDialog.DoMapping.UnableToFindSourceFields.Message"), e);
+				return;
+			}
+
+			StepMetaInterface stepMetaInterface = stepMeta.getStepMetaInterface();
+			try {
+				targetFields = stepMetaInterface.getRequiredFields(transMeta);
+			} catch (KettleException e) {
+				new ErrorDialog(shell, Messages.getString("TableOutputDialog.DoMapping.UnableToFindTargetFields.Title"), Messages.getString("TableOutputDialog.DoMapping.UnableToFindTargetFields.Message"), e);
+				return;
+			}
+
+			String[] inputNames = new String[sourceFields.size()];
+			for (int i = 0; i < sourceFields.size(); i++) {
+				ValueMetaInterface value = sourceFields.getValueMeta(i);
+				inputNames[i] = value.getName()+
+				     EnterMappingDialog.STRING_ORIGIN_SEPARATOR+value.getOrigin()+")";
+			}
+
+			// Create the existing mapping list...
+			//
+			List<SourceToTargetMapping> mappings = new ArrayList<SourceToTargetMapping>();
+			StringBuffer missingSourceFields = new StringBuffer();
+			StringBuffer missingTargetFields = new StringBuffer();
+
+			int nrFields = wFields.nrNonEmpty();
+			for (int i = 0; i < nrFields ; i++) {
+				TableItem item = wFields.getNonEmpty(i);
+				String source = item.getText(2);
+				String target = item.getText(1);
+				
+				int sourceIndex = sourceFields.indexOfValue(source); 
+				if (sourceIndex<0) {
+					missingSourceFields.append(Const.CR + "   " + source+" --> " + target);
+				}
+				int targetIndex = targetFields.indexOfValue(target);
+				if (targetIndex<0) {
+					missingTargetFields.append(Const.CR + "   " + source+" --> " + target);
+				}
+				if (sourceIndex<0 || targetIndex<0) {
+					continue;
+				}
+
+				SourceToTargetMapping mapping = new SourceToTargetMapping(sourceIndex, targetIndex);
+				mappings.add(mapping);
+			}
+
+			// show a confirm dialog if some missing field was found
+			//
+			if (missingSourceFields.length()>0 || missingTargetFields.length()>0){
+				
+				String message="";
+				if (missingSourceFields.length()>0) {
+					message+=Messages.getString("TableOutputDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString())+Const.CR;
+				}
+				if (missingTargetFields.length()>0) {
+					message+=Messages.getString("TableOutputDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString())+Const.CR;
+				}
+				message+=Const.CR;
+				message+=Messages.getString("TableOutputDialog.DoMapping.SomeFieldsNotFoundContinue")+Const.CR;
+				boolean goOn = MessageDialog.openConfirm(shell, Messages.getString("TableOutputDialog.DoMapping.SomeFieldsNotFoundTitle"), message);
+				if (!goOn) {
+					return;
+				}
+			}
+			EnterMappingDialog d = new EnterMappingDialog(TableOutputDialog.this.shell, sourceFields.getFieldNames(), targetFields.getFieldNames(), mappings);
+			mappings = d.open();
+
+			// mappings == null if the user pressed cancel
+			//
+			if (mappings!=null) {
+				// Clear and re-populate!
+				//
+				wFields.table.removeAll();
+				wFields.table.setItemCount(mappings.size());
+				for (int i = 0; i < mappings.size(); i++) {
+					SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
+					TableItem item = wFields.table.getItem(i);
+					item.setText(2, sourceFields.getValueMeta(mapping.getSourcePosition()).getName());
+					item.setText(1, targetFields.getValueMeta(mapping.getTargetPosition()).getName());
+				}
+				wFields.setRowNums();
+				wFields.optWidth(true);
+			}
+		}
+
 	 
 	private void setTableFieldCombo(){
 		Runnable fieldLoader = new Runnable() {

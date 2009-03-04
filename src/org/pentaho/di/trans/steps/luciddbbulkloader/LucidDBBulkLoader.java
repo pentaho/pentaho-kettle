@@ -199,7 +199,7 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 			//
 			writer.write(meta.getFieldTable().length+Const.CR);
 
-            RowMetaInterface targetFieldMeta = meta.getRequiredFields();
+            RowMetaInterface targetFieldMeta = meta.getRequiredFields(this);
 			
             data.bulkFormatMeta = new ValueMetaInterface[meta.getFieldTable().length];
             

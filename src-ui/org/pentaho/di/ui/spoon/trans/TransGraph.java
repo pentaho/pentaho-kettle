@@ -1492,7 +1492,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public void generateMappingToThisStep() {
-    spoon.generateMapping(transMeta, getCurrentStep());
+    spoon.generateFieldMapping(transMeta, getCurrentStep());
   }
 
   public void partitioning() {

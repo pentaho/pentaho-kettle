@@ -1358,8 +1358,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			if (mappingInputStep != null)
 			{
 				StepMeta mappingOutputStep = transMeta.findMappingOutputStep(targetStepname);
-				RowMetaInterface requiredFields = mappingOutputStep.getStepMetaInterface()
-						.getRequiredFields();
+				RowMetaInterface requiredFields = mappingOutputStep.getStepMetaInterface().getRequiredFields(transMeta);
 				if (requiredFields != null && requiredFields.size() > 0)
 				{
 					enabled = true;

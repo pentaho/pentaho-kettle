@@ -842,8 +842,6 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
             	// Update Errors
 				updateErrors();	
 			}
-			
-
 		}
 		}catch (Exception e)
 		{

@@ -33,6 +33,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -883,49 +884,36 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 		return retval;
 	}
 
-	 public RowMetaInterface getRequiredFields() throws KettleException
-	    {
-	        if (databaseMeta!=null)
-	        {
-	            Database db = new Database(databaseMeta);
-	            try
-	            {
-	                db.connect();
-	                
-	                if (!Const.isEmpty(tablename))
-	                {
-	                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
-	                    
-	                    // Check if this table exists...
-	                    if (db.checkTableExists(schemaTable))
-	                    {
-	                        return db.getTableFields(schemaTable);
-	                    }
-	                    else
-	                    {
-	                        throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.TableNotFound"));
-	                    }
-	                }
-	                else
-	                {
-	                    throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.TableNotSpecified"));
-	                }
-	            }
-	            catch(Exception e)
-	            {
-	                throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.ErrorGettingFields"), e);
-	            }
-	            finally
-	            {
-	                db.disconnect();
-	            }
-	        }
-	        else
-	        {
-	            throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.ConnectionNotDefined"));
-	        }
+	 public RowMetaInterface getRequiredFields(VariableSpace space) throws KettleException {
+		String realTableName = space.environmentSubstitute(tablename);
+		String realSchemaName = space.environmentSubstitute(schemaName);
 
-	    }
+		if (databaseMeta != null) {
+			Database db = new Database(databaseMeta);
+			try {
+				db.connect();
+
+				if (!Const.isEmpty(realTableName)) {
+					String schemaTable = databaseMeta.getQuotedSchemaTableCombination(realSchemaName, realTableName);
+
+					// Check if this table exists...
+					if (db.checkTableExists(schemaTable)) {
+						return db.getTableFields(schemaTable);
+					} else {
+						throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.TableNotFound"));
+					}
+				} else {
+					throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.TableNotSpecified"));
+				}
+			} catch (Exception e) {
+				throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.ErrorGettingFields"), e);
+			} finally {
+				db.disconnect();
+			}
+		} else {
+			throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.ConnectionNotDefined"));
+		}
+	}
 
     
     public DatabaseMeta[] getUsedDatabaseConnections()

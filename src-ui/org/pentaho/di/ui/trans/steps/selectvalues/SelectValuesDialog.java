@@ -55,7 +55,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -67,6 +66,7 @@ import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
@@ -746,7 +746,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		StepMetaInterface stepMetaInterface = outputStepMeta
 				.getStepMetaInterface();
 		try {
-			nextStepRequiredFields = stepMetaInterface.getRequiredFields();
+			nextStepRequiredFields = stepMetaInterface.getRequiredFields(transMeta);
 		} catch (KettleException e) {
 			log.logError(toString(), Messages.getString("SelectValuesDialog.DoMapping.UnableToFindOutput"));
 			nextStepRequiredFields = new RowMeta();
@@ -806,25 +806,22 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		mappings = d.open();
 
 		// mappings == null if the user pressed cancel
-		if (null != mappings) {
+		//
+		if (mappings!=null) {
 			wFields.table.removeAll();
 			wFields.table.setItemCount(mappings.size());
 			for (int i = 0; i < mappings.size(); i++) {
-				SourceToTargetMapping mapping = (SourceToTargetMapping) mappings
-						.get(i);
+				SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
 				TableItem item = wFields.table.getItem(i);
-				item.setText(1, prevFields.getValueMeta(mapping
-														.getSourcePosition()).getName());
-				item.setText(2, outputNames[mapping
-											.getTargetPosition()]);
-				item.setText(3, "-1");
-				item.setText(4, "-1");
+				item.setText(1, prevFields.getValueMeta(mapping.getSourcePosition()).getName());
+				item.setText(2, outputNames[mapping.getTargetPosition()]);
 			}
 			wFields.setRowNums();
 			wFields.optWidth(true);
 			wTabFolder.setSelection(0);
 		}
 	}
+	
 	protected void setComboBoxes()
     {
         // Something was changed in the row.

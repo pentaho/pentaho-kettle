@@ -373,10 +373,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     {
         this.port = port;
     }
-
-    public String sendXML(String xml, String service) throws Exception
-    {
-        // The content
+    
+    public PutMethod getSendXMLPutMethod(String xml, String service) throws Exception {
+    	// The content
         // 
         byte[] content = xml.getBytes(Const.XML_ENCODING);
         
@@ -384,18 +383,23 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         // 
         String urlString = constructUrl(service);
         log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
-        PutMethod put = new PutMethod(urlString);
+        PutMethod putMethod = new PutMethod(urlString);
         
         // Request content will be retrieved directly from the input stream
         // 
         RequestEntity entity = new ByteArrayRequestEntity(content);
         
-        put.setRequestEntity(entity);
-        put.setDoAuthentication(true);
-        put.addRequestHeader(new Header("Content-Type", "text/xml;charset=" + Const.XML_ENCODING));
-
-        // post.setContentChunked(true);
+        putMethod.setRequestEntity(entity);
+        putMethod.setDoAuthentication(true);
+        putMethod.addRequestHeader(new Header("Content-Type", "text/xml;charset=" + Const.XML_ENCODING));
         
+        return putMethod;
+    }
+
+    public String sendXML(String xml, String service) throws Exception
+    {
+    	PutMethod put = getSendXMLPutMethod(xml, service);
+    	
         // Get HTTP client
         // 
         HttpClient client = new HttpClient();
@@ -447,7 +451,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     }
 
 
-    private void addCredentials(HttpClient client)
+    public void addCredentials(HttpClient client)
     {
         client.getState().setCredentials
               (
