@@ -159,7 +159,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
 	    }
       catch (Exception e)
       {
-          throw new KettleXMLException("Impossible de charger les informations de l'étape depuis le fichier XML", e);
+          throw new KettleXMLException("It was not possible to load the metadata for this step from XML", e);
       }
 	}
    public String getXML()
