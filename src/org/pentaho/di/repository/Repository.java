@@ -4283,7 +4283,7 @@ public class Repository
     	try
         {
             os = new BufferedOutputStream(KettleVFS.getOutputStream(xmlFilename, false));
-            writer = new OutputStreamWriter(os);
+            writer = new OutputStreamWriter(os, Const.XML_ENCODING);
             
 	        if (monitor!=null) monitor.beginTask("Exporting the repository to XML...", 3);
 	        
@@ -4365,9 +4365,6 @@ public class Repository
 	                    log.logError(toString(), "Job ["+jobs[i]+"] from directory ["+repdir+"] was not exported because of a loading error!");
 	                }
 	            }
-	            
-	            // OK, then export the jobs in the sub-directories as well!
-	            if (repdir.getID()!=dirTree.getID()) exportJobs(null, repdir, writer);
 	        }
     	} catch(Exception e) {
     		throw new KettleException("Error while exporting repository jobs", e);
@@ -4406,9 +4403,6 @@ public class Repository
 	                    log.logError(toString(), "Transformation ["+trans[i]+"] from directory ["+repdir+"] was not exported because of a loading error!");
 	                }
 	            }
-	            
-	            // OK, then export the transformations in the sub-directories as well!
-	            if (repdir.getID()!=dirTree.getID()) exportTransformations(null, repdir, writer);
 	        }
 	        if (monitor!=null) monitor.worked(1);
 	        
