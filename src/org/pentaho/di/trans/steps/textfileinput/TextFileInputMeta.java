@@ -793,6 +793,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("        ").append(XMLHandler.addTagValue("filter_string", filterEncoded, false));
 			retval.append("        ").append(XMLHandler.addTagValue("filter_position", filter[i].getFilterPosition(), false));
 			retval.append("        ").append(XMLHandler.addTagValue("filter_is_last_line", filter[i].isFilterLastLine(), false));
+			retval.append("        ").append(XMLHandler.addTagValue("filter_is_positive", filter[i].isFilterPositive(), false));
 			retval.append("      </filter>").append(Const.CR);
 		}
 		retval.append("    </filters>").append(Const.CR);
@@ -917,6 +918,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 				filter[0].setFilterPosition(Const.toInt(XMLHandler.getTagValue(stepnode, "filter_position"), -1));
 				filter[0].setFilterString(XMLHandler.getTagValue(stepnode, "filter_string"));
 				filter[0].setFilterLastLine(YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filter_is_last_line")));
+				filter[0].setFilterPositive(YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filter_is_positive")));
 			}
 			else
 			{
@@ -938,7 +940,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 					}
 
 					filter[i].setFilterLastLine(YES.equalsIgnoreCase(XMLHandler.getTagValue(fnode, "filter_is_last_line")));
-				}
+    				filter[i].setFilterPositive(YES.equalsIgnoreCase(XMLHandler.getTagValue(fnode, "filter_is_positive")));
+                }
 			}
 
 			for (int i = 0; i < nrfields; i++)
@@ -1091,6 +1094,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 				filter[i].setFilterPosition((int) rep.getStepAttributeInteger(id_step, i, "filter_position"));
 				filter[i].setFilterString(rep.getStepAttributeString(id_step, i, "filter_string"));
 				filter[i].setFilterLastLine(rep.getStepAttributeBoolean(id_step, i, "filter_is_last_line"));
+				filter[i].setFilterPositive(rep.getStepAttributeBoolean(id_step, i, "filter_is_positive"));
 			}
 
 			for (int i = 0; i < nrfields; i++)
@@ -1196,6 +1200,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "filter_position", filter[i].getFilterPosition());
 				rep.saveStepAttribute(id_transformation, id_step, i, "filter_string", filter[i].getFilterString());
 				rep.saveStepAttribute(id_transformation, id_step, i, "filter_is_last_line", filter[i].isFilterLastLine());
+				rep.saveStepAttribute(id_transformation, id_step, i, "filter_is_positive", filter[i].isFilterPositive());
 			}
 
 			for (int i = 0; i < inputFields.length; i++)

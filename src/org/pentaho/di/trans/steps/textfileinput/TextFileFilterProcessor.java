@@ -9,7 +9,7 @@
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
-*/
+ */
 package org.pentaho.di.trans.steps.textfileinput;
 
 /**
@@ -18,74 +18,83 @@ package org.pentaho.di.trans.steps.textfileinput;
  * 
  * @author Sven Boden
  */
-public class TextFileFilterProcessor
-{
+public class TextFileFilterProcessor {
+
     /** The filters to process */
     private TextFileFilter filters[];
-    
     private boolean stopProcessing;
 
     /**
      * @param filters        The filters to process
      */
-    public TextFileFilterProcessor(TextFileFilter filters[])
-    {
-       this.filters = filters;
-       this.stopProcessing = false;
-       
-       if ( filters.length == 0 )
-       {
-    	   // This makes processing faster in case there are no filters.
-    	   filters = null;
-       }
+    public TextFileFilterProcessor(TextFileFilter filters[]) {
+        this.filters = filters;
+        this.stopProcessing = false;
+
+        if (filters.length == 0) {
+            // This makes processing faster in case there are no filters.
+            filters = null;
+        }
     }
 
-    public boolean doFilters(String line)
-    {    	
-    	if ( filters == null )
-    		return true;
-    	
-    	boolean filterOK = true;  // if false: skip this row
-    	
-	    for (int f = 0; f < filters.length && filterOK; f++)
-	    {
-		    TextFileFilter filter = filters[f];
-		    if (filter.getFilterString() != null && filter.getFilterString().length() > 0)
-		    {
-			    int from = filter.getFilterPosition();
-			    if (from >= 0)
-			    {
-				    int to = from + filter.getFilterString().length();
-				    if (line.length() >= from && line.length() >= to)
-				    {
-					    String sub = line.substring(filter.getFilterPosition(), to);
-					    if (sub.equalsIgnoreCase(filter.getFilterString()))
-					    {
-						    filterOK = false; // skip this one!
-					    }
-				    }
-			    }
-			    else
-			    // anywhere on the line
-			    {
-				    int idx = line.indexOf(filter.getFilterString());
-				    if (idx >= 0)
-				    {
-  					    filterOK = false;
-				    }
-			    }
+    public boolean doFilters(String line) {
+        if (filters == null) {
+            return true;
+        }
 
-			    if (!filterOK)
-			    {
-			    	boolean isFilterLastLine=filter.isFilterLastLine();
-				    if ( isFilterLastLine )
-				    {
-					    stopProcessing = true;
-				    }
-				}
-			}
-		}
-	    return filterOK;
+        boolean filterOK = true;  // if false: skip this row
+        boolean positiveMode = false;
+        boolean positiveMatchFound = false;
+
+        // If we have at least one positive filter, we enter positiveMode
+        // Negative filters will always take precendence, meaning that the line
+        // is skipped if one of them is found
+        
+        for (int f = 0; f < filters.length && filterOK; f++) {
+            TextFileFilter filter = filters[f];
+            if (filter.isFilterPositive())
+                positiveMode = true;
+
+            if (filter.getFilterString() != null && filter.getFilterString().length() > 0) {
+                int from = filter.getFilterPosition();
+                if (from >= 0) {
+                    int to = from + filter.getFilterString().length();
+                    if (line.length() >= from && line.length() >= to) {
+                        String sub = line.substring(filter.getFilterPosition(), to);
+                        if (sub.equalsIgnoreCase(filter.getFilterString())) {
+                            if (filter.isFilterPositive()) {
+                                positiveMatchFound = true;
+                            } else {
+                                filterOK = false; // skip this one!
+                            }
+                        }
+                    }
+                } else // anywhere on the line
+                {
+                    int idx = line.indexOf(filter.getFilterString());
+                    if (idx >= 0) {
+                        if (filter.isFilterPositive()) {
+                            positiveMatchFound = true;
+                        } else {
+                            filterOK = false; // skip this one!
+                        }
+                    }
+                }
+
+                if (!filterOK) {
+                    boolean isFilterLastLine = filter.isFilterLastLine();
+                    if (isFilterLastLine) {
+                        stopProcessing = true;
+                    }
+                }
+            }
+        }
+
+        // Positive mode and no match found? Discard the line
+        if (filterOK && positiveMode && !positiveMatchFound)
+            filterOK = false;
+
+        return filterOK;
     }
 
     /**
@@ -94,7 +103,7 @@ public class TextFileFilterProcessor
      * 
      * @return == true: processing should stop, == false: processing should continue.
      */
-	public boolean isStopProcessing() {
-		return stopProcessing;
-	}    
+    public boolean isStopProcessing() {
+        return stopProcessing;
+    }
 }

@@ -23,17 +23,23 @@ public class TextFileFilter implements Cloneable
     /** True if we want to stop when we reach a filter line */
     private boolean            filterLastLine;
 
+    /** True if we want to match only this lines */
+    private boolean            filterPositive;
+
     /**
      * @param filterPosition The position of the occurrence of the filter string to check at
      * @param filterString   The string to filter on
      * @param filterLastLine True if we want to stop when we reach a filter string on the specified position
      *                       False if you just want to skip the line.
+     * @param filterPositive True if we want to get only lines that match this string
+     *
      */
-    public TextFileFilter(int filterPosition, String filterString, boolean filterLastLine)
+    public TextFileFilter(int filterPosition, String filterString, boolean filterLastLine, boolean  filterPositive)
     {
         this.filterPosition = filterPosition;
         this.filterString   = filterString;
         this.filterLastLine = filterLastLine;
+        this.filterPositive = filterPositive;
     }
 
     public TextFileFilter()
@@ -67,6 +73,22 @@ public class TextFileFilter implements Cloneable
     public void setFilterLastLine(boolean filterLastLine)
     {
         this.filterLastLine = filterLastLine;
+    }
+
+    /**
+     * @return Returns the filterPositive.
+     */
+    public boolean isFilterPositive()
+    {
+        return filterPositive;
+    }
+
+    /**
+     * @param filterPositive The filterPositive to set.
+     */
+    public void setFilterPositive(boolean filterPositive)
+    {
+        this.filterPositive = filterPositive;
     }
 
     /**

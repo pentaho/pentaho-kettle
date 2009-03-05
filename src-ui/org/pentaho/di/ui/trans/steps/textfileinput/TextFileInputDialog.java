@@ -1902,11 +1902,13 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             {
              new ColumnInfo(Messages.getString("TextFileInputDialog.FilterStringColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("TextFileInputDialog.FilterPositionColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("TextFileInputDialog.StopOnFilterColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO )
+             new ColumnInfo(Messages.getString("TextFileInputDialog.StopOnFilterColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO ),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.FilterPositiveColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO )
             };
         
         colinf[2].setToolTip(Messages.getString("TextFileInputDialog.StopOnFilterColumn.Tooltip"));
-        
+        colinf[3].setToolTip(Messages.getString("TextFileInputDialog.FilterPositiveColumn.Tooltip"));
+
         wFilter=new TableView(transMeta, wFilterComp, 
                               SWT.FULL_SELECTION | SWT.MULTI, 
                               colinf, 
@@ -2182,6 +2184,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             if (filter.getFilterString()  !=null) item.setText(1, filter.getFilterString());
             if (filter.getFilterPosition()>=0   ) item.setText(2, ""+filter.getFilterPosition());
             item.setText(3, filter.isFilterLastLine()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
+            item.setText(4, filter.isFilterPositive()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
         }
         
         // Date locale
@@ -2363,6 +2366,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             filter.setFilterString( item.getText(1) );
             filter.setFilterPosition( Const.toInt(item.getText(2), -1) );
             filter.setFilterLastLine( Messages.getString("System.Combo.Yes").equalsIgnoreCase( item.getText(3) ) );
+            filter.setFilterPositive( Messages.getString("System.Combo.Yes").equalsIgnoreCase( item.getText(4) ) );
         }
         // Error handling fields...
         meta.setErrorIgnored( wErrorIgnored.getSelection() );
