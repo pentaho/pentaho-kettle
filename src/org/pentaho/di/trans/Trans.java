@@ -199,6 +199,7 @@ public class Trans implements VariableSpace, NamedParams
 		if (log.isDebug()) log.logDebug(toString(), Messages.getString("Trans.Log.NumberOfStepsToRun",String.valueOf(transMeta.nrSteps()) ,String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
 		initializeVariablesFrom(transMeta);
 		copyParametersFrom(transMeta);
+		transMeta.activateParameters();
 		
         // This is needed for e.g. database 'unique' connections.
         threadName = Thread.currentThread().getName();
@@ -240,6 +241,7 @@ public class Trans implements VariableSpace, NamedParams
 			transMeta.initializeVariablesFrom(parentVariableSpace);
 			initializeVariablesFrom(parentVariableSpace);
 			transMeta.copyParametersFrom(this);
+			transMeta.activateParameters();
 			
 	        // This is needed for e.g. database 'unique' connections.
 	        threadName = Thread.currentThread().getName();			
