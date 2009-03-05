@@ -4192,9 +4192,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					tiDbTitle.setText(STRING_CONNECTIONS);
 					tiDbTitle.setImage(guiResource.getImageBol());
 
+					String[] dbNames = new String[jobMeta.nrDatabases()];
+					for (int i=0;i<dbNames.length;i++) dbNames[i]=jobMeta.getDatabase(i).getName();
+					Arrays.sort(dbNames, new Comparator<String>() { public int compare(String o1, String o2) { return o1.compareToIgnoreCase(o2); } });
+
 					// Draw the connections themselves below it.
-					for (int i = 0; i < jobMeta.nrDatabases(); i++) {
-						DatabaseMeta databaseMeta = jobMeta.getDatabase(i);
+					for (int i = 0; i < dbNames.length; i++) {
+						DatabaseMeta databaseMeta = jobMeta.findDatabase(dbNames[i]);
 						TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
 						tiDb.setText(databaseMeta.getName());
 						if (databaseMeta.isShared())
@@ -4247,8 +4251,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 					// Put the slaves below it.
 					//
-					for (int i = 0; i < jobMeta.getSlaveServers().size(); i++) {
-						SlaveServer slaveServer = jobMeta.getSlaveServers().get(i);
+					String[] slaveNames = jobMeta.getSlaveServerNames();					
+					Arrays.sort(slaveNames, new Comparator<String>() { public int compare(String o1, String o2) { return o1.compareToIgnoreCase(o2); } });
+
+					for (int i = 0; i < slaveNames.length ; i++) {
+						SlaveServer slaveServer = jobMeta.findSlaveServer(slaveNames[i]);
 						TreeItem tiSlave = new TreeItem(tiSlaveTitle, SWT.NONE);
 						tiSlave.setText(slaveServer.getName());
 						tiSlave.setImage(guiResource.getImageBol());
