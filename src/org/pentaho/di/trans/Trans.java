@@ -569,7 +569,17 @@ public class Trans implements VariableSpace, NamedParams
         StepInitThread initThreads[] = new StepInitThread[steps.size()];
         Thread[] threads = new Thread[steps.size()];
 
+        // Grab the error code in case we're doing a preview
+        // In that case we're going to propagate the log to the exception...
+        //
+        Log4jStringAppender initAppender = null;
+        if (preview) {
+        	initAppender = LogWriter.createStringAppender();
+        	log.addAppender(initAppender);
+        }
+        
         // Initialize all the threads...
+        //
 		for (int i=0;i<steps.size();i++)
 		{
 			final StepMetaDataCombi sid=steps.get(i);
@@ -614,6 +624,12 @@ public class Trans implements VariableSpace, NamedParams
             }
         }
         
+        // That's all the log we need
+        //
+        if (initAppender!=null) {
+        	log.removeAppender(initAppender);
+        }
+        
 		if (!ok)
 		{
             // Halt the other threads as well, signal end-of-the line to the outside world...
@@ -644,7 +660,13 @@ public class Trans implements VariableSpace, NamedParams
             //
             finished.set(true);
             
-            throw new KettleException(Messages.getString("Trans.Log.FailToInitializeAtLeastOneStep")); //$NON-NLS-1
+            // Pass along the log during preview.  Otherwise it becomes hard to see what went wrong.
+            //
+            if (initAppender!=null) {
+            	throw new KettleException(Messages.getString("Trans.Log.FailToInitializeAtLeastOneStep")+Const.CR+initAppender.getBuffer()); //$NON-NLS-1
+            } else {
+            	throw new KettleException(Messages.getString("Trans.Log.FailToInitializeAtLeastOneStep")+Const.CR); //$NON-NLS-1
+            }
 		}
         
         readyToStart=true;

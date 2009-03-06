@@ -1419,5 +1419,29 @@
 		</tooltip>
 		<image-uri>ui/images/WSL.png</image-uri>
 	</step>
+
+	<step id="CsvInput">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CsvInput")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.csvinput.CsvInputMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CsvInput")
+		</tooltip>
+		<image-uri>ui/images/TFI.png</image-uri>
+	</step>
+
+	<step id="ParallelGzipCsvInput">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ParallelGzipCsvInput")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.parallelgzipcsv.ParGzipCsvInputMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ParallelGzipCsvInput")
+		</tooltip>
+		<image-uri>ui/images/TFI.png</image-uri>
+	</step>
 	
 </steps>

@@ -56,9 +56,11 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.formula.FormulaMeta;
 import org.pentaho.di.trans.steps.formula.FormulaMetaFunction;
 import org.pentaho.di.trans.steps.formula.Messages;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.libformula.ui.editor.LibFormulaEditor;
 
 public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -75,6 +77,8 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
     
     private Map<String, Integer> inputFields;
     private ColumnInfo[] colinf;
+    
+    private String[]	fieldNames;
 
 	public FormulaDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -152,7 +156,7 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
                     new ColumnInfo(Messages.getString("FormulaDialog.Precision.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
                     new ColumnInfo(Messages.getString("FormulaDialog.Replace.Column"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {  } ),
                };   
-        
+
         wFields=new TableView(transMeta, shell, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
                               colinf, 
@@ -198,6 +202,29 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
             }
         };
         new Thread(runnable).start();
+        
+        
+        colinf[1].setSelectionAdapter(new SelectionAdapter() {
+        	public void widgetSelected(SelectionEvent e) {
+        		if (fieldNames==null) return;
+        		
+        		TableView tv = (TableView)e.widget;
+        		TableItem item = tv.table.getItem(e.y);
+        		String formula = item.getText(e.x);
+        		
+        		try {
+        			LibFormulaEditor libFormulaEditor = new LibFormulaEditor(shell, SWT.APPLICATION_MODAL, Const.NVL(formula, ""), fieldNames);
+        			formula = libFormulaEditor.open();
+        			if (formula!=null) {
+        				tv.setText(formula, e.x, e.y);
+        			}
+        		}
+        		catch(Exception ex) {
+                    new ErrorDialog(shell, "Error", "There was an unexpected error in the formula editor", ex);
+        		}
+        		
+        	}
+		});
         
         wFields.addModifyListener(new ModifyListener()
             {
@@ -265,7 +292,7 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
         
         shell.getDisplay().syncExec(new Runnable()
             {
-                public void run()
+				public void run()
                 {
                     // Add the newly create fields.
                     //
@@ -286,6 +313,7 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
                     Const.sortStrings(fieldNames);
                     
                     colinf[5].setComboValues(fieldNames);
+                    FormulaDialog.this.fieldNames = fieldNames;
                 }
             }
         );

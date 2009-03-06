@@ -9,7 +9,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.*/
  
-package org.pentaho.di.trans.steps.csvinput;
+package org.pentaho.di.trans.steps.parallelgzipcsv;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,12 +50,12 @@ import org.w3c.dom.Node;
 
 
 /**
- * @since 2007-07-05
+ * @since 2009-03-06
  * @author matt
- * @version 3.0
+ * @version 3.2
  */
 
-public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, InputFileMetaInterface
+public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterface, InputFileMetaInterface
 {
 	private String filename;
 	
@@ -82,7 +82,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 	
 	private String encoding;
 	
-	public CsvInputMeta()
+	public ParGzipCsvInputMeta()
 	{
 		super(); // allocate BaseStepMeta
 		allocate(0);
@@ -337,36 +337,36 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("CsvInputMeta.CheckResult.NotReceivingFields"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ParGzipCsvInputMeta.CheckResult.NotReceivingFields"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("CsvInputMeta.CheckResult.StepRecevingData",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("ParGzipCsvInputMeta.CheckResult.StepRecevingData",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("CsvInputMeta.CheckResult.StepRecevingData2"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("ParGzipCsvInputMeta.CheckResult.StepRecevingData2"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("CsvInputMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ParGzipCsvInputMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}
 	
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
 	{
-		return new CsvInput(stepMeta, stepDataInterface, cnr, tr, trans);
+		return new ParGzipCsvInput(stepMeta, stepDataInterface, cnr, tr, trans);
 	}
 	
 	public StepDataInterface getStepData()
 	{
-		return new CsvInputData();
+		return new ParGzipCsvInputData();
 	}
 
 	/**

@@ -2994,6 +2994,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         //
         trans = new Trans(transMeta);
         trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
+        trans.setPreview(true);
         trans.prepareExecution(args);
 
         // Add the row listeners to the allocated threads
