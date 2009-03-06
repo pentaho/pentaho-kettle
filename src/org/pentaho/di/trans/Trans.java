@@ -161,6 +161,7 @@ public class Trans implements VariableSpace, NamedParams
     public static final String STRING_INITIALIZING = "Initializing";
     public static final String STRING_WAITING      = "Waiting";
     public static final String STRING_STOPPED      = "Stopped";
+    public static final String STRING_HALTING      = "Halting";
 
 	private boolean safeModeEnabled;
 
@@ -733,6 +734,7 @@ public class Trans implements VariableSpace, NamedParams
 					}
 					
 					finished.set(true);
+					running=false; // no longer running
 				}
 			};
 		addTransListener(transListener);
@@ -2001,25 +2003,30 @@ public class Trans implements VariableSpace, NamedParams
     {
         String message;
         
-        if (isStopped()) 
-        {
-        	message = STRING_STOPPED;
-        }
-        else
         if (running)
         {
-            if (isFinished())
+            if (isStopped()) 
             {
-                message = STRING_FINISHED;
-                if (getResult().getNrErrors()>0) message+=" (with errors)";
+            	message = STRING_HALTING;
             }
             else
             {
-                message = STRING_RUNNING;
+	            if (isFinished())
+	            {
+	                message = STRING_FINISHED;
+	                if (getResult().getNrErrors()>0) message+=" (with errors)";
+	            }
+	            else
+	            {
+	                message = STRING_RUNNING;
+	            }
             }
         }
-        else
-        if (preparing)
+        else if (isStopped())
+        {
+        	message = STRING_STOPPED;
+        }
+        else if (preparing)
         {
             message = STRING_PREPARING;
         }

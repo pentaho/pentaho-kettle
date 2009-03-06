@@ -25,7 +25,7 @@ package org.pentaho.di.trans.step;
 public interface StepDataInterface
 {
 	public static final int STATUS_EMPTY         = 0;
-	public static final int STATUS_INIT          = 1; // Initialising step
+	public static final int STATUS_INIT          = 1; // Initializing step
 	public static final int STATUS_RUNNING       = 2; // Running
 	public static final int STATUS_IDLE          = 3; // Waiting to be run, after init
 	public static final int STATUS_FINISHED      = 4; // finished after running
@@ -33,6 +33,7 @@ public interface StepDataInterface
 	public static final int STATUS_DISPOSED      = 6; // cleaned out, step is gone
     public static final int STATUS_HALTED        = 7; // Not launching because init failed 
 	public static final int STATUS_PAUSED        = 8; // Paused
+    public static final int STATUS_HALTING       = 9; // Stopped but not done killing sub-processes (db queries etc)
     
 	public void setStatus(int status);
 	public int getStatus();

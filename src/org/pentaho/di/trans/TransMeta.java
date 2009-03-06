@@ -6265,7 +6265,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 				fullname = fileObject.getName().getPath();
 			}
 			
-			String exportFileName = resourceNamingInterface.nameResource(baseName, originalPath, extension);
+			String exportFileName = resourceNamingInterface.nameResource(baseName, originalPath, extension, ResourceNamingInterface.FileNamingType.TRANSFORMATION);
 			ResourceDefinition definition = definitions.get(exportFileName);
 			if (definition == null) {
 				// If we do this once, it will be plenty :-)

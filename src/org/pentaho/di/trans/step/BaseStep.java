@@ -132,6 +132,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
             Messages.getString("BaseStep.status.Disposed"), 
             Messages.getString("BaseStep.status.Halted"), 
             Messages.getString("BaseStep.status.Paused"), 
+            Messages.getString("BaseStep.status.Halting"), 
     	};
 
     private TransMeta                    transMeta;
@@ -2520,18 +2521,53 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 
     public int getStatus()
     {
-    	if (isStopped()) return StepDataInterface.STATUS_STOPPED;
-        if (isPaused()) return StepDataInterface.STATUS_PAUSED;
-        if (isAlive()) return StepDataInterface.STATUS_RUNNING;
-
-        // Get the rest in StepDataInterface object:
-        StepDataInterface sdi = trans.getStepDataInterface(stepname, stepcopy);
-        if (sdi != null)
-        {
-            if (sdi.getStatus() == StepDataInterface.STATUS_DISPOSED && !isAlive()) return StepDataInterface.STATUS_FINISHED;
-            return sdi.getStatus();
-        }
-        return StepDataInterface.STATUS_EMPTY;
+    	// Is this thread alive or not?
+    	//
+    	if (isAlive()) {
+    		if (isStopped()) {
+    			return StepDataInterface.STATUS_HALTING;
+    		} else {
+    			if (isPaused()) {
+    				return StepDataInterface.STATUS_PAUSED;
+    			} else {
+    				return StepDataInterface.STATUS_RUNNING;
+    			}
+    		}
+    	} 
+    	else
+    	{
+    		// Thread not running... What are we doing?
+    		//
+			// An init thread is running...
+    		//
+    		if (trans.isInitializing()) {
+        		if (isInitialising()) {
+        			return StepDataInterface.STATUS_INIT;
+        		} else {
+        			// Done initializing, but other threads are still busy.
+        			// So this step is idle
+        			//
+        			return StepDataInterface.STATUS_IDLE;
+        		}
+    		}
+    		else {
+    			// It's not running, it's not initializing, so what is it doing?
+    			//
+        		if (isStopped()) {
+        	    	return StepDataInterface.STATUS_STOPPED;
+        		} else {
+        			// To be sure (race conditions and all), get the rest in StepDataInterface object:
+        			// 
+        			StepDataInterface sdi = trans.getStepDataInterface(stepname, stepcopy);
+        			if (sdi != null)
+        			{
+        				if (sdi.getStatus() == StepDataInterface.STATUS_DISPOSED && !isAlive()) return StepDataInterface.STATUS_FINISHED;
+        				return sdi.getStatus();
+        			}
+        			return StepDataInterface.STATUS_EMPTY;
+        		}
+    		}
+    	}
     }
 
     /**

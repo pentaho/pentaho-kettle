@@ -184,7 +184,8 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
         log.logBasic(toString(), Messages.getString("JobEntryDelay.MaximumTimeReset.Label", String.valueOf(iMaximumTimeout), String.valueOf(Waitscale))); //$NON-NLS-1$
       }
 
-      // TODO don't contineously loop, but sleeping would be better.
+      // Loop until the delay time has expired.
+      //
       while (continueLoop && !parentJob.isStopped())
       {
         // Update Time value
@@ -203,14 +204,11 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
         }
         else
         {
-        	try {
-				Thread.sleep(100);
-			} catch (Exception e) {
-				// handling this exception would be kind of silly.
-			}
+			Thread.sleep(100);
         }
       }
-    } catch (Exception e)
+    } 
+    catch (Exception e)
     {
       // We get an exception
       result.setResult(false);

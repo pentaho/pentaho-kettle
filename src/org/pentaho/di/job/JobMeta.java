@@ -2760,7 +2760,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				fullname = fileObject.getName().getPath();
 			}
 			
-			resourceName = namingInterface.nameResource(baseName, originalPath, extension); //$NON-NLS-1$
+			resourceName = namingInterface.nameResource(baseName, originalPath, extension, ResourceNamingInterface.FileNamingType.JOB); //$NON-NLS-1$
 			ResourceDefinition definition = definitions.get(resourceName);
 			if (definition == null) {
 				// If we do this once, it will be plenty :-)

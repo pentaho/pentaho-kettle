@@ -18,9 +18,6 @@ package org.pentaho.di.trans.steps.formula;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.jfree.formula.lvalues.LValue;
-import org.jfree.formula.lvalues.TypeValuePair;
-import org.jfree.formula.parser.FormulaParser;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -34,6 +31,9 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.reporting.libraries.formula.lvalues.LValue;
+import org.pentaho.reporting.libraries.formula.lvalues.TypeValuePair;
+import org.pentaho.reporting.libraries.formula.parser.FormulaParser;
 
 
 

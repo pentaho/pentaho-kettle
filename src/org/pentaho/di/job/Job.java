@@ -216,6 +216,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	{
 		try
 		{
+			stopped=false;
 			finished=false;
             initialized = true;
     
@@ -245,7 +246,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
             addErrors(1);  // This can be before actual execution
             active=false;
             finished=true;
-            stopped=true;
+            stopped=false;
 		}
 		finally
 		{
@@ -289,7 +290,8 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	private Result execute(boolean fireJobListeners) throws KettleException
     {
 		finished=false;
-        
+		stopped=false;
+
         // Start the tracking...
         JobEntryResult jerStart = new JobEntryResult(null, Messages.getString("Job.Comment.JobStarted"), Messages.getString("Job.Reason.Started"), null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
@@ -553,7 +555,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	                threadExceptions.add(new KettleException(Messages.getString("Job.Log.UnexpectedErrorWhileWaitingForJobEntry",nextEntry.getName()), e));
 				}
 			}
-			if(log.isBasic()) log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.FinishedJobEntry",startpoint.getName()));
+			// if(log.isBasic()) log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.FinishedJobEntry",startpoint.getName(),res.getResult()+""));
 		}
 		
 		// Perhaps we don't have next steps??
@@ -1148,7 +1150,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
         	{
         		if (stopped) 
         		{
-        			message = Trans.STRING_STOPPED;
+        			message = Trans.STRING_HALTING;
         		}
         		else
         		{
@@ -1157,7 +1159,14 @@ public class Job extends Thread implements VariableSpace, NamedParams
         	}
         	else
         	{
-        		message = Trans.STRING_FINISHED;
+        		if (stopped) 
+        		{
+        			message = Trans.STRING_STOPPED;
+        		}
+        		else
+        		{
+	        		message = Trans.STRING_FINISHED;
+        		}
                 if (result!=null && result.getNrErrors()>0)
                 {
                 	message+=" (with errors)";

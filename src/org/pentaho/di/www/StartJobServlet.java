@@ -26,6 +26,7 @@ import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobConfiguration;
 import org.pentaho.di.trans.StepLoader;
 
 
@@ -90,12 +91,20 @@ public class StartJobServlet extends HttpServlet
             		//
             		// We might need to re-connect to the database
             		//
-            		if (!job.getRep().getRepositoryInfo().isLocked())
+            		if (job.getRep()!=null && !job.getRep().getRepositoryInfo().isLocked())
             		{
             			job.getRep().connect(toString());
             		}
 
-            		job = new Job(LogWriter.getInstance(), StepLoader.getInstance(), job.getRep(), job.getJobMeta());
+            		// Create a new job object to start from a sane state.  Then replace the new job in the job map
+            		//
+            		synchronized(jobMap) {
+	            		JobConfiguration jobConfiguration = jobMap.getConfiguration(jobName);
+	            		Job newJob = new Job(LogWriter.getInstance(), StepLoader.getInstance(), job.getRep(), job.getJobMeta());
+	            		jobMap.removeJob(jobName);
+	            		jobMap.addJob(jobName, newJob, jobConfiguration);
+	            		job=newJob;
+            		}
             	}
             	
                 // Log to a String & save appender for re-use later.

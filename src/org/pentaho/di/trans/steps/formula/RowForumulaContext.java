@@ -5,21 +5,21 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jfree.formula.ContextEvaluationException;
-import org.jfree.formula.DefaultErrorValue;
-import org.jfree.formula.DefaultFormulaContext;
-import org.jfree.formula.ErrorValue;
-import org.jfree.formula.FormulaContext;
-import org.jfree.formula.LocalizationContext;
-import org.jfree.formula.function.FunctionRegistry;
-import org.jfree.formula.operators.OperatorFactory;
-import org.jfree.formula.typing.Type;
-import org.jfree.formula.typing.TypeRegistry;
-import org.jfree.formula.typing.coretypes.AnyType;
-import org.jfree.util.Configuration;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.reporting.libraries.base.config.Configuration;
+import org.pentaho.reporting.libraries.formula.ContextEvaluationException;
+import org.pentaho.reporting.libraries.formula.DefaultFormulaContext;
+import org.pentaho.reporting.libraries.formula.ErrorValue;
+import org.pentaho.reporting.libraries.formula.FormulaContext;
+import org.pentaho.reporting.libraries.formula.LibFormulaErrorValue;
+import org.pentaho.reporting.libraries.formula.LocalizationContext;
+import org.pentaho.reporting.libraries.formula.function.FunctionRegistry;
+import org.pentaho.reporting.libraries.formula.operators.OperatorFactory;
+import org.pentaho.reporting.libraries.formula.typing.Type;
+import org.pentaho.reporting.libraries.formula.typing.TypeRegistry;
+import org.pentaho.reporting.libraries.formula.typing.coretypes.AnyType;
 
 public class RowForumulaContext implements FormulaContext
 {
@@ -61,7 +61,7 @@ public class RowForumulaContext implements FormulaContext
                 int index = rowMeta.indexOfValue((String) name);
                 if (index<0)
                 {
-                	ErrorValue errorValue = new DefaultErrorValue((String)name, -1, "Value with name '"+name+"' could not be found in the row.");
+                	ErrorValue errorValue = new LibFormulaErrorValue(LibFormulaErrorValue.ERROR_INVALID_ARGUMENT);
     				throw new ContextEvaluationException(errorValue);
                 }
                 valueMeta = rowMeta.getValueMeta(index);
@@ -72,8 +72,7 @@ public class RowForumulaContext implements FormulaContext
             try {
 				return getPrimitive(valueMeta, valueData);
 			} catch (KettleValueException e) {
-				ErrorValue errorValue = new DefaultErrorValue(valueMeta.getName(), -1, e.toString());
-				throw new ContextEvaluationException(errorValue);
+				throw new ContextEvaluationException(LibFormulaErrorValue.ERROR_ARITHMETIC_VALUE);
 			}
         }
         return null;

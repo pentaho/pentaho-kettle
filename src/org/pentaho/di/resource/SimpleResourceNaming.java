@@ -40,7 +40,7 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
     this.fileSystemPrefix = fileSystemPrefix;
   }
   
-  public String nameResource(String prefix, String originalFilePath, String extension) {
+  public String nameResource(String prefix, String originalFilePath, String extension, FileNamingType namingType) {
     //
     // End result could look like any of the following:
     //

@@ -16,11 +16,12 @@
 
 package org.pentaho.di.trans.steps.formula;
 
-import org.jfree.formula.lvalues.LValue;
-import org.jfree.formula.parser.FormulaParser;
+
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.reporting.libraries.formula.lvalues.LValue;
+import org.pentaho.reporting.libraries.formula.parser.FormulaParser;
 
 /**
  * @author Matt
