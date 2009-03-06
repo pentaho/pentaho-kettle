@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
@@ -48,6 +49,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -58,15 +60,18 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.insertupdate.InsertUpdateMeta;
 import org.pentaho.di.trans.steps.insertupdate.Messages;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
+import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.core.database.Database;
+
 
 
 
@@ -110,6 +115,9 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
     private ColumnInfo[] ciKey;
     
     private ColumnInfo[] ciReturn;
+    
+	private Button     wDoMapping;
+	private FormData   fdDoMapping;
 	
 	/**
 	 * List of ColumnInfo that should have the field names of the selected database table
@@ -336,6 +344,17 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 		fdGetLU.top   = new FormAttachment(wlReturn, margin);
 		fdGetLU.right = new FormAttachment(100, 0);
 		wGetLU.setLayoutData(fdGetLU);
+		
+		
+		wDoMapping = new Button(shell, SWT.PUSH);
+		wDoMapping.setText(Messages.getString("InsertUpdateDialog.EditMapping.Label")); //$NON-NLS-1$
+		fdDoMapping = new FormData();
+		fdDoMapping.top   = new FormAttachment(wGetLU, margin);
+		fdDoMapping.right = new FormAttachment(100, 0);
+		wDoMapping.setLayoutData(fdDoMapping);
+
+		wDoMapping.addListener(SWT.Selection, new Listener() { 	public void handleEvent(Event arg0) { generateMappings();}});
+
 
 		fdReturn = new FormData();
 		fdReturn.left = new FormAttachment(0, 0);
@@ -480,7 +499,108 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
         // return fields
         ciReturn[1].setComboValues(fieldNames);
     }
-	
+	/**
+	 * Reads in the fields from the previous steps and from the ONE next step and opens an 
+	 * EnterMappingDialog with this information. After the user did the mapping, those information 
+	 * is put into the Select/Rename table.
+	 */
+	private void generateMappings() {
+
+		// Determine the source and target fields...
+		//
+		RowMetaInterface sourceFields;
+		RowMetaInterface targetFields;
+
+		try {
+			sourceFields = transMeta.getPrevStepFields(stepMeta);
+		} catch(KettleException e) {
+			new ErrorDialog(shell, Messages.getString("InsertUpdateDialog.DoMapping.UnableToFindSourceFields.Title"), Messages.getString("InsertUpdateDialog.DoMapping.UnableToFindSourceFields.Message"), e);
+			return;
+		}
+		// refresh data
+		input.setDatabaseMeta(transMeta.findDatabase(wConnection.getText()) );
+		input.setTableName(transMeta.environmentSubstitute(wTable.getText()));
+		StepMetaInterface stepMetaInterface = stepMeta.getStepMetaInterface();
+		try {
+			targetFields = stepMetaInterface.getRequiredFields(transMeta);
+		} catch (KettleException e) {
+			new ErrorDialog(shell, Messages.getString("InsertUpdateDialog.DoMapping.UnableToFindTargetFields.Title"), Messages.getString("InsertUpdateDialog.DoMapping.UnableToFindTargetFields.Message"), e);
+			return;
+		}
+
+		String[] inputNames = new String[sourceFields.size()];
+		for (int i = 0; i < sourceFields.size(); i++) {
+			ValueMetaInterface value = sourceFields.getValueMeta(i);
+			inputNames[i] = value.getName()+
+			     EnterMappingDialog.STRING_ORIGIN_SEPARATOR+value.getOrigin()+")";
+		}
+
+		// Create the existing mapping list...
+		//
+		List<SourceToTargetMapping> mappings = new ArrayList<SourceToTargetMapping>();
+		StringBuffer missingSourceFields = new StringBuffer();
+		StringBuffer missingTargetFields = new StringBuffer();
+
+		int nrFields = wReturn.nrNonEmpty();
+		for (int i = 0; i < nrFields ; i++) {
+			TableItem item = wReturn.getNonEmpty(i);
+			String source = item.getText(2);
+			String target = item.getText(1);
+			
+			int sourceIndex = sourceFields.indexOfValue(source); 
+			if (sourceIndex<0) {
+				missingSourceFields.append(Const.CR + "   " + source+" --> " + target);
+			}
+			int targetIndex = targetFields.indexOfValue(target);
+			if (targetIndex<0) {
+				missingTargetFields.append(Const.CR + "   " + source+" --> " + target);
+			}
+			if (sourceIndex<0 || targetIndex<0) {
+				continue;
+			}
+
+			SourceToTargetMapping mapping = new SourceToTargetMapping(sourceIndex, targetIndex);
+			mappings.add(mapping);
+		}
+
+		// show a confirm dialog if some missing field was found
+		//
+		if (missingSourceFields.length()>0 || missingTargetFields.length()>0){
+			
+			String message="";
+			if (missingSourceFields.length()>0) {
+				message+=Messages.getString("InsertUpdateDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString())+Const.CR;
+			}
+			if (missingTargetFields.length()>0) {
+				message+=Messages.getString("InsertUpdateDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString())+Const.CR;
+			}
+			message+=Const.CR;
+			message+=Messages.getString("InsertUpdateDialog.DoMapping.SomeFieldsNotFoundContinue")+Const.CR;
+			boolean goOn = MessageDialog.openConfirm(shell, Messages.getString("InsertUpdateDialog.DoMapping.SomeFieldsNotFoundTitle"), message);
+			if (!goOn) {
+				return;
+			}
+		}
+		EnterMappingDialog d = new EnterMappingDialog(InsertUpdateDialog.this.shell, sourceFields.getFieldNames(), targetFields.getFieldNames(), mappings);
+		mappings = d.open();
+
+		// mappings == null if the user pressed cancel
+		//
+		if (mappings!=null) {
+			// Clear and re-populate!
+			//
+			wReturn.table.removeAll();
+			wReturn.table.setItemCount(mappings.size());
+			for (int i = 0; i < mappings.size(); i++) {
+				SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
+				TableItem item = wReturn.table.getItem(i);
+				item.setText(2, sourceFields.getValueMeta(mapping.getSourcePosition()).getName());
+				item.setText(1, targetFields.getValueMeta(mapping.getTargetPosition()).getName());
+			}
+			wReturn.setRowNums();
+			wReturn.optWidth(true);
+		}
+	}
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 

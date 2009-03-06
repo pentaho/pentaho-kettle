@@ -1,23 +1,13 @@
- /**********************************************************************
- **                                                                   **
- **               This code belongs to the KETTLE project.            **
- **                                                                   **
- ** Kettle, from version 2.2 on, is released into the public domain   **
- ** under the Lesser GNU Public License (LGPL).                       **
- **                                                                   **
- ** For more details, please read the document LICENSE.txt, included  **
- ** in this project                                                   **
- **                                                                   **
- ** http://www.kettle.be                                              **
- ** info@kettle.be                                                    **
- **                                                                   **
- **********************************************************************/
-
-
-/*
- * Created on 2-jul-2003
- *  
- */
+ /* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
+ * This software was developed by Pentaho Corporation and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. If you need a copy of the license, 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
+ * Data Integration.  The Initial Developer is Samatar Hassan.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
+ * the license for the specific language governing your rights and limitations.*/
 
 
 package org.pentaho.di.ui.trans.steps.synchronizeaftermerge;
@@ -28,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -60,6 +51,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -71,10 +63,12 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.synchronizeaftermerge.SynchronizeAfterMergeMeta;
 import org.pentaho.di.trans.steps.synchronizeaftermerge.Messages;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
+import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -164,7 +158,9 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 	
 	private boolean gotPreviousFields=false;
 	
-	
+	private Button     wDoMapping;
+	private FormData   fdDoMapping;
+
 	
 	/**
 	 * List of ColumnInfo that should have the field names of the selected database table
@@ -480,6 +476,16 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 		fdReturn.bottom = new FormAttachment(100, -2*margin);
 		wReturn.setLayoutData(fdReturn);
 		
+		
+		wDoMapping = new Button(wGeneralComp, SWT.PUSH);
+		wDoMapping.setText(Messages.getString("SynchronizeAfterMergeDialog.EditMapping.Label")); //$NON-NLS-1$
+		fdDoMapping = new FormData();
+		fdDoMapping.top   = new FormAttachment(wGetLU, margin);
+		fdDoMapping.right = new FormAttachment(100, 0);
+		wDoMapping.setLayoutData(fdDoMapping);
+
+		wDoMapping.addListener(SWT.Selection, new Listener() { 	public void handleEvent(Event arg0) { generateMappings();}});
+
 		
 	    // 
         // Search the fields in the background
@@ -802,6 +808,109 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 				display.sleep();
 		}
 		return stepname;
+	}
+	/**
+	 * Reads in the fields from the previous steps and from the ONE next step and opens an 
+	 * EnterMappingDialog with this information. After the user did the mapping, those information 
+	 * is put into the Select/Rename table.
+	 */
+	private void generateMappings() {
+
+		// Determine the source and target fields...
+		//
+		RowMetaInterface sourceFields;
+		RowMetaInterface targetFields;
+
+		try {
+			sourceFields = transMeta.getPrevStepFields(stepMeta);
+		} catch(KettleException e) {
+			new ErrorDialog(shell, Messages.getString("SynchronizeAfterMergeDialog.DoMapping.UnableToFindSourceFields.Title"), Messages.getString("SynchronizeAfterMergeDialog.DoMapping.UnableToFindSourceFields.Message"), e);
+			return;
+		}
+
+		// refresh data
+		input.setDatabaseMeta(transMeta.findDatabase(wConnection.getText()) );
+		input.setTableName(transMeta.environmentSubstitute(wTable.getText()));
+		StepMetaInterface stepMetaInterface = stepMeta.getStepMetaInterface();
+		try {
+			targetFields = stepMetaInterface.getRequiredFields(transMeta);
+		} catch (KettleException e) {
+			new ErrorDialog(shell, Messages.getString("SynchronizeAfterMergeDialog.DoMapping.UnableToFindTargetFields.Title"), Messages.getString("SynchronizeAfterMergeDialog.DoMapping.UnableToFindTargetFields.Message"), e);
+			return;
+		}
+
+		String[] inputNames = new String[sourceFields.size()];
+		for (int i = 0; i < sourceFields.size(); i++) {
+			ValueMetaInterface value = sourceFields.getValueMeta(i);
+			inputNames[i] = value.getName()+
+			     EnterMappingDialog.STRING_ORIGIN_SEPARATOR+value.getOrigin()+")";
+		}
+
+		// Create the existing mapping list...
+		//
+		List<SourceToTargetMapping> mappings = new ArrayList<SourceToTargetMapping>();
+		StringBuffer missingSourceFields = new StringBuffer();
+		StringBuffer missingTargetFields = new StringBuffer();
+
+		int nrFields = wReturn.nrNonEmpty();
+		for (int i = 0; i < nrFields ; i++) {
+			TableItem item = wReturn.getNonEmpty(i);
+			String source = item.getText(2);
+			String target = item.getText(1);
+			
+			int sourceIndex = sourceFields.indexOfValue(source); 
+			if (sourceIndex<0) {
+				missingSourceFields.append(Const.CR + "   " + source+" --> " + target);
+			}
+			int targetIndex = targetFields.indexOfValue(target);
+			if (targetIndex<0) {
+				missingTargetFields.append(Const.CR + "   " + source+" --> " + target);
+			}
+			if (sourceIndex<0 || targetIndex<0) {
+				continue;
+			}
+
+			SourceToTargetMapping mapping = new SourceToTargetMapping(sourceIndex, targetIndex);
+			mappings.add(mapping);
+		}
+
+		// show a confirm dialog if some missing field was found
+		//
+		if (missingSourceFields.length()>0 || missingTargetFields.length()>0){
+			
+			String message="";
+			if (missingSourceFields.length()>0) {
+				message+=Messages.getString("SynchronizeAfterMergeDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString())+Const.CR;
+			}
+			if (missingTargetFields.length()>0) {
+				message+=Messages.getString("SynchronizeAfterMergeDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString())+Const.CR;
+			}
+			message+=Const.CR;
+			message+=Messages.getString("SynchronizeAfterMergeDialog.DoMapping.SomeFieldsNotFoundContinue")+Const.CR;
+			boolean goOn = MessageDialog.openConfirm(shell, Messages.getString("SynchronizeAfterMergeDialog.DoMapping.SomeFieldsNotFoundTitle"), message);
+			if (!goOn) {
+				return;
+			}
+		}
+		EnterMappingDialog d = new EnterMappingDialog(SynchronizeAfterMergeDialog.this.shell, sourceFields.getFieldNames(), targetFields.getFieldNames(), mappings);
+		mappings = d.open();
+
+		// mappings == null if the user pressed cancel
+		//
+		if (mappings!=null) {
+			// Clear and re-populate!
+			//
+			wReturn.table.removeAll();
+			wReturn.table.setItemCount(mappings.size());
+			for (int i = 0; i < mappings.size(); i++) {
+				SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
+				TableItem item = wReturn.table.getItem(i);
+				item.setText(2, sourceFields.getValueMeta(mapping.getSourcePosition()).getName());
+				item.setText(1, targetFields.getValueMeta(mapping.getTargetPosition()).getName());
+			}
+			wReturn.setRowNums();
+			wReturn.optWidth(true);
+		}
 	}
 	private void setTableFieldCombo(){
 		Runnable fieldLoader = new Runnable() {

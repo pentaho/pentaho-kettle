@@ -928,7 +928,10 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 				new ErrorDialog(shell, Messages.getString("TableOutputDialog.DoMapping.UnableToFindSourceFields.Title"), Messages.getString("TableOutputDialog.DoMapping.UnableToFindSourceFields.Message"), e);
 				return;
 			}
-
+			
+			// refresh data
+			input.setDatabaseMeta(transMeta.findDatabase(wConnection.getText()) );
+			input.setTablename(transMeta.environmentSubstitute(wTable.getText()));
 			StepMetaInterface stepMetaInterface = stepMeta.getStepMetaInterface();
 			try {
 				targetFields = stepMetaInterface.getRequiredFields(transMeta);
