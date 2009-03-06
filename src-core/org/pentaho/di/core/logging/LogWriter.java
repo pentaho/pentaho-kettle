@@ -25,6 +25,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.apache.log4j.Priority;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -75,15 +76,16 @@ public class LogWriter
             Messages.getString("LogWriter.Level.Rowlevel.LongDesc"),
 		};
 	
+	public static final String STRING_PENTAHO_DI_LOGGER_NAME = "org.pentaho.di";
+	public static final String STRING_PENTAHO_DI_CONSOLE_APPENDER = "ConsoleAppender:"+STRING_PENTAHO_DI_LOGGER_NAME;
+	
 	// String...
 	private int type;
 	private int level;
 	private String filter;
     
     // Log4j
-    private Logger               rootLogger;
-    private Log4jConsoleAppender consoleAppender;
-    private Log4jStringAppender  stringAppender;
+    private Logger               pentahoLogger;
     private Log4jFileAppender    fileAppender;
     
     private File realFilename;
@@ -112,18 +114,37 @@ public class LogWriter
     
     private LogWriter()
     {
-        rootLogger = Logger.getRootLogger();
-        layout = new Log4jKettleLayout(true);
-        
-        // Create the console appender, don't add it yet!
-        consoleAppender = new Log4jConsoleAppender();
-        consoleAppender.setLayout(layout);
-        consoleAppender.setName("AppendToConsole");
+        pentahoLogger = Logger.getLogger(STRING_PENTAHO_DI_LOGGER_NAME);
+        pentahoLogger.setAdditivity(false);
 
-        // Create the string appender, don't add it yet!
-        stringAppender  = new Log4jStringAppender();
-        stringAppender.setLayout(layout);
-        stringAppender.setName("AppendToString");
+        // ensure all messages get logged in this logger since we filtered it above
+        // we do not set the level in the rootLogger so the rootLogger can decide by itself (e.g. in the platform) 
+		//
+        pentahoLogger.setLevel(Level.ALL); 
+
+        layout = new Log4jKettleLayout();
+        
+        // Add a console logger to see something on the console as well...
+        //
+        boolean consoleAppenderFound = false;
+        Enumeration<?> appenders = pentahoLogger.getAllAppenders();
+        while (appenders.hasMoreElements()) {
+			Appender appender = (Appender) appenders.nextElement();
+			if (appender instanceof ConsoleAppender) {
+				consoleAppenderFound = true;
+				break;
+			}
+		}
+        
+        // Play it safe, if another console appender exists for org.pentaho, don't add another one...
+        //
+        if (!consoleAppenderFound) {
+        	Layout patternLayout = new PatternLayout("%-5p %d{dd-MM HH:mm:ss,SSS} - %m%n");
+        	ConsoleAppender consoleAppender = new ConsoleAppender(patternLayout);
+        	consoleAppender.setName(STRING_PENTAHO_DI_CONSOLE_APPENDER);
+        	pentahoLogger.addAppender(consoleAppender);
+        }
+        
     }
 
 	// Default: screen --> out
@@ -131,31 +152,6 @@ public class LogWriter
 	{
         this();
 
-        // Check if there already is a console appender (ConsoleAppender) (in the app server for example)
-        // 
-        boolean found = false;
-        Enumeration<?> appenders = rootLogger.getAllAppenders();
-        
-        // Set the logging level for the Jackcess stuff to INFO...
-        // TODO: make some kind of general configuration possible for this, load from file, etc.
-        Logger.getLogger("com.healthmarketscience.jackcess").setLevel(Level.INFO);
-
-        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
-        System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "info");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.auth", "warn");
-        
-        while(appenders.hasMoreElements())
-        {
-            Object appender = appenders.nextElement();
-            if (appender instanceof ConsoleAppender || appender instanceof Log4jConsoleAppender) found=true;
-        }
-
-        if (!found)
-        {
-            rootLogger.addAppender(consoleAppender);
-        }
-        
 		level  = lvl;
 		filter = null;
 	}
@@ -177,7 +173,7 @@ public class LogWriter
 			
 			// OK, see if we have a file appender already for this 
 			//
-			if (logWriter.rootLogger.getAppender(LogWriter.createFileAppenderName(filename, exact))==null)
+			if (logWriter.pentahoLogger.getAppender(LogWriter.createFileAppenderName(filename, exact))==null)
 			{
 				logWriter.fileAppender = createFileAppender(filename, exact);
                 logWriter.addAppender(logWriter.fileAppender);
@@ -195,7 +191,7 @@ public class LogWriter
 	public static final void closeAndRemoveFileAppender() {
 		if (logWriter.fileAppender!=null) {
 			logWriter.fileAppender.close();
-			logWriter.rootLogger.removeAppender(logWriter.fileAppender);
+			logWriter.pentahoLogger.removeAppender(logWriter.fileAppender);
 		}
 	}
 	
@@ -303,7 +299,7 @@ public class LogWriter
     }
 
     public static void setConsoleAppenderDebug() {
-        Enumeration<?> appenders = Logger.getRootLogger().getAllAppenders();
+        Enumeration<?> appenders = Logger.getLogger(STRING_PENTAHO_DI_LOGGER_NAME).getAllAppenders();
         
         while(appenders.hasMoreElements())
         {
@@ -332,14 +328,14 @@ public class LogWriter
 		try
 		{
 			// Close all appenders...
-            Logger logger = Logger.getRootLogger();
-            Enumeration<?> loggers = logger.getAllAppenders();
-            while (loggers.hasMoreElements())
+            Logger logger = Logger.getLogger(STRING_PENTAHO_DI_LOGGER_NAME);
+            Enumeration<?> appenders = logger.getAllAppenders();
+            while (appenders.hasMoreElements())
             {
-                Appender appender = (Appender) loggers.nextElement();
+                Appender appender = (Appender) appenders.nextElement();
                 appender.close();
             }
-            rootLogger.removeAllAppenders();
+            pentahoLogger.removeAllAppenders();
             logWriter=null;
 		}
 		catch(Exception e) 
@@ -375,40 +371,6 @@ public class LogWriter
 		return log_level_desc_long[level];
 	}
 	
-    /**
-     * @deprecated : get the layout and use that object
-     */
-	public void enableTime()
-	{
-        ((Log4jKettleLayout)layout).setTimeAdded(true);
-	}
-
-    /**
-     * @deprecated : get the layout and use that object
-     */
-	public void disableTime()
-	{
-        ((Log4jKettleLayout)layout).setTimeAdded(false);
-	}
-	
-    /**
-     * @deprecated : get the layout and use that object
-     * @return true is the time is added
-     */
-	public boolean getTime()
-	{
-        return ((Log4jKettleLayout)layout).isTimeAdded();
-	}
-
-    /**
-     * @deprecated : get the layout and use that object
-     * @param tim true is the time has to be is added
-     */
-	public void setTime(boolean tim)
-	{
-        ((Log4jKettleLayout)layout).setTimeAdded(tim);
-	}
-
 	public void println(int lvl, String msg)
 	{
 		println(lvl, "General", msg);
@@ -434,20 +396,14 @@ public class LogWriter
             }
         }
 		        
-        // Where did this come from???
-        Logger logger = Logger.getLogger(subject);
-        // ensure all messages get logged in this logger since we filtered it above
-        // we do not set the level in the rootLogger so the rootLogger can decide by itself (e.g. in the plattform) 
-        logger.setLevel(Level.ALL); 
-        
         Log4jMessage message = new Log4jMessage(msg, subject, lvl);
         
         switch(lvl)
         {
-        case LOG_LEVEL_ERROR:    logger.error(message); break;
+        case LOG_LEVEL_ERROR:    pentahoLogger.error(message); break;
         case LOG_LEVEL_ROWLEVEL: 
-        case LOG_LEVEL_DEBUG:    logger.debug(message); break;
-        default:                 logger.info(message); break;
+        case LOG_LEVEL_DEBUG:    pentahoLogger.debug(message); break;
+        default:                 pentahoLogger.info(message); break;
         }
 	}
 	
@@ -461,15 +417,6 @@ public class LogWriter
 		String stackTrace = Const.getStackTracker(e);
 		println(LOG_LEVEL_ERROR, subject, message); 
 		println(LOG_LEVEL_ERROR, subject, stackTrace); 
-	}
-	
-    /**
-     *  @deprecated  Please get the file appender yourself and work from there.
-     *   
-     */
-	public Object getStream() 
-    {
-		return null; // Will fail so that people fix this.
 	}
 	
 	public void setFilter(String filter)
@@ -529,8 +476,7 @@ public class LogWriter
      */
     public FileInputStream getFileInputStream(String filename, boolean exact) throws IOException
     {
-        Logger logger = Logger.getRootLogger();
-        Appender appender = logger.getAppender(createFileAppenderName(filename, exact));
+        Appender appender = pentahoLogger.getAppender(createFileAppenderName(filename, exact));
         if (appender==null)
         {
             throw new IOException("Unable to find appender for file: "+filename+" (exact="+exact+")");
@@ -573,86 +519,22 @@ public class LogWriter
     {
         this.realFilename = realFilename;
     }
-    
-
-    public void startStringCapture()
-    {
-        Logger logger = Logger.getRootLogger();
-        logger.addAppender(stringAppender);
-    }
-    
-
-    public void endStringCapture()
-    {
-        Logger logger = Logger.getRootLogger();
-        logger.removeAppender(stringAppender);
-    }
-
-    /**
-     * @deprecated please create your own StringAppender, otherwise this is not thread safe!
-     * @return The logging text from since startStringCapture() is called until endStringCapture().
-     */
-    public String getString()
-    {
-        return stringAppender.getBuffer().toString();
-    }
-
-    /**
-     * @deprecated please create your own StringAppender, otherwise this is not thread safe!
-     * @param string the string to set on the string appender buffer
-     */
-    public void setString(String string)
-    {
-        stringAppender.setBuffer(new StringBuffer(string));
-    }
 
     public void addAppender(Appender appender)
     {
-        Logger logger = Logger.getRootLogger();
-        logger.addAppender(appender);
+        pentahoLogger.addAppender(appender);
     }
     
     public void removeAppender(Appender appender)
     {
-        Logger logger = Logger.getRootLogger();
-        logger.removeAppender(appender);
-    }
-
-    public Log4jConsoleAppender getConsoleAppender()
-    {
-        return consoleAppender;
-    }
-    
-    /**
-     * @deprecated please create your own StringAppender, otherwise this is not thread safe!
-     * @return the string appender
-     */
-    public Log4jStringAppender getStringAppender()
-    {
-        return stringAppender;
-    }
-
-    /**
-     * @return the rootLogger
-     */
-    public Logger getRootLogger()
-    {
-        return rootLogger;
-    }
-
-    /**
-     * @param rootLogger the rootLogger to set
-     */
-    public void setRootLogger(Logger rootLogger)
-    {
-        this.rootLogger = rootLogger;
+        pentahoLogger.removeAppender(appender);
     }
     
     public static void setLayout(Layout layout)
     {
         LogWriter.layout = layout; // save for later creation of new files...
         
-        Enumeration<?> appenders = getInstance().getRootLogger().getAllAppenders();
+        Enumeration<?> appenders = logWriter.pentahoLogger.getAllAppenders();
         while (appenders.hasMoreElements())
         {
             Appender appender = (Appender) appenders.nextElement();

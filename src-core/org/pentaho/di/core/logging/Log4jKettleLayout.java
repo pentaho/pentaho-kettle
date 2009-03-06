@@ -32,7 +32,12 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
 	public static final String ERROR_STRING = "ERROR";
     
     private boolean timeAdded;
-    
+
+    public Log4jKettleLayout()
+    {
+    	this(true);
+    }
+
     public Log4jKettleLayout(boolean addTime)
     {
         this.timeAdded = addTime;

@@ -35,6 +35,11 @@
          <param name="ConversionPattern" value="%-5p %d{dd-MM HH:mm:ss,SSS} - %m%n"/>
       </layout>
    </appender>
+   
+   <category name="org.pentaho">
+      <priority value="DEBUG"/>
+   </category>
+   
 
    <category name="com.healthmarketscience.jackcess">
       <priority value="INFO"/>
