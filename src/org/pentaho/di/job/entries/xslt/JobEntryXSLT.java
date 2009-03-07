@@ -269,10 +269,13 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 									// did not find wildcard
 									realoutputfilename=realoutputfilename + "_" + StringUtil.getFormattedDateTimeNow(true);
 								}
-							    if(log.isDebug()) log.logDebug(toString(),  Messages.getString("JobEntryXSLT.OuputFileExists1.Label") +
-										realoutputfilename +  Messages.getString("JobEntryXSLT.OuputFileExists2.Label"));
-								log.logDebug(toString(), Messages.getString("JobEntryXSLT.OuputFileNameChange1.Label") + realoutputfilename +
-								Messages.getString("JobEntryXSLT.OuputFileNameChange2.Label"));
+							    if(log.isDebug())
+							    {
+							    	log.logDebug(toString(),  Messages.getString("JobEntryXSLT.OuputFileExists1.Label") +
+							    	realoutputfilename +  Messages.getString("JobEntryXSLT.OuputFileExists2.Label"));
+							    	log.logDebug(toString(), Messages.getString("JobEntryXSLT.OuputFileNameChange1.Label") + realoutputfilename +
+							    				Messages.getString("JobEntryXSLT.OuputFileNameChange2.Label"));
+							    }
 							}
 
 						
