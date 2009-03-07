@@ -55,11 +55,18 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 		if (!openNextFile()) return null;
 			
 		// Build an empty row based on the meta-data		  
-		Object[] r=buildEmptyRow();
+		Object[] r;
 		try
 		{ 
 			// Create new row or clone
-			if(meta.isFileField())	 r = data.readrow.clone();
+			if (meta.isFileField())
+			{
+				r = data.readrow.clone();
+				r = RowDataUtil.resizeArray(r, data.outputRowMeta.size());
+			}else
+			{
+				r = RowDataUtil.allocateRowData(data.outputRowMeta.size());
+			}
 			
 			r[data.totalpreviousfields]=data.rownr;
 			
@@ -137,19 +144,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 		}
 	  
 	}
-	
-	/**
-	 * Build an empty row based on the meta-data...
-	 * 
-	 * @return
-	 */
 
-	private Object[] buildEmptyRow()
-	{
-        Object[] rowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
- 
-		 return rowData;
-	}
 	private boolean openNextFile()
 	{
 		if (data.last_file) return false; // Done!
