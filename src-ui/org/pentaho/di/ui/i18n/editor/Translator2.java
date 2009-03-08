@@ -862,7 +862,10 @@ public class Translator2
 	protected void search(String searchLocale) {
 		// Ask for the search string...
 		//
-		EnterStringDialog dialog = new EnterStringDialog(shell, Const.NVL(searchString, ""), Messages.getString("i18nDialog.SearchKey"),"Search the translated '"+searchLocale+"' strings in this package");
+		EnterStringDialog dialog = new EnterStringDialog(shell, Const.NVL(searchString, ""), 
+				Messages.getString("i18nDialog.SearchKey"),
+				Messages.getString("i18nDialog.SearchLocale1") + " '" +Const.NVL(searchLocale,"")+ "' "+
+				Messages.getString("i18nDialog.SearchLocale2"));
 		searchString = dialog.open();
 		
 		lastFoundKey = null;
