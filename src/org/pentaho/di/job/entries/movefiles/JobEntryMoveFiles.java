@@ -569,14 +569,14 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 							String shortfilename=sourcefilefolder.getName().getBaseName();
 							
 							try{
-							 shortfilename=getDestinationFilename(sourcefilefolder.getName().getBaseName());
+							 shortfilename=getDestinationFilename(shortfilename);
 							}catch (Exception e){
 								log.logError(toString(), Messages.getString(Messages.getString("JobMoveFiles.Error.GettingFilename",sourcefilefolder.getName().getBaseName(),e.toString())));
 								return entrystatus;
 							}
 							// Move the file to the destination folder				
 							
-							String destinationfilenamefull=destinationfilefolder.toString()+Const.FILE_SEPARATOR+shortfilename;
+							String destinationfilenamefull=KettleVFS.getFilename(destinationfilefolder)+Const.FILE_SEPARATOR+shortfilename;
 							FileObject destinationfile= KettleVFS.getFileObject(destinationfilenamefull);
 							
 							entrystatus=MoveFile(shortfilename,sourcefilefolder,destinationfile,movetofolderfolder,log,parentJob,result);
@@ -590,14 +590,14 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 							// return destination short filename
 							String shortfilename=destinationfile.getName().getBaseName();
 							try{
-							 shortfilename=getDestinationFilename(destinationfile.getName().getBaseName());
+							 shortfilename=getDestinationFilename(shortfilename);
 							}catch (Exception e)
 							{
 								log.logError(toString(), Messages.getString(Messages.getString("JobMoveFiles.Error.GettingFilename",sourcefilefolder.getName().getBaseName(),e.toString())));
 								return entrystatus;
 							}
 
-							String destinationfilenamefull=destinationfilefolder.getParent().toString()+Const.FILE_SEPARATOR+shortfilename;
+							String destinationfilenamefull=KettleVFS.getFilename(destinationfile.getParent())+Const.FILE_SEPARATOR+shortfilename;
 							destinationfile= KettleVFS.getFileObject(destinationfilenamefull);
 							
 							entrystatus=MoveFile(shortfilename,sourcefilefolder,destinationfile,movetofolderfolder,log,parentJob,result);
