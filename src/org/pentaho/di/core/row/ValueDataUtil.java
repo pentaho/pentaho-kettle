@@ -223,7 +223,7 @@ public class ValueDataUtil
         case ValueMetaInterface.TYPE_BIGNUMBER : 
             return metaA.getBigNumber(dataA).multiply( new BigDecimal(100) ).divide( metaB.getBigNumber(dataB), BigDecimal.ROUND_HALF_UP );
             
-        default: throw new KettleValueException("The 'percent1' function only works on numeric data" );
+        default: throw new KettleValueException("The 'A/B in %' function only works on numeric data" );
         }
     }
     
@@ -244,14 +244,12 @@ public class ValueDataUtil
         switch(metaA.getType())
         {
         case ValueMetaInterface.TYPE_NUMBER    : 
-            return new Double( metaA.getNumber(dataA).doubleValue()  - ( 100.0 * metaA.getNumber(dataA).doubleValue() / metaB.getNumber(dataB).doubleValue() ));
+            return new Double( metaA.getNumber(dataA).doubleValue()  - ( metaA.getNumber(dataA).doubleValue() * metaB.getNumber(dataB).doubleValue() / 100.0 ));
         case ValueMetaInterface.TYPE_INTEGER   : 
-            return new Long( metaA.getInteger(dataA).longValue() - ( 100 * metaA.getInteger(dataA).longValue() / metaB.getInteger(dataB).longValue() ));
+            return new Long( metaA.getInteger(dataA).longValue() - ( metaA.getInteger(dataA).longValue() * metaB.getInteger(dataB).longValue() * 100 ));
         case ValueMetaInterface.TYPE_BIGNUMBER : 
-            BigDecimal percentTotal = metaA.getBigNumber(dataA).multiply( new BigDecimal(100) ).divide( metaB.getBigNumber(dataB), BigDecimal.ROUND_HALF_UP );
-            return metaA.getBigNumber(dataA).subtract(percentTotal);
-            
-        default: throw new KettleValueException("The 'percent2' function only works on numeric data" );
+            return metaA.getBigNumber(dataA).subtract( metaA.getBigNumber(dataA).multiply(metaB.getBigNumber(dataB)).divide( new BigDecimal(100), BigDecimal.ROUND_HALF_UP ) );
+        default: throw new KettleValueException("The 'A-B%' function only works on numeric data" );
         }
     }
     
@@ -272,16 +270,14 @@ public class ValueDataUtil
         switch(metaA.getType())
         {
         case ValueMetaInterface.TYPE_NUMBER    : 
-            return new Double( metaA.getNumber(dataA).doubleValue()  + ( 100.0 * metaA.getNumber(dataA).doubleValue() / metaB.getNumber(dataB).doubleValue() ));
+            return new Double( metaA.getNumber(dataA).doubleValue()  + ( metaA.getNumber(dataA).doubleValue() * metaB.getNumber(dataB).doubleValue() / 100.0 ));
         case ValueMetaInterface.TYPE_INTEGER   : 
-            return new Long( metaA.getInteger(dataA).longValue() + ( 100 * metaA.getInteger(dataA).longValue() / metaB.getInteger(dataB).longValue() ));
+            return new Long( metaA.getInteger(dataA).longValue() + ( metaA.getInteger(dataA).longValue() * metaB.getInteger(dataB).longValue() * 100 ));
         case ValueMetaInterface.TYPE_BIGNUMBER : 
-            BigDecimal percentTotal = metaA.getBigNumber(dataA).multiply( new BigDecimal(100) ).divide( metaB.getBigNumber(dataB), BigDecimal.ROUND_HALF_UP );
-            return metaA.getBigNumber(dataA).add(percentTotal);
-            
-        default: throw new KettleValueException("The 'percent3' function only works on numeric data" );
+            return metaA.getBigNumber(dataA).add( metaA.getBigNumber(dataA).multiply(metaB.getBigNumber(dataB)).divide( new BigDecimal(100), BigDecimal.ROUND_HALF_UP ) );
+        default: throw new KettleValueException("The 'A+B%' function only works on numeric data" );
         }
-    }
+    }   
     
     /**
      * A + B * C
@@ -310,9 +306,7 @@ public class ValueDataUtil
         default: throw new KettleValueException("The 'combination1' function only works on numeric data" );
         }
     }
-    
-    
-    
+        
      /**
      * SQRT( A*A + B*B )
      *  

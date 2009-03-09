@@ -283,7 +283,7 @@ public class Calculator extends BaseStep implements StepInterface
                     break;
                 case CalculatorMetaFunction.CALC_PERCENT_3          :  // A + ( A * B / 100 )
                     {
-                        calcData[index] = ValueDataUtil.percent2(metaA, dataA, metaB, dataB);
+                        calcData[index] = ValueDataUtil.percent3(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_COMBINATION_1      :  // A + B * C
