@@ -1447,6 +1447,7 @@ public class RepositoryCreationHelper {
         table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
         table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
         table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0)); // 255 max length for now.
+        table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_LOG_SIZE_LIMIT, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0)); // 255 max length for now.
 		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_JOB_ID_JOB, false);
 
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
