@@ -350,7 +350,7 @@ public class RepositoryImportProgressDialog extends Dialog
                     Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
                     !askDirectory);
                 int answer = mb.open();
-                makeDirectory = answer == 0;
+                makeDirectory = (answer & 0xFF) == 0;
                 askDirectory = !mb.getToggleState();
 
                 // Cancel?
