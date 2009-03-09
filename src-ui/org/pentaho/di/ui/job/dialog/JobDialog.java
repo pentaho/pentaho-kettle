@@ -776,7 +776,7 @@ public class JobDialog extends Dialog
 		FormData fdlSharedObjectsFile = new FormData();
 		fdlSharedObjectsFile.left = new FormAttachment(0, 0);
 		fdlSharedObjectsFile.right= new FormAttachment(middle, -margin);
-		fdlSharedObjectsFile.top  = new FormAttachment(wLogfield, 3*margin);
+		fdlSharedObjectsFile.top  = new FormAttachment(wLogSizeLimit, 4*margin);
 		wlSharedObjectsFile.setLayoutData(fdlSharedObjectsFile);
 		wSharedObjectsFile=new TextVar(jobMeta, wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wlSharedObjectsFile.setToolTipText(Messages.getString("JobDialog.SharedObjectsFile.Tooltip"));
@@ -784,7 +784,7 @@ public class JobDialog extends Dialog
 		props.setLook(wSharedObjectsFile);
 		FormData fdSharedObjectsFile = new FormData();
 		fdSharedObjectsFile.left = new FormAttachment(middle, 0);
-		fdSharedObjectsFile.top  = new FormAttachment(wLogfield, 3*margin);
+		fdSharedObjectsFile.top  = new FormAttachment(wLogSizeLimit, 4*margin);
 		fdSharedObjectsFile.right= new FormAttachment(100, 0);
 		wSharedObjectsFile.setLayoutData(fdSharedObjectsFile);
 		wSharedObjectsFile.addModifyListener(new ModifyListener()

@@ -333,6 +333,7 @@ public class TransDialog extends Dialog
 		BaseStepDialog.setSize(shell);
 
 		changed = false;
+		sharedObjectsFileChanged = false;
 		
 		shell.open();
 		while (!shell.isDisposed())

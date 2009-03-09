@@ -2568,25 +2568,15 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     tid.setDirectoryChangeAllowed(allowDirectoryChange);
     TransMeta ti = tid.open();
 
-    // In this case, load shared objects
+    // Load shared objects
     //
-    if (tid.isSharedObjectsFileChanged()) {
-      try {
-        SharedObjects sharedObjects = transMeta.readSharedObjects(rep);
-        spoon.sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
-      } catch (Exception e) {
-        new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages
-            .getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTransGraphTabName(transMeta)), e);
-      }
-    }
-
     if (tid.isSharedObjectsFileChanged() || ti != null) {
       try {
         SharedObjects sharedObjects = transMeta.readSharedObjects(rep);
         spoon.sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
       } catch (KettleException e) {
-        new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages
-            .getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTransGraphTabName(transMeta)), e);
+        new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), 
+        		Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTransGraphTabName(transMeta)), e);
       }
       spoon.refreshTree();
       spoon.delegates.tabs.renameTabs(); // cheap operation, might as will do it anyway
