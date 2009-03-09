@@ -183,8 +183,8 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
         for (int i = 0; i < variableName.length; i++) {
           rep.saveJobEntryAttribute(id_job, getID(), i, "variable_name", variableName[i]); //$NON-NLS-1$
           rep.saveJobEntryAttribute(id_job, getID(), i, "variable_value", variableValue[i]); //$NON-NLS-1$
-          rep.saveStepAttribute(id_job, getID(), i, "variable_type",   getVariableTypeCode(variableType[i]));
-        }
+          rep.saveJobEntryAttribute(id_job, getID(), i, "variable_type",   getVariableTypeCode(variableType[i]));
+          }
       }
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(
