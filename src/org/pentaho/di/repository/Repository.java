@@ -612,6 +612,7 @@ public class Repository
 		boolean retval = true;
 		try
 		{
+			database.initializeVariablesFrom(null); 
 			database.connect();
             if (!ignoreVersion) verifyVersion();
 			setAutoCommit(false);
