@@ -140,7 +140,7 @@ public class RepositoryDirectory
 	}
 	
 	/**
-	 * Describe the complete path to ( and including) this directory, separated by the "file.separator" system property.
+	 * Describe the complete path to ( and including) this directory, separated by the RepositoryDirectory.DIRECTORY_SEPARATOR property (slash).
 	 * 
 	 * @return The complete path to this directory.
 	 */

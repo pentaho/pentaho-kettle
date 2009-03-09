@@ -465,7 +465,11 @@ public class RepositoryDialog
 		                		sql.append("-- Please note that it is possible to change/edit the generated SQL before execution.").append(Const.CR);
 		                		sql.append("--").append(Const.CR);
 		                		for (String statement : urpd.getGeneratedStatements()) {
-		                			sql.append(statement).append(";").append(Const.CR).append(Const.CR);
+		                			if (statement.endsWith(";")) {
+		                				sql.append(statement).append(Const.CR);
+		                			} else {
+		                				sql.append(statement).append(";").append(Const.CR).append(Const.CR);
+		                			}
 		                		}
 		                		SQLEditor editor = new SQLEditor(shell, SWT.NONE, rep.getDatabaseMeta(), DBCache.getInstance(), sql.toString());
 		                		editor.open();

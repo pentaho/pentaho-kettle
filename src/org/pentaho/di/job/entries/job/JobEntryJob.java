@@ -48,6 +48,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -367,8 +368,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 				directory = rep.getImportBaseDirectory().getPath() + directoryPath;
 			}
 			
-			if (directory==null) {
-				throw new KettleException("The value of directory may not be null");
+			if (directory == null) {
+				if (rep.getImportBaseDirectory()!=null) {
+					directory = rep.getImportBaseDirectory().getPath();
+				} else {
+					directory = new RepositoryDirectory().getPath(); // just pick the root directory
+				}
 			}
 
 			// Removed id_job as we do not know what it is if we are using variables in the path

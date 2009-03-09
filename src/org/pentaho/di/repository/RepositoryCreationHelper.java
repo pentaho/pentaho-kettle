@@ -166,7 +166,7 @@ public class RepositoryCreationHelper {
                     Boolean.valueOf(upgrade),
                 };
             if (dryrun) {
-            	sql = database.getSQLOutput(null, Repository.TABLE_R_VERSION, table, data, "yyyy/MM/dd HH:mm:ss");
+            	sql = database.getSQLOutput(null, Repository.TABLE_R_VERSION, table, data, null);
             	statements.add(sql);
             } else {
             	database.execStatement("INSERT INTO "+databaseMeta.getQuotedSchemaTableCombination(null, Repository.TABLE_R_VERSION)+" VALUES(?, ?, ?, ?, ?)", table, data);
@@ -240,7 +240,7 @@ public class RepositoryCreationHelper {
 					Object[] tableData = new Object[] { new Long(nextid), code[i], desc[i], };
 					
 					if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, table, tableData, "yyyy/MM/dd HH:mm:ss");
+		            	sql = database.getSQLOutput(null, tablename, table, tableData, null);
 		            	statements.add(sql);
 					} else {
 						database.setValuesInsert(table, tableData);
@@ -323,7 +323,7 @@ public class RepositoryCreationHelper {
                             desc[i],
                     };
 					if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, table, tableData, "yyyy/MM/dd HH:mm:ss");
+		            	sql = database.getSQLOutput(null, tablename, table, tableData, null);
 		            	statements.add(sql);
 					} else {
 						database.setValuesInsert(table, tableData);
@@ -568,11 +568,16 @@ public class RepositoryCreationHelper {
 		}
 
 		// In case of an update, the added column R_TRANSFORMATION.ID_DIRECTORY == NULL!!!
-        sql = "UPDATE " + schemaTable + " SET "+repository.quote(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY)+"=0 WHERE "+repository.quote(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" IS NULL";
-        statements.add(sql);
-		if (!dryrun) {
-			database.execStatement(sql);
-		}
+        //
+        sql = "SELECT * FROM "+schemaTable+" WHERE "+repository.quote(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" IS NULL";
+        List<Object[]> rows = database.getRows(sql, 1);
+        if (rows!=null && rows.size()>0) {
+	        sql = "UPDATE " + schemaTable + " SET "+repository.quote(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY)+"=0 WHERE "+repository.quote(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" IS NULL";
+	        statements.add(sql);
+			if (!dryrun) {
+				database.execStatement(sql);
+			}
+        }
 
 		if (monitor!=null) monitor.worked(1);
 
@@ -1362,7 +1367,7 @@ public class RepositoryCreationHelper {
                     tableData.addValue(new ValueMeta(Repository.FIELD_LOGLEVEL_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
 
                     if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), "yyyy/MM/dd HH:mm:ss");
+		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), null);
 		            	statements.add(sql);
 					} else {
 						database.setValuesInsert(tableData.getRowMeta(), tableData.getData());
@@ -1447,9 +1452,8 @@ public class RepositoryCreationHelper {
         table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
         table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
         table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0)); // 255 max length for now.
-        table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_LOG_SIZE_LIMIT, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0)); // 255 max length for now.
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_JOB_ID_JOB, false);
 
+        sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_JOB_ID_JOB, false);
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
 		{
         	statements.add(sql);
@@ -1754,7 +1758,7 @@ public class RepositoryCreationHelper {
                     tableData.addValue(new ValueMeta(Repository.FIELD_PROFILE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
 
                     if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), "yyyy/MM/dd HH:mm:ss");
+		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), null);
 		            	statements.add(sql);	
                     } else {
 						database.setValuesInsert(tableData);
@@ -1855,7 +1859,7 @@ public class RepositoryCreationHelper {
                     tableData.addValue(new ValueMeta(Repository.FIELD_USER_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.TRUE);
 
                     if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), "yyyy/MM/dd HH:mm:ss");
+		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), null);
 		            	statements.add(sql);	
                     } else {
 						database.setValuesInsert(tableData);
@@ -1939,7 +1943,7 @@ public class RepositoryCreationHelper {
                     tableData.addValue(new ValueMeta(Repository.FIELD_PERMISSION_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
 
                     if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), "yyyy/MM/dd HH:mm:ss");
+		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), null);
 		            	statements.add(sql);	
                     } else {
 						database.setValuesInsert(tableData);
@@ -2096,7 +2100,7 @@ public class RepositoryCreationHelper {
                     tableData.addValue(new ValueMeta(Repository.FIELD_PROFILE_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER), new Long(id_permission));
 
                     if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), "yyyy/MM/dd HH:mm:ss");
+		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), null);
 		            	statements.add(sql);	
                     } else {
 						database.setValuesInsert(tableData);
@@ -2153,7 +2157,7 @@ public class RepositoryCreationHelper {
 					table.addValue(new ValueMeta(Repository.FIELD_STEP_TYPE_HELPTEXT, ValueMetaInterface.TYPE_STRING), sp.getTooltip());
 	
 					if (dryrun) {
-		            	String sql = database.getSQLOutput(null, Repository.TABLE_R_STEP_TYPE, table.getRowMeta(), table.getData(), "yyyy/MM/dd HH:mm:ss");
+		            	String sql = database.getSQLOutput(null, Repository.TABLE_R_STEP_TYPE, table.getRowMeta(), table.getData(), null);
 		            	statements.add(sql);
 					} else {
 						database.prepareInsert(table.getRowMeta(), null, Repository.TABLE_R_STEP_TYPE);
@@ -2199,7 +2203,7 @@ public class RepositoryCreationHelper {
 	                table.addValue(new ValueMeta(Repository.FIELD_JOBENTRY_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), type_desc_long);
 	
 					if (dryrun) {
-		            	String sql = database.getSQLOutput(null, Repository.TABLE_R_JOBENTRY_TYPE, table.getRowMeta(), table.getData(), "yyyy/MM/dd HH:mm:ss");
+		            	String sql = database.getSQLOutput(null, Repository.TABLE_R_JOBENTRY_TYPE, table.getRowMeta(), table.getData(), null);
 		            	statements.add(sql);
 					} else {
 		                database.prepareInsert(table.getRowMeta(), null, Repository.TABLE_R_JOBENTRY_TYPE);

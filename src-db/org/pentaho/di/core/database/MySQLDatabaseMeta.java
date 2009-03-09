@@ -293,7 +293,8 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		case ValueMetaInterface.TYPE_STRING:
 			if (length>0)
 			{
-				     if (length<     256) retval+="VARCHAR("+length+")";
+				if (length==1) retval+="CHAR(1)";
+				else if (length<     256) retval+="VARCHAR("+length+")";
 				else if (length<   65536) retval+="TEXT";
 				else if (length<16777215) retval+="MEDIUMTEXT";
 				else retval+="LONGTEXT";

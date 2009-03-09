@@ -252,7 +252,6 @@ public class Repository
 	public static final String FIELD_JOB_PASS_BATCH_ID = "PASS_BATCH_ID";
 	public static final String FIELD_JOB_USE_LOGFIELD = "USE_LOGFIELD";
 	public static final String FIELD_JOB_SHARED_FILE = "SHARED_FILE";
-	public static final String FIELD_JOB_LOG_SIZE_LIMIT = "LOG_SIZE_LIMIT";
 
 	public static final String TABLE_R_LOGLEVEL               = "R_LOGLEVEL";
 	public static final String FIELD_LOGLEVEL_ID_LOGLEVEL = "ID_LOGLEVEL";
@@ -396,14 +395,6 @@ public class Repository
 	public static final String FIELD_TRANS_SLAVE_ID_TRANSFORMATION = "ID_TRANSFORMATION";
 	public static final String FIELD_TRANS_SLAVE_ID_SLAVE = "ID_SLAVE";
 
-	private static final String TRANS_ATTRIBUTE_PARAM_KEY         = "PARAM_KEY";
-	private static final String TRANS_ATTRIBUTE_PARAM_DEFAULT     = "PARAM_DEFAULT";
-	private static final String TRANS_ATTRIBUTE_PARAM_DESCRIPTION = "PARAM_DESC";
-	
-	private static final String JOB_ATTRIBUTE_PARAM_KEY           = "PARAM_KEY";
-	private static final String JOB_ATTRIBUTE_PARAM_DEFAULT       = "PARAM_DEFAULT";
-	private static final String JOB_ATTRIBUTE_PARAM_DESCRIPTION   = "PARAM_DESC";	
-
     public static final String repositoryTableNames[] = new String[] 
          { 
     		  TABLE_R_CLUSTER
@@ -498,6 +489,14 @@ public class Repository
 	public static final String TRANS_ATTRIBUTE_STEP_PERFORMANCE_CAPTURING_DELAY = "STEP_PERFORMANCE_CAPTURING_DELAY";
 	public static final String TRANS_ATTRIBUTE_STEP_PERFORMANCE_LOG_TABLE = "STEP_PERFORMANCE_LOG_TABLE";
 	public static final String TRANS_ATTRIBUTE_LOG_SIZE_LIMIT = "LOG_SIZE_LIMIT";
+	public static final String TRANS_ATTRIBUTE_PARAM_KEY         = "PARAM_KEY";
+	public static final String TRANS_ATTRIBUTE_PARAM_DEFAULT     = "PARAM_DEFAULT";
+	public static final String TRANS_ATTRIBUTE_PARAM_DESCRIPTION = "PARAM_DESC";
+	
+	public static final String JOB_ATTRIBUTE_PARAM_KEY           = "PARAM_KEY";
+	public static final String JOB_ATTRIBUTE_PARAM_DEFAULT       = "PARAM_DEFAULT";
+	public static final String JOB_ATTRIBUTE_PARAM_DESCRIPTION   = "PARAM_DESC";	
+	public static final String JOB_ATTRIBUTE_LOG_SIZE_LIMIT      = "LOG_SIZE_LIMIT";
 		
     private static Repository currentRepository;
     
@@ -1484,39 +1483,37 @@ public class Repository
 		if (transMeta.getMaxDateConnection()!=null) insertStepDatabase(transMeta.getId(), -1L, transMeta.getMaxDateConnection().getID());
 	}
 
-	public synchronized void insertJob(long id_job, long id_directory, String name, long id_database_log, String table_name_log,
-			String modified_user, Date modified_date, boolean useBatchId, boolean batchIdPassed, boolean logfieldUsed, 
-            String sharedObjectsFile, String description, String extended_description, String version, int status,
-			String created_user, Date created_date, String logSizeLimit) throws KettleException
+	public synchronized void insertJob(JobMeta jobMeta) throws KettleException
 	{
 		RowMetaAndData table = new RowMetaAndData();
+		
+		table.addValue(new ValueMeta(FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER), jobMeta.getID());
+		table.addValue(new ValueMeta(FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), jobMeta.getDirectory().getID());
+		table.addValue(new ValueMeta(FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING), jobMeta.getName());
+		table.addValue(new ValueMeta(FIELD_JOB_DESCRIPTION, ValueMetaInterface.TYPE_STRING), jobMeta.getDescription());
+		table.addValue(new ValueMeta(FIELD_JOB_EXTENDED_DESCRIPTION, ValueMetaInterface.TYPE_STRING), jobMeta.getExtendedDescription());
+		table.addValue(new ValueMeta(FIELD_JOB_JOB_VERSION, ValueMetaInterface.TYPE_STRING), jobMeta.getJobversion());
+		table.addValue(new ValueMeta(FIELD_JOB_JOB_STATUS, ValueMetaInterface.TYPE_INTEGER), new Long(jobMeta.getJobstatus()  <0 ? -1L : jobMeta.getJobstatus()));
 
-		table.addValue(new ValueMeta(FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
-		table.addValue(new ValueMeta(FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(id_directory));
-		table.addValue(new ValueMeta(FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING), name);
-		table.addValue(new ValueMeta(FIELD_JOB_DESCRIPTION, ValueMetaInterface.TYPE_STRING), description);
-		table.addValue(new ValueMeta(FIELD_JOB_EXTENDED_DESCRIPTION, ValueMetaInterface.TYPE_STRING), extended_description);
-		table.addValue(new ValueMeta(FIELD_JOB_JOB_VERSION, ValueMetaInterface.TYPE_STRING), version);
-		table.addValue(new ValueMeta(FIELD_JOB_JOB_STATUS, ValueMetaInterface.TYPE_INTEGER), new Long(status  <0 ? -1L : status));
+		table.addValue(new ValueMeta(FIELD_JOB_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER), jobMeta.getLogConnection()!=null ? jobMeta.getLogConnection().getID() : -1L);
+		table.addValue(new ValueMeta(FIELD_JOB_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING), jobMeta.getLogTable());
 
-		table.addValue(new ValueMeta(FIELD_JOB_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER), new Long(id_database_log));
-		table.addValue(new ValueMeta(FIELD_JOB_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING), table_name_log);
-
-		table.addValue(new ValueMeta(FIELD_JOB_CREATED_USER, ValueMetaInterface.TYPE_STRING), created_user);
-		table.addValue(new ValueMeta(FIELD_JOB_CREATED_DATE, ValueMetaInterface.TYPE_DATE), created_date);
-		table.addValue(new ValueMeta(FIELD_JOB_MODIFIED_USER, ValueMetaInterface.TYPE_STRING), modified_user);
-		table.addValue(new ValueMeta(FIELD_JOB_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE), modified_date);
-        table.addValue(new ValueMeta(FIELD_JOB_USE_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(useBatchId));
-        table.addValue(new ValueMeta(FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(batchIdPassed));
-        table.addValue(new ValueMeta(FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(logfieldUsed));
-        table.addValue(new ValueMeta(FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING), sharedObjectsFile);
-        table.addValue(new ValueMeta(FIELD_JOB_LOG_SIZE_LIMIT, ValueMetaInterface.TYPE_STRING), logSizeLimit);
-
+		table.addValue(new ValueMeta(FIELD_JOB_CREATED_USER, ValueMetaInterface.TYPE_STRING), jobMeta.getCreatedUser());
+		table.addValue(new ValueMeta(FIELD_JOB_CREATED_DATE, ValueMetaInterface.TYPE_DATE), jobMeta.getCreatedDate());
+		table.addValue(new ValueMeta(FIELD_JOB_MODIFIED_USER, ValueMetaInterface.TYPE_STRING), jobMeta.getModifiedUser());
+		table.addValue(new ValueMeta(FIELD_JOB_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE), jobMeta.getModifiedDate());
+        table.addValue(new ValueMeta(FIELD_JOB_USE_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isBatchIdUsed());
+        table.addValue(new ValueMeta(FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isBatchIdPassed());
+        table.addValue(new ValueMeta(FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isLogfieldUsed());
+        table.addValue(new ValueMeta(FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING), jobMeta.getSharedObjectsFile());
+        
 		database.prepareInsert(table.getRowMeta(), TABLE_R_JOB);
 		database.setValuesInsert(table);
 		database.insertRow();
         if (log.isDebug()) log.logDebug(toString(), "Inserted new record into table "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB)+" with data : " + table);
 		database.closeInsert();
+		
+        insertJobAttribute(jobMeta.getID(), 0, JOB_ATTRIBUTE_LOG_SIZE_LIMIT, 0, jobMeta.getLogSizeLimit());
 	}
 
 	public synchronized long insertNote(String note, long gui_location_x, long gui_location_y, long gui_location_width, long gui_location_height) throws KettleException
@@ -1735,7 +1732,9 @@ public class Repository
 
     public synchronized long insertJobAttribute(long id_job, long nr, String code, long value_num, String value_str) throws KettleException
     {
-        long id = getNextJobAttributeID();
+    	long id = getNextJobAttributeID();
+    	
+    	System.out.println("Insert job attribute : id_job="+id_job+", code="+code+", value_str="+value_str);
 
         RowMetaAndData table = new RowMetaAndData();
 
@@ -3821,7 +3820,7 @@ public class Repository
 
     public synchronized void delJobAttributes(long id_job) throws KettleException
     {
-        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_ATTRIBUTE)+" WHERE "+quote(FIELD_JOB_ATTRIBUTE_ID_JOB)+" = " + id_job;
+        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_ATTRIBUTE)+" WHERE "+quote(FIELD_JOB_ATTRIBUTE_ID_JOB)+" = " + id_job;
         database.execStatement(sql);
     }   
     
@@ -4145,11 +4144,11 @@ public class Repository
 		// log.logBasic(toString(), "Deleting info in repository on ID_JOB: "+id_job);
 
 		delJobNotes(id_job);
+		delJobAttributes(id_job);
 		delJobEntryAttributes(id_job);
 		delJobEntries(id_job);
 		delJobEntryCopies(id_job);
 		delJobHops(id_job);
-		delJobAttributes(id_job);
 		delJob(id_job);
 
 		// log.logBasic(toString(), "All deleted on job with ID_JOB: "+id_job);
@@ -4524,7 +4523,6 @@ public class Repository
 		this.useBatchProcessing = useBatchProcessing;
 	}
 	
-
 	/**
 	 * Set this directory during import to signal that job entries like Trans and Job need to point to job entries relative to this directory.
 	 * 
@@ -4532,7 +4530,6 @@ public class Repository
 	 */
 	public void setImportBaseDirectory(RepositoryDirectory importBaseDirectory) {
 		this.importBaseDirectory = importBaseDirectory;
-		
 	}
 	
 	/**

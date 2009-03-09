@@ -491,10 +491,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	protected void saveRepJob(Repository rep) throws KettleException {
 		try {
 			// The ID has to be assigned, even when it's a new item...
-			rep.insertJob(getID(), directory.getID(), getName(), logConnection == null ? -1 : logConnection.getID(), logTable,
-					modifiedUser, modifiedDate, useBatchId, batchIdPassed, logfieldUsed, sharedObjectsFile, description,
-					extendedDescription, jobVersion, jobStatus, created_user, created_date, logSizeLimit);					
-			
+			rep.insertJob(this);
 		} catch (KettleDatabaseException dbe) {
 			throw new KettleException(Messages.getString("JobMeta.Exception.UnableToSaveJobToRepository"), dbe); //$NON-NLS-1$
 		}
@@ -914,7 +911,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			useBatchId = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_batchid")); //$NON-NLS-1$ //$NON-NLS-2$
 			batchIdPassed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "pass_batchid")); //$NON-NLS-1$ //$NON-NLS-2$
 			logfieldUsed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_logfield")); //$NON-NLS-1$ //$NON-NLS-2$
-            logSizeLimit = XMLHandler.getTagValue(jobnode, "log", "size_limit_lines"); //$NON-NLS-1$ //$NON-NLS-2$
+            logSizeLimit = XMLHandler.getTagValue(jobnode, "size_limit_lines"); //$NON-NLS-1$ //$NON-NLS-2$
 
 			/*
 			 * read the job entries...
@@ -1353,7 +1350,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 					useBatchId = jobRow.getBoolean(Repository.FIELD_JOB_USE_BATCH_ID, false); //$NON-NLS-1$
 					batchIdPassed = jobRow.getBoolean(Repository.FIELD_JOB_PASS_BATCH_ID, false); //$NON-NLS-1$
 					logfieldUsed = jobRow.getBoolean(Repository.FIELD_JOB_USE_LOGFIELD, false); //$NON-NLS-1$
-					logSizeLimit = jobRow.getString(Repository.FIELD_JOB_LOG_SIZE_LIMIT, null); //$NON-NLS-1$
+					
+					// The log size limit is an attribute
+					//
+					logSizeLimit = rep.getJobAttributeString(getID(), 0, Repository.JOB_ATTRIBUTE_LOG_SIZE_LIMIT);
 	
 					if (monitor != null)
 						monitor.worked(1);

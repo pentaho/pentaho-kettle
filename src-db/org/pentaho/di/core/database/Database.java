@@ -43,6 +43,7 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -3303,7 +3304,6 @@ public class Database implements VariableSpace
 		
 		
 		if (semicolon) retval+=";";
-		retval+=Const.CR;
 		
 		return retval;
 	}
@@ -3361,27 +3361,19 @@ public class Database implements VariableSpace
 		}
 		
 		//
-		// OK, see if there are fields for wich we need to modify the type... (length, precision)
+		// OK, see if there are fields for which we need to modify the type... (length, precision)
 		//
 		RowMetaInterface modify = new RowMeta();
 		for (int i=0;i<fields.size();i++)
 		{
 			ValueMetaInterface desiredField = fields.getValueMeta(i);
 			ValueMetaInterface currentField = tabFields.searchValueMeta( desiredField.getName());
-			if (currentField!=null)
+			if (desiredField!=null && currentField!=null)
 			{
-                boolean mod = false;
-                
-                mod |= ( currentField.getLength()    < desiredField.getLength()    ) && desiredField.getLength()>0; 
-                mod |= ( currentField.getPrecision() < desiredField.getPrecision() ) && desiredField.getPrecision()>0;
+				String desiredDDL = databaseMeta.getFieldDefinition(desiredField, tk, pk, use_autoinc);
+				String currentDDL = databaseMeta.getFieldDefinition(currentField, tk, pk, use_autoinc);
 				
-				// Numeric values...
-				mod |= ( currentField.getType() != desiredField.getType() ) && ( currentField.isNumber()^desiredField.isNumeric() );
-				
-                // TODO: this is not an optimal way of finding out changes.
-                // Perhaps we should just generate the data types strings for existing and new data type and see if anything changed.
-                // 
-                
+                boolean mod = !desiredDDL.equalsIgnoreCase(currentDDL);
 				if (mod)
 				{
                     // System.out.println("Desired field: ["+desiredField.toStringMeta()+"], current field: ["+currentField.toStringMeta()+"]");
@@ -4669,20 +4661,51 @@ public class Database implements VariableSpace
 			
 		}
 		ins.append(") VALUES (");
-		
+
+		java.text.SimpleDateFormat[] fieldDateFormatters  = new java.text.SimpleDateFormat[fields.size()];
+
 		// new add values ...
 		for (int i=0;i<fields.size();i++)
 		{
+			ValueMetaInterface valueMeta = fields.getValueMeta(i);
+			Object valueData = r[i];
+			
+			
 			if (i>0) ins.append(",");
-			{
-				switch(fields.getValueMeta(i).getType()) {
+			
+			// Check for null values...
+			//
+			if (valueMeta.isNull(valueData)) {
+				ins.append("null");
+			} else {
+				// Normal cases...
+				//
+				switch(valueMeta.getType()) {
 				case ValueMetaInterface.TYPE_BOOLEAN:
 				case ValueMetaInterface.TYPE_STRING:
-					ins.append("'" + fields.getString(r,i) + "'") ;
+					String string = valueMeta.getString(valueData);
+					if (string.contains("'")) {
+						switch(databaseMeta.getDatabaseType()) {
+						case DatabaseMeta.TYPE_DATABASE_MYSQL: string = string.replace("'", "\\'"); break;
+						default: string.replace("'", "''"); break;
+						}
+					}
+					ins.append("'" + string + "'") ;
 					break;
 				case ValueMetaInterface.TYPE_DATE:
+					Date date = fields.getDate(r,i);
+					
 					if (Const.isEmpty(dateFormat))
-						ins.append("'" +  fields.getString(r,i)+ "'") ;
+						switch(databaseMeta.getDatabaseType()) {
+						case DatabaseMeta.TYPE_DATABASE_ORACLE :
+							if (fieldDateFormatters[i]==null) {
+								fieldDateFormatters[i]=new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+							}
+							ins.append("TO_DATE('").append(fieldDateFormatters[i].format(date)).append("', 'YYYY/MM/DD HH24:MI:SS')");
+							break;
+						default: 
+							ins.append("'" +  fields.getString(r,i)+ "'") ;
+						}
 					else
 					{
 						try 
@@ -4701,6 +4724,7 @@ public class Database implements VariableSpace
 					break;
 				}
 			}
+			
 		}
 		ins.append(')');
 		}catch (Exception e)

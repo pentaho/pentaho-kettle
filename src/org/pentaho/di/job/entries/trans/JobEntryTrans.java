@@ -49,6 +49,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -269,7 +270,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			filename = XMLHandler.getTagValue(entrynode, "filename") ;
 			transname = XMLHandler.getTagValue(entrynode, "transname") ;
 
-            directory = XMLHandler.getTagValue(entrynode, "directory");
+            directory = XMLHandler.getTagValue(entrynode, "k");
 
             argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
             execPerRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "exec_per_row") );
@@ -382,7 +383,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			super.saveRep(rep, id_job);
 
 			if (directory == null) {
-				throw new KettleException("The value of directory may not be null");
+				if (rep.getImportBaseDirectory()!=null) {
+					directory = rep.getImportBaseDirectory().getPath();
+				} else {
+					directory = new RepositoryDirectory().getPath(); // just pick the root directory
+				}
 			}
 
 			// Removed id_transformation as we do not know what it is if we are using variables in the path
