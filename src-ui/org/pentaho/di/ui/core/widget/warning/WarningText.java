@@ -10,7 +10,10 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
 */
-package org.pentaho.di.ui.core.widget;
+package org.pentaho.di.ui.core.widget.warning;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.swt.SWT;
@@ -26,23 +29,27 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.widget.Messages;
 
 /**
- * A Widget that combines a Text widget with an "In Use" image to the left.
- * It's shown when there is content in the text field.
+ * A Widget that combines a Text widget with a "Warning" image to the left.
+ * It's shown when there is a warning condition in the text field.
  * 
  * @author Matt
  * @since 25-FEB-2009
  */
-public class InUseText extends Composite {
-  private ControlDecoration inUseControlDecoration;
+public class WarningText extends Composite {
+  private ControlDecoration warningControlDecoration;
 
   private Text wText;
+  
+  private List<WarningInterface> warningInterfaces;
 
-  public InUseText(Composite composite, int flags) {
+  public WarningText(Composite composite, int flags) {
     super(composite, SWT.NONE);
+    
+    warningInterfaces = new ArrayList<WarningInterface>();
 
     FormLayout formLayout = new FormLayout();
     formLayout.marginWidth = 0;
@@ -55,25 +62,40 @@ public class InUseText extends Composite {
     // add a text field on it...
     wText = new Text(this, flags);
 
-    inUseControlDecoration = new ControlDecoration(wText, SWT.CENTER | SWT.LEFT);
-    Image image = GUIResource.getInstance().getImageInfoHop();
-    inUseControlDecoration.setImage(image);
-    inUseControlDecoration.setDescriptionText(Messages.getString("TextVar.tooltip.FieldIsInUse"));
-    inUseControlDecoration.hide();
+    warningControlDecoration = new ControlDecoration(wText, SWT.CENTER | SWT.RIGHT);
+    Image warningImage = GUIResource.getInstance().getImageWarning();
+    warningControlDecoration.setImage(warningImage);
+    warningControlDecoration.setDescriptionText(Messages.getString("TextVar.tooltip.FieldIsInUse"));
+    warningControlDecoration.hide();
     
-    // If the length of the string is longer than 0 : set the "in use" image...
+    // If something has changed, check the warning interfaces
     //
     wText.addModifyListener(new ModifyListener() {
 		public void modifyText(ModifyEvent arg0) {
-			if (!Const.isEmpty(wText.getText())) inUseControlDecoration.show();
-			else inUseControlDecoration.hide();
+			
+			// Verify all the warning interfaces.
+			// Show the first that has a warning to show...
+			//
+			boolean foundOne = false;
+			for (WarningInterface warningInterface : warningInterfaces) {
+				WarningMessageInterface warningSituation = warningInterface.getWarningSituation(wText.getText(), wText, this);
+				if (warningSituation.isWarning()) {
+					foundOne=true;
+					warningControlDecoration.show();
+					warningControlDecoration.setDescriptionText(warningSituation.getWarningMessage());
+					break;
+				}
+			}
+			if (!foundOne) {
+				warningControlDecoration.hide();
+			}
 		}
 	});
 
     FormData fdText = new FormData();
     fdText.top = new FormAttachment(0, 0);
-    fdText.left = new FormAttachment(0, image.getBounds().width);
-    fdText.right = new FormAttachment(100, 0);
+    fdText.left = new FormAttachment(0, 0);
+    fdText.right = new FormAttachment(100, -warningImage.getBounds().width);
     wText.setLayoutData(fdText);
   }
 
@@ -145,5 +167,17 @@ public class InUseText extends Composite {
 
   public void showSelection() {
     wText.showSelection();
+  }
+  
+  public void addWarningInterface(WarningInterface warningInterface) {
+	  warningInterfaces.add(warningInterface);
+  }
+  
+  public void removeWarningInterface(WarningInterface warningInterface) {
+	  warningInterfaces.remove(warningInterface);
+  }
+  
+  public List<WarningInterface> getWarningInterfaces() {
+	return warningInterfaces;
   }
 }

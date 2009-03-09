@@ -50,6 +50,16 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
     /** Checkbox to have all rules validated, with all the errors in the output */
     private boolean validatingAll;
     
+    /**
+     * If enabled, it concatenates all encountered errors with the selected separator
+     */
+    private boolean concatenatingErrors;
+    
+    /**
+     * The concatenation separator
+     */
+    private String concatenationSeparator;
+    
     public ValidatorMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -65,6 +75,9 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
         int nrCalcs   = XMLHandler.countNodes(stepnode,   Validation.XML_TAG);
         allocate(nrCalcs);
         validatingAll = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "validate_all"));
+        concatenatingErrors = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "concat_errors"));
+        concatenationSeparator = XMLHandler.getTagValue(stepnode, "concat_separator");
+
         for (int i=0;i<nrCalcs;i++)
         {
             Node calcnode = XMLHandler.getSubNodeByNr(stepnode, Validation.XML_TAG, i);
@@ -77,6 +90,8 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
         StringBuffer retval = new StringBuffer(300);
        
         retval.append(XMLHandler.addTagValue("validate_all", validatingAll));
+        retval.append(XMLHandler.addTagValue("concat_errors", concatenatingErrors));
+        retval.append(XMLHandler.addTagValue("concat_separator", concatenationSeparator));
         
         if (validations!=null)
         for (int i=0;i<validations.length;i++)
@@ -115,7 +130,8 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-		validations = new Validation[0]; 
+		validations = new Validation[0];
+		concatenationSeparator="|";
 	}
 
 	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
@@ -124,6 +140,8 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
         int nrValidationFields = rep.countNrStepAttributes(id_step, "validator_field_name");
         allocate(nrValidationFields);
         validatingAll = rep.getStepAttributeBoolean(id_step, "validate_all");
+        concatenatingErrors = rep.getStepAttributeBoolean(id_step, "concat_errors");
+        concatenationSeparator  = rep.getStepAttributeString(id_step, "concat_separator");
         
         for (int i=0;i<nrValidationFields;i++)
         {
@@ -135,6 +153,9 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		throws KettleException
 	{
 		rep.saveStepAttribute(id_transformation, id_step, "validate_all", validatingAll);
+		rep.saveStepAttribute(id_transformation, id_step, "concat_errors", concatenatingErrors);
+		rep.saveStepAttribute(id_transformation, id_step, "concat_separator", concatenationSeparator);
+		
         for (int i=0;i<validations.length;i++)
         {
         	validations[i].saveRep(rep, id_transformation, id_step, i);
@@ -248,5 +269,33 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setValidatingAll(boolean validatingAll) {
 		this.validatingAll = validatingAll;
+	}
+
+	/**
+	 * @return the concatenatingErrors
+	 */
+	public boolean isConcatenatingErrors() {
+		return concatenatingErrors;
+	}
+
+	/**
+	 * @param concatenatingErrors the concatenatingErrors to set
+	 */
+	public void setConcatenatingErrors(boolean concatenatingErrors) {
+		this.concatenatingErrors = concatenatingErrors;
+	}
+
+	/**
+	 * @return the concatenationSeparator
+	 */
+	public String getConcatenationSeparator() {
+		return concatenationSeparator;
+	}
+
+	/**
+	 * @param concatenationSeparator the concatenationSeparator to set
+	 */
+	public void setConcatenationSeparator(String concatenationSeparator) {
+		this.concatenationSeparator = concatenationSeparator;
 	}
 }

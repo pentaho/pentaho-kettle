@@ -1477,10 +1477,10 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         // 
     	while (row==null && !isStopped()) {
         	// Get a row from the input in row set ...
-    		// Timeout almost immediately if nothing is there to read.
+    		// Timeout immediately if nothing is there to read.
     		// We will then switch to the next row set to read from...
     		//
-        	row = inputRowSet.getRowImmediate(); // inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
+        	row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
         	if (row!=null) {
         		incrementLinesRead();
         		blockPointer++;

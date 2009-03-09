@@ -122,9 +122,29 @@ public class Validator extends BaseStep implements StepInterface
         try {
         	List<KettleValidatorException> exceptions = validateFields(getInputRowMeta(), r);
         	if (exceptions.size()>0) {
-            	if (getStepMeta().isDoingErrorHandling()) {
-            		for (KettleValidatorException e: exceptions) {
-                		putError(getInputRowMeta(), r, 1, e.getMessage(), e.getFieldname(), e.getCodeDesc());
+        		if (getStepMeta().isDoingErrorHandling()) {
+            		if (meta.isConcatenatingErrors()) {
+            			StringBuffer messages=new StringBuffer();
+            			StringBuffer fields = new StringBuffer();
+            			StringBuffer codes = new StringBuffer();
+            			boolean notFirst=false;
+	            		for (KettleValidatorException e: exceptions) {
+	            			if (notFirst) {
+	            				messages.append(meta.getConcatenationSeparator());
+	            				fields.append(meta.getConcatenationSeparator());
+	            				codes.append(meta.getConcatenationSeparator());
+	            			} else {
+	            				notFirst=true;
+	            			}
+            				messages.append(e.getMessage());
+            				fields.append(e.getFieldname());
+            				codes.append(e.getCodeDesc());
+	            		}
+	            		putError(getInputRowMeta(), r, exceptions.size(), messages.toString(), fields.toString(), codes.toString());
+            		} else {
+	            		for (KettleValidatorException e: exceptions) {
+	                		putError(getInputRowMeta(), r, 1, e.getMessage(), e.getFieldname(), e.getCodeDesc());
+	            		}
             		}
             	} else {
             		KettleValidatorException e = exceptions.get(0);

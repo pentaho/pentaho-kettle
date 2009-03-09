@@ -232,6 +232,9 @@ public class GUIResource
     private Image imageErrorHop;
 
     private Image imageInfoHop;
+    
+    private Image imageWarning;
+    
 
     private Map<String,Image> imageMap;
 
@@ -393,6 +396,7 @@ public class GUIResource
 		    imageCopyHop.dispose();
 		    imageErrorHop.dispose();
 		    imageInfoHop.dispose();
+		    imageWarning.dispose();
 		    imageExpandAll.dispose();
 		    imageViewPanel.dispose();
 		    imageDesignPanel.dispose();
@@ -599,6 +603,7 @@ public class GUIResource
     imageCopyHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CopyHop_image")); // , "ui/images/copy-hop.png;
     imageErrorHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ErrorHop_image")); // , "ui/images/error-hop.png;
     imageInfoHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("InfoHop_image")); // , "ui/images/info-hop.png;
+    imageWarning = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Warning_image")); // , "ui/images/warning.png;
 
    imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
@@ -1542,6 +1547,12 @@ public class GUIResource
   public Image getImageInfoHop(){
 	    return imageInfoHop;
   }
+
+  public Image getImageWarning(){
+	    return imageWarning;
+  }
+
+  
   /**
    * Loads an image from a location once.  The second time, the image comes from a cache.
    * Because of this, it's important to never dispose of the image you get from here. (easy!)
