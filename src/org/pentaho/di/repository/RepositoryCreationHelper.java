@@ -656,8 +656,8 @@ public class RepositoryCreationHelper {
 			}
 			try
 			{
-				indexname = "IDX_TRANS_ATTRIBUTE_LOOKUP";
-				keyfield = new String[] { Repository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, Repository.FIELD_TRANS_ATTRIBUTE_CODE, Repository.FIELD_TRANS_ATTRIBUTE_NR };
+				indexname = "IDX_JOB_ATTRIBUTE_LOOKUP";
+				keyfield = new String[] { Repository.FIELD_JOB_ATTRIBUTE_ID_JOB, Repository.FIELD_JOB_ATTRIBUTE_CODE, Repository.FIELD_JOB_ATTRIBUTE_NR };
 
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{

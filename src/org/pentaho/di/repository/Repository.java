@@ -4696,8 +4696,8 @@ public class Repository
 	 * @throws KettleException Upon any error.
 	 */
 	public void insertJobParameter(long id_job, long nr, String key, String defValue, String description) throws KettleException {
-	    insertTransAttribute(id_job, nr, JOB_ATTRIBUTE_PARAM_KEY, 0, key != null ? key : "");
-	    insertTransAttribute(id_job, nr, JOB_ATTRIBUTE_PARAM_DEFAULT, 0, defValue != null ? defValue : "");
-	    insertTransAttribute(id_job, nr, JOB_ATTRIBUTE_PARAM_DESCRIPTION, 0, description != null ? description : "");
+	    insertJobAttribute(id_job, nr, JOB_ATTRIBUTE_PARAM_KEY, 0, key != null ? key : "");
+	    insertJobAttribute(id_job, nr, JOB_ATTRIBUTE_PARAM_DEFAULT, 0, defValue != null ? defValue : "");
+	    insertJobAttribute(id_job, nr, JOB_ATTRIBUTE_PARAM_DESCRIPTION, 0, description != null ? description : "");
 	}	
 }
