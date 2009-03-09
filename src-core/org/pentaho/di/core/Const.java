@@ -464,6 +464,12 @@ public class Const
 	 */
 	public static final String KETTLE_PLUGIN_PACKAGES = "KETTLE_PLUGIN_PACKAGES";
 
+	/**
+	 * If you set this environment variable you can limit the log size of all transformations and jobs 
+	 * that don't have the "log size limit" property set in their respective properties.
+	 */
+	public static final String KETTLE_LOG_SIZE_LIMIT = "KETTLE_LOG_SIZE_LIMIT";
+
     private static String[] emptyPaddedSpacesStrings;
 
 

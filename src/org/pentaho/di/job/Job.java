@@ -764,6 +764,15 @@ public class Job extends Thread implements VariableSpace, NamedParams
         if (jobMeta.isLogfieldUsed())
         {
             stringAppender = LogWriter.createStringAppender();
+            
+            // Set a max number of lines to prevent out of memory errors...
+            //
+            String logLimit = environmentSubstitute(jobMeta.getLogSizeLimit());
+            if (Const.isEmpty(logLimit)) {
+            	logLimit = environmentSubstitute(Const.KETTLE_LOG_SIZE_LIMIT);
+            }
+            stringAppender.setMaxNrLines(Const.toInt(logLimit,0));
+            
             log.addAppender(stringAppender);
             stringAppender.setBuffer(new StringBuffer("START"+Const.CR));
         }

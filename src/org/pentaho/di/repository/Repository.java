@@ -252,6 +252,7 @@ public class Repository
 	public static final String FIELD_JOB_PASS_BATCH_ID = "PASS_BATCH_ID";
 	public static final String FIELD_JOB_USE_LOGFIELD = "USE_LOGFIELD";
 	public static final String FIELD_JOB_SHARED_FILE = "SHARED_FILE";
+	public static final String FIELD_JOB_LOG_SIZE_LIMIT = "LOG_SIZE_LIMIT";
 
 	public static final String TABLE_R_LOGLEVEL               = "R_LOGLEVEL";
 	public static final String FIELD_LOGLEVEL_ID_LOGLEVEL = "ID_LOGLEVEL";
@@ -496,6 +497,7 @@ public class Repository
 	public static final String TRANS_ATTRIBUTE_CAPTURE_STEP_PERFORMANCE = "CAPTURE_STEP_PERFORMANCE";
 	public static final String TRANS_ATTRIBUTE_STEP_PERFORMANCE_CAPTURING_DELAY = "STEP_PERFORMANCE_CAPTURING_DELAY";
 	public static final String TRANS_ATTRIBUTE_STEP_PERFORMANCE_LOG_TABLE = "STEP_PERFORMANCE_LOG_TABLE";
+	public static final String TRANS_ATTRIBUTE_LOG_SIZE_LIMIT = "LOG_SIZE_LIMIT";
 		
     private static Repository currentRepository;
     
@@ -1472,7 +1474,9 @@ public class Repository
         insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_CAPTURE_STEP_PERFORMANCE, 0, transMeta.isCapturingStepPerformanceSnapShots()?"Y":"N");
         insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_STEP_PERFORMANCE_CAPTURING_DELAY, transMeta.getStepPerformanceCapturingDelay(), "");
         insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_STEP_PERFORMANCE_LOG_TABLE, 0, transMeta.getStepPerformanceLogTable());
-        
+
+        insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_LOG_SIZE_LIMIT, 0, transMeta.getLogSizeLimit());
+
 		// Save the logging connection link...
 		if (transMeta.getLogConnection()!=null) insertStepDatabase(transMeta.getId(), -1L, transMeta.getLogConnection().getID());
 
@@ -1483,7 +1487,7 @@ public class Repository
 	public synchronized void insertJob(long id_job, long id_directory, String name, long id_database_log, String table_name_log,
 			String modified_user, Date modified_date, boolean useBatchId, boolean batchIdPassed, boolean logfieldUsed, 
             String sharedObjectsFile, String description, String extended_description, String version, int status,
-			String created_user, Date created_date) throws KettleException
+			String created_user, Date created_date, String logSizeLimit) throws KettleException
 	{
 		RowMetaAndData table = new RowMetaAndData();
 
@@ -1506,6 +1510,7 @@ public class Repository
         table.addValue(new ValueMeta(FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(batchIdPassed));
         table.addValue(new ValueMeta(FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(logfieldUsed));
         table.addValue(new ValueMeta(FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING), sharedObjectsFile);
+        table.addValue(new ValueMeta(FIELD_JOB_LOG_SIZE_LIMIT, ValueMetaInterface.TYPE_STRING), logSizeLimit);
 
 		database.prepareInsert(table.getRowMeta(), TABLE_R_JOB);
 		database.setValuesInsert(table);

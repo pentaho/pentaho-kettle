@@ -139,14 +139,20 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 		// Reset the bytes read in the current block of data
 		//
 		data.totalBytesRead=0L;
-		data.eofReached = false;
+		data.blockNr++;
 
 		if (data.parallel) {
 			
 			// So our first act is to skip to the correct position in the compressed stream...
 			// The number of bytes to skip is nrOfSteps*BufferSize
 			//
-			long bytesToSkip = data.totalNumberOfSteps*data.bufferSize;
+			long positionToReach = (data.blockNr*data.bufferSize*data.totalNumberOfSteps) + data.stepNumber*data.bufferSize;
+			
+			// How many bytes do we need to skip to get where we need to be?
+			//
+			long bytesToSkip = positionToReach - data.fileReadPosition;
+			
+			logBasic("Skipping "+bytesToSkip+" to go to position "+positionToReach+" for step copy "+data.stepNumber);
 			
 			// Get into position...
 			//
@@ -154,7 +160,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 				long bytesSkipped = 0;
 				while (bytesSkipped<bytesToSkip) {
 					long n=data.gzis.skip(bytesToSkip-bytesSkipped);
-					if (n<0) {
+					if (n<=0) {
 						// EOF reached...
 						//
 						data.eofReached=true;
@@ -162,6 +168,8 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 					}
 					bytesSkipped+=n;
 				}
+				
+				data.fileReadPosition+=bytesSkipped;
 				
 				// Now get read until the next CR:
 				//
@@ -274,7 +282,11 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 						}
 						bytesSkipped+=n;
 					}
-					
+
+					// Keep track of the file pointer!
+					//
+					data.fileReadPosition+=bytesSkipped;
+
 					// Skip the first row until the next CR
 					//
 					readOneRow(false);

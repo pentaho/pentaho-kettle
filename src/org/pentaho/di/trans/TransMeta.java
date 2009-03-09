@@ -239,6 +239,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     
     private NamedParams namedParams = new NamedParamsDefault();
     
+    private String logSizeLimit;
+    
     // //////////////////////////////////////////////////////////////////////////
 
     public static final int     TYPE_UNDO_CHANGE   = 1;
@@ -2305,52 +2307,52 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
             if (r != null)
             {
-                setName( r.getString("NAME", null) ); //$NON-NLS-1$
+                setName( r.getString(Repository.FIELD_TRANSFORMATION_NAME, null) ); //$NON-NLS-1$
 
 				// Trans description
-				description = r.getString("DESCRIPTION", null);
-				extended_description = r.getString("EXTENDED_DESCRIPTION", null);
-				trans_version = r.getString("TRANS_VERSION", null);
-				trans_status=(int) r.getInteger("TRANS_STATUS", -1L);
+				description = r.getString(Repository.FIELD_TRANSFORMATION_DESCRIPTION, null);
+				extended_description = r.getString(Repository.FIELD_TRANSFORMATION_EXTENDED_DESCRIPTION, null);
+				trans_version = r.getString(Repository.FIELD_TRANSFORMATION_TRANS_VERSION, null);
+				trans_status=(int) r.getInteger(Repository.FIELD_TRANSFORMATION_TRANS_STATUS, -1L);
 
-                readStep = StepMeta.findStep(steps, r.getInteger("ID_STEP_READ", -1L)); //$NON-NLS-1$
-                writeStep = StepMeta.findStep(steps, r.getInteger("ID_STEP_WRITE", -1L)); //$NON-NLS-1$
-                inputStep = StepMeta.findStep(steps, r.getInteger("ID_STEP_INPUT", -1L)); //$NON-NLS-1$
-                outputStep = StepMeta.findStep(steps, r.getInteger("ID_STEP_OUTPUT", -1L)); //$NON-NLS-1$
-                updateStep = StepMeta.findStep(steps, r.getInteger("ID_STEP_UPDATE", -1L)); //$NON-NLS-1$
+                readStep = StepMeta.findStep(steps, r.getInteger(Repository.FIELD_TRANSFORMATION_ID_STEP_READ, -1L)); //$NON-NLS-1$
+                writeStep = StepMeta.findStep(steps, r.getInteger(Repository.FIELD_TRANSFORMATION_ID_STEP_WRITE, -1L)); //$NON-NLS-1$
+                inputStep = StepMeta.findStep(steps, r.getInteger(Repository.FIELD_TRANSFORMATION_ID_STEP_INPUT, -1L)); //$NON-NLS-1$
+                outputStep = StepMeta.findStep(steps, r.getInteger(Repository.FIELD_TRANSFORMATION_ID_STEP_OUTPUT, -1L)); //$NON-NLS-1$
+                updateStep = StepMeta.findStep(steps, r.getInteger(Repository.FIELD_TRANSFORMATION_ID_STEP_UPDATE, -1L)); //$NON-NLS-1$
                 
-                long id_rejected = rep.getTransAttributeInteger(getID(), 0, "ID_STEP_REJECTED"); // $NON-NLS-1$
+                long id_rejected = rep.getTransAttributeInteger(getID(), 0, Repository.TRANS_ATTRIBUTE_ID_STEP_REJECTED); // $NON-NLS-1$
                 if (id_rejected>0)
                 {
                     rejectedStep = StepMeta.findStep(steps, id_rejected); //$NON-NLS-1$
                 }
 
-                logConnection = DatabaseMeta.findDatabase(databases, r.getInteger("ID_DATABASE_LOG", -1L)); //$NON-NLS-1$
-                logTable = r.getString("TABLE_NAME_LOG", null); //$NON-NLS-1$
-                useBatchId = r.getBoolean("USE_BATCHID", false); //$NON-NLS-1$
-                logfieldUsed = r.getBoolean("USE_LOGFIELD", false); //$NON-NLS-1$
+                logConnection = DatabaseMeta.findDatabase(databases, r.getInteger(Repository.FIELD_TRANSFORMATION_ID_DATABASE_LOG, -1L)); //$NON-NLS-1$
+                logTable = r.getString(Repository.FIELD_TRANSFORMATION_TABLE_NAME_LOG, null); //$NON-NLS-1$
+                useBatchId = r.getBoolean(Repository.FIELD_TRANSFORMATION_USE_BATCHID, false); //$NON-NLS-1$
+                logfieldUsed = r.getBoolean(Repository.FIELD_TRANSFORMATION_USE_LOGFIELD, false); //$NON-NLS-1$
 
-                maxDateConnection = DatabaseMeta.findDatabase(databases, r.getInteger("ID_DATABASE_MAXDATE", -1L)); //$NON-NLS-1$
-                maxDateTable = r.getString("TABLE_NAME_MAXDATE", null); //$NON-NLS-1$
-                maxDateField = r.getString("FIELD_NAME_MAXDATE", null); //$NON-NLS-1$
-                maxDateOffset = r.getNumber("OFFSET_MAXDATE", 0.0); //$NON-NLS-1$
-                maxDateDifference = r.getNumber("DIFF_MAXDATE", 0.0); //$NON-NLS-1$
+                maxDateConnection = DatabaseMeta.findDatabase(databases, r.getInteger(Repository.FIELD_TRANSFORMATION_ID_DATABASE_MAXDATE, -1L)); //$NON-NLS-1$
+                maxDateTable = r.getString(Repository.FIELD_TRANSFORMATION_TABLE_NAME_MAXDATE, null); //$NON-NLS-1$
+                maxDateField = r.getString(Repository.FIELD_TRANSFORMATION_FIELD_NAME_MAXDATE, null); //$NON-NLS-1$
+                maxDateOffset = r.getNumber(Repository.FIELD_TRANSFORMATION_OFFSET_MAXDATE, 0.0); //$NON-NLS-1$
+                maxDateDifference = r.getNumber(Repository.FIELD_TRANSFORMATION_DIFF_MAXDATE, 0.0); //$NON-NLS-1$
 
-				createdUser = r.getString("CREATED_USER", null); //$NON-NLS-1$
-				createdDate = r.getDate("CREATED_DATE", null); //$NON-NLS-1$
+				createdUser = r.getString(Repository.FIELD_TRANSFORMATION_CREATED_USER, null); //$NON-NLS-1$
+				createdDate = r.getDate(Repository.FIELD_TRANSFORMATION_CREATED_DATE, null); //$NON-NLS-1$
 
-                modifiedUser = r.getString("MODIFIED_USER", null); //$NON-NLS-1$
-                modifiedDate = r.getDate("MODIFIED_DATE", null); //$NON-NLS-1$
+                modifiedUser = r.getString(Repository.FIELD_TRANSFORMATION_MODIFIED_USER, null); //$NON-NLS-1$
+                modifiedDate = r.getDate(Repository.FIELD_TRANSFORMATION_MODIFIED_DATE, null); //$NON-NLS-1$
 
                 // Optional:
                 sizeRowset = Const.ROWS_IN_ROWSET;
-                Long val_size_rowset = r.getInteger("SIZE_ROWSET"); //$NON-NLS-1$
+                Long val_size_rowset = r.getInteger(Repository.FIELD_TRANSFORMATION_SIZE_ROWSET); //$NON-NLS-1$
                 if (val_size_rowset != null )
                 {
                     sizeRowset = val_size_rowset.intValue();
                 }
 
-                long id_directory = r.getInteger("ID_DIRECTORY", -1L); //$NON-NLS-1$
+                long id_directory = r.getInteger(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY, -1L); //$NON-NLS-1$
                 if (id_directory >= 0)
                 {
                 	if(log.isDetailed()) log.logDetailed(toString(), "ID_DIRECTORY=" + id_directory); //$NON-NLS-1$
@@ -2368,7 +2370,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 capturingStepPerformanceSnapShots = rep.getTransAttributeBoolean(getID(), 0, Repository.TRANS_ATTRIBUTE_CAPTURE_STEP_PERFORMANCE);
                 stepPerformanceCapturingDelay = rep.getTransAttributeInteger(getID(), 0, Repository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_CAPTURING_DELAY);
                 stepPerformanceLogTable = rep.getTransAttributeString(getID(), 0, Repository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_LOG_TABLE);
-                
+                logSizeLimit = rep.getTransAttributeString(getID(), 0, Repository.TRANS_ATTRIBUTE_LOG_SIZE_LIMIT);
+
                 loadRepParameters(rep);
             }
         }
@@ -2718,6 +2721,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         retval.append("      ").append(XMLHandler.addTagValue("step_performance_table", stepPerformanceLogTable)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      ").append(XMLHandler.addTagValue("use_batchid", useBatchId)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      ").append(XMLHandler.addTagValue("use_logfield", logfieldUsed)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("size_limit_lines", logSizeLimit)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    </log>").append(Const.CR); //$NON-NLS-1$
         retval.append("    <maxdate>").append(Const.CR); //$NON-NLS-1$
         retval.append("      ").append(XMLHandler.addTagValue("connection", maxDateConnection == null ? "" : maxDateConnection.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -3216,6 +3220,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             stepPerformanceLogTable = XMLHandler.getTagValue(infonode, "log", "step_performance_table"); //$NON-NLS-1$ //$NON-NLS-2$
             useBatchId = "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "use_batchid")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             logfieldUsed= "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "USE_LOGFIELD")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            logSizeLimit = XMLHandler.getTagValue(infonode, "log", "size_limit_lines"); //$NON-NLS-1$ //$NON-NLS-2$
 
             // Maxdate range options...
             String maxdatcon = XMLHandler.getTagValue(infonode, "maxdate", "connection"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -6517,5 +6522,19 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
 	public void copyParametersFrom(NamedParams params) {
 		namedParams.copyParametersFrom(params);		
+	}
+
+	/**
+	 * @return the logSizeLimit
+	 */
+	public String getLogSizeLimit() {
+		return logSizeLimit;
+	}
+
+	/**
+	 * @param logSizeLimit the logSizeLimit to set
+	 */
+	public void setLogSizeLimit(String logSizeLimit) {
+		this.logSizeLimit = logSizeLimit;
 	}
 }

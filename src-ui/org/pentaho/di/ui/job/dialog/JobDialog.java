@@ -163,6 +163,10 @@ public class JobDialog extends Dialog
 	private RepositoryDirectory newDirectory;
 	private boolean directoryChangeAllowed;
 
+	private Label	wlLogSizeLimit;
+
+	private TextVar	wLogSizeLimit;
+
 	public JobDialog(Shell parent, int style, JobMeta jobMeta, Repository rep)
 	{
 		super(parent, style);
@@ -190,11 +194,9 @@ public class JobDialog extends Dialog
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				//changed = true;
-				jobMeta.setChanged();
+				changed = true;
 			}
 		};
-		changed = jobMeta.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -251,6 +253,7 @@ public class JobDialog extends Dialog
 		getData();
 		BaseStepDialog.setSize(shell);		
 
+		changed=false;
 			
 		shell.open();
 		while (!shell.isDisposed())
@@ -743,6 +746,28 @@ public class JobDialog extends Dialog
 		fdLogfield.top  = new FormAttachment(wBatchTrans, margin);
 		fdLogfield.right= new FormAttachment(100, 0);
 		wLogfield.setLayoutData(fdLogfield);
+        wLogfield.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setFlags(); } });
+
+        // The log size limit
+        //
+        wlLogSizeLimit = new Label(wLogComp, SWT.RIGHT);
+        wlLogSizeLimit.setText(Messages.getString("JobDialog.LogSizeLimit.Label")); //$NON-NLS-1$
+        wlLogSizeLimit.setToolTipText(Messages.getString("JobDialog.LogSizeLimit.Tooltip")); //$NON-NLS-1$
+        props.setLook(wlLogSizeLimit);
+        FormData fdlLogSizeLimit = new FormData();
+        fdlLogSizeLimit.left = new FormAttachment(0, 0);
+        fdlLogSizeLimit.right= new FormAttachment(middle, -margin);
+        fdlLogSizeLimit.top  = new FormAttachment(wLogfield, margin);
+        wlLogSizeLimit.setLayoutData(fdlLogSizeLimit);
+        wLogSizeLimit=new TextVar(jobMeta, wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wLogSizeLimit.setToolTipText(Messages.getString("JobDialog.LogSizeLimit.Tooltip")); //$NON-NLS-1$
+        props.setLook(wLogSizeLimit);
+        wLogSizeLimit.addModifyListener(lsMod);
+        FormData fdLogSizeLimit = new FormData();
+        fdLogSizeLimit.left = new FormAttachment(middle, 0);
+        fdLogSizeLimit.top  = new FormAttachment(wLogfield, margin);
+        fdLogSizeLimit.right= new FormAttachment(100, 0);
+        wLogSizeLimit.setLayoutData(fdLogSizeLimit);
 
 		// Shared objects file
 		Label wlSharedObjectsFile = new Label(wLogComp, SWT.RIGHT);
@@ -825,7 +850,8 @@ public class JobDialog extends Dialog
         wBatch.setSelection(jobMeta.isBatchIdUsed());
         wBatchTrans.setSelection(jobMeta.isBatchIdPassed());
         wLogfield.setSelection(jobMeta.isLogfieldUsed());
-        
+		wLogSizeLimit.setText( Const.NVL(jobMeta.getLogSizeLimit(), ""));
+
 		// The named parameters
 		String[] parameters = jobMeta.listParameters();
 		for (int idx=0;idx<parameters.length;idx++)
@@ -855,8 +881,6 @@ public class JobDialog extends Dialog
         wSharedObjectsFile.setText(Const.NVL(jobMeta.getSharedObjectsFile(), ""));
         sharedObjectsFileChanged=false;
         
-        changed = jobMeta.hasChanged();
-
         setFlags();
 	}
     
@@ -868,12 +892,14 @@ public class JobDialog extends Dialog
         
         DatabaseMeta dbMeta = jobMeta.findDatabase(wLogconnection.getText());
         wbLogconnection.setEnabled(dbMeta!=null);
+        
+        wlLogSizeLimit.setEnabled(wLogfield.getSelection());
+        wLogSizeLimit.setEnabled(wLogfield.getSelection());
     }
 	
 	private void cancel()
 	{
 		props.setScreen(new WindowProperty(shell));
-		jobMeta.setChanged(changed);
 		jobMeta=null;
 		dispose();
 	}
@@ -913,9 +939,10 @@ public class JobDialog extends Dialog
 			}
 		}		        
         
-        jobMeta.setUseBatchId( wBatch.getSelection());
-        jobMeta.setBatchIdPassed( wBatchTrans.getSelection());
-        jobMeta.setLogfieldUsed( wLogfield.getSelection());
+        jobMeta.setUseBatchId( wBatch.getSelection() );
+        jobMeta.setBatchIdPassed( wBatchTrans.getSelection() );
+        jobMeta.setLogfieldUsed( wLogfield.getSelection() );
+        jobMeta.setLogSizeLimit( wLogSizeLimit.getText() );
         jobMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );
 
         if (newDirectory!=null) 
@@ -950,6 +977,8 @@ public class JobDialog extends Dialog
 	        	jobMeta.setDirectory( newDirectory );
 	        }
         }
+        
+        jobMeta.setChanged( changed || jobMeta.hasChanged());
 
 		dispose();
 	}

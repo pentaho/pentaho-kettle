@@ -182,6 +182,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     private NamedParams namedParams = new NamedParamsDefault();
     
     private static final String XML_TAG_PARAMETERS = "parameters";
+    
+    private String logSizeLimit;
 
 	public JobMeta(LogWriter l) {
 		log = l;
@@ -491,7 +493,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			// The ID has to be assigned, even when it's a new item...
 			rep.insertJob(getID(), directory.getID(), getName(), logConnection == null ? -1 : logConnection.getID(), logTable,
 					modifiedUser, modifiedDate, useBatchId, batchIdPassed, logfieldUsed, sharedObjectsFile, description,
-					extendedDescription, jobVersion, jobStatus, created_user, created_date);					
+					extendedDescription, jobVersion, jobStatus, created_user, created_date, logSizeLimit);					
 			
 		} catch (KettleDatabaseException dbe) {
 			throw new KettleException(Messages.getString("JobMeta.Exception.UnableToSaveJobToRepository"), dbe); //$NON-NLS-1$
@@ -660,6 +662,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 		retval.append("  ").append(XMLHandler.addTagValue("logconnection", ci == null ? "" : ci.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		retval.append("  ").append(XMLHandler.addTagValue("logtable", logTable)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("  ").append(XMLHandler.addTagValue("size_limit_lines", logSizeLimit)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		retval.append("   ").append(XMLHandler.addTagValue("use_batchid", useBatchId)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("   ").append(XMLHandler.addTagValue("pass_batchid", batchIdPassed)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -911,6 +914,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			useBatchId = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_batchid")); //$NON-NLS-1$ //$NON-NLS-2$
 			batchIdPassed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "pass_batchid")); //$NON-NLS-1$ //$NON-NLS-2$
 			logfieldUsed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_logfield")); //$NON-NLS-1$ //$NON-NLS-2$
+            logSizeLimit = XMLHandler.getTagValue(jobnode, "log", "size_limit_lines"); //$NON-NLS-1$ //$NON-NLS-2$
 
 			/*
 			 * read the job entries...
@@ -1327,28 +1331,29 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 						monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobInformation")); //$NON-NLS-1$
 					RowMetaAndData jobRow = rep.getJob(getID());
 	
-					setName( jobRow.getString("NAME", null) ); //$NON-NLS-1$
-					description = jobRow.getString("DESCRIPTION", null); //$NON-NLS-1$
-					extendedDescription = jobRow.getString("EXTENDED_DESCRIPTION", null); //$NON-NLS-1$
-					jobVersion = jobRow.getString("JOB_VERSION", null); //$NON-NLS-1$
-					jobStatus = Const.toInt(jobRow.getString("JOB_STATUS", null), -1); //$NON-NLS-1$
-					logTable = jobRow.getString("TABLE_NAME_LOG", null); //$NON-NLS-1$
+					setName( jobRow.getString(Repository.FIELD_JOB_NAME, null) ); //$NON-NLS-1$
+					description = jobRow.getString(Repository.FIELD_JOB_DESCRIPTION, null); //$NON-NLS-1$
+					extendedDescription = jobRow.getString(Repository.FIELD_JOB_EXTENDED_DESCRIPTION, null); //$NON-NLS-1$
+					jobVersion = jobRow.getString(Repository.FIELD_JOB_JOB_VERSION, null); //$NON-NLS-1$
+					jobStatus = Const.toInt(jobRow.getString(Repository.FIELD_JOB_JOB_STATUS, null), -1); //$NON-NLS-1$
+					logTable = jobRow.getString(Repository.FIELD_JOB_TABLE_NAME_LOG, null); //$NON-NLS-1$
 	
-					created_user = jobRow.getString("CREATED_USER", null); //$NON-NLS-1$
-					created_date = jobRow.getDate("CREATED_DATE", new Date()); //$NON-NLS-1$
+					created_user = jobRow.getString(Repository.FIELD_JOB_CREATED_USER, null); //$NON-NLS-1$
+					created_date = jobRow.getDate(Repository.FIELD_JOB_CREATED_DATE, new Date()); //$NON-NLS-1$
 	
-					modifiedUser = jobRow.getString("MODIFIED_USER", null); //$NON-NLS-1$
-					modifiedDate = jobRow.getDate("MODIFIED_DATE", new Date()); //$NON-NLS-1$
+					modifiedUser = jobRow.getString(Repository.FIELD_JOB_MODIFIED_USER, null); //$NON-NLS-1$
+					modifiedDate = jobRow.getDate(Repository.FIELD_JOB_MODIFIED_DATE, new Date()); //$NON-NLS-1$
 	
-					long id_logdb = jobRow.getInteger("ID_DATABASE_LOG", 0); //$NON-NLS-1$
+					long id_logdb = jobRow.getInteger(Repository.FIELD_JOB_ID_DATABASE_LOG, 0); //$NON-NLS-1$
 					if (id_logdb > 0) {
 						// Get the logconnection
 						logConnection = RepositoryUtil.loadDatabaseMeta(rep, id_logdb);
 						logConnection.shareVariablesWith(this);
 					}
-					useBatchId = jobRow.getBoolean("USE_BATCH_ID", false); //$NON-NLS-1$
-					batchIdPassed = jobRow.getBoolean("PASS_BATCH_ID", false); //$NON-NLS-1$
-					logfieldUsed = jobRow.getBoolean("USE_LOGFIELD", false); //$NON-NLS-1$
+					useBatchId = jobRow.getBoolean(Repository.FIELD_JOB_USE_BATCH_ID, false); //$NON-NLS-1$
+					batchIdPassed = jobRow.getBoolean(Repository.FIELD_JOB_PASS_BATCH_ID, false); //$NON-NLS-1$
+					logfieldUsed = jobRow.getBoolean(Repository.FIELD_JOB_USE_LOGFIELD, false); //$NON-NLS-1$
+					logSizeLimit = jobRow.getString(Repository.FIELD_JOB_LOG_SIZE_LIMIT, null); //$NON-NLS-1$
 	
 					if (monitor != null)
 						monitor.worked(1);
@@ -1359,7 +1364,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 						monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingAvailableDatabasesFromRepository")); //$NON-NLS-1$
 					// Read objects from the shared XML file & the repository
 					try {
-						sharedObjectsFile = jobRow.getString("SHARED_FILE", null);
+						sharedObjectsFile = jobRow.getString(Repository.FIELD_JOB_SHARED_FILE, null);
 						sharedObjects = readSharedObjects(rep);
 					} catch (Exception e) {
 						LogWriter.getInstance().logError(toString(),
@@ -2994,5 +2999,19 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	
 	public void copyParametersFrom(NamedParams params) {
 		namedParams.copyParametersFrom(params);		
+	}
+
+	/**
+	 * @return the logSizeLimit
+	 */
+	public String getLogSizeLimit() {
+		return logSizeLimit;
+	}
+
+	/**
+	 * @param logSizeLimit the logSizeLimit to set
+	 */
+	public void setLogSizeLimit(String logSizeLimit) {
+		this.logSizeLimit = logSizeLimit;
 	}
 }

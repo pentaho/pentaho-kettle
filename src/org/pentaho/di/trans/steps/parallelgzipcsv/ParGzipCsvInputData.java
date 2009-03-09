@@ -64,6 +64,8 @@ public class ParGzipCsvInputData extends BaseStepData implements StepDataInterfa
 	public long	totalBytesRead;
 	public long	blockSize;
 	public boolean	eofReached;
+	public long	fileReadPosition;
+	public int	blockNr;
 	
 	/**
 	 * 
@@ -74,6 +76,7 @@ public class ParGzipCsvInputData extends BaseStepData implements StepDataInterfa
 		startBuffer=0;
 		endBuffer=0;
 		maxBuffer=0;
+		fileReadPosition=0L;
 	}
 	
 	/**
@@ -159,6 +162,7 @@ public class ParGzipCsvInputData extends BaseStepData implements StepDataInterfa
 				maxBuffer+=n; // that's where we ended up so far
 				leftToRead-=n; // a little bit less to read
 			}
+			fileReadPosition+=bytesRead; // keep track of where we are in the file...
 
 			return false; // all OK
 			

@@ -137,14 +137,14 @@ public class Log4jStringAppender implements Appender
     }
 
 	/**
-	 * @return the maximum number of lines that this buffer contains
+	 * @return the maximum number of lines that this buffer contains, 0 or lower means: no limit
 	 */
 	public int getMaxNrLines() {
 		return maxNrLines;
 	}
 
 	/**
-	 * @param maxNrLines the maximum number of lines that this buffer should contain
+	 * @param maxNrLines the maximum number of lines that this buffer should contain, 0 or lower means: no limit
 	 */
 	public void setMaxNrLines(int maxNrLines) {
 		this.maxNrLines = maxNrLines;

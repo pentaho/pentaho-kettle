@@ -132,6 +132,9 @@ public class TransDialog extends Dialog
 	private Text         wStepLogtable;
 	private Button       wBatch;
 	private Button       wLogfield;
+	
+	private Label        wlLogSizeLimit;
+	private TextVar      wLogSizeLimit;
 
 	private CCombo       wMaxdateconnection;
 	private Text         wMaxdatetable;
@@ -162,7 +165,6 @@ public class TransDialog extends Dialog
 	private SelectionAdapter lsDef;
 	
 	private ModifyListener lsMod;
-	private boolean changed;
 	private Repository rep;
 	private PropsUI props;
 	private RepositoryDirectory newDirectory;
@@ -199,6 +201,8 @@ public class TransDialog extends Dialog
 	private Label wlStepLogtable;
 	
 	private Tabs currentTab = null;
+
+	protected boolean	changed;
 	
   public TransDialog(Shell parent, int style, TransMeta transMeta, Repository rep, Tabs currentTab)
   {
@@ -224,6 +228,7 @@ public class TransDialog extends Dialog
         previousSchemaIndex = -1;
         
         directoryChangeAllowed=true;
+        changed=false;
     }
 
 
@@ -241,10 +246,9 @@ public class TransDialog extends Dialog
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				transMeta.setChanged();
+				changed=true;
 			}
 		};
-		changed = transMeta.hasChanged();
 		
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -309,6 +313,7 @@ public class TransDialog extends Dialog
 		wMaxdatediff.addSelectionListener( lsDef );
 		wLogtable.addSelectionListener( lsDef );
 		wStepLogtable.addSelectionListener( lsDef );
+		wLogSizeLimit.addSelectionListener( lsDef );
 		wSizeRowset.addSelectionListener( lsDef );
         wUniqueConnections.addSelectionListener( lsDef );
         wFeedbackSize.addSelectionListener( lsDef );
@@ -327,6 +332,8 @@ public class TransDialog extends Dialog
 
 		BaseStepDialog.setSize(shell);
 
+		changed = false;
+		
 		shell.open();
 		while (!shell.isDisposed())
 		{
@@ -933,6 +940,28 @@ public class TransDialog extends Dialog
         fdLogfield.top  = new FormAttachment(wBatch, margin);
         fdLogfield.right= new FormAttachment(100, 0);
         wLogfield.setLayoutData(fdLogfield);
+        wLogfield.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setFlags(); } });
+
+        // The log size limit
+        //
+        wlLogSizeLimit = new Label(wLogComp, SWT.RIGHT);
+        wlLogSizeLimit.setText(Messages.getString("TransDialog.LogSizeLimit.Label")); //$NON-NLS-1$
+        wlLogSizeLimit.setToolTipText(Messages.getString("TransDialog.LogSizeLimit.Tooltip")); //$NON-NLS-1$
+        props.setLook(wlLogSizeLimit);
+        FormData fdlLogSizeLimit = new FormData();
+        fdlLogSizeLimit.left = new FormAttachment(0, 0);
+        fdlLogSizeLimit.right= new FormAttachment(middle, -margin);
+        fdlLogSizeLimit.top  = new FormAttachment(wLogfield, margin);
+        wlLogSizeLimit.setLayoutData(fdlLogSizeLimit);
+        wLogSizeLimit=new TextVar(transMeta, wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wLogSizeLimit.setToolTipText(Messages.getString("TransDialog.LogSizeLimit.Tooltip")); //$NON-NLS-1$
+        props.setLook(wLogSizeLimit);
+        wLogSizeLimit.addModifyListener(lsMod);
+        FormData fdLogSizeLimit = new FormData();
+        fdLogSizeLimit.left = new FormAttachment(middle, 0);
+        fdLogSizeLimit.top  = new FormAttachment(wLogfield, margin);
+        fdLogSizeLimit.right= new FormAttachment(100, 0);
+        wLogSizeLimit.setLayoutData(fdLogSizeLimit);
 
         FormData fdLogComp = new FormData();
         fdLogComp.left  = new FormAttachment(0, 0);
@@ -1623,7 +1652,6 @@ public class TransDialog extends Dialog
 		if (transMeta.getCreatedUser()!=null)     wCreateUser.setText          ( transMeta.getCreatedUser() );
 		if (transMeta.getCreatedDate()!=null )    wCreateDate.setText          ( transMeta.getCreatedDate().toString() );
 		
-		
 		if (transMeta.getModifiedUser()!=null) wModUser.setText          ( transMeta.getModifiedUser() );
 		if (transMeta.getModifiedDate()!=null) wModDate.setText          ( transMeta.getModifiedDate().toString() );
 	
@@ -1637,6 +1665,7 @@ public class TransDialog extends Dialog
         if (transMeta.getLogConnection()!=null) wLogconnection.setText    ( transMeta.getLogConnection().getName());
 		wLogtable.setText( Const.NVL(transMeta.getLogTable(),"") );
 		wStepLogtable.setText( Const.NVL(transMeta.getStepPerformanceLogTable(),"") );
+		wLogSizeLimit.setText( Const.NVL(transMeta.getLogSizeLimit(), ""));
 
 		wBatch.setSelection(transMeta.isBatchIdUsed());
 		wLogfield.setSelection(transMeta.isLogfieldUsed());
@@ -1762,170 +1791,155 @@ public class TransDialog extends Dialog
         
         wlStepLogtable.setEnabled(wEnableStepPerfMonitor.getSelection());
         wStepLogtable.setEnabled(wEnableStepPerfMonitor.getSelection());
+        
+        wlLogSizeLimit.setEnabled(wLogfield.getSelection());
+        wLogSizeLimit.setEnabled(wLogfield.getSelection());
      }
 
     private void cancel()
 	{
 		props.setScreen(new WindowProperty(shell));
-		transMeta.setChanged(changed);
 		transMeta=null;
 		dispose();
 	}
 	
-	private void ok()
-	{
+	private void ok() {
 		boolean OK = true;
-	
-		transMeta.setReadStep( transMeta.findStep( wReadStep.getText() ) );
-		transMeta.setWriteStep( transMeta.findStep( wWriteStep.getText() ) );
-		transMeta.setInputStep( transMeta.findStep( wInputStep.getText() ) );
-		transMeta.setOutputStep( transMeta.findStep( wOutputStep.getText() ) );
-		transMeta.setUpdateStep( transMeta.findStep( wUpdateStep.getText() ) );
-        transMeta.setRejectedStep( transMeta.findStep( wRejectedStep.getText() ) );
-        
-		transMeta.setLogConnection( transMeta.findDatabase(wLogconnection.getText()) );
-		transMeta.setLogTable( wLogtable.getText() );
-		transMeta.setStepPerformanceLogTable( wStepLogtable.getText());
-		transMeta.setMaxDateConnection( transMeta.findDatabase(wMaxdateconnection.getText()) );
-		transMeta.setMaxDateTable( wMaxdatetable.getText() );
-		transMeta.setMaxDateField( wMaxdatefield.getText() );
-		transMeta.setBatchIdUsed( wBatch.getSelection() );
-		transMeta.setLogfieldUsed( wLogfield.getSelection() );
-		transMeta.setName( wTransname.getText() );
 
-		transMeta.setDescription( wTransdescription.getText() );
-		transMeta.setExtendedDescription( wExtendeddescription.getText() );
-		transMeta.setTransversion( wTransversion.getText() );
-		
-		if ( wTransstatus.getSelectionIndex() != 2 )
-		{
-		    transMeta.setTransstatus( wTransstatus.getSelectionIndex() + 1 );
+		transMeta.setReadStep(transMeta.findStep(wReadStep.getText()));
+		transMeta.setWriteStep(transMeta.findStep(wWriteStep.getText()));
+		transMeta.setInputStep(transMeta.findStep(wInputStep.getText()));
+		transMeta.setOutputStep(transMeta.findStep(wOutputStep.getText()));
+		transMeta.setUpdateStep(transMeta.findStep(wUpdateStep.getText()));
+		transMeta.setRejectedStep(transMeta.findStep(wRejectedStep.getText()));
+
+		transMeta.setLogConnection(transMeta.findDatabase(wLogconnection.getText()));
+		transMeta.setLogTable(wLogtable.getText());
+		transMeta.setStepPerformanceLogTable(wStepLogtable.getText());
+		transMeta.setLogSizeLimit(wLogSizeLimit.getText());
+		transMeta.setMaxDateConnection(transMeta.findDatabase(wMaxdateconnection.getText()));
+		transMeta.setMaxDateTable(wMaxdatetable.getText());
+		transMeta.setMaxDateField(wMaxdatefield.getText());
+		transMeta.setBatchIdUsed(wBatch.getSelection());
+		transMeta.setLogfieldUsed(wLogfield.getSelection());
+		transMeta.setName(wTransname.getText());
+
+		transMeta.setDescription(wTransdescription.getText());
+		transMeta.setExtendedDescription(wExtendeddescription.getText());
+		transMeta.setTransversion(wTransversion.getText());
+
+		if (wTransstatus.getSelectionIndex() != 2) {
+			transMeta.setTransstatus(wTransstatus.getSelectionIndex() + 1);
+		} else {
+			transMeta.setTransstatus(-1);
 		}
-		else
-		{
-			transMeta.setTransstatus( -1 );
-		}
-		
-		try
-		{
-			transMeta.setMaxDateOffset( Double.parseDouble(wMaxdateoffset.getText()) ) ;
-		}
-		catch(Exception e)
-		{
+
+		try {
+			transMeta.setMaxDateOffset(Double.parseDouble(wMaxdateoffset.getText()));
+		} catch (Exception e) {
 			MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
 			mb.setText(Messages.getString("TransDialog.InvalidOffsetNumber.DialogTitle")); //$NON-NLS-1$
 			mb.setMessage(Messages.getString("TransDialog.InvalidOffsetNumber.DialogMessage")); //$NON-NLS-1$
 			mb.open();
 			wMaxdateoffset.setFocus();
 			wMaxdateoffset.selectAll();
-			OK=false;
+			OK = false;
 		}
 
-		try
-		{
-			transMeta.setMaxDateDifference( Double.parseDouble(wMaxdatediff.getText()) );
-		}
-		catch(Exception e)
-		{
+		try {
+			transMeta.setMaxDateDifference(Double.parseDouble(wMaxdatediff.getText()));
+		} catch (Exception e) {
 			MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
 			mb.setText(Messages.getString("TransDialog.InvalidDateDifferenceNumber.DialogTitle")); //$NON-NLS-1$
 			mb.setMessage(Messages.getString("TransDialog.InvalidDateDifferenceNumber.DialogMessage")); //$NON-NLS-1$
 			mb.open();
 			wMaxdatediff.setFocus();
 			wMaxdatediff.selectAll();
-			OK=false;
+			OK = false;
 		}
-		
+
 		// Clear and add current dependencies
 		transMeta.removeAllDependencies();
-    	int nrNonEmptyFields = wFields.nrNonEmpty(); 
-		for (int i=0;i<nrNonEmptyFields;i++)
-		{
+		int nrNonEmptyFields = wFields.nrNonEmpty();
+		for (int i = 0; i < nrNonEmptyFields; i++) {
 			TableItem item = wFields.getNonEmpty(i);
-			
-			DatabaseMeta db  = transMeta.findDatabase(item.getText(1));
+
+			DatabaseMeta db = transMeta.findDatabase(item.getText(1));
 			String tablename = item.getText(2);
 			String fieldname = item.getText(3);
 			TransDependency td = new TransDependency(db, tablename, fieldname);
 			transMeta.addDependency(td);
 		}
-		
+
 		// Clear and add parameters
 		transMeta.eraseParameters();
-    	nrNonEmptyFields = wParamFields.nrNonEmpty(); 
-		for (int i=0;i<nrNonEmptyFields;i++)
-		{
+		nrNonEmptyFields = wParamFields.nrNonEmpty();
+		for (int i = 0; i < nrNonEmptyFields; i++) {
 			TableItem item = wParamFields.getNonEmpty(i);
 
 			try {
 				transMeta.addParameterDefinition(item.getText(1), item.getText(2), item.getText(3));
 			} catch (DuplicateParamException e) {
 				// Ignore the duplicate parameter.
-				if ( log.isDetailed() ) 
+				if (log.isDetailed())
 					log.logDetailed(getClass().getName(), "Duplicate parameter '" + item.getText(1) + "' detected.");
 			}
-		}		
-		
-		transMeta.setSizeRowset( Const.toInt( wSizeRowset.getText(), Const.ROWS_IN_ROWSET) );
-		transMeta.setUsingUniqueConnections( wUniqueConnections.getSelection() );
-        
-        transMeta.setFeedbackShown( wShowFeedback.getSelection() );
-        transMeta.setFeedbackSize( Const.toInt( wFeedbackSize.getText(), Const.ROWS_UPDATE ) );
-        transMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );
-        transMeta.setUsingThreadPriorityManagment( wManageThreads.getSelection() );
+		}
 
-        if (directoryChangeAllowed) {
-			if (newDirectory!=null)
-			{
-			    RepositoryDirectory dirFrom = transMeta.getDirectory();
-			    long idDirFrom = dirFrom==null?-1L:dirFrom.getID();
-			    
-				try
-				{
-					rep.moveTransformation(transMeta.getName(), idDirFrom, newDirectory.getID() );
-			 		log.logDetailed(getClass().getName(), Messages.getString("TransDialog.Log.MovedDirectoryTo",newDirectory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
-					transMeta.setDirectory( newDirectory );
-				}
-				catch(KettleException ke)
-				{
-			 		transMeta.setDirectory( dirFrom );
-			 		OK=false;
-			 		new ErrorDialog(shell, Messages.getString("TransDialog.ErrorMovingTransformation.DialogTitle"), Messages.getString("TransDialog.ErrorMovingTransformation.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+		transMeta.setSizeRowset(Const.toInt(wSizeRowset.getText(), Const.ROWS_IN_ROWSET));
+		transMeta.setUsingUniqueConnections(wUniqueConnections.getSelection());
+
+		transMeta.setFeedbackShown(wShowFeedback.getSelection());
+		transMeta.setFeedbackSize(Const.toInt(wFeedbackSize.getText(), Const.ROWS_UPDATE));
+		transMeta.setSharedObjectsFile(wSharedObjectsFile.getText());
+		transMeta.setUsingThreadPriorityManagment(wManageThreads.getSelection());
+
+		if (directoryChangeAllowed) {
+			if (newDirectory != null) {
+				RepositoryDirectory dirFrom = transMeta.getDirectory();
+				long idDirFrom = dirFrom == null ? -1L : dirFrom.getID();
+
+				try {
+					rep.moveTransformation(transMeta.getName(), idDirFrom, newDirectory.getID());
+					log.logDetailed(getClass().getName(), Messages.getString("TransDialog.Log.MovedDirectoryTo", newDirectory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
+					transMeta.setDirectory(newDirectory);
+				} catch (KettleException ke) {
+					transMeta.setDirectory(dirFrom);
+					OK = false;
+					new ErrorDialog(shell, Messages.getString("TransDialog.ErrorMovingTransformation.DialogTitle"), Messages.getString("TransDialog.ErrorMovingTransformation.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
-        }
-        else
-        {
-        	// Just update to the new selected directory...
-        	//
-        	if (newDirectory!=null) transMeta.setDirectory(newDirectory);
-        }
+		} else {
+			// Just update to the new selected directory...
+			//
+			if (newDirectory != null)
+				transMeta.setDirectory(newDirectory);
+		}
 
 		// Performance monitoring tab:
 		//
 		transMeta.setCapturingStepPerformanceSnapShots(wEnableStepPerfMonitor.getSelection());
 
-    try
-    {
-      transMeta.setStepPerformanceCapturingDelay(Long.parseLong(wEnableStepPerfInterval.getText()));
-    }
-    catch(Exception e)
-    {
-      MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-      mb.setText(Messages.getString("TransDialog.InvalidStepPerfIntervalNumber.DialogTitle")); //$NON-NLS-1$
-      mb.setMessage(Messages.getString("TransDialog.InvalidStepPerfIntervalNumber.DialogMessage")); //$NON-NLS-1$
-      mb.open();
-      wEnableStepPerfInterval.setFocus();  
-      wEnableStepPerfInterval.selectAll();
-      OK=false;
-    }
+		try {
+			transMeta.setStepPerformanceCapturingDelay(Long.parseLong(wEnableStepPerfInterval.getText()));
+		} catch (Exception e) {
+			MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+			mb.setText(Messages.getString("TransDialog.InvalidStepPerfIntervalNumber.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(Messages.getString("TransDialog.InvalidStepPerfIntervalNumber.DialogMessage")); //$NON-NLS-1$
+			mb.open();
+			wEnableStepPerfInterval.setFocus();
+			wEnableStepPerfInterval.selectAll();
+			OK = false;
+		}
 
+		// Also get the partition schemas...
+		applySchema(); // get last changes too...
+		transMeta.setPartitionSchemas(schemas);
 
-        // Also get the partition schemas...
-        applySchema(); // get last changes too...
-        transMeta.setPartitionSchemas(schemas);
-		
-		if (OK) dispose();
+		if (OK) {
+			transMeta.setChanged(changed || transMeta.hasChanged());
+			dispose();
+		}
 	}
 	
 	// Get the dependencies
