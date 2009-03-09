@@ -1441,6 +1441,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			} catch (KettleException dbe) {
 				throw new KettleException(Messages.getString("JobMeta.Exception.AnErrorOccuredReadingJob", jobname), dbe);
 			} finally {
+				initializeVariablesFrom(getParentVariableSpace());
 				setInternalKettleVariables();
 			}
 		}
