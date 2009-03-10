@@ -64,7 +64,7 @@ public class Kitchen
 		Job            job      = null;
 		
 		StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionDirname, optionFilename, optionLoglevel;
-        StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListjobs, optionListrep, optionNorep, optionVersion;
+        StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListjobs, optionListrep, optionNorep, optionVersion, optionListParam;
         NamedParams optionParams = new NamedParamsDefault();
 
 		CommandLineOption options[] = new CommandLineOption[] 
@@ -84,6 +84,7 @@ public class Kitchen
 		        new CommandLineOption("norep", Messages.getString("Kitchen.CmdLine.NoRep"), optionNorep=new StringBuffer(), true, false),
                 new CommandLineOption("version", Messages.getString("Kitchen.CmdLine.Version") , optionVersion=new StringBuffer(), true, false),
                 new CommandLineOption("param", Messages.getString("Pan.ComdLine.Param") , optionParams, true),
+		        new CommandLineOption("listparam", Messages.getString("Pan.ComdLine.ListParam"), optionListParam=new StringBuffer(), true, false),
             };
 
 		if (args.size()==0 ) 
@@ -358,6 +359,25 @@ public class Kitchen
             job.getJobMeta().setInternalKettleVariables(job);
             job.copyParametersFrom(job.getJobMeta());
             
+    		// List the parameters defined in this job 
+    		// Then simply exit...
+    		//
+    		if ("Y".equalsIgnoreCase(optionListParam.toString())) {
+    			for (String parameterName : job.listParameters()) {
+    				String deft = job.getParameterDefault(parameterName);
+    				String desc = job.getParameterDescription(parameterName);
+    				if ( deft != null )  {
+    					System.out.println("Parameter: "+parameterName+" ( default=["+deft+"]) : "+Const.NVL(desc, ""));
+    				} else {
+    					System.out.println("Parameter: "+parameterName+" : "+Const.NVL(desc, ""));
+    				}
+    			}
+    			
+    			// stop right here...
+    			//
+    			exitJVM(7); // same as the other list options
+    		}
+    		            
 			// Map the command line named parameters to the actual named parameters. Skip for
 			// the moment any extra command line parameter not known in the job.
 			String[] jobParams = job.listParameters();

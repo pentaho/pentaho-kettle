@@ -12,9 +12,11 @@
 */
 package org.pentaho.di.resource;
 
+import java.util.Map;
+
 public interface ResourceNamingInterface {
 	
-	public enum FileNamingType  {
+	public static enum FileNamingType  {
 		TRANSFORMATION,
 		JOB,
 		DATA_FILE,
@@ -30,4 +32,9 @@ public interface ResourceNamingInterface {
 	 * @return The filename, typically including a GUID, but always the same when given the same prefix and extension as input.
 	 */
 	public String nameResource(String prefix, String originalFilePath, String extension, FileNamingType namingType);
+	
+	/**
+	 * @return the map of folders mapped to created parameters during the resource naming.
+	 */
+	public Map<String, String> getDirectoryMap();
 }

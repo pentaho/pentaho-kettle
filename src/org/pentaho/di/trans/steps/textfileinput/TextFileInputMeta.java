@@ -44,6 +44,7 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -1712,7 +1713,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			// So let's change the filename from relative to absolute by grabbing the file object...
 			// In case the name of the file comes from previous steps, forget about this!
 			//
-			List<String> newFilenames = new ArrayList<String>();
+			List<FileObject> newFilenames = new ArrayList<FileObject>();
 			
 			if (!acceptingFilenames) {
 				FileInputList fileList = getTextFileList(space);
@@ -1726,7 +1727,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 						if (fileObject.exists()) {
 							// Convert to an absolute path and add it to the list.
 							// 
-							newFilenames.add(fileObject.getName().getPath());
+							newFilenames.add(fileObject);
 						} else {
 							return null; // it's all or nothing over here! 
 						}
@@ -1734,10 +1735,15 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 					
 					// Still here: set a new list of absolute filenames!
 					//
-					fileName = newFilenames.toArray(new String[newFilenames.size()]);
-					fileMask = new String[newFilenames.size()]; // all null since converted to absolute path.
-					fileRequired = new String[newFilenames.size()]; // all null, turn to "Y" :
-					for (int i=0;i<newFilenames.size();i++) fileRequired[i]="Y";
+					fileName=new String[newFilenames.size()];
+					fileMask=new String[newFilenames.size()];
+					fileRequired=new String[newFilenames.size()];
+					for (int i=0;i<newFilenames.size();i++) {
+						FileObject fileObject = newFilenames.get(i);
+						fileName[i] = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
+						fileMask[i] = null;
+						fileRequired[i] = "Y";
+					}
 				}
 			}
 			return null;

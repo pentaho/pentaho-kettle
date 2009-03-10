@@ -2784,6 +2784,16 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				for (JobEntryCopy jobEntry : jobMeta.jobcopies) {
 					jobEntry.getEntry().exportResources(jobMeta, definitions, namingInterface, repository);
 				}
+				
+				// Set a number of parameters for all the data files referenced so far...
+				//
+				Map<String, String> directoryMap = namingInterface.getDirectoryMap();
+				if (directoryMap!=null) {
+					for (String directory : directoryMap.keySet()) {
+						String parameterName = directoryMap.get(directory);
+						jobMeta.addParameterDefinition(parameterName, directory, "Data file path discovered during export");
+					}
+				}
 
 				// At the end, add ourselves to the map...
 				//

@@ -33,6 +33,7 @@ import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobEntryLoader;
+import org.pentaho.di.kitchen.Messages;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -67,7 +68,7 @@ public class Pan
 
 		// The options: 
 		StringBuffer optionRepname, optionUsername, optionPassword, optionTransname, optionDirname, optionFilename, optionLoglevel;
-		StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode, optionVersion, optionJarFilename;
+		StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode, optionVersion, optionJarFilename, optionListParam;
 		NamedParams optionParams = new NamedParamsDefault();
         
 		CommandLineOption options[] = new CommandLineOption[] 
@@ -90,6 +91,7 @@ public class Pan
                 new CommandLineOption("version", Messages.getString("Pan.ComdLine.Version"), optionVersion=new StringBuffer(), true, false),
                 new CommandLineOption("jarfile", Messages.getString("Pan.ComdLine.JarFile") , optionJarFilename=new StringBuffer(), false, true),
                 new CommandLineOption("param", Messages.getString("Pan.ComdLine.Param") , optionParams, true),
+		        new CommandLineOption("listparam", Messages.getString("Pan.ComdLine.ListParam"), optionListParam=new StringBuffer(), true, false),
             };
 
 		if (args.size()==0 ) 
@@ -150,7 +152,6 @@ public class Pan
         // This is where the action starts.
         // Print the options before we start processing when running in Debug or Rowlevel
         //
-        // TODO: include the named parameters        
         if (log.isDebug())
         {
 		    System.out.println("Arguments:");
@@ -412,6 +413,25 @@ public class Pan
 		{
 			trans.initializeVariablesFrom(null);
 			trans.getTransMeta().setInternalKettleVariables(trans);
+			
+    		// List the parameters defined in this transformation 
+    		// Then simply exit...
+    		//
+    		if ("Y".equalsIgnoreCase(optionListParam.toString())) {
+    			for (String parameterName : trans.listParameters()) {
+    				String deft = trans.getParameterDefault(parameterName);
+    				String desc = trans.getParameterDescription(parameterName);
+    				if ( deft != null )  {
+    					System.out.println("Parameter: "+parameterName+" ( default=["+deft+"]) : "+Const.NVL(desc, ""));
+    				} else {
+    					System.out.println("Parameter: "+parameterName+" : "+Const.NVL(desc, ""));
+    				}
+    			}
+    			
+    			// stop right here...
+    			//
+    			exitJVM(7); // same as the other list options
+    		}
 			
 			// Map the command line named parameters to the actual named parameters. Skip for
 			// the moment any extra command line parameter not known in the transformation.

@@ -3607,7 +3607,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			String zipFilename = dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName();
 
 			try {
+				// Export the resources linked to the currently loaded file...
+				//
 				String launchFile = ResourceUtil.serializeResourceExportInterface(zipFilename, resourceExportInterface, (VariableSpace)resourceExportInterface, rep);
+				
 				String message = "This resource can be executed in the exported zip file ["+zipFilename+"]"+Const.CR;
 				message += "Important: relative paths to referenced input files don't work anymore!"+Const.CR;
 				message +=" We had the choice to either put the files inside the zip archive OR change the references to an absolute path in the various steps."+Const.CR;

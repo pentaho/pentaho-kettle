@@ -6294,6 +6294,16 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 				// inside of the transformation.
 				//
 				transMeta.setFilename(exportFileName);
+				
+				// Set a number of parameters for all the data files referenced so far...
+				//
+				Map<String, String> directoryMap = resourceNamingInterface.getDirectoryMap();
+				if (directoryMap!=null) {
+					for (String directory : directoryMap.keySet()) {
+						String parameterName = directoryMap.get(directory);
+						transMeta.addParameterDefinition(parameterName, directory, "Data file path discovered during export");
+					}
+				}
 
 				// At the end, add ourselves to the map...
 				//
