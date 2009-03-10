@@ -41,6 +41,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.UserInfo;
+import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.version.BuildVersion;
 
@@ -64,7 +65,7 @@ public class Kitchen
 		Job            job      = null;
 		
 		StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionDirname, optionFilename, optionLoglevel;
-        StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListjobs, optionListrep, optionNorep, optionVersion, optionListParam;
+        StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListjobs, optionListrep, optionNorep, optionVersion, optionListParam, optionExport;
         NamedParams optionParams = new NamedParamsDefault();
 
 		CommandLineOption options[] = new CommandLineOption[] 
@@ -83,8 +84,9 @@ public class Kitchen
 			    new CommandLineOption("listrep", Messages.getString("Kitchen.CmdLine.ListAvailableReps"), optionListrep=new StringBuffer(), true, false),
 		        new CommandLineOption("norep", Messages.getString("Kitchen.CmdLine.NoRep"), optionNorep=new StringBuffer(), true, false),
                 new CommandLineOption("version", Messages.getString("Kitchen.CmdLine.Version") , optionVersion=new StringBuffer(), true, false),
-                new CommandLineOption("param", Messages.getString("Kitchen.ComdLine.Param") , optionParams, true),
+                new CommandLineOption("param", Messages.getString("Kitchen.ComdLine.Param") , optionParams, false),
 		        new CommandLineOption("listparam", Messages.getString("Kitchen.ComdLine.ListParam"), optionListParam=new StringBuffer(), true, false),
+		        new CommandLineOption("export", Messages.getString("Kitchen.ComdLine.Export"), optionExport=new StringBuffer(), true, false),
             };
 
 		if (args.size()==0 ) 
@@ -338,6 +340,26 @@ public class Kitchen
 			}
 
 			exitJVM(7);
+		}
+		
+		if (!Const.isEmpty(optionExport.toString())) {
+			
+
+			try {
+				// Export the resources linked to the currently loaded file...
+				//
+				String launchFile = ResourceUtil.serializeResourceExportInterface(optionExport.toString(), job.getJobMeta(), job, repository);
+				String message = ResourceUtil.getExplanation(optionExport.toString(), launchFile, job.getJobMeta());
+				System.out.println();
+				System.out.println(message);
+				
+				// Setting the list parameters option will make kitchen exit below in the parameters section
+				//
+				optionListParam=new StringBuffer("Y");
+			} catch(Exception e) {
+				System.out.println(Const.getStackTracker(e));
+				exitJVM(2);
+			}
 		}
 		
 		Result result = null;

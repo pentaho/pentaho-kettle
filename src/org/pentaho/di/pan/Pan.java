@@ -89,7 +89,7 @@ public class Pan
 		        new CommandLineOption("safemode", Messages.getString("Pan.ComdLine.SafeMode"), optionSafemode=new StringBuffer(), true, false),
                 new CommandLineOption("version", Messages.getString("Pan.ComdLine.Version"), optionVersion=new StringBuffer(), true, false),
                 new CommandLineOption("jarfile", Messages.getString("Pan.ComdLine.JarFile") , optionJarFilename=new StringBuffer(), false, true),
-                new CommandLineOption("param", Messages.getString("Pan.ComdLine.Param") , optionParams, true),
+                new CommandLineOption("param", Messages.getString("Pan.ComdLine.Param") , optionParams, false),
 		        new CommandLineOption("listparam", Messages.getString("Pan.ComdLine.ListParam"), optionListParam=new StringBuffer(), true, false),
             };
 

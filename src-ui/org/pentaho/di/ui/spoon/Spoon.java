@@ -3610,27 +3610,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				// Export the resources linked to the currently loaded file...
 				//
 				String launchFile = ResourceUtil.serializeResourceExportInterface(zipFilename, resourceExportInterface, (VariableSpace)resourceExportInterface, rep);
-				
-				String message = "This resource can be executed in the exported zip file ["+zipFilename+"]"+Const.CR;
-				message += "Important: relative paths to referenced input files don't work anymore!"+Const.CR;
-				message +=" We had the choice to either put the files inside the zip archive OR change the references to an absolute path in the various steps."+Const.CR;
-				message += "Because of time and functionality constraints, we opted to change the references.  Later we will add options to tweak this behavior"+Const.CR+Const.CR;
-				message += "This resource can be executed in the exported zip file ["+zipFilename+"]"+Const.CR;
-				message+="You can do this by running kitchen with the following command:"+Const.CR+Const.CR;
-				if (Const.isWindows()) {
-					message+="Kitchen.bat /file:\"";
-				} else {
-					message+="sh kitchen.sh -file='";
-				}
-				message+=launchFile;
-				if (Const.isWindows()) {
-					message+="\"";
-				} else {
-					message+="'";
-				}
-				message += Const.CR+"Please note that you can open this file with File/Open file from URL.  Enter this URL to open it:"+Const.CR+Const.CR;
-				message += launchFile+Const.CR+Const.CR;
-				
+				String message = ResourceUtil.getExplanation(zipFilename, launchFile, resourceExportInterface);
+								
 				EnterTextDialog enterTextDialog = new EnterTextDialog(shell, "Resource serialized", "This resource was serialized succesfully!", message);
 				enterTextDialog.setReadOnly();
 				enterTextDialog.open();

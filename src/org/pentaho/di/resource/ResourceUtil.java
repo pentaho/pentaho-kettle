@@ -12,6 +12,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.TransMeta;
 
 
 public class ResourceUtil {
@@ -76,5 +77,32 @@ public class ResourceUtil {
 				}
 			}
 		}
+	}
+
+	public static String getExplanation(String zipFilename, String launchFile, ResourceExportInterface resourceExportInterface) {
+		
+		String commandString="";
+		if (Const.isWindows()) {
+			if (resourceExportInterface instanceof TransMeta) {
+				commandString+="Pan.bat /file:\"";
+			} else {
+				commandString+="Kitchen.bat /file:\"";
+			}
+		} else {
+			if (resourceExportInterface instanceof TransMeta) {
+				commandString+="sh pan.sh -file='";
+			} else {
+				commandString+="sh kitchen.sh -file='";
+			}
+		}
+		commandString+=launchFile;
+		if (Const.isWindows()) {
+			commandString+="\"";
+		} else {
+			commandString+="'";
+		}
+
+		String message = Messages.getString("ResourceUtil.ExportResourcesExplanation", zipFilename, commandString, launchFile, Const.CR);
+		return message;
 	}
 }
