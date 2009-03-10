@@ -155,7 +155,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
       replaceVars = rep.getJobEntryAttributeBoolean(id_jobentry, "replacevars"); //$NON-NLS-1$
 
       // How many variableName?
-      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "name"); //$NON-NLS-1$
+      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "variable_name"); //$NON-NLS-1$
       variableName = new String[argnr];
       variableValue = new String[argnr];
       variableType = new int[argnr];
@@ -184,7 +184,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
           rep.saveJobEntryAttribute(id_job, getID(), i, "variable_name", variableName[i]); //$NON-NLS-1$
           rep.saveJobEntryAttribute(id_job, getID(), i, "variable_value", variableValue[i]); //$NON-NLS-1$
           rep.saveJobEntryAttribute(id_job, getID(), i, "variable_type",   getVariableTypeCode(variableType[i]));
-          }
+        }
       }
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(
