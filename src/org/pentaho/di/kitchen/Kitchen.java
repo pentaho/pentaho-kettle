@@ -359,25 +359,6 @@ public class Kitchen
             job.getJobMeta().setInternalKettleVariables(job);
             job.copyParametersFrom(job.getJobMeta());
             
-    		// List the parameters defined in this job 
-    		// Then simply exit...
-    		//
-    		if ("Y".equalsIgnoreCase(optionListParam.toString())) {
-    			for (String parameterName : job.listParameters()) {
-    				String deft = job.getParameterDefault(parameterName);
-    				String desc = job.getParameterDescription(parameterName);
-    				if ( deft != null )  {
-    					System.out.println("Parameter: "+parameterName+" ( default=["+deft+"]) : "+Const.NVL(desc, ""));
-    				} else {
-    					System.out.println("Parameter: "+parameterName+" : "+Const.NVL(desc, ""));
-    				}
-    			}
-    			
-    			// stop right here...
-    			//
-    			exitJVM(7); // same as the other list options
-    		}
-    		            
 			// Map the command line named parameters to the actual named parameters. Skip for
 			// the moment any extra command line parameter not known in the job.
 			String[] jobParams = job.listParameters();
@@ -387,9 +368,31 @@ public class Kitchen
 					job.setParameterValue(param, value);
 				}
 			}
-			// Put the parameters over the already defined variable space. Parameters
-			// get priority.
-			job.activateParameters();            
+			
+			// Put the parameters over the already defined variable space. Parameters get priority.
+			//
+			job.activateParameters();
+			
+    		// List the parameters defined in this job 
+    		// Then simply exit...
+    		//
+    		if ("Y".equalsIgnoreCase(optionListParam.toString())) {
+    			for (String parameterName : job.listParameters()) {
+    				String value = job.getParameterValue(parameterName);
+    				String deflt = job.getParameterDefault(parameterName);
+    				String descr = job.getParameterDescription(parameterName);
+    				
+    				if ( deflt != null )  {
+    					System.out.println("Parameter: "+parameterName+"="+Const.NVL(value, "")+", default="+deflt+" : "+Const.NVL(descr, ""));
+    				} else {
+    					System.out.println("Parameter: "+parameterName+"="+Const.NVL(value, "")+" : "+Const.NVL(descr, ""));
+    				}
+    			}
+    			
+    			// stop right here...
+    			//
+    			exitJVM(7); // same as the other list options
+    		}
                        
 			result = job.execute(); // Execute the selected job.		
 			job.endProcessing(Database.LOG_STATUS_END, result);  // The bookkeeping...

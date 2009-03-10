@@ -822,7 +822,27 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 //
                 else // Local execution...
                 {
-                	transMeta.copyParametersFrom(namedParam);
+                	// transMeta.copyParametersFrom(namedParam);
+                	
+	                transMeta.clearParameters();
+	                String[] parameterNames = transMeta.listParameters();
+	                for (int idx = 0; idx < parameterNames.length; idx++)  {
+	                	// Grab the parameter value set in the Trans job entry
+	                	//
+	                    String thisValue = namedParam.getParameterValue(parameterNames[idx]);
+	                    if (!Const.isEmpty(thisValue)) {
+	                    	// Set the value as specified by the user in the job entry
+	                    	//
+	                    	transMeta.setParameterValue(parameterNames[idx], thisValue);
+	                    } else {
+	                    	// See if the parameter had a value set in the parent job...
+	                    	//
+	                    	String parentValue = parentJob.getParameterValue(parameterNames[idx]);
+	                    	if (!Const.isEmpty(parentValue)) {
+	                    		transMeta.setParameterValue(parameterNames[idx], parentValue);
+	                    	}
+	                    }
+	                }
                 	
                     // Create the transformation from meta-data
                     Trans trans = new Trans(transMeta);

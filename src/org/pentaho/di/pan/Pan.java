@@ -414,25 +414,6 @@ public class Pan
 			trans.initializeVariablesFrom(null);
 			trans.getTransMeta().setInternalKettleVariables(trans);
 			
-    		// List the parameters defined in this transformation 
-    		// Then simply exit...
-    		//
-    		if ("Y".equalsIgnoreCase(optionListParam.toString())) {
-    			for (String parameterName : trans.listParameters()) {
-    				String deft = trans.getParameterDefault(parameterName);
-    				String desc = trans.getParameterDescription(parameterName);
-    				if ( deft != null )  {
-    					System.out.println("Parameter: "+parameterName+" ( default=["+deft+"]) : "+Const.NVL(desc, ""));
-    				} else {
-    					System.out.println("Parameter: "+parameterName+" : "+Const.NVL(desc, ""));
-    				}
-    			}
-    			
-    			// stop right here...
-    			//
-    			exitJVM(7); // same as the other list options
-    		}
-			
 			// Map the command line named parameters to the actual named parameters. Skip for
 			// the moment any extra command line parameter not known in the transformation.
 			String[] transParams = trans.listParameters();
@@ -451,7 +432,28 @@ public class Pan
 			{
 				trans.setSafeModeEnabled(true);
 			}
-			
+
+    		// List the parameters defined in this transformation 
+    		// Then simply exit...
+    		//
+    		if ("Y".equalsIgnoreCase(optionListParam.toString())) {
+    			for (String parameterName : trans.listParameters()) {
+    				String value = trans.getParameterValue(parameterName);
+    				String deflt = trans.getParameterDefault(parameterName);
+    				String descr = trans.getParameterDescription(parameterName);
+    				
+    				if ( deflt != null )  {
+    					System.out.println("Parameter: "+parameterName+"="+Const.NVL(value, "")+", default="+deflt+" : "+Const.NVL(descr, ""));
+    				} else {
+    					System.out.println("Parameter: "+parameterName+"="+Const.NVL(value, "")+" : "+Const.NVL(descr, ""));
+    				}
+    			}
+    			
+    			// stop right here...
+    			//
+    			exitJVM(7); // same as the other list options
+    		}
+
 		    // allocate & run the required sub-threads
 			try {
 				trans.execute((String[])args.toArray(new String[args.size()]));

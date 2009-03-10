@@ -689,11 +689,26 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	                job.copyParametersFrom(jobMeta);
 	                
 	                // Set the parameters calculated above on this instance.
+	                //
 	                job.clearParameters();
 	                String[] parameterNames = job.listParameters();
 	                for (int idx = 0; idx < parameterNames.length; idx++)  {
+	                	// Grab the parameter value set in the job entry
+	                	//
 	                    String thisValue = namedParam.getParameterValue(parameterNames[idx]);
-	                    job.setParameterValue(parameterNames[idx], thisValue);
+	                    if (!Const.isEmpty(thisValue)) {
+	                    	// Set the value as specified by the user in the job entry
+	                    	//
+	                    	job.setParameterValue(parameterNames[idx], thisValue);
+	                    } else {
+	                    	// See if the parameter had a value set in the parent job...
+	                    	// This value should pass down to the sub-job...
+	                    	//
+	                    	String parentValue = parentJob.getParameterValue(parameterNames[idx]);
+	                    	if (!Const.isEmpty(parentValue)) {
+	                    		job.setParameterValue(parameterNames[idx], parentValue);
+	                    	}
+	                    }
 	                }
 	                job.activateParameters();
 	                
