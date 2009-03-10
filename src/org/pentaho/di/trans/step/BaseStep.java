@@ -535,7 +535,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	        	
 	        	// If the step run in multiple copies, we only want to open every socket once.
 	        	// 
-				if (stepMeta.getCopies()==1 || (stepMeta.getCopies()>1 && getCopy()==i ) ) {
+				if (getCopy()==remoteStep.getSourceStepCopyNr()) { 
 		        	// Open a server socket to allow the remote output step to connect.
 		        	//
 		        	RemoteStep copy = (RemoteStep) remoteStep.clone();
@@ -545,7 +545,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 		        	}
 		        	catch(Exception e) {
 		            	log.logError(toString(), "Unable to open server socket during step initialisation: "+copy.toString(), e);
-		            	throw new Exception(e);
+		            	throw e;
 		        	}
 		        	remoteOutputSteps.add(copy);
 				}
@@ -609,6 +609,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 		{
 	    	try {
 	    		serverSocket.close();
+	    		log.logDetailed(toString(), "Closed server socket on port "+serverSocket.getLocalPort());
 	    	} catch (IOException e) {
 	    		log.logError(toString(), "Cleanup: Unable to close server socket ("+serverSocket.getLocalPort()+")", e);
 	    	}
