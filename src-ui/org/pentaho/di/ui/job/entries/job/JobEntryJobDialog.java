@@ -154,6 +154,10 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 	private Button wFollowingAbortRemotely;
 	private FormData fdlFollowingAbortRemotely, fdFollowingAbortRemotely;
 
+	private Label wlPassParams;
+	private Button wPassParams;
+	private FormData fdlPassParams, fdPassParams;
+
 	private Button wOK, wCancel;
 
 	private Listener lsOK, lsCancel;
@@ -663,18 +667,33 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		Composite wParameterComp = new Composite(wTabFolder, SWT.NONE);
 		props.setLook(wParameterComp);
 		wParameterComp.setLayout(fieldLayout);
-				
+		
+		// Pass all parameters down 
+		//
+		wlPassParams = new Label(wParameterComp, SWT.RIGHT);
+		wlPassParams.setText(Messages.getString("JobJob.PassAllParameters.Label"));
+		props.setLook(wlPassParams);
+		fdlPassParams = new FormData();
+		fdlPassParams.left = new FormAttachment(0, 0);
+		fdlPassParams.top = new FormAttachment(0, 0);
+		fdlPassParams.right = new FormAttachment(middle, -margin);
+		wlPassParams.setLayoutData(fdlPassParams);
+		wPassParams = new Button(wParameterComp, SWT.CHECK);
+		props.setLook(wPassParams);
+		fdPassParams = new FormData();
+		fdPassParams.left = new FormAttachment(middle, 0);
+		fdPassParams.top = new FormAttachment(0, 0);
+		fdPassParams.right = new FormAttachment(100, 0);
+		wPassParams.setLayoutData(fdPassParams);
+		
 		final int ParameterCols = 3;
 		rows = 100;
 		final int parameterRows = rows;
 
 	    colinf = new ColumnInfo[ParameterCols];
-		colinf[0] = new ColumnInfo(Messages.getString("JobJob.Parameters.Parameter.Label"),
-				ColumnInfo.COLUMN_TYPE_TEXT, false);
-		colinf[1] = new ColumnInfo(Messages.getString("JobJob.Parameters.ColumnName.Label"),
-				ColumnInfo.COLUMN_TYPE_TEXT, false);
-		colinf[2] = new ColumnInfo(Messages.getString("JobJob.Parameters.Value.Label"),
-				ColumnInfo.COLUMN_TYPE_TEXT, false);		
+		colinf[0] = new ColumnInfo(Messages.getString("JobJob.Parameters.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinf[1] = new ColumnInfo(Messages.getString("JobJob.Parameters.ColumnName.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinf[2] = new ColumnInfo(Messages.getString("JobJob.Parameters.Value.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false);		
 		colinf[2].setUsingVariables(true);
 
 		wParameters = new TableView(jobMeta, wParameterComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
@@ -682,7 +701,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 				
         FormData fdParameters = new FormData();
         fdParameters.left  = new FormAttachment(0, 0);
-        fdParameters.top   = new FormAttachment(0, margin);
+        fdParameters.top   = new FormAttachment(wPassParams, margin);
         fdParameters.right = new FormAttachment(100, 0);
         fdParameters.bottom= new FormAttachment(100, 0);
         wParameters.setLayoutData(fdParameters);
@@ -924,7 +943,9 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 			}
 			wParameters.setRowNums();
 			wParameters.optWidth(true);
-		}		
+		}	
+		
+		wPassParams.setSelection(jobEntry.isPassingAllParameters());
 		
 		wPrevious.setSelection(jobEntry.argFromPrevious);
 		wPrevToParams.setSelection(jobEntry.paramsFromPrevious);
@@ -1030,6 +1051,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 			
 			nr++;
 		}		
+		jobEntry.setPassingAllParameters(wPassParams.getSelection());
 
 		jobEntry.setLogfile = wSetLogfile.getSelection();
 		jobEntry.addDate = wAddDate.getSelection();

@@ -184,6 +184,10 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     private Button wAppendLogfile;
 
     private FormData fdlAppendLogfile, fdAppendLogfile;
+    
+	private Label wlPassParams;
+	private Button wPassParams;
+	private FormData fdlPassParams, fdPassParams;
 
 	private Display display;
 
@@ -751,6 +755,24 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		props.setLook(wParameterComp);
 		wParameterComp.setLayout(fieldLayout);
 				
+		// Pass all parameters down 
+		//
+		wlPassParams = new Label(wParameterComp, SWT.RIGHT);
+		wlPassParams.setText(Messages.getString("JobTrans.PassAllParameters.Label"));
+		props.setLook(wlPassParams);
+		fdlPassParams = new FormData();
+		fdlPassParams.left = new FormAttachment(0, 0);
+		fdlPassParams.top = new FormAttachment(0, 0);
+		fdlPassParams.right = new FormAttachment(middle, -margin);
+		wlPassParams.setLayoutData(fdlPassParams);
+		wPassParams = new Button(wParameterComp, SWT.CHECK);
+		props.setLook(wPassParams);
+		fdPassParams = new FormData();
+		fdPassParams.left = new FormAttachment(middle, 0);
+		fdPassParams.top = new FormAttachment(0, 0);
+		fdPassParams.right = new FormAttachment(100, 0);
+		wPassParams.setLayoutData(fdPassParams);
+
 		final int ParameterCols = 3;
 		rows = 100;
 		final int parameterRows = rows;
@@ -769,7 +791,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 				
         FormData fdParameters = new FormData();
         fdParameters.left  = new FormAttachment(0, 0);
-        fdParameters.top   = new FormAttachment(0, margin);
+        fdParameters.top   = new FormAttachment(wPassParams, margin);
         fdParameters.right = new FormAttachment(100, 0);
         fdParameters.bottom= new FormAttachment(100, 0);
         wParameters.setLayoutData(fdParameters);

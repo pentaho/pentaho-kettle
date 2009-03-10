@@ -98,6 +98,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     public  boolean followingAbortRemotely;
     
     private String remoteSlaveServerName;
+    public  boolean passingAllParameters=true;
 
     public JobEntryJob(String name)
 	{
@@ -231,6 +232,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		
 		if (parameters!=null)  {
 			retval.append("      ").append(XMLHandler.openTag("parameters"));
+			
+			retval.append("        ").append(XMLHandler.addTagValue("pass_all_parameters", passingAllParameters));
+			
 			for (int i=0;i<parameters.length;i++)
 			{
 				// This is a better way of making the XML file than the arguments.
@@ -286,16 +290,20 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 				arguments[a] = XMLHandler.getTagValue(entrynode, "argument" + a);
 			}
 			
-			Node fields = XMLHandler.getSubNode(entrynode, "parameters");   //$NON-NLS-1$
-			int nrRows  = XMLHandler.countNodes(fields, "parameter");       //$NON-NLS-1$
+			Node parametersNode = XMLHandler.getSubNode(entrynode, "parameters");   //$NON-NLS-1$
 			
-			parameters = new String[nrRows];
-			parameterFieldNames = new String[nrRows];
-			parameterValues = new String[nrRows];
+			String passAll = XMLHandler.getTagValue(parametersNode, "pass_all_parameters");
+			passingAllParameters = Const.isEmpty(passAll) || "Y".equalsIgnoreCase(passAll);
+
+			int nrParameters  = XMLHandler.countNodes(parametersNode, "parameter");       //$NON-NLS-1$
 			
-			for (int i=0;i<nrRows;i++)
+			parameters = new String[nrParameters];
+			parameterFieldNames = new String[nrParameters];
+			parameterValues = new String[nrParameters];
+			
+			for (int i=0;i<nrParameters;i++)
 			{
-				Node knode = XMLHandler.getSubNodeByNr(fields, "parameter", i);         //$NON-NLS-1$
+				Node knode = XMLHandler.getSubNodeByNr(parametersNode, "parameter", i);         //$NON-NLS-1$
 				
 				parameters         [i] = XMLHandler.getTagValue(knode, "name");        //$NON-NLS-1$
 				parameterFieldNames[i] = XMLHandler.getTagValue(knode, "stream_name"); //$NON-NLS-1$
@@ -350,7 +358,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 				parameters[a] = rep.getJobEntryAttributeString(id_jobentry, a, "parameter_name");
 				parameterFieldNames[a] = rep.getJobEntryAttributeString(id_jobentry, a, "parameter_stream_name");
 				parameterValues[a] = rep.getJobEntryAttributeString(id_jobentry, a, "parameter_value");
-			}					
+			}
+			
+			passingAllParameters = rep.getJobEntryAttributeBoolean(id_jobentry, "pass_all_parameters", true);
+			
 		} catch (KettleDatabaseException dbe) {
 			throw new KettleException("Unable to load job entry of type 'job' from the repository with id_jobentry=" + id_jobentry, dbe);
 		}
@@ -415,7 +426,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 					rep.saveJobEntryAttribute(id_job, getID(), i, "parameter_stream_name", Const.NVL(parameterFieldNames[i], ""));
 					rep.saveJobEntryAttribute(id_job, getID(), i, "parameter_value", Const.NVL(parameterValues[i], ""));
 				}
-			}			
+			}		
+			
+			rep.saveJobEntryAttribute(id_job, getID(), "pass_all_parameters", passingAllParameters);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -702,11 +715,13 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	                    	job.setParameterValue(parameterNames[idx], thisValue);
 	                    } else {
 	                    	// See if the parameter had a value set in the parent job...
-	                    	// This value should pass down to the sub-job...
+	                    	// This value should pass down to the sub-job if that's what we opted to do.
 	                    	//
-	                    	String parentValue = parentJob.getParameterValue(parameterNames[idx]);
-	                    	if (!Const.isEmpty(parentValue)) {
-	                    		job.setParameterValue(parameterNames[idx], parentValue);
+	                    	if (isPassingAllParameters()) {
+		                    	String parentValue = parentJob.getParameterValue(parameterNames[idx]);
+		                    	if (!Const.isEmpty(parentValue)) {
+		                    		job.setParameterValue(parameterNames[idx], parentValue);
+		                    	}
 	                    	}
 	                    }
 	                }
@@ -1140,4 +1155,19 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	public void setFollowingAbortRemotely(boolean followingAbortRemotely) {
 		this.followingAbortRemotely = followingAbortRemotely;
 	}
+
+	/**
+	 * @return the passingAllParameters
+	 */
+	public boolean isPassingAllParameters() {
+		return passingAllParameters;
+	}
+
+	/**
+	 * @param passingAllParameters the passingAllParameters to set
+	 */
+	public void setPassingAllParameters(boolean passingAllParameters) {
+		this.passingAllParameters = passingAllParameters;
+	}
+
 }
