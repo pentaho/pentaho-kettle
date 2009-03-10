@@ -33,7 +33,6 @@ import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobEntryLoader;
-import org.pentaho.di.kitchen.Messages;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;

@@ -83,8 +83,8 @@ public class Kitchen
 			    new CommandLineOption("listrep", Messages.getString("Kitchen.CmdLine.ListAvailableReps"), optionListrep=new StringBuffer(), true, false),
 		        new CommandLineOption("norep", Messages.getString("Kitchen.CmdLine.NoRep"), optionNorep=new StringBuffer(), true, false),
                 new CommandLineOption("version", Messages.getString("Kitchen.CmdLine.Version") , optionVersion=new StringBuffer(), true, false),
-                new CommandLineOption("param", Messages.getString("Pan.ComdLine.Param") , optionParams, true),
-		        new CommandLineOption("listparam", Messages.getString("Pan.ComdLine.ListParam"), optionListParam=new StringBuffer(), true, false),
+                new CommandLineOption("param", Messages.getString("Kitchen.ComdLine.Param") , optionParams, true),
+		        new CommandLineOption("listparam", Messages.getString("Kitchen.ComdLine.ListParam"), optionListParam=new StringBuffer(), true, false),
             };
 
 		if (args.size()==0 ) 
