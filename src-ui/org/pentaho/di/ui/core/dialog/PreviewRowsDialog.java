@@ -134,6 +134,8 @@ public class PreviewRowsDialog extends Dialog
         if (message == null)
             message = Messages.getString("PreviewRowsDialog.Header", stepname);
 
+        if(buffer!=null)   	message+=" "+Messages.getString("PreviewRowsDialog.NrRows",""+buffer.size());
+        
         shell.setLayout(formLayout);
         shell.setText(title);
 
