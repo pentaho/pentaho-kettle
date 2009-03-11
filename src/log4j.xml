@@ -40,13 +40,24 @@
       <priority value="DEBUG"/>
    </category>
    
-
    <category name="com.healthmarketscience.jackcess">
-      <priority value="INFO"/>
+      <priority value="WARN"/>
+   </category>
+   
+   <category name="org.apache.commons.httpclient">
+       <priority value="WARN"/>
+   </category>
+   
+   <category name="org.mortbay">
+      <priority value="ERR"/>
+   </category>
+
+   <category name="java.net">
+      <priority value="NONE"/>
    </category>
    
    <category name="org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient">
-      <priority value="INFO"/>
+      <priority value="WARN"/>
    </category>
 
    <category name="org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.auth">

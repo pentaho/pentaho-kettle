@@ -46,10 +46,12 @@ public class AddJobServlet extends HttpServlet
     public static final String CONTEXT_PATH = "/kettle/addJob";
     
     private JobMap jobMap;
+	private SocketRepository	socketRepository;
     
-    public AddJobServlet(JobMap jobMap)
+    public AddJobServlet(JobMap jobMap, SocketRepository socketRepository)
     {
         this.jobMap = jobMap;
+        this.socketRepository = socketRepository;
     }
     
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -111,6 +113,8 @@ public class AddJobServlet extends HttpServlet
             // Create the transformation and store in the list...
             //
             final Job job = new Job(LogWriter.getInstance(), StepLoader.getInstance(), repository, jobMeta);
+            
+            job.setSocketRepository(socketRepository);
             
             Job oldOne = jobMap.getJob(job.getJobname());
             if ( oldOne!=null)

@@ -3728,9 +3728,9 @@ public class Database implements VariableSpace
 
 			Object[] data = new Object[] {
 					status, 
-					Long.valueOf(read), Long.valueOf(written), 
+					Long.valueOf(read), Long.valueOf(written), Long.valueOf(updated),  
 					Long.valueOf(input), Long.valueOf(output), 
-					Long.valueOf(updated), Long.valueOf(errors), 
+					Long.valueOf(errors), 
 					startdate, enddate, logdate, depdate, replayDate, 
 					log_string, 
 					Long.valueOf(id),

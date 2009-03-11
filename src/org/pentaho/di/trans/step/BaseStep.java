@@ -61,6 +61,7 @@ import org.pentaho.di.trans.cluster.TransSplitter;
 import org.pentaho.di.trans.steps.mapping.Mapping;
 import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
+import org.pentaho.di.www.SocketRepository;
 
 public class BaseStep extends Thread implements VariableSpace, StepInterface
 {
@@ -320,6 +321,9 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	private boolean usingThreadPriorityManagment;
 	
 	private List<StepListener> stepListeners;
+	
+	/** The socket repository to use when opening server side sockets in clustering mode */
+	private SocketRepository socketRepository;
 
     /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
@@ -341,6 +345,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         this.transMeta = transMeta;
         this.trans = trans;
         this.stepname = stepMeta.getName();
+        this.socketRepository = trans.getSocketRepository();
 
         // Set the name of the thread
         if (stepMeta.getName() != null)
@@ -555,7 +560,8 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	        for (RemoteStep remoteStep : remoteOutputSteps) {
 	        	if (remoteStep.getServerSocket()!=null) {
 					try {
-						remoteStep.getServerSocket().close();
+						ServerSocket serverSocket = remoteStep.getServerSocket();
+						serverSocket.close();
 					} catch (IOException e1) {
 			        	log.logError(toString(), "Unable to close server socket after error during step initialisation", e);
 					} 
@@ -608,10 +614,11 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 		for (ServerSocket serverSocket : serverSockets)
 		{
 	    	try {
-	    		serverSocket.close();
-	    		log.logDetailed(toString(), "Closed server socket on port "+serverSocket.getLocalPort());
+	    		socketRepository.releaseSocket(serverSocket.getLocalPort());
+	    		
+	    		log.logDetailed(toString(), "Released server socket on port "+serverSocket.getLocalPort());
 	    	} catch (IOException e) {
-	    		log.logError(toString(), "Cleanup: Unable to close server socket ("+serverSocket.getLocalPort()+")", e);
+	    		log.logError(toString(), "Cleanup: Unable to release server socket ("+serverSocket.getLocalPort()+")", e);
 	    	}
 		}
     }
@@ -2917,6 +2924,20 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	
 	public boolean isMapping() {
 		return stepMeta.isMapping();
+	}
+
+	/**
+	 * @return the socketRepository
+	 */
+	public SocketRepository getSocketRepository() {
+		return socketRepository;
+	}
+
+	/**
+	 * @param socketRepository the socketRepository to set
+	 */
+	public void setSocketRepository(SocketRepository socketRepository) {
+		this.socketRepository = socketRepository;
 	}
 	
 }

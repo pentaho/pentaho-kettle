@@ -69,6 +69,7 @@ import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 import org.pentaho.di.www.AddTransServlet;
 import org.pentaho.di.www.PrepareExecutionTransServlet;
 import org.pentaho.di.www.SlaveServerTransStatus;
+import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartExecutionTransServlet;
 import org.pentaho.di.www.WebResult;
 
@@ -187,6 +188,8 @@ public class Trans implements VariableSpace, NamedParams
     private int nrOfFinishedSteps;
     
     private NamedParams namedParams = new NamedParamsDefault();
+
+	private SocketRepository	socketRepository;
     
 	/**
 	 * Initialize a transformation from transformation meta-data defined in memory
@@ -2984,5 +2987,13 @@ public class Trans implements VariableSpace, NamedParams
 	 */
 	public void setMappingStepName(String mappingStepName) {
 		this.mappingStepName = mappingStepName;
+	}
+
+	public void setSocketRepository(SocketRepository socketRepository) {
+		this.socketRepository = socketRepository;
+	}
+	
+	public SocketRepository getSocketRepository() {
+		return socketRepository;
 	}
 }

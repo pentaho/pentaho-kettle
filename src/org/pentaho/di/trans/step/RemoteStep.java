@@ -17,6 +17,7 @@ import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -32,6 +33,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.www.SocketRepository;
 import org.w3c.dom.Node;
 
 
@@ -200,16 +202,56 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		this.port = port;
 	}
 
-	public void openServerSocket(BaseStep baseStep) throws IOException {
+	public synchronized void openServerSocket(BaseStep baseStep) throws IOException {
 		this.baseStep = baseStep;
 		int portNumber = Integer.parseInt( baseStep.environmentSubstitute(port) );
-        serverSocket = new ServerSocket(portNumber);
+		
+		SocketRepository socketRepository = baseStep.getSocketRepository();
+		serverSocket = socketRepository.openServerSocket(portNumber, baseStep.getName());
+		
+		/*
+        serverSocket = new ServerSocket();
+        serverSocket.setPerformancePreferences(1,2,3); // order of importance: bandwidth, latency, connection time 
+        serverSocket.setReuseAddress(true);
         
-        // Add this socket to the steps server socket list
-        // That way, the socket can be closed during transformation cleanup
-        // That is called when the cluster has finished processing.
+        // It happens in high-paced environments where lots of sockets are opened and closed that the operating
+        // system keeps a lock on a socket.  Because of this we have to wait at least for 2 minutes.
+        // Let's take 3 to make sure we can get a socket connection.
         //
-        baseStep.getServerSockets().add(serverSocket);
+        // It sucks and blows at the same time that we have to do this but I couldn't find another solution.
+        //
+        try {
+        	serverSocket.bind(new InetSocketAddress(portNumber));
+        } catch(BindException e) {
+        	long totalWait=0L;
+        	IOException ioException = null;
+    		this.baseStep.logDetailed("Starting a retry loop to bind the server socket on port "+portNumber+".  We retry for 6 minutes until the socket clears in your operating system.");
+        	while (!serverSocket.isBound() && totalWait<360000) {
+	        	try {
+	        		this.baseStep.logDetailed("Retry binding the server socket on port "+portNumber+" after a "+(totalWait/1000)+" seconds wait...");
+		        	Thread.sleep(5000); // wait 5 seconds, try again...
+		        	totalWait+=5000;
+		        	serverSocket.bind(new InetSocketAddress(portNumber), 100);
+	        	} catch(IOException ioe) {
+	        		ioException = ioe;
+	        	} catch (Exception ex) {
+	        		throw new IOException(ex.getMessage());
+	        	}
+        	}
+        	if (!serverSocket.isBound()) {
+        		throw ioException;
+        	}
+    		this.baseStep.logDetailed("Successfully bound the server socket on port "+portNumber+" after "+(totalWait/1000)+" seconds.");
+        }
+	    
+
+        */
+		
+		// Add this socket to the steps server socket list
+		// That way, the socket can be closed during transformation cleanup
+		// That is called when the cluster has finished processing.
+		//
+		baseStep.getServerSockets().add(serverSocket);
 	}
 
 	/**
@@ -239,7 +281,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	 * @return the RowSet created that will accept the rows for the remote step
 	 * @throws IOException
 	 */
-	public RowSet openWriterSocket() throws IOException {
+	public synchronized RowSet openWriterSocket() throws IOException {
 
 		// Create an output row set: to be added to BaseStep.outputRowSets
 		//
@@ -312,10 +354,14 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 				}
 				finally {
 
-					// shut down the output stream, we've send everything...
+					// shut down the output stream, we've sent everything...
 					//
 					try {
-						if (socket!=null) socket.close();
+						if (socket!=null) {
+							socket.shutdownInput();
+							socket.shutdownOutput();
+							socket.close();
+						}
 					} catch (IOException e) {
 						baseStep.logError("Error closing output socket to remote step", e);
 						baseStep.setErrors(1);
@@ -356,7 +402,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		return rowData;
 	}
 	
-	public RowSet openReaderSocket(final BaseStep baseStep) throws IOException, KettleException {
+	public synchronized RowSet openReaderSocket(final BaseStep baseStep) throws IOException, KettleException {
 		this.baseStep = baseStep;
 		
 		final RowSet rowSet = new RowSet(baseStep.getTransMeta().getSizeRowset());
@@ -367,7 +413,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		rowSet.setRemoteSlaveServerName(targetSlaveServerName);
 		
 		final int portNumber = Integer.parseInt( baseStep.environmentSubstitute(port) );
-		String realHostname = baseStep.environmentSubstitute(hostname);
+		final String realHostname = baseStep.environmentSubstitute(hostname);
 
 		// Connect to the server socket (started during BaseStep.init())
         // Because the accept() call on the server socket can be called after we reached this code
@@ -381,9 +427,9 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
         while ( !connected && (TIMEOUT_IN_SECONDS > (System.currentTimeMillis()-startTime)/1000) && !baseStep.isStopped())
         {
         	try {
-				socket = new Socket(realHostname, portNumber);
-				
-				socket.setSoTimeout(10000);
+				socket = new Socket();
+				socket.setReuseAddress(true);
+				socket.connect(new InetSocketAddress(realHostname, portNumber), 5000);
 				
 				connected=true;
 				
@@ -422,7 +468,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
             if (inputStream==null) throw new KettleException("Unable to connect to the SocketWriter in the "+TIMEOUT_IN_SECONDS+"s timeout period.");
         }
         
-        baseStep.logBasic("Opened socket to read rows from remote step on server "+realHostname+" port "+portNumber);
+        baseStep.logDetailed("Opened connection to server socket to read rows from remote step on server "+realHostname+" port "+portNumber+" - Local port="+socket.getLocalPort());
 
         // Create a thread to take care of the reading from the client socket.
         // The rows read will be put in a RowSet buffer.
@@ -479,7 +525,12 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 				finally {
 					// Close the socket
 					try {
-						if (socket!=null) socket.close();
+						if (socket!=null) {
+							socket.shutdownInput();
+							socket.shutdownOutput();
+							socket.close();
+							baseStep.logDetailed("Closed connection to server socket to read rows from remote step on server "+realHostname+" port "+portNumber+" - Local port="+socket.getLocalPort());
+						}
 					} catch (IOException e) {
 						baseStep.logError("Error closing client socket connection to remote step", e);
 						baseStep.setErrors(1);

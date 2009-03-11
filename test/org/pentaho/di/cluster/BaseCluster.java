@@ -35,7 +35,9 @@ public class BaseCluster extends TestCase {
 		config.setClusterPosting(true);
 		config.setClusterPreparing(true);
 		config.setClusterStarting(true);
-		config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
+		config.setLogLevel(LogWriter.LOG_LEVEL_DETAILED);
+		
+		LogWriter.getInstance().setFilter(" server socket ");
 		
 		return config;
 	}

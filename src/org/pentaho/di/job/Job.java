@@ -49,6 +49,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.www.AddJobServlet;
+import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartJobServlet;
 import org.pentaho.di.www.WebResult;
 
@@ -106,6 +107,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
     private NamedParams namedParams = new NamedParamsDefault();
     
     private boolean finished;
+	private SocketRepository	socketRepository;
     
     public Job(LogWriter lw, String name, String file, String args[])
     {
@@ -787,7 +789,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	{
 		try
 		{
-			long read=res.getNrErrors();
+			long read=res.getNrLinesRead();
 	        long written=res.getNrLinesWritten();
 	        long updated=res.getNrLinesUpdated();
 	        long errors=res.getNrErrors();
@@ -1323,5 +1325,13 @@ public class Job extends Thread implements VariableSpace, NamedParams
 
 	public void copyParametersFrom(NamedParams params) {
 		namedParams.copyParametersFrom(params);
+	}
+
+	public void setSocketRepository(SocketRepository socketRepository) {
+		this.socketRepository = socketRepository;
+	}
+	
+	public SocketRepository getSocketRepository() {
+		return socketRepository;
 	}
 }

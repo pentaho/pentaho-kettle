@@ -701,6 +701,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	                job.setInternalKettleVariables(this);
 	                job.copyParametersFrom(jobMeta);
 	                
+	                // Pass the socket repository all around.
+	                //
+	                job.setSocketRepository(parentJob.getSocketRepository());
+	                
 	                // Set the parameters calculated above on this instance.
 	                //
 	                job.clearParameters();

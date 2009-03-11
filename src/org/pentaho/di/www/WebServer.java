@@ -47,14 +47,16 @@ public class WebServer
     private TransformationMap  transformationMap;
 	private JobMap             jobMap;
 	private List<SlaveServerDetection>  detections;
+	private SocketRepository   socketRepository;
 	
     private String hostname;
     private int port;
 
-    public WebServer(TransformationMap transformationMap, JobMap jobMap, List<SlaveServerDetection> detections, String hostname, int port, boolean join) throws Exception
+    public WebServer(TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port, boolean join) throws Exception
     {
         this.transformationMap = transformationMap;
         this.jobMap = jobMap;
+        this.socketRepository = socketRepository;
         this.detections = detections;
         this.hostname = hostname;
         this.port = port;
@@ -70,9 +72,9 @@ public class WebServer
         }
     }
 
-	public WebServer(TransformationMap transformationMap, JobMap jobMap, List<SlaveServerDetection> slaveServers, String hostname, int port) throws Exception
+	public WebServer(TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository, List<SlaveServerDetection> slaveServers, String hostname, int port) throws Exception
     {
-      this(transformationMap, jobMap, slaveServers, hostname, port, true);
+      this(transformationMap, jobMap, socketRepository, slaveServers, hostname, port, true);
     }
 
     public Server getServer()
@@ -166,7 +168,7 @@ public class WebServer
         // Add transformation
         //
         Context addTrans = new Context(contexts, AddTransServlet.CONTEXT_PATH, Context.SESSIONS);
-        addTrans.addServlet(new ServletHolder(new AddTransServlet(transformationMap)), "/*");
+        addTrans.addServlet(new ServletHolder(new AddTransServlet(transformationMap, socketRepository)), "/*");
 
         // Step port reservation
         //
@@ -197,7 +199,7 @@ public class WebServer
         // Add job
         //
         Context addJob= new Context(contexts, AddJobServlet.CONTEXT_PATH, Context.SESSIONS);
-        addJob.addServlet(new ServletHolder(new AddJobServlet(jobMap)), "/*");
+        addJob.addServlet(new ServletHolder(new AddJobServlet(jobMap, socketRepository)), "/*");
 
         
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -225,14 +227,20 @@ public class WebServer
     }
 
     public void stopServer() {
-      try {
-        if (server != null) {
-          server.stop();
-        }
-      } catch (Exception e) {
-        log.logError(Messages.getString("WebServer.Error.FailedToStop.Title"),Messages.getString("WebServer.Error.FailedToStop.Msg", ""+e));
-      }
-    }
+		try {
+			if (server != null) {
+				// Clean up all the server sockets...
+				//
+				socketRepository.closeAll();
+
+				// Stop the server...
+				//
+				server.stop();
+			}
+		} catch (Exception e) {
+			log.logError(Messages.getString("WebServer.Error.FailedToStop.Title"), Messages.getString("WebServer.Error.FailedToStop.Msg", "" + e));
+		}
+	}
     
     private void createListeners() 
     {
@@ -297,6 +305,20 @@ public class WebServer
 		};
 		timer.schedule(timerTask, 20000, 20000);
 		
+	}
+
+	/**
+	 * @return the socketRepository
+	 */
+	public SocketRepository getSocketRepository() {
+		return socketRepository;
+	}
+
+	/**
+	 * @param socketRepository the socketRepository to set
+	 */
+	public void setSocketRepository(SocketRepository socketRepository) {
+		this.socketRepository = socketRepository;
 	}
 }
 

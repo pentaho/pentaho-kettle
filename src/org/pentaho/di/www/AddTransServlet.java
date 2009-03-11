@@ -43,10 +43,12 @@ public class AddTransServlet extends HttpServlet
     public static final String CONTEXT_PATH = "/kettle/addTrans";
     
     private TransformationMap transformationMap;
+	private SocketRepository	socketRepository;
     
-    public AddTransServlet(TransformationMap transformationMap)
+    public AddTransServlet(TransformationMap transformationMap, SocketRepository socketRepository)
     {
         this.transformationMap = transformationMap;
+        this.socketRepository = socketRepository;
     }
     
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -107,6 +109,7 @@ public class AddTransServlet extends HttpServlet
             //
             final Trans trans = new Trans(transMeta);
             trans.setRepository(repository);
+            trans.setSocketRepository(socketRepository);
             
             Trans oldOne = transformationMap.getTransformation(trans.getName());
             if ( oldOne!=null)

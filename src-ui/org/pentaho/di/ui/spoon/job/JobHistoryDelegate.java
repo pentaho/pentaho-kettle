@@ -443,22 +443,23 @@ public class JobHistoryDelegate extends SpoonDelegate {
                                     
                                     // Set the correct valueMeta objects on the view
                                     //
-                                    colinf[ 0].setValueMeta(displayMeta.searchValueMeta("JOBNAME"));
-                                    colinf[ 1].setValueMeta(displayMeta.searchValueMeta("ID_JOB"));
-                                    colinf[ 2].setValueMeta(displayMeta.searchValueMeta("STATUS"));
-                                    colinf[ 3].setValueMeta(durationMeta);
-                                    colinf[ 4].setValueMeta(displayMeta.searchValueMeta("LINES_READ"));
-                                    colinf[ 5].setValueMeta(displayMeta.searchValueMeta("LINES_WRITTEN"));
-                                    colinf[ 6].setValueMeta(displayMeta.searchValueMeta("LINES_UPDATED"));
-                                    colinf[ 7].setValueMeta(displayMeta.searchValueMeta("LINES_INPUT"));
-                                    colinf[ 8].setValueMeta(displayMeta.searchValueMeta("LINES_OUTPUT"));
-                                    colinf[ 9].setValueMeta(displayMeta.searchValueMeta("ERRORS"));
-                                    colinf[10].setValueMeta(displayMeta.searchValueMeta("STARTDATE"));
-                                    colinf[11].setValueMeta(displayMeta.searchValueMeta("ENDDATE"));
-                                    colinf[12].setValueMeta(displayMeta.searchValueMeta("LOGDATE"));
-                                    colinf[13].setValueMeta(displayMeta.searchValueMeta("DEPDATE"));
+                                    int idx=0;
+                                    colinf[idx++].setValueMeta(displayMeta.searchValueMeta("JOBNAME"));
+                                    colinf[idx++].setValueMeta(displayMeta.searchValueMeta("ID_JOB"));
+                                    colinf[idx++].setValueMeta(displayMeta.searchValueMeta("STATUS"));
+                                    colinf[idx++].setValueMeta(durationMeta);
+                                    colinf[idx++].setValueMeta(displayMeta.searchValueMeta("LINES_READ"));
+                                    colinf[idx++].setValueMeta(displayMeta.searchValueMeta("LINES_WRITTEN"));
+                                    colinf[idx++].setValueMeta(displayMeta.searchValueMeta("LINES_UPDATED"));
+                                    colinf[idx++].setValueMeta(displayMeta.searchValueMeta("LINES_INPUT"));
+                                    colinf[idx++].setValueMeta(displayMeta.searchValueMeta("LINES_OUTPUT"));
+                                    colinf[idx++].setValueMeta(displayMeta.searchValueMeta("ERRORS"));
+                                    colinf[idx++].setValueMeta(displayMeta.searchValueMeta("STARTDATE"));
+                                    colinf[idx++].setValueMeta(displayMeta.searchValueMeta("ENDDATE"));
+                                    colinf[idx++].setValueMeta(displayMeta.searchValueMeta("LOGDATE"));
+                                    colinf[idx++].setValueMeta(displayMeta.searchValueMeta("DEPDATE"));
                                     replayDateMeta = displayMeta.searchValueMeta("REPLAYDATE");
-                                    colinf[14].setValueMeta(replayDateMeta);
+                                    colinf[idx++].setValueMeta(replayDateMeta);
                                 }	
                                 
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);

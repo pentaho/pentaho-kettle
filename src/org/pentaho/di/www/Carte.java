@@ -48,6 +48,7 @@ public class Carte
         TransformationMap transformationMap = new TransformationMap();
         JobMap jobMap = new JobMap();
         List<SlaveServerDetection> detections = new ArrayList<SlaveServerDetection>();
+        SocketRepository socketRepository = new SocketRepository();
         
         Trans trans = generateTestTransformation();
         transformationMap.addTransformation(trans.getName(), trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
@@ -86,7 +87,7 @@ public class Carte
 	        }
         }
         
-		this.webServer = new WebServer(transformationMap, jobMap, detections, hostname, port, config.isJoining());
+		this.webServer = new WebServer(transformationMap, jobMap, socketRepository, detections, hostname, port, config.isJoining());
 	}
 	
     public static void main(String[] args) throws Exception

@@ -388,7 +388,7 @@ public class LogWriter
         msg = (args.length <= 0) ? msg : MessageFormat.format(msg, args);
         
 		// Are the message filtered?
-		if (filter!=null && filter.length()>0)
+		if (lvl!=LOG_LEVEL_ERROR && !Const.isEmpty(filter))
         {
             if (subject.indexOf(filter)<0 && msg.indexOf(filter)<0)
             {

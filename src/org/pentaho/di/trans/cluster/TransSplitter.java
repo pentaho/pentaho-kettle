@@ -1221,10 +1221,10 @@ public class TransSplitter
             // Also add the original list of partition schemas to the slave step copy partition distribution...
             //
             slaveStepCopyPartitionDistribution.setOriginalPartitionSchemas(originalTransformation.getPartitionSchemas());
-            for (SlaveStepCopyPartitionDistribution.SlaveStepCopy slaveStepCopy : slaveStepCopyPartitionDistribution.getDistribution().keySet()) {
-            	int partition = slaveStepCopyPartitionDistribution.getPartition(slaveStepCopy.getSlaveServerName(), slaveStepCopy.getPartitionSchemaName(), slaveStepCopy.getStepCopyNr());
-            	System.out.println("slave step copy: slaveServer="+slaveStepCopy.getSlaveServerName()+", partition schema="+slaveStepCopy.getPartitionSchemaName()+", copynr="+slaveStepCopy.getStepCopyNr()+" ---> partition="+partition);
-            }
+            //for (SlaveStepCopyPartitionDistribution.SlaveStepCopy slaveStepCopy : slaveStepCopyPartitionDistribution.getDistribution().keySet()) {
+            //	int partition = slaveStepCopyPartitionDistribution.getPartition(slaveStepCopy.getSlaveServerName(), slaveStepCopy.getPartitionSchemaName(), slaveStepCopy.getStepCopyNr());
+            //	System.out.println("slave step copy: slaveServer="+slaveStepCopy.getSlaveServerName()+", partition schema="+slaveStepCopy.getPartitionSchemaName()+", copynr="+slaveStepCopy.getStepCopyNr()+" ---> partition="+partition);
+            //}
             
             // Get a hold of all the slave transformations & the master...
             // Assign the SAME slave-step-copy-partition distribution to all of them.

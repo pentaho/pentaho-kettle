@@ -861,8 +861,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	                }
                 	
                     // Create the transformation from meta-data
+	                //
                     Trans trans = new Trans(transMeta);
 
+                    // Pass the socket repository as early as possible...
+                    //
+                    trans.setSocketRepository(parentJob.getSocketRepository());
+                    
                     if (parentJob.getJobMeta().isBatchIdPassed())
                     {
                         trans.setPassedBatchId(parentJob.getPassedBatchId());
