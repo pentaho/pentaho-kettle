@@ -1455,19 +1455,24 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	private void ChildNode(Node node,String realXPath,String realXPathCleaned)
 	{
 		 Element ce = (Element) node;
-	
 		 // List child 
 		 for(int j=0;j<ce.nodeCount();j++)
 		 {
-			 
 			 Node cnode=ce.node(j);
 			 if(!Const.isEmpty(cnode.getName()))
 			 {
 				 Element cce = (Element) cnode;
 				 if(cce.nodeCount()>1)
 				 {
-					 // let's get child nodes
-				 	 ChildNode(cnode,realXPath,realXPathCleaned);
+					 if(Const.getOccurenceString(cnode.asXML(),"/>")<=1)
+					 {
+						 // We do not have child nodes ...
+						 setNodeField(cnode,realXPathCleaned); 
+					 }else
+					 {
+						 // let's get child nodes
+						 ChildNode(cnode,realXPath,realXPathCleaned);
+					 }
 				 }else
 				 {
 					 setNodeField(cnode,realXPathCleaned); 
