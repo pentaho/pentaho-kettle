@@ -57,14 +57,25 @@ public class StepPerformanceSnapShot {
 		this.inputBufferSize = inputBufferSize;
 		this.outputBufferSize = outputBufferSize;
 		
-		timeDifference = date.getTime() - previous.date.getTime();
-		linesRead = totalLinesRead - previous.totalLinesRead;
-		linesWritten =  totalLinesWritten - previous.totalLinesWritten;
-		linesInput = totalLinesInput - previous.totalLinesInput;
-		linesOutput = totalLinesOutput - previous.totalLinesOutput;
-		linesUpdated= totalLinesUpdated - previous.totalLinesUpdated;
-		linesRejected= totalLinesRejected - previous.totalLinesRejected;
-		errors= totalErrors - previous.totalErrors;
+		if (previous == null) {
+            timeDifference = 0;
+            linesRead = totalLinesRead;
+            linesWritten =  totalLinesWritten;
+            linesInput = totalLinesInput;
+            linesOutput = totalLinesOutput;
+            linesUpdated= totalLinesUpdated;
+            linesRejected= totalLinesRejected;
+            errors= totalErrors;
+		} else {
+		    timeDifference = date.getTime() - previous.date.getTime();
+		    linesRead = totalLinesRead - previous.totalLinesRead;
+		    linesWritten =  totalLinesWritten - previous.totalLinesWritten;
+		    linesInput = totalLinesInput - previous.totalLinesInput;
+		    linesOutput = totalLinesOutput - previous.totalLinesOutput;
+		    linesUpdated= totalLinesUpdated - previous.totalLinesUpdated;
+		    linesRejected= totalLinesRejected - previous.totalLinesRejected;
+		    errors= totalErrors - previous.totalErrors;
+		}
 	}
 
 	/**

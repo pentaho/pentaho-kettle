@@ -824,7 +824,7 @@ public class Trans implements VariableSpace, NamedParams
 	            }
 	            // Make the difference...
 	            //
-	            if (previous!=null) snapShot.diff(previous, baseStep.rowsetInputSize(), baseStep.rowsetOutputSize());
+	            snapShot.diff(previous, baseStep.rowsetInputSize(), baseStep.rowsetOutputSize());
 	            snapShotList.add(snapShot);
 	        }
     	}
