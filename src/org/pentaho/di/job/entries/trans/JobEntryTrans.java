@@ -1,4 +1,4 @@
- /* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
+/* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -731,6 +731,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     executionConfiguration.setClusterShowingTransformation(false);
                     executionConfiguration.setSafeModeEnabled(false);
                     executionConfiguration.setRepository(rep);
+                    executionConfiguration.setLogLevel(log.getLogLevel());
                     
                     // Also pass the variables from the transformation into the execution configuration
                     // That way it can go over the HTTP connection to the slave server.

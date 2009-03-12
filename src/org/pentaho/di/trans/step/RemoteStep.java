@@ -88,11 +88,13 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	
 	private GZIPOutputStream gzipOutputStream;
 
+	private String	sourceSlaveServerName;
+
 	/**
 	 * @param hostname
 	 * @param port
 	 */
-	public RemoteStep(String hostname, String remoteHostname, String port, String sourceStep, int sourceStepCopyNr, String targetStep, int targetStepCopyNr, String targetSlaveServerName, int bufferSize, boolean compressingStreams) {
+	public RemoteStep(String hostname, String remoteHostname, String port, String sourceStep, int sourceStepCopyNr, String targetStep, int targetStepCopyNr, String sourceSlaveServerName, String targetSlaveServerName, int bufferSize, boolean compressingStreams) {
 		super();
 		this.hostname = hostname;
 		this.remoteHostname = remoteHostname;
@@ -104,6 +106,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		this.bufferSize = bufferSize;
 		this.compressingStreams = compressingStreams;
 		
+		this.sourceSlaveServerName = sourceSlaveServerName;
 		this.targetSlaveServerName = targetSlaveServerName;
 		
 		if (sourceStep.equals(targetStep) && sourceStepCopyNr==targetStepCopyNr) {
@@ -136,6 +139,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		xml.append(XMLHandler.addTagValue("target_step_name", targetStep, false));
 		xml.append(XMLHandler.addTagValue("target_step_copy", targetStepCopyNr, false));
 
+		xml.append(XMLHandler.addTagValue("source_slave_server_name", sourceSlaveServerName, false));
 		xml.append(XMLHandler.addTagValue("target_slave_server_name", targetSlaveServerName, false));
 
 
@@ -157,12 +161,13 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		targetStep       = XMLHandler.getTagValue(node, "target_step_name");
 		targetStepCopyNr = Integer.parseInt(XMLHandler.getTagValue(node, "target_step_copy"));
 		
+		sourceSlaveServerName = XMLHandler.getTagValue(node, "source_slave_server_name");
 		targetSlaveServerName = XMLHandler.getTagValue(node, "target_slave_server_name");
 	}
 	
 	@Override
 	public String toString() {
-		return hostname+":"+port+" ("+targetSlaveServerName+" : "+sourceStep+"."+sourceStepCopyNr+" --> "+targetStep+"."+targetStepCopyNr+")"; // "  -  "+sourceStep+"."+sourceStepCopyNr+" --> "+targetStep+"."+targetStepCopyNr+")";
+		return hostname+":"+port+" ("+sourceSlaveServerName+"/"+sourceStep+"."+sourceStepCopyNr+" --> "+targetSlaveServerName+"/"+targetStep+"."+targetStepCopyNr+")"; // "  -  "+sourceStep+"."+sourceStepCopyNr+" --> "+targetStep+"."+targetStepCopyNr+")";
 	}
 	
 	@Override
@@ -207,45 +212,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		int portNumber = Integer.parseInt( baseStep.environmentSubstitute(port) );
 		
 		SocketRepository socketRepository = baseStep.getSocketRepository();
-		serverSocket = socketRepository.openServerSocket(portNumber, baseStep.getName());
-		
-		/*
-        serverSocket = new ServerSocket();
-        serverSocket.setPerformancePreferences(1,2,3); // order of importance: bandwidth, latency, connection time 
-        serverSocket.setReuseAddress(true);
-        
-        // It happens in high-paced environments where lots of sockets are opened and closed that the operating
-        // system keeps a lock on a socket.  Because of this we have to wait at least for 2 minutes.
-        // Let's take 3 to make sure we can get a socket connection.
-        //
-        // It sucks and blows at the same time that we have to do this but I couldn't find another solution.
-        //
-        try {
-        	serverSocket.bind(new InetSocketAddress(portNumber));
-        } catch(BindException e) {
-        	long totalWait=0L;
-        	IOException ioException = null;
-    		this.baseStep.logDetailed("Starting a retry loop to bind the server socket on port "+portNumber+".  We retry for 6 minutes until the socket clears in your operating system.");
-        	while (!serverSocket.isBound() && totalWait<360000) {
-	        	try {
-	        		this.baseStep.logDetailed("Retry binding the server socket on port "+portNumber+" after a "+(totalWait/1000)+" seconds wait...");
-		        	Thread.sleep(5000); // wait 5 seconds, try again...
-		        	totalWait+=5000;
-		        	serverSocket.bind(new InetSocketAddress(portNumber), 100);
-	        	} catch(IOException ioe) {
-	        		ioException = ioe;
-	        	} catch (Exception ex) {
-	        		throw new IOException(ex.getMessage());
-	        	}
-        	}
-        	if (!serverSocket.isBound()) {
-        		throw ioException;
-        	}
-    		this.baseStep.logDetailed("Successfully bound the server socket on port "+portNumber+" after "+(totalWait/1000)+" seconds.");
-        }
-	    
-
-        */
+		serverSocket = socketRepository.openServerSocket(portNumber, baseStep.getTransMeta().getName()+" - "+baseStep.toString());
 		
 		// Add this socket to the steps server socket list
 		// That way, the socket can be closed during transformation cleanup
@@ -659,5 +626,19 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	 */
 	public void setRemoteHostname(String remoteHostname) {
 		this.remoteHostname = remoteHostname;
+	}
+
+	/**
+	 * @return the sourceSlaveServer name
+	 */
+	public String getSourceSlaveServerName() {
+		return sourceSlaveServerName;
+	}
+
+	/**
+	 * @param sourceSlaveServername the sourceSlaveServerName to set
+	 */
+	public void setSourceSlaveServerName(String sourceSlaveServerName) {
+		this.sourceSlaveServerName = sourceSlaveServerName;
 	}
 }

@@ -1504,7 +1504,7 @@ public class Trans implements VariableSpace, NamedParams
 
 		// Change the logging back to stream...
 		String log_string = null;
-		if (transMeta.isLogfieldUsed())
+		if (transMeta.isLogfieldUsed() && stringAppender!=null)
 		{
             log_string = stringAppender.getBuffer().append(Const.CR+"END"+Const.CR).toString();
             log.removeAppender(stringAppender);
@@ -2319,7 +2319,7 @@ public class Trans implements VariableSpace, NamedParams
 	*/
 	public static final long monitorClusteredTransformation(String logSubject, TransSplitter transSplitter, Job parentJob)
 	{
-		return monitorClusteredTransformation(logSubject, transSplitter, parentJob, 5); // monitor every 5 seconds
+		return monitorClusteredTransformation(logSubject, transSplitter, parentJob, 1); // monitor every 1 seconds
 	}
 	
     /** Consider that all the transformations in a cluster schema are running now...<br>

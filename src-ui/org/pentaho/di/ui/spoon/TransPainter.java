@@ -488,7 +488,7 @@ public class TransPainter
 	         	// Also draw the name of the partition schema below the box
 	         	//
 	         	gc.setForeground(gray);
-	         	gc.drawText(partitionSchema.getName(), point.x, point.y+textExtent.y+3, true);
+	         	gc.drawText(Const.NVL(partitionSchema.getName(), "<no partition name>"), point.x, point.y+textExtent.y+3, true);
 	         	
 	            // Add to the list of areas...
 	         	//

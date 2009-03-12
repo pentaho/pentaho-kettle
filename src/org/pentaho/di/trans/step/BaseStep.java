@@ -561,7 +561,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	        	if (remoteStep.getServerSocket()!=null) {
 					try {
 						ServerSocket serverSocket = remoteStep.getServerSocket();
-						serverSocket.close();
+						getTrans().getSocketRepository().releaseSocket(serverSocket.getLocalPort());
 					} catch (IOException e1) {
 			        	log.logError(toString(), "Unable to close server socket after error during step initialisation", e);
 					} 

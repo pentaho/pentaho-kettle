@@ -99,6 +99,9 @@ public class AddTransServlet extends HttpServlet
             TransMeta transMeta = transConfiguration.getTransMeta();
             TransExecutionConfiguration transExecutionConfiguration = transConfiguration.getTransExecutionConfiguration();
             log.setLogLevel(transExecutionConfiguration.getLogLevel());
+            if (log.getLogLevel()>=LogWriter.LOG_LEVEL_DETAILED) {
+            	log.logDetailed(toString(), "Logging level set to "+log.getLogLevelDesc());
+            }
             transMeta.injectVariables(transExecutionConfiguration.getVariables());
             
             // If there was a repository, we know about it at this point in time.

@@ -142,7 +142,7 @@ public class JobEntryJobRunner implements Runnable
 	
 	public void waitUntilFinished()
 	{
-		while (!isFinished())
+		while (!isFinished() && !job.isStopped())
 		{
 			try { Thread.sleep(0,1); }
 			catch(InterruptedException e) { }

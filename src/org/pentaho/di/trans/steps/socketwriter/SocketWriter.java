@@ -132,7 +132,7 @@ public class SocketWriter extends BaseStep implements StepInterface
             try
             {
                 int port = Integer.parseInt( environmentSubstitute(meta.getPort()) );
-                data.serverSocket = new ServerSocket(port);
+                data.serverSocket = getTrans().getSocketRepository().openServerSocket(port, getTransMeta().getName()+" - "+this.toString());
                 
                 return true;
             }

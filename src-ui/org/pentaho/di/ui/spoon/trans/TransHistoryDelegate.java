@@ -385,9 +385,9 @@ public class TransHistoryDelegate extends SpoonDelegate {
                         
                         RowMetaAndData params = new RowMetaAndData();
                         params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), transMeta.getName()); //$NON-NLS-1$
-                        params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), transMeta.getName() + " (slave %"); //$NON-NLS-1$ //$NON-NLS-2$
+                        params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), transMeta.getName() + " (%"); //$NON-NLS-1$ //$NON-NLS-2$
                         ResultSet resultSet = database.openQuery("SELECT * FROM "+transMeta.getLogTable()+" WHERE TRANSNAME LIKE ? OR TRANSNAME LIKE ? ORDER BY ID_BATCH desc", params.getRowMeta(), params.getData()); //$NON-NLS-1$ //$NON-NLS-2$
-                        
+                        // database.getRows("SELECT * FROM "+transMeta.getLogTable()+" WHERE TRANSNAME LIKE 'test-hops-%'", 0);
                         rowList = new ArrayList<RowMetaAndData>();
                         Object[] rowData = database.getRow(resultSet);
                         while (rowData!=null)
@@ -402,6 +402,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
                         database.closeQuery(resultSet);
 
                         if (wFields.isDisposed()) return;
+                        
                         wFields.table.clearAll();
 
                         if (rowList.size()>0)

@@ -172,8 +172,8 @@ public class WebServer
 
         // Step port reservation
         //
-        Context getPort = new Context(contexts, GetStepSocketServlet.CONTEXT_PATH, Context.SESSIONS);
-        getPort.addServlet(new ServletHolder(new GetStepSocketServlet(transformationMap)), "/*");
+        Context getPort = new Context(contexts, AllocateServerSocketServlet.CONTEXT_PATH, Context.SESSIONS);
+        getPort.addServlet(new ServletHolder(new AllocateServerSocketServlet(transformationMap)), "/*");
         
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////

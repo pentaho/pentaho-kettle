@@ -50,6 +50,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
+import org.pentaho.di.www.AllocateServerSocketServlet;
 import org.pentaho.di.www.CleanupTransServlet;
 import org.pentaho.di.www.GetJobStatusServlet;
 import org.pentaho.di.www.GetSlavesServlet;
@@ -715,6 +716,30 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
             names[i] = slaveServer.getName();
         }
         return names;
+    }
+    
+    public int allocateServerSocket(int portRangeStart, String hostname, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy) throws Exception {
+    	String service=AllocateServerSocketServlet.CONTEXT_PATH+"/?";
+    	service += AllocateServerSocketServlet.PARAM_RANGE_START+"="+Integer.toString(portRangeStart);
+    	service += "&" + AllocateServerSocketServlet.PARAM_HOSTNAME+"="+hostname;
+    	service += "&" + AllocateServerSocketServlet.PARAM_TRANSFORMATION_NAME+"="+URLEncoder.encode(transformationName, "UTF-8");
+    	service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_SLAVE+"="+URLEncoder.encode(sourceSlaveName, "UTF-8");
+    	service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_STEPNAME+"="+URLEncoder.encode(sourceStepName, "UTF-8");
+    	service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_STEPCOPY+"="+URLEncoder.encode(sourceStepCopy, "UTF-8");
+    	service += "&" + AllocateServerSocketServlet.PARAM_TARGET_SLAVE+"="+URLEncoder.encode(targetSlaveName, "UTF-8");
+    	service += "&" + AllocateServerSocketServlet.PARAM_TARGET_STEPNAME+"="+URLEncoder.encode(targetStepName, "UTF-8");
+    	service += "&" + AllocateServerSocketServlet.PARAM_TARGET_STEPCOPY+"="+URLEncoder.encode(targetStepCopy, "UTF-8");
+    	service += "&xml=Y";
+    	String xml = execService(service);
+    	Document doc = XMLHandler.loadXMLString(xml);
+    	String portString = XMLHandler.getTagValue(doc, AllocateServerSocketServlet.XML_TAG_PORT);
+    	
+    	int port = Const.toInt(portString, -1);
+    	if (port<0) {
+    		throw new Exception("Unable to retrieve port from service : "+service+", received : \n"+xml);
+    	}
+
+    	return port;
     }
 
     public String getName()

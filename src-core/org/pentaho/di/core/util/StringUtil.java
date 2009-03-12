@@ -263,15 +263,17 @@ public class StringUtil
 	 *            the system properties to use
 	 * @return the string with the substitution applied.
 	 */
-	public static final String environmentSubstitute(String aString, Map<String, String> systemProperties)
+	public synchronized static final String environmentSubstitute(String aString, Map<String, String> systemProperties)
 	{
 		Map<String, String> sysMap = new HashMap<String, String>();
-		sysMap.putAll(systemProperties);
-		
-		aString = substituteWindows(aString, sysMap);
-		aString = substituteUnix(aString, sysMap);
-		aString = substituteHex(aString);
-		return aString;
+		synchronized(sysMap) {
+			sysMap.putAll(systemProperties);
+			
+			aString = substituteWindows(aString, sysMap);
+			aString = substituteUnix(aString, sysMap);
+			aString = substituteHex(aString);
+			return aString;
+		}
 	}
 
 	/**
