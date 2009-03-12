@@ -268,6 +268,7 @@ public class Validator extends BaseStep implements StepInterface
             		data.minimumValue[i]!=null || 
             		data.maximumValue[i]!=null || 
             		data.listValues[i].length>0 ||
+            		field.isSourcingValues() ||
             		!Const.isEmpty(field.getStartString()) ||
             		!Const.isEmpty(field.getEndString()) ||
             		!Const.isEmpty(field.getStartStringNotAllowed()) ||
@@ -309,7 +310,7 @@ public class Validator extends BaseStep implements StepInterface
 	            	
 	            	// In list?
 	            	//
-	            	boolean found = data.listValues[i].length==0;
+	            	boolean found = false;
 	            	for (Object object : data.listValues[i]) {
 	                	if (object!=null && data.listValues[i]!=null && valueMeta.compare(valueData, validatorMeta, object)==0) {
 	                    	found=true;
