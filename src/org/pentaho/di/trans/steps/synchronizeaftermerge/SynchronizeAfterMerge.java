@@ -163,7 +163,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 			            {
 			                String sql = getLookupStatement(data.inputRowMeta);
 			                
-			                if(log.isDebug()) logDebug("Pr�paration instruction Insertion SQL : "+sql);
+			                if(log.isDebug()) logDebug("Preparating SQL for insert: "+sql);
 			
 			                data.lookupStatement = data.db.prepareSQL(sql);
 			                data.preparedStatements.put(data.realSchemaTable+"lookup", data.lookupStatement);
