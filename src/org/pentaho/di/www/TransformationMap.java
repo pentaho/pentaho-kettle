@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Appender;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 
@@ -129,80 +130,88 @@ public class TransformationMap
      */
     public synchronized SocketPortAllocation allocateServerSocketPort(int portRangeStart, String hostname, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy) {
     	
-    	// Look up the sockets list for the given host
-    	//
-    	List<SocketPortAllocation> serverSocketPortsMap = hostServerSocketPortsMap.get(hostname);
-    	if (serverSocketPortsMap==null) {
-    		serverSocketPortsMap = new ArrayList<SocketPortAllocation>();
-    		hostServerSocketPortsMap.put(hostname, serverSocketPortsMap);
-    	} 
+    	synchronized(hostServerSocketPortsMap) {
+	    	// Look up the sockets list for the given host
+	    	//
+	    	List<SocketPortAllocation> serverSocketPortsMap = hostServerSocketPortsMap.get(hostname);
+	    	if (serverSocketPortsMap==null) {
+	    		serverSocketPortsMap = new ArrayList<SocketPortAllocation>();
+	    		hostServerSocketPortsMap.put(hostname, serverSocketPortsMap);
+	    	} 
+	
+	    	// Find the socket port allocation in the list...
+	    	//
+	    	SocketPortAllocation socketPortAllocation = null;
+	    	int maxPort=portRangeStart-1;
+	    	for (int index = 0; index < serverSocketPortsMap.size() ; index++) {
+	    		SocketPortAllocation spa = serverSocketPortsMap.get(index);
+	    		if (spa.getPort()>maxPort) {
+	    			maxPort=spa.getPort();
+	    		}
+	
+	    		if (spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && 
+		    			spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName) &&
+		    			spa.getTransformationName().equalsIgnoreCase(transformationName) &&
+		    			spa.getSourceStepName().equalsIgnoreCase(sourceStepName) &&
+		    			spa.getSourceStepCopy().equalsIgnoreCase(sourceStepCopy) &&
+		    			spa.getTargetStepName().equalsIgnoreCase(targetStepName) &&
+		    			spa.getTargetStepCopy().equalsIgnoreCase(targetStepCopy)
+		    		) {
+		    			// This is the port we want, return it.  Make sure it's allocated.
+		    			//
+	    				spa.setAllocated(true);
+		    			socketPortAllocation = spa;
+		    			break;
+		    	} else {
+		    		// If we find an available spot, take it.
+		    		//
+		    		if (!spa.isAllocated()) {
+		    			// This is not an allocated port.
+		    			// So we can basically use this port slot to put our own allocation in it.
+		    			//
+		    			// However, that is ONLY possible if the port belongs to the same slave server couple.
+		    			// Otherwise, we keep on searching.
+		    			//
+		    			if (spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName)) {
+			    			socketPortAllocation = new SocketPortAllocation(spa.getPort(), new Date(), transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
+			    			serverSocketPortsMap.set(index, socketPortAllocation);
 
-    	// Find the socket port allocation in the list...
-    	//
-    	SocketPortAllocation socketPortAllocation = null;
-    	int maxPort=portRangeStart-1;
-    	for (int index = 0; index < serverSocketPortsMap.size() ; index++) {
-    		SocketPortAllocation spa = serverSocketPortsMap.get(index);
-    		if (spa.getPort()>maxPort) {
-    			maxPort=spa.getPort();
-    		}
-
-    		if (spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && 
-	    			spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName) &&
-	    			spa.getTransformationName().equalsIgnoreCase(transformationName) &&
-	    			spa.getSourceStepName().equalsIgnoreCase(sourceStepName) &&
-	    			spa.getSourceStepCopy().equalsIgnoreCase(sourceStepCopy) &&
-	    			spa.getTargetStepName().equalsIgnoreCase(targetStepName) &&
-	    			spa.getTargetStepCopy().equalsIgnoreCase(targetStepCopy)
-	    		) {
-	    			// This is the port we want, return it.  Make sure it's allocated.
-	    			//
-    				spa.setAllocated(true);
-	    			socketPortAllocation = spa;
-	    			break;
+				    		LogWriter.getInstance().logBasic("MASTER", "Port "+hostname+":"+socketPortAllocation.getPort()+" REUSED for slave ["+sourceSlaveName+"], transformation=["+transformationName+"]");
+			    			break;
+		    			}
+		    		}
+		    	}
 	    	}
-    	
-    		if (!spa.isAllocated()) {
-    			// This is not an allocated port.
-    			// So we can basically use this port slot to put our own allocation in it.
-    			//
-    			// However, that is ONLY possible if the port belongs to the same slave server couple.
-    			// Otherwise, we keep on searching.
-    			//
-    			if (spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName)) {
-	    			socketPortAllocation = new SocketPortAllocation(spa.getPort(), new Date(), transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
-	    			serverSocketPortsMap.set(index, socketPortAllocation);
-	    			break;
-    			}
-    		}
+	    	
+	    	if (socketPortAllocation==null) {
+	    		// Allocate a new port and add it to the back of the list
+	    		// Normally this list should stay sorted on port number this way
+	    		//
+	    		socketPortAllocation = new SocketPortAllocation(maxPort+1, new Date(), transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
+	    		serverSocketPortsMap.add(socketPortAllocation);
+	    		
+	    		LogWriter.getInstance().logBasic("MASTER", "Port "+hostname+":"+socketPortAllocation.getPort()+" allocated for slave ["+sourceSlaveName+"], transformation=["+transformationName+"]");
+	    	}
+	    	
+	    	// DEBUG : Do a verification on the content of the list.
+	    	// If we find a port twice in the list, complain!
+	    	//
+	    	for (int i = 0; i < serverSocketPortsMap.size() ; i++) {
+	    		for (int j = 0; j < serverSocketPortsMap.size() ; j++) {
+	    			if (i!=j) {
+	    				SocketPortAllocation one = serverSocketPortsMap.get(i);
+	    				SocketPortAllocation two = serverSocketPortsMap.get(j);
+	    				if (one.getPort() == two.getPort()) {
+	    					System.out.println("WTF!!! Identical ports discovered in the ports list.");
+	    				}
+	    			}
+	    		}
+	    	}
+	    	    	
+	    	// give back the good news too...
+	    	//
+	    	return socketPortAllocation;
     	}
-    	
-    	if (socketPortAllocation==null) {
-    		// Allocate a new port and add it to the back of the list
-    		// Normally this list should stay sorted on port number this way
-    		//
-    		socketPortAllocation = new SocketPortAllocation(maxPort+1, new Date(), transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
-    		serverSocketPortsMap.add(socketPortAllocation);
-    	}
-    	
-    	// DEBUG : Do a verification on the content of the list.
-    	// If we find a port twice in the list, complain!
-    	//
-    	for (int i = 0; i < serverSocketPortsMap.size() ; i++) {
-    		for (int j = 0; j < serverSocketPortsMap.size() ; j++) {
-    			if (i!=j) {
-    				SocketPortAllocation one = serverSocketPortsMap.get(i);
-    				SocketPortAllocation two = serverSocketPortsMap.get(j);
-    				if (one.getPort() == two.getPort()) {
-    					System.out.println("WTF!!! Identical ports discovered in the ports list.");
-    				}
-    			}
-    		}
-    	}
-    	    	
-    	// give back the good news too...
-    	//
-    	return socketPortAllocation;
     }
     
     /**

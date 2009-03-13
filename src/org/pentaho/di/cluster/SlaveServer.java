@@ -725,6 +725,11 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     }
     
     public int allocateServerSocket(int portRangeStart, String hostname, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy) throws Exception {
+    	
+    	if (hostname.startsWith("${")) {
+    		throw new Exception("Not a hostname : "+hostname);
+    	}
+    	
     	String service=AllocateServerSocketServlet.CONTEXT_PATH+"/?";
     	service += AllocateServerSocketServlet.PARAM_RANGE_START+"="+Integer.toString(portRangeStart);
     	service += "&" + AllocateServerSocketServlet.PARAM_HOSTNAME+"="+hostname;

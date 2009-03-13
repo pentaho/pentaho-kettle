@@ -2171,6 +2171,14 @@ public class Trans implements VariableSpace, NamedParams
                     variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
                     variables.put(Const.INTERNAL_VARIABLE_CLUSTER_MASTER, "Y");
                     
+                    // Parameters override the variables.
+                    // For the time being we're passing the parameters over the wire as variables...
+                    //
+                    TransMeta ot = transSplitter.getOriginalTransformation();
+                    for (String param : ot.listParameters()) {
+                    	variables.put(param, Const.NVL(ot.getParameterValue(param), Const.NVL(ot.getParameterDefault(param), ot.getVariable(param))));
+                    }
+                    
                     String masterReply = masterServer.sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
                     WebResult webResult = WebResult.fromXMLString(masterReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))

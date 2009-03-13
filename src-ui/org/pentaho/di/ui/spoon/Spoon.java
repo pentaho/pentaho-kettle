@@ -113,6 +113,7 @@ import org.pentaho.di.core.lifecycle.LifeEventInfo;
 import org.pentaho.di.core.lifecycle.LifecycleException;
 import org.pentaho.di.core.lifecycle.LifecycleSupport;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -2297,6 +2298,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	protected void editSlaveServer(SlaveServer slaveServer) {
+		// slaveServer.getVariable("MASTER_HOST")
 		SlaveServerDialog dialog = new SlaveServerDialog(shell, slaveServer);
 		if (dialog.open()) {
 			refreshTree();
@@ -2927,6 +2929,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					TransMeta transMeta = tlpd.open();
 					sharedObjectsFileMap.put(transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects());
 					setTransMetaVariables(transMeta);
+					
 					if (transMeta != null) {
 						if (log.isDetailed())
 							log.logDetailed(toString(), Messages.getString("Spoon.Log.LoadToTransformation", name, repdir.getDirectoryName()));// "Transformation ["+transname+"] in directory ["+repdir+"] loaded from the repository."
@@ -3183,6 +3186,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				// anyway.
 			}
 		}
+		
+		// Also set the parameters
+		//
+		setParametersAsVariablesInUI(transMeta, transMeta);
 	}
 
 	/**
@@ -3203,6 +3210,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				// anyway.
 			}
 		}
+		
+		// Also set the parameters
+		//
+		setParametersAsVariablesInUI(jobMeta, jobMeta);
 	}
 
 	public void loadRepositoryObjects(TransMeta transMeta) {
@@ -5939,15 +5950,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	public void executeTransformation(final TransMeta transMeta, final boolean local, final boolean remote, final boolean cluster, final boolean preview, final boolean debug, final Date replayDate, final boolean safe) {
-		getDisplay().asyncExec(new Runnable() { public void run() { 
-	
-				try {
-					delegates.trans.executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate, safe);
-				} catch (Exception e) {
-					new ErrorDialog(shell, "Execute transformation", "There was an error during transformation execution", e);
-				}
-			}
-		});
+		new Thread() {
+			public void run() {
+				getDisplay().asyncExec(new Runnable() { public void run() { 
+						try {
+							delegates.trans.executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate, safe);
+						} catch (Exception e) {
+							new ErrorDialog(shell, "Execute transformation", "There was an error during transformation execution", e);
+						}
+					}
+				});
+			}	
+		}.start();
 	}
 
 	public void executeJob(JobMeta jobMeta, boolean local, boolean remote, Date replayDate, boolean safe) {
@@ -6335,6 +6349,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		JobGraph jobGraph = getActiveJobGraph();
 		if (jobGraph != null)
 			jobGraph.zoom100Percent();
+	}
+
+	public void setParametersAsVariablesInUI(NamedParams namedParameters, VariableSpace space) {
+	      for (String param : namedParameters.listParameters()) {
+	    	  try {
+	    		  space.setVariable(param, Const.NVL(namedParameters.getParameterValue(param), Const.NVL(namedParameters.getParameterDefault(param), Const.NVL(space.getVariable(param), ""))));
+	    	  }
+	    	  catch(Exception e) {
+	    		  // ignore this
+	    	  }
+	      }
 	}
 
 }

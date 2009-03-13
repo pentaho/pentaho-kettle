@@ -948,4 +948,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     return "STEP"; //$NON-NLS-1$
   }
   
+  public boolean isClustered() {
+	  return clusterSchema!=null;
+  }
 }

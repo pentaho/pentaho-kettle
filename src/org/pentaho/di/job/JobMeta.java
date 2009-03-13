@@ -885,6 +885,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			for (int i = 0; i < nrSlaveServers; i++) {
 				Node slaveServerNode = XMLHandler.getSubNodeByNr(slaveServersNode, SlaveServer.XML_TAG, i);
 				SlaveServer slaveServer = new SlaveServer(slaveServerNode);
+                slaveServer.shareVariablesWith(this);
 
 				// Check if the object exists and if it's a shared object.
 				// If so, then we will keep the shared version, not this one.
@@ -1041,6 +1042,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
             for (int i = 0; i < dbids.length; i++)
             {
                 SlaveServer slaveServer = new SlaveServer(rep, dbids[i]);
+                slaveServer.shareVariablesWith(this);
+
                 SlaveServer check = findSlaveServer(slaveServer.getName()); // Check if there already is one in the transformation
                 if (check==null || overWriteShared) 
                 {
@@ -1073,9 +1076,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		for (SharedObjectInterface object : objectsMap.values()) {
 			if (object instanceof DatabaseMeta) {
 				DatabaseMeta databaseMeta = (DatabaseMeta) object;
+                databaseMeta.shareVariablesWith(this);
 				addOrReplaceDatabase(databaseMeta);
 			} else if (object instanceof SlaveServer) {
 				SlaveServer slaveServer = (SlaveServer) object;
+                slaveServer.shareVariablesWith(this);
 				addOrReplaceSlaveServer(slaveServer);
 			}
 		}

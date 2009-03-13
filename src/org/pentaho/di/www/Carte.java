@@ -85,6 +85,7 @@ public class Carte
 	        	try {
 		        	SlaveServerDetection slaveServerDetection = new SlaveServerDetection(client);
 		        	master.sendXML(slaveServerDetection.getXML(), RegisterSlaveServlet.CONTEXT_PATH+"/");
+	        		LogWriter.getInstance().logError("Carte", "Registered this slave server to master slave server ["+master.toString()+"] on address ["+master.getServerAndPort()+"]");
 	        	} catch(Exception e) {
 	        		LogWriter.getInstance().logError("Carte", "Unable to register to master slave server ["+master.toString()+"] on address ["+master.getServerAndPort()+"]");
 	        		allOK=false;

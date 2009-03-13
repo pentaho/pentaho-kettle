@@ -27,6 +27,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.SlaveStepCopyPartitionDistribution;
 import org.pentaho.di.trans.TransHopMeta;
@@ -78,10 +79,35 @@ public class TransSplitter
 	/**
      * @param originalTransformation
      */
-    public TransSplitter(TransMeta originalTransformation)
+    public TransSplitter(TransMeta transMeta) throws KettleException
     {
         this();
-        this.originalTransformation = originalTransformation;
+        
+        // We want to make sure there is no trace of the old transformation left when we 
+        // Modify during split.
+        // As such, we deflate/inflate over XML
+        //
+        String transXML = transMeta.getXML();
+        this.originalTransformation = new TransMeta(XMLHandler.getSubNode(XMLHandler.loadXMLString(transXML), TransMeta.XML_TAG), null);
+        this.originalTransformation.shareVariablesWith(transMeta);
+        
+        // FIRST : convert the dynamic master into a fixed one.
+        // This is why we copied the original transformation
+        //
+        ClusterSchema clusterSchema = this.originalTransformation.findFirstUsedClusterSchema();
+        if (clusterSchema==null) {
+      	  throw new KettleException("No clustering is used in this transformation.");
+        }
+        if (clusterSchema.isDynamic()) {
+      	  List<SlaveServer> slaveServers = clusterSchema.getSlaveServersFromMasterOrLocal();
+      	  SlaveServer masterSlaveServer = clusterSchema.findMaster();
+      	  if (masterSlaveServer==null) {
+      		  throw new KettleException("You always need at least one master in a cluster schema.");
+      	  }
+      	  slaveServers.add(0, masterSlaveServer);
+      	  clusterSchema.setDynamic(false);
+      	  clusterSchema.setSlaveServers(slaveServers);
+        }
     }
 
     /**
@@ -166,9 +192,11 @@ public class TransSplitter
     	Integer portNumber = portCache.get(portCacheKey);
     	if (portNumber!=null) return portNumber.intValue();
     	
+    	String realHostname = sourceSlave.environmentSubstitute(sourceSlave.getHostname());
+    	
     	int port = masterSlave.allocateServerSocket(
     			Const.toInt(clusterSchema.getBasePort(), 40000), 
-    			sourceSlave.getHostname(), 
+    			realHostname, 
     			originalTransformation.getName(), 
     			sourceSlave.getName(), sourceStepName, Integer.toString(sourceStepCopy),   // Source 
     			targetSlave.getName(), targetStepName, Integer.toString(targetStepCopy));  // Target
@@ -373,20 +401,21 @@ public class TransSplitter
         {
         	SlaveServer masterSlaveServer = getMasterServer();
             masterTransMeta = getOriginalCopy(false, null, null);
+            ClusterSchema clusterSchema = originalTransformation.findFirstUsedClusterSchema();
+            List<SlaveServer> slaveServers = clusterSchema.getSlaveServers();
+            int nrSlavesNodes = clusterSchema.findNrSlaves();
             
             for (int r=0;r<referenceSteps.length;r++)
             {
                 StepMeta referenceStep = referenceSteps[r];
-                ClusterSchema referenceClusterSchema = referenceStep.getClusterSchema(); 
-
+                
                 int nrPreviousSteps = originalTransformation.findNrPrevSteps(referenceStep);
                 for (int p=0;p<nrPreviousSteps;p++)
                 {
                     StepMeta previousStep = originalTransformation.findPrevStep(referenceStep, p);
 
-                    ClusterSchema previousClusterSchema = previousStep.getClusterSchema();
-                    if (referenceClusterSchema==null) {
-                        if (previousClusterSchema==null)
+                    if (!referenceStep.isClustered()) {
+                        if (!previousStep.isClustered())
                         {
                             // No clustering involved here: just add the reference step to the master
                             //
@@ -430,8 +459,8 @@ public class TransSplitter
                             
                             // Verify that the number of copies is equal to the number of slaves or 1
                             //
-                            if (masterStep.getCopies()!=1 && masterStep.getCopies()!=(previousClusterSchema.findNrSlaves()*nrOfSourceCopies)) {
-                                throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+previousClusterSchema.findNrSlaves()+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
+                            if (masterStep.getCopies()!=1 && masterStep.getCopies()!=(nrSlavesNodes*nrOfSourceCopies)) {
+                                throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+nrSlavesNodes+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
                             }
                             Queue<Integer> masterStepCopyNumbers = new LinkedList<Integer>();
                             for (int i = 0; i < masterStep.getCopies(); i++) {
@@ -440,10 +469,9 @@ public class TransSplitter
 
                             // Then add the remote input/output steps to master and slave 
                             // 
-                            int nrSlaves = previousClusterSchema.getSlaveServers().size();
-                            for (int slaveNr=0;slaveNr<nrSlaves;slaveNr++)
+                            for (int slaveNr=0;slaveNr<slaveServers.size();slaveNr++)
                             {
-                                SlaveServer sourceSlaveServer = (SlaveServer) previousClusterSchema.getSlaveServers().get(slaveNr);
+                                SlaveServer sourceSlaveServer = slaveServers.get(slaveNr);
                                 
                                 if (!sourceSlaveServer.isMaster())
                                 {
@@ -452,7 +480,7 @@ public class TransSplitter
                                 	
                                     // SLAVE : add remote output steps to the previous step
                                 	//
-                                	TransMeta slave = getSlaveTransformation(previousClusterSchema, sourceSlaveServer);
+                                	TransMeta slave = getSlaveTransformation(clusterSchema, sourceSlaveServer);
 
                                     // See if we can add a link to the previous using the Remote Steps concept.
                                 	//
@@ -481,7 +509,7 @@ public class TransSplitter
                         			    if (masterStepCopyNr == null) {
                         			        masterStepCopyNr = 0;
                         			    }
-                        				int port = getPort(previousClusterSchema, masterSlaveServer, masterStep.getName(), masterStepCopyNr, sourceSlaveServer, slaveStep.getName(), sourceCopyNr);
+                        				int port = getPort(clusterSchema, masterSlaveServer, masterStep.getName(), masterStepCopyNr, sourceSlaveServer, slaveStep.getName(), sourceCopyNr);
 
                                         RemoteStep remoteMasterStep = new RemoteStep(sourceSlaveServer.getHostname(), masterSlaveServer.getHostname(), Integer.toString(port), slaveStep.getName(), sourceCopyNr, masterStep.getName(), masterStepCopyNr, sourceSlaveServer.getName(), masterSlaveServer.getName(), socketsBufferSize, compressingSocketStreams);
                                         masterStep.getRemoteInputSteps().add(remoteMasterStep);
@@ -510,7 +538,7 @@ public class TransSplitter
                         				if (partitionSchema.isDynamicallyDefined()) {
                         					// Expand the cluster definition to: nrOfSlaves*nrOfPartitionsPerSlave...
                         					//
-                        					partitionSchema.expandPartitionsDynamically(previousClusterSchema.findNrSlaves(), originalTransformation);
+                        					partitionSchema.expandPartitionsDynamically(clusterSchema.findNrSlaves(), originalTransformation);
                         				}
                         				masterStep.setTargetStepPartitioningMeta( stepPartitioningMeta );
                     					masterTransMeta.addOrReplacePartitionSchema(partitionSchema);
@@ -525,10 +553,10 @@ public class TransSplitter
                         				if (partitionSchema.isDynamicallyDefined()) {
                         					// Expand the cluster definition to: nrOfSlaves*nrOfPartitionsPerSlave...
                         					//
-                        					partitionSchema.expandPartitionsDynamically(previousClusterSchema.findNrSlaves(), originalTransformation);
+                        					partitionSchema.expandPartitionsDynamically(clusterSchema.findNrSlaves(), originalTransformation);
                         				}
                         				
-                        				partitionSchema.retainPartitionsForSlaveServer(previousClusterSchema.findNrSlaves(), getSlaveServerNumber(referenceClusterSchema, sourceSlaveServer));
+                        				partitionSchema.retainPartitionsForSlaveServer(clusterSchema.findNrSlaves(), getSlaveServerNumber(clusterSchema, sourceSlaveServer));
                     					slave.addOrReplacePartitionSchema( partitionSchema );
                         			}
                                 }
@@ -537,7 +565,7 @@ public class TransSplitter
                     }
                     else
                     {
-                        if (previousClusterSchema==null)
+                        if (!previousStep.isClustered())
                         {
                             // reference step is clustered
                             // previous step is not clustered
@@ -558,8 +586,8 @@ public class TransSplitter
 
                             // Verify that the number of copies is equal to the number of slaves or 1
                             //
-                            if (sourceStep.getCopies()!=1 && sourceStep.getCopies()!=(referenceClusterSchema.findNrSlaves()*nrOfTargetCopies)) {
-                                throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+referenceClusterSchema.findNrSlaves()+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
+                            if (sourceStep.getCopies()!=1 && sourceStep.getCopies()!=(nrSlavesNodes*nrOfTargetCopies)) {
+                                throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+nrSlavesNodes+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
                             }
                             
                             Queue<Integer> masterStepCopyNumbers = new LinkedList<Integer>();
@@ -567,15 +595,14 @@ public class TransSplitter
                                 masterStepCopyNumbers.add(i);
                             }
 
-                            int nrSlaves = referenceClusterSchema.getSlaveServers().size();
-                            for (int s=0;s<nrSlaves;s++)
+                            for (int s=0;s<slaveServers.size();s++)
                             {
-                                SlaveServer targetSlaveServer = (SlaveServer) referenceClusterSchema.getSlaveServers().get(s);
+                                SlaveServer targetSlaveServer = slaveServers.get(s);
                                 if (!targetSlaveServer.isMaster())
                                 {
                                     // SLAVE : add remote input step to the reference slave step...
                                     //
-                                    TransMeta slaveTransMeta = getSlaveTransformation(referenceClusterSchema, targetSlaveServer);
+                                    TransMeta slaveTransMeta = getSlaveTransformation(clusterSchema, targetSlaveServer);
                                     
                                     // also add the step itself.
                                     StepMeta targetStep = slaveTransMeta.findStep(referenceStep.getName());
@@ -601,7 +628,7 @@ public class TransSplitter
                                         if (masterStepCopyNr == null) {
                                             masterStepCopyNr = 0;
                                         }
-                        				int port = getPort(referenceClusterSchema, targetSlaveServer, sourceStep.getName(), masterStepCopyNr, targetSlaveServer, referenceStep.getName(), targetCopyNr);
+                        				int port = getPort(clusterSchema, targetSlaveServer, sourceStep.getName(), masterStepCopyNr, targetSlaveServer, referenceStep.getName(), targetCopyNr);
 
                                         RemoteStep remoteMasterStep = new RemoteStep(targetSlaveServer.getHostname(), masterSlaveServer.getHostname(), Integer.toString(port), sourceStep.getName(), masterStepCopyNr, referenceStep.getName(), targetCopyNr, masterSlaveServer.getName(), targetSlaveServer.getName(), socketsBufferSize, compressingSocketStreams);
                                         sourceStep.getRemoteOutputSteps().add(remoteMasterStep);
@@ -630,7 +657,7 @@ public class TransSplitter
                         				if (partitionSchema.isDynamicallyDefined()) {
                         					// Expand the cluster definition to: nrOfSlaves*nrOfPartitionsPerSlave...
                         					//
-                        					partitionSchema.expandPartitionsDynamically(referenceClusterSchema.findNrSlaves(), originalTransformation);
+                        					partitionSchema.expandPartitionsDynamically(clusterSchema.findNrSlaves(), originalTransformation);
                         				}
                         				sourceStep.setTargetStepPartitioningMeta( stepPartitioningMeta );
                     					masterTransMeta.addOrReplacePartitionSchema(partitionSchema);
@@ -645,10 +672,10 @@ public class TransSplitter
                         				if (partitionSchema.isDynamicallyDefined()) {
                         					// Expand the cluster definition to: nrOfSlaves*nrOfPartitionsPerSlave...
                         					//
-                        					partitionSchema.expandPartitionsDynamically(referenceClusterSchema.findNrSlaves(), originalTransformation);
+                        					partitionSchema.expandPartitionsDynamically(clusterSchema.findNrSlaves(), originalTransformation);
                         				}
                         				
-                        				partitionSchema.retainPartitionsForSlaveServer(referenceClusterSchema.findNrSlaves(), getSlaveServerNumber(referenceClusterSchema, targetSlaveServer));
+                        				partitionSchema.retainPartitionsForSlaveServer(clusterSchema.findNrSlaves(), getSlaveServerNumber(clusterSchema, targetSlaveServer));
                     					slaveTransMeta.addOrReplacePartitionSchema( partitionSchema );
                         			}
                                 }
@@ -660,14 +687,13 @@ public class TransSplitter
                             // previous step is clustered
                             // --> Add reference step to the slave transformation(s)
                             //
-                        	int nrSlaves = referenceClusterSchema.getSlaveServers().size();
-                            for (int slaveNr=0;slaveNr<nrSlaves;slaveNr++)
+                        	for (int slaveNr=0;slaveNr<slaveServers.size();slaveNr++)
                             {
-                                SlaveServer targetSlaveServer = referenceClusterSchema.getSlaveServers().get(slaveNr);
+                                SlaveServer targetSlaveServer = slaveServers.get(slaveNr);
                                 if (!targetSlaveServer.isMaster())
                                 {
                                     // SLAVE
-                                    TransMeta slaveTransMeta = getSlaveTransformation(referenceClusterSchema, targetSlaveServer);
+                                    TransMeta slaveTransMeta = getSlaveTransformation(clusterSchema, targetSlaveServer);
                                     
                                     // This is the target step
                                     //
@@ -714,9 +740,9 @@ public class TransSplitter
                         				partitionSchema.setName( createSlavePartitionSchemaName(partitionSchema.getName())) ;
                         				
                         				if (partitionSchema.isDynamicallyDefined()) {
-                        					partitionSchema.expandPartitionsDynamically(referenceClusterSchema.findNrSlaves(), originalTransformation);
+                        					partitionSchema.expandPartitionsDynamically(clusterSchema.findNrSlaves(), originalTransformation);
                         				}
-                        				partitionSchema.retainPartitionsForSlaveServer(referenceClusterSchema.findNrSlaves(), getSlaveServerNumber(referenceClusterSchema, targetSlaveServer));
+                        				partitionSchema.retainPartitionsForSlaveServer(clusterSchema.findNrSlaves(), getSlaveServerNumber(clusterSchema, targetSlaveServer));
                         				
                         				sourceStep.setStepPartitioningMeta(stepPartitioningMeta);
                         				targetStep.setStepPartitioningMeta(stepPartitioningMeta);
@@ -743,8 +769,8 @@ public class TransSplitter
                                     	//
                                     	// Let's see if we can find them...
                                     	//
-                            			for (int partSlaveNr=0;partSlaveNr<referenceClusterSchema.getSlaveServers().size();partSlaveNr++) {
-                                    		SlaveServer sourceSlaveServer = referenceClusterSchema.getSlaveServers().get(partSlaveNr);
+                            			for (int partSlaveNr=0;partSlaveNr<slaveServers.size();partSlaveNr++) {
+                                    		SlaveServer sourceSlaveServer = slaveServers.get(partSlaveNr);
                                     		if (!sourceSlaveServer.isMaster()) {
                                     			
                                     			// It's running in 1 or more copies depending on the number of partitions
@@ -795,14 +821,14 @@ public class TransSplitter
 	                                        				// We hit only get the remote steps, NOT the local ones.
 	                                        				// That's why it's OK to generate all combinations.
 	                                        				//
-			                                    			int outPort = getPort(referenceClusterSchema, targetSlaveServer, sourceStep.getName(), sourceCopyNr, sourceSlaveServer, targetStep.getName(), targetCopyNr);
+			                                    			int outPort = getPort(clusterSchema, targetSlaveServer, sourceStep.getName(), sourceCopyNr, sourceSlaveServer, targetStep.getName(), targetCopyNr);
 			                                    			RemoteStep remoteOutputStep = new RemoteStep( targetSlaveServer.getHostname(), sourceSlaveServer.getHostname(), Integer.toString(outPort), sourceStep.getName(), sourceCopyNr, targetStep.getName(), targetCopyNr, targetSlaveServer.getName(), sourceSlaveServer.getName(), socketsBufferSize, compressingSocketStreams);
 			                                    			sourceStep.getRemoteOutputSteps().add(remoteOutputStep);
 			
 			                                    			// OK, so the source step is sending rows out on the reserved ports
 			                                    			// What we need to do now is link all the OTHER slaves up to them.
 			                                    			//
-			                                    			int inPort = getPort(referenceClusterSchema, sourceSlaveServer, sourceStep.getName(), sourceCopyNr, targetSlaveServer, targetStep.getName(), targetCopyNr);
+			                                    			int inPort = getPort(clusterSchema, sourceSlaveServer, sourceStep.getName(), sourceCopyNr, targetSlaveServer, targetStep.getName(), targetCopyNr);
 			                                    			RemoteStep remoteInputStep = new RemoteStep( sourceSlaveServer.getHostname(), targetSlaveServer.getHostname(), Integer.toString(inPort), sourceStep.getName(), sourceCopyNr, targetStep.getName(), targetCopyNr, sourceSlaveServer.getName(), targetSlaveServer.getName(), socketsBufferSize, compressingSocketStreams );
 			                                    			targetStep.getRemoteInputSteps().add(remoteInputStep);
                                             			}
@@ -829,10 +855,10 @@ public class TransSplitter
                                     				if (partitionSchema.isDynamicallyDefined()) {
                                     					// Expand the cluster definition to: nrOfSlaves*nrOfPartitionsPerSlave...
                                     					//
-                                    					partitionSchema.expandPartitionsDynamically(referenceClusterSchema.findNrSlaves(), originalTransformation);
+                                    					partitionSchema.expandPartitionsDynamically(clusterSchema.findNrSlaves(), originalTransformation);
                                     				}
                                     				
-                                    				partitionSchema.retainPartitionsForSlaveServer(referenceClusterSchema.findNrSlaves(), getSlaveServerNumber(referenceClusterSchema, targetSlaveServer));
+                                    				partitionSchema.retainPartitionsForSlaveServer(clusterSchema.findNrSlaves(), getSlaveServerNumber(clusterSchema, targetSlaveServer));
                                     				
                                     				sourceStep.setStepPartitioningMeta( stepPartitioningMeta );
                                 					slaveTransMeta.addOrReplacePartitionSchema(partitionSchema);
@@ -848,9 +874,9 @@ public class TransSplitter
                                     				partitionSchema.setName( createSlavePartitionSchemaName(partitionSchema.getName())) ;
                                     				
                                     				if (partitionSchema.isDynamicallyDefined()) {
-                                    					partitionSchema.expandPartitionsDynamically(referenceClusterSchema.findNrSlaves(), originalTransformation);
+                                    					partitionSchema.expandPartitionsDynamically(clusterSchema.findNrSlaves(), originalTransformation);
                                     				}
-                                    				partitionSchema.retainPartitionsForSlaveServer(referenceClusterSchema.findNrSlaves(), getSlaveServerNumber(referenceClusterSchema, targetSlaveServer));
+                                    				partitionSchema.retainPartitionsForSlaveServer(clusterSchema.findNrSlaves(), getSlaveServerNumber(clusterSchema, targetSlaveServer));
                                     				
                                     				targetStep.setStepPartitioningMeta( stepPartitioningMeta );
                                 					slaveTransMeta.addOrReplacePartitionSchema(partitionSchema);
@@ -874,7 +900,7 @@ public class TransSplitter
                                     				if (partitionSchema.isDynamicallyDefined()) {
                                     					// Expand the cluster definition to: nrOfSlaves*nrOfPartitionsPerSlave...
                                     					//
-                                    					partitionSchema.expandPartitionsDynamically(referenceClusterSchema.findNrSlaves(), originalTransformation);
+                                    					partitionSchema.expandPartitionsDynamically(clusterSchema.findNrSlaves(), originalTransformation);
                                     				}
                                     				
                                     				sourceStep.setTargetStepPartitioningMeta( stepPartitioningMeta );
@@ -891,7 +917,7 @@ public class TransSplitter
                 
                 if (nrPreviousSteps==0)
                 {
-                    if (referenceClusterSchema==null)
+                    if (!referenceStep.isClustered())
                     {
                         // Not clustered, simply add the step.
                         if (masterTransMeta.findStep(referenceStep.getName())==null) {
@@ -900,15 +926,14 @@ public class TransSplitter
                     }
                     else
                     {
-                        int nrSlaves = referenceClusterSchema.getSlaveServers().size();
-                        for (int s=0;s<nrSlaves;s++)
+                        for (int s=0;s<slaveServers.size();s++)
                         {
-                            SlaveServer slaveServer = (SlaveServer) referenceClusterSchema.getSlaveServers().get(s);
+                            SlaveServer slaveServer = slaveServers.get(s);
 
                             if (!slaveServer.isMaster())
                             {
                                 // SLAVE
-                                TransMeta slave = getSlaveTransformation(referenceClusterSchema, slaveServer);
+                                TransMeta slave = getSlaveTransformation(clusterSchema, slaveServer);
                                 if (slave.findStep(referenceStep.getName())==null)
                                 {
                                 	addSlaveCopy(slave, referenceStep, slaveServer);
@@ -924,7 +949,6 @@ public class TransSplitter
             for (int i=0;i<referenceSteps.length;i++)
             {
                 StepMeta originalStep = referenceSteps[i];
-                ClusterSchema originalClusterSchema = originalStep.getClusterSchema(); 
 
                 // Also take care of the info steps...
                 // For example: StreamLookup, Table Input, etc.
@@ -933,11 +957,9 @@ public class TransSplitter
                 for (int p=0;infoSteps!=null && p<infoSteps.length;p++)
                 {
                     StepMeta infoStep = infoSteps[p];
-                    
-                    ClusterSchema infoClusterSchema = infoStep.getClusterSchema();
-                    if (originalClusterSchema==null)
+                    if (!originalStep.isClustered())
                     {
-                        if (infoClusterSchema==null)
+                        if (!infoStep.isClustered())
                         {
                             // No clustering involved here: just add a link between the reference step and the infostep
                             //
@@ -957,26 +979,26 @@ public class TransSplitter
                             //     On top of that we need to merge the data from all these steps using a dummy. (to make sure)
                         	//     That dummy needs to feed into Merge Join
                         	//
-                            int nrSlaves = infoClusterSchema.getSlaveServers().size();
+                            int nrSlaves = clusterSchema.getSlaveServers().size();
                             for (int s=0;s<nrSlaves;s++)
                             {
-                                SlaveServer sourceSlaveServer = (SlaveServer) infoClusterSchema.getSlaveServers().get(s);
+                                SlaveServer sourceSlaveServer = (SlaveServer) clusterSchema.getSlaveServers().get(s);
                                 
                                 if (!sourceSlaveServer.isMaster())
                                 {
                                 	////////////////////////////////////////////////////////////////////////////////////////////
                                     // On the SLAVES: add a socket writer...
                                 	//
-                                	TransMeta slave = getSlaveTransformation(infoClusterSchema, sourceSlaveServer);
+                                	TransMeta slave = getSlaveTransformation(clusterSchema, sourceSlaveServer);
                                     
                                 	SocketWriterMeta socketWriterMeta = new SocketWriterMeta();
-                                	int port = getPort(infoClusterSchema, sourceSlaveServer, infoStep.getName(), 0, masterSlaveServer, originalStep.getName(), 0);
+                                	int port = getPort(clusterSchema, sourceSlaveServer, infoStep.getName(), 0, masterSlaveServer, originalStep.getName(), 0);
                                 	socketWriterMeta.setPort(""+port);
-                                	socketWriterMeta.setBufferSize(infoClusterSchema.getSocketsBufferSize());
-                                	socketWriterMeta.setFlushInterval(infoClusterSchema.getSocketsFlushInterval());
-                                	socketWriterMeta.setCompressed(infoClusterSchema.isSocketsCompressed());
+                                	socketWriterMeta.setBufferSize(clusterSchema.getSocketsBufferSize());
+                                	socketWriterMeta.setFlushInterval(clusterSchema.getSocketsFlushInterval());
+                                	socketWriterMeta.setCompressed(clusterSchema.isSocketsCompressed());
                                 	
-                                    StepMeta writerStep = new StepMeta(getWriterName(infoClusterSchema, sourceSlaveServer, infoStep.getName(), 0, masterSlaveServer, originalStep.getName(), 0), socketWriterMeta);
+                                    StepMeta writerStep = new StepMeta(getWriterName(clusterSchema, sourceSlaveServer, infoStep.getName(), 0, masterSlaveServer, originalStep.getName(), 0), socketWriterMeta);
                                     writerStep.setLocation(infoStep.getLocation().x+50, infoStep.getLocation().y + 50);
                                     writerStep.setDraw(true);
                                     
@@ -992,10 +1014,10 @@ public class TransSplitter
                                 	//
                                     SocketReaderMeta socketReaderMeta = new SocketReaderMeta();
                                     socketReaderMeta.setPort(""+port);
-                                    socketReaderMeta.setBufferSize(infoClusterSchema.getSocketsBufferSize());
-                                    socketReaderMeta.setCompressed(infoClusterSchema.isSocketsCompressed());
+                                    socketReaderMeta.setBufferSize(clusterSchema.getSocketsBufferSize());
+                                    socketReaderMeta.setCompressed(clusterSchema.isSocketsCompressed());
                                     
-                                    StepMeta readerStep = new StepMeta(getReaderName(infoClusterSchema, sourceSlaveServer, infoStep.getName(), 0, masterSlaveServer, originalStep.getName(), 0), socketReaderMeta);
+                                    StepMeta readerStep = new StepMeta(getReaderName(clusterSchema, sourceSlaveServer, infoStep.getName(), 0, masterSlaveServer, originalStep.getName(), 0), socketReaderMeta);
                                     readerStep.setLocation(infoStep.getLocation().x, infoStep.getLocation().y+(s*FANOUT*2)-(nrSlaves*FANOUT/2));
                                     readerStep.setDraw(true);
                                     
@@ -1053,28 +1075,27 @@ public class TransSplitter
                     }
                     else
                     {
-                        if (infoClusterSchema==null)
+                        if (!infoStep.isClustered())
                         {
                             // reference step is clustered
                             // info step is not clustered
                             // --> Add a socket writer for each slave server
                             //
-                            int nrSlaves = originalClusterSchema.getSlaveServers().size();
-                            for (int s=0;s<nrSlaves;s++)
+                            for (int s=0;s<slaveServers.size();s++)
                             {
-                                SlaveServer targetSlaveServer = (SlaveServer) originalClusterSchema.getSlaveServers().get(s);
+                                SlaveServer targetSlaveServer = slaveServers.get(s);
                                 
                                 if (!targetSlaveServer.isMaster())
                                 {
                                     // MASTER
                                     SocketWriterMeta socketWriterMeta = new SocketWriterMeta();
-                                    socketWriterMeta.setPort(""+getPort(originalClusterSchema, masterSlaveServer, infoStep.getName(), 0, targetSlaveServer, originalStep.getName(), 0));
-                                    socketWriterMeta.setBufferSize(originalClusterSchema.getSocketsBufferSize());
-                                    socketWriterMeta.setFlushInterval(originalClusterSchema.getSocketsFlushInterval());
-                                    socketWriterMeta.setCompressed(originalClusterSchema.isSocketsCompressed());
+                                    socketWriterMeta.setPort(""+getPort(clusterSchema, masterSlaveServer, infoStep.getName(), 0, targetSlaveServer, originalStep.getName(), 0));
+                                    socketWriterMeta.setBufferSize(clusterSchema.getSocketsBufferSize());
+                                    socketWriterMeta.setFlushInterval(clusterSchema.getSocketsFlushInterval());
+                                    socketWriterMeta.setCompressed(clusterSchema.isSocketsCompressed());
 
-                                    StepMeta writerStep = new StepMeta(getWriterName(originalClusterSchema, masterSlaveServer, infoStep.getName(), 0, targetSlaveServer, originalStep.getName(), 0), socketWriterMeta);
-                                    writerStep.setLocation(originalStep.getLocation().x, originalStep.getLocation().y + (s*FANOUT*2)-(nrSlaves*FANOUT/2));
+                                    StepMeta writerStep = new StepMeta(getWriterName(clusterSchema, masterSlaveServer, infoStep.getName(), 0, targetSlaveServer, originalStep.getName(), 0), socketWriterMeta);
+                                    writerStep.setLocation(originalStep.getLocation().x, originalStep.getLocation().y + (s*FANOUT*2)-(nrSlavesNodes*FANOUT/2));
                                     writerStep.setDraw(originalStep.isDrawn());
             
                                     masterTransMeta.addStep(writerStep);
@@ -1092,15 +1113,15 @@ public class TransSplitter
                                     masterTransMeta.addTransHop(masterHop);
                                     
                                     // SLAVE
-                                    TransMeta slave = getSlaveTransformation(originalClusterSchema, targetSlaveServer);
+                                    TransMeta slave = getSlaveTransformation(clusterSchema, targetSlaveServer);
                                     
                                     SocketReaderMeta socketReaderMeta = new SocketReaderMeta();
                                     socketReaderMeta.setHostname(masterSlaveServer.getHostname());
-                                    socketReaderMeta.setPort(""+getPort(originalClusterSchema, masterSlaveServer, infoStep.getName(), 0, targetSlaveServer, originalStep.getName(), 0));
-                                    socketReaderMeta.setBufferSize(originalClusterSchema.getSocketsBufferSize());
-                                    socketReaderMeta.setCompressed(originalClusterSchema.isSocketsCompressed());
+                                    socketReaderMeta.setPort(""+getPort(clusterSchema, masterSlaveServer, infoStep.getName(), 0, targetSlaveServer, originalStep.getName(), 0));
+                                    socketReaderMeta.setBufferSize(clusterSchema.getSocketsBufferSize());
+                                    socketReaderMeta.setCompressed(clusterSchema.isSocketsCompressed());
                                     
-                                    StepMeta readerStep = new StepMeta(getReaderName(originalClusterSchema, masterSlaveServer, infoStep.getName(), 0, targetSlaveServer,originalStep.getName(), 0), socketReaderMeta);
+                                    StepMeta readerStep = new StepMeta(getReaderName(clusterSchema, masterSlaveServer, infoStep.getName(), 0, targetSlaveServer,originalStep.getName(), 0), socketReaderMeta);
                                     readerStep.setLocation(originalStep.getLocation().x-(SPLIT/2), originalStep.getLocation().y);
                                     readerStep.setDraw(originalStep.isDrawn());
                                     slave.addStep(readerStep);
@@ -1148,13 +1169,12 @@ public class TransSplitter
                             // 
                             // Now we have to explain to the slaveStep that it has to source from previous
                             //
-                            int nrSlaves = originalClusterSchema.getSlaveServers().size();
-                            for (int s=0;s<nrSlaves;s++)
+                            for (int s=0;s<slaveServers.size();s++)
                             {
-                                SlaveServer slaveServer = (SlaveServer) originalClusterSchema.getSlaveServers().get(s);
+                                SlaveServer slaveServer = slaveServers.get(s);
                                 if (!slaveServer.isMaster())
                                 {
-                                    TransMeta slave = getSlaveTransformation(originalClusterSchema, slaveServer);
+                                    TransMeta slave = getSlaveTransformation(clusterSchema, slaveServer);
                                     StepMeta slaveStep = slave.findStep(originalStep.getName());
                                     String infoStepNames[] = slaveStep.getStepMetaInterface().getInfoSteps();
                                     if (infoStepNames!=null)
@@ -1261,7 +1281,7 @@ public class TransSplitter
     }
     
     /**
-     * We want to devide the available partitions over the slaves.
+     * We want to divide the available partitions over the slaves.
      * Let's create a hashtable that contains the partition schema's
      * Since we can only use a single cluster, we can divide them all over a single set of slave servers. 
      * 

@@ -2578,6 +2578,11 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), 
         		Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTransGraphTabName(transMeta)), e);
       }
+      
+      // If we added properties, add them to the variables too, so that they appear in the CTRL-SPACE variable completion.
+      //
+      spoon.setParametersAsVariablesInUI(transMeta, transMeta);
+      
       spoon.refreshTree();
       spoon.delegates.tabs.renameTabs(); // cheap operation, might as will do it anyway
     }
@@ -2880,8 +2885,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             else
               args = null;
 
-            log.logMinimal(Spoon.APP_NAME,
-                Messages.getString("TransLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
+            log.logMinimal(Spoon.APP_NAME, Messages.getString("TransLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
+            
             trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
 
             // Launch the step preparation in a different thread. 

@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
+import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
@@ -32,6 +33,7 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.undo.TransAction;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
@@ -829,7 +831,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			}
 		}
 		else {
-			if (transMeta.isUsingAtLeastOneClusterSchema()) {
+			if (transMeta.findFirstUsedClusterSchema()!=null) {
 				executionConfiguration.setExecutingLocally(false);
 				executionConfiguration.setExecutingRemotely(false);
 				executionConfiguration.setExecutingClustered(true);
@@ -845,7 +847,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		Object data[] = spoon.variables.getData();
 		String fields[] = spoon.variables.getRowMeta().getFieldNames();
 		Map<String, String> variableMap = new HashMap<String, String>();
-		variableMap.putAll(executionConfiguration.getVariables()); // the defaul
+		variableMap.putAll(executionConfiguration.getVariables()); // the default
 		for (int idx = 0; idx < fields.length; idx++) {
 			String value = executionConfiguration.getVariables().get(fields[idx]);
 			if (Const.isEmpty(value)) value = data[idx].toString();  
@@ -959,7 +961,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate
   
         // Then the slaves...
         //
-
         for (int i = 0; i < slaves.length; i++) {
           TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
           addTransGraph(slaveTrans);
@@ -971,6 +972,17 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 	  for (String var : Const.INTERNAL_TRANS_VARIABLES) executionConfiguration.getVariables().put(var, transMeta.getVariable(var));
 	  for (String var : Const.INTERNAL_JOB_VARIABLES) executionConfiguration.getVariables().put(var, transMeta.getVariable(var));
       
+      // Parameters override the variables.
+      // For the time being we're passing the parameters over the wire as variables...
+      //
+      TransMeta ot = transSplitter.getOriginalTransformation();
+      for (String param : ot.listParameters()) {
+        String value = Const.NVL(ot.getParameterValue(param), Const.NVL(ot.getParameterDefault(param), ot.getVariable(param)));
+        if (!Const.isEmpty(value)) {
+        	executionConfiguration.getVariables().put(param, value);
+        }
+      }
+
       Trans.executeClustered(transSplitter, executionConfiguration);
       
       if (executionConfiguration.isClusterPosting()) {

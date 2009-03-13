@@ -94,6 +94,7 @@ public class SlaveServerDialog extends Dialog
 	{
 		super(par, SWT.NONE);
 		this.slaveServer=(SlaveServer) slaveServer.clone();
+		this.slaveServer.shareVariablesWith(slaveServer);
 		this.originalServer=slaveServer;
 		props=PropsUI.getInstance();
 		ok=false;
@@ -228,7 +229,7 @@ public class SlaveServerDialog extends Dialog
 		fdlHostname.right = new FormAttachment(middle, -margin);
 		wlHostname.setLayoutData(fdlHostname);
 
-		wHostname = new TextVar(slaveServer, wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		wHostname = new TextVar(slaveServer, wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER ); // slaveServer.getVariable("MASTER_HOST")
 		props.setLook(wHostname);
 		wHostname.addModifyListener(lsMod);
 		FormData fdHostname = new FormData();

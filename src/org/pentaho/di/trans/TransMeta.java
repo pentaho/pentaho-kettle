@@ -2246,6 +2246,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             for (int i = 0; i < dbids.length; i++)
             {
                 SlaveServer slaveServer = new SlaveServer(rep, dbids[i]);
+                slaveServer.shareVariablesWith(this);
                 SlaveServer check = findSlaveServer(slaveServer.getName()); // Check if there already is one in the transformation
                 if (check==null || overWriteShared) 
                 {
@@ -2276,14 +2277,15 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             long dbids[] = rep.getClusterIDs();
             for (int i = 0; i < dbids.length; i++)
             {
-                ClusterSchema cluster = new ClusterSchema(rep, dbids[i], slaveServers);
-                ClusterSchema check = findClusterSchema(cluster.getName()); // Check if there already is one in the transformation
+                ClusterSchema clusterSchema = new ClusterSchema(rep, dbids[i], slaveServers);
+                clusterSchema.shareVariablesWith(this);
+                ClusterSchema check = findClusterSchema(clusterSchema.getName()); // Check if there already is one in the transformation
                 if (check==null || overWriteShared) 
                 {
-                    if (!Const.isEmpty(cluster.getName()))
+                    if (!Const.isEmpty(clusterSchema.getName()))
                     {
-                        addOrReplaceClusterSchema(cluster);
-                        if (!overWriteShared) cluster.setChanged(false);
+                        addOrReplaceClusterSchema(clusterSchema);
+                        if (!overWriteShared) clusterSchema.setChanged(false);
                     }
                 }
             }
@@ -3317,6 +3319,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             {
                 Node slaveServerNode = XMLHandler.getSubNodeByNr(slaveServersNode, SlaveServer.XML_TAG, i);
                 SlaveServer slaveServer = new SlaveServer(slaveServerNode);
+                slaveServer.shareVariablesWith(this);
                 
                 // Check if the object exists and if it's a shared object.
                 // If so, then we will keep the shared version, not this one.
@@ -3343,6 +3346,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             {
                 Node clusterSchemaNode = XMLHandler.getSubNodeByNr(clusterSchemasNode, ClusterSchema.XML_TAG, i);
                 ClusterSchema clusterSchema = new ClusterSchema(clusterSchemaNode, slaveServers);
+                clusterSchema.shareVariablesWith(this);
                 
                 // Check if the object exists and if it's a shared object.
                 // If so, then we will keep the shared version, not this one.
@@ -3390,7 +3394,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 			{
 				createdDate = XMLHandler.stringToDate(createDate);
 			}
-
 
             // Changed user/date
             modifiedUser = XMLHandler.getTagValue(infonode, "modified_user");
@@ -3460,6 +3463,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             else if (object instanceof SlaveServer)
             {
                 SlaveServer slaveServer = (SlaveServer) object;
+                slaveServer.shareVariablesWith(this);
                 addOrReplaceSlaveServer(slaveServer);
             }
             else if (object instanceof StepMeta)
@@ -3475,6 +3479,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             else if (object instanceof ClusterSchema)
             {
                 ClusterSchema clusterSchema = (ClusterSchema) object;
+                clusterSchema.shareVariablesWith(this);
                 addOrReplaceClusterSchema(clusterSchema);
             }
         }
@@ -6343,11 +6348,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		this.slaveStepCopyPartitionDistribution = slaveStepCopyPartitionDistribution;
 	}
 	
-	public boolean isUsingAtLeastOneClusterSchema() {
+	public ClusterSchema findFirstUsedClusterSchema() {
 		for (StepMeta stepMeta : steps) {
-			if (stepMeta.getClusterSchema()!=null) return true;
+			if (stepMeta.getClusterSchema()!=null) return stepMeta.getClusterSchema();
 		}
-		return false;
+		return null;
 	}
 
 	public boolean isSlaveTransformation() {

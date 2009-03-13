@@ -20,6 +20,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -266,7 +267,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     /**
      * @return the internal (static) list of slave servers
      */
-    public List<SlaveServer> getSlaveServerList()
+    public List<SlaveServer> getSlaveServers()
     {
         return slaveServers;
     }
@@ -510,13 +511,14 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
 	 * @return A list of dynamic slave servers, retrieved from the first master server that was available.
 	 * @throws KettleException when none of the masters can be contacted.
 	 */
-	public List<SlaveServer> getSlaveServers() throws KettleException {
+	public List<SlaveServer> getSlaveServersFromMasterOrLocal() throws KettleException {
         if (isDynamic()) {
 			// Find a master that is available
     		//
     		List<SlaveServer> dynamicSlaves = null;
     		Exception exception = null;
-    		for (SlaveServer slave : getSlaveServerList()) {
+    		for (int i=0;i<slaveServers.size();i++) {
+    			SlaveServer slave = slaveServers.get(i);
     			if (slave.isMaster() && dynamicSlaves==null) {
     				try {
 						List<SlaveServerDetection> detections = slave.getSlaveServerDetections();
@@ -524,7 +526,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
 						for (SlaveServerDetection detection : detections) {
 							if (detection.isActive()) {
 								dynamicSlaves.add(detection.getSlaveServer());
-								// log.logBasic(toString(), "Found dynamic slave : "+detection.getSlaveServer().getName()+" --> "+detection.getSlaveServer().getServerAndPort());
+								LogWriter.getInstance().logBasic(toString(), "Found dynamic slave : "+detection.getSlaveServer().getName()+" --> "+detection.getSlaveServer().getServerAndPort());
 							}
 						}
 					} catch (Exception e) {

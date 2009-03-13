@@ -1209,9 +1209,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     openTransformation((JobEntryTrans) entry);
   }
 
-  public void launchChef() {
+  public void openJob() {
     final JobEntryInterface entry = getJobEntry().getEntry();
-    launchChef((JobEntryJob) entry);
+    openJob((JobEntryJob) entry);
   }
 
   public void newHopClick() {
@@ -1332,7 +1332,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
           case JOB: {
             item.setEnabled(true);
             item.setText(Messages.getString("JobGraph.PopupMenu.JobEntry.LaunchChef"));
-            menu.addMenuListener("job-graph-entry-launch", this, "launchChef"); //$NON-NLS-1$ //$NON-NLS-2$
+            menu.addMenuListener("job-graph-entry-launch", this, "openJob"); //$NON-NLS-1$ //$NON-NLS-2$
           }
             break;
           default: {
@@ -1677,7 +1677,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
       final JobEntryJob entry = (JobEntryJob) jobentry.getEntry();
       if ((entry != null && entry.getFilename() != null && spoon.rep == null)
           || (entry != null && entry.getName() != null && spoon.rep != null)) {
-        launchChef(entry);
+        openJob(entry);
       }
     } else if (jobentry.getJobEntryType() == JobEntryType.TRANS) {
       final JobEntryTrans entry = (JobEntryTrans) jobentry.getEntry();
@@ -1718,6 +1718,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         }
 
         copyInternalJobVariables(jobMeta, newTrans);
+        spoon.setParametersAsVariablesInUI(newTrans, newTrans);
 
         spoon.addTransGraph(newTrans);
         newTrans.clearChanged();
@@ -1743,6 +1744,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         launchTransMeta.setFilename(exactFilename);
 
         copyInternalJobVariables(jobMeta, launchTransMeta);
+        spoon.setParametersAsVariablesInUI(launchTransMeta, launchTransMeta);
 
         spoon.addTransGraph(launchTransMeta);
         spoon.open();
@@ -1765,7 +1767,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     }
   }
 
-  public void launchChef(JobEntryJob entry) {
+  public void openJob(JobEntryJob entry) {
     String exactFilename = jobMeta.environmentSubstitute(entry.getFilename());
     String exactJobname = jobMeta.environmentSubstitute(entry.getJobName());
 
@@ -1774,6 +1776,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
       try {
         JobMeta newJobMeta = new JobMeta(log, spoon.rep, exactJobname, spoon.rep.getDirectoryTree().findDirectory(entry.getDirectory()));
         newJobMeta.clearChanged();
+        spoon.setParametersAsVariablesInUI(newJobMeta, newJobMeta);
         spoon.delegates.jobs.addJobGraph(newJobMeta);
       } catch (Throwable e) {
         new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title"), 
@@ -1792,6 +1795,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         } else {
           newJobMeta = new JobMeta(log);
         }
+        
+        spoon.setParametersAsVariablesInUI(newJobMeta, newJobMeta);
 
         newJobMeta.setFilename(exactFilename);
         newJobMeta.clearChanged();
@@ -2432,6 +2437,10 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
                 .makeJobGraphTabName(jobMeta)), e);
       }
     }
+    
+    // If we added properties, add them to the variables too, so that they appear in the CTRL-SPACE variable completion.
+    //
+    spoon.setParametersAsVariablesInUI(jobMeta, jobMeta);
 
     if (jd.isSharedObjectsFileChanged() || ji != null) {
       spoon.refreshTree();

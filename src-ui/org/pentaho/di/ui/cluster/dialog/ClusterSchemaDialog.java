@@ -349,12 +349,12 @@ public class ClusterSchemaDialog extends Dialog
         dialog.setMulti(true);
         if (dialog.open()!=null)
         {
-            clusterSchema.getSlaveServerList().clear();
+            clusterSchema.getSlaveServers().clear();
             int[] indeces = dialog.getSelectionIndeces();
             for (int i=0;i<indeces.length;i++)
             {
                 SlaveServer slaveServer = SlaveServer.findSlaveServer(slaveServers, names[indeces[i]]);
-                clusterSchema.getSlaveServerList().add(slaveServer);
+                clusterSchema.getSlaveServers().add(slaveServer);
             }
             
             refreshSlaveServers();
@@ -384,7 +384,7 @@ public class ClusterSchemaDialog extends Dialog
 	private void refreshSlaveServers()
     {
         wServers.clearAll(false);
-        List<SlaveServer> slServers = clusterSchema.getSlaveServerList();
+        List<SlaveServer> slServers = clusterSchema.getSlaveServers();
         for (int i=0;i<slServers.size();i++)
         {
             TableItem item = new TableItem(wServers.table, SWT.NONE);
@@ -413,7 +413,7 @@ public class ClusterSchemaDialog extends Dialog
         originalSchema.setSocketsFlushInterval(clusterSchema.getSocketsFlushInterval());
         originalSchema.setSocketsCompressed(clusterSchema.isSocketsCompressed());
         originalSchema.setDynamic(clusterSchema.isDynamic());
-        originalSchema.setSlaveServers(clusterSchema.getSlaveServerList());
+        originalSchema.setSlaveServers(clusterSchema.getSlaveServers());
         originalSchema.setChanged();
 
         ok=true;
@@ -459,11 +459,11 @@ public class ClusterSchemaDialog extends Dialog
         String[] names = SlaveServer.getSlaveServerNames(slaveServers);
         int idx[] = Const.indexsOfFoundStrings(wServers.getItems(0), names);
         
-        clusterSchema.getSlaveServerList().clear();
+        clusterSchema.getSlaveServers().clear();
         for (int i=0;i<idx.length;i++)
         {
             SlaveServer slaveServer = SlaveServer.findSlaveServer(slaveServers, names[idx[i]]);
-            clusterSchema.getSlaveServerList().add(slaveServer);
+            clusterSchema.getSlaveServers().add(slaveServer);
         }
             
     }

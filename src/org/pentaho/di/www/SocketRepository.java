@@ -39,8 +39,8 @@ public class SocketRepository {
 	        serverSocket.setReuseAddress(true);
 	        
 	        // It happens in high-paced environments where lots of sockets are opened and closed that the operating
-	        // system keeps a lock on a socket.  Because of this we have to wait at least for 6 minutes.
-	        // Let's take 6 to make sure we can get a socket connection and we still get into trouble.
+	        // system keeps a lock on a socket.  Because of this we have to wait at least for one minute and on some platforms up to 2 minutes.
+	        // Let's take 5 to make sure we can get a socket connection and we still get into trouble.
 	        //
 	        // mc: It sucks and blows at the same time that we have to do this but I couldn't find another solution.
 	        //
@@ -51,8 +51,8 @@ public class SocketRepository {
 	        	long startTime = System.currentTimeMillis();
 	        	
 	        	IOException ioException = null;
-	    		log.logDetailed("Carte socket repository", "Starting a retry loop to bind the server socket on port "+port+".  We retry for 10 minutes until the socket clears in your operating system.");
-	        	while (!serverSocket.isBound() && totalWait<600000) {
+	    		log.logDetailed("Carte socket repository", "Starting a retry loop to bind the server socket on port "+port+".  We retry for 5 minutes until the socket clears in your operating system.");
+	        	while (!serverSocket.isBound() && totalWait<300000) {
 		        	try {
 			        	totalWait=System.currentTimeMillis()-startTime;
 		        		log.logDetailed("Carte socket repository", "Retry binding the server socket on port "+port+" after a "+(totalWait/1000)+" seconds wait...");
@@ -82,6 +82,7 @@ public class SocketRepository {
 			if (entry.isInUse()) { 
 				throw new IOException("Server socket on port "+port+" is already in use by ["+entry.getUser()+"]");
 			}
+			entry.setInUse(true);
 		}
 		return entry.getServerSocket();
 	}
