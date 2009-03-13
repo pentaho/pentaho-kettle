@@ -50,7 +50,7 @@ public class SystemData extends BaseStep implements StepInterface
         setName(stepMeta.getName());
 	}
 	
-	private Object[] getSystemData(RowMetaInterface inputRowMeta, Object[] inputRowData)
+	private Object[] getSystemData(RowMetaInterface inputRowMeta, Object[] inputRowData) throws KettleException
 	{
 		Object[] row = new Object[data.outputRowMeta.size()];
         for (int i=0;i<inputRowMeta.size();i++)
@@ -214,7 +214,11 @@ public class SystemData extends BaseStep implements StepInterface
                 row[index] = Const.getHostname();
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_IP_ADDRESS:
-                row[index] = Const.getIPAddress();
+				try {
+					row[index] = Const.getIPAddress();
+				} catch(Exception e) {
+					throw new KettleException(e);
+				}
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_FILENAME   : 
                 row[index] = getTransMeta().getFilename();

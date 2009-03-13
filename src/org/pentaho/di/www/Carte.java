@@ -44,6 +44,8 @@ public class Carte
 
 	public Carte(SlaveServerConfig config) throws Exception {
 		this.config = config;
+
+		boolean allOK=true;
 		
         TransformationMap transformationMap = new TransformationMap();
         JobMap jobMap = new JobMap();
@@ -65,8 +67,8 @@ public class Carte
             }
             catch(Exception e)
             {
-                System.out.println(Messages.getString("Carte.Error.CanNotPartPort", slaveServer.getHostname(), ""+port));
-                
+                LogWriter.getInstance().logError("Carte", Messages.getString("Carte.Error.CanNotPartPort", slaveServer.getHostname(), ""+port), e);
+                allOK=false;
             }
         }
 
@@ -80,14 +82,19 @@ public class Carte
 	        	// Here we use the username/password specified in the slave server section of the configuration.
 	        	// This doesn't have to be the same pair as the one used on the master!
 	        	//
-	        	SlaveServerDetection slaveServerDetection = new SlaveServerDetection(client);
-	        	master.sendXML(slaveServerDetection.getXML(), RegisterSlaveServlet.CONTEXT_PATH+"/");
-	        	
-	        	// Open a Keep-alive 
+	        	try {
+		        	SlaveServerDetection slaveServerDetection = new SlaveServerDetection(client);
+		        	master.sendXML(slaveServerDetection.getXML(), RegisterSlaveServlet.CONTEXT_PATH+"/");
+	        	} catch(Exception e) {
+	        		LogWriter.getInstance().logError("Carte", "Unable to register to master slave server ["+master.toString()+"] on address ["+master.getServerAndPort()+"]");
+	        		allOK=false;
+	        	}
 	        }
         }
         
-		this.webServer = new WebServer(transformationMap, jobMap, socketRepository, detections, hostname, port, config.isJoining());
+        if (allOK) {
+        	this.webServer = new WebServer(transformationMap, jobMap, socketRepository, detections, hostname, port, config.isJoining());
+        }
 	}
 	
     public static void main(String[] args) throws Exception

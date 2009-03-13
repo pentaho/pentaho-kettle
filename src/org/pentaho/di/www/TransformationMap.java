@@ -143,9 +143,11 @@ public class TransformationMap
     	int maxPort=portRangeStart-1;
     	for (int index = 0; index < serverSocketPortsMap.size() ; index++) {
     		SocketPortAllocation spa = serverSocketPortsMap.get(index);
-    		
-    		if (spa.isAllocated()) {
-	    		if (spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && 
+    		if (spa.getPort()>maxPort) {
+    			maxPort=spa.getPort();
+    		}
+
+    		if (spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && 
 	    			spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName) &&
 	    			spa.getTransformationName().equalsIgnoreCase(transformationName) &&
 	    			spa.getSourceStepName().equalsIgnoreCase(sourceStepName) &&
@@ -153,20 +155,25 @@ public class TransformationMap
 	    			spa.getTargetStepName().equalsIgnoreCase(targetStepName) &&
 	    			spa.getTargetStepCopy().equalsIgnoreCase(targetStepCopy)
 	    		) {
-	    			// This is the port we want, return it.
+	    			// This is the port we want, return it.  Make sure it's allocated.
 	    			//
+    				spa.setAllocated(true);
 	    			socketPortAllocation = spa;
 	    			break;
-	    		}
-    		} else {
+	    	}
+    	
+    		if (!spa.isAllocated()) {
     			// This is not an allocated port.
     			// So we can basically use this port slot to put our own allocation in it.
     			//
-    			socketPortAllocation = new SocketPortAllocation(spa.getPort(), new Date(), transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
-    			serverSocketPortsMap.set(index, socketPortAllocation);
-    		}
-    		if (spa.getPort()>maxPort) {
-    			maxPort=spa.getPort();
+    			// However, that is ONLY possible if the port belongs to the same slave server couple.
+    			// Otherwise, we keep on searching.
+    			//
+    			if (spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName)) {
+	    			socketPortAllocation = new SocketPortAllocation(spa.getPort(), new Date(), transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
+	    			serverSocketPortsMap.set(index, socketPortAllocation);
+	    			break;
+    			}
     		}
     	}
     	
@@ -176,6 +183,21 @@ public class TransformationMap
     		//
     		socketPortAllocation = new SocketPortAllocation(maxPort+1, new Date(), transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
     		serverSocketPortsMap.add(socketPortAllocation);
+    	}
+    	
+    	// DEBUG : Do a verification on the content of the list.
+    	// If we find a port twice in the list, complain!
+    	//
+    	for (int i = 0; i < serverSocketPortsMap.size() ; i++) {
+    		for (int j = 0; j < serverSocketPortsMap.size() ; j++) {
+    			if (i!=j) {
+    				SocketPortAllocation one = serverSocketPortsMap.get(i);
+    				SocketPortAllocation two = serverSocketPortsMap.get(j);
+    				if (one.getPort() == two.getPort()) {
+    					System.out.println("WTF!!! Identical ports discovered in the ports list.");
+    				}
+    			}
+    		}
     	}
     	    	
     	// give back the good news too...

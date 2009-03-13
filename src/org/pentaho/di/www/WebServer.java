@@ -103,7 +103,7 @@ public class WebServer
         	JAASUserRealm jaasRealm = new JAASUserRealm("Kettle");
         	jaasRealm.setLoginModuleName(System.getProperty("loginmodulename"));
         	securityHandler.setUserRealm(jaasRealm);
-        }else{
+        } else {
         	// See if there is a kettle.pwd file in the KETTLE_HOME directory:
         	//
         	File homePwdFile = new File(Const.getKettleCartePasswordFile());

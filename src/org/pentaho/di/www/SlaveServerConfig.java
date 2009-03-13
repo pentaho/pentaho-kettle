@@ -1,9 +1,12 @@
 package org.pentaho.di.www;
 
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
 
@@ -62,16 +65,38 @@ public class SlaveServerConfig {
 		Node mastersNode = XMLHandler.getSubNode(node, XML_TAG_MASTERS);
 		int nrMasters = XMLHandler.countNodes(mastersNode, SlaveServer.XML_TAG);
 		for (int i=0;i<nrMasters;i++) {
-			Node slaveNode = XMLHandler.getSubNodeByNr(mastersNode, SlaveServer.XML_TAG, i);
-			SlaveServer master = new SlaveServer(slaveNode);
-			masters.add(master);
+			Node masterSlaveNode = XMLHandler.getSubNodeByNr(mastersNode, SlaveServer.XML_TAG, i);
+			SlaveServer masterSlaveServer = new SlaveServer(masterSlaveNode);
+			checkNetworkInterfaceSetting(masterSlaveNode, masterSlaveServer);					
+			masters.add(masterSlaveServer);
 		}
 		reportingToMasters = "Y".equalsIgnoreCase(XMLHandler.getTagValue(node, "report_to_masters"));
 		Node slaveNode = XMLHandler.getSubNode(node, SlaveServer.XML_TAG);
 		if (slaveNode!=null) {
 			slaveServer = new SlaveServer(slaveNode);
+			checkNetworkInterfaceSetting(slaveNode, slaveServer);					
 		}
 		joining = "Y".equalsIgnoreCase(XMLHandler.getTagValue(node, "joining"));
+	}
+
+	private void checkNetworkInterfaceSetting(Node slaveNode, SlaveServer slaveServer) {
+		// See if we need to grab the network interface to use and then override the host name
+		//
+		String networkInterfaceName = XMLHandler.getTagValue(slaveNode, "network_interface");
+		if (!Const.isEmpty(networkInterfaceName)) {
+			// OK, so let's try to get the IP address for this network interface...
+			//
+			try {
+				String newHostname = Const.getIPAddress(networkInterfaceName);
+				if (newHostname!=null) {
+					slaveServer.setHostname(newHostname);
+					LogWriter.getInstance().logBasic("Slave server configuration", "Hostname for slave server ["+slaveServer.getName()+"] is set to ["+newHostname+"], information derived from network "+networkInterfaceName);
+				}
+			} catch (SocketException e) {
+				LogWriter.getInstance().logError("Slave server configuration", "Unable to get the IP address for network interface "+networkInterfaceName+" for slave server ["+slaveServer.getName()+"]", e);
+			}
+		}
+	
 	}
 
 	public SlaveServerConfig(String hostname, int port, boolean joining) {

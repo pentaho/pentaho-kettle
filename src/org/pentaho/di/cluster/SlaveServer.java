@@ -189,15 +189,15 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
             throw new KettleDatabaseException(Messages.getString("SlaveServer.SlaveCouldNotBeFound", Long.toString(id_slave_server))); //$NON-NLS-1$
         }
         
-        name          = row.getString("NAME", null); //$NON-NLS-1$
-        hostname      = row.getString("HOST_NAME", null); //$NON-NLS-1$
-        port          = row.getString("PORT", null); //$NON-NLS-1$
-        username      = row.getString("USERNAME", null); //$NON-NLS-1$
-        password      = row.getString("PASSWORD", null); //$NON-NLS-1$
-        proxyHostname = row.getString("PROXY_HOST_NAME", null); //$NON-NLS-1$
-        proxyPort     = row.getString("PROXY_PORT", null); //$NON-NLS-1$
-        nonProxyHosts = row.getString("NON_PROXY_HOSTS", null); //$NON-NLS-1$
-        master        = row.getBoolean("MASTER", false); //$NON-NLS-1$
+        name          = row.getString(Repository.FIELD_SLAVE_NAME, null); //$NON-NLS-1$
+        hostname      = row.getString(Repository.FIELD_SLAVE_HOST_NAME, null); //$NON-NLS-1$
+        port          = row.getString(Repository.FIELD_SLAVE_PORT, null); //$NON-NLS-1$
+        username      = row.getString(Repository.FIELD_SLAVE_USERNAME, null); //$NON-NLS-1$
+        password      = row.getString(Repository.FIELD_SLAVE_PASSWORD, null); //$NON-NLS-1$
+        proxyHostname = row.getString(Repository.FIELD_SLAVE_PROXY_HOST_NAME, null); //$NON-NLS-1$
+        proxyPort     = row.getString(Repository.FIELD_SLAVE_PROXY_PORT, null); //$NON-NLS-1$
+        nonProxyHosts = row.getString(Repository.FIELD_SLAVE_NON_PROXY_HOSTS, null); //$NON-NLS-1$
+        master        = row.getBoolean(Repository.FIELD_SLAVE_MASTER, false); //$NON-NLS-1$
     }
 
     
@@ -848,5 +848,5 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
-	}	       
+	}
 }

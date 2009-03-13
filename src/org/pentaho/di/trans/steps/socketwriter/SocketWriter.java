@@ -13,7 +13,6 @@ package org.pentaho.di.trans.steps.socketwriter;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
-import java.net.ServerSocket;
 import java.util.zip.GZIPOutputStream;
 
 import org.pentaho.di.core.Const;

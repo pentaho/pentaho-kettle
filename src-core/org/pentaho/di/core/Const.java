@@ -848,37 +848,53 @@ public class Const
 	 * Determins the IP address of the machine Kettle is running on.
 	 * @return The IP address
 	 */
-	public static final String getIPAddress()
+	public static final String getIPAddress() throws Exception
 	{
-		try
+		Enumeration<NetworkInterface> enumInterfaces = NetworkInterface.getNetworkInterfaces();
+		while (enumInterfaces.hasMoreElements())
 		{
-			Enumeration<NetworkInterface> enumInterfaces = NetworkInterface.getNetworkInterfaces();
-			while (enumInterfaces.hasMoreElements())
+			NetworkInterface nwi = (NetworkInterface) enumInterfaces.nextElement();
+			Enumeration<InetAddress> ip = nwi.getInetAddresses();
+			while (ip.hasMoreElements())
 			{
-				NetworkInterface nwi = (NetworkInterface) enumInterfaces.nextElement();
-				Enumeration<InetAddress> ip = nwi.getInetAddresses();
-				while (ip.hasMoreElements())
+				InetAddress in = (InetAddress) ip.nextElement();
+				if (!in.isLoopbackAddress() && in.toString().indexOf(":") < 0)
 				{
-					InetAddress in = (InetAddress) ip.nextElement();
-					if (!in.isLoopbackAddress() && in.toString().indexOf(":") < 0)
-					{
-						return in.getHostAddress();
-					}
+					return in.getHostAddress();
 				}
 			}
-		} catch (SocketException e)
-		{
-
 		}
-
 		return "127.0.0.1";
 	}
+
+	/**
+	 * Get the primary IP address tied to a network interface (excluding loop-back etc)
+	 * @param networkInterfaceName the name of the network interface to interrogate
+	 * @return null if the network interface or address wasn't found.
+	 * 
+	 * @throws SocketException in case of a security or network error
+	 */
+	public static final String getIPAddress(String networkInterfaceName) throws SocketException { 
+		NetworkInterface networkInterface = NetworkInterface.getByName(networkInterfaceName);
+		Enumeration<InetAddress> ipAddresses = networkInterface.getInetAddresses();
+		while (ipAddresses.hasMoreElements())
+		{
+			InetAddress inetAddress = (InetAddress) ipAddresses.nextElement();
+			if (!inetAddress.isLoopbackAddress() && inetAddress.toString().indexOf(":") < 0)
+			{
+				String hostname = inetAddress.getHostAddress();
+				return hostname;
+			}
+		}
+		return null;
+	}
+
 
 	/**
 	 * Tries to determine the MAC address of the machine Kettle is running on.
 	 * @return The MAC address.
 	 */
-	public static final String getMACAddress()
+	public static final String getMACAddress() throws Exception
 	{
 		String ip = getIPAddress();
 		String mac = "none";
