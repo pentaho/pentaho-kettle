@@ -447,7 +447,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         {
             // Release current connection to the connection pool once you are done
             put.releaseConnection();
-            log.logDetailed(toString(), Messages.getString("SlaveServer.DETAILED_SentXmlToService", service, hostname)); //$NON-NLS-1$
+            log.logDetailed(toString(), Messages.getString("SlaveServer.DETAILED_SentXmlToService", service, environmentSubstitute(hostname))); //$NON-NLS-1$
         }
     }
 
