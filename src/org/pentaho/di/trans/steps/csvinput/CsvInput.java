@@ -274,7 +274,7 @@ public class CsvInput extends BaseStep implements StepInterface
 				data.binaryFilename=data.filenames[data.filenr].getBytes();
 			}
 			
-			data.fis = new FileInputStream(fileObject.getName().getPathDecoded());
+			data.fis = new FileInputStream(KettleVFS.getFilename(fileObject));
 			data.fc = data.fis.getChannel();
 			data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
 
