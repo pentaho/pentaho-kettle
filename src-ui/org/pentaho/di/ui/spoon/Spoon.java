@@ -5938,12 +5938,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	}
 
-	public void executeTransformation(TransMeta transMeta, boolean local, boolean remote, boolean cluster, boolean preview, boolean debug, Date replayDate, boolean safe) {
-		try {
-			delegates.trans.executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate, safe);
-		} catch (Exception e) {
-			new ErrorDialog(shell, "Execute transformation", "There was an error during transformation execution", e);
-		}
+	public void executeTransformation(final TransMeta transMeta, final boolean local, final boolean remote, final boolean cluster, final boolean preview, final boolean debug, final Date replayDate, final boolean safe) {
+		getDisplay().asyncExec(new Runnable() { public void run() { 
+	
+				try {
+					delegates.trans.executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate, safe);
+				} catch (Exception e) {
+					new ErrorDialog(shell, "Execute transformation", "There was an error during transformation execution", e);
+				}
+			}
+		});
 	}
 
 	public void executeJob(JobMeta jobMeta, boolean local, boolean remote, Date replayDate, boolean safe) {

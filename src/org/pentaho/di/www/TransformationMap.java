@@ -32,8 +32,6 @@ import org.pentaho.di.trans.TransConfiguration;
  */
 public class TransformationMap
 {
-	private static final int	PORT_RECYCLE_PERIOD_IN_HOURSE	= 12;
-	
 	private Map<String, Trans> transformationMap;
     private Map<String, TransConfiguration> configurationMap;
     private Map<String, Appender> loggingMap;
@@ -140,75 +138,63 @@ public class TransformationMap
     	} 
 
     	// Find the socket port allocation in the list...
-    	// Remove ports older than 12 hours
     	//
-    	int removedPort=-1;
     	SocketPortAllocation socketPortAllocation = null;
-    	for (SocketPortAllocation spa : new ArrayList<SocketPortAllocation>(serverSocketPortsMap)) {
+    	int maxPort=portRangeStart-1;
+    	for (int index = 0; index < serverSocketPortsMap.size() ; index++) {
+    		SocketPortAllocation spa = serverSocketPortsMap.get(index);
     		
-    		if (spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && 
-    			spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName) &&
-    			spa.getTransformationName().equalsIgnoreCase(transformationName) &&
-    			spa.getSourceStepName().equalsIgnoreCase(sourceStepName) &&
-    			spa.getSourceStepCopy().equalsIgnoreCase(sourceStepCopy) &&
-    			spa.getTargetStepName().equalsIgnoreCase(targetStepName) &&
-    			spa.getTargetStepCopy().equalsIgnoreCase(targetStepCopy)
-    		) {
-    			long elapsed = spa.getLastRequested().getTime() - System.currentTimeMillis();
-    			int hours = (int) (elapsed/(1000*60*60));
-
-    			// If the port was de-allocated OR 
-    			// if it was more than 12 hours ago that this port was allocated, remove it from the list
-    			//
-    			if (!spa.isAllocated() || hours<PORT_RECYCLE_PERIOD_IN_HOURSE) {
+    		if (spa.isAllocated()) {
+	    		if (spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && 
+	    			spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName) &&
+	    			spa.getTransformationName().equalsIgnoreCase(transformationName) &&
+	    			spa.getSourceStepName().equalsIgnoreCase(sourceStepName) &&
+	    			spa.getSourceStepCopy().equalsIgnoreCase(sourceStepCopy) &&
+	    			spa.getTargetStepName().equalsIgnoreCase(targetStepName) &&
+	    			spa.getTargetStepCopy().equalsIgnoreCase(targetStepCopy)
+	    		) {
+	    			// This is the port we want, return it.
+	    			//
 	    			socketPortAllocation = spa;
 	    			break;
-    			} else {
-    				serverSocketPortsMap.remove(spa); // remove the port, it's too old.
-    				removedPort=spa.getPort(); // just in case...
-    			}
+	    		}
+    		} else {
+    			// This is not an allocated port.
+    			// So we can basically use this port slot to put our own allocation in it.
+    			//
+    			socketPortAllocation = new SocketPortAllocation(spa.getPort(), new Date(), transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
+    			serverSocketPortsMap.set(index, socketPortAllocation);
+    		}
+    		if (spa.getPort()>maxPort) {
+    			maxPort=spa.getPort();
     		}
     	}
     	
-    	if (socketPortAllocation!=null) {
-    		socketPortAllocation.setLastRequested(new Date());
-    	} else {
-    		boolean allocated = false;
-    		int allocatedPort=-1;
-
-    		// Allocate an available port for the host...
+    	if (socketPortAllocation==null) {
+    		// Allocate a new port and add it to the back of the list
+    		// Normally this list should stay sorted on port number this way
     		//
-    		
-    		// If we just removed a port, it's easy... 
-    		//
-    		if (removedPort>0) {
-    			allocatedPort=removedPort;
-    			allocated=true;
-    		} else {
-	    		
-	    		for (int p=portRangeStart;!allocated;p++) {
-	    			boolean portFound=false;
-		    		for (SocketPortAllocation portAllocation : serverSocketPortsMap) {
-		    			if (portAllocation.getPort()==p) {
-		    				portFound=true; // sorry, "p" is taken.
-		    			}
-		    		}
-		    		if (!portFound) {
-		    			allocated=true;
-		    			allocatedPort=p;
-		    		}
-	    		}
-    		}
-    		
-    		// Now that we have a new port, remember it the next time around...
-    		//
-    		socketPortAllocation = new SocketPortAllocation(allocatedPort, new Date(), transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
+    		socketPortAllocation = new SocketPortAllocation(maxPort+1, new Date(), transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
     		serverSocketPortsMap.add(socketPortAllocation);
     	}
     	    	
     	// give back the good news too...
     	//
     	return socketPortAllocation;
+    }
+    
+    /**
+     * Deallocate all the ports for the given transformation name, accross all hosts. 
+     * @param transName the transformation name to release
+     */
+    public void deallocateServerSocketPorts(String transName) {
+    	for (String hostname : hostServerSocketPortsMap.keySet()) {
+    		for (SocketPortAllocation spa : hostServerSocketPortsMap.get(hostname)) {
+    			if (spa.getTransformationName().equalsIgnoreCase(transName)) {
+    				spa.setAllocated(false);
+    			}
+    		}
+    	}
     }
 
 	public void deallocateServerSocketPort(int port, String hostname) {
@@ -224,7 +210,7 @@ public class TransformationMap
     	for (SocketPortAllocation spa : new ArrayList<SocketPortAllocation>(serverSocketPortsMap)) {
     		
     		if (spa.getPort()==port) {
-    			serverSocketPortsMap.remove(spa);
+    			spa.setAllocated(false);
     			return;
     		}
     	}

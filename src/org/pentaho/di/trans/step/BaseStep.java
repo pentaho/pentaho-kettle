@@ -614,6 +614,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 		for (ServerSocket serverSocket : serverSockets)
 		{
 	    	try {
+	    		
 	    		socketRepository.releaseSocket(serverSocket.getLocalPort());
 	    		
 	    		log.logDetailed(toString(), "Released server socket on port "+serverSocket.getLocalPort());

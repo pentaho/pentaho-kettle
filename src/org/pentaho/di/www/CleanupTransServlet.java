@@ -54,6 +54,8 @@ public class CleanupTransServlet extends HttpServlet
         
 
         String transName = request.getParameter("name");
+        String sockets = request.getParameter("sockets");
+        
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
 
         response.setStatus(HttpServletResponse.SC_OK);
@@ -78,39 +80,46 @@ public class CleanupTransServlet extends HttpServlet
     
         try
         {
-            Trans trans = transformationMap.getTransformation(transName);
-            if (trans!=null)
+        	String message;
+        	
+        	if ("Y".equalsIgnoreCase(sockets)) {
+        		transformationMap.deallocateServerSocketPorts(transName);
+                message =  Messages.getString("TransStatusServlet.Log.TransServerSocketPortsReleased",transName);
+        	} else {
+	            Trans trans = transformationMap.getTransformation(transName);
+	            if (trans!=null)
+	            {
+	                trans.cleanup();
+	                trans.endProcessing(Database.LOG_STATUS_END);
+	                
+	                // Also release the server sockets
+	                message =  Messages.getString("TransStatusServlet.Log.TransCleanednup",transName);
+	            }
+	            else
+	            {
+	                message = "The specified transformation ["+transName+"] could not be found";
+	                if (useXML)
+	                {
+	                    out.println(new WebResult(WebResult.STRING_ERROR, message));
+	                }
+	                else
+	                {
+	                    out.println("<H1>"+message+"</H1>");
+	                    out.println("<a href=\"/kettle/status\">" + Messages.getString("TransStatusServlet.BackToStatusPage") +"</a><p>");
+	                }
+	            }
+        	}
+	                
+            if (useXML)
             {
-                trans.cleanup();
-                trans.endProcessing(Database.LOG_STATUS_END);
-
-                String message =  Messages.getString("TransStatusServlet.Log.TransCleanednup",transName);
-               
-                
-                if (useXML)
-                {
-                    out.println(new WebResult(WebResult.STRING_OK, message).getXML());
-                }
-                else
-                {
-                    
-                    out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("TransStatusServlet.BackToStatusPage")  + "</a><p>");
-                }
+                out.println(new WebResult(WebResult.STRING_OK, message).getXML());
             }
             else
             {
-                String message = "The specified transformation ["+transName+"] could not be found";
-                if (useXML)
-                {
-                    out.println(new WebResult(WebResult.STRING_ERROR, message));
-                }
-                else
-                {
-                    out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/status\">" + Messages.getString("TransStatusServlet.BackToStatusPage") +"</a><p>");
-                }
-            }
+                
+                out.println("<H1>"+message+"</H1>");
+                out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("TransStatusServlet.BackToStatusPage")  + "</a><p>");
+        	}
         }
         catch (Exception ex)
         {

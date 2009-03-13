@@ -1034,11 +1034,17 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		return true;
 	}
 
-    public List<SQLStatement> getSQLStatements(Repository repository) throws KettleException
+    public List<SQLStatement> getSQLStatements(Repository repository, VariableSpace space) throws KettleException
     {
+    	this.copyVariablesFrom(space);
         TransMeta transMeta = getTransMeta(repository);
 
         return transMeta.getSQLStatements();
+    }
+
+    public List<SQLStatement> getSQLStatements(Repository repository) throws KettleException
+    {
+    	return getSQLStatements(repository, null);
     }
 
     /**

@@ -153,7 +153,6 @@ public class Carte
 		catch(KettleException e)
         {
             throw new Exception(Messages.getString("Carte.Error.UnableLoadSteps"), e);
-            
         }
 
 		try 

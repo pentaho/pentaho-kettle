@@ -736,12 +736,14 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		}
 	}
 
-	public void executeTransformation(TransMeta transMeta, boolean local, boolean remote, boolean cluster, boolean preview, boolean debug, Date replayDate, boolean safe) throws KettleException {
+	public void executeTransformation(final TransMeta transMeta, 
+			final boolean local, final boolean remote, final boolean cluster, final boolean preview, final boolean debug, 
+			final Date replayDate, final boolean safe) throws KettleException {
 		
 		if (transMeta == null) {
 			return;
 		}
-		
+
 		// See if we need to ask for debugging information...
 		//
 		TransDebugMeta transDebugMeta = null;
@@ -916,7 +918,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			// Are we executing clustered?
 			//
 			} else if (executionConfiguration.isExecutingClustered()) {
-				splitTrans(transMeta, executionConfiguration);
+					splitTrans(transMeta, executionConfiguration); 
 			}
 		}
 	}

@@ -2356,7 +2356,8 @@ public class Trans implements VariableSpace, NamedParams
 			masterServer = null;
 			errors++;
 		}
-        TransMeta master = transSplitter.getMaster();
+        TransMeta masterTransMeta = transSplitter.getMaster();
+        TransMeta transMeta = transSplitter.getOriginalTransformation();
 
         boolean allFinished = false;
         while (!allFinished && errors==0 && ( parentJob==null || !parentJob.isStopped()) )
@@ -2388,11 +2389,11 @@ public class Trans implements VariableSpace, NamedParams
             }
 
             // Check the master too
-            if (allFinished && errors==0 && master!=null && master.nrSteps()>0)
+            if (allFinished && errors==0 && masterTransMeta!=null && masterTransMeta.nrSteps()>0)
             {
                 try
                 {
-                    SlaveServerTransStatus transStatus = masterServer.getTransStatus(master.getName());
+                    SlaveServerTransStatus transStatus = masterServer.getTransStatus(masterTransMeta.getName());
                     if (transStatus.isRunning()) {
                     	if(log.isDetailed()) log.logDetailed(logSubject, "Master transformation is still running.");
                     	allFinished = false;
@@ -2434,7 +2435,7 @@ public class Trans implements VariableSpace, NamedParams
 
                 try
                 {
-                    WebResult webResult = masterServer.stopTransformation(master.getName());
+                    WebResult webResult = masterServer.stopTransformation(masterTransMeta.getName());
                     if (!WebResult.STRING_OK.equals(webResult.getResult()))
                     {
                         log.logError(logSubject, "Unable to stop master transformation '"+masterServer.getName()+"' : "+webResult.getMessage());
@@ -2455,7 +2456,7 @@ public class Trans implements VariableSpace, NamedParams
             {
                 // Not finished or error: wait a bit longer
             	if(log.isDetailed()) log.logDetailed(logSubject, "Clustered transformation is still running, waiting a few seconds...");
-                try { Thread.sleep(sleepTimeSeconds*1000); } catch(Exception e) {} // Check all slaves every x seconds. 
+                try { Thread.sleep(sleepTimeSeconds*2000); } catch(Exception e) {} // Check all slaves every x seconds. 
             }
         }
         
@@ -2486,16 +2487,24 @@ public class Trans implements VariableSpace, NamedParams
 
         // Clean up  the master too
         //
-        if (master!=null && master.nrSteps()>0)
+        if (masterTransMeta!=null && masterTransMeta.nrSteps()>0)
         {
             try
             {
-                WebResult webResult = masterServer.cleanupTransformation(master.getName());
+                WebResult webResult = masterServer.cleanupTransformation(masterTransMeta.getName());
                 if (!WebResult.STRING_OK.equals(webResult.getResult()))
                 {
-                    log.logError(logSubject, "Unable to run clean-up on master transformation '"+master.getName()+"' : "+webResult.getMessage());
+                    log.logError(logSubject, "Unable to run clean-up on master transformation '"+masterTransMeta.getName()+"' : "+webResult.getMessage());
                     errors+=1;
                 }
+
+                webResult = masterServer.deallocatePorts(transMeta.getName()); // registered under the original name?
+                if (!WebResult.STRING_OK.equals(webResult.getResult()))
+                {
+                    log.logError(logSubject, "Unable to run clean-up on master transformation '"+masterTransMeta.getName()+"' : "+webResult.getMessage());
+                    errors+=1;
+                }
+
             }
             catch(Exception e)
             {

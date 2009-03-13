@@ -997,8 +997,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
     public List<SQLStatement> getSQLStatements(Repository repository, VariableSpace space) throws KettleException
     {
+    	this.copyVariablesFrom(space);
         JobMeta jobMeta = getJobMeta(repository, space);
-
         return jobMeta.getSQLStatements(repository, null);
     }
     

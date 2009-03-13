@@ -698,6 +698,12 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         return WebResult.fromXMLString(xml);
     }
     
+    public WebResult deallocatePorts(String transName) throws Exception
+    {
+        String xml = execService(CleanupTransServlet.CONTEXT_PATH+"/?sockets=Y&name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        return WebResult.fromXMLString(xml);
+    }
+    
     public static SlaveServer findSlaveServer(List<SlaveServer> slaveServers, String name)
     {
         for (SlaveServer slaveServer : slaveServers)
