@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
@@ -739,7 +740,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 			
 			wFields.table.removeAll();
 			
-			inputStream = KettleVFS.getInputStream(fileObject);
+			inputStream = new GZIPInputStream(KettleVFS.getInputStream(fileObject));
 	        
             InputStreamReader reader = new InputStreamReader(inputStream);
             
