@@ -17,6 +17,7 @@ import org.pentaho.di.core.CountersTest;
 import org.pentaho.di.core.RowSetTest;
 import org.pentaho.di.core.database.DatabaseTest;
 import org.pentaho.di.core.encryption.EncrTest;
+import org.pentaho.di.core.parameters.ParameterSimpleTransTest;
 import org.pentaho.di.core.row.RowDataUtilTest;
 import org.pentaho.di.core.row.RowTest;
 import org.pentaho.di.core.row.ValueDataUtilTest;
@@ -74,6 +75,7 @@ public class AllRegressionTests
         suite.addTestSuite(ConstTest.class);
         suite.addTestSuite(StringUtilTest.class);
         suite.addTestSuite(EncrTest.class);
+        suite.addTestSuite(ParameterSimpleTransTest.class);
         
         suite.addTestSuite(ValueMetaTest.class);
         suite.addTestSuite(RowDataUtilTest.class);
