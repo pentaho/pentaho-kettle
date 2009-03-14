@@ -310,17 +310,19 @@ public class Validator extends BaseStep implements StepInterface
 	            	
 	            	// In list?
 	            	//
-	            	boolean found = false;
-	            	for (Object object : data.listValues[i]) {
-	                	if (object!=null && data.listValues[i]!=null && valueMeta.compare(valueData, validatorMeta, object)==0) {
-	                    	found=true;
-	                	}
+	            	if (field.isSourcingValues() || data.listValues[i].length > 0) {
+	            	    boolean found = false;
+	            	    for (Object object : data.listValues[i]) {
+	            	        if (object!=null && data.listValues[i]!=null && valueMeta.compare(valueData, validatorMeta, object)==0) {
+	            	            found=true;
+	            	        }
+	            	    }
+	            	    if (!found) {
+	            	        KettleValidatorException exception = new KettleValidatorException(field, KettleValidatorException.ERROR_VALUE_NOT_IN_LIST, Messages.getString("Validator.Exception.NotInList", field.getFieldName(), valueMeta.getString(valueData)), field.getFieldName());
+	            	        if (meta.isValidatingAll()) exceptions.add(exception); else throw exception;
+	            	    }
 	            	}
-	            	if (!found) {
-	            		KettleValidatorException exception = new KettleValidatorException(field, KettleValidatorException.ERROR_VALUE_NOT_IN_LIST, Messages.getString("Validator.Exception.NotInList", field.getFieldName(), valueMeta.getString(valueData)), field.getFieldName());
-	                	if (meta.isValidatingAll()) exceptions.add(exception); else throw exception;
-	            	}
-	            	
+
 	            	// Numeric data or strings with only 
 		            if (field.isOnlyNumericAllowed()) {
 		            	if (valueMeta.isNumeric() || !containsOnlyDigits(valueMeta.getString(valueData)) ) {
