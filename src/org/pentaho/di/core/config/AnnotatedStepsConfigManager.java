@@ -97,7 +97,7 @@ public class AnnotatedStepsConfigManager<T extends StepPluginMeta> extends Basic
 			//
 			String category;
 			if (step.category()!=StepCategory.CATEGORY_USER_DEFINED) {
-				category = StepCategory.STANDARD_CATEGORIES[step.category()].getName();
+				category = StepCategory.BRIDGE_ANNOTATION_CATEGORY_NUMBERS[step.category()].getName();
 			}
 			else {
 				LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messsages for missing locale
