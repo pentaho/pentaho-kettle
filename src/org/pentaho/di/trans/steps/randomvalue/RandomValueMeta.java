@@ -188,19 +188,19 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 
 			switch (fieldType[i]) {
 			case TYPE_RANDOM_NUMBER: 
-				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_NUMBER);
+				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_NUMBER, 10, 5);
 				break;
 			case TYPE_RANDOM_INTEGER: 
-				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_INTEGER);
+				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_INTEGER, 10, 0);
 				break;
 			case TYPE_RANDOM_STRING:
-				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING);
+				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING, 13, 0);
 				break;
 			case TYPE_RANDOM_UUID:
-				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING);
+				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING, 36, 0);
 				break;
 			case TYPE_RANDOM_UUID4:
-				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING);
+				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING, 36, 0);
 				break;
 			default:
 				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_NONE);
