@@ -91,6 +91,8 @@ public class TransSplitter
         this.originalTransformation = new TransMeta(XMLHandler.getSubNode(XMLHandler.loadXMLString(transXML), TransMeta.XML_TAG), null);
         this.originalTransformation.shareVariablesWith(transMeta);
         
+        checkClusterConfiguration();
+        
         // FIRST : convert the dynamic master into a fixed one.
         // This is why we copied the original transformation
         //
@@ -130,13 +132,14 @@ public class TransSplitter
     private void checkClusterConfiguration() throws KettleException
     {
         Map<String,ClusterSchema> map = new Hashtable<String,ClusterSchema>();
-        StepMeta[] steps = originalTransformation.getStepsArray();
-        for (int i=0;i<steps.length;i++)
+        List<StepMeta> steps = originalTransformation.getSteps();
+        for (int i=0;i<steps.size();i++)
         {
-            ClusterSchema clusterSchema = steps[i].getClusterSchema(); 
+        	StepMeta step = steps.get(i);
+            ClusterSchema clusterSchema = step.getClusterSchema(); 
             if (clusterSchema!=null)
             {
-                map.put(steps[i].getClusterSchema().getName(), steps[i].getClusterSchema());
+                map.put(clusterSchema.getName(), clusterSchema);
                 
                 if (clusterSchema.findMaster()==null)
                 {
@@ -455,13 +458,6 @@ public class TransSplitter
                                 masterTransMeta.addStep(masterStep);
                             }
                             
-                            int nrOfSourceCopies = previousStep.getCopies();
-                            
-                            // Verify that the number of copies is equal to the number of slaves or 1
-                            //
-                            if (masterStep.getCopies()!=1 && masterStep.getCopies()!=(nrSlavesNodes*nrOfSourceCopies)) {
-                                throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+nrSlavesNodes+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
-                            }
                             Queue<Integer> masterStepCopyNumbers = new LinkedList<Integer>();
                             for (int i = 0; i < masterStep.getCopies(); i++) {
                                 masterStepCopyNumbers.add(i);
@@ -472,7 +468,7 @@ public class TransSplitter
                             for (int slaveNr=0;slaveNr<slaveServers.size();slaveNr++)
                             {
                                 SlaveServer sourceSlaveServer = slaveServers.get(slaveNr);
-                                
+
                                 if (!sourceSlaveServer.isMaster())
                                 {
                                 	// MASTER: add remote input steps to the master step.  That way it can receive data over sockets.
@@ -498,6 +494,14 @@ public class TransSplitter
                         			//
                         			StepPartitioningMeta previousStepPartitioningMeta = previousStep.getStepPartitioningMeta();
                         			PartitionSchema previousPartitionSchema = previousStepPartitioningMeta.getPartitionSchema();
+
+                                    int nrOfSourceCopies = determineNrOfStepCopies(sourceSlaveServer, previousStep);
+                                    
+                                    // Verify that the number of copies is equal to the number of slaves or 1
+                                    //
+                                    if (masterStep.getCopies()!=1 && masterStep.getCopies()!=nrOfSourceCopies) {
+                                        throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+nrSlavesNodes+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
+                                    }
 
                         			// Add the required remote input and output steps to make the partitioning a reality.
                         			//
@@ -582,14 +586,6 @@ public class TransSplitter
                                 masterTransMeta.addStep(sourceStep); 
                             }
 
-                            int nrOfTargetCopies = referenceStep.getCopies();
-
-                            // Verify that the number of copies is equal to the number of slaves or 1
-                            //
-                            if (sourceStep.getCopies()!=1 && sourceStep.getCopies()!=(nrSlavesNodes*nrOfTargetCopies)) {
-                                throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+nrSlavesNodes+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
-                            }
-                            
                             Queue<Integer> masterStepCopyNumbers = new LinkedList<Integer>();
                             for (int i = 0; i < sourceStep.getCopies(); i++) {
                                 masterStepCopyNumbers.add(i);
@@ -618,6 +614,14 @@ public class TransSplitter
                         			StepPartitioningMeta targetStepPartitioningMeta = referenceStep.getStepPartitioningMeta();
                         			PartitionSchema targetPartitionSchema = targetStepPartitioningMeta.getPartitionSchema();
 
+                                    int nrOfTargetCopies = determineNrOfStepCopies(targetSlaveServer, referenceStep);
+
+                                    // Verify that the number of copies is equal to the number of slaves or 1
+                                    //
+                                    if (sourceStep.getCopies()!=1 && sourceStep.getCopies()!=nrOfTargetCopies) {
+                                        throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+nrSlavesNodes+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
+                                    }
+                                    
                         			// Add the required remote input and output steps to make the partitioning a reality.
                         			//
                         			for (int targetCopyNr=0;targetCopyNr<nrOfTargetCopies;targetCopyNr++) {
@@ -1229,7 +1233,34 @@ public class TransSplitter
         }
     }
     
-    private int getSlaveServerNumber(ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException {
+    /**
+     * Calculate the number of step copies in a step.<br>
+     * If a step is not running clustered, it's simply returning getCopies().<br>
+     * If a step is clustered and not doing any partitioning, it's simply returning getCopies().<br>
+     * If a step is clustered and partitioned, we need to look in the partitioning map for the specified slave server.<br>
+     * That is because the number of copies can vary over the slaves. (5 partitions over 3 slaves for example)
+     * 
+     * @param slaveServer the slave server
+     * @param referenceStep the reference step
+     * @return the number of step copies that we run.
+     */
+    private int determineNrOfStepCopies(SlaveServer slaveServer, StepMeta step) {
+		if (!step.isClustered()) return step.getCopies();
+		if (!step.isPartitioned()) return step.getCopies();
+		if (slaveServer.isMaster()) return step.getCopies();
+		
+		// Partitioned and clustered...
+		//
+		StepPartitioningMeta stepPartitioningMeta = step.getStepPartitioningMeta();
+		PartitionSchema partitionSchema = stepPartitioningMeta.getPartitionSchema();
+		
+		Map<PartitionSchema, List<String>> partitionMap = slaveServerPartitionsMap.get(slaveServer);
+		List<String> partitionList = partitionMap.get(partitionSchema);
+		
+		return partitionList.size();
+	}
+
+	private int getSlaveServerNumber(ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException {
     	int index = 0;
     	for (SlaveServer check : clusterSchema.getSlaveServers()) {
     		if (!check.isMaster()) {
@@ -1327,19 +1358,21 @@ public class TransSplitter
             }
 
             int slaveServerNr=0;
+            List<SlaveServer> slaveServers = clusterSchema.getSlaveServers();
+            
             for (int p=0;p<nrPartitions;p++)
             {
                 String partitionId = partitionSchema.getPartitionIDs().get(p);
                 
-                SlaveServer slaveServer = clusterSchema.getSlaveServers().get(slaveServerNr);
+                SlaveServer slaveServer = slaveServers.get(slaveServerNr);
                 
                 // Skip the master...
                 //
                 if (slaveServer.isMaster())
                 {
                     slaveServerNr++;
-                    if (slaveServerNr>=clusterSchema.getSlaveServers().size()) slaveServerNr=0; // re-start
-                    slaveServer = (SlaveServer) clusterSchema.getSlaveServers().get(slaveServerNr);
+                    if (slaveServerNr>=slaveServers.size()) slaveServerNr=0; // re-start
+                    slaveServer = (SlaveServer) slaveServers.get(slaveServerNr);
                 }
 
                 Map<PartitionSchema,List<String>> schemaPartitionsMap = slaveServerPartitionsMap.get(slaveServer);
