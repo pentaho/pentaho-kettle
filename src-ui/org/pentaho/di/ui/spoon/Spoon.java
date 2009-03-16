@@ -3042,18 +3042,23 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				listener = fileNodeMap.get(root.getNodeName());
 			}
 
-			if (listener != null) {
-				loaded = listener.open(root, fname, importfile);
-			}
-			if (!loaded) {
-				// Give error back
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-				mb.setMessage(Messages.getString("Spoon.UnknownFileType.Message", fname));
-				mb.setText(Messages.getString("Spoon.UnknownFileType.Title"));
-				mb.open();
-			} else {
-				applyVariables(); // set variables in the newly loaded
-				// transformation(s) and job(s).
+			// You got to have a file name!
+			//
+			if (!Const.isEmpty(fname)) {
+				
+				if (listener != null) {
+					loaded = listener.open(root, fname, importfile);
+				}
+				if (!loaded) {
+					// Give error back
+					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+					mb.setMessage(Messages.getString("Spoon.UnknownFileType.Message", fname));
+					mb.setText(Messages.getString("Spoon.UnknownFileType.Title"));
+					mb.open();
+				} else {
+					applyVariables(); // set variables in the newly loaded
+					// transformation(s) and job(s).
+				}
 			}
 		} catch (KettleException e) {
 			new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorOpening.Title"), Messages.getString("Spoon.Dialog.ErrorOpening.Message") + fname, e);
