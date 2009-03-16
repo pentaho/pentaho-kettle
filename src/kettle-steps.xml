@@ -157,6 +157,18 @@
 		<image-uri>ui/images/TOP.png</image-uri>
 	</step>
 	
+	<step id="InfobrightOutput">
+    <description>
+      ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.InfobrightOutput")
+    </description>
+    <class-name>org.pentaho.di.trans.steps.infobrightoutput.InfobrightLoaderMetadata</class-name>
+    <category>ognl:@org.pentaho.di.trans.step.StepCategory@BULK.getName()</category>
+    <tooltip>
+      ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.InfobrightOutput")
+    </tooltip>
+    <image-uri>ui/images/IBL.png</image-uri>
+  </step>
+  
 	<step id="SortRows">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SortRows")

@@ -113,5 +113,6 @@
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-formula-editor-0.0.1.jar"/>
 	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/jtds-1.2.2.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/infobright-core-2.2.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
