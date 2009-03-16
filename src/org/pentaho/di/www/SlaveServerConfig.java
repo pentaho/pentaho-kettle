@@ -90,6 +90,9 @@ public class SlaveServerConfig {
 				String newHostname = Const.getIPAddress(networkInterfaceName);
 				if (newHostname!=null) {
 					slaveServer.setHostname(newHostname);
+					// Also change the name of the slave...
+					//
+					slaveServer.setName(slaveServer.getName()+"-"+newHostname);
 					LogWriter.getInstance().logBasic("Slave server configuration", "Hostname for slave server ["+slaveServer.getName()+"] is set to ["+newHostname+"], information derived from network "+networkInterfaceName);
 				}
 			} catch (SocketException e) {
