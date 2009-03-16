@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
@@ -725,14 +726,16 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     }
     
     public int allocateServerSocket(int portRangeStart, String hostname, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy) throws Exception {
-    	
-    	if (hostname.startsWith("${")) {
-    		throw new Exception("Not a hostname : "+hostname);
-    	}
+
+    	// Look up the IP address of the given hostname
+    	// Only this way we'll be to allocate on the correct host.
+    	//
+    	InetAddress inetAddress = InetAddress.getByName(hostname);
+    	String address = inetAddress.getHostAddress();
     	
     	String service=AllocateServerSocketServlet.CONTEXT_PATH+"/?";
     	service += AllocateServerSocketServlet.PARAM_RANGE_START+"="+Integer.toString(portRangeStart);
-    	service += "&" + AllocateServerSocketServlet.PARAM_HOSTNAME+"="+hostname;
+    	service += "&" + AllocateServerSocketServlet.PARAM_HOSTNAME+"="+address;
     	service += "&" + AllocateServerSocketServlet.PARAM_TRANSFORMATION_NAME+"="+URLEncoder.encode(transformationName, "UTF-8");
     	service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_SLAVE+"="+URLEncoder.encode(sourceSlaveName, "UTF-8");
     	service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_STEPNAME+"="+URLEncoder.encode(sourceStepName, "UTF-8");
