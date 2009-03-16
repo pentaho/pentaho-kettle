@@ -498,10 +498,11 @@ public class TransSplitter
                                     int nrOfSourceCopies = determineNrOfStepCopies(sourceSlaveServer, previousStep);
                                     
                                     // Verify that the number of copies is equal to the number of slaves or 1
+                                    // FIXME check this code, it no longer is relevant after the change to use determineNrOfStepCopies().  It probably wasn't working before either.
                                     //
-                                    if (masterStep.getCopies()!=1 && masterStep.getCopies()!=nrOfSourceCopies) {
-                                        throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+nrSlavesNodes+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
-                                    }
+                                    // if (masterStep.getCopies()!=1 && masterStep.getCopies()!=nrOfSourceCopies) {
+                                    //     throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+nrSlavesNodes+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
+                                    // }
 
                         			// Add the required remote input and output steps to make the partitioning a reality.
                         			//
@@ -617,10 +618,11 @@ public class TransSplitter
                                     int nrOfTargetCopies = determineNrOfStepCopies(targetSlaveServer, referenceStep);
 
                                     // Verify that the number of copies is equal to the number of slaves or 1
+                                    // FIXME check this code, it no longer is relevant after the change to use determineNrOfStepCopies().  It probably wasn't working before either.
                                     //
-                                    if (sourceStep.getCopies()!=1 && sourceStep.getCopies()!=nrOfTargetCopies) {
-                                        throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+nrSlavesNodes+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
-                                    }
+                                    // if (sourceStep.getCopies()!=1 && sourceStep.getCopies()!=nrOfTargetCopies) {
+                                    //    throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+nrSlavesNodes+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
+                                    // }
                                     
                         			// Add the required remote input and output steps to make the partitioning a reality.
                         			//
