@@ -457,14 +457,20 @@ public class XMLHandler
         try
         {           
             // Check and open XML document
+        	//
             dbf  = DocumentBuilderFactory.newInstance();
             dbf.setIgnoringComments(true);
             dbf.setNamespaceAware(namespaceAware);
             db   = dbf.newDocumentBuilder();
+            
             // even dbf.setValidating(false) will the parser NOT prevent from checking the existance of the DTD
             // thus we need to give the BaseURI (systemID) below to have a chance to get it
             // or return empty dummy documents for all external entities (sources)
-            if (ignoreEntities) db.setEntityResolver(new DTDIgnoringEntityResolver()); 
+            //
+            if (ignoreEntities) { 
+            	db.setEntityResolver(new DTDIgnoringEntityResolver()); 
+            }
+            
             InputStream inputStream=null;
             try
             {
@@ -477,7 +483,9 @@ public class XMLHandler
             		// Do extra verifications
             		//
             		String systemIDwithEndingSlash=systemID.trim();
+            		
             		//make sure we have an ending slash, otherwise the last part will be ignored
+            		//
             		if (!systemIDwithEndingSlash.endsWith("/") && !systemIDwithEndingSlash.endsWith("\\")) {
             			systemIDwithEndingSlash=systemIDwithEndingSlash.concat("/");
             		}
@@ -1026,7 +1034,7 @@ public class XMLHandler
     
 }
 
-//
+
 /**
  * Handle external references and return an empty dummy document.
  * @author jb
@@ -1038,9 +1046,10 @@ class DTDIgnoringEntityResolver implements EntityResolver{
 		//nothing
 	}
 	public InputSource resolveEntity(java.lang.String publicID, java.lang.String systemID) throws IOException {
-		//System.out.println("Public-ID: "+publicID.toString());
-		//System.out.println("System-ID: "+systemID.toString());
+		System.out.println("Public-ID: "+publicID.toString());
+		System.out.println("System-ID: "+systemID.toString());
 		return new InputSource(new ByteArrayInputStream("<?xml version='1.0' encoding='UTF-8'?>".getBytes()));
 	}
-} 
+}
+
 	
