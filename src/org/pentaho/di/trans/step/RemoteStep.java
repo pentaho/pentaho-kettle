@@ -325,8 +325,6 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					//
 					try {
 						if (socket!=null) {
-							socket.shutdownInput();
-							socket.shutdownOutput();
 							socket.close();
 						}
 					} catch (IOException e) {
@@ -493,8 +491,6 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					// Close the socket
 					try {
 						if (socket!=null) {
-							socket.shutdownInput();
-							socket.shutdownOutput();
 							socket.close();
 							baseStep.logDetailed("Closed connection to server socket to read rows from remote step on server "+realHostname+" port "+portNumber+" - Local port="+socket.getLocalPort());
 						}
