@@ -27,6 +27,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.SlaveStepCopyPartitionDistribution;
@@ -83,6 +84,8 @@ public class TransSplitter
     {
         this();
         
+        LogWriter.getInstance().logBasic("!!!!!!!!!!", "Before clone, MASTER_HOST (parameter)="+transMeta.getParameterValue("MASTER_HOST"));
+        
         // We want to make sure there is no trace of the old transformation left when we 
         // Modify during split.
         // As such, we deflate/inflate over XML
@@ -91,6 +94,8 @@ public class TransSplitter
         this.originalTransformation = new TransMeta(XMLHandler.getSubNode(XMLHandler.loadXMLString(transXML), TransMeta.XML_TAG), null);
         this.originalTransformation.shareVariablesWith(transMeta);
         this.originalTransformation.copyParametersFrom(transMeta);
+
+        LogWriter.getInstance().logBasic("!!!!!!!!!!", "After clone, MASTER_HOST (parameter)="+this.originalTransformation.getParameterValue("MASTER_HOST"));
 
         checkClusterConfiguration();
         
