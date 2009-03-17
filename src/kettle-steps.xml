@@ -893,7 +893,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GPBulkLoader")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.gpbulkloader.GPBulkLoaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@BULK.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GPBulkLoader")
 		</tooltip>
@@ -905,7 +905,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.PGBulkLoader")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.pgbulkloader.PGBulkLoaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@BULK.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.PGBulkLoader")
 		</tooltip>
@@ -1053,7 +1053,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetSubFolders")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.getsubfolders.GetSubFoldersMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GetSubFolders")
 		</tooltip>
@@ -1065,7 +1065,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MonetDBBulkLoader")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.monetdbbulkloader.MonetDBBulkLoaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@BULK.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.MonetDBBulkLoader")
 		</tooltip>
@@ -1161,7 +1161,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SampleRows")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.samplerows.SampleRowsMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@STATISTICS.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SampleRows")
 		</tooltip>
@@ -1185,7 +1185,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ExecSQLRow")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.execsqlrow.ExecSQLRowMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@SCRIPTING.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ExecSQLRow")
 		</tooltip>
@@ -1197,7 +1197,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DynamicSQLRow")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.dynamicsqlrow.DynamicSQLRowMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.DynamicSQLRow")
 		</tooltip>
@@ -1221,7 +1221,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SynchronizeAfterMerge")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.synchronizeaftermerge.SynchronizeAfterMergeMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SynchronizeAfterMerge")
 		</tooltip>
@@ -1360,12 +1360,12 @@
 		<image-uri>ui/images/US.png</image-uri>
 	</step>
 	
-	<step id="UniqueRowsByHashSet,UniqueRowsByHashSetMeta">
+	<step id="UniqueRowsByHashSet">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.UniqueRowsByHashSet")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.uniquerowsbyhashset.UniqueRowsByHashSetMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.UniqueRowsByHashSet")
 		</tooltip>
@@ -1377,7 +1377,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.HTTPPOST")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.httppost.HTTPPOSTMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.HTTPPOST")
 		</tooltip>
@@ -1413,7 +1413,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ExecProcess")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.execprocess.ExecProcessMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ExecProcess")
 		</tooltip>
@@ -1449,7 +1449,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ParallelGzipCsvInput")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.parallelgzipcsv.ParGzipCsvInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ParallelGzipCsvInput")
 		</tooltip>

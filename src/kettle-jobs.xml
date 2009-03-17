@@ -725,7 +725,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.truncatetables.JobEntryTruncateTables
 		</class-name>
-		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@GENERAL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.TruncateTables.Tooltip")
 		</tooltip>
@@ -738,7 +738,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.setvariables.JobEntrySetVariables
 		</class-name>
-		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@GENERAL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SetVariables.Tooltip")
 		</tooltip>
@@ -751,7 +751,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.msaccessbulkload.JobEntryMSAccessBulkLoad
 		</class-name>
-		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@BULK_LOADING.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.MSAccessBulkLoad.Tooltip")
 		</tooltip>
@@ -764,7 +764,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.waitforsql.JobEntryWaitForSQL
 		</class-name>
-		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@GENERAL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.WaitForSQL.Tooltip")
 		</tooltip>
@@ -777,7 +777,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.evaluatetablecontent.JobEntryEvalTableContent
 		</class-name>
-		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@CONDITIONS.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.EvalTableContent.Tooltip")
 		</tooltip>
@@ -790,7 +790,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.simpleeval.JobEntrySimpleEval
 		</class-name>
-		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@CONDITIONS.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SimpleEval.Tooltip")
 		</tooltip>
@@ -803,7 +803,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.snmptrap.JobEntrySNMPTrap
 		</class-name>
-		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@GENERAL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SNMPTrap.Tooltip")
 		</tooltip>
@@ -816,7 +816,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.mailvalidator.JobEntryMailValidator
 		</class-name>
-		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@MAIL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.MailValidator.Tooltip")
 		</tooltip>
