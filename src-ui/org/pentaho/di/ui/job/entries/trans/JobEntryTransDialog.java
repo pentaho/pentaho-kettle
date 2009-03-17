@@ -1040,6 +1040,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 			wParameters.optWidth(true);
 		}				
 		
+		wPassParams.setSelection(jobEntry.isPassingAllParameters());
+		
 		if (jobEntry.logfile != null)
 			wLogfile.setText(jobEntry.logfile);
 		if (jobEntry.logext != null)
@@ -1146,6 +1148,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 			
 			nr++;
 		}	
+		
+		jobEntry.setPassingAllParameters(wPassParams.getSelection());
 		
 		jobEntry.logfile = wLogfile.getText();
 		jobEntry.logext = wLogext.getText();
