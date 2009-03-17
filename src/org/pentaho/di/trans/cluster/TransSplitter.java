@@ -90,6 +90,7 @@ public class TransSplitter
         String transXML = transMeta.getXML();
         this.originalTransformation = new TransMeta(XMLHandler.getSubNode(XMLHandler.loadXMLString(transXML), TransMeta.XML_TAG), null);
         this.originalTransformation.shareVariablesWith(transMeta);
+        this.originalTransformation.copyParametersFrom(transMeta);
         
         checkClusterConfiguration();
         
