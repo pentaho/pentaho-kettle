@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
@@ -394,6 +395,10 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
         	try {
 				socket = new Socket();
 				socket.setReuseAddress(true);
+				
+				baseStep.logDetailed("Trans variable MASTER_HOST : ["+baseStep.getTransMeta().getVariable("MASTER_HOST")+"]");
+				baseStep.logDetailed("Step variable MASTER_HOST : ["+baseStep.getVariable("MASTER_HOST")+"]");
+				baseStep.logDetailed("Opening client (reader) socket to server ["+Const.NVL(realHostname, "")+":"+port+"]");
 				socket.connect(new InetSocketAddress(realHostname, portNumber), 5000);
 				
 				connected=true;
