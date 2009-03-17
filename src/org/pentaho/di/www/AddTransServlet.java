@@ -104,6 +104,7 @@ public class AddTransServlet extends HttpServlet
             }
             transMeta.injectVariables(transExecutionConfiguration.getVariables());
             log.logBasic("!!!!!!!!!!!!!", "MASTER_HOST="+transMeta.getVariable("MASTER_HOST"));
+            log.logBasic("!!!!!!!!!!!!!", "MASTER_HOST="+transExecutionConfiguration.getVariables().get("MASTER_HOST"));
             
             // If there was a repository, we know about it at this point in time.
             //
