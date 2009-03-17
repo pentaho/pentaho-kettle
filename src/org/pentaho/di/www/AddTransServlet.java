@@ -103,8 +103,8 @@ public class AddTransServlet extends HttpServlet
             	log.logDetailed(toString(), "Logging level set to "+log.getLogLevelDesc());
             }
             transMeta.injectVariables(transExecutionConfiguration.getVariables());
-            log.logBasic("!!!!!!!!!!!!!", "MASTER_HOST="+transMeta.getVariable("MASTER_HOST"));
-            log.logBasic("!!!!!!!!!!!!!", "MASTER_HOST="+transExecutionConfiguration.getVariables().get("MASTER_HOST"));
+            
+            log.logBasic("!!!!!!!!!!!!!", "MASTER_HOST="+transExecutionConfiguration.getParams().get("MASTER_HOST"));
             
             // If there was a repository, we know about it at this point in time.
             //
