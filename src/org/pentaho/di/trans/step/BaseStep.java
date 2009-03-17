@@ -542,9 +542,10 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	        	// 
 				if (getCopy()==remoteStep.getSourceStepCopyNr()) { 
 		        	// Open a server socket to allow the remote output step to connect.
-		        	//
+		        	// 
 		        	RemoteStep copy = (RemoteStep) remoteStep.clone();
 		        	try {
+		        		if (log.isDetailed()) logDetailed("Selected remote output step ["+copy+"] to open a server socket to remote step ["+copy.getTargetStep()+"]."+copy.getTargetStepCopyNr()+" on port "+copy.getPort());
 		        		copy.openServerSocket(this);
 		        		if (log.isDetailed()) logDetailed("Opened a server socket connection to "+copy);
 		        	}
