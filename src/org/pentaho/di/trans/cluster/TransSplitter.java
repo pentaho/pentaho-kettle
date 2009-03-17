@@ -832,19 +832,21 @@ public class TransSplitter
                                     			for (int sourceCopyNr=0;sourceCopyNr<nrOfSourcePartitions;sourceCopyNr++) {
                                         			for (int targetCopyNr=0;targetCopyNr<nrOfTargetPartitions;targetCopyNr++) {
                                     				
+                                        				// We hit only get the remote steps, NOT the local ones.
+                                        				// That's why it's OK to generate all combinations.
+                                        				//
                                             			if (!targetSlaveServer.equals(sourceSlaveServer)) {
-	                                        				// We hit only get the remote steps, NOT the local ones.
-	                                        				// That's why it's OK to generate all combinations.
-	                                        				//
-			                                    			int outPort = getPort(clusterSchema, targetSlaveServer, sourceStep.getName(), sourceCopyNr, sourceSlaveServer, targetStep.getName(), targetCopyNr);
-			                                    			RemoteStep remoteOutputStep = new RemoteStep( targetSlaveServer.getHostname(), sourceSlaveServer.getHostname(), Integer.toString(outPort), sourceStep.getName(), sourceCopyNr, targetStep.getName(), targetCopyNr, targetSlaveServer.getName(), sourceSlaveServer.getName(), socketsBufferSize, compressingSocketStreams);
+                                            				// The port runs on the source slave server, on the source step
+                                            				//
+			                                    			int port = getPort(clusterSchema, sourceSlaveServer, sourceStep.getName(), sourceCopyNr, targetSlaveServer, targetStep.getName(), targetCopyNr);
+			                                    			
+			                                    			RemoteStep remoteOutputStep = new RemoteStep( sourceSlaveServer.getHostname(), targetSlaveServer.getHostname(), Integer.toString(port), sourceStep.getName(), sourceCopyNr, targetStep.getName(), targetCopyNr, sourceSlaveServer.getName(), targetSlaveServer.getName(), socketsBufferSize, compressingSocketStreams);
 			                                    			sourceStep.getRemoteOutputSteps().add(remoteOutputStep);
 			
 			                                    			// OK, so the source step is sending rows out on the reserved ports
 			                                    			// What we need to do now is link all the OTHER slaves up to them.
 			                                    			//
-			                                    			int inPort = getPort(clusterSchema, sourceSlaveServer, sourceStep.getName(), sourceCopyNr, targetSlaveServer, targetStep.getName(), targetCopyNr);
-			                                    			RemoteStep remoteInputStep = new RemoteStep( sourceSlaveServer.getHostname(), targetSlaveServer.getHostname(), Integer.toString(inPort), sourceStep.getName(), sourceCopyNr, targetStep.getName(), targetCopyNr, sourceSlaveServer.getName(), targetSlaveServer.getName(), socketsBufferSize, compressingSocketStreams );
+			                                    			RemoteStep remoteInputStep = new RemoteStep( sourceSlaveServer.getHostname(), targetSlaveServer.getHostname(), Integer.toString(port), sourceStep.getName(), sourceCopyNr, targetStep.getName(), targetCopyNr, sourceSlaveServer.getName(), targetSlaveServer.getName(), socketsBufferSize, compressingSocketStreams );
 			                                    			targetStep.getRemoteInputSteps().add(remoteInputStep);
                                             			}
 		                                    			// OK, save the partition number for the target step in the partition distribution...
