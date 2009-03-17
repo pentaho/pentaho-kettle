@@ -566,14 +566,17 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             {
         		if ( !Const.isEmpty(parameters[idx]) )  {
         			// We have a parameter
-        			
+        			//
         			namedParam.addParameterDefinition(parameters[idx], "", "Job entry runtime");
         			if ( Const.isEmpty(Const.trim(parameterFieldNames[idx])) )  {
-        				namedParam.setParameterValue(parameters[idx], 
-			                     Const.NVL(environmentSubstitute(parameterValues[idx]), ""));            				
+        				// There is no field name specified.
+        				//
+        				String value = Const.NVL(environmentSubstitute(parameterValues[idx]), ""); 
+        				namedParam.setParameterValue(parameters[idx], value);            				
         			}            				            		
         			else  {
         				// something filled in, in the field column but we have no incoming stream. yet.
+        				//
         				namedParam.setParameterValue(parameters[idx], "");
         			}
         		}                                
@@ -719,6 +722,31 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     	}
                     }
                 }
+                
+                // Handle the parameters...
+                //
+                transMeta.clearParameters();
+                String[] parameterNames = transMeta.listParameters();
+                for (int idx = 0; idx < parameterNames.length; idx++)  {
+                	// Grab the parameter value set in the Trans job entry
+                	//
+                    String thisValue = namedParam.getParameterValue(parameterNames[idx]);
+                    if (!Const.isEmpty(thisValue)) {
+                    	// Set the value as specified by the user in the job entry
+                    	//
+                    	transMeta.setParameterValue(parameterNames[idx], thisValue);
+                    } else {
+                    	// See if the parameter had a value set in the parent job...
+                    	// This value should pass down to the transformation if that's what we opted to do.
+                    	//
+                    	if (isPassingAllParameters()) {
+	                    	String parentValue = parentJob.getParameterValue(parameterNames[idx]);
+	                    	if (!Const.isEmpty(parentValue)) {
+	                    		transMeta.setParameterValue(parameterNames[idx], parentValue);
+	                    	}
+                    	}
+                    }
+                }
 
                 // Execute this transformation across a cluster of servers
                 //
@@ -836,32 +864,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 //
                 else // Local execution...
                 {
-                	// transMeta.copyParametersFrom(namedParam);
-                	
-	                transMeta.clearParameters();
-	                String[] parameterNames = transMeta.listParameters();
-	                for (int idx = 0; idx < parameterNames.length; idx++)  {
-	                	// Grab the parameter value set in the Trans job entry
-	                	//
-	                    String thisValue = namedParam.getParameterValue(parameterNames[idx]);
-	                    if (!Const.isEmpty(thisValue)) {
-	                    	// Set the value as specified by the user in the job entry
-	                    	//
-	                    	transMeta.setParameterValue(parameterNames[idx], thisValue);
-	                    } else {
-	                    	// See if the parameter had a value set in the parent job...
-	                    	// This value should pass down to the transformation if that's what we opted to do.
-	                    	//
-	                    	if (isPassingAllParameters()) {
-		                    	String parentValue = parentJob.getParameterValue(parameterNames[idx]);
-		                    	if (!Const.isEmpty(parentValue)) {
-		                    		transMeta.setParameterValue(parameterNames[idx], parentValue);
-		                    	}
-	                    	}
-	                    }
-	                }
-                	
-                    // Create the transformation from meta-data
+                	// Create the transformation from meta-data
 	                //
                     Trans trans = new Trans(transMeta);
 
