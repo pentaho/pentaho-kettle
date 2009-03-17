@@ -1056,7 +1056,14 @@ public class BaseStep extends Thread implements VariableSpace
         }
         
         Object[] errorRowData = RowDataUtil.allocateRowData(errorRowMeta.size());
-        if (row!=null) System.arraycopy(row, 0, errorRowData, 0, rowMeta.size());
+        if (row!=null) {
+            if(rowMeta.size()>row.length) {
+            	// in case the row array is not correctly due to the error
+            	System.arraycopy(row, 0, errorRowData, 0, row.length);
+            } else {
+            	System.arraycopy(row, 0, errorRowData, 0, rowMeta.size());
+            }
+        }
         
         // Also add the error fields...
         stepErrorMeta.addErrorRowData(errorRowData, rowMeta.size(), nrErrors, errorDescriptions, fieldNames, errorCodes);
