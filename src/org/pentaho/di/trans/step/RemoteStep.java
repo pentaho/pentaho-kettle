@@ -396,7 +396,6 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 				socket = new Socket();
 				socket.setReuseAddress(true);
 				
-				baseStep.logDetailed("Trans variable MASTER_HOST : ["+baseStep.getTransMeta().getVariable("MASTER_HOST")+"]");
 				baseStep.logDetailed("Step variable MASTER_HOST : ["+baseStep.getVariable("MASTER_HOST")+"]");
 				baseStep.logDetailed("Opening client (reader) socket to server ["+Const.NVL(realHostname, "")+":"+port+"]");
 				socket.connect(new InetSocketAddress(realHostname, portNumber), 5000);

@@ -91,7 +91,7 @@ public class TransSplitter
         this.originalTransformation = new TransMeta(XMLHandler.getSubNode(XMLHandler.loadXMLString(transXML), TransMeta.XML_TAG), null);
         this.originalTransformation.shareVariablesWith(transMeta);
         this.originalTransformation.copyParametersFrom(transMeta);
-        
+
         checkClusterConfiguration();
         
         // FIRST : convert the dynamic master into a fixed one.
