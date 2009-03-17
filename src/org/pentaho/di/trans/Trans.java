@@ -2176,7 +2176,9 @@ public class Trans implements VariableSpace, NamedParams
                     Map<String, String> params = transConfiguration.getTransExecutionConfiguration().getParams();
                     TransMeta ot = transSplitter.getOriginalTransformation();
                     for (String param : ot.listParameters()) {
-                    	params.put(param, Const.NVL(ot.getParameterValue(param), Const.NVL(ot.getParameterDefault(param), ot.getVariable(param))));
+                    	String value = Const.NVL(ot.getParameterValue(param), Const.NVL(ot.getParameterDefault(param), ot.getVariable(param)));
+                    	log.logBasic("!!!!!!!", "Passing parameter ["+param+"] with value ["+value+"]");
+                    	params.put(param, value);
                     }
                     
                     String masterReply = masterServer.sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
@@ -2218,7 +2220,9 @@ public class Trans implements VariableSpace, NamedParams
                               Map<String, String> params = slaveTransExecutionConfiguration.getParams();
                               TransMeta ot = transSplitter.getOriginalTransformation();
                               for (String param : ot.listParameters()) {
-                              	params.put(param, Const.NVL(ot.getParameterValue(param), Const.NVL(ot.getParameterDefault(param), ot.getVariable(param))));
+                            	String value = Const.NVL(ot.getParameterValue(param), Const.NVL(ot.getParameterDefault(param), ot.getVariable(param)));
+                              	params.put(param, value);
+                            	log.logBasic("!!!!!!!", "Passing parameter ["+param+"] with value ["+value+"]");
                               }
                               
                               String slaveReply = slaves[index].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
