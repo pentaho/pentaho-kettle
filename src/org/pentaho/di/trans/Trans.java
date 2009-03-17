@@ -2171,12 +2171,12 @@ public class Trans implements VariableSpace, NamedParams
                     variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
                     variables.put(Const.INTERNAL_VARIABLE_CLUSTER_MASTER, "Y");
                     
-                    // Parameters override the variables.
-                    // For the time being we're passing the parameters over the wire as variables...
+                    // Parameters override the variables but they need to pass over the configuration too...
                     //
+                    Map<String, String> params = transConfiguration.getTransExecutionConfiguration().getParams();
                     TransMeta ot = transSplitter.getOriginalTransformation();
                     for (String param : ot.listParameters()) {
-                    	variables.put(param, Const.NVL(ot.getParameterValue(param), Const.NVL(ot.getParameterDefault(param), ot.getVariable(param))));
+                    	params.put(param, Const.NVL(ot.getParameterValue(param), Const.NVL(ot.getParameterDefault(param), ot.getVariable(param))));
                     }
                     
                     String masterReply = masterServer.sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
@@ -2213,12 +2213,12 @@ public class Trans implements VariableSpace, NamedParams
                               variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
                               variables.put(Const.INTERNAL_VARIABLE_CLUSTER_MASTER, "N");
                               
-                              // Parameters override the variables.
-                              // For the time being we're passing the parameters over the wire as variables...
+                              // Parameters override the variables but they need to pass over the configuration too...
                               //
+                              Map<String, String> params = slaveTransExecutionConfiguration.getParams();
                               TransMeta ot = transSplitter.getOriginalTransformation();
                               for (String param : ot.listParameters()) {
-                              	variables.put(param, Const.NVL(ot.getParameterValue(param), Const.NVL(ot.getParameterDefault(param), ot.getVariable(param))));
+                              	params.put(param, Const.NVL(ot.getParameterValue(param), Const.NVL(ot.getParameterDefault(param), ot.getVariable(param))));
                               }
                               
                               String slaveReply = slaves[index].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
