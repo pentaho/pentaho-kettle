@@ -2177,7 +2177,6 @@ public class Trans implements VariableSpace, NamedParams
                     TransMeta ot = transSplitter.getOriginalTransformation();
                     for (String param : ot.listParameters()) {
                     	String value = Const.NVL(ot.getParameterValue(param), Const.NVL(ot.getParameterDefault(param), ot.getVariable(param)));
-                    	log.logBasic("!!!!!!!", "Passing parameter ["+param+"] with value ["+value+"]");
                     	params.put(param, value);
                     }
                     
@@ -2222,7 +2221,6 @@ public class Trans implements VariableSpace, NamedParams
                               for (String param : ot.listParameters()) {
                             	String value = Const.NVL(ot.getParameterValue(param), Const.NVL(ot.getParameterDefault(param), ot.getVariable(param)));
                               	params.put(param, value);
-                            	log.logBasic("!!!!!!!", "Passing parameter ["+param+"] with value ["+value+"]");
                               }
                               
                               String slaveReply = slaves[index].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");

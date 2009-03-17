@@ -15,6 +15,7 @@ package org.pentaho.di.www;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -103,6 +104,14 @@ public class AddTransServlet extends HttpServlet
             	log.logDetailed(toString(), "Logging level set to "+log.getLogLevelDesc());
             }
             transMeta.injectVariables(transExecutionConfiguration.getVariables());
+            
+            // Also copy the parameters over...
+            //
+            Map<String, String> params = transExecutionConfiguration.getParams();
+            for (String param : params.keySet()) {
+            	String value = params.get(param);
+            	transMeta.setParameterValue(param, value);
+            }
             
             log.logBasic("!!!!!!!!!!!!!", "MASTER_HOST(getParams())="+transExecutionConfiguration.getParams().get("MASTER_HOST"));
             log.logBasic("!!!!!!!!!!!!!", "MASTER_HOST(getVariable())="+transMeta.getVariable("MASTER_HOST"));

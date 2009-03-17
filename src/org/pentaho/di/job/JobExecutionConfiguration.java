@@ -425,7 +425,7 @@ public class JobExecutionConfiguration implements Cloneable
         // Read the parameters...
         //
         Node parmsNode = XMLHandler.getSubNode(trecNode, "parameters");
-        int nrParams = XMLHandler.countNodes(argsNode, "parameter");
+        int nrParams = XMLHandler.countNodes(parmsNode, "parameter");
         for (int i=0;i<nrParams;i++) {
         	Node parmNode = XMLHandler.getSubNodeByNr(parmsNode, "parameter", i);
         	String name = XMLHandler.getTagValue(parmNode, "name");

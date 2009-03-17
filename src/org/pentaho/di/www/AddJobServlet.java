@@ -105,6 +105,15 @@ public class AddJobServlet extends HttpServlet
             JobExecutionConfiguration jobExecutionConfiguration = jobConfiguration.getJobExecutionConfiguration();
             log.setLogLevel(jobExecutionConfiguration.getLogLevel());
             jobMeta.setArguments(jobExecutionConfiguration.getArgumentStrings());
+            jobMeta.injectVariables(jobExecutionConfiguration.getVariables());
+            
+            // Also copy the parameters over...
+            //
+            Map<String, String> params = jobExecutionConfiguration.getParams();
+            for (String param : params.keySet()) {
+            	String value = params.get(param);
+            	jobMeta.setParameterValue(param, value);
+            }
             
             // If there was a repository, we know about it at this point in time.
             //
