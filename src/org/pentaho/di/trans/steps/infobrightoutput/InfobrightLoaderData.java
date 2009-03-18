@@ -1,12 +1,12 @@
 package org.pentaho.di.trans.steps.infobrightoutput;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
@@ -18,7 +18,7 @@ import com.infobright.logging.EtlLogger;
 
 /**
  */
-public class InfobrightLoaderStepData extends BaseStepData implements StepDataInterface {
+public class InfobrightLoaderData extends BaseStepData implements StepDataInterface {
   
   private Database db;  // only for initial use and the loader.
   private String[] requiredFields;
@@ -31,11 +31,11 @@ public class InfobrightLoaderStepData extends BaseStepData implements StepDataIn
   /**
    * Default constructor.  Does nothing special.
    */
-  public InfobrightLoaderStepData() {
+  public InfobrightLoaderData() {
     super();
   }
 
-  void databaseSetup(InfobrightLoaderMetadata meta, VariableSpace space) throws KettleException {
+  void databaseSetup(InfobrightLoaderMeta meta, InfobrightLoader step) throws KettleException {
     
     db = new Database(meta.getDatabaseMeta());
     db.connect();
@@ -45,7 +45,8 @@ public class InfobrightLoaderStepData extends BaseStepData implements StepDataIn
     // '0000-00-00'. In this case, the Kettle error message will misleadingly say
     // that the table doesn't exist. There doesn't seem to be any workaround.
     // See Pentaho JIRA: PDI-2117.
-    requiredRowMeta = meta.getRequiredFields(space); 
+    //
+    requiredRowMeta = meta.getRequiredFields(step); 
     requiredFields = requiredRowMeta.getFieldNames();
     
     try {
@@ -57,8 +58,8 @@ public class InfobrightLoaderStepData extends BaseStepData implements StepDataIn
       DataFormat dataFormat = DataFormat.valueForDisplayName(meta.getInfobrightProductType());
 
       Connection conn = db.getConnection();
-      String tableName = meta.getTablename();
-      EtlLogger logger = meta.getLogger();
+      String tableName = meta.getDatabaseMeta().getQuotedSchemaTableCombination(step.environmentSubstitute(meta.getSchemaName()), step.environmentSubstitute(meta.getTablename()));
+      EtlLogger logger = new KettleEtlLogger(step);
       loader = new InfobrightNamedPipeLoader(tableName, conn, logger, dataFormat);
       record = loader.createRecord(false); // TODO set to true to support error path
       loader.start();
@@ -66,6 +67,8 @@ public class InfobrightLoaderStepData extends BaseStepData implements StepDataIn
     } catch (Exception e) {
       db.disconnect();
       db = null;
+      try { loader.killQuery(); } catch (SQLException e1) { throw new KettleDatabaseException(e1); };
+	
       throw new KettleDatabaseException(e);
     }
   }

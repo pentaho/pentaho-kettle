@@ -22,8 +22,8 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
   
   private final KettleRecordPopulator populator;
   
-  private InfobrightLoaderMetadata meta;
-  private InfobrightLoaderStepData data;
+  private InfobrightLoaderMeta meta;
+  private InfobrightLoaderData data;
 
   /**
    * Standard constructor.  Does nothing special.
@@ -44,8 +44,8 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
    * @see org.pentaho.di.trans.step.StepInterface#processRow(org.pentaho.di.trans.step.StepMetaInterface, org.pentaho.di.trans.step.StepDataInterface)
    */
   public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
-    meta = (InfobrightLoaderMetadata) smi;
-    data = (InfobrightLoaderStepData) sdi;
+    meta = (InfobrightLoaderMeta) smi;
+    data = (InfobrightLoaderData) sdi;
 
     Object[] row = getRow();
     
@@ -89,8 +89,8 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
    */
   public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
     boolean res = false;
-    meta = (InfobrightLoaderMetadata) smi;
-    data = (InfobrightLoaderStepData) sdi;
+    meta = (InfobrightLoaderMeta) smi;
+    data = (InfobrightLoaderData) sdi;
     
     if (super.init(smi, sdi)) {
       try {
@@ -101,6 +101,7 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
         logError("An error occurred intialising this step", ex);
         stopAll();
         setErrors(1);
+        return false;
       }
     }
     return res;
@@ -112,11 +113,11 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
    */
   public void run() {
     try {
-      logBasic(Messages.getString("BrightHouseLoader.Log.StartingToRun"));
+      logBasic(Messages.getString("InfobrightLoader.Log.StartingToRun"));
       while (processRow(meta, data) && !isStopped())
         {}
     } catch (Exception e) {
-      logError(Messages.getString("BrightHouseLoader.Log.UnexpectedError") + " : " + e.toString());
+      logError(Messages.getString("InfobrightLoader.Log.UnexpectedError") + " : " + e.toString());
       logError(Const.getStackTracker(e));
       setErrors(1);
       stopAll();
@@ -138,7 +139,7 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
         data.loader.killQuery();
         logDebug("Loader statement killed.");
       } catch (SQLException sqle) {
-        logError(Messages.getString("BrightHouseLoader.Log.FailedToKillQuery") + " : " + sqle.toString());
+        logError(Messages.getString("InfobrightLoader.Log.FailedToKillQuery") + " : " + sqle.toString());
         logError(Const.getStackTracker(sqle));
       }
     }
@@ -150,8 +151,8 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
   @Override
   public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
     try {
-      meta = (InfobrightLoaderMetadata) smi;
-      data = (InfobrightLoaderStepData) sdi;
+      meta = (InfobrightLoaderMeta) smi;
+      data = (InfobrightLoaderData) sdi;
       if (data != null) {
         data.dispose(); // gtf: OutputStream gets closed here
       }

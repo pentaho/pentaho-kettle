@@ -247,6 +247,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	 */
 	public static final int TYPE_DATABASE_LUCIDDB     = 36;
 	
+	/**
+	 * Connection to an Infobright database
+	 */
+	public static final int TYPE_DATABASE_INFOBRIGHT  = 37;
 	
 
 	/**
@@ -357,6 +361,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         
         addExtraOption(mySQL, "defaultFetchSize", "500");
         addExtraOption(mySQL, "useCursorFetch", "true");
+
+        String infoBright = new InfobrightDatabaseMeta().getDatabaseTypeDesc();
+
+        addExtraOption(infoBright, "characterEncoding", "UTF-8");
     }
 	
 	/**

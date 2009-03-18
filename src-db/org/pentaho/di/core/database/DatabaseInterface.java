@@ -65,6 +65,7 @@ public interface DatabaseInterface extends Cloneable
             VerticaDatabaseMeta.class,
             NeoviewDatabaseMeta.class,
             LucidDBDatabaseMeta.class,
+            InfobrightDatabaseMeta.class,
          };
 	
 	/**

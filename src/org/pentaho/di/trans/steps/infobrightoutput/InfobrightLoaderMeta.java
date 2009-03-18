@@ -17,37 +17,24 @@ import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 import org.w3c.dom.Node;
 
 import com.infobright.etl.model.DataFormat;
-import com.infobright.logging.EtlLogger;
 
 
 /**
- * Loader for BrightHouse database.
+ * Loader for the Infobright column database.
  */
-public class InfobrightLoaderMetadata 
-  extends TableOutputMeta 
-  implements StepMetaInterface, InfobrightLoaderDialogInterface {
+public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInterface {
 
-  private EtlLogger logger = null;
   private DataFormat dataFormat;
   private boolean rejectErrors = false;
   
   /**
    * Default constructor.
    */
-  public InfobrightLoaderMetadata()
+  public InfobrightLoaderMeta()
   {
     super();
     setIgnoreErrors(false);
     setTruncateTable(false);
-  }
-
-  /**
-   * {@inheritDoc}
-   * @see org.pentaho.di.trans.step.StepMetaInterface#getDialogClassName()
-   */
-  @Override
-  public String getDialogClassName() {
-    return "org.pentaho.di.ui.trans.steps.infobrightoutput.InfobrightLoaderDialog";
   }
 
   /** {@inheritDoc}
@@ -56,7 +43,6 @@ public class InfobrightLoaderMetadata
   public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
   {
     InfobrightLoader loader = new InfobrightLoader(stepMeta, stepDataInterface, cnr, tr, trans);
-    logger = new KettleEtlLogger(loader);
     return loader;
   }
   
@@ -65,7 +51,7 @@ public class InfobrightLoaderMetadata
    */
   public StepDataInterface getStepData()
   {
-    return new InfobrightLoaderStepData();
+    return new InfobrightLoaderData();
   }
 
   /** {@inheritDoc}
@@ -73,16 +59,8 @@ public class InfobrightLoaderMetadata
    */
   public Object clone()
   {
-    InfobrightLoaderMetadata retval = (InfobrightLoaderMetadata) super.clone();
+    InfobrightLoaderMeta retval = (InfobrightLoaderMeta) super.clone();
     return retval;
-  }
-
-  //@Override
-  public DatabaseMeta getDatabaseMetadata() {
-    if (this.getDatabaseMeta() == null) {
-      this.setDatabaseMeta(new DatabaseMeta("bhload", "MySQL", "Native", "", "", "3306", "", ""));
-    }
-    return this.getDatabaseMeta();
   }
 
   public String getInfobrightProductType() {
@@ -112,15 +90,6 @@ public class InfobrightLoaderMetadata
     dataFormat = Enum.valueOf(DataFormat.class, XMLHandler.getTagValue(stepnode, "data_format"));
   }
   
-  //@Override
-  public String getDialogTitle() {
-    return Messages.getString("BrightHouseLoaderDialog.Shell.Title");
-  }
-  
-  public EtlLogger getLogger() { 
-    return logger;
-  }
-
   /** @return the rejectErrors */
   public boolean isRejectErrors() {
     return rejectErrors;
