@@ -1161,7 +1161,7 @@ public abstract class BaseDatabaseMeta implements Cloneable
     
     public String getSQLTableExists(String tablename)
     {
-        return "SELECT * FROM "+tablename;
+        return "SELECT 1 FROM "+tablename;
     }
     public String getSQLColumnExists(String columnname, String tablename)
     {
