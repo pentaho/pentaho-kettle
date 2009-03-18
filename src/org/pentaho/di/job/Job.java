@@ -46,8 +46,11 @@ import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceUtil;
+import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.www.AddExportServlet;
 import org.pentaho.di.www.AddJobServlet;
 import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartJobServlet;
@@ -63,6 +66,8 @@ import org.pentaho.di.www.WebResult;
  */
 public class Job extends Thread implements VariableSpace, NamedParams
 {   
+	public static final String	CONFIGURATION_IN_EXPORT_FILENAME	= "__job_execution_configuration__.xml";
+	
 	private LogWriter log;
 	private JobMeta jobMeta;
 	private Repository rep;
@@ -141,11 +146,24 @@ public class Job extends Thread implements VariableSpace, NamedParams
         open(lw, steploader, rep, ti);
         if (ti.getName()!=null) setName(ti.getName()+" ("+super.getName()+")");
 	}
-    
+
+	public Job(LogWriter lw, Repository rep, JobMeta ti)
+	{
+		this();
+        open(lw, null, rep, ti);
+        if (ti.getName()!=null) setName(ti.getName()+" ("+super.getName()+")");
+	}
+
     // Empty constructor, for Class.newInstance()
     public Job()
     {
     	jobListeners = new ArrayList<JobListener>();
+    	this.log = LogWriter.getInstance();
+    }
+
+    public void open(LogWriter lw, Repository rep, JobMeta ti)
+    {
+    	open(lw, null, rep, ti);
     }
     
     public void open(LogWriter lw, StepLoader steploader, Repository rep, JobMeta ti)
@@ -1188,7 +1206,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
         return message;
     }
     
-	public static void sendXMLToSlaveServer(JobMeta jobMeta, JobExecutionConfiguration executionConfiguration) throws KettleException
+	public static void sendToSlaveServer(JobMeta jobMeta, JobExecutionConfiguration executionConfiguration, Repository repository) throws KettleException
 	{
 		SlaveServer slaveServer = executionConfiguration.getRemoteServer();
 
@@ -1204,17 +1222,42 @@ public class Job extends Thread implements VariableSpace, NamedParams
 			for (String var : Const.INTERNAL_TRANS_VARIABLES) executionConfiguration.getVariables().put(var, jobMeta.getVariable(var));
 			for (String var : Const.INTERNAL_JOB_VARIABLES) executionConfiguration.getVariables().put(var, jobMeta.getVariable(var));
 
-			String xml = new JobConfiguration(jobMeta, executionConfiguration).getXML();
-			
-			String reply = slaveServer.sendXML(xml, AddJobServlet.CONTEXT_PATH + "/?xml=Y");
-			WebResult webResult = WebResult.fromXMLString(reply);
-			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-			{
-				throw new KettleException("There was an error posting the job on the remote server: " + Const.CR+ webResult.getMessage());
+			if (executionConfiguration.isPassingExport()) {
+				// First export the job... slaveServer.getVariable("MASTER_HOST")
+				//
+				FileObject tempFile = KettleVFS.createTempFile("jobExport", ".zip", System.getProperty("java.io.tmpdir"));
+				
+				TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface(tempFile.getName().toString(), jobMeta, jobMeta, repository, executionConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME);
+				
+				// Send the zip file over to the slave server...
+				//
+				String result = slaveServer.sendExport(topLevelResource.getArchiveName(), AddExportServlet.TYPE_JOB, topLevelResource.getBaseResourceName());
+				WebResult webResult = WebResult.fromXMLString(result);
+				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+				{
+					throw new KettleException("There was an error passing the exported job to the remote server: " + Const.CR+ webResult.getMessage());
+				}
+				
+				// The remote file name is comprised in the message
+				//
+				String remoteFile = webResult.getMessage();
+				LogWriter.getInstance().logBasic(jobMeta.getName(), "Added the remote job to slave server ["+slaveServer.getName()+"] for remote file: "+remoteFile);
+				
+			} else {
+				String xml = new JobConfiguration(jobMeta, executionConfiguration).getXML();
+				
+				String reply = slaveServer.sendXML(xml, AddJobServlet.CONTEXT_PATH + "/?xml=Y");
+				WebResult webResult = WebResult.fromXMLString(reply);
+				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+				{
+					throw new KettleException("There was an error posting the job on the remote server: " + Const.CR+ webResult.getMessage());
+				}
 			}
 
-			reply = slaveServer.getContentFromServer(StartJobServlet.CONTEXT_PATH + "/?name="+ URLEncoder.encode(jobMeta.getName(), "UTF-8") + "&xml=Y");
-			webResult = WebResult.fromXMLString(reply);
+			// Start the job
+			//
+			String reply = slaveServer.getContentFromServer(StartJobServlet.CONTEXT_PATH + "/?name="+ URLEncoder.encode(jobMeta.getName(), "UTF-8") + "&xml=Y");
+			WebResult webResult = WebResult.fromXMLString(reply);
 			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
 			{
 				throw new KettleException("There was an error starting the job on the remote server: " + Const.CR + webResult.getMessage());

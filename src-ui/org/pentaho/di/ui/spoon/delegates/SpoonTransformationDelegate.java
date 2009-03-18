@@ -885,8 +885,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				}	
 			}
 			
-
-			
 			// addTransLog(transMeta, executionConfiguration.isExecutingLocally());
 			// TransLog transLog = spoon.getActiveTransLog();
 			TransGraph activeTransGraph = spoon.getActiveTransGraph();
@@ -904,7 +902,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			//
 			} else if (executionConfiguration.isExecutingRemotely()) {
 				if (executionConfiguration.getRemoteServer() != null) {
-					Trans.sendXMLToSlaveServer(transMeta, executionConfiguration);
+					Trans.sendToSlaveServer(transMeta, executionConfiguration, spoon.rep);
 					monitorRemoteTrans(transMeta, executionConfiguration.getRemoteServer());
 					spoon.delegates.slaves.addSpoonSlave(executionConfiguration.getRemoteServer());
 					
@@ -918,7 +916,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			// Are we executing clustered?
 			//
 			} else if (executionConfiguration.isExecutingClustered()) {
-					splitTrans(transMeta, executionConfiguration); 
+				splitTrans(transMeta, executionConfiguration); 
 			}
 		}
 	}

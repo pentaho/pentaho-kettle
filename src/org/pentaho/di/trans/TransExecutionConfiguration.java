@@ -48,6 +48,7 @@ public class TransExecutionConfiguration implements Cloneable
     
     private boolean executingRemotely;
     private SlaveServer remoteServer;
+    private boolean passingExport;
     
     private boolean executingClustered;
     private boolean     clusterPosting;
@@ -77,6 +78,8 @@ public class TransExecutionConfiguration implements Cloneable
         clusterPreparing = true;
         clusterStarting = true;
         clusterShowingTransformation = false;
+        
+        passingExport = false;
         
         arguments = new HashMap<String, String>();
         params = new HashMap<String, String>();
@@ -461,7 +464,8 @@ public class TransExecutionConfiguration implements Cloneable
         {
             xml.append("    ").append(remoteServer.getXML()).append(Const.CR);
         }
-        
+        xml.append("    ").append(XMLHandler.addTagValue("pass_export", passingExport));
+
         xml.append("    ").append(XMLHandler.addTagValue("exec_cluster", executingClustered));
         xml.append("    ").append(XMLHandler.addTagValue("cluster_post", clusterPosting));
         xml.append("    ").append(XMLHandler.addTagValue("cluster_prepare", clusterPreparing));
@@ -553,6 +557,7 @@ public class TransExecutionConfiguration implements Cloneable
         {
             remoteServer = new SlaveServer(remoteHostNode);
         }
+        passingExport = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "pass_export"));
 
         executingClustered = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "exec_cluster"));
         clusterPosting = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "cluster_post"));
@@ -725,5 +730,19 @@ public class TransExecutionConfiguration implements Cloneable
 	 */
 	public void setClearingLog(boolean clearingLog) {
 		this.clearingLog = clearingLog;
+	}
+
+	/**
+	 * @return the passingExport
+	 */
+	public boolean isPassingExport() {
+		return passingExport;
+	}
+
+	/**
+	 * @param passingExport the passingExport to set
+	 */
+	public void setPassingExport(boolean passingExport) {
+		this.passingExport = passingExport;
 	}
 }

@@ -801,7 +801,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 	// Send the XML over to the slave server
                 	// Also start the transformation over there...
                 	//
-                	Trans.sendXMLToSlaveServer(transMeta, transExecutionConfiguration);
+                	Trans.sendToSlaveServer(transMeta, transExecutionConfiguration, rep);
                 	
                 	// Now start the monitoring...
                 	//

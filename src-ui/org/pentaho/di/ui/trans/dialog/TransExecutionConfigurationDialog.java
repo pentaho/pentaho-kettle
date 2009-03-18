@@ -89,6 +89,7 @@ public class TransExecutionConfigurationDialog extends Dialog
 
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	private Group gDetails;
+	private Button	wPassExport;
 
     public TransExecutionConfigurationDialog(Shell parent, TransExecutionConfiguration configuration, TransMeta transMeta)
     {
@@ -198,6 +199,15 @@ public class TransExecutionConfigurationDialog extends Dialog
             wRemoteHost.add(slaveServer.toString());
         }
         
+        wPassExport = new Button(gLocal, SWT.CHECK);
+        wPassExport.setText(Messages.getString("TransExecutionConfigurationDialog.PassExport.Label")); //$NON-NLS-1$
+        wPassExport.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.PassExport.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        props.setLook(wPassExport);
+        FormData fdPassExport = new FormData();
+        fdPassExport.left  = new FormAttachment(33, margin);
+        fdPassExport.top   = new FormAttachment(wRemoteHost, margin);
+        wPassExport.setLayoutData(fdPassExport);
+
         /////////////////////////////////////////////////////////////////////////////////////////////////
         // Clustered execution
         //
@@ -534,6 +544,8 @@ public class TransExecutionConfigurationDialog extends Dialog
         wStartExecution.setSelection(configuration.isClusterStarting());
         wShowTransformations.setSelection(configuration.isClusterShowingTransformation());
         wRemoteHost.setText( configuration.getRemoteServer()==null ? "" : configuration.getRemoteServer().toString() );
+        wPassExport.setSelection(configuration.isPassingExport());
+        
         int logIndex = wLogLevel.indexOf(LogWriter.getInstance().getLogLevelLongDesc());
         if (logIndex>=0) wLogLevel.select( logIndex );
         else wLogLevel.setText(LogWriter.getInstance().getLogLevelLongDesc());
@@ -570,7 +582,8 @@ public class TransExecutionConfigurationDialog extends Dialog
                 String serverName = wRemoteHost.getText();
                 configuration.setRemoteServer(transMeta.findSlaveServer(serverName));
             }
-            
+            configuration.setPassingExport(wPassExport.getSelection());
+
             // Clustering data
             configuration.setClusterPosting(wPostTransformation.getSelection());
             configuration.setClusterPreparing(wPrepareExecution.getSelection());
@@ -669,6 +682,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         
         wRemoteHost.setEnabled(enableRemote);
         wlRemoteHost.setEnabled(enableRemote);
+        wPassExport.setEnabled(enableRemote);
         
         wPostTransformation.setEnabled(enableCluster);
         wPrepareExecution.setEnabled(enableCluster);

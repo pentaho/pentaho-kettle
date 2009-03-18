@@ -217,7 +217,19 @@ public class WebServer
         Context getSlaves= new Context(contexts, GetSlavesServlet.CONTEXT_PATH, Context.SESSIONS);
         getSlaves.addServlet(new ServletHolder(new GetSlavesServlet(detections)), "/*");
 
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+        //
+        /// Resources
+        //
+
+        // Add export 
+        //
+        Context addExport = new Context(contexts, AddExportServlet.CONTEXT_PATH, Context.SESSIONS);
+        addExport.addServlet(new ServletHolder(new AddExportServlet(jobMap, transformationMap)), "/*");
         
+        
+
         server.setHandlers(new Handler[] { securityHandler, contexts });
 
         // Start execution

@@ -70,6 +70,8 @@ public class JobExecutionConfigurationDialog extends Dialog
     private Button wExecRemote;
     private CCombo wRemoteHost;
     private Label wlRemoteHost;
+    private Button wPassExport;
+
     private TableView wArguments;
     private Label wlArguments;
     private TableView wParams;
@@ -198,6 +200,15 @@ public class JobExecutionConfigurationDialog extends Dialog
             SlaveServer slaveServer = (SlaveServer)jobMeta.getSlaveServers().get(i);
             wRemoteHost.add(slaveServer.toString());
         }
+        
+        wPassExport = new Button(gLocal, SWT.CHECK);
+        wPassExport.setText(Messages.getString("JobExecutionConfigurationDialog.PassExport.Label")); //$NON-NLS-1$
+        wPassExport.setToolTipText(Messages.getString("JobExecutionConfigurationDialog.PassExport.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        props.setLook(wPassExport);
+        FormData fdPassExport = new FormData();
+        fdPassExport.left  = new FormAttachment(33, margin);
+        fdPassExport.top   = new FormAttachment(wRemoteHost, margin);
+        wPassExport.setLayoutData(fdPassExport);
         
         /////////////////////////////////////////////////////////////////////////////////////////////////
         // Replay date, arguments & variables
@@ -485,6 +496,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         wSafeMode.setSelection(configuration.isSafeModeEnabled());
         wClearLog.setSelection(configuration.isClearingLog());
         wRemoteHost.setText( configuration.getRemoteServer()==null ? "" : configuration.getRemoteServer().toString() );
+        wPassExport.setSelection(configuration.isPassingExport());
         int logIndex = wLogLevel.indexOf(LogWriter.getInstance().getLogLevelLongDesc());
         if (logIndex>=0) wLogLevel.select( logIndex );
         else wLogLevel.setText(LogWriter.getInstance().getLogLevelLongDesc());
@@ -511,6 +523,7 @@ public class JobExecutionConfigurationDialog extends Dialog
                 String serverName = wRemoteHost.getText();
                 configuration.setRemoteServer(jobMeta.findSlaveServer(serverName));
             }
+            configuration.setPassingExport(wPassExport.getSelection());
             
             // various settings
             //
@@ -602,6 +615,7 @@ public class JobExecutionConfigurationDialog extends Dialog
                 
         wRemoteHost.setEnabled(enableRemote);
         wlRemoteHost.setEnabled(enableRemote);
+        wPassExport.setEnabled(enableRemote);
     }
     
     /**

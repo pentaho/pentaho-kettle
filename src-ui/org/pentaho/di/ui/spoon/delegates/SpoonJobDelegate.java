@@ -1401,14 +1401,16 @@ public class SpoonJobDelegate extends SpoonDelegate
 		}
 		
 		JobExecutionConfiguration executionConfiguration = spoon.getJobExecutionConfiguration();
-		
+
+		// Remember the variables set previously
+		//
 		Object data[] = spoon.variables.getData();
 		String fields[] = spoon.variables.getRowMeta().getFieldNames();
 		Map<String, String> variableMap = new HashMap<String, String>();
 		for (int idx = 0; idx < fields.length; idx++) {
 			variableMap.put(fields[idx], data[idx].toString());
 		}
-
+		
 		executionConfiguration.setVariables(variableMap);
 		executionConfiguration.getUsedVariables(jobMeta);
 		executionConfiguration.setReplayDate(replayDate);
@@ -1422,22 +1424,31 @@ public class SpoonJobDelegate extends SpoonDelegate
 			// addJobLog(jobMeta);
 			JobGraph jobGraph = spoon.getActiveJobGraph();
 
+			LogWriter.getInstance().setLogLevel(executionConfiguration.getLogLevel());
+
+			// Set the variables that where specified...
+			//
+			for (String varName : executionConfiguration.getVariables().keySet())
+			{
+				String varValue = executionConfiguration.getVariables().get(varName);
+				jobMeta.setVariable(varName, varValue);
+			}
+			
+			// Set and activate the parameters...
+			//
+			for (String paramName : executionConfiguration.getParams().keySet()) 
+			{
+				String paramValue = executionConfiguration.getParams().get(paramName);
+				jobMeta.setParameterValue(paramName, paramValue);
+			}
+			
+			// Set the arguments too...
+			//
+			jobMeta.setArguments(executionConfiguration.getArgumentStrings());
+
 			// Is this a local execution?
 			//
 			if (executionConfiguration.isExecutingLocally()) {
-				LogWriter.getInstance().setLogLevel(executionConfiguration.getLogLevel());
-				// Set the variables that where specified...
-				for (String varName : executionConfiguration.getVariables().keySet())
-				{
-					String varValue = executionConfiguration.getVariables().get(varName);
-					jobMeta.setVariable(varName, varValue);
-				}
-				
-				// Set the arguments too...
-				//
-				jobMeta.setArguments(executionConfiguration.getArgumentStrings());
-				
-				
 				jobGraph.startJob(executionConfiguration);
 			}
 				
@@ -1445,8 +1456,12 @@ public class SpoonJobDelegate extends SpoonDelegate
 			//
 			else if (executionConfiguration.isExecutingRemotely()) {
 				
+				// Activate the parameters, turn them into variables...
+				//
+				jobMeta.activateParameters();
+				
 				if (executionConfiguration.getRemoteServer() != null) {
-					Job.sendXMLToSlaveServer(jobMeta, executionConfiguration);
+					Job.sendToSlaveServer(jobMeta, executionConfiguration, spoon.rep);
 					spoon.delegates.slaves.addSpoonSlave(executionConfiguration.getRemoteServer());
 				} else {
 					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_ERROR);

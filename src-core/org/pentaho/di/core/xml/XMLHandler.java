@@ -415,7 +415,7 @@ public class XMLHandler
     /**
      * Load a file into an XML document
      * @param filename The filename to load into a document
-     * @return the Document if all went well, null if an error occured!
+     * @return the Document if all went well, null if an error occurred!
      */
     public static final Document loadXMLFile(String filename) throws KettleXMLException
     {

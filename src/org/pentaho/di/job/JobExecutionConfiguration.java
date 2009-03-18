@@ -59,10 +59,13 @@ public class JobExecutionConfiguration implements Cloneable
     private Result previousResult;
     private Repository repository;
     
+    private boolean passingExport;
+    
     public JobExecutionConfiguration()
     {
     	executingLocally = true;
     	executingRemotely = false;
+    	passingExport = false;
     	        
         arguments = new HashMap<String, String>();
         params = new HashMap<String, String>();
@@ -313,6 +316,7 @@ public class JobExecutionConfiguration implements Cloneable
         {
             xml.append("    ").append(remoteServer.getXML()).append(Const.CR);
         }
+        xml.append("    ").append(XMLHandler.addTagValue("pass_export", passingExport));
 
         // Serialize the parameters...
         //
@@ -395,6 +399,7 @@ public class JobExecutionConfiguration implements Cloneable
         {
             remoteServer = new SlaveServer(remoteHostNode);
         }
+        passingExport = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "pass_export"));
 
         // Read the variables...
         //
@@ -546,6 +551,20 @@ public class JobExecutionConfiguration implements Cloneable
 	 */
 	public void setClearingLog(boolean clearingLog) {
 		this.clearingLog = clearingLog;
+	}
+
+	/**
+	 * @return the passingExport
+	 */
+	public boolean isPassingExport() {
+		return passingExport;
+	}
+
+	/**
+	 * @param passingExport the passingExport to set
+	 */
+	public void setPassingExport(boolean passingExport) {
+		this.passingExport = passingExport;
 	}
 
 }

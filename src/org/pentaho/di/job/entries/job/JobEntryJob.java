@@ -805,7 +805,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 	// Also start the job over there...
                 	//
                 	try {
-                		Job.sendXMLToSlaveServer(jobMeta, jobExecutionConfiguration);
+                		Job.sendToSlaveServer(jobMeta, jobExecutionConfiguration, rep);
                 	} catch(KettleException e) {
                 		// Perhaps the job exists on the remote server, carte is down, etc.
                 		// This is an abort situation, stop the parent job...

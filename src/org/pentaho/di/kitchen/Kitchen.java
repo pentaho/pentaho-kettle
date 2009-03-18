@@ -42,6 +42,7 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.resource.ResourceUtil;
+import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.version.BuildVersion;
 
@@ -348,7 +349,8 @@ public class Kitchen
 			try {
 				// Export the resources linked to the currently loaded file...
 				//
-				String launchFile = ResourceUtil.serializeResourceExportInterface(optionExport.toString(), job.getJobMeta(), job, repository);
+				TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface(optionExport.toString(), job.getJobMeta(), job, repository);
+				String launchFile = topLevelResource.getResourceName();
 				String message = ResourceUtil.getExplanation(optionExport.toString(), launchFile, job.getJobMeta());
 				System.out.println();
 				System.out.println(message);

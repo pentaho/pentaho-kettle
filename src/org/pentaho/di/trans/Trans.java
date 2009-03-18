@@ -53,6 +53,8 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.resource.ResourceUtil;
+import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.cluster.TransSplitter;
 import org.pentaho.di.trans.performance.StepPerformanceSnapShot;
 import org.pentaho.di.trans.step.BaseStep;
@@ -66,6 +68,7 @@ import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
+import org.pentaho.di.www.AddExportServlet;
 import org.pentaho.di.www.AddTransServlet;
 import org.pentaho.di.www.PrepareExecutionTransServlet;
 import org.pentaho.di.www.SlaveServerTransStatus;
@@ -163,6 +166,8 @@ public class Trans implements VariableSpace, NamedParams
     public static final String STRING_WAITING      = "Waiting";
     public static final String STRING_STOPPED      = "Stopped";
     public static final String STRING_HALTING      = "Halting";
+
+	public static final String	CONFIGURATION_IN_EXPORT_FILENAME	= "__job_execution_configuration__.xml";
 
 	private boolean safeModeEnabled;
 
@@ -2600,7 +2605,7 @@ public class Trans implements VariableSpace, NamedParams
     }
     
 	
-	public static void sendXMLToSlaveServer(TransMeta transMeta, TransExecutionConfiguration executionConfiguration) throws KettleException
+	public static void sendToSlaveServer(TransMeta transMeta, TransExecutionConfiguration executionConfiguration, Repository repository) throws KettleException
 	{
 		SlaveServer slaveServer = executionConfiguration.getRemoteServer();
 
@@ -2616,23 +2621,52 @@ public class Trans implements VariableSpace, NamedParams
 			for (String var : Const.INTERNAL_TRANS_VARIABLES) executionConfiguration.getVariables().put(var, transMeta.getVariable(var));
 			for (String var : Const.INTERNAL_JOB_VARIABLES) executionConfiguration.getVariables().put(var, transMeta.getVariable(var));
 			
-			// Now send it off to the remote server...
-			//
-			String xml = new TransConfiguration(transMeta, executionConfiguration).getXML();
-			String reply = slaveServer.sendXML(xml, AddTransServlet.CONTEXT_PATH + "/?xml=Y");
-			WebResult webResult = WebResult.fromXMLString(reply);
-			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-			{
-				throw new KettleException( "There was an error posting the transformation on the remote server: " + Const.CR + webResult.getMessage());
+			if (executionConfiguration.isPassingExport()) {
+				
+				// First export the job...
+				//
+				FileObject tempFile = KettleVFS.createTempFile("transExport", ".zip", System.getProperty("java.io.tmpdir"));
+				
+				TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface(tempFile.getName().toString(), transMeta, transMeta, repository, executionConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME);
+				
+				// Send the zip file over to the slave server...
+				//
+				String result = slaveServer.sendExport(topLevelResource.getArchiveName(), AddExportServlet.TYPE_TRANS, topLevelResource.getBaseResourceName());
+				WebResult webResult = WebResult.fromXMLString(result);
+				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+				{
+					throw new KettleException("There was an error passing the exported transformation to the remote server: " + Const.CR+ webResult.getMessage());
+				}
+				
+				// The remote file name is comprised in the message
+				//
+				String remoteFile = webResult.getMessage();
+				LogWriter.getInstance().logBasic(transMeta.getName(), "Added the remote transformation to slave server ["+slaveServer.getName()+"] for remote file: "+remoteFile);
+				
+			} else {
+				
+				// Now send it off to the remote server...
+				//
+				String xml = new TransConfiguration(transMeta, executionConfiguration).getXML();
+				String reply = slaveServer.sendXML(xml, AddTransServlet.CONTEXT_PATH + "/?xml=Y");
+				WebResult webResult = WebResult.fromXMLString(reply);
+				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+				{
+					throw new KettleException( "There was an error posting the transformation on the remote server: " + Const.CR + webResult.getMessage());
+				}
 			}
-
-			reply = slaveServer.getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode(transMeta.getName(), "UTF-8") + "&xml=Y");
-			webResult = WebResult.fromXMLString(reply);
+	
+			// Prepare the transformation
+			//
+			String reply = slaveServer.getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode(transMeta.getName(), "UTF-8") + "&xml=Y");
+			WebResult webResult = WebResult.fromXMLString(reply);
 			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
 			{
 				throw new KettleException("There was an error preparing the transformation for excution on the remote server: "+ Const.CR + webResult.getMessage());
 			}
 
+			// Start the transformation
+			//
 			reply = slaveServer.getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode(transMeta.getName(), "UTF-8") + "&xml=Y");
 			webResult = WebResult.fromXMLString(reply);
 

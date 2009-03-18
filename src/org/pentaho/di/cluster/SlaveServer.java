@@ -36,8 +36,10 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.changed.ChangedFlag;
@@ -48,9 +50,11 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
+import org.pentaho.di.www.AddExportServlet;
 import org.pentaho.di.www.AllocateServerSocketServlet;
 import org.pentaho.di.www.CleanupTransServlet;
 import org.pentaho.di.www.GetJobStatusServlet;
@@ -376,11 +380,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         this.port = port;
     }
     
-    public PutMethod getSendXMLPutMethod(String xml, String service) throws Exception {
-    	// The content
-        // 
-        byte[] content = xml.getBytes(Const.XML_ENCODING);
-        
+    public PutMethod getSendByteArrayMethod(byte[] content, String service) throws Exception {
         // Prepare HTTP put
         // 
         String urlString = constructUrl(service);
@@ -400,7 +400,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
     public String sendXML(String xml, String service) throws Exception
     {
-    	PutMethod put = getSendXMLPutMethod(xml, service);
+    	byte[] content = xml.getBytes(Const.XML_ENCODING);
+    	PutMethod put = getSendByteArrayMethod(content, service);
     	
         // Get HTTP client
         // 
@@ -452,6 +453,84 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         }
     }
 
+    /**
+     * Send an exported archive over to this slave server
+     * @param filename The archive to send
+     * @param type The type of file to add to the slave server (AddExportServlet.TYPE_*)
+     * @param load The filename to load in the archive (the .kjb or .ktr)
+     * @return the XML of the web result
+     * @throws Exception in case something goes awry
+     */
+    public String sendExport(String filename, String type, String load) throws Exception
+    {
+    	String serviceUrl=AddExportServlet.CONTEXT_PATH;
+    	if (type!=null && load!=null) {
+    		serviceUrl = serviceUrl+= "/?"+AddExportServlet.PARAMETER_TYPE+"="+type+"&"+AddExportServlet.PARAMETER_LOAD+"="+URLEncoder.encode(load, "UTF-8");
+    	}
+
+        String urlString = constructUrl(serviceUrl);
+        log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
+
+        PutMethod putMethod = new PutMethod(urlString);
+        
+        // Request content will be retrieved directly from the input stream
+        // 
+    	FileObject fileObject = KettleVFS.getFileObject(filename);
+        RequestEntity entity = new InputStreamRequestEntity(KettleVFS.getInputStream(fileObject));
+        
+        putMethod.setRequestEntity(entity);
+        putMethod.setDoAuthentication(true);
+        putMethod.addRequestHeader(new Header("Content-Type", "binary/zip"));
+    	
+        // Get HTTP client
+        // 
+        HttpClient client = new HttpClient();
+        addCredentials(client);
+        
+        // Execute request
+        // 
+        try
+        {
+            int result = client.executeMethod(putMethod);
+            
+            // The status code
+            log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
+            
+            // the response
+            InputStream inputStream = new BufferedInputStream(putMethod.getResponseBodyAsStream(), 1000);
+            
+            StringBuffer bodyBuffer = new StringBuffer();
+            int c;
+            while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
+            inputStream.close();
+            String bodyTmp = bodyBuffer.toString();
+            
+            switch(result)
+            {
+            case 401: // Security problem: authentication required
+              // Non-internationalized message
+                String message = "Authentication failed"+Const.DOSCR+Const.DOSCR+bodyTmp; //$NON-NLS-1$
+                WebResult webResult = new WebResult(WebResult.STRING_ERROR, message);
+                bodyBuffer.setLength(0);
+                bodyBuffer.append(webResult.getXML());
+                break;
+            }
+
+            String body = bodyBuffer.toString();
+            
+
+            // String body = post.getResponseBodyAsString(); 
+            log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
+            
+            return body;
+        }
+        finally
+        {
+            // Release current connection to the connection pool once you are done
+            putMethod.releaseConnection();
+            log.logDetailed(toString(), Messages.getString("SlaveServer.DETAILED_SentExportToService", AddExportServlet.CONTEXT_PATH, environmentSubstitute(hostname))); //$NON-NLS-1$
+        }
+    }
 
     public void addCredentials(HttpClient client)
     {

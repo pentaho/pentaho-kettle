@@ -24,15 +24,39 @@ public class ResourceUtil {
 	 * @param resourceExportInterface the interface to serialize
 	 * @param space the space to use for variable replacement
 	 * @param repository the repository to load objects from (or null if not used)
-	 * @return The full VFS filename reference to the serialized export interface XML file in the ZIP archive. 
+	 * @return The full VFS filename reference to the serialized export interface XML file in the ZIP archive.
 	 * @throws KettleException in case anything goes wrong during serialization
 	 */
-	public static final String serializeResourceExportInterface(String zipFilename, ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository) throws KettleException {
+	public static final TopLevelResource serializeResourceExportInterface(String zipFilename, ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository) throws KettleException {
+		return serializeResourceExportInterface(zipFilename, resourceExportInterface, space, repository, null, null);
+	}
+	
+	/**
+	 * Serializes the referenced resource export interface (Job, Transformation, Mapping, Step, Job Entry, etc) to a ZIP file.
+	 * 
+	 * @param zipFilename The ZIP file to put the content in
+	 * @param resourceExportInterface the interface to serialize
+	 * @param space the space to use for variable replacement
+	 * @param repository the repository to load objects from (or null if not used)
+	 * @param injectXML The XML to inject into the resulting ZIP archive (optional, can be null)
+	 * @param injectFilename The name of the file for the XML to inject in the ZIP archive (optional, can be null)
+	 * @return The full VFS filename reference to the serialized export interface XML file in the ZIP archive.
+	 * @throws KettleException in case anything goes wrong during serialization
+	 */
+	public static final TopLevelResource serializeResourceExportInterface(String zipFilename, ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository, String injectXML, String injectFilename) throws KettleException {
 		
 		ZipOutputStream out = null;
 		
 		try {
 			Map<String, ResourceDefinition> definitions = new HashMap<String, ResourceDefinition>();
+			
+			// In case we want to add an extra pay-load to the exported ZIP file...
+			//
+			if (injectXML!=null) {
+				ResourceDefinition resourceDefinition = new ResourceDefinition(injectFilename, injectXML);
+				definitions.put(injectFilename, resourceDefinition);
+			}
+			
 			ResourceNamingInterface namingInterface = new SequenceResourceNaming();
 		
 			String topLevelResource = resourceExportInterface.exportResources(space, definitions, namingInterface, repository);
@@ -59,8 +83,8 @@ public class ResourceUtil {
 					out.write(resourceDefinition.getContent().getBytes());
 					out.closeEntry();
 				}
-
-				return "zip:"+fileObject.getName().toString()+"!"+topLevelResource;
+				String zipURL = fileObject.getName().toString();
+				return new TopLevelResource(topLevelResource, zipURL, "zip:"+zipURL+"!"+topLevelResource);
 			} else {
 				throw new KettleException(Messages.getString("ResourceUtil.Exception.NoResourcesFoundToExport"));
 			}

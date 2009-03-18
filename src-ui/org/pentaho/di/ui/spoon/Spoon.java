@@ -149,6 +149,7 @@ import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceUtil;
+import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
@@ -3625,8 +3626,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			try {
 				// Export the resources linked to the currently loaded file...
 				//
-				String launchFile = ResourceUtil.serializeResourceExportInterface(zipFilename, resourceExportInterface, (VariableSpace)resourceExportInterface, rep);
-				String message = ResourceUtil.getExplanation(zipFilename, launchFile, resourceExportInterface);
+				TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface(zipFilename, resourceExportInterface, (VariableSpace)resourceExportInterface, rep);
+				String message = ResourceUtil.getExplanation(zipFilename, topLevelResource.getResourceName(), resourceExportInterface);
 								
 				EnterTextDialog enterTextDialog = new EnterTextDialog(shell, "Resource serialized", "This resource was serialized succesfully!", message);
 				enterTextDialog.setReadOnly();
@@ -5920,7 +5921,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 */
 	public void sendTransformationXMLToSlaveServer(TransMeta transMeta, TransExecutionConfiguration executionConfiguration) {
 		try {
-			Trans.sendXMLToSlaveServer(transMeta, executionConfiguration);
+			Trans.sendToSlaveServer(transMeta, executionConfiguration, rep);
 		} catch (Exception e) {
 			new ErrorDialog(shell, "Error", "Error sending transformation to server", e);
 		}
