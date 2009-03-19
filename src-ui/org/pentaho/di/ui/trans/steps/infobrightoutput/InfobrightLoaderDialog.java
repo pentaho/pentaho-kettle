@@ -166,7 +166,7 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
 	dataFormatSelect = addStandardSelect(Messages.getString("InfobrightLoaderDialog.Dataformat.Label"), prevControl, dataformats);
     targetSchemaText = addStandardTextVar(Messages.getString("InfobrightLoaderDialog.TargetSchema.Label"), dataFormatSelect);
     targetTableText = addStandardTextVar(Messages.getString("InfobrightLoaderDialog.TargetTable.Label"), targetSchemaText);
-    //rejectInvalidRowsButton = addStandardCheckBox(Messages.getString("BrightHouseLoaderDialog.RejectErrors.Label"), targetTableText);
+    //rejectInvalidRowsButton = addStandardCheckBox(Messages.getString("InfobrightLoaderDialog.RejectErrors.Label"), targetTableText);
     
     return targetTableText;
   }
