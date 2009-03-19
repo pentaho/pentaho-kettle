@@ -3260,16 +3260,16 @@ public class Database implements VariableSpace
      */
 	public String getCreateTableStatement(String tableName, RowMetaInterface fields, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
-		String retval;
+		StringBuilder retval = new StringBuilder("CREATE TABLE ");
 		
-		retval = "CREATE TABLE "+tableName+Const.CR;
-		retval+= "("+Const.CR;
+		retval.append(tableName+Const.CR);
+		retval.append("(").append(Const.CR);
 		for (int i=0;i<fields.size();i++)
 		{
-			if (i>0) retval+=", "; else retval+="  ";
+			if (i>0) retval.append(", "); else retval.append("  ");
 			
 			ValueMetaInterface v=fields.getValueMeta(i);
-			retval+=databaseMeta.getFieldDefinition(v, tk, pk, use_autoinc);
+			retval.append(databaseMeta.getFieldDefinition(v, tk, pk, use_autoinc));
 		}
 		// At the end, before the closing of the statement, we might need to add some constraints...
 		// Technical keys
@@ -3277,7 +3277,7 @@ public class Database implements VariableSpace
 		{
 			if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_CACHE)
 			{
-				retval+=", PRIMARY KEY ("+tk+")"+Const.CR;
+				retval.append(", PRIMARY KEY (").append(tk).append(")").append(Const.CR);
 			}
 		}
 		
@@ -3286,26 +3286,54 @@ public class Database implements VariableSpace
 		{
 			if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE)
 			{
-				retval+=", PRIMARY KEY ("+pk+")"+Const.CR;
+				retval.append(", PRIMARY KEY (").append(pk).append(")").append(Const.CR);
 			}
 		}
-		retval+= ")"+Const.CR;
+		retval.append(")").append(Const.CR);
 		
 		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE &&
 				databaseMeta.getIndexTablespace()!=null && databaseMeta.getIndexTablespace().length()>0)
 		{
-			retval+="TABLESPACE "+databaseMeta.getDataTablespace();
+			retval.append("TABLESPACE ").append(databaseMeta.getDataTablespace());
 		}
 
 		if (pk==null && tk==null && databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_NEOVIEW)
 		{
-			retval+="NO PARTITION"; // use this as a default when no pk/tk is there, otherwise you get an error 
+			retval.append("NO PARTITION"); // use this as a default when no pk/tk is there, otherwise you get an error 
 		}
 		
 		
-		if (semicolon) retval+=";";
+		if (semicolon) retval.append(";");
 		
-		return retval;
+		// TODO: All this custom database code shouldn't really be in Database.java.  It should be in the DB implementations.
+		if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_VERTICA)
+		{
+		    retval.append(Const.CR).append("CREATE PROJECTION ").append(tableName).append("_unseg_super").append(Const.CR);
+		    
+	        retval.append("(").append(Const.CR);
+	        for (int i=0;i<fields.size();i++)
+	        {
+	            if (i>0) retval.append(", "); else retval.append("  ");
+	            
+	            retval.append(fields.getValueMeta(i).getName()).append(Const.CR);
+	        }
+            retval.append(")").append(Const.CR);
+            
+            retval.append("AS SELECT").append(Const.CR);
+            for (int i=0;i<fields.size();i++)
+            {
+                if (i>0) retval.append(", "); else retval.append("  ");
+                
+                retval.append(fields.getValueMeta(i).getName()).append(Const.CR);
+            }
+            retval.append("FROM ").append(tableName).append(Const.CR);
+            retval.append("-- Replace UNSEGMENTED with a hash segmentation for optimum performance").append(Const.CR);
+            retval.append("--SEGMENTED BY HASH(X,Y,Z)").append(Const.CR);
+            retval.append("UNSEGMENTED ALL NODES").append(Const.CR);
+            retval.append(";");
+		}
+		
+		return retval.toString();
 	}
 
 	public String getAlterTableStatement(String tableName, RowMetaInterface fields, String tk, boolean use_autoinc, String pk, boolean semicolon) throws KettleDatabaseException
