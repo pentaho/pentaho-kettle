@@ -280,7 +280,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				String sprc = XMLHandler.getTagValue(fnode, "precision"); //$NON-NLS-1$
 				length   [i]=Const.toInt(slen, -1);
 				precision[i]=Const.toInt(sprc, -1);
-				replace  [i] = "Y".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "name")); //$NON-NLS-1$
+				replace  [i] = "Y".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "replace")); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
