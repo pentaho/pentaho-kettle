@@ -46,6 +46,8 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -1360,13 +1362,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		fdSelectionFilter.top = new FormAttachment(lastControl, -(GUIResource.getInstance().getImageExpandAll().getBounds().height+5));
 		fdSelectionFilter.right = new FormAttachment(95, -55);
 		selectionFilter.setLayoutData(fdSelectionFilter);
-		selectionFilter.addSelectionListener(new SelectionAdapter() {  
-			public void widgetDefaultSelected(SelectionEvent arg0) { 
+
+		selectionFilter.addModifyListener(new ModifyListener() { public void modifyText(ModifyEvent arg0) {
+			if (coreObjectsTree!=null && !coreObjectsTree.isDisposed()) {
 				previousShowTrans=false;
 				previousShowJob=false;
 				refreshCoreObjects(); 
-			} 
-		});
+				tidyBranches(coreObjectsTree.getItems(), true); // expand all
+			}
+			if (selectionTree!=null && !selectionTree.isDisposed()) {
+				refreshTree();
+				tidyBranches(selectionTree.getItems(), true); // expand all
+				selectionFilter.setFocus();
+			}
+		} });  
+			
 		lastControl = treeTb;
 		
 
@@ -1619,10 +1629,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			item.dispose();
 		}
 		
-		// What is the selection filter?
-		//
-		String filter = selectionFilter.getText();
-
 		if (showTrans) {
 			// Fill the base components...
 			//
@@ -1666,9 +1672,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						String pluginDescription = basesteps[j].getTooltip(locale);
 						boolean isPlugin = basesteps[j].isPlugin();
 						
-						if (!Const.isEmpty(filter)) {
-							if (!pluginName.contains(filter) && !pluginDescription.contains(filter)) continue;
-						}
+						if (!filterMatch(pluginName) && !filterMatch(pluginDescription)) continue;
 
 						TreeItem stepItem = new TreeItem(item, SWT.NONE);
 						stepItem.setImage(stepimg);
@@ -1702,13 +1706,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(usage.getObjectName());
 				if (stepPlugin != null) {
 					final Image stepimg = GUIResource.getInstance().getImagesSteps().get(stepPlugin.getID()[0]);
-					String pluginName = stepPlugin.getDescription(locale);
-					String pluginDescription = stepPlugin.getTooltip(locale);
+					String pluginName = Const.NVL(stepPlugin.getDescription(locale), "");
+					String pluginDescription = Const.NVL(stepPlugin.getTooltip(locale), "");
 					boolean isPlugin = stepPlugin.isPlugin();
 					
-					if (!Const.isEmpty(filter)) {
-						if (!pluginName.contains(filter) && !pluginDescription.contains(filter)) continue;
-					}
+					if (!filterMatch(pluginName) && !filterMatch(pluginDescription)) continue;
 
 					TreeItem stepItem = new TreeItem(item, SWT.NONE);
 					stepItem.setImage(stepimg);
@@ -1775,13 +1777,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 						if (baseJobEntries[j].getCategory(locale).equalsIgnoreCase(baseCategories[i])) {
 							final Image jobEntryImage = (Image) GUIResource.getInstance().getImagesJobentriesSmall().get(baseJobEntries[j].getID());
-							String pluginName = baseJobEntries[j].getDescription(locale);
-							String pluginDescription = baseJobEntries[j].getTooltip(locale);
+							String pluginName = Const.NVL(baseJobEntries[j].getDescription(locale), "");
+							String pluginDescription = Const.NVL(baseJobEntries[j].getTooltip(locale), "");
 							boolean isPlugin = baseJobEntries[j].isPlugin();
 
-							if (!Const.isEmpty(filter)) {
-								if (!pluginName.contains(filter) && !pluginDescription.contains(filter)) continue;
-							}
+							if (!filterMatch(pluginName) && !filterMatch(pluginDescription)) continue;
 
 							TreeItem stepItem = new TreeItem(item, SWT.NONE);
 							stepItem.setImage(jobEntryImage);
@@ -3957,6 +3957,27 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			mb.open();
 		}
 	}
+	
+	/**
+	 * Matches if the filter is non-empty 
+	 * @param string
+	 * @return
+	 */
+	private boolean filterMatch(String string) {
+		String filter = selectionFilter.getText();
+		if (Const.isEmpty(string)) return true;
+		if (Const.isEmpty(filter)) return true;
+		
+		try {
+			if (string.matches(filter)) return true;
+		} catch(Exception e) {
+			log.logError(toString(), "Not a valid pattern ["+filter+"] : "+e.getMessage());
+		}
+
+		if (string.toUpperCase().contains(filter.toUpperCase())) return true;
+
+		return false;
+	}
 
 	/**
 	 * Refresh the object selection tree (on the left of the screen)
@@ -4048,14 +4069,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 			for (int t = 0; t < transMetas.length; t++) {
 				TransMeta transMeta = transMetas[t];
-
+				
 				if (!props.isOnlyActiveFileShownInTree() || showAll || (activeTransMeta != null && activeTransMeta.equals(transMeta))) {
+					
 					// Add a tree item with the name of transformation
 					//
-					TreeItem tiTransName = new TreeItem(tiTrans, SWT.NONE);
 					String name = delegates.tabs.makeTransGraphTabName(transMeta);
-					if (Const.isEmpty(name))
+					if (Const.isEmpty(name)) {
 						name = STRING_TRANS_NO_NAME;
+					}
+					
+					TreeItem tiTransName = new TreeItem(tiTrans, SWT.NONE);
 					tiTransName.setText(name);
 					tiTransName.setImage(guiResource.getImageTransGraph());
 
@@ -4079,6 +4103,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					// Draw the connections themselves below it.
 					for (int i = 0; i < dbNames.length ; i++) {
 						DatabaseMeta databaseMeta = transMeta.findDatabase(dbNames[i]);
+						
+						if (!filterMatch(dbNames[i])) continue;
+						
 						TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
 						tiDb.setText(databaseMeta.getName());
 						if (databaseMeta.isShared())
@@ -4098,6 +4125,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					for (int i = 0; i < transMeta.nrSteps(); i++) {
 						StepMeta stepMeta = transMeta.getStep(i);
 						StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(stepMeta.getStepID());
+						
+						if (!filterMatch(stepMeta.getName()) && !filterMatch(stepMeta.getDescription())) continue;
+						
 						TreeItem tiStep = new TreeItem(tiStepTitle, SWT.NONE);
 						tiStep.setText(stepMeta.getName());
 						if (stepMeta.isShared())
@@ -4121,6 +4151,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					// Put the steps below it.
 					for (int i = 0; i < transMeta.nrTransHops(); i++) {
 						TransHopMeta hopMeta = transMeta.getTransHop(i);
+						
+						if (!filterMatch(hopMeta.toString())) continue;
+						
 						TreeItem tiHop = new TreeItem(tiHopTitle, SWT.NONE);
 						tiHop.setText(hopMeta.toString());
 						if (hopMeta.isEnabled())
@@ -4140,6 +4173,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					// Put the steps below it.
 					for (int i = 0; i < transMeta.getPartitionSchemas().size(); i++) {
 						PartitionSchema partitionSchema = transMeta.getPartitionSchemas().get(i);
+						if (!filterMatch(partitionSchema.getName())) continue;
 						TreeItem tiPartition = new TreeItem(tiPartitionTitle, SWT.NONE);
 						tiPartition.setText(partitionSchema.getName());
 						tiPartition.setImage(guiResource.getImageFolderConnections());
@@ -4162,6 +4196,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 					for (int i = 0; i < slaveNames.length ; i++) {
 						SlaveServer slaveServer = transMeta.findSlaveServer(slaveNames[i]);
+						if (!filterMatch(slaveServer.getName())) continue;
 						TreeItem tiSlave = new TreeItem(tiSlaveTitle, SWT.NONE);
 						tiSlave.setText(slaveServer.getName());
 						tiSlave.setImage(guiResource.getImageSlave());
@@ -4180,6 +4215,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					// Put the steps below it.
 					for (int i = 0; i < transMeta.getClusterSchemas().size(); i++) {
 						ClusterSchema clusterSchema = transMeta.getClusterSchemas().get(i);
+						if (!filterMatch(clusterSchema.getName())) continue;
 						TreeItem tiCluster = new TreeItem(tiClusterTitle, SWT.NONE);
 						tiCluster.setText(clusterSchema.toString());
 						tiCluster.setImage(guiResource.getImageCluster());
@@ -4209,10 +4245,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				if (!props.isOnlyActiveFileShownInTree() || showAll || (activeJobMeta != null && activeJobMeta.equals(jobMeta))) {
 					// Add a tree item with the name of job
 					//
-					TreeItem tiJobName = new TreeItem(tiJobs, SWT.NONE);
 					String name = delegates.tabs.makeJobGraphTabName(jobMeta);
-					if (Const.isEmpty(name))
+					if (Const.isEmpty(name)) {
 						name = STRING_JOB_NO_NAME;
+					}
+					if (!filterMatch(name)) {
+						continue;
+					}
+
+					TreeItem tiJobName = new TreeItem(tiJobs, SWT.NONE);
 					tiJobName.setText(name);
 					tiJobName.setImage(guiResource.getImageJobGraph());
 
@@ -4236,6 +4277,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					// Draw the connections themselves below it.
 					for (int i = 0; i < dbNames.length; i++) {
 						DatabaseMeta databaseMeta = jobMeta.findDatabase(dbNames[i]);
+						if (!filterMatch(databaseMeta.getName())) continue;
 						TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
 						tiDb.setText(databaseMeta.getName());
 						if (databaseMeta.isShared())
@@ -4255,6 +4297,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					//
 					for (int i = 0; i < jobMeta.nrJobEntries(); i++) {
 						JobEntryCopy jobEntry = jobMeta.getJobEntry(i);
+
+						if (!filterMatch(jobEntry.getName()) && !filterMatch(jobEntry.getDescription())) continue;
 
 						TreeItem tiJobEntry = ConstUI.findTreeItem(tiJobEntriesTitle, jobEntry.getName());
 						if (tiJobEntry != null)
@@ -4293,6 +4337,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 					for (int i = 0; i < slaveNames.length ; i++) {
 						SlaveServer slaveServer = jobMeta.findSlaveServer(slaveNames[i]);
+						if (!filterMatch(slaveServer.getName())) continue;
 						TreeItem tiSlave = new TreeItem(tiSlaveTitle, SWT.NONE);
 						tiSlave.setText(slaveServer.getName());
 						tiSlave.setImage(guiResource.getImageBol());
