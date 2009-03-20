@@ -123,6 +123,8 @@ public class GUIResource
 
 	private ManagedFont fontTiny;
 
+	private ManagedFont fontSmall;
+
 	/* * * Images * * */
 	private Map<String, Image> imagesSteps;
 
@@ -357,6 +359,7 @@ public class GUIResource
 			fontMediumBold.dispose();
 			fontLarge.dispose();
 			fontTiny.dispose();
+			fontSmall.dispose();
 			fontBold.dispose();
 
 			// Common images
@@ -538,6 +541,10 @@ public class GUIResource
 		// Create a tiny version of the graph font
 		FontData tinyFontData = new FontData(props.getGraphFont().getName(), props.getGraphFont().getHeight() -2, props.getGraphFont().getStyle());
 		fontTiny = new ManagedFont(display, tinyFontData);
+
+		// Create a small version of the graph font
+		FontData smallFontData = new FontData(props.getGraphFont().getName(), props.getGraphFont().getHeight() -1, props.getGraphFont().getStyle());
+		fontSmall = new ManagedFont(display, smallFontData);
 
 		// Create a bold version of the default font to display shared objects
 		// in the trees
@@ -1116,6 +1123,14 @@ public class GUIResource
 	public Font getFontTiny()
 	{
 		return fontTiny.getFont();
+	}
+
+	/**
+	 * @return the small font 
+	 */
+	public Font getFontSmall()
+	{
+		return fontSmall.getFont();
 	}
 
 	/**

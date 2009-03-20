@@ -630,7 +630,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XMLInputSax")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.xmlinputsax.XMLInputSaxMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@DEPRECATED.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.XMLInputSax")
 		</tooltip>
