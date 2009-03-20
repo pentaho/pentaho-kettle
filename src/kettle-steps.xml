@@ -630,7 +630,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XMLInputSax")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.xmlinputsax.XMLInputSaxMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@DEPRECATED.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.XMLInputSax")
 		</tooltip>
@@ -893,7 +893,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GPBulkLoader")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.gpbulkloader.GPBulkLoaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@BULK.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GPBulkLoader")
 		</tooltip>
@@ -905,7 +905,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.PGBulkLoader")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.pgbulkloader.PGBulkLoaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@BULK.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.PGBulkLoader")
 		</tooltip>
@@ -1449,7 +1449,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ParallelGzipCsvInput")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.parallelgzipcsv.ParGzipCsvInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ParallelGzipCsvInput")
 		</tooltip>

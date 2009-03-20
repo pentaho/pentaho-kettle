@@ -77,6 +77,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
@@ -300,6 +301,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private ToolItem						view, design, expandAll, collapseAll;
 
 	private Label							selectionLabel;
+	private Text                            selectionFilter;
 
 	private org.eclipse.swt.widgets.Menu	fileMenus;
 
@@ -1338,8 +1340,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		fdsLabel.top = new FormAttachment(lastControl, 5);
 		selectionLabel.setLayoutData(fdsLabel);
 		lastControl = selectionLabel;
-
-		ToolBar treeTb = new ToolBar(mainComposite, SWT.HORIZONTAL | SWT.FLAT);
+		
+		ToolBar treeTb = new ToolBar(mainComposite, SWT.HORIZONTAL | SWT.FLAT | SWT.BORDER);
 		expandAll = new ToolItem(treeTb, SWT.PUSH);
 		expandAll.setImage(GUIResource.getInstance().getImageExpandAll());
 		collapseAll = new ToolItem(treeTb, SWT.PUSH);
@@ -1350,6 +1352,23 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		fdTreeToolbar.right = new FormAttachment(95, 5);
 		treeTb.setLayoutData(fdTreeToolbar);
 		lastControl = treeTb;
+		
+		selectionFilter = new Text(mainComposite, SWT.SINGLE | SWT.BORDER | SWT.LEFT);
+		selectionFilter.setFont(GUIResource.getInstance().getFontSmall());
+		selectionFilter.setToolTipText(Messages.getString("Spoon.SelectionFilter.Tooltip"));
+		FormData fdSelectionFilter = new FormData();
+		fdSelectionFilter.top = new FormAttachment(lastControl, -(GUIResource.getInstance().getImageExpandAll().getBounds().height+5));
+		fdSelectionFilter.right = new FormAttachment(95, -55);
+		selectionFilter.setLayoutData(fdSelectionFilter);
+		selectionFilter.addSelectionListener(new SelectionAdapter() {  
+			public void widgetDefaultSelected(SelectionEvent arg0) { 
+				previousShowTrans=false;
+				previousShowJob=false;
+				refreshCoreObjects(); 
+			} 
+		});
+		lastControl = treeTb;
+		
 
 		expandAll.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -1599,6 +1618,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			TreeItem item = expandItems[i];
 			item.dispose();
 		}
+		
+		// What is the selection filter?
+		//
+		String filter = selectionFilter.getText();
 
 		if (showTrans) {
 			// Fill the base components...
@@ -1642,6 +1665,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						String pluginName = basesteps[j].getDescription(locale);
 						String pluginDescription = basesteps[j].getTooltip(locale);
 						boolean isPlugin = basesteps[j].isPlugin();
+						
+						if (!Const.isEmpty(filter)) {
+							if (!pluginName.contains(filter) && !pluginDescription.contains(filter)) continue;
+						}
 
 						TreeItem stepItem = new TreeItem(item, SWT.NONE);
 						stepItem.setImage(stepimg);
@@ -1678,6 +1705,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					String pluginName = stepPlugin.getDescription(locale);
 					String pluginDescription = stepPlugin.getTooltip(locale);
 					boolean isPlugin = stepPlugin.isPlugin();
+					
+					if (!Const.isEmpty(filter)) {
+						if (!pluginName.contains(filter) && !pluginDescription.contains(filter)) continue;
+					}
+
 					TreeItem stepItem = new TreeItem(item, SWT.NONE);
 					stepItem.setImage(stepimg);
 					stepItem.setText(pluginName);
@@ -1746,6 +1778,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 							String pluginName = baseJobEntries[j].getDescription(locale);
 							String pluginDescription = baseJobEntries[j].getTooltip(locale);
 							boolean isPlugin = baseJobEntries[j].isPlugin();
+
+							if (!Const.isEmpty(filter)) {
+								if (!pluginName.contains(filter) && !pluginDescription.contains(filter)) continue;
+							}
 
 							TreeItem stepItem = new TreeItem(item, SWT.NONE);
 							stepItem.setImage(jobEntryImage);
@@ -3997,7 +4033,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		//
 		// First remove the old ones.
 		selectionTree.removeAll();
-
+		
 		// Now add the data back
 		//
 		if (!props.isOnlyActiveFileShownInTree() || showAll || activeTransMeta != null) {
