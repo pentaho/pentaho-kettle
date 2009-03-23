@@ -573,6 +573,7 @@ public class JobDialog extends Dialog
 			{
 				DatabaseMeta databaseMeta = jobMeta.findDatabase(wLogconnection.getText());
 				if (databaseMeta==null) databaseMeta=new DatabaseMeta();
+				databaseMeta.shareVariablesWith(jobMeta);
 				DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
 				cid.setModalDialog(true);
 				if (cid.open()!=null)
