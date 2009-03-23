@@ -3651,7 +3651,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		
 		// Ask the user for a zip file to export to:
 		//
-		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		dialog.setText(Messages.getString("Spoon.ExportResourceSelectZipFile"));
 		dialog.setFilterExtensions(new String[] {"*.zip;*.ZIP", "*"});
 		dialog.setFilterNames(new String[] { Messages.getString("System.FileType.ZIPFiles"), Messages.getString("System.FileType.AllFiles"), });
