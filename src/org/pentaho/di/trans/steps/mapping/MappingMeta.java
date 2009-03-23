@@ -797,7 +797,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 			// To get a relative path to it, we inject
 			// ${Internal.Job.Filename.Directory}
 			//
-			String newFilename = "${" + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
+			String newFilename = "${" + Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
 
 			// Set the correct filename inside the XML.
 			//
