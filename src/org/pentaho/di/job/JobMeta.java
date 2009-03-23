@@ -338,6 +338,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				jobMeta.notes = new ArrayList<NotePadMeta>();
 				jobMeta.databases = new ArrayList<DatabaseMeta>();
 				jobMeta.slaveServers = new ArrayList<SlaveServer>();
+				jobMeta.namedParams = new NamedParamsDefault();
 			}
 
 			for (JobEntryInterface entry : jobentries)
@@ -352,9 +353,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				jobMeta.databases.add((DatabaseMeta) entry.clone());
 			for (SlaveServer slave : slaveServers)
 				jobMeta.getSlaveServers().add((SlaveServer) slave.clone());
-
+			for (String key : listParameters()) 
+				jobMeta.addParameterDefinition(key, getParameterDefault(key), getParameterDescription(key));
 			return jobMeta;
-		} catch (CloneNotSupportedException e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}

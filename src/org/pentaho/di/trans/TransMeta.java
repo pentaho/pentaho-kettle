@@ -354,6 +354,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           transMeta.partitionSchemas = new ArrayList<PartitionSchema>();
           transMeta.slaveServers = new ArrayList<SlaveServer>();
           transMeta.clusterSchemas = new ArrayList<ClusterSchema>();
+          transMeta.namedParams = new NamedParamsDefault();
         }
         for (DatabaseMeta db : databases) transMeta.addDatabase((DatabaseMeta)db.clone());
         for (StepMeta step : steps) transMeta.addStep((StepMeta) step.clone());
@@ -363,9 +364,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         for (SlaveServer slave : slaveServers) transMeta.getSlaveServers().add((SlaveServer)slave.clone());
         for (ClusterSchema schema : clusterSchemas) transMeta.getClusterSchemas().add((ClusterSchema)schema.clone());
         for (PartitionSchema schema : partitionSchemas) transMeta.getPartitionSchemas().add((PartitionSchema)schema.clone());
+        for (String key : listParameters()) transMeta.addParameterDefinition(key, getParameterDefault(key), getParameterDescription(key));
         
         return transMeta;
-      } catch (CloneNotSupportedException e) {
+      } catch (Exception e) {
         e.printStackTrace();
         return null;
       }

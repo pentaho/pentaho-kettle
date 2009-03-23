@@ -3653,26 +3653,40 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		
 		// Ask the user for a zip file to export to:
 		//
-		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-		dialog.setText(Messages.getString("Spoon.ExportResourceSelectZipFile"));
-		dialog.setFilterExtensions(new String[] {"*.zip;*.ZIP", "*"});
-		dialog.setFilterNames(new String[] { Messages.getString("System.FileType.ZIPFiles"), Messages.getString("System.FileType.AllFiles"), });
-		if (dialog.open()!=null)
-		{
-			String zipFilename = dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName();
-
-			try {
-				// Export the resources linked to the currently loaded file...
-				//
-				TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface(zipFilename, resourceExportInterface, (VariableSpace)resourceExportInterface, rep);
-				String message = ResourceUtil.getExplanation(zipFilename, topLevelResource.getResourceName(), resourceExportInterface);
-								
-				EnterTextDialog enterTextDialog = new EnterTextDialog(shell, "Resource serialized", "This resource was serialized succesfully!", message);
-				enterTextDialog.setReadOnly();
-				enterTextDialog.open();
-			} catch(Exception e) {
-				new ErrorDialog(shell, "Error", "Error exporting current file", e);
+		try {
+			String zipFilename = null;
+			while (Const.isEmpty(zipFilename)) {
+				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+				dialog.setText(Messages.getString("Spoon.ExportResourceSelectZipFile"));
+				dialog.setFilterExtensions(new String[] {"*.zip;*.ZIP", "*"});
+				dialog.setFilterNames(new String[] { Messages.getString("System.FileType.ZIPFiles"), Messages.getString("System.FileType.AllFiles"), });
+				if (dialog.open()!=null)
+				{
+					zipFilename = dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName();
+					FileObject zipFileObject = KettleVFS.getFileObject(zipFilename);
+					if (zipFileObject.exists()) {
+						MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL);
+						box.setMessage(Messages.getString("Spoon.ExportResourceZipFileExists.Message"));
+						box.setText(Messages.getString("Spoon.ExportResourceZipFileExists.Title"));
+						int answer = box.open();
+						if (answer==SWT.CANCEL) return;
+						if (answer==SWT.NO) zipFilename = null;
+					}
+				} else {
+					return;
+				}
 			}
+			
+			// Export the resources linked to the currently loaded file...
+			//
+			TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface(zipFilename, resourceExportInterface, (VariableSpace)resourceExportInterface, rep);
+			String message = ResourceUtil.getExplanation(zipFilename, topLevelResource.getResourceName(), resourceExportInterface);
+							
+			EnterTextDialog enterTextDialog = new EnterTextDialog(shell, "Resource serialized", "This resource was serialized succesfully!", message);
+			enterTextDialog.setReadOnly();
+			enterTextDialog.open();
+		} catch(Exception e) {
+			new ErrorDialog(shell, "Error", "Error exporting current file", e);
 		}
 	}
 
