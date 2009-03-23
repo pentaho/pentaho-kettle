@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -27,8 +28,12 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -826,4 +831,25 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setNameSpace(String nameSpace) {
 		this.nameSpace = nameSpace;
 	}
+	
+	/**
+	 * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively.
+	 * So what this does is turn the name of the base path into an absolute path.
+	 */
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+		try {
+			// The object that we're modifying here is a copy of the original!
+			// So let's change the filename from relative to absolute by grabbing the file object...
+			// 
+			if (!Const.isEmpty(fileName)) {
+				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName));
+				fileName = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
+			}
+			
+			return null;
+		} catch (Exception e) {
+			throw new KettleException(e); //$NON-NLS-1$
+		}
+	}
+
 }

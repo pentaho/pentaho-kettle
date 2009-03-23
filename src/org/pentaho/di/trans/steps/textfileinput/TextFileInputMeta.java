@@ -1728,8 +1728,6 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 							// Convert to an absolute path and add it to the list.
 							// 
 							newFilenames.add(fileObject);
-						} else {
-							return null; // it's all or nothing over here! 
 						}
 					}
 					

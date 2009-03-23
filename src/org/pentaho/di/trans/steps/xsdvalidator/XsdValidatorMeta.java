@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -33,8 +34,12 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -51,7 +56,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 {
-	private String  xdsFilename;
+	private String  xsdFilename;
 	private String  xmlStream;
 	private String  resultFieldname;
 	private boolean addValidationMessage;
@@ -165,7 +170,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
      */
     public String getXSDFilename()
     {
-        return xdsFilename;
+        return xsdFilename;
     }
     
     public String getResultfieldname()
@@ -184,7 +189,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
      */
     public void setXSDfilename(String xdsFilename)
     {
-        this.xdsFilename = xdsFilename;
+        this.xsdFilename = xdsFilename;
     }
     
     public void setResultfieldname(String resultFieldname)
@@ -224,7 +229,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		{
 
 			
-			xdsFilename     = XMLHandler.getTagValue(stepnode, "xdsfilename"); //$NON-NLS-1$
+			xsdFilename     = XMLHandler.getTagValue(stepnode, "xdsfilename"); //$NON-NLS-1$
 			xmlStream     = XMLHandler.getTagValue(stepnode, "xmlstream"); //$NON-NLS-1$
 			resultFieldname     = XMLHandler.getTagValue(stepnode, "resultfieldname"); //$NON-NLS-1$
 			xsdDefinedField     = XMLHandler.getTagValue(stepnode, "xsddefinedfield");
@@ -249,7 +254,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-		xdsFilename = ""; //$NON-NLS-1$
+		xsdFilename = ""; //$NON-NLS-1$
 		xmlStream = "";
 		resultFieldname="result";
 		addValidationMessage=false;
@@ -296,7 +301,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("    "+XMLHandler.addTagValue("xdsfilename", xdsFilename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("xdsfilename", xsdFilename)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    "+XMLHandler.addTagValue("xmlstream", xmlStream)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    "+XMLHandler.addTagValue("resultfieldname",resultFieldname));
 		retval.append("    "+XMLHandler.addTagValue("addvalidationmsg",addValidationMessage));
@@ -317,7 +322,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			xdsFilename     = rep.getStepAttributeString(id_step, "xdsfilename"); //$NON-NLS-1$
+			xsdFilename     = rep.getStepAttributeString(id_step, "xdsfilename"); //$NON-NLS-1$
 			xmlStream     = rep.getStepAttributeString(id_step, "xmlstream"); //$NON-NLS-1$
 			resultFieldname     = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$
 			
@@ -343,7 +348,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "xdsfilename", xdsFilename); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "xdsfilename", xsdFilename); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "xmlstream", xmlStream); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "resultfieldname",resultFieldname);
 			rep.saveStepAttribute(id_transformation, id_step, "xmlsourcefile",  xmlSourceFile);
@@ -392,7 +397,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if(xsdSource.equals(SPECIFY_FILENAME))
 		{
-			if(Const.isEmpty(xdsFilename))
+			if(Const.isEmpty(xsdFilename))
 			{
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsdValidatorMeta.CheckResult.XSDFieldEmpty"), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 				remarks.add(cr);				
@@ -437,10 +442,39 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		return new XsdValidatorData();
 	}
     
- 
 
     public boolean supportsErrorHandling()
     {
         return true;
     }
+    
+	/**
+	 * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively.
+	 * So what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
+	 * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like that.
+
+	 * TODO: create options to configure this behavior 
+	 */
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+		try {
+			// The object that we're modifying here is a copy of the original!
+			// So let's change the filename from relative to absolute by grabbing the file object...
+			// In case the name of the file comes from previous steps, forget about this!
+			//
+			
+			// From : ${Internal.Transformation.Filename.Directory}/../foo/bar.xsd
+			// To   : /home/matt/test/files/foo/bar.xsd
+			//
+			if (!Const.isEmpty(xsdFilename)) {
+				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(xsdFilename));
+				xsdFilename = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
+				
+				return xsdFilename;
+			}
+		
+			return null;
+		} catch (Exception e) {
+			throw new KettleException(e); //$NON-NLS-1$
+		}
+	}
 }

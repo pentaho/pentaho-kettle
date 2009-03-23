@@ -294,6 +294,7 @@ public class Trans implements VariableSpace, NamedParams
 		if (arguments!=null) transMeta.setArguments(arguments);
 		
 		activateParameters();
+		transMeta.activateParameters();
 
 		if (transMeta.getName()==null)
 		{

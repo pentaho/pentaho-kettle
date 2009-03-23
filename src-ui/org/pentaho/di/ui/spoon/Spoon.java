@@ -3649,6 +3649,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		if (resourceExportInterface==null) resourceExportInterface=getActiveJob();
 		if (resourceExportInterface==null) return; // nothing to do here, prevent an NPE
 		
+		// ((VariableSpace)resourceExportInterface).getVariable("Internal.Transformation.Filename.Directory");
+		
 		// Ask the user for a zip file to export to:
 		//
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);

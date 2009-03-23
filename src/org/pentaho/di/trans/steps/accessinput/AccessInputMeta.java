@@ -17,6 +17,7 @@
 
 package org.pentaho.di.trans.steps.accessinput;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +37,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -783,4 +787,50 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
         return true;
     }
 	
+	/**
+	 * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively.
+	 * So what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
+	 * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like that.
+
+	 * TODO: create options to configure this behavior 
+	 */
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+		try {
+			// The object that we're modifying here is a copy of the original!
+			// So let's change the filename from relative to absolute by grabbing the file object...
+			//
+			List<FileObject> newFilenames = new ArrayList<FileObject>();
+			
+			FileInputList fileList = getFiles(space);
+			if (fileList.getFiles().size()>0) {
+				for (FileObject fileObject : fileList.getFiles()) {
+					// From : ${Internal.Transformation.Filename.Directory}/../foo/bar.csv
+					// To   : /home/matt/test/files/foo/bar.csv
+					//
+					// If the file doesn't exist, forget about this effort too!
+					//
+					if (fileObject.exists()) {
+						// Convert to an absolute path and add it to the list.
+						// 
+						newFilenames.add(fileObject);
+					}
+				}
+				
+				// Still here: set a new list of absolute filenames!
+				//
+				fileName=new String[newFilenames.size()];
+				fileMask=new String[newFilenames.size()];
+				// fileRequired=new String[newFilenames.size()];
+				for (int i=0;i<newFilenames.size();i++) {
+					FileObject fileObject = newFilenames.get(i);
+					fileName[i] = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
+					fileMask[i] = null;
+					// fileRequired[i] = "Y";
+				}
+			}
+			return null;
+		} catch (Exception e) {
+			throw new KettleException(e); //$NON-NLS-1$
+		}
+	}
 }

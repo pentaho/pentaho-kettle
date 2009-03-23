@@ -6499,8 +6499,21 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 			} catch (UnknownParamException e) {
 				value = "";
 			}
-			setVariable(key, value);
-		}		 		
+			
+			String defValue;
+			try {
+				defValue = getParameterDefault(key);
+			} catch (UnknownParamException e) {
+				defValue = "";
+			}
+			
+			if ( Const.isEmpty(value) )  {
+				setVariable(key, Const.NVL(defValue, ""));
+			}
+			else  {
+				setVariable(key, Const.NVL(value, ""));
+			}
+		}		 			 		
 	}
 
 	public void addParameterDefinition(String key, String defaultValue, String description) throws DuplicateParamException {

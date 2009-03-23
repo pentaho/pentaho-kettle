@@ -2794,7 +2794,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
   }
 
   private void setControlStates() {
-    getDisplay().asyncExec(new Runnable() {
+	  if (getDisplay().isDisposed()) return;
+	  
+      getDisplay().asyncExec(new Runnable() {
 
       public void run() {
         // Start/Run button...

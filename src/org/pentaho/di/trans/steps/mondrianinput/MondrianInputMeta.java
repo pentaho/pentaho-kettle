@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.mondrianinput;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -27,8 +28,12 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
@@ -285,4 +290,40 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setCatalog(String catalog) {
 		this.catalog = catalog;
 	}
+	
+	/**
+	 * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively.
+	 * So what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
+	 * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like that.
+
+	 * TODO: create options to configure this behavior 
+	 */
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+		try {
+			// The object that we're modifying here is a copy of the original!
+			// So let's change the filename from relative to absolute by grabbing the file object...
+			// In case the name of the file comes from previous steps, forget about this!
+			//
+			if (Const.isEmpty(catalog)) {
+				// From : ${Internal.Transformation.Filename.Directory}/../foo/bar.csv
+				// To   : /home/matt/test/files/foo/bar.csv
+				//
+				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(catalog));
+				
+				// If the file doesn't exist, forget about this effort too!
+				//
+				if (fileObject.exists()) {
+					// Convert to an absolute path...
+					// 
+					catalog = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
+					
+					return catalog;
+				}
+			}
+			return null;
+		} catch (Exception e) {
+			throw new KettleException(e); //$NON-NLS-1$
+		}
+	}
+
 }
