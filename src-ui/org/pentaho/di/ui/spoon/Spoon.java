@@ -3666,7 +3666,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					FileObject zipFileObject = KettleVFS.getFileObject(zipFilename);
 					if (zipFileObject.exists()) {
 						MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL);
-						box.setMessage(Messages.getString("Spoon.ExportResourceZipFileExists.Message"));
+						box.setMessage(Messages.getString("Spoon.ExportResourceZipFileExists.Message", zipFilename));
 						box.setText(Messages.getString("Spoon.ExportResourceZipFileExists.Title"));
 						int answer = box.open();
 						if (answer==SWT.CANCEL) return;
