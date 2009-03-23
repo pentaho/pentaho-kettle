@@ -1686,9 +1686,19 @@ public class RepositoryExplorerDialog extends Dialog
     			if (fromdir!=null)
     			{
                     debug = "fromdir found: move transformation!"; //$NON-NLS-1$
-    				rep.moveTransformation(transname, fromdir.getID(), repdir.getID());
-    				changedInDialog = true;
-    				retval=true;
+                    long existingTransID = rep.getTransformationID(transname, repdir.getID());
+                    if (existingTransID == -1) {
+	                    rep.moveTransformation(transname, fromdir.getID(), repdir.getID());
+	    				changedInDialog = true;
+	    				retval=true;
+                    }
+                    else
+                    {
+                    	MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+        				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Trans.Move.ErrorDuplicate.Message", transname)+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+        				mb.setText(Messages.getString("RepositoryExplorerDialog.Trans.Move.ErrorDuplicate.Title")); //$NON-NLS-1$
+        				mb.open();
+                    }
     			}
     			else
     			{
@@ -1730,9 +1740,19 @@ public class RepositoryExplorerDialog extends Dialog
     			if (fromdir!=null)
     			{
                     debug = "fromdir found: move job!"; //$NON-NLS-1$
-    				rep.moveJob(jobname, fromdir.getID(), repdir.getID());
-    				changedInDialog = true;
-    				retval=true;
+                    long existingjobID = rep.getJobID(jobname, repdir.getID());
+                    if (existingjobID == -1) {
+                    	rep.moveJob(jobname, fromdir.getID(), repdir.getID());
+                    	changedInDialog = true;
+                    	retval=true;
+                    }
+                    else 
+                    {
+                    	MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+        				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Job.Move.ErrorDuplicate.Message", jobname)+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+        				mb.setText(Messages.getString("RepositoryExplorerDialog.Job.Move.ErrorDuplicate.Title")); //$NON-NLS-1$
+        				mb.open();	
+                    }
     			}
     			else
     			{
@@ -2324,6 +2344,7 @@ public class RepositoryExplorerDialog extends Dialog
 		try
 		{
 			DatabaseMeta databaseMeta = new DatabaseMeta();
+			databaseMeta.initializeVariablesFrom(null);
 			DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
 			String name = dd.open();
 			if (name!=null)

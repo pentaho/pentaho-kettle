@@ -503,6 +503,9 @@ public class SpoonDBDelegate extends SpoonDelegate
 		if (hasDatabasesInterface instanceof VariableSpace) {
 			databaseMeta.shareVariablesWith((VariableSpace)hasDatabasesInterface);
 		}
+		else {
+			databaseMeta.initializeVariablesFrom(null);
+		}
 		
     // DatabaseDialog con = new DatabaseDialog(spoon.getShell(), databaseMeta);
     XulDatabaseDialog con = new XulDatabaseDialog(spoon.getShell(), databaseMeta);
