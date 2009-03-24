@@ -1315,6 +1315,12 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 
     public void putError(RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes) throws KettleStepException
     {
+    	if (safeModeEnabled) {
+    		if(rowMeta.size()>row.length) {
+    			throw new KettleStepException(Messages.getString("BaseStep.Exception.MetadataDoesntMatchDataRowSize", Integer.toString(rowMeta.size()), Integer.toString(row!=null?row.length:0)));
+    		}
+    	}
+
         StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
 
         if (errorRowMeta==null)
@@ -1327,12 +1333,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         
         Object[] errorRowData = RowDataUtil.allocateRowData(errorRowMeta.size());
         if (row!=null) {
-            if(rowMeta.size()>row.length) {
-            	// in case the row array is not correctly due to the error
-            	System.arraycopy(row, 0, errorRowData, 0, row.length);
-            } else {
-            	System.arraycopy(row, 0, errorRowData, 0, rowMeta.size());
-            }
+        	System.arraycopy(row, 0, errorRowData, 0, rowMeta.size());
         }
         
         // Also add the error fields...
