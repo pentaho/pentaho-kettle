@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="S3CSVINPUT"
+   iconfile="S3CIN.png"
+   description="S3 CSV Input"
+   tooltip="Is capable of reading CSV data stored on Amazon S3 in parallel"
+   category="Input"
+   classname="org.pentaho.di.trans.steps.s3csvinput.S3CsvInputMeta">
+   <libraries>
+    <library name="s3csvinput.jar"/>
+    <library name="jets3t-0.7.0.jar"/>
+    </libraries>
+</plugin>
