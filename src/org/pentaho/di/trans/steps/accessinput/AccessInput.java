@@ -122,8 +122,10 @@ public class AccessInput extends BaseStep implements StepInterface
 		 Object[] r=buildEmptyRow();
 		 
 		 // Create new row	or clone
-		 if(meta.isFileField())	 r = data.readrow.clone();
+		 if(meta.isFileField())
+			 System.arraycopy(data.readrow, 0, r, 0, data.readrow.length);
 
+		 
 		 try{	
 			 
 				// Execute for each Input field...
@@ -363,8 +365,8 @@ public class AccessInput extends BaseStep implements StepInterface
 					  // Create the output row meta-data
 		            data.outputRowMeta = new RowMeta();
 		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
-		            
-		            // Create convert meta-data objects that will contain Date & Number formatters
+
+		   		   // Create convert meta-data objects that will contain Date & Number formatters
 		            // For String to <type> conversions, we allocate a conversion meta data row as well...
 					//
 					data.convertRowMeta = data.outputRowMeta.clone();
