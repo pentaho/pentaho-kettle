@@ -569,14 +569,16 @@ public class RepositoryCreationHelper {
 
 		// In case of an update, the added column R_TRANSFORMATION.ID_DIRECTORY == NULL!!!
         //
-        sql = "SELECT * FROM "+schemaTable+" WHERE "+repository.quote(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" IS NULL";
-        List<Object[]> rows = database.getRows(sql, 1);
-        if (rows!=null && rows.size()>0) {
-	        sql = "UPDATE " + schemaTable + " SET "+repository.quote(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY)+"=0 WHERE "+repository.quote(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" IS NULL";
-	        statements.add(sql);
-			if (!dryrun) {
-				database.execStatement(sql);
-			}
+        if (database.checkTableExists(schemaTable)) {
+	        sql = "SELECT * FROM "+schemaTable+" WHERE "+repository.quote(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" IS NULL";
+	        List<Object[]> rows = database.getRows(sql, 1);
+	        if (rows!=null && rows.size()>0) {
+		        sql = "UPDATE " + schemaTable + " SET "+repository.quote(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY)+"=0 WHERE "+repository.quote(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" IS NULL";
+		        statements.add(sql);
+				if (!dryrun) {
+					database.execStatement(sql);
+				}
+	        }
         }
 
 		if (monitor!=null) monitor.worked(1);
