@@ -251,7 +251,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 				data.binaryFilename=data.filenames[data.filenr].getBytes();
 			}
 			
-			data.gzis = new GZIPInputStream(data.fis, 10000);
+			data.gzis = new GZIPInputStream(data.fis, data.bufferSize);
 
 			data.fileReadPosition = 0L;
 			data.eofReached = false;
