@@ -156,6 +156,7 @@ public class ParGzipCsvInputData extends BaseStepData implements StepDataInterfa
 					// EOF, nothing more to read in combination with the need to get more data means we're done.
 					//
 					eofReached=true;
+					fileReadPosition+=bytesRead;
 					return bytesRead==0; 
 				}
 				bytesRead+=n; // bytes read so far
