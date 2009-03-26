@@ -98,20 +98,39 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 
 			// Open the next file...
 			//
-			if (!openNextFile()) {
-				setOutputDone();
-				return false; // nothing to see here, move along...
-			}	
+			boolean opened = false;
+			while (data.filenr<data.filenames.length) {
+				if (openNextFile()) {
+					opened=true;
+					break;
+				}
+			}
+			
+			if (!opened) {
+				setOutputDone(); // last file, end here
+				return false;
+			}
 		}
 		
 		Object[] outputRowData=readOneRow(true);    // get row, set busy!
 		if (outputRowData==null)  // no more input to be expected...
 		{
 			if (skipToNextBlock()) {
-				if (openNextFile()) {
-					return true; // try again on the next loop in the next file...
+				// If we need to open a new file, make sure we don't stop when we get a false from the openNextFile() algorithm.
+				// It can also mean that the file is smaller than the block size
+				// In that case, check the file number and retry until we get a valid file position to work with.
+				//
+				boolean opened = false;
+				while (data.filenr<data.filenames.length) {
+					if (openNextFile()) {
+						opened=true;
+						break;
+					}
 				}
-				else {
+				
+				if (opened) {
+					return true; // try again on the next loop in the next file...
+				} else {
 					setOutputDone(); // last file, end here
 					return false;
 				}
@@ -152,7 +171,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 			//
 			long bytesToSkip = positionToReach - data.fileReadPosition;
 			
-			logBasic("Skipping "+bytesToSkip+" to go to position "+positionToReach+" for step copy "+data.stepNumber);
+			logBasic("Skipping "+bytesToSkip+" bytes to go to position "+positionToReach+" for step copy "+data.stepNumber);
 			
 			// Get into position...
 			//
@@ -174,11 +193,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 				
 				// Now we need to clear the buffer, reset everything...
 				//
-				data.startBuffer=0;
-				data.endBuffer=0;
-				data.maxBuffer=0;
-				// data.bufferSize=0;
-				// data.totalBytesRead=0L;
+				clearBuffer();
 				
 				// Now get read until the next CR:
 				//
@@ -244,6 +259,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 
 			// Open the next one...
 			//
+			logBasic("Opening file #"+data.filenr+" : "+data.filenames[data.filenr]);
 			FileObject fileObject = KettleVFS.getFileObject(data.filenames[data.filenr]);
 			data.fis = KettleVFS.getInputStream(fileObject);
 			
@@ -253,8 +269,14 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 			
 			data.gzis = new GZIPInputStream(data.fis, data.bufferSize);
 
+			clearBuffer();
 			data.fileReadPosition = 0L;
+			data.blockNr=0;
 			data.eofReached = false;
+			
+			// Skip to the next file...
+			//
+			data.filenr++;
 
 			// If we are running in parallel and we need to skip bytes in the first file, let's do so here.
 			//
@@ -292,7 +314,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 						if (n<=0) {
 							// EOF in this file, can't read a block in this step copy
 							data.eofReached=true;
-							return false; // done reading this file!
+							return false;
 						}
 						bytesSkipped+=n;
 					}
@@ -340,10 +362,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 				resultFile.setComment("File was read by a Csv input step");
 				addResultFile(resultFile);
 			}
-						
-			// Move to the next filename
-			//
-			data.filenr++;
+
 			
 			// Reset the row number pointer...
 			//
@@ -354,6 +373,12 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 		catch(Exception e) {
 			throw new KettleException(e);
 		}
+	}
+
+	private void clearBuffer() {
+		data.startBuffer=0;
+		data.endBuffer=0;
+		data.maxBuffer=0;
 	}
 
 	/**
