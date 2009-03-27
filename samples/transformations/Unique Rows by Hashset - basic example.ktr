@@ -185,7 +185,7 @@ var val2 = Math.floor(Math.random()*10+1)
 
   <step>
     <name>Unique numbers</name>
-    <type>UniqueRowsByHashSetMeta</type>
+    <type>UniqueRowsByHashSet</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
@@ -287,7 +287,7 @@ var val2 = Math.floor(Math.random()*10+1)
 
   <step>
     <name>Unique words (using hash)</name>
-    <type>UniqueRowsByHashSetMeta</type>
+    <type>UniqueRowsByHashSet</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
@@ -334,7 +334,7 @@ var val2 = Math.floor(Math.random()*10+1)
 
   <step>
     <name>Unique words (using values)</name>
-    <type>UniqueRowsByHashSetMeta</type>
+    <type>UniqueRowsByHashSet</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
