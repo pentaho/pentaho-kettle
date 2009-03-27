@@ -358,6 +358,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 
 	public Map<String, SharedObjects>		sharedObjectsFileMap;
+	
+	/** We can use this to set a default filter path in the open and save dialogs */
+	public String                           lastDirOpened;
 
 	/**
 	 * This is the main procedure for Spoon.
@@ -2949,8 +2952,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 			dialog.setFilterExtensions(Const.STRING_TRANS_AND_JOB_FILTER_EXT);
 			dialog.setFilterNames(Const.getTransformationAndJobFilterNames());
+			setFilterPath(dialog);
 			String fname = dialog.open();
 			if (fname != null) {
+				lastDirOpened = dialog.getFilterPath();
 				openFile(fname, importfile);
 			}
 		} else {
@@ -2995,6 +3000,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					refreshGraph();
 					refreshTree();
 				}
+			}
+		}
+	}
+
+	private void setFilterPath(FileDialog dialog) {
+		if (!Const.isEmpty(lastDirOpened)) {
+			if (new File(lastDirOpened).exists()) {
+				dialog.setFilterPath(lastDirOpened);
 			}
 		}
 	}
@@ -3660,8 +3673,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				dialog.setText(Messages.getString("Spoon.ExportResourceSelectZipFile"));
 				dialog.setFilterExtensions(new String[] {"*.zip;*.ZIP", "*"});
 				dialog.setFilterNames(new String[] { Messages.getString("System.FileType.ZIPFiles"), Messages.getString("System.FileType.AllFiles"), });
+				setFilterPath(dialog);
 				if (dialog.open()!=null)
 				{
+					lastDirOpened = dialog.getFilterPath();
 					zipFilename = dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName();
 					FileObject zipFileObject = KettleVFS.getFileObject(zipFilename);
 					if (zipFileObject.exists()) {
@@ -3711,8 +3726,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		String extensions[] = meta.getFilterExtensions();
 		dialog.setFilterExtensions(extensions);
 		dialog.setFilterNames(meta.getFilterNames());
+		setFilterPath(dialog);
 		String fname = dialog.open();
 		if (fname != null) {
+			lastDirOpened = dialog.getFilterPath();
+			
 			// Is the filename ending on .ktr, .xml?
 			boolean ending = false;
 			for (int i = 0; i < extensions.length - 1; i++) {
