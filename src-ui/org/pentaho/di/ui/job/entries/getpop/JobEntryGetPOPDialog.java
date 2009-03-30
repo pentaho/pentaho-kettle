@@ -499,10 +499,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	public void ChooseListMails()
 	{
 		jobEntry.setChanged();
-		if (wListmails.getSelectionIndex()==2)
-			wFirstmails.setEnabled(true);
-		else
-			wFirstmails.setEnabled(false);
+		wlFirstmails.setEnabled(wListmails.getSelectionIndex()==2);
+		wFirstmails.setEnabled(wListmails.getSelectionIndex()==2);
 	}
 
     public void dispose()
