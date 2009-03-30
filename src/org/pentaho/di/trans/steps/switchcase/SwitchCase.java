@@ -168,6 +168,7 @@ public class SwitchCase extends BaseStep implements StepInterface
 	            return ok;
         	}
         	catch(Exception e) {
+        	    e.printStackTrace();
         		logError(e.getMessage());
         		return false;
         	}
