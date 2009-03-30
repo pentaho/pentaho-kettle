@@ -55,8 +55,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 	private String sql;
 	private String catalog;
     private boolean variableReplacementActive;
-
-	public MondrianInputMeta()
+    public MondrianInputMeta()
 	{
 		super();
 	}
@@ -159,7 +158,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 		
 		try
 		{
-			MondrianHelper helper = new MondrianHelper(databaseMeta, catalog, sql);
+			MondrianHelper helper = new MondrianHelper(databaseMeta, catalog, sql, space);
 			add = helper.getCachedRowMeta();
 			if (add==null) {
 				helper.openQuery();

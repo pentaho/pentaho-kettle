@@ -45,6 +45,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 
 /**
  * <code>Mondrian Helper class</code> ...
@@ -61,30 +62,32 @@ public class MondrianHelper {
 	private RowMetaInterface outputRowMeta;
 	private Result result;
 	private Query query;
+	private VariableSpace space;
 	
     private List<List<Object>> rows;
     private List<String> headings;
 	private Connection connection;
 
-	public MondrianHelper(DatabaseMeta databaseMeta, String catalog, String queryString) {
+	public MondrianHelper(DatabaseMeta databaseMeta, String catalog, String queryString, VariableSpace space) {
 		this.databaseMeta = databaseMeta;
 		this.catalog = catalog;
 		this.queryString = queryString;
+		this.space = space;
 	}
 	
     public void openQuery() throws KettleDatabaseException {
         
     	String connectString = "Provider=mondrian;" +
-            "Jdbc='"+databaseMeta.getURL()+"';"+
-    		"Catalog='"+catalog+"';"+
-            "JdbcDrivers="+databaseMeta.getDriverClass()+";";
+            "Jdbc='"+space.environmentSubstitute(databaseMeta.getURL())+"';"+
+    		"Catalog='"+space.environmentSubstitute(catalog)+"';"+
+            "JdbcDrivers="+space.environmentSubstitute(databaseMeta.getDriverClass())+";";
     	if (!Const.isEmpty(databaseMeta.getUsername())) {
-    		connectString+="JdbcUser="+databaseMeta.getUsername()+";";
+    		connectString+="JdbcUser="+space.environmentSubstitute(databaseMeta.getUsername())+";";
     	}
     	if (!Const.isEmpty(databaseMeta.getPassword())) {
-    		connectString+="JdbcPassword="+databaseMeta.getPassword()+";";
+    		connectString+="JdbcPassword="+space.environmentSubstitute(databaseMeta.getPassword())+";";
     	}
-        
+
     	connection = DriverManager.getConnection(connectString, null);
         query = connection.parseQuery(queryString);
         result = connection.execute(query);
