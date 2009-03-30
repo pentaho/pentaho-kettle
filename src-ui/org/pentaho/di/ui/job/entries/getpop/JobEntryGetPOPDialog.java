@@ -269,7 +269,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 			public void widgetSelected(SelectionEvent e) 
 			{
 				
-				EnableSSL();
+				setPort();
 			}
 		}
 			);
@@ -461,7 +461,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
         });
 
         getData();
-		EnableSSL();
+        setPort();
 		ChooseListMails();
         BaseStepDialog.setSize(shell);
 
@@ -475,11 +475,6 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
         return jobEntry;
     }
     
-	private void EnableSSL()
-	{
-	
-		wSSLPort.setEnabled(wUseSSL.getSelection());	
-	}
 	
 	public void checkPasswordVisible()
 	{
@@ -509,6 +504,16 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
         props.setScreen(winprop);
         shell.dispose();
     }
+    private void setPort()
+    {
+    	if(Const.isEmpty(wSSLPort.getText()))
+    	{
+    		if(wUseSSL.getSelection())
+    			wSSLPort.setText("995");
+    		else	
+    			wSSLPort.setText("");
+    	}
+    }
 
     /**
      * Copy information from the meta-data input to the dialog fields.
@@ -529,12 +534,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		
 		if (jobEntry.getSSLPort() !=null)
 		{
-		
 			wSSLPort.setText(jobEntry.getSSLPort());
-		}
-		else
-		{
-			wSSLPort.setText("995");
 		}
 
 		

@@ -109,7 +109,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     username = null;
     password = null;
     usessl = false;
-    sslport = "995"; //$NON-NLS-1$
+    sslport = null;
     outputdirectory = null;
     filenamepattern = null;
     retrievemails = 0;
@@ -384,7 +384,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
     //Create session object
     Session sess = Session.getDefaultInstance(prop, null);
-    sess.setDebug(true);
 
     FileObject fileObject = null;
     Store st = null;
@@ -406,25 +405,29 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     		 String host = getRealServername();
     	     String user = getRealUsername();
     	     String pwd = getRealPassword();
+    	     int port=-1;
 
 	        if (!getUseSSL())
 	        {
 	          //Create POP3 object
 	          st = sess.getStore("pop3"); //$NON-NLS-1$
-
-	          // Try to connect to the server
-	          st.connect(host, user, pwd);
+			  // Try to connect to the server
+			  port=Const.toInt(getRealSSLPort(),-1);
+			  if(port!=-1)
+				st.connect(host,port,user,pwd);
+			  else
+				st.connect(host,user,pwd);
 	        } else
 	        {
-	          // Ssupports POP3 connection with SSL, the connection is established via SSL.
+	          // Supports POP3 connection with SSL, the connection is established via SSL.
 
 	          String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory"; //$NON-NLS-1$
 	          prop.setProperty("mail.pop3.socketFactory.class", SSL_FACTORY); //$NON-NLS-1$
 	          prop.setProperty("mail.pop3.socketFactory.fallback", "false"); //$NON-NLS-1$ //$NON-NLS-2$
 	          prop.setProperty("mail.pop3.port", getRealSSLPort()); //$NON-NLS-1$
 	          prop.setProperty("mail.pop3.socketFactory.port", getRealSSLPort()); //$NON-NLS-1$
-
-	          URLName url = new URLName("pop3", host, Const.toInt(getRealSSLPort(), 995), "", user, pwd); //$NON-NLS-1$ //$NON-NLS-2$
+	          port=Const.toInt(getRealSSLPort(),995);
+	          URLName url = new URLName("pop3", host, port, "", user, pwd); //$NON-NLS-1$ //$NON-NLS-2$
 	          st = new POP3SSLStore(sess, url);
 	          st.connect();
 	        }
@@ -468,7 +471,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	              startpattern = getRealFilenamePattern();
 	            }
 
-	            for (int i = 0; i < msg_list.length; i++)
+	            for (int i = 0; i < msg_list.length && !parentJob.isStopped(); i++)
 	            {
 	              if ((nb_email_POP <= nbrmailtoretrieve && retrievemails == 2) || (retrievemails != 2))
 	              {
