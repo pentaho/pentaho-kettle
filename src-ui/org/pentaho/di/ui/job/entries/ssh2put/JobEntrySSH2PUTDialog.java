@@ -1172,47 +1172,45 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
     }
     private void checkFTPFolder()
     {
-    	boolean folderexists=false;
-    	String errmsg="";
-    	try
+    	String realfoldername=jobMeta.environmentSubstitute(wFtpDirectory.getText());
+    	if(!Const.isEmpty(realfoldername))
     	{
-	    	String realfoldername=jobMeta.environmentSubstitute(wFtpDirectory.getText());
-	    	if(!Const.isEmpty(realfoldername))
+	    	boolean folderexists=false;
+	    	String errmsg="";
+	    	try
 	    	{
-    		if(connect())
-    		{
-    				SFTPv3Client client = new SFTPv3Client(conn);
-    				boolean folderexist=sshDirectoryExists(client,realfoldername);
-    				client.close();
-    				if(folderexist)
-    				{
-    					// Folder exists
-    					folderexists=true;
-    				}else
-    				{
-    					// we can not find folder
-    					folderexists=false;
-    				}
-    			}
-    			
-    		}
-	    	
-    	}catch(Exception e)
-    	{
-    		errmsg=e.getMessage();
-    	}
-    	if(folderexists)
-    	{
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-			mb.setMessage(Messages.getString("JobSSH2PUT.FolderExists.OK",wFtpDirectory.getText()) +Const.CR);
-			mb.setText(Messages.getString("JobSSH2PUT.FolderExists.Title.Ok"));
-			mb.open();	
-    	}else
-    	{
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("JobSSH2PUT.FolderExists.NOK",wFtpDirectory.getText()) +Const.CR + errmsg);
-			mb.setText(Messages.getString("JobSSH2PUT.FolderExists.Title.Bad"));
-			mb.open(); 
+	    		if(connect())
+	    		{
+	    				SFTPv3Client client = new SFTPv3Client(conn);
+	    				boolean folderexist=sshDirectoryExists(client,realfoldername);
+	    				client.close();
+	    				if(folderexist)
+	    				{
+	    					// Folder exists
+	    					folderexists=true;
+	    				}else
+	    				{
+	    					// we can not find folder
+	    					folderexists=false;
+	    				}
+	    			}
+	    	}catch(Exception e)
+	    	{
+	    		errmsg=e.getMessage();
+	    	}
+	    	if(folderexists)
+	    	{
+				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
+				mb.setMessage(Messages.getString("JobSSH2PUT.FolderExists.OK",wFtpDirectory.getText()) +Const.CR);
+				mb.setText(Messages.getString("JobSSH2PUT.FolderExists.Title.Ok"));
+				mb.open();	
+	    	}else
+	    	{
+				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+				mb.setMessage(Messages.getString("JobSSH2PUT.FolderExists.NOK",wFtpDirectory.getText()) +Const.CR + errmsg);
+				mb.setText(Messages.getString("JobSSH2PUT.FolderExists.Title.Bad"));
+				mb.open(); 
+	    	}
     	}
     }
     private boolean connect()
