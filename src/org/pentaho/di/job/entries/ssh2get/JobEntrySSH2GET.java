@@ -1257,7 +1257,6 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 				byte[] buffer = new byte[2048];
 				while (true) 
 				{
-					//int len = sftpClient.read(sftpFileHandle, offset,buffer, 0, buffer.length);
 					int len = sftpClient.read(sftpFileHandle, offset,buffer, 0, buffer.length);
 					if (len <= 0)	break;
 					fos.write(buffer, 0, len);

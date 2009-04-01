@@ -877,7 +877,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 								    if ( (onlyGettingNewFiles == false) ||
 						                   (onlyGettingNewFiles == true) && !sshFileExists(client, remoteFilename))
 								       {
-											putok=putFile(myFile, remoteFilename, client);
+											putok=putFile(myFile, remoteFilename, client,log);
 											if(!putok) {
 												nbrerror++;
 												log.logError(toString(),Messages.getString("JobSSH2PUT.Log.Error.CanNotPutFile",localFilename));
@@ -949,67 +949,78 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 		
 		return connnect;
 	}
-	
-	private boolean putFile(FileObject localFile, String remotefilename, SFTPv3Client sftpClient) {
-		LogWriter log = LogWriter.getInstance();
-		long filesize = -1;
+	private boolean putFile(FileObject localFile, String remotefilename, SFTPv3Client sftpClient,LogWriter log)
+	{
+		long filesize=-1;
 		InputStream in = null;
 		BufferedInputStream inBuf = null;
-		SFTPv3FileHandle sftpFileHandle = null;
-		boolean retval = false;
-		try {
-			// Put file in the default folder
-			sftpFileHandle = sftpClient.createFileTruncate(remotefilename);
-
+		SFTPv3FileHandle sftpFileHandle=null;
+		boolean retval=false;
+		
+		try
+		{
+			// Put file in the folder
+			sftpFileHandle=sftpClient.createFileTruncate(remotefilename);
+	
 			// Associate a file input stream for the current local file
 			in = KettleVFS.getInputStream(localFile);
 			inBuf = new BufferedInputStream(in);
-			long bytesWritten = 0;
 			byte[] buf = new byte[2048];
+			long offset = 0;
 			long length = localFile.getContent().getSize();
-
+			
+			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSSH2PUT.Log.SendingFile",localFile.toString() 
+					,""+length,remotefilename));
+			
 			// Write to remote file
-			while (bytesWritten != length) {
-				int len = inBuf.read(buf, 0, buf.length);
-				sftpClient.write(sftpFileHandle, bytesWritten, buf, 0, len);
-				bytesWritten += len;
-			}
+             while(true){
+                 int len = in.read(buf, 0, buf.length);
+                 if(len <= 0) break;
+                 sftpClient.write(sftpFileHandle, offset, buf, 0, len);
+                 offset += len;
+             }
 
 			// Get File size
-			filesize = getFileSize(sftpClient, remotefilename);
-
-			if (log.isDetailed())
-				log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.FileOnRemoteHost", remotefilename, "" + filesize));
-
-			retval = true;
-		} catch (Exception e) {
-			// We failed to put files
-			log.logError(toString(), Messages.getString("JobSSH2PUT.Log.ErrorCopyingFile", localFile.toString()));
-		} finally {
-			if (in != null)
-				try {
-					in.close();
-					in = null;
-				} catch (Exception ex) {
-				}
-
-			if (inBuf != null)
-				try {
-					inBuf.close();
-					inBuf = null;
-				} catch (Exception ex) {
-				}
-			if (sftpFileHandle != null)
-				try {
-					sftpClient.closeFile(sftpFileHandle);
-					sftpFileHandle = null;
-				} catch (Exception ex) {
-				}
-		}
+			filesize=getFileSize(sftpClient, remotefilename) ;
+			
+			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSSH2PUT.Log.FileOnRemoteHost",
+					remotefilename,""+filesize));
+			
+			retval= true;
+		  } catch(Exception e)  
+		  {
+			  // We failed to put files
+			  log.logError(toString(),Messages.getString("JobSSH2PUT.Log.ErrorCopyingFile",localFile.toString())+":"+e.getMessage());
+		  }
+			finally 
+			{
+				if (in != null)
+					try 
+					{
+						in.close();
+						in = null;
+					} 
+					catch (Exception ex) {} 
+					
+					if(inBuf!=null)
+					try 
+					{
+						inBuf.close();
+						inBuf = null;
+					} 
+					catch (Exception ex) {}
+					if(sftpFileHandle!=null) 
+					try 
+					{
+						sftpClient.closeFile(sftpFileHandle);
+						sftpFileHandle=null;
+					} catch (Exception ex) {}
+					if(sftpClient!=null)
+						sftpClient.close();
+			}
 		return retval;
 	}
-
-
+	
 	/**
 	 * Check existence of a file
 	 * 
