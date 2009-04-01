@@ -135,7 +135,7 @@ public class AccessInput extends BaseStep implements StepInterface
 					AccessInputField field= meta.getInputFields()[i];
 
 					// Get field value
-					Object obj = data.rw.get(field.getColumn());	
+					Object obj = data.rw.get(environmentSubstitute(field.getColumn()));	
 					String value;
 					if (obj==null) {
 						value=null;
