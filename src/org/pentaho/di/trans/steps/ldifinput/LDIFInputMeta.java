@@ -590,7 +590,7 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 			    LDIFInputField field = inputFields[i];
 			    
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",          field.getName());
-				rep.saveStepAttribute(id_transformation, id_step, i, "fied_attribut",       field.getAttribut());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_attribut",      field.getAttribut());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",          field.getTypeDesc());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",        field.getFormat());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",      field.getCurrencySymbol());
