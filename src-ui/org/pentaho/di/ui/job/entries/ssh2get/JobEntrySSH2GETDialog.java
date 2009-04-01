@@ -70,6 +70,7 @@ import com.trilead.ssh2.SFTPv3FileAttributes;
 
 public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	
     private static final String[] FILETYPES = new String[] {
         Messages.getString("JobSSH2GET.Filetype.Pem"),
         Messages.getString("JobSSH2GET.Filetype.All") };
