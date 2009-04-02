@@ -328,9 +328,9 @@ public class Mail extends BaseStep implements StepInterface
 			if(data.indexOfContactPhone>-1) contactphone=data.previousRowMeta.getString(r,data.indexOfContactPhone);
 			
 			String servername=data.previousRowMeta.getString(r,data.indexOfServer);
-			String port=null;
-			if(data.indexOfPort>-1) port=data.previousRowMeta.getString(r,data.indexOfPort);
-			
+			int port=-1;
+			if(data.indexOfPort>-1) port= Const.toInt(""+data.previousRowMeta.getInteger(r,data.indexOfPort),-1);
+
 			String authuser=null;
 			if(data.indexOfAuthenticationUser>-1) authuser=data.previousRowMeta.getString(r,data.indexOfAuthenticationUser);
 			String authpass=null;
@@ -368,9 +368,17 @@ public class Mail extends BaseStep implements StepInterface
 			
 		return true;
 	}
+	private int Round(long value)
+	{
+		try {
+			return Math.round(value);
+		}catch(Exception e)
+		{
+			return -1;
+		}
+	}
 
-
-	  public  void sendMail(Object[] r,String server, String port,
+	  public  void sendMail(Object[] r,String server, int port,
 			  String senderAddress,String senderName,String destination,String destinationCc,
 			  String destinationBCc,
 			  String contactPerson, String contactPhone,
@@ -396,8 +404,7 @@ public class Mail extends BaseStep implements StepInterface
 	    	}
 	      }
 	      data.props.put("mail." + protocol + ".host", server);
-	      if (!Const.isEmpty(port))
-	        data.props.put("mail." + protocol + ".port", port);
+	      if (port!=-1) data.props.put("mail." + protocol + ".port", port);
 	      boolean debug = log.getLogLevel() >= LogWriter.LOG_LEVEL_DEBUG;
 
 	      if (debug) data.props.put("mail.debug", "true");
@@ -525,10 +532,9 @@ public class Mail extends BaseStep implements StepInterface
 	      try {
 	        transport = session.getTransport(protocol);
 	        if (meta.isUsingAuthentication()) {
-	          if (!Const.isEmpty(port)){
-	            transport.connect(Const.NVL(server, ""), Integer
-	                .parseInt(Const.NVL(port, "")), Const.NVL(
-	                authenticationUser, ""), Const.NVL(authenticationPassword, ""));
+	          if (port!=-1){
+	            transport.connect(Const.NVL(server, ""), port, Const.NVL(authenticationUser, ""), 
+	            		Const.NVL(authenticationPassword, ""));
 	          }else {
 	            transport.connect(Const.NVL(server, ""), Const.NVL(
 	                authenticationUser, ""), Const.NVL(authenticationPassword, ""));
