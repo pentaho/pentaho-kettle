@@ -417,6 +417,12 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
     	return "SELECT NEXT VALUE FOR "+sequenceName+" FROM SYSIBM.SYSDUMMY1";
     }
 
-    
+    /**
+     * @return This indicator separates the normal URL from the options. DB2 is special
+     * in the sense that it requires a : instead of the usual ;.
+     */
+    public String getExtraOptionIndicator()
+    {
+        return ":";
+    }       
 }
-
