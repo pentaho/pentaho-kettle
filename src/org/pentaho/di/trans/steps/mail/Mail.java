@@ -368,15 +368,6 @@ public class Mail extends BaseStep implements StepInterface
 			
 		return true;
 	}
-	private int Round(long value)
-	{
-		try {
-			return Math.round(value);
-		}catch(Exception e)
-		{
-			return -1;
-		}
-	}
 
 	  public  void sendMail(Object[] r,String server, int port,
 			  String senderAddress,String senderName,String destination,String destinationCc,
