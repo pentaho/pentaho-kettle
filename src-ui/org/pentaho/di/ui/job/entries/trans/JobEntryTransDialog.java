@@ -149,7 +149,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 	private Button wCluster;
 	private FormData fdlCluster, fdCluster;
 
-	private Label wlFields;
+	//private Label wlFields;
 	private TableView wFields;
 	// private FormData fdlFields, fdFields;
 	
@@ -506,7 +506,6 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				wlFields.setEnabled(!jobEntry.argFromPrevious);
 				wFields.setEnabled(!jobEntry.argFromPrevious);
 			}
 		});
