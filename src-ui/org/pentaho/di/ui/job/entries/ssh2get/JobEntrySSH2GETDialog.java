@@ -1197,7 +1197,7 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
     					// Folder exists
     					folderexists=true;
     				}else	{
-    					// we can not find folder
+    					// we cannot find folder
     					folderexists=false;
     				}
     			}

@@ -1176,46 +1176,47 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	private void copyRecursive(String sourceLocation, String targetLocation,
+  	private void copyRecursive(String sourceLocation, String targetLocation,
 		SFTPv3Client sftpClient,String wildcardin,Job parentJob) throws Exception 
 	{
-		String sourceFolder="";
-		if (sourceLocation!=null) sourceFolder=sourceLocation + FTPUtils.FILE_SEPARATOR;
-
-		if (this.isDirectory(sftpClient, sourceFolder)) 
-		{
-
-			Vector<SFTPv3DirectoryEntry> filelist = sftpClient.ls(sourceFolder);
-      
-			Iterator<SFTPv3DirectoryEntry> iterator = filelist.iterator();
-
-			while (iterator.hasNext() && !parentJob.isStopped()) 
-			{
-				
-				SFTPv3DirectoryEntry dirEntry = iterator.next();
-
-				if (dirEntry == null) continue;
-				
-				if (dirEntry.filename.equals(".")|| dirEntry.filename.equals(".."))	continue;
-				
-					copyRecursive(sourceFolder + dirEntry.filename, targetLocation + FTPUtils.FILE_SEPARATOR + dirEntry.filename, sftpClient,wildcardin,parentJob);
-
-			} 
-
-		} 
-		else 
-		{
+		String sourceFolder="."+FTPUtils.FILE_SEPARATOR;
+		if (sourceLocation!=null) sourceFolder=sourceLocation;
 			
-			if(GetFileWildcard(sourceFolder,wildcardin))
-			{
-				// It's a file...so let's start transferring it
-				copyFile(sourceFolder, targetLocation, sftpClient);
-			}
-			
-
-		}
-	}
+		if (this.isDirectory(sftpClient, sourceFolder)) {	
+	        Vector filelist = sftpClient.ls(sourceFolder);
+	        Iterator iterator = filelist.iterator();
 	
+	        while (iterator.hasNext()) {
+	
+	        SFTPv3DirectoryEntry dirEntry = (SFTPv3DirectoryEntry) iterator .next();
+	
+	        if (dirEntry == null)   continue;
+	        if (dirEntry.filename.equals(".")  || dirEntry.filename.equals(".."))  continue;
+	        copyRecursive(sourceFolder + FTPUtils.FILE_SEPARATOR+dirEntry.filename, targetLocation + Const.FILE_SEPARATOR 
+	        		+ dirEntry.filename, sftpClient,wildcardin,parentJob);
+        } 
+       } else if (isFile(sftpClient, sourceFolder))
+       {
+    	  if(GetFileWildcard(sourceFolder,wildcardin))
+            copyFile(sourceFolder, targetLocation, sftpClient);
+       }
+  }
+	/**
+	 * Checks if file is a file
+	 * 
+	 * @param sftpClient
+	 * @param filename
+	 * @return true, if filename is a directory
+	 */
+	public boolean isFile(SFTPv3Client sftpClient, String filename)  
+	{
+		try 
+		{
+			return sftpClient.stat(filename).isRegularFile();
+		} 
+		catch(Exception e)  {}
+		return false;
+	}
 	  
 	/**
 	 * 
