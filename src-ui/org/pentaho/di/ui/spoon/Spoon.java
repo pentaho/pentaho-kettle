@@ -697,7 +697,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				newSlaveServer();
 			}
 		});
-		miNewSlave.setImage(GUIResource.getInstance().getImageBol());
+		miNewSlave.setImage(GUIResource.getInstance().getImageSlave());
 	}
 
 	public Shell getShell() {
@@ -4374,7 +4374,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						if (!filterMatch(slaveServer.getName())) continue;
 						TreeItem tiSlave = new TreeItem(tiSlaveTitle, SWT.NONE);
 						tiSlave.setText(slaveServer.getName());
-						tiSlave.setImage(guiResource.getImageBol());
+						tiSlave.setImage(guiResource.getImageSlave());
 						if (slaveServer.isShared())
 							tiSlave.setFont(guiResource.getFontBold());
 					}
