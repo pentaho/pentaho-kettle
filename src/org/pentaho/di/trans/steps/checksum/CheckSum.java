@@ -87,8 +87,8 @@ public class CheckSum extends BaseStep implements StepInterface {
 		Object[] outputRowData = null;
 
 		try {
-			if (meta.getCheckSumType().equals("ADLER32")
-					|| meta.getCheckSumType().equals("CRC32")) {
+			if (meta.getCheckSumType().equals(CheckSumMeta.TYPE_ADLER32)
+					|| meta.getCheckSumType().equals(CheckSumMeta.TYPE_CRC32)) {
 				// get checksum
 				Long checksum = calculCheckSum(r);
 				outputRowData = RowDataUtil.addValueData(r, getInputRowMeta()
@@ -138,8 +138,12 @@ public class CheckSum extends BaseStep implements StepInterface {
 					.getString(r, data.fieldnrs[i]);
 			Buff.append(fieldvalue);
 		}
-
-		MessageDigest digest = MessageDigest.getInstance("MD5");
+		MessageDigest digest;
+		if(meta.getCheckSumType().equals(CheckSumMeta.TYPE_MD5))
+			digest = MessageDigest.getInstance(CheckSumMeta.TYPE_MD5);
+		else
+			digest = MessageDigest.getInstance(CheckSumMeta.TYPE_SHA1);
+		
 		digest.update(Buff.toString().getBytes());
 		byte[] hash = digest.digest();
 
