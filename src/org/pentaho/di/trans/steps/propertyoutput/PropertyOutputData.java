@@ -24,6 +24,7 @@ import java.util.Properties;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.apache.commons.vfs.FileObject;
 
 
 /**
@@ -43,9 +44,9 @@ public class PropertyOutputData extends BaseStepData implements StepDataInterfac
 	public int indexOfKeyField;
 	public int indexOfValueField;
 	
-	public String filename;
 	public int indexOfFieldfilename;
 	HashSet<String> KeySet = new HashSet<String>();
+	public FileObject file;
 	
 	Properties pro = new Properties();
 
@@ -59,8 +60,8 @@ public class PropertyOutputData extends BaseStepData implements StepDataInterfac
 		indexOfKeyField=-1;
 		indexOfValueField=-1;
 		
-		filename=null;
 		indexOfFieldfilename=-1;
+		file=null;
 
 	}
 

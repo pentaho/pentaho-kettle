@@ -14,7 +14,6 @@
 
 package org.pentaho.di.trans.steps.propertyoutput;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 
@@ -26,13 +25,13 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.addsequence.Messages;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 
 import org.apache.commons.vfs.FileObject;
 import java.util.Properties;
-
-import java.io.*;
+import java.io.OutputStream;
 
 
 
@@ -68,7 +67,7 @@ public class PropertyOutput extends BaseStep implements StepInterface
 			if(!first)
 			{
 				// Save properties to file
-				saveProperties(data.pro, data.filename);
+				saveProperties(data.pro);
 			}
 			setOutputDone();
 			return false;
@@ -101,10 +100,12 @@ public class PropertyOutput extends BaseStep implements StepInterface
             
 			// Let's check for filename...
 			
-			data.filename=buildFilename();
+			try{
+			data.file=KettleVFS.getFileObject(buildFilename());
+			}catch(Exception e){throw new KettleException(e);}
 			
 			// Check if filename is empty..
-			if(Const.isEmpty(data.filename))
+			if(data.file==null)
 			{
 				logError(Messages.getString("PropertyOutput.Log.FilenameEmpty"));
 				throw new KettleException(Messages.getString("PropertyOutput.Log.FilenameEmpty"));	
@@ -168,8 +169,6 @@ public class PropertyOutput extends BaseStep implements StepInterface
 			  {
                 putError(data.outputRowMeta, r, 1L, errorMessage, null, "PROPSOUTPUTO001");
 			  }
-	        
-
 		}	
 		
 		return true;
@@ -177,60 +176,59 @@ public class PropertyOutput extends BaseStep implements StepInterface
 	
 	private void createParentFolder() throws KettleException
 	{
-		// Do we need to create parent folder ?
+		
 		if(meta.isCreateParentFolder())
 		{
-			// Check for parent folder
 			FileObject parentfolder=null;
-    		try
-    		{
+			try
+			{	
+				// Do we need to create parent folder ?
+			
+				// Check for parent folder
     			// Get parent folder
-	    		parentfolder=KettleVFS.getFileObject(data.filename).getParent();	    		
+	    		parentfolder=data.file.getParent();	    		
 	    		if(!parentfolder.exists())	
 	    		{
 	    			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("PropertyOutput.Log.ParentFolderExists",parentfolder.getName().toString()));
 	    			parentfolder.createFolder();
 	    			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("PropertyOutput.Log.CanNotCreateParentFolder",parentfolder.getName().toString()));
-	    		}
-    		}
-    		catch (Exception e) {					
-				// The field is unreachable !
+	    		}		
+			}
+			catch (Exception e) {					
 				logError(Messages.getString("PropertyOutput.Log.CanNotCreateParentFolder", parentfolder.getName().toString()));
 				throw new KettleException(Messages.getString("PropertyOutput.Log.CanNotCreateParentFolder",parentfolder.getName().toString()));
-				
-    		}
-    		 finally {
-             	if ( parentfolder != null )
-             	{
-             		try  {
-             			parentfolder.close();
-             		}
-             		catch ( Exception ex ) {};
-             	}
-             }		
-		}	
+			
+			}
+		 finally {
+	         	if ( parentfolder != null )
+	         	{
+	         		try  {
+	         			parentfolder.close();
+	         		}
+	         		catch ( Exception ex ) {};
+	         	}
+		 }
+		} 	
 	}
-   private void saveProperties(Properties p, String fileName) {
+   private void saveProperties(Properties p) throws KettleException{
 
         OutputStream propsFile=null;
 
         try {
-            propsFile = new FileOutputStream(fileName);
+            propsFile = KettleVFS.getOutputStream(data.file,false);
             p.store(propsFile, environmentSubstitute(meta.getComment()));
             propsFile.close();
             
 			if( meta.AddToResult())
 			{
 				// Add this to the result file names...
-				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileName), getTransMeta().getName(), getStepname());
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
 				resultFile.setComment(Messages.getString("PropertyOutput.Log.FileAddedResult"));
 				addResultFile(resultFile);
 			}   
             
-        } catch (IOException ioe) {
-            System.out.println("I/O Exception.");
-            ioe.printStackTrace();
-            System.exit(0);
+        } catch (Exception e) {
+        	throw new KettleException(e);
         }
         finally
         {
@@ -265,7 +263,14 @@ public class PropertyOutput extends BaseStep implements StepInterface
 	{
 		meta=(PropertyOutputMeta)smi;
 		data=(PropertyOutputData)sdi;
-
+		if(data.file!=null)
+		{
+     		try  {
+     			data.file.close();
+     			data.file=null;
+     		}
+     		catch ( Exception ex ) {};
+		}
 		setOutputDone();
 		super.dispose(smi, sdi);
 	}

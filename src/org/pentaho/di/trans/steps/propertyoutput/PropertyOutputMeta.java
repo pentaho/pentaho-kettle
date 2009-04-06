@@ -295,8 +295,6 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 			retval+="_"+stepnr;
 		}
 		
-		
-		
 		if (extension!=null && extension.length()!=0) 
 		{
 			retval+="."+extension;
