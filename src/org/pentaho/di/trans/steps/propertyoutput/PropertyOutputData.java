@@ -15,7 +15,6 @@
 
 package org.pentaho.di.trans.steps.propertyoutput;
 
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
@@ -49,7 +48,6 @@ public class PropertyOutputData extends BaseStepData implements StepDataInterfac
 	public FileObject file;
 	
 	Properties pro = new Properties();
-
     
 	public PropertyOutputData()
 	{
@@ -62,7 +60,6 @@ public class PropertyOutputData extends BaseStepData implements StepDataInterfac
 		
 		indexOfFieldfilename=-1;
 		file=null;
-
 	}
 
 }

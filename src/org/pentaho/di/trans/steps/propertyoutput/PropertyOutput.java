@@ -17,6 +17,7 @@ package org.pentaho.di.trans.steps.propertyoutput;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -30,8 +31,9 @@ import org.pentaho.di.core.vfs.KettleVFS;
 
 
 import org.apache.commons.vfs.FileObject;
-import java.util.Properties;
+
 import java.io.OutputStream;
+import java.util.Properties;;
 
 
 
@@ -99,20 +101,20 @@ public class PropertyOutput extends BaseStep implements StepInterface
 			}
             
 			// Let's check for filename...
-			
-			try{
-			data.file=KettleVFS.getFileObject(buildFilename());
-			}catch(Exception e){throw new KettleException(e);}
-			
+			String filename=buildFilename();
 			// Check if filename is empty..
-			if(data.file==null)
+			if(Const.isEmpty(filename))
 			{
 				logError(Messages.getString("PropertyOutput.Log.FilenameEmpty"));
 				throw new KettleException(Messages.getString("PropertyOutput.Log.FilenameEmpty"));	
 			}
+			try{
+				data.file=KettleVFS.getFileObject(filename);
+			}catch(Exception e){throw new KettleException(e);}
+
+
 			// Create parent folder if needed...
 			createParentFolder();
-			
 	
 		} // end first
 		
@@ -211,14 +213,11 @@ public class PropertyOutput extends BaseStep implements StepInterface
 		} 	
 	}
    private void saveProperties(Properties p) throws KettleException{
-
-        OutputStream propsFile=null;
-
+	   OutputStream propsFile=null;;
         try {
-            propsFile = KettleVFS.getOutputStream(data.file,false);
+			propsFile = KettleVFS.getOutputStream(data.file,false);
             p.store(propsFile, environmentSubstitute(meta.getComment()));
-            propsFile.close();
-            
+          
 			if( meta.AddToResult())
 			{
 				// Add this to the result file names...
@@ -229,15 +228,14 @@ public class PropertyOutput extends BaseStep implements StepInterface
             
         } catch (Exception e) {
         	throw new KettleException(e);
-        }
-        finally
+        }finally
         {
         	if(propsFile!=null)
         	{
-        		try{        	
+        		try{
         			propsFile.close();
         			propsFile=null;
-        		}catch(Exception e){}
+        		}catch(Exception e){};
         	}
         }
     }
@@ -263,14 +261,13 @@ public class PropertyOutput extends BaseStep implements StepInterface
 	{
 		meta=(PropertyOutputMeta)smi;
 		data=(PropertyOutputData)sdi;
-		if(data.file!=null)
-		{
-     		try  {
-     			data.file.close();
-     			data.file=null;
-     		}
-     		catch ( Exception ex ) {};
-		}
+		try  {
+			if(data.file!=null)
+			{
+	     		data.file.close();
+	     		data.file=null;
+	     	}
+		}catch ( Exception ex ) {};
 		setOutputDone();
 		super.dispose(smi, sdi);
 	}
