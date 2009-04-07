@@ -995,28 +995,32 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 			finally 
 			{
 				if (in != null)
+				{
 					try 
 					{
 						in.close();
 						in = null;
 					} 
 					catch (Exception ex) {} 
+				}
 					
-					if(inBuf!=null)
+				if(inBuf!=null) 
+				{
 					try 
 					{
 						inBuf.close();
 						inBuf = null;
 					} 
 					catch (Exception ex) {}
-					if(sftpFileHandle!=null) 
+				}
+				if(sftpFileHandle!=null) 
+				{
 					try 
 					{
 						sftpClient.closeFile(sftpFileHandle);
 						sftpFileHandle=null;
 					} catch (Exception ex) {}
-					if(sftpClient!=null)
-						sftpClient.close();
+				}
 			}
 		return retval;
 	}
