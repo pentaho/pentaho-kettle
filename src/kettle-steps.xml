@@ -1333,7 +1333,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Janino")
 		</tooltip>
-		<image-uri>ui/images/GenericTransform.png</image-uri>
+		<image-uri>ui/images/janino.png</image-uri>
 	</step>
 	
 	<step id="ReservoirSampling">
