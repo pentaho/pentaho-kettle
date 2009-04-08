@@ -309,6 +309,7 @@ public class Mail extends BaseStep implements StepInterface
 		try{
 			// get values
 			String maildestination= data.previousRowMeta.getString(r,data.indexOfDestination);
+			if(Const.isEmpty(maildestination))	throw new KettleException("Mail.Error.MailDestinationEmpty");
 			String maildestinationCc= null;
 			if(data.indexOfDestinationCc>-1) maildestinationCc=data.previousRowMeta.getString(r,data.indexOfDestinationCc);
 			String maildestinationBCc= null;
@@ -328,6 +329,7 @@ public class Mail extends BaseStep implements StepInterface
 			if(data.indexOfContactPhone>-1) contactphone=data.previousRowMeta.getString(r,data.indexOfContactPhone);
 			
 			String servername=data.previousRowMeta.getString(r,data.indexOfServer);
+			if(Const.isEmpty(servername))	throw new KettleException("Mail.Error.MailServerEmpty");
 			int port=-1;
 			if(data.indexOfPort>-1) port= Const.toInt(""+data.previousRowMeta.getInteger(r,data.indexOfPort),-1);
 
