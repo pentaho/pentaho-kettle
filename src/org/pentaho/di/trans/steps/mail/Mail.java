@@ -145,7 +145,7 @@ public class Mail extends BaseStep implements StepInterface
 				}  
 			}
 			// BCc
-			if (!Const.isEmpty(meta.getDestinationCc())) {
+			if (!Const.isEmpty(meta.getDestinationBCc())) {
 				// cache the position of the BCc field			
 				if (data.indexOfDestinationBCc<0) {	
 					String realDestinationBCcFieldname=meta.getDestinationBCc();
