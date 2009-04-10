@@ -761,18 +761,34 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 					mandatoryok=false;
 					log.logError(toString(),Messages.getString("JobSSH2PUT.Log.DestinatFolderMissing"));
 				}else{
-					// Let's check if folder exists...
-					if(!KettleVFS.fileExists(realDestinationFolder))
+					FileObject folder=null;
+					try{
+						folder=KettleVFS.getFileObject(realDestinationFolder);
+						// Let's check if folder exists...
+						if(!folder.exists())
+						{
+							// Do we need to create it?
+							if(createDestinationFolder) 
+								folder.createFolder();
+							else
+								log.logError(toString(),Messages.getString("JobSSH2PUT.Log.DestinatFolderNotExist",realDestinationFolder));
+						}
+					}catch(Exception e){throw new KettleException(e);}
+					finally
 					{
-						mandatoryok=false;
-						log.logError(toString(),Messages.getString("JobSSH2PUT.Log.DestinatFolderNotExist",realDestinationFolder));
+						if(folder!=null)
+						{
+							try{
+								folder.close();
+								folder=null;
+							}catch(Exception e){};
+						}
 					}
 				}
 			}
 			
 			if(mandatoryok)
 			{
-			
 				Connection conn = null;
 				SFTPv3Client client = null;
 		        boolean good=true;
