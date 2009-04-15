@@ -58,7 +58,7 @@ public class StringCut extends BaseStep implements StepInterface {
 				rcode=null;
 			else
 			{
-				if(cutTo>lenCode) cutTo=lenCode-1;
+				if(cutTo>lenCode) cutTo=lenCode;
 				if(cutTo<0 && cutFrom ==0  && (-cutTo)>lenCode) cutTo=-(lenCode);
 				if(cutTo<0 && cutFrom<0 && (-cutTo)>lenCode) cutTo=-(lenCode);
 				
