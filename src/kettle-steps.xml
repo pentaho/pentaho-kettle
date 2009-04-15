@@ -1240,6 +1240,18 @@
 		<image-uri>ui/images/OBL.png</image-uri>
 	</step>
 	
+	<step id="MySQLBulkLoader">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MySQLBulkLoader")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.mysqlbulkloader.MySQLBulkLoaderMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.MySQLBulkLoader")
+		</tooltip>
+		<image-uri>ui/images/OBL.png</image-uri>
+	</step>
+	
 	<step id="ReplaceString">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ReplaceString")
