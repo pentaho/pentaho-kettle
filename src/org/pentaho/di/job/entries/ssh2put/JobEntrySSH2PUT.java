@@ -873,9 +873,6 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 								String localFilename = myFile.toString();
 								String remoteFilename = myFile.getName().getBaseName();
 								
-								// do we have a target directory?
-								if(!Const.isEmpty(realftpDirectory)) remoteFilename=realftpDirectory + FTPUtils.FILE_SEPARATOR +remoteFilename;
-								
 								boolean getIt = true;
 								
 								// First see if the file matches the regular expression!
@@ -884,23 +881,29 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 									getIt = matcher.matches();
 								}
 								
+								// do we have a target directory?
+								if(!Const.isEmpty(realftpDirectory)) remoteFilename=realftpDirectory + FTPUtils.FILE_SEPARATOR +remoteFilename;
+								
+
+								if(onlyGettingNewFiles)
+								{
+									// We get only new files
+									// ie not exist on the remote server
+									getIt=!sshFileExists(client, remoteFilename);
+								}
+								
 								if(getIt)
 								{
 									nbfilestoput++;
 									
-									boolean putok=true;
-									
-								    if ( (onlyGettingNewFiles == false) ||
-						                   (onlyGettingNewFiles == true) && !sshFileExists(client, remoteFilename))
-								       {
-											putok=putFile(myFile, remoteFilename, client,log);
-											if(!putok) {
-												nbrerror++;
-												log.logError(toString(),Messages.getString("JobSSH2PUT.Log.Error.CanNotPutFile",localFilename));
-											}else{
-												nbput++;	
-											}
-									   }
+									boolean putok=putFile(myFile, remoteFilename, client,log);
+									if(!putok) {
+										nbrerror++;
+										log.logError(toString(),Messages.getString("JobSSH2PUT.Log.Error.CanNotPutFile",localFilename));
+									}else{
+										nbput++;	
+									}
+									   
 								       if(putok && !afterFtpPut.equals("do_nothing")){
 											deleteOrMoveFiles(myFile,realDestinationFolder);
 										}

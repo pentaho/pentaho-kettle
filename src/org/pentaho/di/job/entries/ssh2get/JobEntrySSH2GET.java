@@ -900,13 +900,19 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 					
 					if(good)
 					{
+						Pattern pattern=null;
+				        if (!Const.isEmpty(realwildcard))
+				        {
+				        	pattern = Pattern.compile(realwildcard);
+				        }
+				        
 						if(includeSubFolders)
 						{
 							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSSH2GET.Log.RecursiveModeOn"));
-							copyRecursive( realftpDirectory ,realLocalDirectory, client,realwildcard,parentJob);
+							copyRecursive( realftpDirectory ,realLocalDirectory, client,pattern,parentJob);
 						}else{
 							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSSH2GET.Log.RecursiveModeOff"));
-							GetFiles(realftpDirectory, realLocalDirectory,client,realwildcard,parentJob);
+							GetFiles(realftpDirectory, realLocalDirectory,client,pattern,parentJob);
 						}
 						
 						/********************************RESULT ********************/
@@ -1065,23 +1071,18 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	 * 
 	 * @param selectedfile
 	 * @param wildcard
+	 * @param pattern
 	 * @return True if the selectedfile matches the wildcard
 	 **********************************************************/
-	private boolean GetFileWildcard(String selectedfile, String wildcard)
+	private boolean getFileWildcard(String selectedfile,Pattern pattern)
 	{
-		Pattern pattern = null;
 		boolean getIt=true;
-	
-        if (!Const.isEmpty(wildcard))
-        {
-        	 pattern = Pattern.compile(wildcard);
-			// First see if the file matches the regular expression!
-			if (pattern!=null)
-			{
-				Matcher matcher = pattern.matcher(selectedfile);
-				getIt = matcher.matches();
-			}
-        }
+		// First see if the file matches the regular expression!
+		if (pattern!=null)
+		{
+			Matcher matcher = pattern.matcher(selectedfile);
+			getIt = matcher.matches();
+		}
 		
 		return getIt;
 	}
@@ -1131,7 +1132,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	 */
 	@SuppressWarnings("unchecked")
 	private void GetFiles(String sourceLocation, String targetLocation,
-		SFTPv3Client sftpClient,String wildcardin,Job parentJob) throws Exception 
+		SFTPv3Client sftpClient,Pattern pattern, Job parentJob) throws Exception 
 	{
 
 		String sourceFolder=".";
@@ -1156,7 +1157,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 					|| dirEntry.filename.equals("..") || isDirectory(sftpClient, sourceFolder+dirEntry.filename))
 					continue;
 				
-				if(GetFileWildcard(dirEntry.filename,wildcardin))
+				if(getFileWildcard(dirEntry.filename,pattern))
 				{
 					// Copy file from remote host
 					copyFile(sourceFolder + dirEntry.filename, targetLocation + FTPUtils.FILE_SEPARATOR + dirEntry.filename, sftpClient);
@@ -1177,7 +1178,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	 */
 	@SuppressWarnings("unchecked")
   	private void copyRecursive(String sourceLocation, String targetLocation,
-		SFTPv3Client sftpClient,String wildcardin,Job parentJob) throws Exception 
+		SFTPv3Client sftpClient,Pattern pattern,Job parentJob) throws Exception 
 	{
 		String sourceFolder="."+FTPUtils.FILE_SEPARATOR;
 		if (sourceLocation!=null) sourceFolder=sourceLocation;
@@ -1193,11 +1194,11 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	        if (dirEntry == null)   continue;
 	        if (dirEntry.filename.equals(".")  || dirEntry.filename.equals(".."))  continue;
 	        copyRecursive(sourceFolder + FTPUtils.FILE_SEPARATOR+dirEntry.filename, targetLocation + Const.FILE_SEPARATOR 
-	        		+ dirEntry.filename, sftpClient,wildcardin,parentJob);
+	        		+ dirEntry.filename, sftpClient,pattern,parentJob);
         } 
        } else if (isFile(sftpClient, sourceFolder))
        {
-    	  if(GetFileWildcard(sourceFolder,wildcardin))
+    	  if(getFileWildcard(sourceFolder,pattern))
             copyFile(sourceFolder, targetLocation, sftpClient);
        }
   }
