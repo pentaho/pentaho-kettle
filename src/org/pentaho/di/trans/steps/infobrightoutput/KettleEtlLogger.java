@@ -5,7 +5,9 @@ import org.pentaho.di.trans.step.BaseStep;
 import com.infobright.logging.EtlLogger;
 
 /**
- * Adapter between EtlLogger and a Kettle BaseStep 
+ * Adapter between Infobright EtlLogger and a Kettle BaseStep.
+ *
+ * @author geoffrey.falk@infobright.com
  */
 public class KettleEtlLogger implements EtlLogger {
 

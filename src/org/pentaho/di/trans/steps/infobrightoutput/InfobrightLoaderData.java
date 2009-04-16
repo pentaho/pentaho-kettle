@@ -17,6 +17,7 @@ import com.infobright.logging.EtlLogger;
 
 
 /**
+ * @author geoffrey.falk@infobright.com
  */
 public class InfobrightLoaderData extends BaseStepData implements StepDataInterface {
   
@@ -67,8 +68,13 @@ public class InfobrightLoaderData extends BaseStepData implements StepDataInterf
     } catch (Exception e) {
       db.disconnect();
       db = null;
-      try { loader.killQuery(); } catch (SQLException e1) { throw new KettleDatabaseException(e1); };
-	
+      if (loader != null) {
+        try {
+          loader.killQuery();
+        } catch (SQLException e1) {
+          throw new KettleDatabaseException(e1);
+        }
+      }
       throw new KettleDatabaseException(e);
     }
   }

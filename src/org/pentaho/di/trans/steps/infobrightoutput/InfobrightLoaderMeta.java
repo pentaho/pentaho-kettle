@@ -20,7 +20,9 @@ import com.infobright.etl.model.DataFormat;
 
 
 /**
- * Loader for the Infobright column database.
+ * Metadata for the Infobright loader.
+ *
+ * @author geoffrey.falk@infobright.com
  */
 public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInterface {
 

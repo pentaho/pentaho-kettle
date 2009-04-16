@@ -7,6 +7,9 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import com.infobright.etl.model.BrighthouseRecord;
 import com.infobright.etl.model.ValueConverterException;
 
+/**
+ * @author geoffrey.falk@infobright.com
+ */
 public class KettleRecordPopulator {
 
   private KettleValueConverter[] conv = null;

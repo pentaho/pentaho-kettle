@@ -15,8 +15,10 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
- * Uses the native named pipe load capability of BrightHouse to load kettle-sourced data into
- * a BrightHouse table.
+ * Uses named pipe capability to load Kettle-sourced data into
+ * an Infobright table.
+ * 
+ * @author geoffrey.falk@infobright.com
  */
 public class InfobrightLoader extends BaseStep implements StepInterface {
   
@@ -24,6 +26,8 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
   
   private InfobrightLoaderMeta meta;
   private InfobrightLoaderData data;
+  
+  private boolean triedToClosePipe = false;
 
   /**
    * Standard constructor.  Does nothing special.
@@ -75,7 +79,7 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
       }
     } catch(Exception e) {
       logError("Because of an error, this step can't continue: " + e.getMessage());
-      e.printStackTrace();
+      logError(Const.getStackTracker(e));
       setErrors(1);
       stopAll();
       setOutputDone();  // signal end to receiver(s)
@@ -99,6 +103,7 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
 
       } catch (Exception ex) {
         logError("An error occurred intialising this step", ex);
+        logError(Const.getStackTracker(ex));
         stopAll();
         setErrors(1);
         return false;
@@ -116,13 +121,15 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
       logBasic(Messages.getString("InfobrightLoader.Log.StartingToRun"));
       while (processRow(meta, data) && !isStopped())
         {}
+      closePipe();
     } catch (Exception e) {
       logError(Messages.getString("InfobrightLoader.Log.UnexpectedError") + " : " + e.toString());
       logError(Const.getStackTracker(e));
       setErrors(1);
       stopAll();
     } finally {
-      dispose(meta, data); // gtf: OutputStream gets closed here
+      safeClosePipe();
+      dispose(meta, data);
       logSummary();
       markStop();
     }
@@ -145,21 +152,28 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
     }
   }
   
-  /** {@inheritDoc}
-   * @see org.pentaho.di.trans.step.BaseStep#dispose(org.pentaho.di.trans.step.StepMetaInterface, org.pentaho.di.trans.step.StepDataInterface)
-   */
-  @Override
-  public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+  private synchronized void closePipe() throws KettleException {
     try {
-      meta = (InfobrightLoaderMeta) smi;
-      data = (InfobrightLoaderData) sdi;
       if (data != null) {
         data.dispose(); // gtf: OutputStream gets closed here
       }
-    } catch (Exception ioe) {
-      logError("Unexpected error disposing of step data", ioe);      
+    } catch (Exception e) {    
+      throw new KettleException(e); // FIX FOR IB TICKET #390822
     } finally {
-      super.dispose(smi, sdi);      
+      triedToClosePipe = true;     
+    }
+  }
+  
+  private synchronized void safeClosePipe() {
+    if (!triedToClosePipe) {
+      try {
+        closePipe();
+      } catch (Exception e) {
+        logError(Messages.getString("InfobrightLoader.Log.UnexpectedError") + " : " + e.toString());
+        logError(Const.getStackTracker(e));
+      } finally {
+        triedToClosePipe = true;
+      }
     }
   }
   

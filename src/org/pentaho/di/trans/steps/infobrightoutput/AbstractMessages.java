@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 
+/**
+ * @author Infobright Inc.
+ */
 public abstract class AbstractMessages {
   protected ArrayList<String> packageNames = new ArrayList<String>();
 

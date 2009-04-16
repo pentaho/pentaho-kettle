@@ -1,5 +1,8 @@
 package org.pentaho.di.trans.steps.infobrightoutput;
 
+/**
+ * @author Infobright Inc.
+ */
 public class WindowsJNILibraryUtil {
 
   /**
