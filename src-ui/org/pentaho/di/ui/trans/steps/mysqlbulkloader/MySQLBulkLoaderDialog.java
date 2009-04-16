@@ -98,6 +98,10 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 	private Label				wlCharSet;
 	private TextVar				wCharSet;
 	private FormData			fdlCharSet, fdCharSet;
+	
+	private Label				wlBulkSize;
+	private TextVar				wBulkSize;
+	private FormData			fdlBulkSize, fdBulkSize;
 
     private Label               wlReturn;
     private TableView           wReturn;
@@ -327,6 +331,24 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
         fdCharSet.right= new FormAttachment(100, 0);
         wCharSet.setLayoutData(fdCharSet);
 
+        // BulkSize line...
+        wlBulkSize=new Label(shell, SWT.RIGHT);
+        wlBulkSize.setText(Messages.getString("MySQLBulkLoaderDialog.BulkSize.Label")); //$NON-NLS-1$
+        props.setLook(wlBulkSize);
+        fdlBulkSize=new FormData();
+        fdlBulkSize.left = new FormAttachment(0, 0);
+        fdlBulkSize.right= new FormAttachment(middle, -margin);
+        fdlBulkSize.top  = new FormAttachment(wCharSet, margin);
+        wlBulkSize.setLayoutData(fdlBulkSize);
+        wBulkSize=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wBulkSize);
+        wBulkSize.addModifyListener(lsMod);
+        fdBulkSize=new FormData();
+        fdBulkSize.left = new FormAttachment(middle, 0);
+        fdBulkSize.top  = new FormAttachment(wCharSet, margin);
+        fdBulkSize.right= new FormAttachment(100, 0);
+        wBulkSize.setLayoutData(fdBulkSize);
+
         
         // Replace line...
 		wlReplace = new Label(shell, SWT.RIGHT);
@@ -335,14 +357,14 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		fdlReplace = new FormData();
 		fdlReplace.left = new FormAttachment(0, 0);
 		fdlReplace.right = new FormAttachment(middle, -margin);
-		fdlReplace.top = new FormAttachment(wCharSet, margin * 2);
+		fdlReplace.top = new FormAttachment(wBulkSize, margin * 2);
 		wlReplace.setLayoutData(fdlReplace);
 
 		wReplace = new Button(shell, SWT.CHECK | SWT.LEFT );
 		props.setLook(wReplace);
 		fdReplace = new FormData();
 		fdReplace.left = new FormAttachment(middle, 0);
-		fdReplace.top = new FormAttachment(wCharSet, margin * 2);
+		fdReplace.top = new FormAttachment(wBulkSize, margin * 2);
 		fdReplace.right = new FormAttachment(100, 0);
 		wReplace.setLayoutData(fdReplace);
 		wReplace.addSelectionListener(new SelectionAdapter() {
@@ -465,6 +487,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
         wDelimiter.addSelectionListener(lsDef);
         wEnclosure.addSelectionListener(lsDef);
         wCharSet.addSelectionListener(lsDef);
+        wBulkSize.addSelectionListener(lsDef);
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(new ShellAdapter()
@@ -513,6 +536,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		wCharSet.setText(Const.NVL(input.getEncoding(), ""));   //$NON-NLS-1$
 		wReplace.setSelection(input.isReplacingData());
 		wIgnore.setSelection(input.isIgnoringErrors());
+		wBulkSize.setText(Const.NVL(input.getBulkSize(), ""));
 
 		if (input.getFieldTable() != null) {
 			for (i = 0; i < input.getFieldTable().length; i++)
@@ -563,6 +587,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		inf.setEncoding( wCharSet.getText() );
 		inf.setReplacingData( wReplace.getSelection() );
 		inf.setIgnoringErrors( wIgnore.getSelection() );
+		inf.setBulkSize( wBulkSize.getText() );
 
 		log.logDebug(toString(), Messages.getString("MySQLBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrfields; i++)

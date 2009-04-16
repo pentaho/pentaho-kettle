@@ -43,12 +43,6 @@ public class MySQLBulkLoaderData extends BaseStepData implements StepDataInterfa
 	public ValueMetaInterface bulkDateMeta;
 	public ValueMetaInterface bulkNumberMeta;
 	
-	public int bufferSize;
-	
-	public byte[][] rowBuffer;
-
-	public int bufferIndex;
-
 	public String schemaTable;
 
 	public String fifoFilename;
@@ -58,6 +52,8 @@ public class MySQLBulkLoaderData extends BaseStepData implements StepDataInterfa
 	public MySQLBulkLoader.SqlRunner sqlRunner;
 
 	public ValueMetaInterface[]	bulkFormatMeta;
+
+	public long	bulkSize;
 	
 	/**
 	 *  Default constructor.

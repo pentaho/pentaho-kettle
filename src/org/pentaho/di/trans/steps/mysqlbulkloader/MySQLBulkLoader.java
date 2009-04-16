@@ -52,14 +52,12 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	public boolean execute(MySQLBulkLoaderMeta meta, boolean wait) throws KettleException
+	public boolean execute(MySQLBulkLoaderMeta meta) throws KettleException
 	{
         Runtime rt = Runtime.getRuntime();
 
         try  
         {
-        	String tableName = environmentSubstitute(meta.getTableName());
-        	
         	// 1) Create the FIFO file using the "mkfifo" command...
         	//    Make sure to log all the possible output, also from STDERR
         	//
@@ -116,11 +114,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 
             // 3) Now we are ready to run the load command...
             //
-            executeLoadCommand(tableName);
-            
-        	// 4) We have to write rows to the FIFO file later on.
-            //
-        	data.fifoStream = new BufferedOutputStream( new FileOutputStream( fifoFile ), 1000 );
+            executeLoadCommand();            
         }
         catch ( Exception ex )
         {
@@ -130,7 +124,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
         return true;
 	}
 
-	private void executeLoadCommand(String tableName) throws KettleException {
+	private void executeLoadCommand() throws Exception {
 		
         String loadCommand = "";
         loadCommand += "LOAD DATA INFILE '"+meta.getFifoFileName()+"' ";
@@ -156,6 +150,10 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
         logBasic("Starting the MySQL bulk Load in a separate thread : "+loadCommand);
         data.sqlRunner = new SqlRunner(data, loadCommand);
         data.sqlRunner.start();
+        
+        // Ready to start writing rows to the FIFO file now...
+        //
+    	data.fifoStream = new BufferedOutputStream( new FileOutputStream( data.fifoFilename ), 1000 );
 	}
 
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
@@ -170,17 +168,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 			{
 				setOutputDone();
 				
-				// Close the fifo file...
-				//
-				data.fifoStream.close();
-				data.fifoStream=null;
-
-                // wait for the INSERT statement to finish and check for any
-                // error and/or warning...
-                data.sqlRunner.join();
-                SqlRunner sqlRunner = data.sqlRunner;
-                data.sqlRunner = null;
-                sqlRunner.checkExcn();
+				closeOutput();
 	            
 				return false;
 			}
@@ -214,9 +202,17 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 
 				// execute the client statement...
 				//
-				execute(meta, true);
+				execute(meta);
 			}
-			
+
+			// Every nr of rows we re-start the bulk load process to allow indexes etc to fit into the MySQL server memory
+			// Performance could degrade if we don't do this.
+			//
+			if (data.bulkSize>0 && getLinesOutput()>0 && (getLinesOutput()%data.bulkSize)==0) {
+				closeOutput();
+				executeLoadCommand();
+			}
+
 			writeRowToBulk(getInputRowMeta(), r);
 			putRow(getInputRowMeta(), r);
 			incrementLinesOutput();
@@ -231,6 +227,21 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 			setOutputDone();  // signal end to receiver(s)
 			return false;
 		} 
+	}
+
+	private void closeOutput() throws Exception 
+	{
+		// Close the fifo file...
+		//
+		data.fifoStream.close();
+		data.fifoStream=null;
+
+        // wait for the INSERT statement to finish and check for any
+        // error and/or warning...
+        data.sqlRunner.join();
+        SqlRunner sqlRunner = data.sqlRunner;
+        data.sqlRunner = null;
+        sqlRunner.checkExcn();
 	}
 
 	private void writeRowToBulk(RowMetaInterface rowMeta, Object[] r) throws KettleException {
@@ -356,10 +367,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 			data.bulkNumberMeta.setDecimalSymbol(".");
 			data.bulkNumberMeta.setStringEncoding(meta.getEncoding());
 						
-			// Allocate the buffer
-			// 
-			data.rowBuffer = new byte[data.bufferSize][];
-			data.bufferIndex = 0;
+			data.bulkSize = Const.toLong(environmentSubstitute(meta.getBulkSize()), -1L);
 			
 			// Schema-table combination...
 			data.schemaTable = meta.getDatabaseMeta().getSchemaTableCombination(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTableName()));
@@ -382,14 +390,24 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 	    	}
 
             // Stop the SQL execution thread
+	    	//
             if (data.sqlRunner!= null) {
                 data.sqlRunner.join();
                 data.sqlRunner = null;
             }
-            // And finally, release the database connection
+            // Release the database connection
+            //
             if (data.db!=null) {
                 data.db.disconnect();
                 data.db = null;
+            }
+            
+            // remove the fifo file...
+            //
+            try {
+            	new File(data.fifoFilename).delete();
+            } catch(Exception e) {
+            	logError("Unable to delete FIFO file : "+data.fifoFilename, e);
             }
 	    }
 	    catch(Exception e) {

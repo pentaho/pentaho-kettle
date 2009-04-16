@@ -114,6 +114,9 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 	
 	/** The escape character */
 	private String escapeChar;	
+	
+	/** The number of rows to load per bulk statement */
+	private String bulkSize;
 		
 	public MySQLBulkLoaderMeta()
 	{
@@ -230,6 +233,8 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 			delimiter      = XMLHandler.getTagValue(stepnode, "delimiter");         //$NON-NLS-1$
 			escapeChar     = XMLHandler.getTagValue(stepnode, "escape_char");         //$NON-NLS-1$
 			
+			bulkSize       = XMLHandler.getTagValue(stepnode, "bulk_size");          //$NON-NLS-1$
+			
 			replacingData  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "replace"));         //$NON-NLS-1$
 			ignoringErrors = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "ignore"));         //$NON-NLS-1$
 
@@ -265,6 +270,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
         escapeChar   = "\\";
         replacingData = false;
         ignoringErrors = false;
+        bulkSize = null;
         
 		allocate(0);
 	}
@@ -273,17 +279,17 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 	{
         StringBuffer retval = new StringBuffer(300);
 
-		retval.append("    ").append(XMLHandler.addTagValue("connection",   databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("    ").append(XMLHandler.addTagValue("schema",       schemaName));    //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("table",        tableName));     //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("encoding",     encoding));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("delimiter",    delimiter));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("enclosure",    enclosure));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("escape_char",  escapeChar));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("replace",      replacingData));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("ignore",       ignoringErrors));      //$NON-NLS-1$ //$NON-NLS-2$
-
+		retval.append("    ").append(XMLHandler.addTagValue("connection",     databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("    ").append(XMLHandler.addTagValue("schema",         schemaName));    //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("table",          tableName));     //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("encoding",       encoding));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("delimiter",      delimiter));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("enclosure",      enclosure));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("escape_char",    escapeChar));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("replace",        replacingData));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("ignore",         ignoringErrors));      //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("fifo_file_name", fifoFileName));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("bulk_size",      bulkSize));      //$NON-NLS-1$ //$NON-NLS-2$
 
 		for (int i=0;i<fieldTable.length;i++)
 		{
@@ -313,6 +319,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 			fifoFileName   =      rep.getStepAttributeString(id_step,  "fifo_file_name");       //$NON-NLS-1$
 			replacingData  =      rep.getStepAttributeBoolean(id_step, "replace");       //$NON-NLS-1$
 			ignoringErrors =      rep.getStepAttributeBoolean(id_step, "ignore");       //$NON-NLS-1$
+			bulkSize       =      rep.getStepAttributeString(id_step,  "bulk_size");       //$NON-NLS-1$
 			
 			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             //$NON-NLS-1$
 
@@ -340,16 +347,14 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "id_connection",    databaseMeta==null?-1:databaseMeta.getID()); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "schema",           schemaName);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "table",            tableName);     //$NON-NLS-1$
-			
 			rep.saveStepAttribute(id_transformation, id_step, "encoding",         encoding);      //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "enclosure",        enclosure);      //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "delimiter",        delimiter);      //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "escape_char",      escapeChar);      //$NON-NLS-1$
-
-			rep.saveStepAttribute(id_transformation, id_step, "fifo_file_name", fifoFileName);      //$NON-NLS-1$
-
-			rep.saveStepAttribute(id_transformation, id_step, "replace", replacingData);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "ignore", ignoringErrors);      //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "fifo_file_name",   fifoFileName);      //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "replace",          replacingData);      //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "ignore",           ignoringErrors);      //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "bulk_size",        bulkSize);      //$NON-NLS-1$
 
 			for (int i=0;i<fieldTable.length;i++)
 			{
@@ -817,6 +822,20 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 	 */
 	public void setIgnoringErrors(boolean ignoringErrors) {
 		this.ignoringErrors = ignoringErrors;
+	}
+
+	/**
+	 * @return the bulkSize
+	 */
+	public String getBulkSize() {
+		return bulkSize;
+	}
+
+	/**
+	 * @param bulkSize the bulkSize to set
+	 */
+	public void setBulkSize(String bulkSize) {
+		this.bulkSize = bulkSize;
 	}
 
 }
