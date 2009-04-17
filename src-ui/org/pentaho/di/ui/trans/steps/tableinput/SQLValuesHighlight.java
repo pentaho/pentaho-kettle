@@ -268,7 +268,7 @@ public class SQLValuesHighlight implements LineStyleListener {
 		};
 			
 			private String[] fgKeywords= { 
-					"create","procedure","as","set","nocount","on","declare","varchar","print","table","int",
+					"create","procedure","as","set","nocount","on","declare","varchar","print","table","int","tintytext",
 					"select","from","where","and","or","insert","into","cursor","read_only","for","open","fetch",
 					"next","end","deallocate","table","drop","exec","begin","close","update","delete","truncate",
 					"inner","outer","left","join","union","all","float","when",
