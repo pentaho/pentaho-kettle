@@ -446,7 +446,7 @@ public class Mapping extends BaseStep implements StepInterface
 	@Override
     public long getLinesInput()
     {
-        if (data.linesInputStepNr != -1)
+        if (data!=null && data.linesInputStepNr != -1)
             return data.mappingTrans.getSteps().get(data.linesInputStepNr).step.getLinesInput();
         else
             return 0;
@@ -455,7 +455,7 @@ public class Mapping extends BaseStep implements StepInterface
     @Override
     public long getLinesOutput()
     {
-        if (data.linesOutputStepNr != -1)
+        if (data!=null && data.linesOutputStepNr != -1)
             return data.mappingTrans.getSteps().get(data.linesOutputStepNr).step.getLinesOutput();
         else
             return 0;
@@ -464,7 +464,7 @@ public class Mapping extends BaseStep implements StepInterface
     @Override
     public long getLinesRead()
     {
-        if (data.linesReadStepNr != -1)
+        if (data!=null && data.linesReadStepNr != -1)
             return data.mappingTrans.getSteps().get(data.linesReadStepNr).step.getLinesRead();
         else
             return 0;
@@ -473,7 +473,7 @@ public class Mapping extends BaseStep implements StepInterface
     @Override
     public long getLinesRejected()
     {
-        if (data.linesRejectedStepNr != -1)
+        if (data!=null && data.linesRejectedStepNr != -1)
             return data.mappingTrans.getSteps().get(data.linesRejectedStepNr).step.getLinesRejected();
         else
             return 0;
@@ -482,7 +482,7 @@ public class Mapping extends BaseStep implements StepInterface
     @Override
     public long getLinesUpdated()
     {
-        if (data.linesUpdatedStepNr != -1)
+        if (data!=null && data.linesUpdatedStepNr != -1)
             return data.mappingTrans.getSteps().get(data.linesUpdatedStepNr).step.getLinesUpdated();
         else
             return 0;
@@ -491,7 +491,7 @@ public class Mapping extends BaseStep implements StepInterface
     @Override
     public long getLinesWritten()
     {
-        if (data.linesWrittenStepNr != -1)
+        if (data!=null && data.linesWrittenStepNr != -1)
             return data.mappingTrans.getSteps().get(data.linesWrittenStepNr).step.getLinesWritten();
         else
             return 0;
