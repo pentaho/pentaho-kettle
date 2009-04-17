@@ -4565,7 +4565,14 @@ public class Database implements VariableSpace
 					v=cstmt.getString(pos);
 					break;
 				case ValueMetaInterface.TYPE_DATE:
-					v=cstmt.getDate(pos); 
+					if (databaseMeta.supportsTimeStampToDateConversion())
+                    {
+						v=cstmt.getTimestamp(pos);
+                    }
+                    else 
+                    {
+                    	v=cstmt.getDate(pos); 
+                    }					
 					break;
 				}
 				ret.addValue(vMeta, v);
@@ -4593,7 +4600,14 @@ public class Database implements VariableSpace
 						v=cstmt.getString(pos + i);
 						break;
 					case ValueMetaInterface.TYPE_DATE:
-						v=cstmt.getTimestamp(pos + i);
+						if (databaseMeta.supportsTimeStampToDateConversion())
+	                    {
+							v=cstmt.getTimestamp(pos + i);
+	                    }
+	                    else 
+	                    {
+	                    	v=cstmt.getDate(pos + i); 
+	                    }					
 						break;
 					}
 					ret.addValue(vMeta, v);
