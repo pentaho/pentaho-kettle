@@ -67,6 +67,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 
 
@@ -795,6 +796,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		}
 		// show a confirm dialog if some misconfiguration was found
 		if (missingFields.length()>0){
+			MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
 			boolean goOn = MessageDialog.openConfirm(shell,
 					Messages.getString("SelectValuesDialog.DoMapping.SomeFieldsNotFoundTitle"), 
 					Messages.getString("SelectValuesDialog.DoMapping.SomeFieldsNotFound", missingFields.toString()));

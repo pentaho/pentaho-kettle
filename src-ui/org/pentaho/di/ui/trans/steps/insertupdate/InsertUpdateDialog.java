@@ -71,7 +71,7 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.core.database.Database;
-
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 
 
@@ -576,6 +576,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 			}
 			message+=Const.CR;
 			message+=Messages.getString("InsertUpdateDialog.DoMapping.SomeFieldsNotFoundContinue")+Const.CR;
+			MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
 			boolean goOn = MessageDialog.openConfirm(shell, Messages.getString("InsertUpdateDialog.DoMapping.SomeFieldsNotFoundTitle"), message);
 			if (!goOn) {
 				return;

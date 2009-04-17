@@ -77,6 +77,7 @@ import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 
 /**
@@ -988,6 +989,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 				}
 				message+=Const.CR;
 				message+=Messages.getString("TableOutputDialog.DoMapping.SomeFieldsNotFoundContinue")+Const.CR;
+				MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
 				boolean goOn = MessageDialog.openConfirm(shell, Messages.getString("TableOutputDialog.DoMapping.SomeFieldsNotFoundTitle"), message);
 				if (!goOn) {
 					return;

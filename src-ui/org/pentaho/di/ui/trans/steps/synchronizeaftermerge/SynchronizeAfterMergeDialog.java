@@ -73,6 +73,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -887,6 +888,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 			}
 			message+=Const.CR;
 			message+=Messages.getString("SynchronizeAfterMergeDialog.DoMapping.SomeFieldsNotFoundContinue")+Const.CR;
+			MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
 			boolean goOn = MessageDialog.openConfirm(shell, Messages.getString("SynchronizeAfterMergeDialog.DoMapping.SomeFieldsNotFoundTitle"), message);
 			if (!goOn) {
 				return;
