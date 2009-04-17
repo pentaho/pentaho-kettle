@@ -4584,8 +4584,33 @@ public class Database implements VariableSpace
 				case ValueMetaInterface.TYPE_STRING:
 					v=cstmt.getString(pos);
 					break;
+				case ValueMetaInterface.TYPE_BINARY: 
+                    if (databaseMeta.supportsGetBlob())
+                    {
+                        Blob blob = cstmt.getBlob(pos);
+                        if (blob!=null)
+                        {
+                            v = blob.getBytes(1L, (int)blob.length());
+                        }
+                        else
+                        {
+                            v = null;
+                        }
+                    }
+                    else
+                    {
+                        v = cstmt.getBytes(pos);
+                    }
+	                break;					
 				case ValueMetaInterface.TYPE_DATE:
-					v=cstmt.getDate(pos); 
+					if (databaseMeta.supportsTimeStampToDateConversion())
+                    {
+						v=cstmt.getTimestamp(pos);
+                    }
+                    else 
+                    {
+                    	v=cstmt.getDate(pos); 
+                    }					
 					break;
 				}
 				ret.addValue(vMeta, v);
@@ -4612,8 +4637,33 @@ public class Database implements VariableSpace
 					case ValueMetaInterface.TYPE_STRING:
 						v=cstmt.getString(pos + i);
 						break;
+					case ValueMetaInterface.TYPE_BINARY: 
+	                    if (databaseMeta.supportsGetBlob())
+	                    {
+	                        Blob blob = cstmt.getBlob(pos + i);
+	                        if (blob!=null)
+	                        {
+	                            v = blob.getBytes(1L, (int)blob.length());
+	                        }
+	                        else
+	                        {
+	                            v = null;
+	                        }
+	                    }
+	                    else
+	                    {
+	                        v = cstmt.getBytes(pos + i);
+	                    }
+		                break;					
 					case ValueMetaInterface.TYPE_DATE:
-						v=cstmt.getTimestamp(pos + i);
+						if (databaseMeta.supportsTimeStampToDateConversion())
+	                    {
+							v=cstmt.getTimestamp(pos + i);
+	                    }
+	                    else 
+	                    {
+	                    	v=cstmt.getDate(pos + i); 
+	                    }					
 						break;
 					}
 					ret.addValue(vMeta, v);
