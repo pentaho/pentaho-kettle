@@ -75,7 +75,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 */
 	public String getSQLQueryFields(String tableName)
 	{
-	    return "SELECT * FROM "+tableName+" LIMIT 1";
+	    return "SELECT * FROM "+tableName+" LIMIT 0"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
     public String getSQLTableExists(String tablename)
@@ -89,7 +89,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     }
     public String getSQLQueryColumnFields(String columnname, String tableName)
     {
-        return "SELECT " + columnname + " FROM "+tableName +" LIMIT 1";
+        return "SELECT " + columnname + " FROM "+tableName +" LIMIT 0"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
     
 	/**
