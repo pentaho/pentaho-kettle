@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.Messages;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 
 /**
@@ -72,7 +73,8 @@ public class ShowBrowserDialog extends Dialog
 		Display display = parent.getDisplay();
 		
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.MAX | SWT.MIN);
- 		props.setLook(shell);
+		shell.setImage(GUIResource.getInstance().getImageSpoon());
+		props.setLook(shell);
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
