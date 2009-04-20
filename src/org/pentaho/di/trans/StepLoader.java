@@ -320,48 +320,24 @@ public class StepLoader implements LoaderInputStreamProvider
         
     	try {
     		// try reading plugins defined in JAR file META-INF/step_plugin.xml
-        	Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/step_plugin.xml");
-        	while( resources.hasMoreElements() ) 
-        	{
-        		URL url = resources.nextElement();
-        		Object content = url.getContent();
-        		if( content instanceof InputStream )
-        		{
-        			readPluginFromResource( (InputStream) content, null, null, StepPlugin.TYPE_NATIVE );
-        		}
-        	}
+    		InputStream content = getClass().getClassLoader().getResourceAsStream("META-INF/step_plugin.xml");
+    		if (content != null) readPluginFromResource(content, null, null, StepPlugin.TYPE_NATIVE );
     	} catch (Exception e) {
     		throw new KettleException("Unable to load plugins specified in 'META-INF/step_plugin.xml' files", e);
     	}
     	
     	try {
     		// try reading plugins defined in JAR file META-INF/kettle-partition-plugins.xml
-        	Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/kettle-partition-plugins.xml");
-        	while( resources.hasMoreElements() ) 
-        	{
-        		URL url = resources.nextElement();
-        		Object content = url.getContent();
-        		if( content instanceof InputStream )
-        		{
-        			readPluginFromResource( (InputStream) content, null, null, StepPlugin.TYPE_NATIVE );
-        		}
-        	}
+    		InputStream content = getClass().getClassLoader().getResourceAsStream("META-INF/kettle-partition-plugins.xml");
+    		if (content != null) readPluginFromResource(content, null, null, StepPlugin.TYPE_NATIVE );
     		// also look in /kettle-partition-plugins.xml
-        	resources = getClass().getClassLoader().getResources("kettle-partition-plugins.xml");
-        	while( resources.hasMoreElements() ) 
-        	{
-        		URL url = resources.nextElement();
-        		Object content = url.getContent();
-        		if( content instanceof InputStream )
-        		{
-        			readPluginFromResource( (InputStream) content, null, null, StepPlugin.TYPE_NATIVE );
-        		}
-        	}
+    		content = getClass().getClassLoader().getResourceAsStream("kettle-partition-plugins.xml");
+    		if (content != null) readPluginFromResource(content, null, null, StepPlugin.TYPE_NATIVE );
     	} catch (Exception e) {
     		throw new KettleException("Unable to load plugins specified in 'META-INF/kettle-partition-plugins.xml' files", e);
     	}
     	
-    	//TODO: THis is what will move into the plubin loader class
+    	//TODO: THis is what will move into the plugin loader class
         for (int dirNr = 0;dirNr<pluginDirectory.length;dirNr++)
         {
             try
