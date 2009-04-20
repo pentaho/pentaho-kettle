@@ -199,6 +199,8 @@ public class Pan
 		
 		TransMeta transMeta = new TransMeta();
 
+		// In case we use a repository...
+		Repository rep=null;
 		try
 		{
 			if(log.isDebug()) log.logDebug("Pan",Messages.getString("Pan.Log.StartingToLookOptions"));
@@ -223,7 +225,7 @@ public class Pan
 							// Define and connect to the repository...
 							if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.Allocate&ConnectRep"));
 							
-							Repository rep = new Repository(log, repinfo, userinfo);
+							rep = new Repository(log, repinfo, userinfo);
 							if (rep.connect("Pan commandline"))
 							{
 								RepositoryDirectory directory = rep.getDirectoryTree(); // Default = root
@@ -302,7 +304,6 @@ public class Pan
 									userinfo=null;
 									repinfo=null;
 								}
-								rep.disconnect();
 							}
 							else
 							{
@@ -383,6 +384,7 @@ public class Pan
 		{
 			trans=null;
 			transMeta=null;
+			if(rep!=null) rep.disconnect();
 			System.out.println(Messages.getString("Pan.Error.ProcessStopError",e.getMessage()));
 			
 			e.printStackTrace();
@@ -391,6 +393,8 @@ public class Pan
 
 		if (trans==null)
 		{
+			if(rep!=null) rep.disconnect();
+			
 			if (!"Y".equalsIgnoreCase(optionListtrans.toString()) && 
                 !"Y".equalsIgnoreCase(optionListdir.toString()) && 
                 !"Y".equalsIgnoreCase(optionListrep.toString()) &&
@@ -527,6 +531,10 @@ public class Pan
 			
             exitJVM(2);
 		}
+		finally
+        {
+            if (rep!=null) rep.disconnect();
+        }
 
 	}
 	
