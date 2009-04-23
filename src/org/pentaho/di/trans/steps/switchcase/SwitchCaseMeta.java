@@ -73,6 +73,9 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 	
 	/** The default target step */
 	private StepMeta defaultTargetStep;
+	
+	/** True if the comparison is a String.contains instead of equals */
+    private boolean isContains;
 
 	public SwitchCaseMeta()
 	{
@@ -103,6 +106,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
         StringBuffer retval = new StringBuffer(200);
 
 		retval.append(XMLHandler.addTagValue("fieldname", fieldname));		             //$NON-NLS-1$
+        retval.append(XMLHandler.addTagValue("use_contains", isContains));                   //$NON-NLS-1$
 		retval.append(XMLHandler.addTagValue("case_value_type", ValueMeta.getTypeDesc(caseValueType)));	 //$NON-NLS-1$
 		retval.append(XMLHandler.addTagValue("case_value_format", caseValueFormat));	 //$NON-NLS-1$
 		retval.append(XMLHandler.addTagValue("case_value_decimal", caseValueDecimal));	 //$NON-NLS-1$
@@ -126,6 +130,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			fieldname = XMLHandler.getTagValue(stepnode, "fieldname"); //$NON-NLS-1$
+            isContains = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_contains")); //$NON-NLS-1$
 			caseValueType = ValueMeta.getType(XMLHandler.getTagValue(stepnode, "case_value_type")); //$NON-NLS-1$
 			caseValueFormat = XMLHandler.getTagValue(stepnode, "case_value_format"); //$NON-NLS-1$
 			caseValueDecimal = XMLHandler.getTagValue(stepnode, "case_value_decimal"); //$NON-NLS-1$
@@ -158,6 +163,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			fieldname        = rep.getStepAttributeString (id_step, "fieldname");  //$NON-NLS-1$
+            isContains       = rep.getStepAttributeBoolean (id_step, "use_contains");  //$NON-NLS-1$
 			caseValueType    = ValueMeta.getType(rep.getStepAttributeString (id_step, "case_value_type"));  //$NON-NLS-1$
 			caseValueFormat  = rep.getStepAttributeString (id_step, "case_value_format");  //$NON-NLS-1$
 			caseValueDecimal = rep.getStepAttributeString (id_step, "case_value_decimal");  //$NON-NLS-1$
@@ -184,6 +190,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "fieldname", fieldname); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "use_contains", isContains); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "case_value_type", ValueMeta.getTypeDesc(caseValueType)); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "case_value_format", caseValueFormat); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "case_value_decimal", caseValueDecimal); //$NON-NLS-1$
@@ -435,5 +442,15 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setDefaultTargetStep(StepMeta defaultTargetStep) {
 		this.defaultTargetStep = defaultTargetStep;
-	}	
+	}
+
+    public boolean isContains()
+    {
+        return isContains;
+    }
+
+    public void setContains(boolean isContains)
+    {
+        this.isContains = isContains;
+    }
 }

@@ -11,8 +11,6 @@
 
 package org.pentaho.di.trans.steps.switchcase;
 
-import java.util.Hashtable;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -151,7 +149,7 @@ public class SwitchCase extends BaseStep implements StepInterface
 
         if (super.init(smi, sdi))
         {
-        	data.outputMap = new Hashtable<Object,RowSet>();
+            data.outputMap = meta.isContains() ? new ContainsKeyToRowSetMap() : new KeyToRowSetMap();
         	
         	if (Const.isEmpty(meta.getFieldname())) {
         		logError(Messages.getString("SwitchCase.Log.NoFieldSpecifiedToSwitchWith")); //$NON-NLS-1$

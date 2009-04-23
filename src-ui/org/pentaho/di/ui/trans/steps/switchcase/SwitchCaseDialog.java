@@ -29,7 +29,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -47,8 +46,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.switchcase.Messages;
 import org.pentaho.di.trans.steps.switchcase.SwitchCaseMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.*;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
@@ -58,7 +56,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 	private CCombo wFieldName;
 
 	private Label wlDataType;
-	private Combo wDataType;
+	private CCombo wDataType;
 	
 	private Label wlConversionMask;
 	private Text wConversionMask;
@@ -75,7 +73,11 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 	private Label wlDefaultTarget;
 	private CCombo wDefaultTarget;
 	
-	private SwitchCaseMeta input;
+    private Label        wlContains;
+    private Button  wContains;
+    private FormData     fdlContains, fdContains;
+
+    private SwitchCaseMeta input;
 	private RowMetaInterface inputFields;
 		
 	public SwitchCaseDialog(Shell parent, Object in, TransMeta tr, String sname)
@@ -158,7 +160,23 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 			new ErrorDialog(shell, Messages.getString("SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Title"), Messages.getString("SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Message"), ex);
 		}
 		
-		
+        wlContains=new Label(shell, SWT.RIGHT);
+        wlContains.setText(Messages.getString("SwitchCaseDialog.Contains.Label"));
+        props.setLook(wlContains);
+        fdlContains=new FormData();
+        fdlContains.left = new FormAttachment(0, 0);
+        fdlContains.right= new FormAttachment(middle, -margin);
+        fdlContains.top  = new FormAttachment(wFieldName, margin*2);
+        wlContains.setLayoutData(fdlContains);
+        wContains=new Button(shell, SWT.CHECK);
+        wContains.setToolTipText(Messages.getString("SwitchCaseDialog.Contains.Tooltip"));
+        props.setLook(wContains);
+        fdContains=new FormData();
+        fdContains.left  = new FormAttachment(middle, 0);
+        fdContains.top   = new FormAttachment(wFieldName, margin*2);
+        fdContains.right = new FormAttachment(100, 0);
+        wContains.setLayoutData(fdContains);
+
 		// Data type
 		//
 		wlDataType=new Label(shell, SWT.RIGHT);
@@ -167,15 +185,15 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		FormData fdlDataType = new FormData();
 		fdlDataType.left = new FormAttachment(0, 0);
 		fdlDataType.right= new FormAttachment(middle, 0);
-		fdlDataType.top  = new FormAttachment(wFieldName, margin);
+		fdlDataType.top  = new FormAttachment(wContains, margin);
 		wlDataType.setLayoutData(fdlDataType);
-		wDataType=new Combo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wDataType=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wDataType.setItems(ValueMeta.getTypes());
  		props.setLook(wDataType);
 		FormData fdDataType = new FormData();
 		fdDataType.left = new FormAttachment(middle, margin);
 		fdDataType.right= new FormAttachment(100, 0);
-		fdDataType.top  = new FormAttachment(wFieldName, margin);
+		fdDataType.top  = new FormAttachment(wContains, margin);
 		wDataType.setLayoutData(fdDataType);
 		
 		// Conversion mask
@@ -329,6 +347,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 	public void getData()
 	{
 		wFieldName.setText(Const.NVL(input.getFieldname(), ""));
+		wContains.setSelection(input.isContains());
 		wDataType.setText(ValueMeta.getTypeDesc(input.getCaseValueType()));
 		wDecimalSymbol.setText(Const.NVL(input.getCaseValueDecimal(), ""));
 		wGroupingSymbol.setText(Const.NVL(input.getCaseValueGroup(), ""));
@@ -357,6 +376,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		if (Const.isEmpty(wStepname.getText())) return;
 
 		input.setFieldname(wFieldName.getText());
+		input.setContains(wContains.getSelection());
 		input.setCaseValueType(ValueMeta.getType(wDataType.getText()));
 		input.setCaseValueFormat(wConversionMask.getText());
 		input.setCaseValueDecimal(wDecimalSymbol.getText());

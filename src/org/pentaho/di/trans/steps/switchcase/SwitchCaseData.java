@@ -12,8 +12,6 @@
 
 package org.pentaho.di.trans.steps.switchcase;
 
-import java.util.Hashtable;
-
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -31,7 +29,7 @@ public class SwitchCaseData extends BaseStepData implements StepDataInterface
 {
 
 	public RowMetaInterface outputRowMeta;
-	public Hashtable<Object, RowSet> outputMap;
+	public KeyToRowSetMap outputMap;
 	public ValueMetaInterface valueMeta;
 	public RowSet nullRowSet;
 	public int fieldIndex;
@@ -46,5 +44,4 @@ public class SwitchCaseData extends BaseStepData implements StepDataInterface
 	{
 		super();
 	}
-
 }
