@@ -233,7 +233,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 			// check if table exists!
 			if(db.checkTableExists(realTablename)){
 				if(!Const.isEmpty(realSchemaname))
-					db.truncateTable(tablename, realSchemaname);
+					db.truncateTable(realSchemaname, tablename);
 				else
 					db.truncateTable(tablename);
 		
