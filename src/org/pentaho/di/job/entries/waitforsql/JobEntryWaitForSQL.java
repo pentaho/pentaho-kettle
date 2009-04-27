@@ -576,15 +576,17 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 	                	break;
 	                case JobEntryWaitForSQL.SUCCESS_CONDITION_ROWS_COUNT_SMALLER_EQUAL:
 	                	successOK=(rowsCount<=nrRowsLimit);
+	                	break;
 	                case JobEntryWaitForSQL.SUCCESS_CONDITION_ROWS_COUNT_GREATER:
 	                	successOK=(rowsCount>nrRowsLimit);
+	                	break;
 	                case JobEntryWaitForSQL.SUCCESS_CONDITION_ROWS_COUNT_GREATER_EQUAL:
 	                	successOK=(rowsCount>=nrRowsLimit);
 	                	break;
 	                default: 
 	                	break;
 	             }	
-			} // endif countStatement!=null    
+			} // end if countStatement!=null    
 		}
 		catch(KettleDatabaseException dbe)
 		{
