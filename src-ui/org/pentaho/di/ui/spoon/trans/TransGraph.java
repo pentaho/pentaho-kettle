@@ -1233,6 +1233,10 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         if (e.keyCode == SWT.HOME && (e.stateMask & SWT.ALT) != 0) {
         snaptogrid(ConstUI.GRID_SIZE);
         }
+        
+        if (e.character == 'E' && (e.stateMask & SWT.CTRL) != 0) {
+        	checkErrorVisuals();
+        }
 
         // SPACE : over a step: show output fields...
         if (e.character == ' ' && lastMove != null) {
@@ -1811,7 +1815,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           menu.addMenuListener("trans-graph-entry-detach", this, "detachStep"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-inputs", this, "fieldsBefore"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-outputs", this, "fieldsAfter"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-lineage", this, "fieldsLineage"); //$NON-NLS-1$ //$NON-NLS-2$
+          // menu.addMenuListener("trans-graph-entry-lineage", this, "fieldsLineage"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-verify", this, "checkSelectedSteps"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-mapping", this, "generateMappingToThisStep"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-partitioning", this, "partitioning"); //$NON-NLS-1$ //$NON-NLS-2$
