@@ -127,7 +127,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 	private void executeLoadCommand() throws Exception {
 		
         String loadCommand = "";
-        loadCommand += "LOAD DATA INFILE '"+meta.getFifoFileName()+"' ";
+        loadCommand += "LOAD DATA INFILE '"+environmentSubstitute(meta.getFifoFileName())+"' ";
         loadCommand += "INTO TABLE "+data.schemaTable+" ";
         if (meta.isReplacingData()) {
         	loadCommand += "REPLACE ";
@@ -195,8 +195,10 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 						}
 					} else if (sourceMeta.isNumeric() && meta.getFieldFormatType()[i]==MySQLBulkLoaderMeta.FIELD_FORMAT_TYPE_NUMBER) {
 						data.bulkFormatMeta[i] = data.bulkNumberMeta.clone();
-					} else {
-						data.bulkFormatMeta[i] = null;
+					} 
+					
+					if (data.bulkFormatMeta[i]==null && !sourceMeta.isStorageBinaryString()) {
+						data.bulkFormatMeta[i] = sourceMeta.clone();
 					}
 				}
 
@@ -272,10 +274,12 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 		    				data.fifoStream.write((byte[])valueData);
 		    			} else {
 		    				String string = valueMeta.getString(valueData);
-		    				if (meta.getFieldFormatType()[i]==MySQLBulkLoaderMeta.FIELD_FORMAT_TYPE_STRING_ESCAPE) {
-		    					string = Const.replace(string, meta.getEnclosure(), meta.getEscapeChar()+meta.getEnclosure());
+		    				if (string!=null) {
+			    				if (meta.getFieldFormatType()[i]==MySQLBulkLoaderMeta.FIELD_FORMAT_TYPE_STRING_ESCAPE) {
+			    					string = Const.replace(string, meta.getEnclosure(), meta.getEscapeChar()+meta.getEnclosure());
+			    				}
+			    				data.fifoStream.write(string.getBytes());
 		    				}
-		    				data.fifoStream.write(string.getBytes());
 		    			}
 		    			data.fifoStream.write(data.quote);
 		    			break;
@@ -284,7 +288,9 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 	    					data.fifoStream.write( valueMeta.getBinaryString(valueData) );
 	    				} else {
 		    				Long integer = valueMeta.getInteger(valueData);
-		    				data.fifoStream.write(data.bulkFormatMeta[i].getString(integer).getBytes());
+		    				if (integer!=null) {
+		    					data.fifoStream.write(data.bulkFormatMeta[i].getString(integer).getBytes());
+		    				}
 	    				}
 		    			break;
 		    		case ValueMetaInterface.TYPE_DATE:
@@ -292,7 +298,9 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 	    					data.fifoStream.write( valueMeta.getBinaryString(valueData) );
 	    				} else {
 		    				Date date = valueMeta.getDate(valueData);
-		    				data.fifoStream.write(data.bulkFormatMeta[i].getString(date).getBytes());
+		    				if (date!=null) {
+		    					data.fifoStream.write(data.bulkFormatMeta[i].getString(date).getBytes());
+		    				}
 	    				}
 		    			break;
 		    		case ValueMetaInterface.TYPE_BOOLEAN:
@@ -300,7 +308,9 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 	    					data.fifoStream.write( valueMeta.getBinaryString(valueData) );
 	    				} else {
 		    				Boolean b= valueMeta.getBoolean(valueData);
-		    				data.fifoStream.write(data.bulkFormatMeta[i].getString(b).getBytes());
+		    				if (b!=null) {
+		    					data.fifoStream.write(data.bulkFormatMeta[i].getString(b).getBytes());
+		    				}
 	    				}
 		    			break;
 		    		case ValueMetaInterface.TYPE_NUMBER:
@@ -308,7 +318,9 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 		    				data.fifoStream.write((byte[])valueData);
 		    			} else {
 		    				Double d = valueMeta.getNumber(valueData);
-		    				data.fifoStream.write(data.bulkFormatMeta[i].getString(d).getBytes());
+		    				if (d!=null) {
+		    					data.fifoStream.write(data.bulkFormatMeta[i].getString(d).getBytes());
+		    				}
 		    			}
 		    			break;
 		    		case ValueMetaInterface.TYPE_BIGNUMBER:
@@ -316,7 +328,9 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 		    				data.fifoStream.write((byte[])valueData);
 		    			} else {
 		    				BigDecimal bn = valueMeta.getBigNumber(valueData);
-		    				data.fifoStream.write(data.bulkFormatMeta[i].getString(bn).getBytes());
+		    				if (bn!=null) {
+		    					data.fifoStream.write(data.bulkFormatMeta[i].getString(bn).getBytes());
+		    				}
 		    			}
 		    			break;
 		    		}
@@ -405,7 +419,9 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
             // remove the fifo file...
             //
             try {
-            	new File(data.fifoFilename).delete();
+            	if (data.fifoFilename!=null) {
+            		new File(data.fifoFilename).delete();
+            	}
             } catch(Exception e) {
             	logError("Unable to delete FIFO file : "+data.fifoFilename, e);
             }

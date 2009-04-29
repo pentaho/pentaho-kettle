@@ -147,6 +147,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
     private Trans                        trans;
 
     private Object statusCountersLock = new Object();
+    
     /**  nr of lines read from previous step(s)
      * @deprecated please use the supplied getters, setters and increment/decrement methods 
      */
@@ -324,6 +325,12 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	
 	/** The socket repository to use when opening server side sockets in clustering mode */
 	private SocketRepository socketRepository;
+	
+	/** The upper buffer size boundary after which we manage the thread priority a little bit to prevent excessive locking */
+	private int upperBufferBoundary;
+	
+	/** The lower buffer size boundary after which we manage the thread priority a little bit to prevent excessive locking */
+	private int lowerBufferBoundary;
 
     /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
@@ -426,6 +433,9 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	    stepListeners = new ArrayList<StepListener>();
         
         dispatch();
+        
+        upperBufferBoundary = (int)(transMeta.getSizeRowset() * 0.98);
+        lowerBufferBoundary = (int)(transMeta.getSizeRowset() * 0.02);
     }
 
     public boolean init(StepMetaInterface smi, StepDataInterface sdi)
@@ -1031,7 +1041,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	        }
 	    	this.checkTransRunning = true;
 	    }
-
+	    
         // call all row listeners...
         //
 	    synchronized (this) {
@@ -1082,6 +1092,14 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
             	//
                 RowSet rs = outputRowSets.get(currentOutputRowSetNr);
                 
+        	    // To reduce stress on the locking system we are NOT going to allow
+        	    // the buffer to grow to its full capacity.
+        	    //
+                if (isUsingThreadPriorityManagment() && !rs.isDone() && rs.size()>= upperBufferBoundary && !isStopped())
+                {
+                	try { Thread.sleep(0,1); } catch (InterruptedException e) { }
+                }
+                
                 // Loop until we find room in the target rowset
                 //
                 while (!rs.putRow(rowMeta, row) && !isStopped()) 
@@ -1106,6 +1124,15 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
                 for (int i = 1; i < outputRowSets.size(); i++) // start at 1
                 {
                     RowSet rs = outputRowSets.get(i);
+                    
+            	    // To reduce stress on the locking system we are NOT going to allow
+            	    // the buffer to grow to its full capacity.
+            	    //
+                    if (isUsingThreadPriorityManagment() && !rs.isDone() && rs.size()>= upperBufferBoundary && !isStopped())
+                    {
+                    	try { Thread.sleep(0,1); } catch (InterruptedException e) { }
+                    }
+
                     try
                     {
                         // Loop until we find room in the target rowset
@@ -1479,7 +1506,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	    // The buffer to grow beyond "a few" entries.
 	    // We'll only do that if the previous step has not ended...
 	    //
-        if (isUsingThreadPriorityManagment() && !inputRowSet.isDone() && inputRowSet.size()<= ( transMeta.getSizeRowset()>>6 ) && !isStopped())
+        if (isUsingThreadPriorityManagment() && !inputRowSet.isDone() && inputRowSet.size()<= lowerBufferBoundary && !isStopped())
         {
         	try { Thread.sleep(0,1); } catch (InterruptedException e) { }
         }
@@ -1709,7 +1736,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	    // The buffer to grow beyond "a few" entries.
 	    // We'll only do that if the previous step has not ended...
 	    //
-        if (isUsingThreadPriorityManagment() && !rowSet.isDone() && rowSet.size()<= ( transMeta.getSizeRowset()>>6 ) && !isStopped())
+        if (isUsingThreadPriorityManagment() && !rowSet.isDone() && rowSet.size()<= lowerBufferBoundary && !isStopped())
         {
         	try { Thread.sleep(0,1); } catch (InterruptedException e) { }
         }
