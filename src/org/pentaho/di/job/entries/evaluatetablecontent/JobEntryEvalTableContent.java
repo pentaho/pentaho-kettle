@@ -417,7 +417,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		                default: 
 		                	break;
 		             }	
-				} // endif countSQLStatement!=null    
+				} // end if countSQLStatement!=null    
 			}
 			catch(KettleException dbe)
 			{
