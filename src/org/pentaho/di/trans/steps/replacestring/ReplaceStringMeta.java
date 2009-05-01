@@ -297,6 +297,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 			} else {
 				int index = inputRowMeta.indexOfValue(fieldInStream[i]);
 				if (index>=0) {
+					valueMeta.setName(fieldInStream[i]);
 					inputRowMeta.setValueMeta(index, valueMeta);
 				}
 			}
