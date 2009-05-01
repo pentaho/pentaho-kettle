@@ -44,6 +44,7 @@ public class ReplaceString extends BaseStep implements StepInterface {
             int copyNr, TransMeta transMeta, Trans trans) {
         super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
     }
+    
     public static String replaceString(String originalString, Pattern pattern, String replaceByString) 
     {
         if (originalString == null) {
@@ -84,13 +85,13 @@ public class ReplaceString extends BaseStep implements StepInterface {
 
     private synchronized Object[] getOneRow(RowMetaInterface rowMeta,Object[] row) throws KettleException {
 
-        Object[] rowData = RowDataUtil.createResizedCopy(row, data.outputRowMeta.size());
-
+    	Object[] rowData = RowDataUtil.resizeArray(row, data.outputRowMeta.size());
+        
         int length = meta.getFieldInStream().length;
 
         for (int i = 0; i < length; i++) {
             String value = replaceString(
-                    (String)row[data.inStreamNrs[i]],	
+                    getInputRowMeta().getString(row, data.inStreamNrs[i]),	
                     data.patterns[i],
                     data.replaceByString[i]);
 
@@ -126,6 +127,8 @@ public class ReplaceString extends BaseStep implements StepInterface {
             data.inStreamNrs = new int[numFields];
             data.outStreamNrs = new String[numFields];
             data.patterns = new Pattern[numFields];
+            data.replaceByString = new String[numFields];
+            
             for (int i = 0; i < numFields; i++) {
                 data.inStreamNrs[i] = getInputRowMeta().indexOfValue(meta.getFieldInStream()[i]);
                 if (data.inStreamNrs[i] < 0) // couldn't find field!
@@ -136,8 +139,6 @@ public class ReplaceString extends BaseStep implements StepInterface {
                     throw new KettleStepException(Messages.getString("ReplaceString.Exception.FieldTypeNotString", meta.getFieldInStream()[i]));
 
                 data.outStreamNrs[i] = environmentSubstitute(meta.getFieldOutStream()[i]);
-
-                data.replaceByString = new String[numFields];
 
                 data.patterns[i] = buildPattern(
                         meta.getUseRegEx()[i] != ReplaceStringMeta.USE_REGEX_YES,

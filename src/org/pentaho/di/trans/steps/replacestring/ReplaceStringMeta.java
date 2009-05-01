@@ -288,11 +288,17 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 	            VariableSpace space) throws KettleStepException
 	  {
 		for(int i=0;i<fieldOutStream.length;i++) {
+			ValueMetaInterface valueMeta = new ValueMeta(space.environmentSubstitute(fieldOutStream[i]), ValueMeta.TYPE_STRING);
+			valueMeta.setLength(100, -1);
+			valueMeta.setOrigin(name);
+			
 			if (!Const.isEmpty(fieldOutStream[i])){
-				ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(fieldOutStream[i]), ValueMeta.TYPE_STRING);
-				v.setLength(100, -1);
-				v.setOrigin(name);
-				inputRowMeta.addValueMeta(v);
+				inputRowMeta.addValueMeta(valueMeta);
+			} else {
+				int index = inputRowMeta.indexOfValue(fieldInStream[i]);
+				if (index>=0) {
+					inputRowMeta.setValueMeta(index, valueMeta);
+				}
 			}
 		}
 	}
