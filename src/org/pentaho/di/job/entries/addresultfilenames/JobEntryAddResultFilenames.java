@@ -233,7 +233,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
          // ok we can process this file/folder
         if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryAddResultFilenames.ProcessingRow", filefolder_previous, fmasks_previous)); //$NON-NLS-1$
 
-          if (!ProcessFile(filefolder_previous, fmasks_previous,parentJob,result)) {
+          if (!ProcessFile(filefolder_previous, fmasks_previous,parentJob,result, log)) {
         	  nrErrFiles++;
           }
        
@@ -244,7 +244,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
         
           // ok we can process this file/folder
     	  if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryAddResultFilenames.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
-          if (!ProcessFile(arguments[i], filemasks[i],parentJob,result)) {
+          if (!ProcessFile(arguments[i], filemasks[i],parentJob,result, log)) {
         	  nrErrFiles++;
           }
       }
@@ -261,10 +261,9 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
     return result;
   }
 
-  private boolean ProcessFile(String filename, String wildcard, Job parentJob,Result result) {
-    LogWriter log = LogWriter.getInstance();
+  private boolean ProcessFile(String filename, String wildcard, Job parentJob,Result result, LogWriter log) {
 
-    boolean rcode = false;
+    boolean rcode = true;
     FileObject filefolder = null;
     String realFilefoldername = environmentSubstitute(filename);
     String realwildcard = environmentSubstitute(wildcard);
@@ -305,10 +304,11 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
       } else {
         // File can not be found
     	  if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobEntryAddResultFilenames.FileCanNotbeFound", realFilefoldername)); //$NON-NLS-1$
-        rcode = true;
+    	  rcode = false;
       }
     } catch (IOException e) {
-      log.logError(toString(), Messages.getString("JobEntryAddResultFilenames.CouldNotProcess", realFilefoldername, e.getMessage())); //$NON-NLS-1$
+    	rcode = false;
+        log.logError(toString(), Messages.getString("JobEntryAddResultFilenames.CouldNotProcess", realFilefoldername, e.getMessage())); //$NON-NLS-1$
     } finally {
       if (filefolder != null) {
         try {
