@@ -179,6 +179,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 	private FormData fdFilenameField,fdlFilenameField;
     private Button wFileField;
 	
+    private boolean gotPreviousField=false;
 
 	public static final int dateLengths[] = new int[] { 23, 19, 14, 10, 10, 10,
 			10, 8, 8, 8, 8, 6, 6 };
@@ -1052,26 +1053,29 @@ public class LDIFInputDialog extends BaseStepDialog implements
 	
 	 private void setFileField()
 	 {
-		 try{
-	           
-			 wFilenameField.removeAll();
-				
-			 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-				if (r!=null)
-				{
-		             r.getFieldNames();
-		             
-		             for (int i=0;i<r.getFieldNames().length;i++)
-						{	
-		            	 wFilenameField.add(r.getFieldNames()[i]);					
-							
-						}
+		 if(!gotPreviousField)
+		 {
+			 try{
+		         String value=wFilenameField.getText();  
+				 wFilenameField.removeAll();
+					
+				 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+					if (r!=null)
+					{
+			             r.getFieldNames();
+			             
+			             for (int i=0;i<r.getFieldNames().length;i++)
+							{	
+			            	 wFilenameField.add(r.getFieldNames()[i]);					
+								
+							}
+					}
+					gotPreviousField=true;
+					if(value!=null) wFilenameField.setText(value);
+			 }catch(KettleException ke){
+					new ErrorDialog(shell, Messages.getString("LDIFInputDialog.FailedToGetFields.DialogTitle"), Messages.getString("LDIFInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-			 
-			
-		 }catch(KettleException ke){
-				new ErrorDialog(shell, Messages.getString("LDIFInputDialog.FailedToGetFields.DialogTitle"), Messages.getString("LDIFInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
-			}
+		 }
 	 }
 	private void get() {
 

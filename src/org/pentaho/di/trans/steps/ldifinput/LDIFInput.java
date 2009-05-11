@@ -119,7 +119,8 @@ public class LDIFInput extends BaseStep implements StepInterface
 		 Object[] outputRowData=buildEmptyRow();
 		 
 		 // Create new row	or clone
-		 if(meta.isFileField())	 outputRowData = data.readrow.clone();
+		 if(meta.isFileField())
+			 System.arraycopy(data.readrow, 0, outputRowData, 0, data.readrow.length);
 
 		 try{	
 			
