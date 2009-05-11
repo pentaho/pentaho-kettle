@@ -313,6 +313,11 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 		int nrFiles  = fileName.length;
 		int nrFields = inputFields.length;
 		retval.allocate(nrFiles, nrFields);
+		for (int i=0;i<nrFiles;i++)
+		{
+			retval.fileName[i]     = fileName[i];
+			retval.fileMask[i]     = fileMask[i];
+		}
 		for (int i=0;i<nrFields;i++)
 		{
             if (inputFields[i]!=null)

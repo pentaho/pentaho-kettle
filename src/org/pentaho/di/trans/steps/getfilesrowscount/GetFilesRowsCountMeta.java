@@ -270,7 +270,11 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 		int nrFiles  = fileName.length;
 
 		retval.allocate(nrFiles);
-	
+		for (int i=0;i<nrFiles;i++)
+		{
+			retval.fileName[i]     = fileName[i];
+			retval.fileMask[i]     = fileMask[i];
+		}
 		return retval;
 	}
     

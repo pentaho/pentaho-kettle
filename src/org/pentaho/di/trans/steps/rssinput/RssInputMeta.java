@@ -268,7 +268,10 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface
 		int nrUrl  = url.length;
 
 		retval.allocate(nrUrl, nrFields);
-		
+		for (int i=0;i<nrUrl;i++)
+		{
+			retval.url[i]     = url[i];
+		}
 		for (int i=0;i<nrFields;i++)
 		{
             if (inputFields[i]!=null)
