@@ -84,7 +84,7 @@
 	  <target name="compile-db" depends="compile-core" description="compile the db source code " >
 	  	<echo>Compiling Kettle DB...</echo>
       <javac fork="true"
-          destdir="${classes-core}"
+          destdir="${classes-db}"
           target="5"
           source="5"
           deprecation="true"
@@ -94,7 +94,8 @@
 	    	<src path="${src-db}"/>
 	    	
 	    	<classpath id="cp-kettle-db">
-	    		<pathelement path="${classes-core}"/>
+                <pathelement path="${classes-core}"/>
+	    		<pathelement path="${classes-db}"/>
 				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
 				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
 		  		</classpath>
@@ -116,6 +117,7 @@
 
             <classpath id="cp-kettle">
                 <pathelement path="${classes-core}"/>
+	    		<pathelement path="${classes-db}"/>
                 <fileset dir="${libext}" 		includes="*.jar *.zip"/>
                 <fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
             </classpath>
@@ -308,7 +310,7 @@
 	  <target name="kettle-db" depends="compile-db, copy-db" description="generate the kettle db library kettle-db.jar">
 	  	<echo>Generating the Kettle DB library kettle-db.jar ...</echo>
 	  	<jar jarfile="${lib}/kettle-db.jar" 
-	    	 basedir="${classes-core}" 
+	    	 basedir="${classes-db}" 
 	    	 includes="**/* ${version.file.path}"
 	  	     excludes="**/Thumbs.db **/*.jar **/*.swp"
 	  		>

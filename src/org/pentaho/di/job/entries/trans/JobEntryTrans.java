@@ -274,7 +274,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			filename = XMLHandler.getTagValue(entrynode, "filename") ;
 			transname = XMLHandler.getTagValue(entrynode, "transname") ;
 
-            directory = XMLHandler.getTagValue(entrynode, "k");
+            directory = XMLHandler.getTagValue(entrynode, "directory");
 
             argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
             execPerRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "exec_per_row") );

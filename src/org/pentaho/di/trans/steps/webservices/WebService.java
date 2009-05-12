@@ -166,13 +166,15 @@ public class WebService extends BaseStep implements StepInterface
     	// Create an index list for the input fields
     	//
         indexList = new ArrayList<Integer>();
-        for (WebServiceField curField : meta.getFieldsIn())
-        {
-            int index = rowMeta.indexOfValue(curField.getName());
-            if (index>=0)
-            {
-            	indexList.add(index);
-            }
+        if (rowMeta!=null) {
+	        for (WebServiceField curField : meta.getFieldsIn())
+	        {
+	            int index = rowMeta.indexOfValue(curField.getName());
+	            if (index>=0)
+	            {
+	            	indexList.add(index);
+	            }
+	        }
         }
         
         // Create a map for the output values too

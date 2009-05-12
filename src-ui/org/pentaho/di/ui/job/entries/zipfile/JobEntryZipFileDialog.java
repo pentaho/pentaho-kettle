@@ -676,8 +676,8 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wlCompressionRate.setText(Messages.getString("JobZipFiles.CompressionRate.Label"));
 		props.setLook(wlCompressionRate);
 		fdlCompressionRate = new FormData();
-		fdlCompressionRate.left = new FormAttachment(0, 0);
-		fdlCompressionRate.right = new FormAttachment(middle, 0);
+		fdlCompressionRate.left = new FormAttachment(0, -margin);
+		fdlCompressionRate.right = new FormAttachment(middle, -margin);
 		fdlCompressionRate.top = new FormAttachment(wZipFile, margin);
 		wlCompressionRate.setLayoutData(fdlCompressionRate);
 		wCompressionRate = new CCombo(wSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
@@ -699,8 +699,8 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wlIfFileExists.setText(Messages.getString("JobZipFiles.IfZipFileExists.Label"));
 		props.setLook(wlIfFileExists);
 		fdlIfFileExists = new FormData();
-		fdlIfFileExists.left = new FormAttachment(0, 0);
-		fdlIfFileExists.right = new FormAttachment(middle, 0);
+		fdlIfFileExists.left = new FormAttachment(0, -margin);
+		fdlIfFileExists.right = new FormAttachment(middle, -margin);
 		fdlIfFileExists.top = new FormAttachment(wCompressionRate, margin);
 		wlIfFileExists.setLayoutData(fdlIfFileExists);
 		wIfFileExists = new CCombo(wSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
@@ -723,8 +723,8 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wlAfterZip.setText(Messages.getString("JobZipFiles.AfterZip.Label"));
 		props.setLook(wlAfterZip);
 		fdlAfterZip = new FormData();
-		fdlAfterZip.left = new FormAttachment(0, 0);
-		fdlAfterZip.right = new FormAttachment(middle, 0);
+		fdlAfterZip.left = new FormAttachment(0, -margin);
+		fdlAfterZip.right = new FormAttachment(middle, -margin);
 		fdlAfterZip.top = new FormAttachment(wIfFileExists, margin);
 		wlAfterZip.setLayoutData(fdlAfterZip);
 		wAfterZip = new CCombo(wSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
