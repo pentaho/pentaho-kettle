@@ -302,7 +302,10 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
     {
         rep.saveStepAttribute(id_transformation, id_step, "PARTITIONING_SCHEMA",    partitionSchema!=null?partitionSchema.getName():""); // selected schema
-        rep.saveStepAttribute(id_transformation, id_step, "PARTITIONING_METHOD",    getMethodCode());          // method of partitioning  
+        rep.saveStepAttribute(id_transformation, id_step, "PARTITIONING_METHOD",    getMethodCode());          // method of partitioning
+        if( partitioner != null ) {
+        	partitioner.saveRep( rep, id_transformation, id_step);
+        }
     }
     
     public void createPartitioner( String method ) {
