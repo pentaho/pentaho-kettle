@@ -47,6 +47,9 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
     /** Name of the web service operation to use  */
     private String operationName;
     
+    /** Name of the operation request name: optional, can be different from the operation name */
+    private String operationRequestName;
+    
     /** The name-space of the operation */
     private String operationNamespace;
 
@@ -188,6 +191,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         // Store the operation
         //
         retval.append("    " + XMLHandler.addTagValue("wsOperation", getOperationName()));
+        retval.append("    " + XMLHandler.addTagValue("wsOperationRequest", getOperationRequestName()));
         retval.append("    " + XMLHandler.addTagValue("wsOperationNamespace", getOperationNamespace()));
         retval.append("    " + XMLHandler.addTagValue("wsInFieldContainer", getInFieldContainerName()));
         retval.append("    " + XMLHandler.addTagValue("wsInFieldArgument", getInFieldArgumentName()));
@@ -246,6 +250,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         // Load the operation
         //
         setOperationName(XMLHandler.getTagValue(stepnode, "wsOperation"));
+        setOperationRequestName(XMLHandler.getTagValue(stepnode, "wsOperationRequest"));
         setOperationNamespace(XMLHandler.getTagValue(stepnode, "wsOperationNamespace"));
         setInFieldContainerName(XMLHandler.getTagValue(stepnode, "wsInFieldContainer"));
         setInFieldArgumentName(XMLHandler.getTagValue(stepnode, "wsInFieldArgument"));
@@ -309,6 +314,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         // Load the operation
         //
         setOperationName(rep.getStepAttributeString(id_step, "wsOperation"));
+        setOperationRequestName(rep.getStepAttributeString(id_step, "wsOperationRequest"));
         setOperationNamespace(rep.getStepAttributeString(id_step, "wsOperationNamespace"));
         setInFieldContainerName(rep.getStepAttributeString(id_step, "wsInFieldContainer"));
         setInFieldArgumentName(rep.getStepAttributeString(id_step, "wsInFieldArgument"));
@@ -361,6 +367,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         // Store the WS Operation
         //
         rep.saveStepAttribute(id_transformation, id_step, "wsOperation", getOperationName());
+        rep.saveStepAttribute(id_transformation, id_step, "wsOperationRequest", getOperationRequestName());
         rep.saveStepAttribute(id_transformation, id_step, "wsOperationNamespace", getOperationNamespace());
         rep.saveStepAttribute(id_transformation, id_step, "wsInFieldContainer", getInFieldContainerName());
         rep.saveStepAttribute(id_transformation, id_step, "wsInFieldArgument", getInFieldArgumentName());
@@ -636,5 +643,19 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setReturningReplyAsString(boolean returningReplyAsString) {
 		this.returningReplyAsString = returningReplyAsString;
+	}
+
+	/**
+	 * @return the operationRequestName
+	 */
+	public String getOperationRequestName() {
+		return operationRequestName;
+	}
+
+	/**
+	 * @param operationRequestName the operationRequestName to set
+	 */
+	public void setOperationRequestName(String operationRequestName) {
+		this.operationRequestName = operationRequestName;
 	}
 }

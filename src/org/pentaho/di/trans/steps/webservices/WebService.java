@@ -13,8 +13,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -40,7 +43,6 @@ import org.apache.commons.httpclient.methods.RequestEntity;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -54,11 +56,15 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.webservices.wsdl.Wsdl;
+import org.pentaho.di.trans.steps.webservices.wsdl.WsdlOpParameter;
+import org.pentaho.di.trans.steps.webservices.wsdl.WsdlOpParameterList;
+import org.pentaho.di.trans.steps.webservices.wsdl.WsdlOperation;
 import org.pentaho.di.trans.steps.webservices.wsdl.XsdType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import com.ctc.wstx.exc.WstxParsingException;
 
@@ -70,7 +76,6 @@ public class WebService extends BaseStep implements StepInterface
 
     private WebServiceMeta meta;
 
-    private StringBuffer xml;
 
     private int nbRowProcess;
 
@@ -122,7 +127,6 @@ public class WebService extends BaseStep implements StepInterface
     		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
     		
     		defineIndexList(getInputRowMeta(), vCurrentRow);
-    		startXML();
     	}
     	else
     	{
@@ -136,18 +140,14 @@ public class WebService extends BaseStep implements StepInterface
     	
         if (vCurrentRow != null)
         {
-            parseRow(getInputRowMeta(), vCurrentRow);
-
             nbRowProcess++;
+            data.argumentRows.add(vCurrentRow);
         }
 
         if ((vCurrentRow == null && (nbRowProcess % meta.getCallStep() != 0)) || (vCurrentRow != null && ((nbRowProcess > 0 && nbRowProcess % meta.getCallStep() == 0)))
             || (vCurrentRow == null && (!meta.hasFieldsIn())))
         {
-            endXML();
             requestSOAP(vCurrentRow, getInputRowMeta());
-
-            startXML();
         }
 
         // No input received, this one lookup execution is all we're going to do.
@@ -161,7 +161,7 @@ public class WebService extends BaseStep implements StepInterface
 
     private List<Integer> indexList;
     
-    private void defineIndexList(RowMetaInterface rowMeta, Object[] vCurrentRow)
+    private void defineIndexList(RowMetaInterface rowMeta, Object[] vCurrentRow) throws KettleException
     {
     	// Create an index list for the input fields
     	//
@@ -173,6 +173,9 @@ public class WebService extends BaseStep implements StepInterface
 	            if (index>=0)
 	            {
 	            	indexList.add(index);
+	            } else 
+	            {
+	            	throw new KettleException("Required input field ["+curField.getName()+"] couldn't be found in the step input");
 	            }
 	        }
         }
@@ -190,106 +193,124 @@ public class WebService extends BaseStep implements StepInterface
             	data.indexMap.put(curField.getWsName(), index); 
             }
         }
+    }
+   
+    private String getRequestXML(WsdlOperation operation) throws KettleException
+    {
+    	WsdlOpParameterList parameters = operation.getParameters();
+    	String requestOperation = Const.NVL(meta.getOperationRequestName(), meta.getOperationName()); 
+    	Iterator<WsdlOpParameter> iterator = parameters.iterator();
     	
-    }
-    
-    private void parseRow(RowMetaInterface rowMeta, Object[] vCurrentRow) throws KettleValueException
-    {
-        if (meta.getInFieldArgumentName() != null)
-        {
-            xml.append("        <" + NS_PREFIX + ":").append(meta.getInFieldArgumentName()).append(">\n");
-        }
+    	List<String> bodyNames = new ArrayList<String>();
+    	
+    	while (iterator.hasNext()) {
+			WsdlOpParameter wsdlOpParameter = iterator.next();
+			bodyNames.add(wsdlOpParameter.getName().getLocalPart());
+		}
 
-        for (Integer index : indexList)
-        {
-            ValueMetaInterface vCurrentValue = rowMeta.getValueMeta(index);
-            Object data = vCurrentRow[index];
-            
-            WebServiceField field = meta.getFieldInFromName(vCurrentValue.getName());
-            if (field != null)
-            {
-                if (!vCurrentValue.isNull(data))
-                {
-                    xml.append("          <").append(NS_PREFIX).append(":").append(field.getWsName()).append(">");
-                    if (XsdType.TIME.equals(field.getXsdType()))
-                    {
-                        // Allow to deal with hours like 36:12:12 (> 24h)
-                        long millis = vCurrentValue.getDate(data).getTime() - dateRef.getTime();
-                        xml.append(decFormat.format(millis / 3600000) + ":"
-                                   + decFormat.format((millis % 3600000) / 60000)
-                                   + ":"
-                                   + decFormat.format(((millis % 60000) / 1000)));
-                    }
-                    else if (XsdType.DATE.equals(field.getXsdType()))
-                    {
-                        xml.append(dateFormat.format(vCurrentValue.getDate(data)));
-                    }
-                    else if (XsdType.BOOLEAN.equals(field.getXsdType()))
-                    {
-                        xml.append(vCurrentValue.getBoolean(data) ? "true" : "false");
-                    }
-                    else if (XsdType.DATE_TIME.equals(field.getXsdType()))
-                    {
-                        xml.append(dateTimeFormat.format(vCurrentValue.getDate(data)));
-                    }
-                    else if (vCurrentValue.isNumber())
-                    {
-                    	// TODO: To Fix !! This is very bad coding...
-                    	//
-                        xml.append(vCurrentValue.getString(data).trim().replace(',', '.'));
-                    }
-                    else
-                    {
-                        xml.append(Const.trim(vCurrentValue.getString(data)));
-                    }
-                    xml.append("</").append(NS_PREFIX).append(":").append(field.getWsName()).append(">\n");
-                }
-                else
-                {
-                    xml.append("          <").append(NS_PREFIX).append(":").append(field.getWsName()).append(" xsi:nil=\"true\"/>\n");
-                }
-            }
-        }
-        if (meta.getInFieldArgumentName() != null)
-        {
-            xml.append("        </" + NS_PREFIX + ":").append(meta.getInFieldArgumentName()).append(">\n");
-        }
-    }
-
-    private void startXML()
-    {
-        xml = new StringBuffer();
+    	List<String> headerNames = new ArrayList<String>(parameters.getHeaderNames());
+    	
+    	StringBuffer xml = new StringBuffer();
 
         // TODO We only manage one name space for all the elements. See in the
         // future how to manage multiple name spaces
         //
         xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        xml.append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ns=\"");
+        xml.append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:"+NS_PREFIX+"=\"");
         xml.append(meta.getOperationNamespace());
         xml.append("\">\n");
 
-        xml.append("  <soapenv:Header/>\n");
+        xml.append("  <soapenv:Header>\n");
+        addParametersToXML(xml, headerNames);
+        xml.append("  </soapenv:Header>\n");
+
         xml.append("  <soapenv:Body>\n");
 
-        xml.append("    <" + NS_PREFIX + ":").append(meta.getOperationName()).append(">\n");
+        xml.append("    <" + NS_PREFIX + ":").append(requestOperation).append(">\n");   // OPEN request operation
         if (meta.getInFieldContainerName() != null)
         {
             xml.append("      <" + NS_PREFIX + ":" + meta.getInFieldContainerName() + ">\n");
         }
 
-    }
+        addParametersToXML(xml, bodyNames);
 
-    private void endXML()
-    {
-    	if (xml==null) startXML();
-    	
         if (meta.getInFieldContainerName() != null)
         {
             xml.append("      </" + NS_PREFIX + ":" + meta.getInFieldContainerName() + ">\n");
         }
-        xml.append("    </" + NS_PREFIX + ":").append(meta.getOperationName()).append(">\n");
+        xml.append("    </" + NS_PREFIX + ":").append(requestOperation).append(">\n");  // CLOSE request operation
         xml.append("  </soapenv:Body>\n");
         xml.append("</soapenv:Envelope>\n");
+        
+        return xml.toString();
+    }
+    
+    private void addParametersToXML(StringBuffer xml, List<String> names) throws KettleException {
+    	
+        // Add the row parameters...
+        //
+        for (Object[] vCurrentRow : data.argumentRows) {
+        	
+            if (meta.getInFieldArgumentName() != null)
+            {
+                xml.append("        <" + NS_PREFIX + ":").append(meta.getInFieldArgumentName()).append(">\n");
+            }
+
+            for (Integer index : indexList)
+            {
+                ValueMetaInterface vCurrentValue = getInputRowMeta().getValueMeta(index);
+                Object data = vCurrentRow[index];
+                
+                WebServiceField field = meta.getFieldInFromName(vCurrentValue.getName());
+                if (field != null && names.contains(field.getWsName()))
+                {
+                    if (!vCurrentValue.isNull(data))
+                    {
+                        xml.append("          <").append(NS_PREFIX).append(":").append(field.getWsName()).append(">");
+                        if (XsdType.TIME.equals(field.getXsdType()))
+                        {
+                            // Allow to deal with hours like 36:12:12 (> 24h)
+                            long millis = vCurrentValue.getDate(data).getTime() - dateRef.getTime();
+                            xml.append(decFormat.format(millis / 3600000) + ":"
+                                       + decFormat.format((millis % 3600000) / 60000)
+                                       + ":"
+                                       + decFormat.format(((millis % 60000) / 1000)));
+                        }
+                        else if (XsdType.DATE.equals(field.getXsdType()))
+                        {
+                            xml.append(dateFormat.format(vCurrentValue.getDate(data)));
+                        }
+                        else if (XsdType.BOOLEAN.equals(field.getXsdType()))
+                        {
+                            xml.append(vCurrentValue.getBoolean(data) ? "true" : "false");
+                        }
+                        else if (XsdType.DATE_TIME.equals(field.getXsdType()))
+                        {
+                            xml.append(dateTimeFormat.format(vCurrentValue.getDate(data)));
+                        }
+                        else if (vCurrentValue.isNumber())
+                        {
+                        	// TODO: To Fix !! This is very bad coding...
+                        	//
+                            xml.append(vCurrentValue.getString(data).trim().replace(',', '.'));
+                        }
+                        else
+                        {
+                            xml.append(Const.trim(vCurrentValue.getString(data)));
+                        }
+                        xml.append("</").append(NS_PREFIX).append(":").append(field.getWsName()).append(">\n");
+                    }
+                    else
+                    {
+                        xml.append("          <").append(NS_PREFIX).append(":").append(field.getWsName()).append(" xsi:nil=\"true\"/>\n");
+                    }
+                }
+            }
+            if (meta.getInFieldArgumentName() != null)
+            {
+                xml.append("        </" + NS_PREFIX + ":").append(meta.getInFieldArgumentName()).append(">\n");
+            }
+        }
     }
 
     private synchronized void requestSOAP(Object[] rowData, RowMetaInterface rowMeta) throws KettleException
@@ -323,6 +344,12 @@ public class WebService extends BaseStep implements StepInterface
 
         try
         {
+        	// Generate the XML to send over, determine the correct name for the request...
+        	//
+        	WsdlOperation operation = wsdl.getOperation(meta.getOperationName());
+        	String xml = getRequestXML(operation);
+            data.argumentRows.clear(); // ready for the next batch.
+        	
         	URI uri = new URI(vURLService, false);
             vHttpMethod.setURI(uri);
             vHttpMethod.setRequestHeader("Content-Type", "text/xml;charset=UTF-8");
@@ -443,11 +470,17 @@ public class WebService extends BaseStep implements StepInterface
 
 	    	// What is the expected response object for the operation?
 	    	//
-	    	Document doc = XMLHandler.loadXMLString(response);
-	    	Node enveloppeNode = XMLHandler.getSubNode(doc, "soapenv:Envelope");
-	    	if (enveloppeNode==null) enveloppeNode = XMLHandler.getSubNode(doc, "soap:Envelope"); // retry
-	    	Node bodyNode = XMLHandler.getSubNode(enveloppeNode, "soapenv:body");
-	    	if (bodyNode==null) bodyNode = XMLHandler.getSubNode(enveloppeNode, "soap:body");// retry
+    		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+    		documentBuilderFactory.setNamespaceAware(true);
+    		
+    		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+    		
+    		Document doc = documentBuilder.parse(new InputSource(new StringReader(response)));
+    		
+    		Node envelopeNode = doc.getFirstChild();
+    		String nsPrefix = envelopeNode.getPrefix();
+    		Node bodyNode = XMLHandler.getSubNode(envelopeNode, nsPrefix+":Body");
+    		if (bodyNode==null) XMLHandler.getSubNode(envelopeNode, nsPrefix+":body"); // retry, just in case!
 	    	
 	    	// Create a few objects to help do the layout of XML snippets we find along the way
 	    	// 
@@ -502,8 +535,33 @@ public class WebService extends BaseStep implements StepInterface
 			    			break;
 			    		}
 			    	}
-			    	if (responseNode!=null) {
-			    		nodeList = responseNode.getChildNodes();
+			    	
+			    	// See if we want the whole block returned as XML...
+			    	//
+			    	if (meta.getFieldsOut().size()==1) {
+			    		WebServiceField field = meta.getFieldsOut().get(0);
+			    		if (field.getWsName().equals(responseNode.getNodeName())) {
+			    			// Pass the data as XML
+			    			//
+			    			StringWriter nodeXML = new StringWriter();
+			    			transformer.transform(new DOMSource(responseNode), new StreamResult(nodeXML));
+			    			String xml = nodeXML.toString();
+			    			
+			    			Object[] outputRowData = createNewRow(rowData);
+			    			int index = rowData==null ? 0 : getInputRowMeta().size();
+			    			outputRowData[index++] = xml;
+			    			putRow(data.outputRowMeta, outputRowData);
+			    			
+			    		} else {
+					    	if (responseNode!=null) {
+					    		nodeList = responseNode.getChildNodes();
+					    	}
+			    		}
+			    		
+			    	} else {
+				    	if (responseNode!=null) {
+				    		nodeList = responseNode.getChildNodes();
+				    	}
 			    	}
 	    		}
 	    	}

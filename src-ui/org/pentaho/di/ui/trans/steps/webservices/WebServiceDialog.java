@@ -54,6 +54,7 @@ import org.pentaho.di.trans.steps.webservices.wsdl.ComplexType;
 import org.pentaho.di.trans.steps.webservices.wsdl.Wsdl;
 import org.pentaho.di.trans.steps.webservices.wsdl.WsdlOpParameter;
 import org.pentaho.di.trans.steps.webservices.wsdl.WsdlOpParameterContainer;
+import org.pentaho.di.trans.steps.webservices.wsdl.WsdlOpParameterList;
 import org.pentaho.di.trans.steps.webservices.wsdl.WsdlOperation;
 import org.pentaho.di.trans.steps.webservices.wsdl.WsdlOperationContainer;
 import org.pentaho.di.trans.steps.webservices.wsdl.WsdlParamContainer;
@@ -80,6 +81,9 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
     private Label wlOperation;
     private CCombo wOperation;
+
+    private Label wlOperationRequest;
+    private Text wOperationRequest;
 
     private Label wlStep;
     private Text wStep;
@@ -259,6 +263,15 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         if (wsdlOperation != null)
         {
+        	// figure out the request name
+        	//
+        	String request = "";
+        	WsdlOpParameterList parameters = wsdlOperation.getParameters();
+        	if (parameters!=null && parameters.getOperation()!=null && parameters.getOperation().getInput()!=null && parameters.getOperation().getInput().getName()!=null) {
+        		request=wsdlOperation.getParameters().getOperation().getInput().getName().toString();
+        	}
+        	wOperationRequest.setText(request);
+        	
             for (int cpt = 0; cpt < wsdlOperation.getParameters().size(); cpt++)
             {
                 WsdlOpParameter param = (WsdlOpParameter) wsdlOperation.getParameters().get(cpt);
@@ -720,6 +733,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         {
             wOperation.setText(meta.getOperationName() == null ? "" : meta.getOperationName());
         }
+        wOperationRequest.setText(Const.NVL(meta.getOperationRequestName(), ""));
         if (meta.getInFieldContainerName() != null || meta.getInFieldArgumentName() != null || !meta.getFieldsIn().isEmpty())
         {
             addTabFieldIn();
@@ -784,6 +798,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     	webServiceMeta.setCompatible(wCompatible.getSelection());
     	webServiceMeta.setRepeatingElementName(wRepeatingElement.getText());
     	webServiceMeta.setReturningReplyAsString(wReplyAsString.getSelection());
+    	webServiceMeta.setOperationRequestName(wOperationRequest.getText());
 
         if (wsdlOperation != null)
         {
@@ -1046,13 +1061,32 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         });
 
+        // Operation request name (optional)
+        wlOperationRequest = new Label(compositeTabWebService, SWT.RIGHT);
+        wlOperationRequest.setText(Messages.getString("WebServiceDialog.OperationRequest.Label")); //$NON-NLS-1$
+        props.setLook(wlOperationRequest);
+        FormData fdlOperationRequest = new FormData();
+        fdlOperationRequest.left = new FormAttachment(0, 0);
+        fdlOperationRequest.top = new FormAttachment(wOperation, margin);
+        fdlOperationRequest.right = new FormAttachment(middle, -margin);
+        wlOperationRequest.setLayoutData(fdlOperationRequest);
+        wOperationRequest = new Text(compositeTabWebService, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wOperationRequest.addModifyListener(lsMod);
+        wOperationRequest.setToolTipText(Messages.getString("WebServiceDialog.OperationRequest.Tooltip")); //$NON-NLS-1$
+        props.setLook(wOperationRequest);
+        FormData fdOperationRequest = new FormData();
+        fdOperationRequest.top = new FormAttachment(wOperation, margin);
+        fdOperationRequest.left = new FormAttachment(middle, 0);
+        fdOperationRequest.right = new FormAttachment(100, 0);
+        wOperationRequest.setLayoutData(fdOperationRequest);
+
         // Pas d'appel
         wlStep = new Label(compositeTabWebService, SWT.RIGHT);
         wlStep.setText(Messages.getString("WebServiceDialog.Step.Label")); //$NON-NLS-1$
         props.setLook(wlStep);
         FormData fdlStep = new FormData();
         fdlStep.left = new FormAttachment(0, 0);
-        fdlStep.top = new FormAttachment(wOperation, margin);
+        fdlStep.top = new FormAttachment(wOperationRequest, margin);
         fdlStep.right = new FormAttachment(middle, -margin);
         wlStep.setLayoutData(fdlStep);
         wStep = new Text(compositeTabWebService, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -1060,7 +1094,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wStep.setToolTipText(Messages.getString("WebServiceDialog.Step.Tooltip")); //$NON-NLS-1$
         props.setLook(wStep);
         FormData fdStep = new FormData();
-        fdStep.top = new FormAttachment(wOperation, margin);
+        fdStep.top = new FormAttachment(wOperationRequest, margin);
         fdStep.left = new FormAttachment(middle, 0);
         fdStep.right = new FormAttachment(100, 0);
         wStep.setLayoutData(fdStep);

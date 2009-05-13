@@ -21,6 +21,12 @@ public class WebServiceField implements Cloneable
     		return null;
     	}
     }
+    
+    @Override
+    public String toString() {
+    	
+    	return name!=null ? name : super.toString();
+    }
 
     public String getName()
     {

@@ -247,4 +247,8 @@ public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter>
         }
         return resolvedParams;
     }
+    
+    public HashSet<String> getHeaderNames() {
+    	return _headerNames;
+    }
 }
