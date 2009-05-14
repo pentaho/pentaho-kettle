@@ -43,6 +43,15 @@ public interface MessageHandler extends Handler {
 	 * get a key from the defined package bundle, by key
 	 * @param packageName
 	 * @param key
+	 * @param parameters
+	 * @return
+	 */
+	public String getString(String packageName, String key, String...parameters);
+
+	/**
+	 * get a key from the defined package bundle, by key
+	 * @param packageName
+	 * @param key
 	 * @param param1
 	 * @return
 	 */

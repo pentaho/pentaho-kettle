@@ -22,6 +22,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -51,7 +52,7 @@ import org.w3c.dom.NodeList;
  */
 public class MessagesSourceCrawler {
 
-	private static final String MESSAGES_GETSTRING = "Messages.getString(";
+	private String scanPhrases[];
 
 	/**
 	 * The source directories to crawl through
@@ -74,6 +75,11 @@ public class MessagesSourceCrawler {
 	 * The folders with XML files to scan for keys in
 	 */
 	private List<SourceCrawlerXMLFolder> xmlFolders;
+	
+	
+	private Pattern packagePattern;
+	private Pattern importPattern;
+	private Pattern pkgPattern;
 
 	/**
 	 * @param sourceDirectories
@@ -89,6 +95,10 @@ public class MessagesSourceCrawler {
 		this.occurrences = new ArrayList<KeyOccurrence>();
 		this.filesToAvoid = new ArrayList<String>();
 		this.xmlFolders = xmlFolders;
+		
+		packagePattern = Pattern.compile("^\\s*package .*;[ \t]*$");
+		importPattern = Pattern.compile("^\\s*import [a-z\\._0-9]*\\.Messages;[ \t]*$");
+		pkgPattern = Pattern.compile("^.*private static String PKG .*$");
 	}
 
 	/**
@@ -205,15 +215,16 @@ public class MessagesSourceCrawler {
 
 					// Scan for elements and tags in this file...
 					//
-					for (SourceCrawlerXMLElement xmlElement : xmlFolder
-							.getElements()) {
-						addLabelOccurrences(fileObject, doc
-								.getElementsByTagName(xmlElement
-										.getSearchElement()), xmlFolder
-								.getKeyPrefix(), xmlElement.getKeyTag(),
-								xmlElement.getKeyAttribute(), xmlFolder
-										.getDefaultPackage(), xmlFolder
-										.getPackageExceptions());
+					for (SourceCrawlerXMLElement xmlElement : xmlFolder.getElements()) {
+						addLabelOccurrences(
+								fileObject, 
+								doc.getElementsByTagName(xmlElement.getSearchElement()), 
+								xmlFolder.getKeyPrefix(), 
+								xmlElement.getKeyTag(),
+								xmlElement.getKeyAttribute(), 
+								xmlFolder.getDefaultPackage(), 
+								xmlFolder.getPackageExceptions()
+							);
 					}
 				} catch (KettleXMLException e) {
 					LogWriter.getInstance().logError(toString(),
@@ -231,8 +242,7 @@ public class MessagesSourceCrawler {
 		if (nodeList == null)
 			return;
 
-		TransformerFactory transformerFactory = TransformerFactory
-				.newInstance();
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
 		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -291,51 +301,52 @@ public class MessagesSourceCrawler {
 		String line = reader.readLine();
 		while (line != null) {
 			row++;
-
+			
 			// Examine the line...
 
 			// What we first look for is the import of the messages package.
 			//
 			// "package org.pentaho.di.trans.steps.sortedmerge;"
 			//
-			if (line.matches("^[ \t]*package .*;[ \t]*$")) {
+			if (packagePattern.matcher(line).matches()) {
 				int beginIndex = line.indexOf("org.pentaho.");
 				int endIndex = line.indexOf(';');
-				messagesPackage = line.substring(beginIndex, endIndex); // this
-																		// is
-																		// the
-																		// default
+				messagesPackage = line.substring(beginIndex, endIndex); // this is the default
 			}
 
 			// This is the alternative location of the messages package:
 			//
 			// "import org.pentaho.di.trans.steps.sortedmerge.Messages;"
 			//
-			if (line.matches("^[ \t]*import [a-z\\._0-9]*\\.Messages;[ \t]*$")) {
+			if (importPattern.matcher(line).matches()) {
 				int beginIndex = line.indexOf("org.pentaho.");
 				int endIndex = line.indexOf(".Messages;");
-				messagesPackage = line.substring(beginIndex, endIndex); // if
-																		// there
-																		// is
-																		// any
-																		// specified,
-																		// we
-																		// take
-																		// this
-																		// one.
+				messagesPackage = line.substring(beginIndex, endIndex); // if there is any specified, we take this one.
+			}
+			
+			// Look for the value of the PKG value...
+			//
+			// 	private static String PKG = "org.pentaho.foo.bar.somepkg";
+			//
+			if (pkgPattern.matcher(line).matches()) {
+				int beginIndex = line.indexOf('"')+1;
+				int endIndex = line.indexOf('"', beginIndex);
+				messagesPackage = line.substring(beginIndex, endIndex);   
 			}
 
-			// Now look for occurrences of Messages.getString(
+			// Now look for occurrences of "Messages.getString(", "BaseMessages.getString(PKG", ...
 			//
-			int index = line.indexOf(MESSAGES_GETSTRING);
-			while (index >= 0) {
-				// see if there's a character [a-z][A-Z] before the search string...
-				// Otherwise we're looking at BaseMessages.getString(), etc.
-				//
-				if (index==0 || (index>0 & !Character.isJavaIdentifierPart(line.charAt(index-1)))) {
-					addLineOccurrence(fileObject, messagesPackage, line, row, index);
+			for (String scanPhrase : scanPhrases) {
+				int index = line.indexOf(scanPhrase);
+				while (index >= 0) {
+					// see if there's a character [a-z][A-Z] before the search string...
+					// Otherwise we're looking at BaseMessages.getString(), etc.
+					//
+					if (index==0 || (index>0 & !Character.isJavaIdentifierPart(line.charAt(index-1)))) {
+						addLineOccurrence(fileObject, messagesPackage, line, row, index, scanPhrase);
+					}
+					index = line.indexOf(scanPhrase, index + 1);
 				}
-				index = line.indexOf(MESSAGES_GETSTRING, index + 1);
 			}
 
 			line = reader.readLine();
@@ -361,11 +372,11 @@ public class MessagesSourceCrawler {
 	 *            located.
 	 */
 	private void addLineOccurrence(FileObject fileObject,
-			String messagesPackage, String line, int row, int index) {
+			String messagesPackage, String line, int row, int index, String scanPhrase) {
 		// Right after the "Messages.getString(" string is the key, quoted (")
 		// until the next comma...
 		//
-		int column = index + MESSAGES_GETSTRING.length();
+		int column = index + scanPhrase.length();
 		String arguments = "";
 
 		// we start at the double quote...
@@ -566,6 +577,20 @@ public class MessagesSourceCrawler {
 	 */
 	public void setSingleMessagesFile(String singleMessagesFile) {
 		this.singleMessagesFile = singleMessagesFile;
+	}
+
+	/**
+	 * @return the scanPhrases
+	 */
+	public String[] getScanPhrases() {
+		return scanPhrases;
+	}
+
+	/**
+	 * @param scanPhrases the scanPhrases to set
+	 */
+	public void setScanPhrases(String[] scanPhrases) {
+		this.scanPhrases = scanPhrases;
 	}
 
 }

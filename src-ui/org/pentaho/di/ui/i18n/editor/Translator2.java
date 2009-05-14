@@ -132,6 +132,7 @@ public class Translator2
 	protected String searchString;
 	protected String lastFoundKey;
 	private String singleMessagesFile;
+	private String[] scanPhrases;
 
 	private java.util.List<SourceCrawlerXMLFolder> xmlFolders;
 		
@@ -154,6 +155,7 @@ public class Translator2
         	// crawl through the source directories...
         	//
         	crawler = new MessagesSourceCrawler(directories, singleMessagesFile, xmlFolders);
+        	crawler.setScanPhrases(scanPhrases);
         	crawler.setFilesToAvoid(filesToAvoid);
         	crawler.crawl();
         	
@@ -230,7 +232,7 @@ public class Translator2
     	rootDirectories = new ArrayList<String>();
     	filesToAvoid = new ArrayList<String>();
     	xmlFolders = new ArrayList<SourceCrawlerXMLFolder>();
-
+    	
     	File file = new File("translator.xml");
     	if (file.exists()) {
     		
@@ -249,6 +251,14 @@ public class Translator2
     				Node localeNode = XMLHandler.getSubNodeByNr(localeListNode, "locale", i);
     				String locale = XMLHandler.getTagValue(localeNode, "code");
     				localeList.add(locale);
+    			}
+    			
+    			Node phrasesNode = XMLHandler.getSubNode(configNode, "scan-phrases");
+    			int nrPhrases = XMLHandler.countNodes(phrasesNode, "scan-phrase");
+    			scanPhrases = new String[nrPhrases];
+    			for (int i=0;i<nrPhrases;i++) {
+    				Node phraseNode = XMLHandler.getSubNodeByNr(phrasesNode, "scan-phrase", i);
+    				scanPhrases[i] = XMLHandler.getNodeValue(phraseNode);
     			}
 
     			Node rootsNode = XMLHandler.getSubNode(configNode, "source-directories");

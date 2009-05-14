@@ -443,37 +443,48 @@ public class GlobalMessages extends AbstractMessageHandler
         Object[] parameters = new Object[] {};
         return calculateString(packageName, key, parameters);
     }
+    
+    public String getString(String packageName, String key, String...parameters)
+    {
+        return calculateString(packageName, key, parameters);
+    }
 
+    @Deprecated
     public String getString(String packageName, String key, String param1)
     {
         Object[] parameters = new Object[] { param1 };
         return calculateString(packageName, key, parameters);
     }
 
+    @Deprecated
     public String getString(String packageName, String key, String param1, String param2)
     {
         Object[] parameters = new Object[] { param1, param2 };
         return calculateString(packageName, key, parameters);
     }
 
+    @Deprecated
     public String getString(String packageName, String key, String param1, String param2, String param3)
     {
         Object[] parameters = new Object[] { param1, param2, param3 };
         return calculateString(packageName, key, parameters);
     }
     
+    @Deprecated
     public String getString(String packageName, String key, String param1, String param2, String param3,String param4)
     {
         Object[] parameters = new Object[] { param1, param2, param3, param4 };
         return calculateString(packageName, key, parameters);
     }
     
+    @Deprecated
     public String getString(String packageName, String key, String param1, String param2, String param3, String param4, String param5)
     {
         Object[] parameters = new Object[] { param1, param2, param3, param4, param5 };
         return calculateString(packageName, key, parameters);
     }
     
+    @Deprecated
     public String getString(String packageName, String key, String param1, String param2, String param3,String param4,String param5,String param6)
     {
         Object[] parameters = new Object[] { param1, param2, param3, param4, param5, param6 };

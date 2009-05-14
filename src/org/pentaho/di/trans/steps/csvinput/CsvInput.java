@@ -27,6 +27,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -44,6 +45,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class CsvInput extends BaseStep implements StepInterface
 {
+	private static String PKG = "org.pentaho.di.trans.steps.csvinput"; // for i18n purposes, needed by Translator2   $NON-NLS-1$
+
 	private CsvInputMeta meta;
 	private CsvInputData data;
 	
@@ -139,7 +142,7 @@ public class CsvInput extends BaseStep implements StepInterface
 			putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
 	        if (checkFeedback(getLinesInput())) 
 	        {
-	        	if(log.isBasic()) logBasic(Messages.getString("CsvInput.Log.LineNumber", Long.toString(getLinesInput()))); //$NON-NLS-1$
+	        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "CsvInput.Log.LineNumber", Long.toString(getLinesInput()))); //$NON-NLS-1$
 	        }
 		}
 			
@@ -207,10 +210,10 @@ public class CsvInput extends BaseStep implements StepInterface
 	        }
 	        
 	        if (data.filenames.length > 0)
-	        	logBasic(Messages.getString("CsvInput.Log.ParallelFileNrAndPositionFeedback", data.filenames[data.filenr], Long.toString(data.fileSizes.get(data.filenr)), Long.toString(data.bytesToSkipInFirstFile), Long.toString(data.blockToRead)));
+	        	logBasic(BaseMessages.getString(PKG, "CsvInput.Log.ParallelFileNrAndPositionFeedback", data.filenames[data.filenr], Long.toString(data.fileSizes.get(data.filenr)), Long.toString(data.bytesToSkipInFirstFile), Long.toString(data.blockToRead)));
 		}
 		catch(Exception e) {
-			throw new KettleException(Messages.getString("CsvInput.Exception.ErrorPreparingParallelRun"), e);
+			throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Exception.ErrorPreparingParallelRun"), e);
 		}
 	}
 
@@ -229,7 +232,7 @@ public class CsvInput extends BaseStep implements StepInterface
 				String filenameField = environmentSubstitute(meta.getFilenameField());
 				index = getInputRowMeta().indexOfValue(filenameField);
 				if (index<0) {
-					throw new KettleException(Messages.getString("CsvInput.Exception.FilenameFieldNotFound", filenameField));
+					throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Exception.FilenameFieldNotFound", filenameField));
 				}
 			}
 				
@@ -241,7 +244,7 @@ public class CsvInput extends BaseStep implements StepInterface
 		
 		data.filenames = filenames.toArray(new String[filenames.size()]);
 		
-		logBasic(Messages.getString("CsvInput.Log.ReadingFromNrFiles", Integer.toString(data.filenames.length)));
+		logBasic(BaseMessages.getString(PKG, "CsvInput.Log.ReadingFromNrFiles", Integer.toString(data.filenames.length)));
 	}
 
 	private boolean openNextFile() throws KettleException {
@@ -267,7 +270,7 @@ public class CsvInput extends BaseStep implements StepInterface
 			if (!(fileObject instanceof LocalFile)) {
 				// We can only use NIO on local files at the moment, so that's what we limit ourselves to.
 				//
-				throw new KettleException(Messages.getString("CsvInput.Log.OnlyLocalFilesAreSupported"));
+				throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Log.OnlyLocalFilesAreSupported"));
 			}
 			
 			if (meta.isLazyConversionActive()) {
@@ -311,7 +314,7 @@ public class CsvInput extends BaseStep implements StepInterface
 					(data.parallel && data.bytesToSkipInFirstFile<=0)
 					) {
 					readOneRow(false); // skip this row.
-					logBasic(Messages.getString("CsvInput.Log.HeaderRowSkipped", data.filenames[data.filenr-1]));
+					logBasic(BaseMessages.getString(PKG, "CsvInput.Log.HeaderRowSkipped", data.filenames[data.filenr-1]));
 				}
 			}
 			
@@ -640,7 +643,7 @@ public class CsvInput extends BaseStep implements StepInterface
 				String filename = environmentSubstitute(meta.getFilename());
 
 				if (Const.isEmpty(filename)) {
-					logError(Messages.getString("CsvInput.MissingFilename.Message"));
+					logError(BaseMessages.getString(PKG, "CsvInput.MissingFilename.Message"));
 					return false;
 				}
 
