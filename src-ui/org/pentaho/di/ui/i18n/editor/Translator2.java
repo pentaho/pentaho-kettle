@@ -1100,9 +1100,9 @@ public class Translator2
         return APP_NAME;
     }
     
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
-        Display display = new Display();
+		Display display = new Display();
         LogWriter log = LogWriter.getInstance();
         PropsUI.init(display, Props.TYPE_PROPERTIES_SPOON);
         

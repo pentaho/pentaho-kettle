@@ -20,11 +20,9 @@
 package org.pentaho.di.ui.job.entries.zipfile;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -35,29 +33,31 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
+import org.pentaho.di.job.entries.zipfile.JobEntryZipFile;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.zipfile.JobEntryZipFile;
-import org.pentaho.di.job.entries.zipfile.Messages;
 
 
 /**
@@ -68,9 +68,11 @@ import org.pentaho.di.job.entries.zipfile.Messages;
  */
 public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
-   private static final String[] FILETYPES = new String[] {
-			Messages.getString("JobZipFiles.Filetype.Zip"),
-			Messages.getString("JobZipFiles.Filetype.All")};
+	private static Class<?> PKG = JobEntryZipFile.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+    private static final String[] FILETYPES = new String[] {
+			BaseMessages.getString(PKG, "JobZipFiles.Filetype.Zip"),
+			BaseMessages.getString(PKG, "JobZipFiles.Filetype.All")};
 	
 	private Label        wlName;
 	private Text         wName;
@@ -177,7 +179,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryZipFile) jobEntryInt;
         if (this.jobEntry.getName() == null) 
-			this.jobEntry.setName(Messages.getString("JobZipFiles.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobZipFiles.Name.Default"));
  
 	}
 
@@ -204,14 +206,14 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobZipFiles.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobZipFiles.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// ZipFilename line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobZipFiles.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobZipFiles.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -235,7 +237,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		//////////////////////////
 
 		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
-		wGeneralTab.setText(Messages.getString("JobZipFiles.Tab.General.Label"));
+		wGeneralTab.setText(BaseMessages.getString(PKG, "JobZipFiles.Tab.General.Label"));
 		
 		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wGeneralComp);
@@ -252,7 +254,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
         // /
         wSourceFiles = new Group(wGeneralComp, SWT.SHADOW_NONE);
         props.setLook(wSourceFiles);
-        wSourceFiles.setText(Messages.getString("JobZipFiles.SourceFiles.Group.Label"));
+        wSourceFiles.setText(BaseMessages.getString(PKG, "JobZipFiles.SourceFiles.Group.Label"));
 
         FormLayout groupLayout = new FormLayout();
         groupLayout.marginWidth = 10;
@@ -262,7 +264,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 
       //Get Result from previous?
 		wlgetFromPrevious = new Label(wSourceFiles, SWT.RIGHT);
-		wlgetFromPrevious.setText(Messages.getString("JobZipFiles.getFromPrevious.Label"));
+		wlgetFromPrevious.setText(BaseMessages.getString(PKG, "JobZipFiles.getFromPrevious.Label"));
 		props.setLook(wlgetFromPrevious);
 		fdlgetFromPrevious = new FormData();
 		fdlgetFromPrevious.left = new FormAttachment(0, 0);
@@ -271,7 +273,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wlgetFromPrevious.setLayoutData(fdlgetFromPrevious);
 		wgetFromPrevious = new Button(wSourceFiles, SWT.CHECK);
 		props.setLook(wgetFromPrevious);
-		wgetFromPrevious.setToolTipText(Messages.getString("JobZipFiles.getFromPrevious.Tooltip"));
+		wgetFromPrevious.setToolTipText(BaseMessages.getString(PKG, "JobZipFiles.getFromPrevious.Tooltip"));
 		fdgetFromPrevious = new FormData();
 		fdgetFromPrevious.left = new FormAttachment(middle, 0);
 		fdgetFromPrevious.top = new FormAttachment(wName, margin);
@@ -291,7 +293,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 
 		// TargetDirectory line
 		wlSourceDirectory = new Label(wSourceFiles, SWT.RIGHT);
-		wlSourceDirectory.setText(Messages.getString("JobZipFiles.SourceDir.Label"));
+		wlSourceDirectory.setText(BaseMessages.getString(PKG, "JobZipFiles.SourceDir.Label"));
 		props.setLook(wlSourceDirectory);
 		fdlSourceDirectory = new FormData();
 		fdlSourceDirectory.left = new FormAttachment(0, 0);
@@ -303,7 +305,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
         // Browse folders button ...
 		wbSourceDirectory=new Button(wSourceFiles, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbSourceDirectory);
-		wbSourceDirectory.setText(Messages.getString("JobZipFiles.BrowseFolders.Label"));
+		wbSourceDirectory.setText(BaseMessages.getString(PKG, "JobZipFiles.BrowseFolders.Label"));
 		fdbSourceDirectory=new FormData();
 		fdbSourceDirectory.right= new FormAttachment(100, 0);
 		fdbSourceDirectory.top  = new FormAttachment(wgetFromPrevious, margin);
@@ -312,15 +314,15 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		// Browse Destination file browse button ...
 		wbSourceFile=new Button(wSourceFiles, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbSourceFile);
-		wbSourceFile.setText(Messages.getString("JobZipFiles.BrowseFiles.Label"));
+		wbSourceFile.setText(BaseMessages.getString(PKG, "JobZipFiles.BrowseFiles.Label"));
 		fdbSourceFile=new FormData();
 		fdbSourceFile.right= new FormAttachment(wbSourceDirectory, -margin);
 		fdbSourceFile.top  = new FormAttachment(wgetFromPrevious, margin);
 		wbSourceFile.setLayoutData(fdbSourceFile);
 				
 		
-		wSourceDirectory = new TextVar(jobMeta,wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobZipFiles.SourceDir.Tooltip"));
+		wSourceDirectory = new TextVar(jobMeta,wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobZipFiles.SourceDir.Tooltip"));
 		props.setLook(wSourceDirectory);
 		wSourceDirectory.addModifyListener(lsMod);
 		fdSourceDirectory = new FormData();
@@ -331,15 +333,15 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		
 		// Wildcard line
 		wlWildcard = new Label(wSourceFiles, SWT.RIGHT);
-		wlWildcard.setText(Messages.getString("JobZipFiles.Wildcard.Label"));
+		wlWildcard.setText(BaseMessages.getString(PKG, "JobZipFiles.Wildcard.Label"));
 		props.setLook(wlWildcard);
 		fdlWildcard = new FormData();
 		fdlWildcard.left = new FormAttachment(0, 0);
 		fdlWildcard.top = new FormAttachment(wSourceDirectory, margin);
 		fdlWildcard.right = new FormAttachment(middle, -margin);
 		wlWildcard.setLayoutData(fdlWildcard);
-		wWildcard = new TextVar(jobMeta,wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobZipFiles.Wildcard.Tooltip"));
+		wWildcard = new TextVar(jobMeta,wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobZipFiles.Wildcard.Tooltip"));
 		props.setLook(wWildcard);
 		wWildcard.addModifyListener(lsMod);
 		fdWildcard = new FormData();
@@ -350,15 +352,15 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		
 		// Wildcard to exclude
 		wlWildcardExclude = new Label(wSourceFiles, SWT.RIGHT);
-		wlWildcardExclude.setText(Messages.getString("JobZipFiles.WildcardExclude.Label"));
+		wlWildcardExclude.setText(BaseMessages.getString(PKG, "JobZipFiles.WildcardExclude.Label"));
 		props.setLook(wlWildcardExclude);
 		fdlWildcardExclude = new FormData();
 		fdlWildcardExclude.left = new FormAttachment(0, 0);
 		fdlWildcardExclude.top = new FormAttachment(wWildcard, margin);
 		fdlWildcardExclude.right = new FormAttachment(middle, -margin);
 		wlWildcardExclude.setLayoutData(fdlWildcardExclude);
-		wWildcardExclude = new TextVar(jobMeta,wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobZipFiles.WildcardExclude.Tooltip"));
+		wWildcardExclude = new TextVar(jobMeta,wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobZipFiles.WildcardExclude.Tooltip"));
 		props.setLook(wWildcardExclude);
 		wWildcardExclude.addModifyListener(lsMod);
 		fdWildcardExclude = new FormData();
@@ -383,7 +385,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
         // /
         wZipFile = new Group(wGeneralComp, SWT.SHADOW_NONE);
         props.setLook(wZipFile);
-        wZipFile.setText(Messages.getString("JobZipFiles.ZipFile.Group.Label"));
+        wZipFile.setText(BaseMessages.getString(PKG, "JobZipFiles.ZipFile.Group.Label"));
 
         FormLayout groupLayoutzipfile = new FormLayout();
         groupLayoutzipfile.marginWidth = 10;
@@ -394,7 +396,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 
 		// ZipFilename line
 		wlZipFilename=new Label(wZipFile, SWT.RIGHT);
-		wlZipFilename.setText(Messages.getString("JobZipFiles.ZipFilename.Label"));
+		wlZipFilename.setText(BaseMessages.getString(PKG, "JobZipFiles.ZipFilename.Label"));
 		props.setLook(wlZipFilename);
 		fdlZipFilename=new FormData();
 		fdlZipFilename.left = new FormAttachment(0, 0);
@@ -403,7 +405,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wlZipFilename.setLayoutData(fdlZipFilename);
 		wbZipFilename=new Button(wZipFile, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbZipFilename);
-		wbZipFilename.setText(Messages.getString("System.Button.Browse"));
+		wbZipFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbZipFilename=new FormData();
 		fdbZipFilename.right= new FormAttachment(100, 0);
 		fdbZipFilename.top  = new FormAttachment(wSourceFiles, 0);
@@ -451,7 +453,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		
 		// Create Parent Folder
 		wlCreateParentFolder=new Label(wZipFile, SWT.RIGHT);
-		wlCreateParentFolder.setText(Messages.getString("JobZipFiles.CreateParentFolder.Label"));
+		wlCreateParentFolder.setText(BaseMessages.getString(PKG, "JobZipFiles.CreateParentFolder.Label"));
  		props.setLook(wlCreateParentFolder);
 		fdlCreateParentFolder=new FormData();
 		fdlCreateParentFolder.left = new FormAttachment(0, 0);
@@ -459,7 +461,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		fdlCreateParentFolder.right= new FormAttachment(middle, -margin);
 		wlCreateParentFolder.setLayoutData(fdlCreateParentFolder);
 		wCreateParentFolder=new Button(wZipFile, SWT.CHECK );
-		wCreateParentFolder.setToolTipText(Messages.getString("JobZipFiles.CreateParentFolder.Tooltip"));
+		wCreateParentFolder.setToolTipText(BaseMessages.getString(PKG, "JobZipFiles.CreateParentFolder.Tooltip"));
  		props.setLook(wCreateParentFolder);
 		fdCreateParentFolder=new FormData();
 		fdCreateParentFolder.left = new FormAttachment(middle, 0);
@@ -477,7 +479,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 
 		// Create multi-part file?
 		wlAddDate=new Label(wZipFile, SWT.RIGHT);
-		wlAddDate.setText(Messages.getString("JobZipFiles.AddDate.Label"));
+		wlAddDate.setText(BaseMessages.getString(PKG, "JobZipFiles.AddDate.Label"));
  		props.setLook(wlAddDate);
 		fdlAddDate=new FormData();
 		fdlAddDate.left = new FormAttachment(0, 0);
@@ -486,7 +488,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wlAddDate.setLayoutData(fdlAddDate);
 		wAddDate=new Button(wZipFile, SWT.CHECK);
  		props.setLook(wAddDate);
- 		wAddDate.setToolTipText(Messages.getString("JobZipFiles.AddDate.Tooltip"));
+ 		wAddDate.setToolTipText(BaseMessages.getString(PKG, "JobZipFiles.AddDate.Tooltip"));
 		fdAddDate=new FormData();
 		fdAddDate.left = new FormAttachment(middle, 0);
 		fdAddDate.top  = new FormAttachment(wCreateParentFolder, margin);
@@ -502,7 +504,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		);
 		// Create multi-part file?
 		wlAddTime=new Label(wZipFile, SWT.RIGHT);
-		wlAddTime.setText(Messages.getString("JobZipFiles.AddTime.Label"));
+		wlAddTime.setText(BaseMessages.getString(PKG, "JobZipFiles.AddTime.Label"));
  		props.setLook(wlAddTime);
 		fdlAddTime=new FormData();
 		fdlAddTime.left = new FormAttachment(0, 0);
@@ -511,7 +513,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wlAddTime.setLayoutData(fdlAddTime);
 		wAddTime=new Button(wZipFile, SWT.CHECK);
  		props.setLook(wAddTime);
- 		wAddTime.setToolTipText(Messages.getString("JobZipFiles.AddTime.Tooltip"));
+ 		wAddTime.setToolTipText(BaseMessages.getString(PKG, "JobZipFiles.AddTime.Tooltip"));
 		fdAddTime=new FormData();
 		fdAddTime.left = new FormAttachment(middle, 0);
 		fdAddTime.top  = new FormAttachment(wAddDate, margin);
@@ -528,7 +530,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		
 		// Specify date time format?
 		wlSpecifyFormat=new Label(wZipFile, SWT.RIGHT);
-		wlSpecifyFormat.setText(Messages.getString("JobZipFiles.SpecifyFormat.Label"));
+		wlSpecifyFormat.setText(BaseMessages.getString(PKG, "JobZipFiles.SpecifyFormat.Label"));
 		props.setLook(wlSpecifyFormat);
 		fdlSpecifyFormat=new FormData();
 		fdlSpecifyFormat.left = new FormAttachment(0, 0);
@@ -537,7 +539,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wlSpecifyFormat.setLayoutData(fdlSpecifyFormat);
 		wSpecifyFormat=new Button(wZipFile, SWT.CHECK);
 		props.setLook(wSpecifyFormat);
-		wSpecifyFormat.setToolTipText(Messages.getString("JobZipFiles.SpecifyFormat.Tooltip"));
+		wSpecifyFormat.setToolTipText(BaseMessages.getString(PKG, "JobZipFiles.SpecifyFormat.Tooltip"));
 	    fdSpecifyFormat=new FormData();
 		fdSpecifyFormat.left = new FormAttachment(middle, 0);
 		fdSpecifyFormat.top  = new FormAttachment(wAddTime, margin);
@@ -559,7 +561,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		
  		// DateTimeFormat
 		wlDateTimeFormat=new Label(wZipFile, SWT.RIGHT);
-        wlDateTimeFormat.setText(Messages.getString("JobZipFiles.DateTimeFormat.Label"));
+        wlDateTimeFormat.setText(BaseMessages.getString(PKG, "JobZipFiles.DateTimeFormat.Label"));
         props.setLook(wlDateTimeFormat);
         fdlDateTimeFormat=new FormData();
         fdlDateTimeFormat.left = new FormAttachment(0, 0);
@@ -580,7 +582,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 
 		wbShowFiles=new Button(wZipFile, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbShowFiles);
-		wbShowFiles.setText(Messages.getString("JobZipFiles.ShowFile.Button"));
+		wbShowFiles.setText(BaseMessages.getString(PKG, "JobZipFiles.ShowFile.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left = new FormAttachment(middle, 0);
 		fdbShowFiles.top  = new FormAttachment(wDateTimeFormat, margin*2);
@@ -598,15 +600,15 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 							wSpecifyFormat.getSelection(),wDateTimeFormat.getText());
 					if (filename!=null && filename.length>0)
 					{
-						EnterSelectionDialog esd = new EnterSelectionDialog(shell, filename, Messages.getString("JobZipFiles.SelectOutputFiles.DialogTitle"), Messages.getString("JobZipFiles.SelectOutputFiles.DialogMessage"));
+						EnterSelectionDialog esd = new EnterSelectionDialog(shell, filename, BaseMessages.getString(PKG, "JobZipFiles.SelectOutputFiles.DialogTitle"), BaseMessages.getString(PKG, "JobZipFiles.SelectOutputFiles.DialogMessage"));
 						esd.setViewOnly();
 						esd.open();
 					}
 					else
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage(Messages.getString("JobZipFiles.NoFilesFound.DialogMessage"));
-						mb.setText(Messages.getString("System.Dialog.Error.Title"));
+						mb.setMessage(BaseMessages.getString(PKG, "JobZipFiles.NoFilesFound.DialogMessage"));
+						mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
 						mb.open(); 
 					}
 				}
@@ -650,7 +652,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		//////////////////////////
 		
 		wAdvancedTab=new CTabItem(wTabFolder, SWT.NONE);
-		wAdvancedTab.setText(Messages.getString("JobZipFiles.Tab.Advanced.Label"));
+		wAdvancedTab.setText(BaseMessages.getString(PKG, "JobZipFiles.Tab.Advanced.Label"));
 		
 		wAdvancedComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wAdvancedComp);
@@ -665,7 +667,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
         //
         wSettings = new Group(wAdvancedComp, SWT.SHADOW_NONE);
         props.setLook(wSettings);
-        wSettings.setText(Messages.getString("JobZipFiles.Advanced.Group.Label"));
+        wSettings.setText(BaseMessages.getString(PKG, "JobZipFiles.Advanced.Group.Label"));
         FormLayout groupLayoutSettings = new FormLayout();
         groupLayoutSettings.marginWidth = 10;
         groupLayoutSettings.marginHeight = 10;
@@ -673,7 +675,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 
         // Compression Rate
 		wlCompressionRate = new Label(wSettings, SWT.RIGHT);
-		wlCompressionRate.setText(Messages.getString("JobZipFiles.CompressionRate.Label"));
+		wlCompressionRate.setText(BaseMessages.getString(PKG, "JobZipFiles.CompressionRate.Label"));
 		props.setLook(wlCompressionRate);
 		fdlCompressionRate = new FormData();
 		fdlCompressionRate.left = new FormAttachment(0, -margin);
@@ -681,10 +683,10 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		fdlCompressionRate.top = new FormAttachment(wZipFile, margin);
 		wlCompressionRate.setLayoutData(fdlCompressionRate);
 		wCompressionRate = new CCombo(wSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wCompressionRate.add(Messages.getString("JobZipFiles.NO_COMP_CompressionRate.Label"));
-		wCompressionRate.add(Messages.getString("JobZipFiles.DEF_COMP_CompressionRate.Label"));
-		wCompressionRate.add(Messages.getString("JobZipFiles.BEST_COMP_CompressionRate.Label"));
-		wCompressionRate.add(Messages.getString("JobZipFiles.BEST_SPEED_CompressionRate.Label"));
+		wCompressionRate.add(BaseMessages.getString(PKG, "JobZipFiles.NO_COMP_CompressionRate.Label"));
+		wCompressionRate.add(BaseMessages.getString(PKG, "JobZipFiles.DEF_COMP_CompressionRate.Label"));
+		wCompressionRate.add(BaseMessages.getString(PKG, "JobZipFiles.BEST_COMP_CompressionRate.Label"));
+		wCompressionRate.add(BaseMessages.getString(PKG, "JobZipFiles.BEST_SPEED_CompressionRate.Label"));
 		wCompressionRate.select(1); // +1: starts at -1
 
 		props.setLook(wCompressionRate);
@@ -696,7 +698,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 	
 		// If File Exists
 		wlIfFileExists = new Label(wSettings, SWT.RIGHT);
-		wlIfFileExists.setText(Messages.getString("JobZipFiles.IfZipFileExists.Label"));
+		wlIfFileExists.setText(BaseMessages.getString(PKG, "JobZipFiles.IfZipFileExists.Label"));
 		props.setLook(wlIfFileExists);
 		fdlIfFileExists = new FormData();
 		fdlIfFileExists.left = new FormAttachment(0, -margin);
@@ -704,11 +706,11 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		fdlIfFileExists.top = new FormAttachment(wCompressionRate, margin);
 		wlIfFileExists.setLayoutData(fdlIfFileExists);
 		wIfFileExists = new CCombo(wSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wIfFileExists.add(Messages.getString("JobZipFiles.Create_NewFile_IfFileExists.Label"));
-		wIfFileExists.add(Messages.getString("JobZipFiles.Append_File_IfFileExists.Label"));
-		wIfFileExists.add(Messages.getString("JobZipFiles.Do_Nothing_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobZipFiles.Create_NewFile_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobZipFiles.Append_File_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobZipFiles.Do_Nothing_IfFileExists.Label"));
 
-		wIfFileExists.add(Messages.getString("JobZipFiles.Fail_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobZipFiles.Fail_IfFileExists.Label"));
 		wIfFileExists.select(3); // +1: starts at -1
 
 		props.setLook(wIfFileExists);
@@ -720,7 +722,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 
 		// After Zipping
 		wlAfterZip = new Label(wSettings, SWT.RIGHT);
-		wlAfterZip.setText(Messages.getString("JobZipFiles.AfterZip.Label"));
+		wlAfterZip.setText(BaseMessages.getString(PKG, "JobZipFiles.AfterZip.Label"));
 		props.setLook(wlAfterZip);
 		fdlAfterZip = new FormData();
 		fdlAfterZip.left = new FormAttachment(0, -margin);
@@ -728,9 +730,9 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		fdlAfterZip.top = new FormAttachment(wIfFileExists, margin);
 		wlAfterZip.setLayoutData(fdlAfterZip);
 		wAfterZip = new CCombo(wSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wAfterZip.add(Messages.getString("JobZipFiles.Do_Nothing_AfterZip.Label"));
-		wAfterZip.add(Messages.getString("JobZipFiles.Delete_Files_AfterZip.Label"));
-		wAfterZip.add(Messages.getString("JobZipFiles.Move_Files_AfterZip.Label"));
+		wAfterZip.add(BaseMessages.getString(PKG, "JobZipFiles.Do_Nothing_AfterZip.Label"));
+		wAfterZip.add(BaseMessages.getString(PKG, "JobZipFiles.Delete_Files_AfterZip.Label"));
+		wAfterZip.add(BaseMessages.getString(PKG, "JobZipFiles.Move_Files_AfterZip.Label"));
 
 		wAfterZip.select(0); // +1: starts at -1
 
@@ -752,7 +754,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 
 		// moveTo Directory
 		wlMovetoDirectory = new Label(wSettings, SWT.RIGHT);
-		wlMovetoDirectory.setText(Messages.getString("JobZipFiles.MovetoDirectory.Label"));
+		wlMovetoDirectory.setText(BaseMessages.getString(PKG, "JobZipFiles.MovetoDirectory.Label"));
 		props.setLook(wlMovetoDirectory);
 		fdlMovetoDirectory = new FormData();
 		fdlMovetoDirectory.left = new FormAttachment(0, 0);
@@ -763,14 +765,14 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
         // Browse folders button ...
 		wbMovetoDirectory=new Button(wSettings, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbMovetoDirectory);
-		wbMovetoDirectory.setText(Messages.getString("JobZipFiles.BrowseFolders.Label"));
+		wbMovetoDirectory.setText(BaseMessages.getString(PKG, "JobZipFiles.BrowseFolders.Label"));
 		fdbMovetoDirectory=new FormData();
 		fdbMovetoDirectory.right= new FormAttachment(100, 0);
 		fdbMovetoDirectory.top  = new FormAttachment(wAfterZip, margin);
 		wbMovetoDirectory.setLayoutData(fdbMovetoDirectory);
 		
-		wMovetoDirectory = new TextVar(jobMeta,wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobZipFiles.MovetoDirectory.Tooltip"));
+		wMovetoDirectory = new TextVar(jobMeta,wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobZipFiles.MovetoDirectory.Tooltip"));
 		props.setLook(wMovetoDirectory);
 		wMovetoDirectory.addModifyListener(lsMod);
 		fdMovetoDirectory = new FormData();
@@ -781,7 +783,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		
 		//create moveto folder
 		wlcreateMoveToDirectory = new Label(wSettings, SWT.RIGHT);
-		wlcreateMoveToDirectory.setText(Messages.getString("JobZipFiles.createMoveToDirectory.Label"));
+		wlcreateMoveToDirectory.setText(BaseMessages.getString(PKG, "JobZipFiles.createMoveToDirectory.Label"));
 		props.setLook(wlcreateMoveToDirectory);
 		fdlcreateMoveToDirectory = new FormData();
 		fdlcreateMoveToDirectory.left = new FormAttachment(0, 0);
@@ -790,7 +792,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wlcreateMoveToDirectory.setLayoutData(fdlcreateMoveToDirectory);
 		wcreateMoveToDirectory = new Button(wSettings, SWT.CHECK);
 		props.setLook(wcreateMoveToDirectory);
-		wcreateMoveToDirectory.setToolTipText(Messages.getString("JobZipFiles.createMoveToDirectory.Tooltip"));
+		wcreateMoveToDirectory.setToolTipText(BaseMessages.getString(PKG, "JobZipFiles.createMoveToDirectory.Tooltip"));
 		fdcreateMoveToDirectory = new FormData();
 		fdcreateMoveToDirectory.left = new FormAttachment(middle, 0);
 		fdcreateMoveToDirectory.top = new FormAttachment(wMovetoDirectory, margin);
@@ -823,7 +825,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
         // /
         wFileResult = new Group(wAdvancedComp, SWT.SHADOW_NONE);
         props.setLook(wFileResult);
-        wFileResult.setText(Messages.getString("JobZipFiles.FileResult.Group.Label"));
+        wFileResult.setText(BaseMessages.getString(PKG, "JobZipFiles.FileResult.Group.Label"));
 
         FormLayout groupLayoutresult = new FormLayout();
         groupLayoutresult.marginWidth = 10;
@@ -834,7 +836,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
         
     	//Add file to result
 		wlAddFileToResult = new Label(wFileResult, SWT.RIGHT);
-		wlAddFileToResult.setText(Messages.getString("JobZipFiles.AddFileToResult.Label"));
+		wlAddFileToResult.setText(BaseMessages.getString(PKG, "JobZipFiles.AddFileToResult.Label"));
 		props.setLook(wlAddFileToResult);
 		fdlAddFileToResult = new FormData();
 		fdlAddFileToResult.left = new FormAttachment(0, 0);
@@ -843,7 +845,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wlAddFileToResult.setLayoutData(fdlAddFileToResult);
 		wAddFileToResult = new Button(wFileResult, SWT.CHECK);
 		props.setLook(wAddFileToResult);
-		wAddFileToResult.setToolTipText(Messages.getString("JobZipFiles.AddFileToResult.Tooltip"));
+		wAddFileToResult.setToolTipText(BaseMessages.getString(PKG, "JobZipFiles.AddFileToResult.Tooltip"));
 		fdAddFileToResult = new FormData();
 		fdAddFileToResult.left = new FormAttachment(middle, 0);
 		fdAddFileToResult.top = new FormAttachment(wSettings, margin);
@@ -891,9 +893,9 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 
         
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTabFolder);
 
@@ -1128,8 +1130,8 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 	   if(Const.isEmpty(wName.getText())) 
          {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
          }

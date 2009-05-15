@@ -17,7 +17,6 @@
 package org.pentaho.di.ui.job.entries.success;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -32,19 +31,20 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
+import org.pentaho.di.job.entries.success.JobEntrySuccess;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.success.JobEntrySuccess;
-import org.pentaho.di.job.entries.success.Messages;
 
 /**
  * This dialog allows you to edit a JobEntry Success object.
@@ -54,6 +54,8 @@ import org.pentaho.di.job.entries.success.Messages;
  */
 public class JobEntrySuccessDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntrySuccess.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label wlName;
 
     private Text wName;
@@ -79,7 +81,7 @@ public class JobEntrySuccessDialog extends JobEntryDialog implements JobEntryDia
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntrySuccess) jobEntryInt;
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobEntrySuccessDialog.Name.Default"));
+            this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntrySuccessDialog.Name.Default"));
     }
 
     public JobEntryInterface open()
@@ -105,14 +107,14 @@ public class JobEntrySuccessDialog extends JobEntryDialog implements JobEntryDia
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobEntrySuccessDialog.Title"));
+        shell.setText(BaseMessages.getString(PKG, "JobEntrySuccessDialog.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
         
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("JobEntrySuccessDialog.Jobname.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "JobEntrySuccessDialog.Jobname.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
@@ -129,9 +131,9 @@ public class JobEntrySuccessDialog extends JobEntryDialog implements JobEntryDia
         wName.setLayoutData(fdName);
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
         // at the bottom
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wName);
@@ -221,8 +223,8 @@ public class JobEntrySuccessDialog extends JobEntryDialog implements JobEntryDia
  	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
        }

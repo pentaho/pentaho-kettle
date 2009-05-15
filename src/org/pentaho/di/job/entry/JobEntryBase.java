@@ -29,9 +29,9 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.job.JobEntryCategory;
-import org.pentaho.di.job.JobEntryType;
+import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceHolderInterface;
@@ -47,12 +47,10 @@ import org.w3c.dom.Node;
  *
  */
 public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSourceInterface, ResourceHolderInterface
-{
+{ 
   private String name;
 
   private String description;
-
-  private String pluginID = null;
 
   /**
    * Id as defined in the xml or annotation.
@@ -61,33 +59,14 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   private boolean changed;
 
-  private JobEntryType type;
-
   private long id;
   
   protected VariableSpace variables = new Variables();
-  
-
-  public static final String category_order[] =
-  {
-      JobEntryCategory.GENERAL.getName(),
-      JobEntryCategory.MAIL.getName(),
-      JobEntryCategory.FILE_MANAGEMENT.getName(),
-      JobEntryCategory.CONDITIONS.getName(),
-      JobEntryCategory.SCRIPTING.getName(),
-      JobEntryCategory.BULK_LOADING.getName(),
-      JobEntryCategory.XML.getName(),
-      JobEntryCategory.FILE_TRANSFER.getName(),
-      JobEntryCategory.REPOSITORY.getName(),
-      JobEntryCategory.EXPERIMENTAL.getName(),
-  };
-
-
+ 
   public JobEntryBase()
   {
     name = null;
     description = null;
-    type=JobEntryType.NONE;
   }
 
   public JobEntryBase(String name, String description)
@@ -95,15 +74,6 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     setName(name);
     setDescription(description);
     setID(-1L);
-    type=JobEntryType.NONE;
-  }
-
-  public JobEntryBase(JobEntryBase jeb)
-  {
-    setName(jeb.getName());
-    setDescription(jeb.getDescription());
-    setJobEntryType(jeb.getJobEntryType());
-    setID(jeb.getID());
   }
 
   public void clear()
@@ -123,58 +93,15 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     return id;
   }
 
-  public void setJobEntryType(JobEntryType type)
-  {
-    this.type = type;
-  }
-
-  public String getPluginID()
-  {
-    return this.pluginID;
-  }
-
-  /**
-   * Support for CheckResultSourceInterface
-   */
-  public String getTypeId() {
-    return getTypeCode();
-  }
-
-  public JobEntryType getJobEntryType()
-  {
-    return type;
-  }
-
-  public String getTypeCode()
-  {
-    if (this.pluginID != null)
-      return this.pluginID;
-    return type.toString();// JobEntryInterface.typeCode[type];
-  }
-
-  public static final String getTypeCode(JobEntryType type)
-  {
-    return type.toString();
-  }
-
   public String getTypeDesc()
   {
-    return type.getDescription();
-  }
-
-  public static final String getTypeDesc(JobEntryType type)
-  {
-    return type.getDescription();
+	  JobPlugin plugin = JobEntryLoader.getInstance().findJobPluginWithID(configId);
+	  return plugin.getDescription();
   }
 
   public void setName(String name)
   {
     this.name = name;
-  }
-
-  public void setPluginID(String pid)
-  {
-    this.pluginID = pid;
   }
 
   public String getName()
@@ -219,47 +146,47 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   public boolean isEvaluation()
   {
-		return getJobEntryType() == JobEntryType.EVAL;
+		return true;
   }
 
   public boolean isJob()
   {
-    return getJobEntryType() == JobEntryType.JOB;
+    return "JOB".equals(configId);
   }
 
   public boolean isMail()
   {
-    return getJobEntryType() == JobEntryType.MAIL;
+    return "MAIL".equals(configId);
   }
 
   public boolean isShell()
   {
-    return getJobEntryType() == JobEntryType.MAIL;
+    return "SHELL".equals(configId);
   }
 
   public boolean isSpecial()
   {
-    return getJobEntryType() == JobEntryType.SPECIAL;
+    return "SPECIAL".equals(configId);
   }
 
   public boolean isTransformation()
   {
-		return getJobEntryType() == JobEntryType.TRANS;
+	return "TRANS".equals(configId);
   }
 
   public boolean isFTP()
   {
-    return getJobEntryType() == JobEntryType.FTP;
+	return "FTP".equals(configId);
   }
 
   public boolean isSFTP()
   {
-    return getJobEntryType() == JobEntryType.SFTP;
+	return "SFTP".equals(configId);
   }
 
   public boolean isHTTP()
   {
-    return getJobEntryType() == JobEntryType.HTTP;
+	return "HTTP".equals(configId);
   }
 
   // Add here for the new types?
@@ -269,10 +196,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     StringBuffer retval = new StringBuffer();
     retval.append("      ").append(XMLHandler.addTagValue("name", getName()));
     retval.append("      ").append(XMLHandler.addTagValue("description", getDescription()));
-    if (type != JobEntryType.NONE)
-      retval.append("      ").append(XMLHandler.addTagValue("type", getTypeCode()));
-    if (pluginID != null)
-      retval.append("      ").append(XMLHandler.addTagValue("type", pluginID));
+    retval.append("      ").append(XMLHandler.addTagValue("type", configId));
 
     return retval.toString();
   }
@@ -282,9 +206,6 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     try
     {
       setName(XMLHandler.getTagValue(entrynode, "name"));
-      setDescription(XMLHandler.getTagValue(entrynode, "description"));
-      String stype = XMLHandler.getTagValue(entrynode, "type");
-      setJobEntryType(JobEntryCopy.getType(stype));
       setDescription(XMLHandler.getTagValue(entrynode, "description"));
 	} catch(Exception e)
     {
@@ -322,7 +243,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
         RowMetaAndData jetrow = rep.getJobEntryType(id_jobentry_type);
         if (jetrow != null)
         {
-          type = JobEntryCopy.getType(jetrow.getString("CODE", null));
+          configId = jetrow.getString("CODE", null);
         }
       }
 		}
@@ -505,6 +426,20 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   public void setConfigId(String configId)
   {
     this.configId = configId;
+  }
+  
+  /**
+   * TODO: research the removal of configId in favor of typeId
+   */
+  public String getTypeId() {
+	  return getConfigId();
+  }
+  
+  /**
+   * TODO: research the removal of configId in favor of typeId
+   */
+  public void setTypeId(String typeId) {
+	  setConfigId(typeId);
   }
 
   /**

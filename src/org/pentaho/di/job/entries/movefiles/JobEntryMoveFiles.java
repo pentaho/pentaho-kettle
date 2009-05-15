@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
-
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
@@ -41,10 +40,9 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.entries.movefiles.Messages;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
@@ -60,6 +58,8 @@ import org.w3c.dom.Node;
  */
 public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryMoveFiles.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public boolean move_empty_folders;
 	public  boolean arg_from_previous;
 	public  boolean include_subfolders;
@@ -130,17 +130,11 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		AddDateBeforeExtension=false;
 		iffileexists="do_nothing";
 		setID(-1L);
-		setJobEntryType(JobEntryType.MOVE_FILES);
 	}
 
 	public JobEntryMoveFiles()
 	{
 		this("");
-	}
-
-	public JobEntryMoveFiles(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
 	public Object clone()
@@ -250,7 +244,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		catch(KettleXMLException xe)
 		{
 			
-			throw new KettleXMLException(Messages.getString("JobMoveFiles.Error.Exception.UnableLoadXML"), xe);
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobMoveFiles.Error.Exception.UnableLoadXML"), xe);
 		}
 	}
 
@@ -302,7 +296,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		catch(KettleException dbe)
 		{
 			
-			throw new KettleException(Messages.getString("JobMoveFiles.Error.Exception.UnableLoadRep")+id_jobentry, dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobMoveFiles.Error.Exception.UnableLoadRep")+id_jobentry, dbe);
 		}
 	}
 	
@@ -351,7 +345,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		catch(KettleDatabaseException dbe)
 		{
 			
-			throw new KettleException(Messages.getString("JobMoveFiles.Error.Exception.UnableSaveRep")+id_job, dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobMoveFiles.Error.Exception.UnableSaveRep")+id_job, dbe);
 		}
 	}
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob) throws KettleException 
@@ -370,10 +364,10 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		limitFiles=Const.toInt(environmentSubstitute(getNrErrorsLessThan()),10);
 		
 		if(simulate){
-			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.SimulationOn"));
+			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.SimulationOn"));
 		}
 		if(include_subfolders){
-			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.IncludeSubFoldersOn"));
+			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.IncludeSubFoldersOn"));
 		}	
 		
 		String MoveToFolder=environmentSubstitute(destinationFolder);
@@ -384,27 +378,27 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		
 		if(iffileexists.equals("move_file")){
 			if(Const.isEmpty(MoveToFolder)){
-				log.logError(toString(), Messages.getString("JobMoveFiles.Log.Error.MoveToFolderMissing"));
+				log.logError(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.Error.MoveToFolderMissing"));
 				return result;
 			}
 			 FileObject folder = null;
 			 try{
 				 folder = KettleVFS.getFileObject(MoveToFolder);
 				 if(!folder.exists()) {
-					 if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.Error.FolderMissing",MoveToFolder));
+					 if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.Error.FolderMissing",MoveToFolder));
 					 if(create_move_to_folder) {
 						 folder.createFolder();
 					 }else {
-						 log.logError(toString(), Messages.getString("JobMoveFiles.Log.Error.FolderMissing",MoveToFolder));
+						 log.logError(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.Error.FolderMissing",MoveToFolder));
 						 return result; 
 					 }
 				 }
 				 if(!folder.getType().equals(FileType.FOLDER)){
-					log.logError(toString(), Messages.getString("JobMoveFiles.Log.Error.NotFolder",MoveToFolder));
+					log.logError(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.Error.NotFolder",MoveToFolder));
 					return result; 
 				 }
 			 }catch (Exception e){
-				 log.logError(toString(), Messages.getString("JobMoveFiles.Log.Error.GettingMoveToFolder",MoveToFolder,e.getMessage()));
+				 log.logError(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.Error.GettingMoveToFolder",MoveToFolder,e.getMessage()));
 				 return result; 
 			 }finally{
 				 if ( folder != null ){
@@ -417,14 +411,14 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			
 		if (arg_from_previous){
 			if (log.isDetailed())
-				log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));
+				log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));
 		}
 		if (arg_from_previous && rows!=null){
 			for (int iteration=0;iteration<rows.size() && !parentJob.isStopped();iteration++) {			
 				// Success condition broken?
 				if(successConditionBroken){
 					if(!successConditionBrokenExit){
-						log.logError(toString(), Messages.getString("JobMoveFiles.Error.SuccessConditionbroken",""+NrErrors));
+						log.logError(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Error.SuccessConditionbroken",""+NrErrors));
 						successConditionBrokenExit=true;
 					}
 					result.setNrErrors(NrErrors);
@@ -441,7 +435,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 
 				if(!Const.isEmpty(vsourcefilefolder_previous) &&  !Const.isEmpty(vdestinationfilefolder_previous)){
 					if(log.isDetailed())
-						log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.ProcessingRow",vsourcefilefolder_previous, vdestinationfilefolder_previous, vwildcard_previous));
+						log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.ProcessingRow",vsourcefilefolder_previous, vdestinationfilefolder_previous, vwildcard_previous));
 
 					if(! ProcessFileFolder(vsourcefilefolder_previous,vdestinationfilefolder_previous,vwildcard_previous,parentJob,result,MoveToFolder,log))
 					{
@@ -452,7 +446,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				}
 				else{
 					if(log.isDetailed())
-						log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.IgnoringRow",vsourcefilefolder[iteration],vdestinationfilefolder[iteration],vwildcard[iteration]));
+						log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.IgnoringRow",vsourcefilefolder[iteration],vdestinationfilefolder[iteration],vwildcard[iteration]));
 				}
 			}
 		}
@@ -461,7 +455,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				// Success condition broken?
 				if(successConditionBroken){
 					if(!successConditionBrokenExit)	{
-						log.logError(toString(), Messages.getString("JobMoveFiles.Error.SuccessConditionbroken",""+NrErrors));
+						log.logError(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Error.SuccessConditionbroken",""+NrErrors));
 						successConditionBrokenExit=true;
 					}
 					result.setEntryNr(NrErrors);
@@ -473,7 +467,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				if(!Const.isEmpty(vsourcefilefolder[i]) && !Const.isEmpty(vdestinationfilefolder[i])){
 				// ok we can process this file/folder
 					if(log.isDetailed())
-						log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.ProcessingRow",vsourcefilefolder[i],vdestinationfilefolder[i],vwildcard[i]));
+						log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.ProcessingRow",vsourcefilefolder[i],vdestinationfilefolder[i],vwildcard[i]));
 				
 					if(!ProcessFileFolder(vsourcefilefolder[i],vdestinationfilefolder[i],vwildcard[i],parentJob,result,MoveToFolder,log)){
 						// Update Errors
@@ -482,7 +476,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				}
 				else{
 					if(log.isDetailed())
-						log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.IgnoringRow",vsourcefilefolder[i],vdestinationfilefolder[i],vwildcard[i]));
+						log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.IgnoringRow",vsourcefilefolder[i],vdestinationfilefolder[i],vwildcard[i]));
 				}
 			}
 		}	
@@ -500,8 +494,8 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	{
 		if(log.isDetailed()){
 			log.logDetailed(toString(), "=======================================");
-			log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.Info.FilesInError","" + NrErrors));
-			log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.Info.FilesInSuccess","" + NrSuccess));
+			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.Info.FilesInError","" + NrErrors));
+			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.Info.FilesInSuccess","" + NrSuccess));
 			log.logDetailed(toString(), "=======================================");
 		}
 	}
@@ -556,7 +550,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 						// Source is a folder, destination is a file
 						// WARNING !!! CAN NOT MOVE FOLDER TO FILE !!!
 						
-						log.logError(Messages.getString("JobMoveFiles.Log.Forbidden"), Messages.getString("JobMoveFiles.Log.CanNotMoveFolderToFile",realSourceFilefoldername,realDestinationFilefoldername));	
+						log.logError(BaseMessages.getString(PKG, "JobMoveFiles.Log.Forbidden"), BaseMessages.getString(PKG, "JobMoveFiles.Log.CanNotMoveFolderToFile",realSourceFilefoldername,realDestinationFilefoldername));	
 						
 						// Update Errors
 						updateErrors();
@@ -571,7 +565,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 							try{
 							 shortfilename=getDestinationFilename(shortfilename);
 							}catch (Exception e){
-								log.logError(toString(), Messages.getString(Messages.getString("JobMoveFiles.Error.GettingFilename",sourcefilefolder.getName().getBaseName(),e.toString())));
+								log.logError(toString(), BaseMessages.getString(PKG, BaseMessages.getString(PKG, "JobMoveFiles.Error.GettingFilename",sourcefilefolder.getName().getBaseName(),e.toString())));
 								return entrystatus;
 							}
 							// Move the file to the destination folder				
@@ -593,7 +587,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 							 shortfilename=getDestinationFilename(shortfilename);
 							}catch (Exception e)
 							{
-								log.logError(toString(), Messages.getString(Messages.getString("JobMoveFiles.Error.GettingFilename",sourcefilefolder.getName().getBaseName(),e.toString())));
+								log.logError(toString(), BaseMessages.getString(PKG, BaseMessages.getString(PKG, "JobMoveFiles.Error.GettingFilename",sourcefilefolder.getName().getBaseName(),e.toString())));
 								return entrystatus;
 							}
 
@@ -607,7 +601,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 							if(log.isDetailed())
 							{
 								log.logDetailed(toString(),"  ");
-								log.logDetailed(toString(),Messages.getString("JobMoveFiles.Log.FetchFolder",sourcefilefolder.toString()));
+								log.logDetailed(toString(),BaseMessages.getString(PKG, "JobMoveFiles.Log.FetchFolder",sourcefilefolder.toString()));
 							}
 							
 							FileObject[] fileObjects = sourcefilefolder.findFiles(
@@ -645,7 +639,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	                            	// Success condition broken?
 	                            	if(successConditionBroken){
 	            						if(!successConditionBrokenExit){
-	            							log.logError(toString(), Messages.getString("JobMoveFiles.Error.SuccessConditionbroken",""+NrErrors));
+	            							log.logError(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Error.SuccessConditionbroken",""+NrErrors));
 	            							successConditionBrokenExit=true;
 	            						}
 	            						return false;
@@ -669,17 +663,17 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				else
 				{
 					// Destination Folder or Parent folder is missing
-					log.logError(toString(), Messages.getString("JobMoveFiles.Error.DestinationFolderNotFound",realDestinationFilefoldername));					
+					log.logError(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Error.DestinationFolderNotFound",realDestinationFilefoldername));					
 				}	
 			} // end if
 			else
 			{	
-				log.logError(toString(), Messages.getString("JobMoveFiles.Error.SourceFileNotExists",realSourceFilefoldername));					
+				log.logError(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Error.SourceFileNotExists",realSourceFilefoldername));					
 			}
 		} // end try
 		catch (Exception e) 
 		{
-			log.logError(toString(), Messages.getString("JobMoveFiles.Error.Exception.MoveProcess",realSourceFilefoldername.toString(),destinationfilefolder.toString(), e.getMessage()));					
+			log.logError(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Error.Exception.MoveProcess",realSourceFilefoldername.toString(),destinationfilefolder.toString(), e.getMessage()));					
 			// Update Errors
 			updateErrors();
 		}
@@ -722,7 +716,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		try{
 		if(!destinationfilename.exists()){
 			if(!simulate) sourcefilename.moveTo(destinationfilename);
-			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",sourcefilename.getName().toString(),destinationfilename.getName().toString()));
+			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.FileMoved",sourcefilename.getName().toString(),destinationfilename.getName().toString()));
 		
 			// add filename to result filename
 			if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
@@ -732,10 +726,10 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		
 		}
 		else{
-			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileExists",destinationfilename.toString()));
+			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.FileExists",destinationfilename.toString()));
 			if(iffileexists.equals("overwrite_file")){
 				if(!simulate) sourcefilename.moveTo(destinationfilename);
-				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileOverwrite",destinationfilename.getName().toString()));
+				if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.FileOverwrite",destinationfilename.getName().toString()));
 			
 				// add filename to result filename
 				if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
@@ -752,7 +746,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 					short_filename=getMoveDestinationFilename(short_filename,"ddMMyyyy_HHmmssSSS");
 				}catch (Exception e)
 				{
-					log.logError(toString(), Messages.getString(Messages.getString("JobMoveFiles.Error.GettingFilename",short_filename)));
+					log.logError(toString(), BaseMessages.getString(PKG, BaseMessages.getString(PKG, "JobMoveFiles.Error.GettingFilename",short_filename)));
 					return retval;
 				}
 				
@@ -762,7 +756,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				
 				
 				if(!simulate) sourcefilename.moveTo(destinationfile);
-				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",sourcefilename.getName().toString(),destinationfile.getName().toString()));
+				if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.FileMoved",sourcefilename.getName().toString(),destinationfile.getName().toString()));
 				
 				
 				// add filename to result filename
@@ -774,7 +768,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			}
 			else if(iffileexists.equals("delete_file")){
 				if(!simulate) destinationfilename.delete();
-				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileDeleted",destinationfilename.getName().toString()));
+				if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.FileDeleted",destinationfilename.getName().toString()));
 			}
 			else if(iffileexists.equals("move_file")){
 				String short_filename=shortfilename;	
@@ -783,7 +777,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 					short_filename=getMoveDestinationFilename(short_filename,null);
 				}catch (Exception e)
 				{
-					log.logError(toString(), Messages.getString(Messages.getString("JobMoveFiles.Error.GettingFilename",short_filename)));
+					log.logError(toString(), BaseMessages.getString(PKG, BaseMessages.getString(PKG, "JobMoveFiles.Error.GettingFilename",short_filename)));
 					return retval;
 				}
 				
@@ -791,7 +785,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				destinationfile = KettleVFS.getFileObject(movetofilenamefull);
 				if(!destinationfile.exists()){
 					if(!simulate) sourcefilename.moveTo(destinationfile);
-					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",sourcefilename.getName().toString(),destinationfile.getName().toString()));
+					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.FileMoved",sourcefilename.getName().toString(),destinationfile.getName().toString()));
 				
 					// add filename to result filename
 					if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
@@ -801,7 +795,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 					if(ifmovedfileexists.equals("overwrite_file"))
 					{
 						if(!simulate) sourcefilename.moveTo(destinationfile);
-						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileOverwrite",destinationfile.getName().toString()));
+						if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.FileOverwrite",destinationfile.getName().toString()));
 					
 						// add filename to result filename
 						if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
@@ -821,7 +815,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 						destinationfile= KettleVFS.getFileObject(destinationfilenamefull);
 							
 						if(!simulate) sourcefilename.moveTo(destinationfile);
-						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",destinationfile.getName().toString()));
+						if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.FileMoved",destinationfile.getName().toString()));
 					
 						// add filename to result filename
 						if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
@@ -845,7 +839,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		}
 		}catch (Exception e)
 		{
-			log.logError(toString(), Messages.getString("JobMoveFiles.Error.Exception.MoveProcessError",sourcefilename.toString(),destinationfilename.toString(),e.getMessage()));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Error.Exception.MoveProcessError",sourcefilename.toString(),destinationfilename.toString(),e.getMessage()));
 		}
 		finally 
 		{
@@ -876,7 +870,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			  shortfilename=getDestinationFilename(sourceshortfilename);
 			}catch (Exception e)
 			{
-				log.logError(toString(), Messages.getString(Messages.getString("JobMoveFiles.Error.GettingFilename",Currentfile.getName().getBaseName(),e.toString())));
+				log.logError(toString(), BaseMessages.getString(PKG, BaseMessages.getString(PKG, "JobMoveFiles.Error.GettingFilename",Currentfile.getName().getBaseName(),e.toString())));
 				return entrystatus;
 			}
 			
@@ -945,7 +939,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
     
 	}catch (Exception e)
 	{
-		log.logError(toString(), Messages.getString("JobMoveFiles.Log.Error",e.toString()));
+		log.logError(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.Error",e.toString()));
 	}
 	finally 
 	{
@@ -996,12 +990,12 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			if(log.isDebug())
 			{
 				log.logDebug(toString()," ------ ");
-				log.logDebug(toString(),Messages.getString("JobMoveFiles.Log.FileAddedToResultFilesName",fileaddentry));
+				log.logDebug(toString(),BaseMessages.getString(PKG, "JobMoveFiles.Log.FileAddedToResultFilesName",fileaddentry));
 			}
 			
 		}catch (Exception e)
 		{
-			log.logError(Messages.getString("JobMoveFiles.Error.AddingToFilenameResult"),fileaddentry + ""+e.getMessage());
+			log.logError(BaseMessages.getString(PKG, "JobMoveFiles.Error.AddingToFilenameResult"),fileaddentry + ""+e.getMessage());
 		}
 
 }
@@ -1020,20 +1014,20 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
     		{
     			if(create_destination_folder)
     			{
-    				if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobMoveFiles.Log.FolderNotExist",folder.getName().toString()));
+    				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobMoveFiles.Log.FolderNotExist",folder.getName().toString()));
     				folder.createFolder();
-        			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FolderWasCreated", folder.getName().toString()));
+        			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMoveFiles.Log.FolderWasCreated", folder.getName().toString()));
     			}
     			else
     			{
-    				log.logError(toString(),Messages.getString("JobMoveFiles.Log.FolderNotExist",folder.getName().toString()));
+    				log.logError(toString(),BaseMessages.getString(PKG, "JobMoveFiles.Log.FolderNotExist",folder.getName().toString()));
     				return false;
     			}
     		}
     		return true;
 		}
 		catch (Exception e) {
-			log.logError(toString(),Messages.getString("JobMoveFiles.Log.CanNotCreateParentFolder",folder.getName().toString()));
+			log.logError(toString(),BaseMessages.getString(PKG, "JobMoveFiles.Log.CanNotCreateParentFolder",folder.getName().toString()));
 			
 		}
 		 finally {

@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.w3c.dom.Node;
-
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSelectInfo;
+import org.apache.commons.vfs.FileSelector;
+import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -37,16 +39,13 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileType;
-import org.apache.commons.vfs.FileSelector;
-import org.apache.commons.vfs.FileSelectInfo;
+import org.w3c.dom.Node;
 
 
 /**
@@ -59,6 +58,8 @@ import org.apache.commons.vfs.FileSelectInfo;
  */
 public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryFolderIsEmpty.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String foldername;
 	private int filescount;
 	private int folderscount;
@@ -75,17 +76,11 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 		includeSubfolders=false;
 		specifywildcard=false;
 		setID(-1L);
-		setJobEntryType(JobEntryType.FOLDER_IS_EMPTY);
 	}
 
 	public JobEntryFolderIsEmpty()
 	{
 		this("");
-	}
-
-	public JobEntryFolderIsEmpty(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -328,8 +323,8 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 			}
 			catch (Exception e) 
 			{
-				log.logError(Messages.getString("JobFolderIsEmpty.Error") , 
-						Messages.getString("JobFolderIsEmpty.Error.Exception", 
+				log.logError(BaseMessages.getString(PKG, "JobFolderIsEmpty.Error") , 
+						BaseMessages.getString(PKG, "JobFolderIsEmpty.Error.Exception", 
 						info.getFile().toString(),e.getMessage()));
 				 returncode= false;
 			}

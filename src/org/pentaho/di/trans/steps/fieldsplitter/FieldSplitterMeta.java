@@ -31,7 +31,6 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepCategory;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -90,7 +89,7 @@ import org.w3c.dom.Node;
 </CODE>
 **/
 @Step(name="FieldSplitter",image="ui/images/SPL.png",tooltip="BaseStep.TypeTooltipDesc.SplitFields",description="BaseStep.TypeLongDesc.SplitFields",
-		category=StepCategory.CATEGORY_TRANSFORM)
+		categoryDescription="BaseStep.Category.Transform", i18nPackageName="org.pentaho.di.trans.step")
 public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 {
     /** Field to split */

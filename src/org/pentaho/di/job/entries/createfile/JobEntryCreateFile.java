@@ -21,11 +21,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.ResultFile;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -33,8 +33,8 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -52,6 +52,7 @@ import org.w3c.dom.Node;
  */
 public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+  private static Class<?> PKG = JobEntryCreateFile.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
   private String filename;
 
   private boolean failIfFileExists;
@@ -64,17 +65,11 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
     failIfFileExists = true;
     addfilenameresult=false;
     setID(-1L);
-    setJobEntryType(JobEntryType.CREATE_FILE);
   }
 
   public JobEntryCreateFile()
   {
     this("");
-  }
-
-  public JobEntryCreateFile(JobEntryBase jeb)
-  {
-    super(jeb);
   }
 
   public Object clone()
@@ -236,7 +231,7 @@ private void addFilenameToResult(String targetFilename,LogWriter log,Result resu
         resultFile.setComment(""); //$NON-NLS-1$
 		result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 		
-        if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryCreateFile.FileAddedToResult",targetFilename)); //$NON-NLS-1$
+        if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCreateFile.FileAddedToResult",targetFilename)); //$NON-NLS-1$
 	} catch(Exception e)
 	{
 		throw new KettleException(e);

@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -30,13 +31,15 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.config.ConfigManager;
+import org.pentaho.di.core.config.KettleConfig;
+import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.i18n.LoaderInputStreamProvider;
-import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepCategory;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Document;
@@ -58,7 +61,10 @@ public class StepLoader implements LoaderInputStreamProvider
     
     private static final int PLUGIN_TYPE_STEP = 1;
     private static final int PLUGIN_TYPE_PARTIONER = 2;
-
+    
+    
+    private StepPluginMeta[] steps;
+    
     private StepLoader(String pluginDirectory[])
     {
         this.pluginDirectory = pluginDirectory;
@@ -84,6 +90,37 @@ public class StepLoader implements LoaderInputStreamProvider
 
         return stepLoader;
     }
+    
+    /**
+     * Reads the step metadata, names, descriptions, IDs, icon filenames, etc.
+     * @throws KettleException
+     */
+    private void initStepPluginMeta() throws KettleException
+    {
+    	synchronized(StepLoader.getInstance())
+    	{
+        	if (steps==null) { 
+	    		try
+		    	{
+		    		//annotated classes first
+		    		ConfigManager<?> stepsAnntCfg = KettleConfig.getInstance().getManager("steps-annotation-config");
+		    		Collection<StepPluginMeta> mainSteps = stepsAnntCfg.loadAs(StepPluginMeta.class);
+		    		ConfigManager<?> stepsCfg = KettleConfig.getInstance().getManager("steps-xml-config");
+		    		Collection<StepPluginMeta> csteps = stepsCfg.loadAs(StepPluginMeta.class);
+		    	
+		    		mainSteps.addAll(csteps);
+		    
+		    		steps = mainSteps.toArray(new StepPluginMeta[mainSteps.size()]);
+		    	}
+		    	catch(KettleConfigException e)
+		    	{
+		    		throw new KettleException("There was an unexpected error while reading the step plugin metadata", e);
+		    	}
+        	}
+    	}
+    }
+
+
 
     /**
      * Read & initialize all the steps and plugins
@@ -93,6 +130,7 @@ public class StepLoader implements LoaderInputStreamProvider
      */
     public boolean read() throws KettleException
     {
+    	initStepPluginMeta();
         readNatives(); 
         readPlugins();
         
@@ -107,6 +145,7 @@ public class StepLoader implements LoaderInputStreamProvider
     public static final void init(String[] pluginDirectory) throws KettleException
     {
     	StepLoader loader = getInstance(pluginDirectory);
+    	loader.initStepPluginMeta();
         loader.readNatives(); 
         loader.readPlugins();
     }
@@ -122,9 +161,9 @@ public class StepLoader implements LoaderInputStreamProvider
 
     public void readNatives()
     {
-        for (int i = 0; i < BaseStep.steps.length; i++)
+        for (int i = 0; i < steps.length; i++)
         {
-            StepPluginMeta pluginMeta = BaseStep.steps[i];
+            StepPluginMeta pluginMeta = steps[i];
             String id[] = pluginMeta.getId();
             String long_desc = pluginMeta.getLongDesc();
             String tooltip = pluginMeta.getTooltipDesc();

@@ -20,6 +20,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Node;
 
 /**
@@ -30,6 +31,8 @@ import org.w3c.dom.Node;
  */
 public class ResultFile implements Cloneable
 {
+	private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final int FILE_TYPE_GENERAL   = 0;
 	public static final int FILE_TYPE_LOG       = 1;
 	public static final int FILE_TYPE_ERRORLINE = 2;
@@ -39,11 +42,11 @@ public class ResultFile implements Cloneable
 	public static final String[] fileTypeCode = { "GENERAL", "LOG", "ERRORLINE", "ERROR", "WARNING" };
 	
 	public static final String[] fileTypeDesc = {
-                                                 Messages.getString("ResultFile.FileType.General"),
-                                                 Messages.getString("ResultFile.FileType.Log"),
-                                                 Messages.getString("ResultFile.FileType.ErrorLine"),
-                                                 Messages.getString("ResultFile.FileType.Error"),
-                                                 Messages.getString("ResultFile.FileType.Warning")
+                                                 BaseMessages.getString(PKG, "ResultFile.FileType.General"),
+                                                 BaseMessages.getString(PKG, "ResultFile.FileType.Log"),
+                                                 BaseMessages.getString(PKG, "ResultFile.FileType.ErrorLine"),
+                                                 BaseMessages.getString(PKG, "ResultFile.FileType.Error"),
+                                                 BaseMessages.getString(PKG, "ResultFile.FileType.Warning")
     };
 	private static final String XML_TAG = "result-file";
     

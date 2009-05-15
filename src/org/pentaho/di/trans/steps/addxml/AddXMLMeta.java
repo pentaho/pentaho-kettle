@@ -27,6 +27,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -50,6 +51,8 @@ import org.w3c.dom.Node;
 
 public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
 {
+	private static Class<?> PKG = AddXMLMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** The base name of the output file */
 
     /** Flag: ommit the XML Header*/
@@ -333,7 +336,7 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
         // Check output fields
         if (prev!=null && prev.size()>0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("AddXMLMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
             remarks.add(cr);
             
             String  error_message="";
@@ -351,13 +354,13 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
             }
             if (error_found) 
             {
-                error_message=Messages.getString("AddXMLMeta.CheckResult.FieldsNotFound", error_message);
+                error_message=BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.FieldsNotFound", error_message);
                 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
                 remarks.add(cr);
             }
             else
             {
-                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("AddXMLMeta.CheckResult.AllFieldsFound"), stepMeta);
+                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.AllFieldsFound"), stepMeta);
                 remarks.add(cr);
             }
         }
@@ -365,16 +368,16 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
         // See if we have input streams leading to this step!
         if (input.length>0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("AddXMLMeta.CheckResult.ExpectedInputOk"), stepMeta);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.ExpectedInputOk"), stepMeta);
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("AddXMLMeta.CheckResult.ExpectedInputError"), stepMeta);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.ExpectedInputError"), stepMeta);
             remarks.add(cr);
         }
         
-        cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, Messages.getString("AddXMLMeta.CheckResult.FilesNotChecked"), stepMeta);
+        cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.FilesNotChecked"), stepMeta);
         remarks.add(cr);
     }
 

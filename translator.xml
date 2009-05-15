@@ -9,6 +9,11 @@
     <root>src-ui</root>
   </source-directories>
   
+  <scan-phrases>
+    <scan-phrase>Messages.getString(</scan-phrase>
+    <scan-phrase>BaseMessages.getString(PKG,</scan-phrase>
+  </scan-phrases>
+  
   <locale-list>
     <locale> <code>en_US</code> <language>English</language> <country>United States of America</country> </locale>
     <locale> <code>fr_FR</code> <language>French</language> <country>France</country> </locale>

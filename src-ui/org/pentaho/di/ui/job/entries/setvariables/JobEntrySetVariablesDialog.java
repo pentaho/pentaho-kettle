@@ -11,7 +11,6 @@
 
 package org.pentaho.di.ui.job.entries.setvariables;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -23,27 +22,27 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.setvariables.JobEntrySetVariables;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.setvariables.JobEntrySetVariables;
-import org.pentaho.di.job.entries.setvariables.Messages;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 /**
@@ -55,6 +54,8 @@ import org.pentaho.di.core.Const;
 
 public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntrySetVariables.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlName;
 	private Text         wName;
     private FormData     fdlName, fdName;
@@ -86,7 +87,7 @@ public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEnt
         jobEntry = (JobEntrySetVariables) jobEntryInt;
 
 		if (this.jobEntry.getName() == null) 
-			this.jobEntry.setName(Messages.getString("JobEntrySetVariables.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntrySetVariables.Name.Default"));
     }
 	public JobEntryInterface open()
 	{
@@ -111,14 +112,14 @@ public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEnt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobEntrySetVariables.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobEntrySetVariables.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobEntrySetVariables.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobEntrySetVariables.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -141,7 +142,7 @@ public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEnt
 
 		wSettings = new Group(shell, SWT.SHADOW_NONE);
 		props.setLook(wSettings);
-		wSettings.setText(Messages.getString("JobEntrySetVariables.Settings.Label"));
+		wSettings.setText(BaseMessages.getString(PKG, "JobEntrySetVariables.Settings.Label"));
 
 		FormLayout groupLayout = new FormLayout();
 		groupLayout.marginWidth = 10;
@@ -149,7 +150,7 @@ public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEnt
 		wSettings.setLayout(groupLayout);
 
 		wlVarSubs = new Label(wSettings, SWT.RIGHT);
-		wlVarSubs.setText(Messages.getString("JobEntrySetVariables.VarsReplace.Label"));
+		wlVarSubs.setText(BaseMessages.getString(PKG, "JobEntrySetVariables.VarsReplace.Label"));
 		props.setLook(wlVarSubs);
 		fdlVarSubs = new FormData();
 		fdlVarSubs.left = new FormAttachment(0, 0);
@@ -158,7 +159,7 @@ public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEnt
 		wlVarSubs.setLayoutData(fdlVarSubs);
 		wVarSubs = new Button(wSettings, SWT.CHECK);
 		props.setLook(wVarSubs);
-		wVarSubs.setToolTipText(Messages.getString("JobEntrySetVariables.VarsReplace.Tooltip"));
+		wVarSubs.setToolTipText(BaseMessages.getString(PKG, "JobEntrySetVariables.VarsReplace.Tooltip"));
 		fdVarSubs = new FormData();
 		fdVarSubs.left = new FormAttachment(middle, 0);
 		fdVarSubs.top = new FormAttachment(wName, margin);
@@ -184,7 +185,7 @@ public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEnt
 		// ///////////////////////////////////////////////////////////
 		
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("SetVariableDialog.Variables.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "SetVariableDialog.Variables.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -201,9 +202,9 @@ public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEnt
 		
 		ColumnInfo[] colinf=
             {
-		        new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableName"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-		        new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableType"), ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntrySetVariables.getVariableTypeDescriptions(), false), //$NON-NLS-1$
+		        new ColumnInfo(BaseMessages.getString(PKG, "SetVariableDialog.Fields.Column.VariableName"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+		        new ColumnInfo(BaseMessages.getString(PKG, "SetVariableDialog.Fields.Column.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "SetVariableDialog.Fields.Column.VariableType"), ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntrySetVariables.getVariableTypeDescriptions(), false), //$NON-NLS-1$
             };
 		colinf[0].setUsingVariables(true);
 		colinf[1].setUsingVariables(true);
@@ -224,9 +225,9 @@ public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEnt
 		wFields.setLayoutData(fdFields);
 		
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFields);
 
@@ -305,8 +306,8 @@ public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEnt
  	   if(Const.isEmpty(wName.getText())) 
       {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
       }

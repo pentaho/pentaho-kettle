@@ -37,10 +37,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.job.JobEntryLoader;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.trans.StepLoader;
@@ -673,15 +671,7 @@ public class GUIResource
 		JobPlugin plugins[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_ALL);
 		for (int i = 0; i < plugins.length; i++)
 		{
-			try
-			{
-				if (jobEntryLoader.getJobEntryClass(plugins[i]).getJobEntryType() == JobEntryType.SPECIAL)
-					continue;
-			} catch (KettleStepLoaderException e)
-			{
-				log.logError("Kettle", "Unable to create job entry from plugin [" + plugins[i] + "]", e);
-				continue;
-			}
+			if ("SPECIAL".equals(plugins[i].getID())) continue;
 
 			Image image = null;
 			Image small_image = null;
@@ -694,7 +684,7 @@ public class GUIResource
 					image = ImageUtil.getImage(display, filename);
 				} catch (Exception e)
 				{
-					log.logError("Kettle", "Unable to find required job entry image file [" + filename + "] : " + e.toString());
+					log.logError("Kettle", "Unable to find required job entry image file [" + filename + "] for id ["+plugins[i].getID()+"] : " + e.toString());
 					image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
 					GC gc = new GC(image);
 					gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
@@ -721,7 +711,7 @@ public class GUIResource
 					}
 					catch(Exception altE) 
 					{
-						log.logError("Kettle", "Unable to find required job entry image file [" + filename + "] : " + e.toString());
+						log.logError("Kettle", "Unable to find required job entry image file [" + filename + "] : for id ["+plugins[i].getID()+"] " + e.toString());
 						image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
 						GC gc = new GC(image);
 						gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);

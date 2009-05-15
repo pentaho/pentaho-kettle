@@ -38,7 +38,9 @@ import java.util.TimeZone;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
+import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 
 /**
  * This class is used to define a number of default values for various settings throughout Kettle.
@@ -50,6 +52,8 @@ import org.pentaho.di.laf.BasePropertyHandler;
  */
 public class Const
 {
+	private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	/**
 	 *  Version number
 	 */
@@ -1724,10 +1728,10 @@ public class Const
     {
         if (tips == null)
         {
-            int tipsOfDayCount = toInt(Messages.getString("Const.TipOfDay.Count"), 0);
+            int tipsOfDayCount = toInt(BaseMessages.getString(PKG, "Const.TipOfDay.Count"), 0);
             tips = new String[tipsOfDayCount];
             for (int i = 1; i <= tipsOfDayCount; i++)
-                tips[i - 1] = Messages.getString("Const.TipOfDay" + Integer.toString(i));
+                tips[i - 1] = BaseMessages.getString(PKG, "Const.TipOfDay" + Integer.toString(i));
         }
 
         return tips;
@@ -1742,10 +1746,10 @@ public class Const
     {
         if (dateFormats == null)
         {
-            int dateFormatsCount = toInt(Messages.getString("Const.DateFormat.Count"), 0);
+            int dateFormatsCount = toInt(BaseMessages.getString(PKG, "Const.DateFormat.Count"), 0);
             dateFormats = new String[dateFormatsCount];
             for (int i = 1; i <= dateFormatsCount; i++)
-                dateFormats[i - 1] = Messages.getString("Const.DateFormat" + Integer.toString(i));
+                dateFormats[i - 1] = BaseMessages.getString(PKG, "Const.DateFormat" + Integer.toString(i));
         }
         return dateFormats;
     }
@@ -1759,11 +1763,11 @@ public class Const
     {
         if (numberFormats == null)
         {
-            int numberFormatsCount = toInt(Messages.getString("Const.NumberFormat.Count"), 0);
+            int numberFormatsCount = toInt(BaseMessages.getString(PKG, "Const.NumberFormat.Count"), 0);
             numberFormats = new String[numberFormatsCount + 1];
             numberFormats[0] = DEFAULT_NUMBER_FORMAT;
             for (int i = 1; i <= numberFormatsCount; i++)
-                numberFormats[i] = Messages.getString("Const.NumberFormat" + Integer.toString(i));
+                numberFormats[i] = BaseMessages.getString(PKG, "Const.NumberFormat" + Integer.toString(i));
         }
         return numberFormats;
     }
@@ -1773,11 +1777,11 @@ public class Const
         if (STRING_TRANS_AND_JOB_FILTER_NAMES == null)
         {
             STRING_TRANS_AND_JOB_FILTER_NAMES = new String[] {
-                                                            Messages.getString("Const.FileFilter.TransformationJob"),
-                                                            Messages.getString("Const.FileFilter.Transformations"),
-                                                            Messages.getString("Const.FileFilter.Jobs"),
-                                                            Messages.getString("Const.FileFilter.XML"),
-                                                            Messages.getString("Const.FileFilter.All")
+                                                            BaseMessages.getString(PKG, "Const.FileFilter.TransformationJob"),
+                                                            BaseMessages.getString(PKG, "Const.FileFilter.Transformations"),
+                                                            BaseMessages.getString(PKG, "Const.FileFilter.Jobs"),
+                                                            BaseMessages.getString(PKG, "Const.FileFilter.XML"),
+                                                            BaseMessages.getString(PKG, "Const.FileFilter.All")
             };
         }
         return STRING_TRANS_AND_JOB_FILTER_NAMES;
@@ -1788,9 +1792,9 @@ public class Const
         if (STRING_TRANS_FILTER_NAMES == null)
         {
             STRING_TRANS_FILTER_NAMES = new String[] {
-                                                            Messages.getString("Const.FileFilter.Transformations"),
-                                                            Messages.getString("Const.FileFilter.XML"),
-                                                            Messages.getString("Const.FileFilter.All")
+                                                            BaseMessages.getString(PKG, "Const.FileFilter.Transformations"),
+                                                            BaseMessages.getString(PKG, "Const.FileFilter.XML"),
+                                                            BaseMessages.getString(PKG, "Const.FileFilter.All")
             };
         }
         return STRING_TRANS_FILTER_NAMES;
@@ -1801,9 +1805,9 @@ public class Const
         if (STRING_JOB_FILTER_NAMES == null)
         {
             STRING_JOB_FILTER_NAMES = new String[] {
-                                                            Messages.getString("Const.FileFilter.Jobs"),
-                                                            Messages.getString("Const.FileFilter.XML"),
-                                                            Messages.getString("Const.FileFilter.All")
+                                                            BaseMessages.getString(PKG, "Const.FileFilter.Jobs"),
+                                                            BaseMessages.getString(PKG, "Const.FileFilter.XML"),
+                                                            BaseMessages.getString(PKG, "Const.FileFilter.All")
             };
         }
         return STRING_JOB_FILTER_NAMES;
@@ -2110,5 +2114,16 @@ public class Const
 	        }
 	    }
 		return counter;
+	}
+
+	/**
+	 * Determines the package name of a class, specifically for i18n purposes.
+	 * This method is scanned for by Translator2 : DO NOT RENAME OR REFACTOR.
+	 *  
+	 * @param class1
+	 * @return
+	 */
+	public static String getPackageName(Class<CsvInputMeta> clazz) {
+		return clazz.getPackage().getName();
 	}
 }

@@ -30,8 +30,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -46,21 +46,18 @@ import org.w3c.dom.Node;
  * @since 5-11-2003
  */
 public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInterface {
+  private static Class<?> PKG = JobEntryEval.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   private String script;
 
   public JobEntryEval(String n, String scr) {
     super(n, ""); //$NON-NLS-1$
     script = scr;
     setID(-1L);
-    setJobEntryType(JobEntryType.EVAL);
   }
 
   public JobEntryEval() {
     this("", ""); //$NON-NLS-1$ //$NON-NLS-2$
-  }
-
-  public JobEntryEval(JobEntryBase jeb) {
-    super(jeb);
   }
 
   public Object clone() {
@@ -82,7 +79,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
       super.loadXML(entrynode, databases, slaveServers);
       script = XMLHandler.getTagValue(entrynode, "script"); //$NON-NLS-1$
     } catch (Exception e) {
-      throw new KettleXMLException(Messages.getString("JobEntryEval.UnableToLoadFromXml"), e); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryEval.UnableToLoadFromXml"), e); //$NON-NLS-1$
     }
   }
 
@@ -93,7 +90,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
       script = rep.getJobEntryAttributeString(id_jobentry, "script"); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(
-          Messages.getString("JobEntryEval.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
+          BaseMessages.getString(PKG, "JobEntryEval.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -105,7 +102,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
 
       rep.saveJobEntryAttribute(id_job, getID(), "script", script); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
-      throw new KettleException(Messages.getString("JobEntryEval.UnableToSaveToRepo", String.valueOf(id_job)), //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "JobEntryEval.UnableToSaveToRepo", String.valueOf(id_job)), //$NON-NLS-1$
           dbe);
     }
   }
@@ -176,12 +173,12 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
         return retval;
       } catch (Exception e) {
         result.setNrErrors(1);
-        log.logError(toString(), Messages.getString("JobEntryEval.CouldNotCompile", e.toString())); //$NON-NLS-1$
+        log.logError(toString(), BaseMessages.getString(PKG, "JobEntryEval.CouldNotCompile", e.toString())); //$NON-NLS-1$
         return false;
       }
     } catch (Exception e) {
       result.setNrErrors(1);
-      log.logError(toString(), Messages.getString("JobEntryEval.ErrorEvaluating", e.toString())); //$NON-NLS-1$
+      log.logError(toString(), BaseMessages.getString(PKG, "JobEntryEval.ErrorEvaluating", e.toString())); //$NON-NLS-1$
       return false;
     } finally {
       Context.exit();

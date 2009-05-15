@@ -22,10 +22,8 @@ import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.JobEntryCategory;
 import org.pentaho.di.job.JobPluginMeta;
-import org.pentaho.di.job.entry.Messages;
-
+import org.pentaho.di.job.entry.JobEntryBase;
 
 /**
  * Registers classes annotated with @Job as Kettle/PDI jobs, without the need for XML configurations.
@@ -35,8 +33,11 @@ import org.pentaho.di.job.entry.Messages;
  * @author Alex Silva
  *
  * @param <T>
- */public class AnnotatedJobConfigManager<T extends JobPluginMeta> extends BasicConfigManager<T> 
+ */
+public class AnnotatedJobConfigManager<T extends JobPluginMeta> extends BasicConfigManager<T> 
 {
+	private static Class<?> PKG = JobEntryBase.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	@Inject
 	String packages;
 	
@@ -70,7 +71,7 @@ import org.pentaho.di.job.entry.Messages;
 			// The package name to get the descriptions or tool tip from...
 			//
 			String packageName = job.i18nPackageName();
-			if (Const.isEmpty(packageName)) packageName = org.pentaho.di.job.entry.Messages.class.getPackage().getName();
+			if (Const.isEmpty(packageName)) packageName = PKG.getPackage().getName();
 
 			// An alternative package to get the description or tool tip from...
 			//
@@ -80,7 +81,7 @@ import org.pentaho.di.job.entry.Messages;
 			//
 			LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messages for missing locale
 			String name = BaseMessages.getString(packageName, job.name());
-			if (name.startsWith("!") && name.endsWith("!")) name=Messages.getString(job.name());
+			if (name.startsWith("!") && name.endsWith("!")) name=BaseMessages.getString(PKG, job.name());
 			LogWriter.getInstance().setLogLevel(oldLogLevel); // restore loglevel, when the last alternative fails, log it when loglevel is detailed
 			if (!Const.isEmpty(job.name()) && name.startsWith("!") && name.endsWith("!")) name=BaseMessages.getString(altPackageName, job.name());
 			if (name.startsWith("!") && name.endsWith("!")) name=job.name(); // Nothing to translate, keep it like it is. 
@@ -89,7 +90,7 @@ import org.pentaho.di.job.entry.Messages;
 			//
 			LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messages for missing locale
 			String tooltip = BaseMessages.getString(packageName, job.tooltip());
-			if (tooltip.startsWith("!") && tooltip.endsWith("!")) tooltip=Messages.getString(job.tooltip());
+			if (tooltip.startsWith("!") && tooltip.endsWith("!")) tooltip=BaseMessages.getString(PKG, job.tooltip());
 			LogWriter.getInstance().setLogLevel(oldLogLevel); // restore loglevel, when the last alternative fails, log it when loglevel is detailed
 			if (tooltip.startsWith("!") && tooltip.endsWith("!")) tooltip=BaseMessages.getString(altPackageName, job.tooltip());
 			if (tooltip.startsWith("!") && tooltip.endsWith("!")) tooltip=job.tooltip(); // Nothing to translate, keep it like it is. 
@@ -99,19 +100,13 @@ import org.pentaho.di.job.entry.Messages;
 			// If the step should have a separate category, this is the place to calculate that
 			// This calculation is only used if the category is USER_DEFINED
 			//
-			String category;
-			if (job.category()!=JobEntryCategory.CATEGORY_USER_DEFINED) {
-				category = JobEntryCategory.STANDARD_CATEGORIES[job.category()].getName();
-			}
-			else {
-				LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messages for missing locale
-				category = BaseMessages.getString(packageName, job.categoryDescription());
-				if (category.startsWith("!") && category.endsWith("!")) category=Messages.getString(job.categoryDescription());
-				LogWriter.getInstance().setLogLevel(oldLogLevel); // restore loglevel, when the last alternative fails, log it when loglevel is detailed
-				if (category.startsWith("!") && category.endsWith("!")) category=BaseMessages.getString(altPackageName, job.categoryDescription());
-			}
+			LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messages for missing locale
+			String category = BaseMessages.getString(packageName, job.categoryDescription());
+			if (category.startsWith("!") && category.endsWith("!")) category=BaseMessages.getString(PKG, job.categoryDescription());
+			LogWriter.getInstance().setLogLevel(oldLogLevel); // restore loglevel, when the last alternative fails, log it when loglevel is detailed
+			if (category.startsWith("!") && category.endsWith("!")) category=BaseMessages.getString(altPackageName, job.categoryDescription());
 			
-			jobs.add(new JobPluginMeta(clazz, jobId, job.type(), name, tooltip, job.image(), category));
+			jobs.add(new JobPluginMeta(clazz, jobId, name, tooltip, job.image(), category));
 		}
 		
 		

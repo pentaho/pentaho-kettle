@@ -25,14 +25,16 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.trans.step.Messages;
+import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 
 public class JobEntryDialog extends Dialog {
+	private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	protected JobEntryInterface jobEntryInt;
 	protected Repository rep;
@@ -77,7 +79,7 @@ public class JobEntryDialog extends Dialog {
 
     addDatabases(wConnection);
 
-    wlConnection.setText(Messages.getString("BaseStepDialog.Connection.Label")); //$NON-NLS-1$
+    wlConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.Connection.Label")); //$NON-NLS-1$
     props.setLook(wlConnection);
     fdlConnection = new FormData();
     fdlConnection.left = new FormAttachment(0, 0);
@@ -91,7 +93,7 @@ public class JobEntryDialog extends Dialog {
     // 
     // NEW button
     //
-    wbnConnection.setText(Messages.getString("BaseStepDialog.NewConnectionButton.Label")); //$NON-NLS-1$
+    wbnConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.NewConnectionButton.Label")); //$NON-NLS-1$
     wbnConnection.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         DatabaseMeta databaseMeta = new DatabaseMeta();
@@ -119,7 +121,7 @@ public class JobEntryDialog extends Dialog {
     //
     // Edit button
     //
-    wbeConnection.setText(Messages.getString("BaseStepDialog.EditConnectionButton.Label")); //$NON-NLS-1$
+    wbeConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.EditConnectionButton.Label")); //$NON-NLS-1$
     wbeConnection.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         DatabaseMeta databaseMeta = jobMeta.findDatabase(wConnection.getText());

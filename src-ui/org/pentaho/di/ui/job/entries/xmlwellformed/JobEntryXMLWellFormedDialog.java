@@ -21,9 +21,8 @@
 
 package org.pentaho.di.ui.job.entries.xmlwellformed;
 
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
@@ -39,31 +38,30 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-
-import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.job.entries.xmlwellformed.JobEntryXMLWellFormed;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.xmlwellformed.JobEntryXMLWellFormed;
-import org.pentaho.di.job.entries.xmlwellformed.Messages;
 
 /**
  * This dialog allows you to edit the XML valid job entry settings.
@@ -74,11 +72,12 @@ import org.pentaho.di.job.entries.xmlwellformed.Messages;
 
 public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryXMLWellFormed.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private static final String[] FILETYPES = new String[] 
 		{
-			Messages.getString("JobXMLWellFormed.Filetype.Xml"),
-			Messages.getString("JobXMLWellFormed.Filetype.All")};
+			BaseMessages.getString(PKG, "JobXMLWellFormed.Filetype.Xml"),
+			BaseMessages.getString(PKG, "JobXMLWellFormed.Filetype.All")};
 	
 	private Label        wlName;
 	private Text         wName;
@@ -168,7 +167,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
         jobEntry = (JobEntryXMLWellFormed) jobEntryInt;
 
 		if (this.jobEntry.getName() == null) 
-			this.jobEntry.setName(Messages.getString("JobXMLWellFormed.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobXMLWellFormed.Name.Default"));
     }
 
     
@@ -195,14 +194,14 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobXMLWellFormed.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobXMLWellFormed.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.Name.Label"));
 		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -231,7 +230,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		
 		
 		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
-		wGeneralTab.setText(Messages.getString("JobXMLWellFormed.Tab.General.Label"));
+		wGeneralTab.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.Tab.General.Label"));
 		
 		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wGeneralComp);
@@ -249,7 +248,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 
 		wSettings = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wSettings);
-		wSettings.setText(Messages.getString("JobXMLWellFormed.Settings.Label"));
+		wSettings.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.Settings.Label"));
 
 		FormLayout groupLayout = new FormLayout();
 		groupLayout.marginWidth = 10;
@@ -257,7 +256,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		wSettings.setLayout(groupLayout);
 		
 		wlIncludeSubfolders = new Label(wSettings, SWT.RIGHT);
-		wlIncludeSubfolders.setText(Messages.getString("JobXMLWellFormed.IncludeSubfolders.Label"));
+		wlIncludeSubfolders.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.IncludeSubfolders.Label"));
 		props.setLook(wlIncludeSubfolders);
 		fdlIncludeSubfolders = new FormData();
 		fdlIncludeSubfolders.left = new FormAttachment(0, 0);
@@ -266,7 +265,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		wlIncludeSubfolders.setLayoutData(fdlIncludeSubfolders);
 		wIncludeSubfolders = new Button(wSettings, SWT.CHECK);
 		props.setLook(wIncludeSubfolders);
-		wIncludeSubfolders.setToolTipText(Messages.getString("JobXMLWellFormed.IncludeSubfolders.Tooltip"));
+		wIncludeSubfolders.setToolTipText(BaseMessages.getString(PKG, "JobXMLWellFormed.IncludeSubfolders.Tooltip"));
 		fdIncludeSubfolders = new FormData();
 		fdIncludeSubfolders.left = new FormAttachment(middle, 0);
 		fdIncludeSubfolders.top = new FormAttachment(wName, margin);
@@ -284,7 +283,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 	
 		// previous
 		wlPrevious = new Label(wSettings, SWT.RIGHT);
-		wlPrevious.setText(Messages.getString("JobXMLWellFormed.Previous.Label"));
+		wlPrevious.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.Previous.Label"));
 		props.setLook(wlPrevious);
 		fdlPrevious = new FormData();
 		fdlPrevious.left = new FormAttachment(0, 0);
@@ -294,7 +293,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		wPrevious = new Button(wSettings, SWT.CHECK);
 		props.setLook(wPrevious);
 		wPrevious.setSelection(jobEntry.arg_from_previous);
-		wPrevious.setToolTipText(Messages.getString("JobXMLWellFormed.Previous.Tooltip"));
+		wPrevious.setToolTipText(BaseMessages.getString(PKG, "JobXMLWellFormed.Previous.Tooltip"));
 		fdPrevious = new FormData();
 		fdPrevious.left = new FormAttachment(middle, 0);
 		fdPrevious.top = new FormAttachment(wIncludeSubfolders, margin );
@@ -321,7 +320,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 
 		// SourceFileFolder line
 		wlSourceFileFolder=new Label(wGeneralComp, SWT.RIGHT);
-		wlSourceFileFolder.setText(Messages.getString("JobXMLWellFormed.SourceFileFolder.Label"));
+		wlSourceFileFolder.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.SourceFileFolder.Label"));
 		props.setLook(wlSourceFileFolder);
 		fdlSourceFileFolder=new FormData();
 		fdlSourceFileFolder.left = new FormAttachment(0, 0);
@@ -332,7 +331,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		// Browse Source folders button ...
 		wbSourceDirectory=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbSourceDirectory);
-		wbSourceDirectory.setText(Messages.getString("JobXMLWellFormed.BrowseFolders.Label"));
+		wbSourceDirectory.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.BrowseFolders.Label"));
 		fdbSourceDirectory=new FormData();
 		fdbSourceDirectory.right= new FormAttachment(100, 0);
 		fdbSourceDirectory.top  = new FormAttachment(wSettings, margin);
@@ -366,7 +365,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		// Browse Source files button ...
 		wbSourceFileFolder=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbSourceFileFolder);
-		wbSourceFileFolder.setText(Messages.getString("JobXMLWellFormed.BrowseFiles.Label"));
+		wbSourceFileFolder.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.BrowseFiles.Label"));
 		fdbSourceFileFolder=new FormData();
 		fdbSourceFileFolder.right= new FormAttachment(wbSourceDirectory, -margin);
 		fdbSourceFileFolder.top  = new FormAttachment(wSettings, margin);
@@ -375,14 +374,14 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		// Browse Destination file add button ...
 		wbaSourceFileFolder=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbaSourceFileFolder);
-		wbaSourceFileFolder.setText(Messages.getString("JobXMLWellFormed.FilenameAdd.Button"));
+		wbaSourceFileFolder.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.FilenameAdd.Button"));
 		fdbaSourceFileFolder=new FormData();
 		fdbaSourceFileFolder.right= new FormAttachment(wbSourceFileFolder, -margin);
 		fdbaSourceFileFolder.top  = new FormAttachment(wSettings, margin);
 		wbaSourceFileFolder.setLayoutData(fdbaSourceFileFolder);
 
 		wSourceFileFolder=new TextVar(jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wSourceFileFolder.setToolTipText(Messages.getString("JobXMLWellFormed.SourceFileFolder.Tooltip"));
+		wSourceFileFolder.setToolTipText(BaseMessages.getString(PKG, "JobXMLWellFormed.SourceFileFolder.Tooltip"));
 		
 		props.setLook(wSourceFileFolder);
 		wSourceFileFolder.addModifyListener(lsMod);
@@ -430,8 +429,8 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		// Buttons to the right of the screen...
 		wbdSourceFileFolder=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbdSourceFileFolder);
-		wbdSourceFileFolder.setText(Messages.getString("JobXMLWellFormed.FilenameDelete.Button"));
-		wbdSourceFileFolder.setToolTipText(Messages.getString("JobXMLWellFormed.FilenameDelete.Tooltip"));
+		wbdSourceFileFolder.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.FilenameDelete.Button"));
+		wbdSourceFileFolder.setToolTipText(BaseMessages.getString(PKG, "JobXMLWellFormed.FilenameDelete.Tooltip"));
 		fdbdSourceFileFolder=new FormData();
 		fdbdSourceFileFolder.right = new FormAttachment(100, 0);
 		fdbdSourceFileFolder.top  = new FormAttachment (wSourceFileFolder, 40);
@@ -439,8 +438,8 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 
 		wbeSourceFileFolder=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbeSourceFileFolder);
-		wbeSourceFileFolder.setText(Messages.getString("JobXMLWellFormed.FilenameEdit.Button"));
-		wbeSourceFileFolder.setToolTipText(Messages.getString("JobXMLWellFormed.FilenameEdit.Tooltip"));
+		wbeSourceFileFolder.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.FilenameEdit.Button"));
+		wbeSourceFileFolder.setToolTipText(BaseMessages.getString(PKG, "JobXMLWellFormed.FilenameEdit.Tooltip"));
 		fdbeSourceFileFolder=new FormData();
 		fdbeSourceFileFolder.right = new FormAttachment(100, 0);
 		fdbeSourceFileFolder.left = new FormAttachment(wbdSourceFileFolder, 0, SWT.LEFT);
@@ -451,7 +450,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		
 		// Wildcard
 		wlWildcard = new Label(wGeneralComp, SWT.RIGHT);
-		wlWildcard.setText(Messages.getString("JobXMLWellFormed.Wildcard.Label"));
+		wlWildcard.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.Wildcard.Label"));
 		props.setLook(wlWildcard);
 		fdlWildcard = new FormData();
 		fdlWildcard.left = new FormAttachment(0, 0);
@@ -460,7 +459,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		wlWildcard.setLayoutData(fdlWildcard);
 		
 		wWildcard = new TextVar(jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wWildcard.setToolTipText(Messages.getString("JobXMLWellFormed.Wildcard.Tooltip"));
+		wWildcard.setToolTipText(BaseMessages.getString(PKG, "JobXMLWellFormed.Wildcard.Tooltip"));
 		props.setLook(wWildcard);
 		wWildcard.addModifyListener(lsMod);
 		fdWildcard = new FormData();
@@ -470,7 +469,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		wWildcard.setLayoutData(fdWildcard);
 
 		wlFields = new Label(wGeneralComp, SWT.NONE);
-		wlFields.setText(Messages.getString("JobXMLWellFormed.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.Fields.Label"));
 		props.setLook(wlFields);
 		fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -487,14 +486,14 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 
 		ColumnInfo[] colinf=new ColumnInfo[]
 			{
-				new ColumnInfo(Messages.getString("JobXMLWellFormed.Fields.SourceFileFolder.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
-				new ColumnInfo(Messages.getString("JobXMLWellFormed.Fields.Wildcard.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobXMLWellFormed.Fields.SourceFileFolder.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobXMLWellFormed.Fields.Wildcard.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
 			};
 
 		colinf[0].setUsingVariables(true);
-		colinf[0].setToolTip(Messages.getString("JobXMLWellFormed.Fields.SourceFileFolder.Tooltip"));
+		colinf[0].setToolTip(BaseMessages.getString(PKG, "JobXMLWellFormed.Fields.SourceFileFolder.Tooltip"));
 		colinf[1].setUsingVariables(true);
-		colinf[1].setToolTip(Messages.getString("JobXMLWellFormed.Fields.Wildcard.Tooltip"));
+		colinf[1].setToolTip(BaseMessages.getString(PKG, "JobXMLWellFormed.Fields.Wildcard.Tooltip"));
 
 		wFields = new TableView(jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,	FieldsRows, lsMod, props);
 
@@ -582,7 +581,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		
 		
 		wAdvancedTab=new CTabItem(wTabFolder, SWT.NONE);
-		wAdvancedTab.setText(Messages.getString("JobXMLWellFormed.Tab.Advanced.Label"));
+		wAdvancedTab.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.Tab.Advanced.Label"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;
@@ -601,7 +600,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 	     // /
 	    wSuccessOn= new Group(wAdvancedComp, SWT.SHADOW_NONE);
 	    props.setLook(wSuccessOn);
-	    wSuccessOn.setText(Messages.getString("JobXMLWellFormed.SuccessOn.Group.Label"));
+	    wSuccessOn.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.SuccessOn.Group.Label"));
 
 	    FormLayout successongroupLayout = new FormLayout();
 	    successongroupLayout.marginWidth = 10;
@@ -612,7 +611,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 
 	    //Success Condition
 	  	wlSuccessCondition = new Label(wSuccessOn, SWT.RIGHT);
-	  	wlSuccessCondition.setText(Messages.getString("JobXMLWellFormed.SuccessCondition.Label"));
+	  	wlSuccessCondition.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.SuccessCondition.Label"));
 	  	props.setLook(wlSuccessCondition);
 	  	fdlSuccessCondition = new FormData();
 	  	fdlSuccessCondition.left = new FormAttachment(0, 0);
@@ -620,9 +619,9 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 	  	fdlSuccessCondition.top = new FormAttachment(0, margin);
 	  	wlSuccessCondition.setLayoutData(fdlSuccessCondition);
 	  	wSuccessCondition = new CCombo(wSuccessOn, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-	  	wSuccessCondition.add(Messages.getString("JobXMLWellFormed.SuccessWhenAllWorksFine.Label"));
-	  	wSuccessCondition.add(Messages.getString("JobXMLWellFormed.SuccessWhenAtLeat.Label"));
-	  	wSuccessCondition.add(Messages.getString("JobXMLWellFormed.SuccessWhenBadFormedLessThan.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobXMLWellFormed.SuccessWhenAllWorksFine.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobXMLWellFormed.SuccessWhenAtLeat.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobXMLWellFormed.SuccessWhenBadFormedLessThan.Label"));
 	  	wSuccessCondition.select(0); // +1: starts at -1
 	  	
 		props.setLook(wSuccessCondition);
@@ -642,7 +641,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 
 		// Success when number of errors less than
 		wlNrErrorsLessThan= new Label(wSuccessOn, SWT.RIGHT);
-		wlNrErrorsLessThan.setText(Messages.getString("JobXMLWellFormed.NrBadFormedLessThan.Label"));
+		wlNrErrorsLessThan.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.NrBadFormedLessThan.Label"));
 		props.setLook(wlNrErrorsLessThan);
 		fdlNrErrorsLessThan= new FormData();
 		fdlNrErrorsLessThan.left = new FormAttachment(0, 0);
@@ -651,8 +650,8 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		wlNrErrorsLessThan.setLayoutData(fdlNrErrorsLessThan);
 		
 		
-		wNrErrorsLessThan= new TextVar(jobMeta,wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobXMLWellFormed.NrBadFormedLessThan.Tooltip"));
+		wNrErrorsLessThan= new TextVar(jobMeta,wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobXMLWellFormed.NrBadFormedLessThan.Tooltip"));
 		props.setLook(wNrErrorsLessThan);
 		wNrErrorsLessThan.addModifyListener(lsMod);
 		fdNrErrorsLessThan= new FormData();
@@ -681,7 +680,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 	     // /
 	    wFileResult = new Group(wAdvancedComp, SWT.SHADOW_NONE);
 	    props.setLook(wFileResult);
-	    wFileResult.setText(Messages.getString("JobXMLWellFormed.FileResult.Group.Label"));
+	    wFileResult.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.FileResult.Group.Label"));
 
 	    FormLayout fileresultgroupLayout = new FormLayout();
 	    fileresultgroupLayout.marginWidth = 10;
@@ -692,7 +691,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 	      
 	    //Add Filenames to result filenames?
 	  	wlAddFilenameToResult = new Label(wFileResult, SWT.RIGHT);
-	  	wlAddFilenameToResult.setText(Messages.getString("JobXMLWellFormed.AddFilenameToResult.Label"));
+	  	wlAddFilenameToResult.setText(BaseMessages.getString(PKG, "JobXMLWellFormed.AddFilenameToResult.Label"));
 	  	props.setLook(wlAddFilenameToResult);
 	  	fdlAddFilenameToResult = new FormData();
 	  	fdlAddFilenameToResult.left = new FormAttachment(0, 0);
@@ -700,9 +699,9 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 	  	fdlAddFilenameToResult.top = new FormAttachment(0, margin);
 	  	wlAddFilenameToResult.setLayoutData(fdlAddFilenameToResult);
 	  	wAddFilenameToResult = new CCombo(wFileResult, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-	  	wAddFilenameToResult.add(Messages.getString("JobXMLWellFormed.AddAllFilenamesToResult.Label"));
-	  	wAddFilenameToResult.add(Messages.getString("JobXMLWellFormed.AddOnlyWellFormedFilenames.Label"));
-	  	wAddFilenameToResult.add(Messages.getString("JobXMLWellFormed.AddOnlyBadFormedFilenames.Label"));
+	  	wAddFilenameToResult.add(BaseMessages.getString(PKG, "JobXMLWellFormed.AddAllFilenamesToResult.Label"));
+	  	wAddFilenameToResult.add(BaseMessages.getString(PKG, "JobXMLWellFormed.AddOnlyWellFormedFilenames.Label"));
+	  	wAddFilenameToResult.add(BaseMessages.getString(PKG, "JobXMLWellFormed.AddOnlyBadFormedFilenames.Label"));
 	  	wAddFilenameToResult.select(0); // +1: starts at -1
 	  	
 		props.setLook(wAddFilenameToResult);
@@ -759,9 +758,9 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		
 
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTabFolder);
 		
@@ -902,8 +901,8 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 	   if(Const.isEmpty(wName.getText())) 
          {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
          }

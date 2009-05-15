@@ -23,6 +23,7 @@ import java.util.Collections;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Contains the schema's, catalogs, tables, views, synonyms, etc we can find in the databases...
@@ -32,6 +33,8 @@ import org.pentaho.di.core.logging.LogWriter;
  */
 public class DatabaseMetaInformation
 {
+	private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String[] tables;
 	private String[] views;
 	private String[] synonyms;
@@ -148,7 +151,7 @@ public class DatabaseMetaInformation
 	{
 		if (monitor!=null)
 		{
-			monitor.beginTask(Messages.getString("DatabaseMeta.Info.GettingInfoFromDb"), 8);
+			monitor.beginTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingInfoFromDb"), 8);
 		}
 
 		Database db = new Database(dbInfo);	
@@ -165,17 +168,17 @@ public class DatabaseMetaInformation
 		
 		try
 		{
-			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.ConnectingDb"));
+			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.ConnectingDb"));
 			db.connect();
 			if (monitor!=null) monitor.worked(1);
 			
 			if (monitor!=null && monitor.isCanceled()) return;
-			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.GettingMetaData"));
+			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingMetaData"));
 			DatabaseMetaData dbmd = db.getDatabaseMetaData();
 			if (monitor!=null) monitor.worked(1);
 
 			if (monitor!=null && monitor.isCanceled()) return;
-			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.GettingInfo"));
+			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingInfo"));
 			if (dbInfo.supportsCatalogs() && dbmd.supportsCatalogsInTableDefinitions())
 			{
 				ArrayList<Catalog> catalogList = new ArrayList<Catalog>();
@@ -224,7 +227,7 @@ public class DatabaseMetaInformation
 					{
 						// Obviously, we're not allowed to snoop around in this catalog.
 						// Just ignore it!
-						LogWriter.getInstance().logError(getClass().getName(),Messages.getString("DatabaseMeta.Error.UnexpectedCatalogError"), e);
+						LogWriter.getInstance().logError(getClass().getName(),BaseMessages.getString(PKG, "DatabaseMeta.Error.UnexpectedCatalogError"), e);
 					}
 
 					// Save the list of tables in the catalog (can be empty)
@@ -238,7 +241,7 @@ public class DatabaseMetaInformation
 			if (monitor!=null) monitor.worked(1);
 	
 			if (monitor!=null && monitor.isCanceled()) return;
-			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.GettingSchemaInfo"));
+			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingSchemaInfo"));
 			if (dbInfo.supportsSchemas() && dbmd.supportsSchemasInTableDefinitions())
 			{
 				ArrayList<Schema> schemaList = new ArrayList<Schema>();
@@ -300,7 +303,7 @@ public class DatabaseMetaInformation
 				}
 				catch(Exception e)
 				{
-					LogWriter.getInstance().logError(getClass().getName(), Messages.getString("DatabaseMeta.Error.UnexpectedError"), e);
+					LogWriter.getInstance().logError(getClass().getName(), BaseMessages.getString(PKG, "DatabaseMeta.Error.UnexpectedError"), e);
 				}
 				
 				// Save for later...
@@ -309,7 +312,7 @@ public class DatabaseMetaInformation
 			if (monitor!=null) monitor.worked(1);
 	
 			if (monitor!=null && monitor.isCanceled()) return;
-			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.GettingTables"));
+			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingTables"));
 			if (dbInfo.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MSSQL) {
 				// Support schemas for MS SQL server due to PDI-1531
 				setTables(db.getTablenames(true));
@@ -319,7 +322,7 @@ public class DatabaseMetaInformation
 			if (monitor!=null) monitor.worked(1);
 	
 			if (monitor!=null && monitor.isCanceled()) return;
-			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.GettingViews"));
+			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingViews"));
 			if (dbInfo.supportsViews())
 			{
 				if (dbInfo.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MSSQL) {
@@ -332,7 +335,7 @@ public class DatabaseMetaInformation
 			if (monitor!=null) monitor.worked(1);
 	
 			if (monitor!=null && monitor.isCanceled()) return;
-			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.GettingSynonyms"));
+			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingSynonyms"));
 			if (dbInfo.supportsSynonyms())
 			{
 				if (dbInfo.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MSSQL) {
@@ -346,11 +349,11 @@ public class DatabaseMetaInformation
 		}
 		catch(Exception e)
 		{
-			throw new KettleDatabaseException(Messages.getString("DatabaseMeta.Error.UnableRetrieveDbInfo"), e);
+			throw new KettleDatabaseException(BaseMessages.getString(PKG, "DatabaseMeta.Error.UnableRetrieveDbInfo"), e);
 		}
 		finally
 		{
-			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.ClosingDbConnection"));
+			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.ClosingDbConnection"));
 
 			db.disconnect();
 			if (monitor!=null) monitor.worked(1);

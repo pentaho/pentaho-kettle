@@ -32,6 +32,7 @@ import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
@@ -47,6 +48,8 @@ import org.w3c.dom.Document;
 
 public class Pan
 {
+	private static Class<?> PKG = Pan.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static void main(String[] a) throws KettleException
 	{
 		EnvUtil.environmentInit();
@@ -72,25 +75,25 @@ public class Pan
         
 		CommandLineOption options[] = new CommandLineOption[] 
             {
-			    new CommandLineOption("rep", Messages.getString("Pan.ComdLine.RepName"), optionRepname=new StringBuffer()),
-			    new CommandLineOption("user", Messages.getString("Pan.ComdLine.RepUsername"), optionUsername=new StringBuffer()),
-			    new CommandLineOption("pass", Messages.getString("Pan.ComdLine.RepPassword"), optionPassword=new StringBuffer()),
-			    new CommandLineOption("trans", Messages.getString("Pan.ComdLine.TransName"), optionTransname=new StringBuffer()),
-			    new CommandLineOption("dir", Messages.getString("Pan.ComdLine.RepDir"), optionDirname=new StringBuffer()),
-			    new CommandLineOption("file", Messages.getString("Pan.ComdLine.XMLTransFile"), optionFilename=new StringBuffer()),
-			    new CommandLineOption("level", Messages.getString("Pan.ComdLine.LogLevel"), optionLoglevel=new StringBuffer()),
-			    new CommandLineOption("logfile", Messages.getString("Pan.ComdLine.LogFile"), optionLogfile=new StringBuffer()),
-			    new CommandLineOption("log",  Messages.getString("Pan.ComdLine.LogOldFile"), optionLogfileOld=new StringBuffer(), false, true),
-			    new CommandLineOption("listdir", Messages.getString("Pan.ComdLine.ListDirRep") , optionListdir=new StringBuffer(), true, false),
-			    new CommandLineOption("listtrans", Messages.getString("Pan.ComdLine.ListTransDir"), optionListtrans=new StringBuffer(), true, false),
-			    new CommandLineOption("listrep", Messages.getString("Pan.ComdLine.ListReps"), optionListrep=new StringBuffer(), true, false),
-		        new CommandLineOption("exprep", Messages.getString("Pan.ComdLine.ExpObjectsXML"), optionExprep=new StringBuffer(), true, false),
-		        new CommandLineOption("norep", Messages.getString("Pan.ComdLine.NoRep"), optionNorep=new StringBuffer(), true, false),
-		        new CommandLineOption("safemode", Messages.getString("Pan.ComdLine.SafeMode"), optionSafemode=new StringBuffer(), true, false),
-                new CommandLineOption("version", Messages.getString("Pan.ComdLine.Version"), optionVersion=new StringBuffer(), true, false),
-                new CommandLineOption("jarfile", Messages.getString("Pan.ComdLine.JarFile") , optionJarFilename=new StringBuffer(), false, true),
-                new CommandLineOption("param", Messages.getString("Pan.ComdLine.Param") , optionParams, false),
-		        new CommandLineOption("listparam", Messages.getString("Pan.ComdLine.ListParam"), optionListParam=new StringBuffer(), true, false),
+			    new CommandLineOption("rep", BaseMessages.getString(PKG, "Pan.ComdLine.RepName"), optionRepname=new StringBuffer()),
+			    new CommandLineOption("user", BaseMessages.getString(PKG, "Pan.ComdLine.RepUsername"), optionUsername=new StringBuffer()),
+			    new CommandLineOption("pass", BaseMessages.getString(PKG, "Pan.ComdLine.RepPassword"), optionPassword=new StringBuffer()),
+			    new CommandLineOption("trans", BaseMessages.getString(PKG, "Pan.ComdLine.TransName"), optionTransname=new StringBuffer()),
+			    new CommandLineOption("dir", BaseMessages.getString(PKG, "Pan.ComdLine.RepDir"), optionDirname=new StringBuffer()),
+			    new CommandLineOption("file", BaseMessages.getString(PKG, "Pan.ComdLine.XMLTransFile"), optionFilename=new StringBuffer()),
+			    new CommandLineOption("level", BaseMessages.getString(PKG, "Pan.ComdLine.LogLevel"), optionLoglevel=new StringBuffer()),
+			    new CommandLineOption("logfile", BaseMessages.getString(PKG, "Pan.ComdLine.LogFile"), optionLogfile=new StringBuffer()),
+			    new CommandLineOption("log",  BaseMessages.getString(PKG, "Pan.ComdLine.LogOldFile"), optionLogfileOld=new StringBuffer(), false, true),
+			    new CommandLineOption("listdir", BaseMessages.getString(PKG, "Pan.ComdLine.ListDirRep") , optionListdir=new StringBuffer(), true, false),
+			    new CommandLineOption("listtrans", BaseMessages.getString(PKG, "Pan.ComdLine.ListTransDir"), optionListtrans=new StringBuffer(), true, false),
+			    new CommandLineOption("listrep", BaseMessages.getString(PKG, "Pan.ComdLine.ListReps"), optionListrep=new StringBuffer(), true, false),
+		        new CommandLineOption("exprep", BaseMessages.getString(PKG, "Pan.ComdLine.ExpObjectsXML"), optionExprep=new StringBuffer(), true, false),
+		        new CommandLineOption("norep", BaseMessages.getString(PKG, "Pan.ComdLine.NoRep"), optionNorep=new StringBuffer(), true, false),
+		        new CommandLineOption("safemode", BaseMessages.getString(PKG, "Pan.ComdLine.SafeMode"), optionSafemode=new StringBuffer(), true, false),
+                new CommandLineOption("version", BaseMessages.getString(PKG, "Pan.ComdLine.Version"), optionVersion=new StringBuffer(), true, false),
+                new CommandLineOption("jarfile", BaseMessages.getString(PKG, "Pan.ComdLine.JarFile") , optionJarFilename=new StringBuffer(), false, true),
+                new CommandLineOption("param", BaseMessages.getString(PKG, "Pan.ComdLine.Param") , optionParams, false),
+		        new CommandLineOption("listparam", BaseMessages.getString(PKG, "Pan.ComdLine.ListParam"), optionListParam=new StringBuffer(), true, false),
             };
 
 		if (args.size()==0 ) 
@@ -106,7 +109,7 @@ public class Pan
 
 		// Parse the options...
 		if( !CommandLineOption.parseArguments(args, options, log) ) {
-            log.logError("Pan",  Messages.getString("Pan.Error.CommandLineError"));
+            log.logError("Pan",  BaseMessages.getString(PKG, "Pan.Error.CommandLineError"));
            
             exitJVM(8);
 		}
@@ -135,14 +138,14 @@ public class Pan
         if (!Const.isEmpty(optionLoglevel)) 
         {
             log.setLogLevel(optionLoglevel.toString());
-            log.logMinimal("Pan",  Messages.getString("Pan.Log.Loglevel",log.getLogLevelLongDesc()));
+            log.logMinimal("Pan",  BaseMessages.getString(PKG, "Pan.Log.Loglevel",log.getLogLevelLongDesc()));
            
         }
         
         if (!Const.isEmpty(optionVersion))
         {
             BuildVersion buildVersion = BuildVersion.getInstance();
-            if(log.isBasic()) log.logBasic("Pan", Messages.getString("Pan.Log.KettleVersion", buildVersion.getVersion(), buildVersion.getRevision(), buildVersion.getBuildDate()));
+            if(log.isBasic()) log.logBasic("Pan", BaseMessages.getString(PKG, "Pan.Log.KettleVersion", buildVersion.getVersion(), buildVersion.getRevision(), buildVersion.getBuildDate()));
             
             if (a.length==1) exitJVM(6);
         }
@@ -164,7 +167,7 @@ public class Pan
         /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        log.logMinimal("Pan", Messages.getString("Pan.Log.StartingToRun"));       
+        log.logMinimal("Pan", BaseMessages.getString(PKG, "Pan.Log.StartingToRun"));       
 		
 		/* Load the plugins etc.*/
 		try {
@@ -172,7 +175,7 @@ public class Pan
 		}
 		catch(KettleException e)
 		{
-			log.logError("Pan", Messages.getString("Pan.Error.LoadingStepsHaltPan"));
+			log.logError("Pan", BaseMessages.getString(PKG, "Pan.Error.LoadingStepsHaltPan"));
 			
 			exitJVM(8);
 		}
@@ -184,7 +187,7 @@ public class Pan
 		}
 		catch(KettleException e)
         {
-            log.logError("Pan", Messages.getString("Pan.Error.LoadingJobEntriesHaltPan"), e);
+            log.logError("Pan", BaseMessages.getString(PKG, "Pan.Error.LoadingJobEntriesHaltPan"), e);
             
             exitJVM(8);
         }
@@ -195,7 +198,7 @@ public class Pan
 		cal=Calendar.getInstance();
 		start=cal.getTime();
 
-		if(log.isDebug()) log.logDebug("Pan",Messages.getString("Pan.Log.AllocatteNewTrans"));
+		if(log.isDebug()) log.logDebug("Pan",BaseMessages.getString(PKG, "Pan.Log.AllocatteNewTrans"));
 		
 		TransMeta transMeta = new TransMeta();
 
@@ -203,27 +206,27 @@ public class Pan
 		Repository rep=null;
 		try
 		{
-			if(log.isDebug()) log.logDebug("Pan",Messages.getString("Pan.Log.StartingToLookOptions"));
+			if(log.isDebug()) log.logDebug("Pan",BaseMessages.getString(PKG, "Pan.Log.StartingToLookOptions"));
 			
 			// Read kettle transformation specified on command-line?
 			if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename) || !Const.isEmpty(optionJarFilename))
 			{			
-				if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.ParsingCommandline"));
+				if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.ParsingCommandline"));
 				
 				if (!Const.isEmpty(optionRepname) && !"Y".equalsIgnoreCase(optionNorep.toString()))
 				{
-					if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.LoadingAvailableRep"));
+					if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.LoadingAvailableRep"));
 					
 					RepositoriesMeta repsinfo = new RepositoriesMeta(log);
 					if (repsinfo.readData())
 					{
-						if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.FindingRep",""+optionRepname));
+						if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.FindingRep",""+optionRepname));
 						
 						repinfo = repsinfo.findRepository(optionRepname.toString());
 						if (repinfo!=null)
 						{
 							// Define and connect to the repository...
-							if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.Allocate&ConnectRep"));
+							if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.Allocate&ConnectRep"));
 							
 							rep = new Repository(log, repinfo, userinfo);
 							if (rep.connect("Pan commandline"))
@@ -239,7 +242,7 @@ public class Pan
 								if (directory!=null)
 								{
 									// Check username, password
-									if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.CheckSuppliedUserPass"));
+									if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.CheckSuppliedUserPass"));
 									
 									userinfo = new UserInfo(rep, optionUsername.toString(), optionPassword.toString());
 									if (userinfo.getID()>0)
@@ -247,10 +250,10 @@ public class Pan
 										// Load a transformation
 										if (!Const.isEmpty(optionTransname))
 										{
-											if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.LoadTransInfo"));
+											if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.LoadTransInfo"));
 											
 											transMeta = new TransMeta(rep, optionTransname.toString(), directory);
-											if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.AllocateTrans"));
+											if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.AllocateTrans"));
 											
 											trans = new Trans(transMeta);
 											trans.setRepository(rep);
@@ -259,7 +262,7 @@ public class Pan
 										// List the transformations in the repository
 										if ("Y".equalsIgnoreCase(optionListtrans.toString()))
 										{
-											if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.GettingListTransDirectory",""+directory));
+											if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.GettingListTransDirectory",""+directory));
 											
 											String transnames[] = rep.getTransformationNames(directory.getID());
 											for (int i=0;i<transnames.length;i++)
@@ -281,43 +284,43 @@ public class Pan
                                         // Export the repository
                                         if (!Const.isEmpty(optionExprep))
                                         {
-                                            System.out.println(Messages.getString("Pan.Log.ExportingObjectsRepToFile",""+optionExprep));
+                                            System.out.println(BaseMessages.getString(PKG, "Pan.Log.ExportingObjectsRepToFile",""+optionExprep));
                                             
                                             rep.exportAllObjects(null, optionExprep.toString(), directory,"all");
-                                            System.out.println(Messages.getString("Pan.Log.FinishedExportObjectsRepToFile",""+optionExprep));
+                                            System.out.println(BaseMessages.getString(PKG, "Pan.Log.FinishedExportObjectsRepToFile",""+optionExprep));
                                         }
 										else
 										{
-											System.out.println(Messages.getString("Pan.Error.NoTransNameSupplied"));
+											System.out.println(BaseMessages.getString(PKG, "Pan.Error.NoTransNameSupplied"));
 										}
 									}
 									else
 									{
-										System.out.println(Messages.getString("Pan.Error.CanNotVerifyUserPass"));
+										System.out.println(BaseMessages.getString(PKG, "Pan.Error.CanNotVerifyUserPass"));
 										userinfo=null;
 										repinfo=null;
 									}
 								}
 								else
 								{
-									System.out.println(Messages.getString("Pan.Error.CanNotFindSpecifiedDirectory",""+optionDirname));
+									System.out.println(BaseMessages.getString(PKG, "Pan.Error.CanNotFindSpecifiedDirectory",""+optionDirname));
 									userinfo=null;
 									repinfo=null;
 								}
 							}
 							else
 							{
-								System.out.println(Messages.getString("Pan.Error.CanNotConnectRep"));
+								System.out.println(BaseMessages.getString(PKG, "Pan.Error.CanNotConnectRep"));
 							}
 						}
 						else
 						{
-							System.out.println(Messages.getString("Pan.Error.NoRepProvided"));
+							System.out.println(BaseMessages.getString(PKG, "Pan.Error.NoRepProvided"));
 						}
 					}
 					else
 					{
-						System.out.println(Messages.getString("Pan.Error.NoRepsDefined"));
+						System.out.println(BaseMessages.getString(PKG, "Pan.Error.NoRepsDefined"));
 					}
 				}
 
@@ -326,7 +329,7 @@ public class Pan
                 //
 				if (trans==null && !Const.isEmpty(optionFilename))
 				{
-					if(log.isDetailed()) log.logDetailed("Pan", Messages.getString("Pan.Log.LoadingTransXML",""+optionFilename));
+					if(log.isDetailed()) log.logDetailed("Pan", BaseMessages.getString(PKG, "Pan.Log.LoadingTransXML",""+optionFilename));
 					
 					transMeta = new TransMeta(optionFilename.toString());
 					trans = new Trans(transMeta);
@@ -338,7 +341,7 @@ public class Pan
                 {
                     try
                     {
-                    	if(log.isDetailed())  log.logDetailed("Pan", Messages.getString("Pan.Log.LoadingTransJar",""+optionJarFilename));
+                    	if(log.isDetailed())  log.logDetailed("Pan", BaseMessages.getString(PKG, "Pan.Log.LoadingTransJar",""+optionJarFilename));
                     	
                     	InputStream inputStream = Pan.class.getResourceAsStream(optionJarFilename.toString());
                         StringBuffer xml = new StringBuffer();
@@ -351,7 +354,7 @@ public class Pan
                     }
                     catch(Exception e)
                     {
-                        System.out.println(Messages.getString("Pan.Error.ReadingJar",e.toString()));
+                        System.out.println(BaseMessages.getString(PKG, "Pan.Error.ReadingJar",e.toString()));
                         
                         System.out.println(Const.getStackTracker(e));
                         throw e;
@@ -361,22 +364,22 @@ public class Pan
 			
 			if ("Y".equalsIgnoreCase(optionListrep.toString()))
 			{
-				if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.GettingListReps"));
+				if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.GettingListReps"));
 				
 				RepositoriesMeta ri = new RepositoriesMeta(log);
 				if (ri.readData())
 				{
-					System.out.println(Messages.getString("Pan.Log.ListReps"));
+					System.out.println(BaseMessages.getString(PKG, "Pan.Log.ListReps"));
 					
 					for (int i=0;i<ri.nrRepositories();i++)
 					{
 						RepositoryMeta rinfo = ri.getRepository(i);
-						System.out.println(Messages.getString("Pan.Log.RepNameDesc",""+(i+1),rinfo.getName(),rinfo.getDescription()));					
+						System.out.println(BaseMessages.getString(PKG, "Pan.Log.RepNameDesc",""+(i+1),rinfo.getName(),rinfo.getDescription()));					
 					}
 				}
 				else
 				{
-					System.out.println(Messages.getString("Pan.Error.UnableReadXML"));					
+					System.out.println(BaseMessages.getString(PKG, "Pan.Error.UnableReadXML"));					
 				}
 			}
 		}
@@ -385,7 +388,7 @@ public class Pan
 			trans=null;
 			transMeta=null;
 			if(rep!=null) rep.disconnect();
-			System.out.println(Messages.getString("Pan.Error.ProcessStopError",e.getMessage()));
+			System.out.println(BaseMessages.getString(PKG, "Pan.Error.ProcessStopError",e.getMessage()));
 			
 			e.printStackTrace();
 			exitJVM(1);
@@ -401,7 +404,7 @@ public class Pan
                 Const.isEmpty(optionExprep)
                )
             {
-                System.out.println(Messages.getString("Pan.Error.CanNotLoadTrans"));
+                System.out.println(BaseMessages.getString(PKG, "Pan.Error.CanNotLoadTrans"));
                 
                 exitJVM(7);
             }
@@ -462,7 +465,7 @@ public class Pan
 				trans.execute((String[])args.toArray(new String[args.size()]));
 			}
 			catch(KettleException e) {
-                System.out.println( Messages.getString("Pan.Error.UnablePrepareInitTrans"));
+                System.out.println( BaseMessages.getString(PKG, "Pan.Error.UnablePrepareInitTrans"));
                
                 exitJVM(3);
 			}
@@ -470,7 +473,7 @@ public class Pan
 			trans.waitUntilFinished();
 			trans.endProcessing(Database.LOG_STATUS_END);
 
-			log.logMinimal("Pan", Messages.getString("Pan.Log.Finished"));
+			log.logMinimal("Pan", BaseMessages.getString(PKG, "Pan.Log.Finished"));
 			 
 			
 			cal=Calendar.getInstance();
@@ -478,17 +481,17 @@ public class Pan
 			String begin=df.format(start).toString();
 			String end  =df.format(stop).toString();
 
-			log.logMinimal("Pan", Messages.getString("Pan.Log.StartStop",begin,end));
+			log.logMinimal("Pan", BaseMessages.getString(PKG, "Pan.Log.StartStop",begin,end));
 			
 			long millis=stop.getTime()-start.getTime();
 	        long seconds = millis / 1000;
 	        if (seconds <= 60) {
-	            log.logMinimal("Pan",  Messages.getString("Pan.Log.ProcessingEndAfter", String.valueOf(seconds)));
+	            log.logMinimal("Pan",  BaseMessages.getString(PKG, "Pan.Log.ProcessingEndAfter", String.valueOf(seconds)));
 	        }
 	        else if (seconds <= 60 * 60) {
 	            int min = (int)(seconds / 60);
 	            int rem = (int)(seconds % 60);
-	            log.logMinimal("Pan",  Messages.getString("Pan.Log.ProcessingEndAfterLong", String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+	            log.logMinimal("Pan",  BaseMessages.getString(PKG, "Pan.Log.ProcessingEndAfterLong", String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
 	        }
 	        else if (seconds <= 60 * 60 * 24) {
 	            int rem;
@@ -496,7 +499,7 @@ public class Pan
 	            rem = (int)(seconds % (60 * 60)); 
 	            int min = rem / 60;
 	            rem = rem % 60;
-	            log.logMinimal("Pan",  Messages.getString("Pan.Log.ProcessingEndAfterLonger", String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+	            log.logMinimal("Pan",  BaseMessages.getString(PKG, "Pan.Log.ProcessingEndAfterLonger", String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
 	        }
 	        else {
 	            int rem;
@@ -506,7 +509,7 @@ public class Pan
 	            rem = rem % (60 * 60); 
 	            int min = rem / 60;
 	            rem = rem % 60;
-	            log.logMinimal("Pan",  Messages.getString("Pan.Log.ProcessingEndAfterLongest", String.valueOf(days), String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+	            log.logMinimal("Pan",  BaseMessages.getString(PKG, "Pan.Log.ProcessingEndAfterLongest", String.valueOf(days), String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
 	        }
 			
 			if (trans.getResult().getNrErrors()==0) 
@@ -521,9 +524,9 @@ public class Pan
 		}
 		catch(KettleException ke)
 		{
-			System.out.println(Messages.getString("Pan.Log.ErrorOccurred",""+ke.getMessage()));
+			System.out.println(BaseMessages.getString(PKG, "Pan.Log.ErrorOccurred",""+ke.getMessage()));
 			
-            log.logError("Pan", Messages.getString("Pan.Log.UnexpectedErrorOccurred",""+ke.getMessage()));
+            log.logError("Pan", BaseMessages.getString(PKG, "Pan.Log.UnexpectedErrorOccurred",""+ke.getMessage()));
             
 			// Close the file appender if any...
 			//

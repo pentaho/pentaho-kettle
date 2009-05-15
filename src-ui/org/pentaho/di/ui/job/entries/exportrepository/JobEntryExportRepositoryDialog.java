@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -43,35 +42,35 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Group;
-
-import org.pentaho.di.core.util.StringUtil;
-import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
-import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.core.widget.LabelTextVar;
-import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.job.entries.exportrepository.JobEntryExportRepository;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoriesMeta;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.UserInfo;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.LabelTextVar;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.exportrepository.JobEntryExportRepository;
-import org.pentaho.di.job.entries.exportrepository.Messages;
 
 
 /**
@@ -82,9 +81,11 @@ import org.pentaho.di.job.entries.exportrepository.Messages;
  */
 public class JobEntryExportRepositoryDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryExportRepository.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final String[] FILETYPES = new String[] 
-	                                     {Messages.getString("JobExportRepository.Filetype.XmlFiles"),
-	                                       Messages.getString("JobExportRepository.Filetype.AllFiles") };
+	                                     { BaseMessages.getString(PKG, "JobExportRepository.Filetype.XmlFiles"),
+	                                       BaseMessages.getString(PKG, "JobExportRepository.Filetype.AllFiles") };
 	
 	private Label        wlName;
 	private Text         wName;
@@ -199,7 +200,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryExportRepository) jobEntryInt;
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobExportRepository.Name.Default"));
+            this.jobEntry.setName(BaseMessages.getString(PKG, "JobExportRepository.Name.Default"));
     }
 	public JobEntryInterface open()
 	{
@@ -224,14 +225,14 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobExportRepository.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobExportRepository.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Repositoryname line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobExportRepository.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobExportRepository.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -255,7 +256,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		//////////////////////////
 		
 		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
-		wGeneralTab.setText(Messages.getString("JobExportRepository.Tab.General.Label"));
+		wGeneralTab.setText(BaseMessages.getString(PKG, "JobExportRepository.Tab.General.Label"));
 		
 		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wGeneralComp);
@@ -270,7 +271,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 	     // /
 	    wRepositoryInfos = new Group(wGeneralComp, SWT.SHADOW_NONE);
 	    props.setLook(wRepositoryInfos);
-	    wRepositoryInfos.setText(Messages.getString("JobExportRepository.RepositoryInfos.Group.Label"));
+	    wRepositoryInfos.setText(BaseMessages.getString(PKG, "JobExportRepository.RepositoryInfos.Group.Label"));
 
 	    FormLayout RepositoryInfosgroupLayout = new FormLayout();
 	    RepositoryInfosgroupLayout.marginWidth = 10;
@@ -280,7 +281,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 
 		// Repositoryname line
 		wlRepositoryname=new Label(wRepositoryInfos, SWT.RIGHT);
-		wlRepositoryname.setText(Messages.getString("JobExportRepository.Repositoryname.Label"));
+		wlRepositoryname.setText(BaseMessages.getString(PKG, "JobExportRepository.Repositoryname.Label"));
  		props.setLook(wlRepositoryname);
 		fdlRepositoryname=new FormData();
 		fdlRepositoryname.left = new FormAttachment(0, margin);
@@ -290,8 +291,8 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 
 		wbRepositoryname=new Button(wRepositoryInfos, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbRepositoryname);
-		wbRepositoryname.setText(Messages.getString("JobExportRepository.ListRepositories.Label"));
-		wbRepositoryname.setToolTipText(Messages.getString("JobExportRepository.ListRepositories.Tooltip"));
+		wbRepositoryname.setText(BaseMessages.getString(PKG, "JobExportRepository.ListRepositories.Label"));
+		wbRepositoryname.setToolTipText(BaseMessages.getString(PKG, "JobExportRepository.ListRepositories.Tooltip"));
 		fdbRepositoryname=new FormData();
 		fdbRepositoryname.right= new FormAttachment(100, 0);
 		fdbRepositoryname.top  = new FormAttachment(wName, 0);
@@ -318,8 +319,8 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		);
 
 		  // UserName line
-        wUserName = new LabelTextVar(jobMeta,wRepositoryInfos, Messages.getString("JobExportRepository.User.Label"), Messages
-            .getString("JobExportRepository.User.Tooltip"));
+        wUserName = new LabelTextVar(jobMeta,wRepositoryInfos, BaseMessages.getString(PKG, "JobExportRepository.User.Label"), 
+        		BaseMessages.getString(PKG, "JobExportRepository.User.Tooltip"));
         props.setLook(wUserName);
         wUserName.addModifyListener(lsMod);
         fdUserName = new FormData();
@@ -329,8 +330,8 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
         wUserName.setLayoutData(fdUserName);
 
         // Password line
-        wPassword = new LabelTextVar(jobMeta,wRepositoryInfos, Messages.getString("JobExportRepository.Password.Label"), Messages
-            .getString("JobExportRepository.Password.Tooltip"));
+        wPassword = new LabelTextVar(jobMeta,wRepositoryInfos, BaseMessages.getString(PKG, "JobExportRepository.Password.Label"), 
+        		BaseMessages.getString(PKG, "JobExportRepository.Password.Tooltip"));
         props.setLook(wPassword);
         wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
@@ -351,10 +352,10 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
         
 		// Test connection button
 		wTest=new Button(wRepositoryInfos,SWT.PUSH);
-		wTest.setText(Messages.getString("JobExportRepository.TestConnection.Label"));
+		wTest.setText(BaseMessages.getString(PKG, "JobExportRepository.TestConnection.Label"));
  		props.setLook(wTest);
 		fdTest=new FormData();
-		wTest.setToolTipText(Messages.getString("JobExportRepository.TestConnection.Tooltip"));
+		wTest.setToolTipText(BaseMessages.getString(PKG, "JobExportRepository.TestConnection.Tooltip"));
 		//fdTest.left = new FormAttachment(middle, 0);
 		fdTest.top  = new FormAttachment(wPassword, 2*margin);
 		fdTest.right= new FormAttachment(100, 0);
@@ -377,7 +378,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 	   
 	     wSettings = new Group(wGeneralComp, SWT.SHADOW_NONE);
 	     props.setLook(wSettings);
-	     wSettings.setText(Messages.getString("JobExportRepository.Settings.Group.Label"));
+	     wSettings.setText(BaseMessages.getString(PKG, "JobExportRepository.Settings.Group.Label"));
 
 	    FormLayout SettingsgroupLayout = new FormLayout();
 	    SettingsgroupLayout.marginWidth = 10;
@@ -386,7 +387,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 	     
 	    
 	    wlExportType = new Label(wSettings, SWT.RIGHT);
-		wlExportType.setText(Messages.getString("JobExportRepository.ExportType.Label"));
+		wlExportType.setText(BaseMessages.getString(PKG, "JobExportRepository.ExportType.Label"));
 		props.setLook(wlExportType);
 		fdlExportType = new FormData();
 		fdlExportType.left = new FormAttachment(0, 0);
@@ -394,11 +395,11 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		fdlExportType.top = new FormAttachment(wRepositoryInfos, margin);
 		wlExportType.setLayoutData(fdlExportType);
 		wExportType = new CCombo(wSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wExportType.add(Messages.getString("JobExportRepository.Export_All.Label"));
-		wExportType.add(Messages.getString("JobExportRepository.Export_Jobs.Label"));
-		wExportType.add(Messages.getString("JobExportRepository.Export_Trans.Label"));
-		wExportType.add(Messages.getString("JobExportRepository.Export_By_Folder.Label"));
-		wExportType.add(Messages.getString("JobExportRepository.Export_One_Folder.Label"));
+		wExportType.add(BaseMessages.getString(PKG, "JobExportRepository.Export_All.Label"));
+		wExportType.add(BaseMessages.getString(PKG, "JobExportRepository.Export_Jobs.Label"));
+		wExportType.add(BaseMessages.getString(PKG, "JobExportRepository.Export_Trans.Label"));
+		wExportType.add(BaseMessages.getString(PKG, "JobExportRepository.Export_By_Folder.Label"));
+		wExportType.add(BaseMessages.getString(PKG, "JobExportRepository.Export_One_Folder.Label"));
 		wExportType.select(0); // +1: starts at -1
 
 		props.setLook(wExportType);
@@ -420,7 +421,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		
 		// Foldername line
 		wlFoldername=new Label(wSettings, SWT.RIGHT);
-		wlFoldername.setText(Messages.getString("JobExportRepository.Foldername.Label"));
+		wlFoldername.setText(BaseMessages.getString(PKG, "JobExportRepository.Foldername.Label"));
  		props.setLook(wlFoldername);
 		fdlFoldername=new FormData();
 		fdlFoldername.left = new FormAttachment(0, margin);
@@ -430,8 +431,8 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 
 		wbFoldername=new Button(wSettings, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFoldername);
-		//wbFoldername.setText(Messages.getString("JobExportRepository.ListFolders.Label"));
-		wbFoldername.setToolTipText(Messages.getString("JobExportRepository.ListFolders.Tooltip"));
+		//wbFoldername.setText(BaseMessages.getString(PKG, "JobExportRepository.ListFolders.Label"));
+		wbFoldername.setToolTipText(BaseMessages.getString(PKG, "JobExportRepository.ListFolders.Tooltip"));
 		wbFoldername.setImage(GUIResource.getInstance().getImageBol());
 		fdbFoldername=new FormData();
 		fdbFoldername.right= new FormAttachment(100, 0);
@@ -461,7 +462,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 
 		  // export each directory to a new folder?
 		wlNewFolder=new Label(wSettings, SWT.RIGHT);
-		wlNewFolder.setText(Messages.getString("JobExportRepository.NewFolder.Label"));
+		wlNewFolder.setText(BaseMessages.getString(PKG, "JobExportRepository.NewFolder.Label"));
  		props.setLook(wlNewFolder);
 		fdlNewFolder=new FormData();
 		fdlNewFolder.left = new FormAttachment(0, 0);
@@ -470,7 +471,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		wlNewFolder.setLayoutData(fdlNewFolder);
 		wNewFolder=new Button(wSettings, SWT.CHECK);
  		props.setLook(wNewFolder);
- 		wNewFolder.setToolTipText(Messages.getString("JobExportRepository.NewFolder.Tooltip"));
+ 		wNewFolder.setToolTipText(BaseMessages.getString(PKG, "JobExportRepository.NewFolder.Tooltip"));
 		fdNewFolder=new FormData();
 		fdNewFolder.left = new FormAttachment(middle, margin);
 		fdNewFolder.top  = new FormAttachment(wFoldername, margin);
@@ -501,7 +502,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 	   
 	     wTarget = new Group(wGeneralComp, SWT.SHADOW_NONE);
 	     props.setLook(wTarget);
-	     wTarget.setText(Messages.getString("JobExportRepository.Target.Group.Label"));
+	     wTarget.setText(BaseMessages.getString(PKG, "JobExportRepository.Target.Group.Label"));
 
 	    FormLayout TargetgroupLayout = new FormLayout();
 	    TargetgroupLayout.marginWidth = 10;
@@ -510,7 +511,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 	     
         // Target filename line
 		wlTargetFilename=new Label(wTarget, SWT.RIGHT);
-		wlTargetFilename.setText(Messages.getString("JobExportRepository.TargetFilename.Label"));
+		wlTargetFilename.setText(BaseMessages.getString(PKG, "JobExportRepository.TargetFilename.Label"));
 		props.setLook(wlTargetFilename);
 		fdlTargetFilename=new FormData();
 		fdlTargetFilename.left = new FormAttachment(0, 0);
@@ -521,7 +522,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
         // Browse Source folders button ...
 		wbTargetFilename=new Button(wTarget, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbTargetFilename);
-		wbTargetFilename.setText(Messages.getString("JobExportRepository.BrowseFolders.Label"));
+		wbTargetFilename.setText(BaseMessages.getString(PKG, "JobExportRepository.BrowseFolders.Label"));
 		fdbTargetFilename=new FormData();
 		fdbTargetFilename.right= new FormAttachment(100, 0);
 		fdbTargetFilename.top  = new FormAttachment(wSettings, margin);
@@ -555,7 +556,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		// Browse Source files button ...
 		wbTargetFoldername=new Button(wTarget, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbTargetFoldername);
-		wbTargetFoldername.setText(Messages.getString("JobExportRepository.BrowseFiles.Label"));
+		wbTargetFoldername.setText(BaseMessages.getString(PKG, "JobExportRepository.BrowseFiles.Label"));
 		fdbTargetFoldername=new FormData();
 		fdbTargetFoldername.right= new FormAttachment(wbTargetFilename, -margin);
 		fdbTargetFoldername.top  = new FormAttachment(wSettings, margin);
@@ -583,7 +584,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 	     // Target filename line
 	    wTargetFilename = new TextVar(jobMeta,wTarget, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wTargetFilename);
-        wTargetFilename.setToolTipText(Messages.getString("JobExportRepository.TargetFilename.Tooltip"));
+        wTargetFilename.setToolTipText(BaseMessages.getString(PKG, "JobExportRepository.TargetFilename.Tooltip"));
         wTargetFilename.addModifyListener(lsMod);
         fdTargetFilename = new FormData();
         fdTargetFilename.left = new FormAttachment(middle, margin);
@@ -593,7 +594,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
         
         // create folder or parent folder?
 		wlcreateFolder=new Label(wTarget, SWT.RIGHT);
-		wlcreateFolder.setText(Messages.getString("JobExportRepository.createFolder.Label"));
+		wlcreateFolder.setText(BaseMessages.getString(PKG, "JobExportRepository.createFolder.Label"));
  		props.setLook(wlcreateFolder);
 		fdlcreateFolder=new FormData();
 		fdlcreateFolder.left = new FormAttachment(0, 0);
@@ -602,7 +603,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		wlcreateFolder.setLayoutData(fdlcreateFolder);
 		wcreateFolder=new Button(wTarget, SWT.CHECK);
  		props.setLook(wcreateFolder);
- 		wcreateFolder.setToolTipText(Messages.getString("JobExportRepository.createFolder.Tooltip"));
+ 		wcreateFolder.setToolTipText(BaseMessages.getString(PKG, "JobExportRepository.createFolder.Tooltip"));
 		fdcreateFolder=new FormData();
 		fdcreateFolder.left = new FormAttachment(middle, margin);
 		fdcreateFolder.top  = new FormAttachment(wTargetFilename, margin);
@@ -619,7 +620,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
         
         // Create multi-part file?
 		wlAddDate=new Label(wTarget, SWT.RIGHT);
-		wlAddDate.setText(Messages.getString("JobExportRepository.AddDate.Label"));
+		wlAddDate.setText(BaseMessages.getString(PKG, "JobExportRepository.AddDate.Label"));
  		props.setLook(wlAddDate);
 		fdlAddDate=new FormData();
 		fdlAddDate.left = new FormAttachment(0, 0);
@@ -628,7 +629,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		wlAddDate.setLayoutData(fdlAddDate);
 		wAddDate=new Button(wTarget, SWT.CHECK);
  		props.setLook(wAddDate);
- 		wAddDate.setToolTipText(Messages.getString("JobExportRepository.AddDate.Tooltip"));
+ 		wAddDate.setToolTipText(BaseMessages.getString(PKG, "JobExportRepository.AddDate.Tooltip"));
 		fdAddDate=new FormData();
 		fdAddDate.left = new FormAttachment(middle, margin);
 		fdAddDate.top  = new FormAttachment(wcreateFolder, margin);
@@ -644,7 +645,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		);
 		// Create multi-part file?
 		wlAddTime=new Label(wTarget, SWT.RIGHT);
-		wlAddTime.setText(Messages.getString("JobExportRepository.AddTime.Label"));
+		wlAddTime.setText(BaseMessages.getString(PKG, "JobExportRepository.AddTime.Label"));
  		props.setLook(wlAddTime);
 		fdlAddTime=new FormData();
 		fdlAddTime.left = new FormAttachment(0, 0);
@@ -653,7 +654,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		wlAddTime.setLayoutData(fdlAddTime);
 		wAddTime=new Button(wTarget, SWT.CHECK);
  		props.setLook(wAddTime);
- 		wAddTime.setToolTipText(Messages.getString("JobExportRepository.AddTime.Tooltip"));
+ 		wAddTime.setToolTipText(BaseMessages.getString(PKG, "JobExportRepository.AddTime.Tooltip"));
 		fdAddTime=new FormData();
 		fdAddTime.left = new FormAttachment(middle, margin);
 		fdAddTime.top  = new FormAttachment(wAddDate, margin);
@@ -670,7 +671,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 
 		// Specify date time format?
 		wlSpecifyFormat=new Label(wTarget, SWT.RIGHT);
-		wlSpecifyFormat.setText(Messages.getString("JobExportRepository.SpecifyFormat.Label"));
+		wlSpecifyFormat.setText(BaseMessages.getString(PKG, "JobExportRepository.SpecifyFormat.Label"));
 		props.setLook(wlSpecifyFormat);
 		fdlSpecifyFormat=new FormData();
 		fdlSpecifyFormat.left = new FormAttachment(0, 0);
@@ -679,7 +680,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		wlSpecifyFormat.setLayoutData(fdlSpecifyFormat);
 		wSpecifyFormat=new Button(wTarget, SWT.CHECK);
 		props.setLook(wSpecifyFormat);
-		wSpecifyFormat.setToolTipText(Messages.getString("JobExportRepository.SpecifyFormat.Tooltip"));
+		wSpecifyFormat.setToolTipText(BaseMessages.getString(PKG, "JobExportRepository.SpecifyFormat.Tooltip"));
 	    fdSpecifyFormat=new FormData();
 		fdSpecifyFormat.left = new FormAttachment(middle, margin);
 		fdSpecifyFormat.top  = new FormAttachment(wAddTime, margin);
@@ -698,7 +699,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		
  		// DateTimeFormat
 		wlDateTimeFormat=new Label(wTarget, SWT.RIGHT);
-        wlDateTimeFormat.setText(Messages.getString("JobExportRepository.DateTimeFormat.Label"));
+        wlDateTimeFormat.setText(BaseMessages.getString(PKG, "JobExportRepository.DateTimeFormat.Label"));
         props.setLook(wlDateTimeFormat);
         fdlDateTimeFormat=new FormData();
         fdlDateTimeFormat.left = new FormAttachment(0, 0);
@@ -721,7 +722,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
         
         // If File Exists
 		wlIfFileExists = new Label(wTarget, SWT.RIGHT);
-		wlIfFileExists.setText(Messages.getString("JobExportRepository.IfFileExists.Label"));
+		wlIfFileExists.setText(BaseMessages.getString(PKG, "JobExportRepository.IfFileExists.Label"));
 		props.setLook(wlIfFileExists);
 		fdlIfFileExists = new FormData();
 		fdlIfFileExists.left = new FormAttachment(0, 0);
@@ -729,10 +730,10 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		fdlIfFileExists.top = new FormAttachment(wDateTimeFormat, margin);
 		wlIfFileExists.setLayoutData(fdlIfFileExists);
 		wIfFileExists = new CCombo(wTarget, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wIfFileExists.add(Messages.getString("JobExportRepository.Do_Nothing_IfFileExists.Label"));
-		wIfFileExists.add(Messages.getString("JobExportRepository.Overwrite_File_IfFileExists.Label"));
-		wIfFileExists.add(Messages.getString("JobExportRepository.Unique_Name_IfFileExists.Label"));;
-		wIfFileExists.add(Messages.getString("JobExportRepository.Fail_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobExportRepository.Do_Nothing_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobExportRepository.Overwrite_File_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobExportRepository.Unique_Name_IfFileExists.Label"));;
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobExportRepository.Fail_IfFileExists.Label"));
 		wIfFileExists.select(0); // +1: starts at -1
 
 		props.setLook(wIfFileExists);
@@ -744,7 +745,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		
 		//Add file to result
 		wlAddFileToResult = new Label(wTarget, SWT.RIGHT);
-		wlAddFileToResult.setText(Messages.getString("JobExportRepository.AddFileToResult.Label"));
+		wlAddFileToResult.setText(BaseMessages.getString(PKG, "JobExportRepository.AddFileToResult.Label"));
 		props.setLook(wlAddFileToResult);
 		fdlAddFileToResult = new FormData();
 		fdlAddFileToResult.left = new FormAttachment(0, 0);
@@ -753,7 +754,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		wlAddFileToResult.setLayoutData(fdlAddFileToResult);
 		wAddFileToResult = new Button(wTarget, SWT.CHECK);
 		props.setLook(wAddFileToResult);
-		wAddFileToResult.setToolTipText(Messages.getString("JobExportRepository.AddFileToResult.Tooltip"));
+		wAddFileToResult.setToolTipText(BaseMessages.getString(PKG, "JobExportRepository.AddFileToResult.Tooltip"));
 		fdAddFileToResult = new FormData();
 		fdAddFileToResult.left = new FormAttachment(middle, margin);
 		fdAddFileToResult.top = new FormAttachment(wIfFileExists, margin);
@@ -801,7 +802,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		/////////////////////////////////////
 		
 		wAdvancedTab=new CTabItem(wTabFolder, SWT.NONE);
-		wAdvancedTab.setText(Messages.getString("JobExportRepository.Tab.Advanced.Label"));
+		wAdvancedTab.setText(BaseMessages.getString(PKG, "JobExportRepository.Tab.Advanced.Label"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;
@@ -818,7 +819,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 	     // /
 	    wSuccessOn= new Group(wAdvancedComp, SWT.SHADOW_NONE);
 	    props.setLook(wSuccessOn);
-	    wSuccessOn.setText(Messages.getString("JobExportRepository.SuccessOn.Group.Label"));
+	    wSuccessOn.setText(BaseMessages.getString(PKG, "JobExportRepository.SuccessOn.Group.Label"));
 
 	    FormLayout successongroupLayout = new FormLayout();
 	    successongroupLayout.marginWidth = 10;
@@ -828,7 +829,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 
 	    //Success Condition
 	  	wlSuccessCondition = new Label(wSuccessOn, SWT.RIGHT);
-	  	wlSuccessCondition.setText(Messages.getString("JobExportRepository.SuccessCondition.Label"));
+	  	wlSuccessCondition.setText(BaseMessages.getString(PKG, "JobExportRepository.SuccessCondition.Label"));
 	  	props.setLook(wlSuccessCondition);
 	  	fdlSuccessCondition = new FormData();
 	  	fdlSuccessCondition.left = new FormAttachment(0, 0);
@@ -836,8 +837,8 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 	  	fdlSuccessCondition.top = new FormAttachment(0, margin);
 	  	wlSuccessCondition.setLayoutData(fdlSuccessCondition);
 	  	wSuccessCondition = new CCombo(wSuccessOn, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-	  	wSuccessCondition.add(Messages.getString("JobExportRepository.SuccessWhenAllWorksFine.Label"));
-	  	wSuccessCondition.add(Messages.getString("JobExportRepository.SuccessWhenErrorsLessThan.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobExportRepository.SuccessWhenAllWorksFine.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobExportRepository.SuccessWhenErrorsLessThan.Label"));
 	  	
 	  	wSuccessCondition.select(0); // +1: starts at -1
 	  	
@@ -858,7 +859,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 
 		// Success when number of errors less than
 		wlLimit= new Label(wSuccessOn, SWT.RIGHT);
-		wlLimit.setText(Messages.getString("JobExportRepository.Limit.Label"));
+		wlLimit.setText(BaseMessages.getString(PKG, "JobExportRepository.Limit.Label"));
 		props.setLook(wlLimit);
 		fdlLimit= new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -867,8 +868,8 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		wlLimit.setLayoutData(fdlLimit);
 		
 		
-		wLimit= new TextVar(jobMeta,wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobExportRepository.NrLimit.Tooltip"));
+		wLimit= new TextVar(jobMeta,wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobExportRepository.NrLimit.Tooltip"));
 		props.setLook(wLimit);
 		wLimit.addModifyListener(lsMod);
 		fdLimit= new FormData();
@@ -915,9 +916,9 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
  		
  		
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTabFolder);
 
@@ -1073,8 +1074,8 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
  	   if(Const.isEmpty(wName.getText())) 
         {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
         }
@@ -1164,21 +1165,21 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 			reps_info = new RepositoriesMeta(log);
 			if (!reps_info.readData())
 			{
-				displayMsg(Messages.getString("JobExportRepository.Error.NoRepsDefined"),Messages.getString("JobExportRepository.Error.NoRepsDefinedMsg"),true);
+				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepsDefined"),BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepsDefinedMsg"),true);
 			}
 			rep_info = reps_info.findRepository( jobMeta.environmentSubstitute(wRepositoryname.getText()));
 	
 			if (rep_info==null)
 			{
 				// Can not find repository
-				displayMsg(Messages.getString("JobExportRepository.Error.CanNotFindRep"),Messages.getString("JobExportRepository.Error.CanNotFindRepMsg",wRepositoryname.getText()),true);
+				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRep"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRepMsg",wRepositoryname.getText()),true);
 				return false;
 			}
 			
 			repos = new Repository(log, rep_info, user_info);
 			if (!repos.connect("Export job entry"))
 			{
-				displayMsg(Messages.getString("JobExportRepository.Error.CanNotConnect"),Messages.getString("JobExportRepository.Error.CanNotConnectMsg",wRepositoryname.getText()),true);
+				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnect"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectMsg",wRepositoryname.getText()),true);
 				return false;
 			}	
 			// Check username, password
@@ -1190,12 +1191,12 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				repos=null;
 				
 				if(displaySuccess)
-					displayMsg(Messages.getString("JobExportRepository.Connected.Title.Ok"),
-							Messages.getString("JobExportRepository.Connected.OK",wRepositoryname.getText()),false);
+					displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Connected.Title.Ok"),
+							BaseMessages.getString(PKG, "JobExportRepository.Connected.OK",wRepositoryname.getText()),false);
 			}else
 			{
-					displayMsg(Messages.getString("JobExportRepository.Connected.Title.Bad"),
-							Messages.getString("JobExportRepository.CanNotVerifyUser",wUserName.getText(),wRepositoryname.getText()),true);
+					displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Connected.Title.Bad"),
+							BaseMessages.getString(PKG, "JobExportRepository.CanNotVerifyUser",wUserName.getText(),wRepositoryname.getText()),true);
 					return false;
 			}
 
@@ -1204,8 +1205,8 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 
 		}catch(Exception e)
 		{
-			displayMsg(Messages.getString("System.Dialog.Error.Title"),
-					Messages.getString("JobExportRepository.ErrorConnecting",wRepositoryname.getText()),true);
+			displayMsg(BaseMessages.getString(PKG, "System.Dialog.Error.Title"),
+					BaseMessages.getString(PKG, "JobExportRepository.ErrorConnecting",wRepositoryname.getText()),true);
 		}finally
 		{
 			if(repos!=null) 
@@ -1248,13 +1249,13 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 			reps_info = new RepositoriesMeta(log);
 			if (!reps_info.readData())
 			{
-				displayMsg(Messages.getString("JobExportRepository.Error.NoRepsDefined"),Messages.getString("JobExportRepository.Error.NoRepsDefinedMsg"),true);
+				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepsDefined"),BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepsDefinedMsg"),true);
 			}else
 			{
 				int nrRepositories=reps_info.nrRepositories();
 				if(nrRepositories==0)
 				{
-					displayMsg(Messages.getString("System.Dialog.Error.Title"), Messages.getString("JobExportRepository.Error.NoRep.DialogMessage"), true);
+					displayMsg(BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "JobExportRepository.Error.NoRep.DialogMessage"), true);
 				}else
 				{
 					String available[] = new String[nrRepositories];
@@ -1268,7 +1269,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 					String[] source = new String[1];
 					source[0]=wRepositoryname.getText();
 					int idxSource[] = Const.indexsOfStrings(source, available);
-					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, available, Messages.getString("JobExportRepository.SelectRepository.Title"), Messages.getString("JobExportRepository.SelectRepository.Message"));
+					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, available, BaseMessages.getString(PKG, "JobExportRepository.SelectRepository.Title"), BaseMessages.getString(PKG, "JobExportRepository.SelectRepository.Message"));
 					dialog.setMulti(false);
 					dialog.setSelectedNrs(idxSource);
 					if (dialog.open()!=null)
@@ -1281,7 +1282,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		}
 		catch(Exception e)
 		{
-			displayMsg(Messages.getString("System.Dialog.Error.Title"), Messages.getString("JobExportRepository.ErrorGettingRepositories.DialogMessage")+Const.CR+":"+e.getMessage(), true);
+			displayMsg(BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "JobExportRepository.ErrorGettingRepositories.DialogMessage")+Const.CR+":"+e.getMessage(), true);
 		}finally
 		{
 			reps_info.clear();
@@ -1298,21 +1299,21 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 			reps_info = new RepositoriesMeta(log);
 			if (!reps_info.readData())
 			{
-				displayMsg(Messages.getString("JobExportRepository.Error.NoRepsDefined"),Messages.getString("JobExportRepository.Error.NoRepsDefinedMsg"),true);
+				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepsDefined"),BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepsDefinedMsg"),true);
 			}
 			rep_info = reps_info.findRepository( jobMeta.environmentSubstitute(wRepositoryname.getText()));
 	
 			if (rep_info==null)
 			{
 				// Can not find repository
-				displayMsg(Messages.getString("JobExportRepository.Error.CanNotFindRep"),Messages.getString("JobExportRepository.Error.CanNotFindRepMsg",wRepositoryname.getText()),true);
+				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRep"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRepMsg",wRepositoryname.getText()),true);
 			}
 			
 			repos = new Repository(log, rep_info, user_info);
 			try{
 			if (!repos.connect("Export job entry"))
 			{
-				displayMsg(Messages.getString("JobExportRepository.Error.CanNotConnect"),Messages.getString("JobExportRepository.Error.CanNotConnectMsg",wRepositoryname.getText()),true);
+				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnect"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectMsg",wRepositoryname.getText()),true);
 			}
 			}catch(Exception e){}
 	
@@ -1326,7 +1327,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 	
 		}catch(Exception e)
 		{
-			displayMsg(Messages.getString("System.Dialog.Error.Title"), Messages.getString("JobExportRepository.ErrorGettingFolderds.DialogMessage")+Const.CR+":"+e.getMessage(), true);
+			displayMsg(BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "JobExportRepository.ErrorGettingFolderds.DialogMessage")+Const.CR+":"+e.getMessage(), true);
 		}
 		finally
 		{

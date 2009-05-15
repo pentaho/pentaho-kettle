@@ -17,16 +17,13 @@ import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
-
 import java.util.ArrayList;
-import org.w3c.dom.Node;
-
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Result;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -36,8 +33,8 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -45,6 +42,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.w3c.dom.Node;
 
 
 /**
@@ -56,6 +54,8 @@ import org.pentaho.di.resource.ResourceEntry.ResourceType;
  */
 public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryWaitForSQL.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public boolean isClearResultList;
 	
 	public boolean isAddRowsResult;
@@ -79,12 +79,12 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 	private static final String selectCount="SELECT count(*) FROM ";
 	
 	public static final String[] successConditionsDesc = new String[] { 
-		Messages.getString("JobEntryWaitForSQL.SuccessWhenRowCountEqual.Label"), 
-		Messages.getString("JobEntryWaitForSQL.SuccessWhenRowCountDifferent.Label"),
-		Messages.getString("JobEntryWaitForSQL.SuccessWhenRowCountSmallerThan.Label"),
-		Messages.getString("JobEntryWaitForSQL.SuccessWhenRowCountSmallerOrEqualThan.Label"),
-		Messages.getString("JobEntryWaitForSQL.SuccessWhenRowCountGreaterThan.Label"),
-		Messages.getString("JobEntryWaitForSQL.SuccessWhenRowCountGreaterOrEqual.Label")
+		BaseMessages.getString(PKG, "JobEntryWaitForSQL.SuccessWhenRowCountEqual.Label"), 
+		BaseMessages.getString(PKG, "JobEntryWaitForSQL.SuccessWhenRowCountDifferent.Label"),
+		BaseMessages.getString(PKG, "JobEntryWaitForSQL.SuccessWhenRowCountSmallerThan.Label"),
+		BaseMessages.getString(PKG, "JobEntryWaitForSQL.SuccessWhenRowCountSmallerOrEqualThan.Label"),
+		BaseMessages.getString(PKG, "JobEntryWaitForSQL.SuccessWhenRowCountGreaterThan.Label"),
+		BaseMessages.getString(PKG, "JobEntryWaitForSQL.SuccessWhenRowCountGreaterOrEqual.Label")
 	
 	};
 	public static final String[] successConditionsCode = new String[] { 
@@ -125,7 +125,6 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		checkCycleTime   = DEFAULT_CHECK_CYCLE_TIME;
 		successOnTimeout = false;
 		setID(-1L);
-		setJobEntryType(JobEntryType.WAIT_FOR_SQL);
 	}
 
 	public JobEntryWaitForSQL()
@@ -133,11 +132,6 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		this("");
 	}
 
-	public JobEntryWaitForSQL(JobEntryBase jeb)
-	{
-		super(jeb);
-	}
-    
     public Object clone()
     {
     	JobEntryWaitForSQL je = (JobEntryWaitForSQL) super.clone();
@@ -243,7 +237,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleException e)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryWaitForSQL.UnableLoadXML"),e);
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryWaitForSQL.UnableLoadXML"),e);
 		}
 	}
 
@@ -280,7 +274,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryWaitForSQL.UnableLoadRep",""+id_jobentry), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryWaitForSQL.UnableLoadRep",""+id_jobentry), dbe);
 		}
 	}
 	private static int getSuccessConditionByCode(String tt) {
@@ -319,7 +313,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryWaitForSQL.UnableSaveRep",""+id_job), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryWaitForSQL.UnableSaveRep",""+id_job), dbe);
 		}
 	}
 	
@@ -355,7 +349,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		
 		if (connection==null)
 		{
-			log.logError(toString(),Messages.getString("JobEntryWaitForSQL.NoDbConnection"));
+			log.logError(toString(),BaseMessages.getString(PKG, "JobEntryWaitForSQL.NoDbConnection"));
 			return result;
 		}
 		
@@ -367,11 +361,11 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 			
         	realCustomSQL=customSQL;
         	if(isUseVars) realCustomSQL=environmentSubstitute(realCustomSQL);
-        	if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobEntryWaitForSQL.Log.EnteredCustomSQL",realCustomSQL));
+        	if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobEntryWaitForSQL.Log.EnteredCustomSQL",realCustomSQL));
         	
         	if(Const.isEmpty(realCustomSQL))
         	{
-        		log.logError(toString(), Messages.getString("JobEntryWaitForSQL.Error.NoCustomSQL"));
+        		log.logError(toString(), BaseMessages.getString(PKG, "JobEntryWaitForSQL.Error.NoCustomSQL"));
         		return result;
         	}
         	
@@ -379,7 +373,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
         {   
 	        if(Const.isEmpty(realTablename))
         	{
-        		log.logError(toString(), Messages.getString("JobEntryWaitForSQL.Error.NoTableName"));
+        		log.logError(toString(), BaseMessages.getString(PKG, "JobEntryWaitForSQL.Error.NoTableName"));
         		return result;
         	}
         }
@@ -403,7 +397,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 	    	long timeStart = System.currentTimeMillis() / 1000;
 			
 			int nrRowsLimit=Const.toInt(environmentSubstitute(rowsCountValue),0);
-			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryWaitForSQL.Log.nrRowsLimit",""+nrRowsLimit));
+			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryWaitForSQL.Log.nrRowsLimit",""+nrRowsLimit));
 	    	
 	
 			long iMaximumTimeout = Const.toInt(environmentSubstitute(maximumTimeout), Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0));
@@ -540,7 +534,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 			
 			if(countStatement!=null)
 			{
-				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryWaitForSQL.Log.RunSQLStatement",countStatement));
+				if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryWaitForSQL.Log.RunSQLStatement",countStatement));
 					
 				if(iscustomSQL)
 				{
@@ -550,7 +544,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 						rowsCount=ar.size();
 					}else
 					{
-						if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobEntryWaitForSQL.Log.customSQLreturnedNothing",countStatement));
+						if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobEntryWaitForSQL.Log.customSQLreturnedNothing",countStatement));
 					}
 					
 				}else
@@ -561,7 +555,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 						rowsCount=row.getInteger(0);
 					}
 				}
-				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryWaitForSQL.Log.NrRowsReturned",""+rowsCount));
+				if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryWaitForSQL.Log.NrRowsReturned",""+rowsCount));
 				
 				switch(successCondition)
 	             {				
@@ -590,7 +584,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			log.logError(toString(), Messages.getString("JobEntryWaitForSQL.Error.RunningEntry",dbe.getMessage()));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryWaitForSQL.Error.RunningEntry",dbe.getMessage()));
 		}finally{
 			if(db!=null) 
 			{

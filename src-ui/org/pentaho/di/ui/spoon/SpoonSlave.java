@@ -43,6 +43,7 @@ import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.step.StepStatus;
@@ -69,6 +70,8 @@ import org.pentaho.di.www.WebResult;
  */
 public class SpoonSlave extends Composite implements TabItemInterface
 {
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final long UPDATE_TIME_VIEW = 30000L; // 30s
     
     public static final String STRING_SLAVE_LOG_TREE_NAME = "SLAVE_LOG : ";
@@ -121,19 +124,19 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		sash.setLayout(new FillLayout());
 
 		colinf = new ColumnInfo[] { 
-                new ColumnInfo(Messages.getString("SpoonSlave.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonSlave.Column.Copynr"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonSlave.Column.Read"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonSlave.Column.Written"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonSlave.Column.Input"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonSlave.Column.Output"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonSlave.Column.Updated"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("SpoonSlave.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonSlave.Column.Errors"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonSlave.Column.Active"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonSlave.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonSlave.Column.Speed"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonSlave.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Copynr"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Read"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Written"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Input"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Output"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Updated"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Errors"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Active"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Speed"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 		};
 
 		colinf[1].setAllignement(SWT.RIGHT);
@@ -184,21 +187,21 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		wText.setVisible(true);
         
 		wRefresh = new Button(this, SWT.PUSH);
-		wRefresh.setText(Messages.getString("SpoonSlave.Button.Refresh"));
+		wRefresh.setText(BaseMessages.getString(PKG, "SpoonSlave.Button.Refresh"));
         wRefresh.setEnabled(true);
         wRefresh.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { refreshViewAndLog(); } });
         
 		wError = new Button(this, SWT.PUSH);
-		wError.setText(Messages.getString("SpoonSlave.Button.ShowErrorLines")); //$NON-NLS-1$
+		wError.setText(BaseMessages.getString(PKG, "SpoonSlave.Button.ShowErrorLines")); //$NON-NLS-1$
         wError.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showErrors(); } } );
 
         wStart= new Button(this, SWT.PUSH);
-        wStart.setText(Messages.getString("SpoonSlave.Button.Start"));
+        wStart.setText(BaseMessages.getString(PKG, "SpoonSlave.Button.Start"));
         wStart.setEnabled(false);
         wStart.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { start(); } });
 
         wStop= new Button(this, SWT.PUSH);
-        wStop.setText(Messages.getString("SpoonSlave.Button.Stop"));
+        wStop.setText(BaseMessages.getString(PKG, "SpoonSlave.Button.Stop"));
         wStop.setEnabled(false);
         wStop.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { stop(); } });
 
@@ -377,14 +380,14 @@ public class SpoonSlave extends Composite implements TabItemInterface
             				WebResult webResult = slaveServer.startTransformation(path[1]);
             				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
             				{
-            					EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("SpoonSlave.ErrorStartingTrans.Title"), Messages.getString("SpoonSlave.ErrorStartingTrans.Message"), webResult.getMessage());
+            					EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingTrans.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingTrans.Message"), webResult.getMessage());
             					dialog.setReadOnly();
             					dialog.open();
             				}
             			}
             			catch(Exception e)
             			{
-            				new ErrorDialog(shell, Messages.getString("SpoonSlave.ErrorStartingTrans.Title"), Messages.getString("SpoonSlave.ErrorStartingTrans.Message"), e);
+            				new ErrorDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingTrans.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingTrans.Message"), e);
             			}
             		}
             	}
@@ -402,14 +405,14 @@ public class SpoonSlave extends Composite implements TabItemInterface
             				WebResult webResult = slaveServer.startJob(path[1]);
             				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
             				{
-            					EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("SpoonSlave.ErrorStartingJob.Title"), Messages.getString("SpoonSlave.ErrorStartingJob.Message"), webResult.getMessage());
+            					EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingJob.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingJob.Message"), webResult.getMessage());
             					dialog.setReadOnly();
             					dialog.open();
             				}
             			}
             			catch(Exception e)
             			{
-            				new ErrorDialog(shell, Messages.getString("SpoonSlave.ErrorStartingJob.Title"), Messages.getString("SpoonSlave.ErrorStartingJob.Message"), e);
+            				new ErrorDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingJob.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingJob.Message"), e);
             			}
             		}
             	}
@@ -442,14 +445,14 @@ public class SpoonSlave extends Composite implements TabItemInterface
             				WebResult webResult = slaveServer.stopTransformation(name);
             				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
             				{
-            					EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("SpoonSlave.ErrorStoppingTrans.Title"), Messages.getString("SpoonSlave.ErrorStoppingTrans.Message"), webResult.getMessage());
+            					EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingTrans.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingTrans.Message"), webResult.getMessage());
             					dialog.setReadOnly();
             					dialog.open();
             				}
             			}
             			catch(Exception e)
             			{
-            				new ErrorDialog(shell, Messages.getString("SpoonSlave.ErrorStoppingTrans.Title"), Messages.getString("SpoonSlave.ErrorStoppingTrans.Message"), e);
+            				new ErrorDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingTrans.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingTrans.Message"), e);
             			}
             		}
             	}
@@ -467,14 +470,14 @@ public class SpoonSlave extends Composite implements TabItemInterface
             				WebResult webResult = slaveServer.stopJob(name);
             				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
             				{
-            					EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("SpoonSlave.ErrorStoppingJob.Title"), Messages.getString("SpoonSlave.ErrorStoppingJob.Message"), webResult.getMessage());
+            					EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingJob.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingJob.Message"), webResult.getMessage());
             					dialog.setReadOnly();
             					dialog.open();
             				}
             			}
             			catch(Exception e)
             			{
-            				new ErrorDialog(shell, Messages.getString("SpoonSlave.ErrorStoppingJob.Title"), Messages.getString("SpoonSlave.ErrorStoppingJob.Message"), e);
+            				new ErrorDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingJob.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingJob.Message"), e);
             			}
             		}
             	}
@@ -593,8 +596,8 @@ public class SpoonSlave extends Composite implements TabItemInterface
 			{
 				String line = all.substring(startpos, i);
 				String uLine = line.toUpperCase();
-				if (uLine.indexOf(Messages.getString("TransLog.System.ERROR")) >= 0 || //$NON-NLS-1$
-						uLine.indexOf(Messages.getString("TransLog.System.EXCEPTION")) >= 0 || //$NON-NLS-1$
+				if (uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.ERROR")) >= 0 || //$NON-NLS-1$
+						uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.EXCEPTION")) >= 0 || //$NON-NLS-1$
 						uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$ 
 						uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$
 				)
@@ -609,8 +612,8 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		}
 		String line = all.substring(startpos);
 		String uLine = line.toUpperCase();
-		if (uLine.indexOf(Messages.getString("TransLog.System.ERROR2")) >= 0 || //$NON-NLS-1$
-				uLine.indexOf(Messages.getString("TransLog.System.EXCEPTION2")) >= 0 || //$NON-NLS-1$
+		if (uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.ERROR2")) >= 0 || //$NON-NLS-1$
+				uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.EXCEPTION2")) >= 0 || //$NON-NLS-1$
 				uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$ 
 				uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$
 		)
@@ -624,7 +627,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 			for (i = 0; i < err_lines.length; i++)
 				err_lines[i] = err.get(i);
 
-			EnterSelectionDialog esd = new EnterSelectionDialog(shell, err_lines, Messages.getString("TransLog.Dialog.ErrorLines.Title"), Messages.getString("TransLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+			EnterSelectionDialog esd = new EnterSelectionDialog(shell, err_lines, BaseMessages.getString(PKG, "TransLog.Dialog.ErrorLines.Title"), BaseMessages.getString(PKG, "TransLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
 			line = esd.open();
             /*
              * TODO: we have multiple transformation we can go to: which one should we pick?

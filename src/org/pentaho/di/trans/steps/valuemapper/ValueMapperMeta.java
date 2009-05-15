@@ -31,7 +31,6 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepCategory;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -45,7 +44,7 @@ import org.w3c.dom.Node;
  * Created on 03-apr-2006
  */
 @Step(name="ValueMapper",image="ui/images/VMP.png",tooltip="BaseStep.TypeTooltipDesc.MapValues",description="BaseStep.TypeLongDesc.ValueMapper",
-		category=StepCategory.CATEGORY_TRANSFORM)
+		categoryDescription="BaseStep.Category.Transform", i18nPackageName="org.pentaho.di.trans.step")
 public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 {
     private String fieldToUse;

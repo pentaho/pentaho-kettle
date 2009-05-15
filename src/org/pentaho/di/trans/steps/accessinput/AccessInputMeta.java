@@ -21,21 +21,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
-
+import org.apache.commons.vfs.FileName;
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -47,13 +49,12 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.core.fileinput.FileInputList;
-
-import org.apache.commons.vfs.FileName;
-import org.apache.commons.vfs.FileObject;
+import org.w3c.dom.Node;
 
 public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 {	
+	private static Class<?> PKG = AccessInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	/** Array of filenames */
 	private  String  fileName[]; 
 
@@ -657,7 +658,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
         }
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("AccessInputMeta.Exception.ErrorReadingRepository"), e);
+			throw new KettleException(BaseMessages.getString(PKG, "AccessInputMeta.Exception.ErrorReadingRepository"), e);
 		}
 	}
 	
@@ -706,7 +707,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("AccessInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
+			throw new KettleException(BaseMessages.getString(PKG, "AccessInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
 		}
 	}
 	
@@ -727,12 +728,12 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we get input...
 		if (input.length>0)
 		{		
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("AccessInputMeta.CheckResult.NoInputExpected"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AccessInputMeta.CheckResult.NoInputExpected"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("AccessInputMeta.CheckResult.NoInput"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AccessInputMeta.CheckResult.NoInput"), stepMeta);
 			remarks.add(cr);
 		}
 		
@@ -740,12 +741,12 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		// String files[] = getFiles();
 		if (fileInputList==null || fileInputList.getFiles().size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("AccessInputMeta.CheckResult.NoFiles"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AccessInputMeta.CheckResult.NoFiles"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("AccessInputMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AccessInputMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepMeta);
 			remarks.add(cr);
 		}
 		
@@ -753,12 +754,12 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		// Check table
 		if (Const.isEmpty(getTableName()))
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("AccessInputMeta.CheckResult.NoFiles"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AccessInputMeta.CheckResult.NoFiles"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("AccessInputMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AccessInputMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepMeta);
 			remarks.add(cr);
 		}
 		

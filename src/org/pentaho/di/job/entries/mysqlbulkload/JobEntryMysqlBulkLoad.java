@@ -36,8 +36,8 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -56,6 +56,8 @@ import org.w3c.dom.Node;
  */
 public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryMysqlBulkLoad.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String schemaname;
 	private String tablename;
 	private String filename;
@@ -91,17 +93,11 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		connection=null;
 		addfiletoresult = false;
 		setID(-1L);
-		setJobEntryType(JobEntryType.MYSQL_BULK_LOAD);
 	}
 
 	public JobEntryMysqlBulkLoad()
 	{
 		this("");
-	}
-
-	public JobEntryMysqlBulkLoad(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
 	public Object clone()
@@ -483,7 +479,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 					{
 						// No database connection is defined
 						result.setNrErrors(1);
-						log.logError(toString(),  Messages.getString("JobMysqlBulkLoad.Nodatabase.Label"));
+						log.logError(toString(),  BaseMessages.getString(PKG, "JobMysqlBulkLoad.Nodatabase.Label"));
 					}
 				}
 				else
@@ -497,14 +493,14 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			{
 				// An unexpected error occurred
 				result.setNrErrors(1);
-				log.logError(toString(), Messages.getString("JobMysqlBulkLoad.UnexpectedError.Label"), e);
+				log.logError(toString(), BaseMessages.getString(PKG, "JobMysqlBulkLoad.UnexpectedError.Label"), e);
 			}
 		}
 		else
 		{
 			// No file was specified
 			result.setNrErrors(1);
-			log.logError(toString(), Messages.getString("JobMysqlBulkLoad.Nofilename.Label"));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobMysqlBulkLoad.Nofilename.Label"));
 		}
 		return result;
 	}

@@ -50,9 +50,9 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.job.JobEntryJob;
-import org.pentaho.di.job.entries.job.Messages;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -76,9 +76,11 @@ import org.pentaho.vfs.ui.VfsFileChooserDialog;
  */
 public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryJob.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final String[] FILE_FILTERNAMES = new String[] {
-			Messages.getString("JobJob.Fileformat.Kettle"), Messages.getString("JobJob.Fileformat.XML"),
-			Messages.getString("JobJob.Fileformat.All") };
+			BaseMessages.getString(PKG, "JobJob.Fileformat.Kettle"), BaseMessages.getString(PKG, "JobJob.Fileformat.XML"),
+			BaseMessages.getString(PKG, "JobJob.Fileformat.All") };
 
 	private LogWriter log;
 
@@ -211,14 +213,14 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobJob.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobJob.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Name line
 		wlName = new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobJob.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobJob.Name.Label"));
 		props.setLook(wlName);
 		fdlName = new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -237,7 +239,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 		// Jobname line
 		wlJobname = new Label(shell, SWT.RIGHT);
-		wlJobname.setText(Messages.getString("JobJob.InternalName.Label"));
+		wlJobname.setText(BaseMessages.getString(PKG, "JobJob.InternalName.Label"));
 		props.setLook(wlJobname);
 		fdlJobname = new FormData();
 		fdlJobname.top = new FormAttachment(wName, margin * 2);
@@ -249,7 +251,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		//props.setLook(wbJobname);
 		//wbJobname.setText("...");
 		wbJobname.setImage(GUIResource.getInstance().getImageJobGraph());
-		wbJobname.setToolTipText(Messages.getString("JobJob.SelectJobRep.Tooltip"));
+		wbJobname.setToolTipText(BaseMessages.getString(PKG, "JobJob.SelectJobRep.Tooltip"));
 		fdbJobname = new FormData();
 		fdbJobname.top = new FormAttachment(wName, margin * 2);
 		fdbJobname.right = new FormAttachment(100, 0);
@@ -258,7 +260,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 		wJobname = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wJobname);
-		wJobname.setToolTipText(Messages.getString("JobJob.InternalName.Tooltip"));
+		wJobname.setToolTipText(BaseMessages.getString(PKG, "JobJob.InternalName.Tooltip"));
 		wJobname.addModifyListener(lsMod);
 		fdJobname = new FormData();
 		fdJobname.top = new FormAttachment(wName, margin * 2);
@@ -268,7 +270,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 		// Directory line
 		wlDirectory = new Label(shell, SWT.RIGHT);
-		wlDirectory.setText(Messages.getString("JobJob.Repository.Label"));
+		wlDirectory.setText(BaseMessages.getString(PKG, "JobJob.Repository.Label"));
 		props.setLook(wlDirectory);
 		fdlDirectory = new FormData();
 		fdlDirectory.top = new FormAttachment(wJobname, margin * 2);
@@ -278,7 +280,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 		wDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wDirectory);
-		wDirectory.setToolTipText(Messages.getString("JobJob.Repository.Tooltip"));
+		wDirectory.setToolTipText(BaseMessages.getString(PKG, "JobJob.Repository.Tooltip"));
 		wDirectory.addModifyListener(lsMod);
 		fdDirectory = new FormData();
 		fdDirectory.top = new FormAttachment(wJobname, margin * 2);
@@ -288,7 +290,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 		// Filename line
 		wlFilename = new Label(shell, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("JobJob.Filename.Label"));
+		wlFilename.setText(BaseMessages.getString(PKG, "JobJob.Filename.Label"));
 		props.setLook(wlFilename);
 		fdlFilename = new FormData();
 		fdlFilename.top = new FormAttachment(wDirectory, margin);
@@ -300,7 +302,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		props.setLook(wbFilename);
 		//wbFilename.setText("...");
 		wbFilename.setImage(GUIResource.getInstance().getImageJobGraph());
-		wbFilename.setToolTipText(Messages.getString("JobJob.SelectFilename.Tooltip"));
+		wbFilename.setToolTipText(BaseMessages.getString(PKG, "JobJob.SelectFilename.Tooltip"));
 		fdbFilename = new FormData();
 		fdbFilename.top = new FormAttachment(wDirectory, margin);
 		fdbFilename.right = new FormAttachment(100, 0);
@@ -321,7 +323,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		// /
 		wLogging = new Group(shell, SWT.SHADOW_NONE);
 		props.setLook(wLogging);
-		wLogging.setText(Messages.getString("JobJob.LogSettings.Group.Label"));
+		wLogging.setText(BaseMessages.getString(PKG, "JobJob.LogSettings.Group.Label"));
 
 		FormLayout groupLayout = new FormLayout();
 		groupLayout.marginWidth = 10;
@@ -331,7 +333,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 		// Set the logfile?
 		wlSetLogfile = new Label(wLogging, SWT.RIGHT);
-		wlSetLogfile.setText(Messages.getString("JobJob.Specify.Logfile.Label"));
+		wlSetLogfile.setText(BaseMessages.getString(PKG, "JobJob.Specify.Logfile.Label"));
 		props.setLook(wlSetLogfile);
 		fdlSetLogfile = new FormData();
 		fdlSetLogfile.left = new FormAttachment(0, 0);
@@ -355,7 +357,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		
 		 // Append logfile?
         wlAppendLogfile = new Label(wLogging, SWT.RIGHT);
-        wlAppendLogfile.setText(Messages.getString("JobJob.Append.Logfile.Label"));
+        wlAppendLogfile.setText(BaseMessages.getString(PKG, "JobJob.Append.Logfile.Label"));
         props.setLook(wlAppendLogfile);
         fdlAppendLogfile = new FormData();
         fdlAppendLogfile.left = new FormAttachment(0, 0);
@@ -363,7 +365,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
         fdlAppendLogfile.right = new FormAttachment(middle, -margin);
         wlAppendLogfile.setLayoutData(fdlAppendLogfile);
         wAppendLogfile = new Button(wLogging, SWT.CHECK);
-        wAppendLogfile.setToolTipText(Messages.getString("JobJob.Append.Logfile.Tooltip"));
+        wAppendLogfile.setToolTipText(BaseMessages.getString(PKG, "JobJob.Append.Logfile.Tooltip"));
         props.setLook(wAppendLogfile);
         fdAppendLogfile = new FormData();
         fdAppendLogfile.left = new FormAttachment(middle, 0);
@@ -379,7 +381,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 		// Set the logfile path + base-name
 		wlLogfile = new Label(wLogging, SWT.RIGHT);
-		wlLogfile.setText(Messages.getString("JobJob.NameOfLogfile.Label"));
+		wlLogfile.setText(BaseMessages.getString(PKG, "JobJob.NameOfLogfile.Label"));
 		props.setLook(wlLogfile);
 		fdlLogfile = new FormData();
 		fdlLogfile.left = new FormAttachment(0, 0);
@@ -397,7 +399,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 		// Set the logfile filename extention
 		wlLogext = new Label(wLogging, SWT.RIGHT);
-		wlLogext.setText(Messages.getString("JobJob.LogfileExtension.Label"));
+		wlLogext.setText(BaseMessages.getString(PKG, "JobJob.LogfileExtension.Label"));
 		props.setLook(wlLogext);
 		fdlLogext = new FormData();
 		fdlLogext.left = new FormAttachment(0, 0);
@@ -415,7 +417,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 		// Add date to logfile name?
 		wlAddDate = new Label(wLogging, SWT.RIGHT);
-		wlAddDate.setText(Messages.getString("JobJob.Logfile.IncludeDate.Label"));
+		wlAddDate.setText(BaseMessages.getString(PKG, "JobJob.Logfile.IncludeDate.Label"));
 		props.setLook(wlAddDate);
 		fdlAddDate = new FormData();
 		fdlAddDate.left = new FormAttachment(0, 0);
@@ -432,7 +434,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 		// Add time to logfile name?
 		wlAddTime = new Label(wLogging, SWT.RIGHT);
-		wlAddTime.setText(Messages.getString("JobJob.Logfile.IncludeTime.Label"));
+		wlAddTime.setText(BaseMessages.getString(PKG, "JobJob.Logfile.IncludeTime.Label"));
 		props.setLook(wlAddTime);
 		fdlAddTime = new FormData();
 		fdlAddTime.left = new FormAttachment(0, 0);
@@ -448,7 +450,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		wAddTime.setLayoutData(fdAddTime);
 
 		wlLoglevel = new Label(wLogging, SWT.RIGHT);
-		wlLoglevel.setText(Messages.getString("JobJob.Loglevel.Label"));
+		wlLoglevel.setText(BaseMessages.getString(PKG, "JobJob.Loglevel.Label"));
 		props.setLook(wlLoglevel);
 		fdlLoglevel = new FormData();
 		fdlLoglevel.left = new FormAttachment(0, 0);
@@ -477,7 +479,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		// ///////////////////////////////////////////////////////////
 
 		wlPrevious = new Label(shell, SWT.RIGHT);
-		wlPrevious.setText(Messages.getString("JobJob.Previous.Label"));
+		wlPrevious.setText(BaseMessages.getString(PKG, "JobJob.Previous.Label"));
 		props.setLook(wlPrevious);
 		fdlPrevious = new FormData();
 		fdlPrevious.left = new FormAttachment(0, 0);
@@ -487,7 +489,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		wPrevious = new Button(shell, SWT.CHECK);
 		props.setLook(wPrevious);
 		wPrevious.setSelection(jobEntry.argFromPrevious);
-		wPrevious.setToolTipText(Messages.getString("JobJob.Previous.Tooltip"));
+		wPrevious.setToolTipText(BaseMessages.getString(PKG, "JobJob.Previous.Tooltip"));
 		fdPrevious = new FormData();
 		fdPrevious.left = new FormAttachment(middle, 0);
 		fdPrevious.top = new FormAttachment(wLogging, margin * 3);
@@ -502,7 +504,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		});
 
 		wlPrevToParams = new Label(shell, SWT.RIGHT);
-		wlPrevToParams.setText(Messages.getString("JobJob.PrevToParams.Label"));
+		wlPrevToParams.setText(BaseMessages.getString(PKG, "JobJob.PrevToParams.Label"));
 		props.setLook(wlPrevToParams);
 		fdlPrevToParams = new FormData();
 		fdlPrevToParams.left = new FormAttachment(0, 0);
@@ -512,7 +514,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		wPrevToParams = new Button(shell, SWT.CHECK);
 		props.setLook(wPrevToParams);
 		wPrevToParams.setSelection(jobEntry.paramsFromPrevious);
-		wPrevToParams.setToolTipText(Messages.getString("JobJob.PrevToParams.Tooltip"));
+		wPrevToParams.setToolTipText(BaseMessages.getString(PKG, "JobJob.PrevToParams.Tooltip"));
 		fdPrevToParams = new FormData();
 		fdPrevToParams.left = new FormAttachment(middle, 0);
 		fdPrevToParams.top = new FormAttachment(wPrevious, margin * 3);
@@ -528,7 +530,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		
 		
 		wlEveryRow = new Label(shell, SWT.RIGHT);
-		wlEveryRow.setText(Messages.getString("JobJob.ExecForEveryInputRow.Label"));
+		wlEveryRow.setText(BaseMessages.getString(PKG, "JobJob.ExecForEveryInputRow.Label"));
 		props.setLook(wlEveryRow);
 		fdlEveryRow = new FormData();
 		fdlEveryRow.left = new FormAttachment(0, 0);
@@ -538,7 +540,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		wEveryRow = new Button(shell, SWT.CHECK);
 		props.setLook(wEveryRow);
 		wEveryRow.setSelection(jobEntry.execPerRow);
-		wEveryRow.setToolTipText(Messages.getString("JobJob.ExecForEveryInputRow.Tooltip"));
+		wEveryRow.setToolTipText(BaseMessages.getString(PKG, "JobJob.ExecForEveryInputRow.Tooltip"));
 		fdEveryRow = new FormData();
 		fdEveryRow.left = new FormAttachment(middle, 0);
 		fdEveryRow.top = new FormAttachment(wPrevToParams, margin * 3);
@@ -555,8 +557,8 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		
 		// The remote slave server
 		wlSlaveServer = new Label(shell, SWT.RIGHT);
-		wlSlaveServer.setText(Messages.getString("JobJob.SlaveServer.Label"));
-		wlSlaveServer.setToolTipText(Messages.getString("JobJob.SlaveServer.ToolTip"));
+		wlSlaveServer.setText(BaseMessages.getString(PKG, "JobJob.SlaveServer.Label"));
+		wlSlaveServer.setToolTipText(BaseMessages.getString(PKG, "JobJob.SlaveServer.ToolTip"));
 		props.setLook(wlSlaveServer);
 		fdlSlaveServer = new FormData();
 		fdlSlaveServer.left = new FormAttachment(0, 0);
@@ -565,7 +567,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		wlSlaveServer.setLayoutData(fdlSlaveServer);
 		wSlaveServer = new ComboVar(jobMeta, shell, SWT.SINGLE | SWT.BORDER);
 		wSlaveServer.setItems(SlaveServer.getSlaveServerNames(jobMeta.getSlaveServers()));
-		wSlaveServer.setToolTipText(Messages.getString("JobJob.SlaveServer.ToolTip"));
+		wSlaveServer.setToolTipText(BaseMessages.getString(PKG, "JobJob.SlaveServer.ToolTip"));
 		props.setLook(wSlaveServer);
 		fdSlaveServer = new FormData();
 		fdSlaveServer.left = new FormAttachment(middle, 0);
@@ -577,7 +579,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		// Wait for the remote transformation to finish?
 		//
 		wlWaitingToFinish = new Label(shell, SWT.RIGHT);
-		wlWaitingToFinish.setText(Messages.getString("JobJob.WaitToFinish.Label"));
+		wlWaitingToFinish.setText(BaseMessages.getString(PKG, "JobJob.WaitToFinish.Label"));
 		props.setLook(wlWaitingToFinish);
 		fdlWaitingToFinish = new FormData();
 		fdlWaitingToFinish.left = new FormAttachment(0, 0);
@@ -596,7 +598,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		// Follow a local abort remotely?
 		//
 		wlFollowingAbortRemotely = new Label(shell, SWT.RIGHT);
-		wlFollowingAbortRemotely.setText(Messages.getString("JobJob.AbortRemote.Label"));
+		wlFollowingAbortRemotely.setText(BaseMessages.getString(PKG, "JobJob.AbortRemote.Label"));
 		props.setLook(wlFollowingAbortRemotely);
 		fdlFollowingAbortRemotely = new FormData();
 		fdlFollowingAbortRemotely.left = new FormAttachment(0, 0);
@@ -616,7 +618,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 	
 		// The Argument tab
 		CTabItem wFieldTab = new CTabItem(wTabFolder, SWT.NONE);
-		wFieldTab.setText(Messages.getString("JobJob.Fields.Argument.Label")); //$NON-NLS-1$
+		wFieldTab.setText(BaseMessages.getString(PKG, "JobJob.Fields.Argument.Label")); //$NON-NLS-1$
         
         FormLayout fieldLayout = new FormLayout();
         fieldLayout.marginWidth  = Const.MARGIN;
@@ -632,7 +634,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		final int FieldsRows = rows;
 
 		ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
-		colinf[0] = new ColumnInfo(Messages.getString("JobJob.Fields.Argument.Label"),
+		colinf[0] = new ColumnInfo(BaseMessages.getString(PKG, "JobJob.Fields.Argument.Label"),
 				ColumnInfo.COLUMN_TYPE_TEXT, false);
 		colinf[0].setUsingVariables(true);
 
@@ -658,7 +660,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 		// The parameters tab
 		CTabItem wParametersTab = new CTabItem(wTabFolder, SWT.NONE);
-		wParametersTab.setText(Messages.getString("JobJob.Fields.Parameters.Label")); //$NON-NLS-1$
+		wParametersTab.setText(BaseMessages.getString(PKG, "JobJob.Fields.Parameters.Label")); //$NON-NLS-1$
         
         fieldLayout = new FormLayout();
         fieldLayout.marginWidth  = Const.MARGIN;
@@ -671,7 +673,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		// Pass all parameters down 
 		//
 		wlPassParams = new Label(wParameterComp, SWT.RIGHT);
-		wlPassParams.setText(Messages.getString("JobJob.PassAllParameters.Label"));
+		wlPassParams.setText(BaseMessages.getString(PKG, "JobJob.PassAllParameters.Label"));
 		props.setLook(wlPassParams);
 		fdlPassParams = new FormData();
 		fdlPassParams.left = new FormAttachment(0, 0);
@@ -691,9 +693,9 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		final int parameterRows = rows;
 
 	    colinf = new ColumnInfo[ParameterCols];
-		colinf[0] = new ColumnInfo(Messages.getString("JobJob.Parameters.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false);
-		colinf[1] = new ColumnInfo(Messages.getString("JobJob.Parameters.ColumnName.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false);
-		colinf[2] = new ColumnInfo(Messages.getString("JobJob.Parameters.Value.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false);		
+		colinf[0] = new ColumnInfo(BaseMessages.getString(PKG, "JobJob.Parameters.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinf[1] = new ColumnInfo(BaseMessages.getString(PKG, "JobJob.Parameters.ColumnName.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinf[2] = new ColumnInfo(BaseMessages.getString(PKG, "JobJob.Parameters.Value.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false);		
 		colinf[2].setUsingVariables(true);
 
 		wParameters = new TableView(jobMeta, wParameterComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
@@ -727,9 +729,9 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		
 		// Some buttons
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTabFolder);
 
@@ -839,8 +841,8 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 				} catch (KettleXMLException xe)
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-					mb.setText(Messages.getString("JobJob.ErrorReadingJob.Text"));
-					mb.setMessage(Messages.getString("JobJob.ErrorReadingJob.Message", wFilename.getText(),
+					mb.setText(BaseMessages.getString(PKG, "JobJob.ErrorReadingJob.Text"));
+					mb.setMessage(BaseMessages.getString(PKG, "JobJob.ErrorReadingJob.Message", wFilename.getText(),
 							xe.getMessage()));
 					mb.open();
 				}
@@ -981,8 +983,8 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 	   if(Const.isEmpty(wName.getText())) 
          {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
          }

@@ -34,7 +34,6 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepCategory;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -45,7 +44,7 @@ import org.w3c.dom.Node;
  * Created on 4-apr-2003
  */
 @Step(name="RowGenerator",image="ui/images/GEN.png",tooltip="BaseStep.TypeTooltipDesc.GenerateRows",description="BaseStep.TypeLongDesc.GenerateRows",
-		category=StepCategory.CATEGORY_INPUT)
+		categoryDescription="BaseStep.Category.Input", i18nPackageName="org.pentaho.di.trans.step")
 public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private  String rowLimit;

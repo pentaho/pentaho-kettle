@@ -36,35 +36,33 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Group;
-
-
-import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
+import org.pentaho.di.job.entries.evaluatetablecontent.JobEntryEvalTableContent;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.evaluatetablecontent.JobEntryEvalTableContent;
-import org.pentaho.di.job.entries.evaluatetablecontent.Messages;
-import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
-import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.StyledTextComp;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 /**
  * This dialog allows you to edit the Table content evaluation job entry settings. (select the connection and
@@ -75,6 +73,8 @@ import org.pentaho.di.core.exception.KettleException;
  */
 public class JobEntryEvalTableContentDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryEvalTableContent.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Button wbTable,wbSQLTable;
 	
     private Label wlName;
@@ -163,7 +163,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryEvalTableContent) jobEntryInt;
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobEntryEvalTableContent.Name.Default"));
+            this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Name.Default"));
     }
 
     public JobEntryInterface open()
@@ -189,13 +189,13 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobEntryEvalTableContent.Title"));
+        shell.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
         
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         FormData fd = new FormData();
         fd.right = new FormAttachment(50, -10);
         fd.bottom = new FormAttachment(100, 0);
@@ -203,7 +203,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
         wOK.setLayoutData(fd);
 
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         fd = new FormData();
         fd.left = new FormAttachment(50, 10);
         fd.bottom = new FormAttachment(100, 0);
@@ -216,7 +216,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
         
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("JobEntryEvalTableContent.Name.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Name.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
@@ -238,7 +238,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 		wConnection.addModifyListener(lsMod);
 		// Schema name line
 		wlSchemaname = new Label(shell, SWT.RIGHT);
-		wlSchemaname.setText(Messages.getString("JobEntryEvalTableContent.Schemaname.Label"));
+		wlSchemaname.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Schemaname.Label"));
 		props.setLook(wlSchemaname);
 		fdlSchemaname = new FormData();
 		fdlSchemaname.left = new FormAttachment(0, 0);
@@ -248,7 +248,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 
 		wSchemaname = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSchemaname);
-		wSchemaname.setToolTipText(Messages.getString("JobEntryEvalTableContent.Schemaname.Tooltip"));
+		wSchemaname.setToolTipText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Schemaname.Tooltip"));
 		wSchemaname.addModifyListener(lsMod);
 		fdSchemaname = new FormData();
 		fdSchemaname.left = new FormAttachment(middle, 0);
@@ -258,7 +258,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 
 		// Table name line
 		wlTablename = new Label(shell, SWT.RIGHT);
-		wlTablename.setText(Messages.getString("JobEntryEvalTableContent.Tablename.Label"));
+		wlTablename.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Tablename.Label"));
 		props.setLook(wlTablename);
 		fdlTablename = new FormData();
 		fdlTablename.left = new FormAttachment(0, 0);
@@ -268,7 +268,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbTable);
-		wbTable.setText(Messages.getString("System.Button.Browse"));
+		wbTable.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		FormData fdbTable = new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
 		fdbTable.top  = new FormAttachment(wSchemaname, margin/2);
@@ -277,7 +277,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 
 		wTablename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wTablename);
-		wTablename.setToolTipText(Messages.getString("JobEntryEvalTableContent.Tablename.Tooltip"));
+		wTablename.setToolTipText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Tablename.Tooltip"));
 		wTablename.addModifyListener(lsMod);
 		fdTablename = new FormData();
 		fdTablename.left = new FormAttachment(middle, 0);
@@ -290,7 +290,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 	    // ///////////////////////////////
 	    wSuccessGroup = new Group(shell, SWT.SHADOW_NONE);
 	    props.setLook(wSuccessGroup);
-	    wSuccessGroup.setText(Messages.getString("JobEntryEvalTableContent.SuccessGroup.Group.Label"));
+	    wSuccessGroup.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.SuccessGroup.Group.Label"));
 
 	    FormLayout SuccessGroupLayout = new FormLayout();
 	    SuccessGroupLayout .marginWidth = 10;
@@ -300,7 +300,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 
 	    //Success Condition
 	  	wlSuccessCondition = new Label(wSuccessGroup, SWT.RIGHT);
-	  	wlSuccessCondition.setText(Messages.getString("JobEntryEvalTableContent.SuccessCondition.Label"));
+	  	wlSuccessCondition.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.SuccessCondition.Label"));
 	  	props.setLook(wlSuccessCondition);
 	  	fdlSuccessCondition = new FormData();
 	  	fdlSuccessCondition.left = new FormAttachment(0, -margin);
@@ -328,7 +328,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 
 		// Success when number of errors less than
 		wlLimit= new Label(wSuccessGroup, SWT.RIGHT);
-		wlLimit.setText(Messages.getString("JobEntryEvalTableContent.Limit.Label"));
+		wlLimit.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Limit.Label"));
 		props.setLook(wlLimit);
 		fdlLimit= new FormData();
 		fdlLimit.left = new FormAttachment(0, -margin);
@@ -337,8 +337,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 		wlLimit.setLayoutData(fdlLimit);
 		
 		
-		wLimit= new TextVar(jobMeta, wSuccessGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobEntryEvalTableContent.Limit.Tooltip"));
+		wLimit= new TextVar(jobMeta, wSuccessGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(PKG, "JobEntryEvalTableContent.Limit.Tooltip"));
 		props.setLook(wLimit);
 		wLimit.addModifyListener(lsMod);
 		fdLimit= new FormData();
@@ -367,7 +366,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 	    // ///////////////////////////////
 	    wCustomGroup = new Group(shell, SWT.SHADOW_NONE);
 	    props.setLook(wCustomGroup);
-	    wCustomGroup.setText(Messages.getString("JobEntryEvalTableContent.CustomGroup.Group.Label"));
+	    wCustomGroup.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.CustomGroup.Group.Label"));
 
 	    FormLayout CustomGroupLayout = new FormLayout();
 	    CustomGroupLayout .marginWidth = 10;
@@ -379,7 +378,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 		
 		  // custom SQL?
         wlcustomSQL= new Label(wCustomGroup, SWT.RIGHT);
-        wlcustomSQL.setText(Messages.getString("JobEntryEvalTableContent.customSQL.Label"));
+        wlcustomSQL.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.customSQL.Label"));
         props.setLook(wlcustomSQL);
         fdlcustomSQL= new FormData();
         fdlcustomSQL.left = new FormAttachment(0, -margin);
@@ -388,7 +387,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
         wlcustomSQL.setLayoutData(fdlcustomSQL);
         wcustomSQL= new Button(wCustomGroup, SWT.CHECK);
         props.setLook(wcustomSQL);
-        wcustomSQL.setToolTipText(Messages.getString("JobEntryEvalTableContent.customSQL.Tooltip"));
+        wcustomSQL.setToolTipText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.customSQL.Tooltip"));
         fdcustomSQL= new FormData();
         fdcustomSQL.left = new FormAttachment(middle, -margin);
         fdcustomSQL.top = new FormAttachment(wSuccessGroup, margin);
@@ -405,7 +404,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 		}); 
         // use Variable substitution?
         wlUseSubs = new Label(wCustomGroup, SWT.RIGHT);
-        wlUseSubs.setText(Messages.getString("JobEntryEvalTableContent.UseVariableSubst.Label"));
+        wlUseSubs.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.UseVariableSubst.Label"));
         props.setLook(wlUseSubs);
         fdlUseSubs = new FormData();
         fdlUseSubs.left = new FormAttachment(0, -margin);
@@ -414,7 +413,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
         wlUseSubs.setLayoutData(fdlUseSubs);
         wUseSubs = new Button(wCustomGroup, SWT.CHECK);
         props.setLook(wUseSubs);
-        wUseSubs.setToolTipText(Messages.getString("JobEntryEvalTableContent.UseVariableSubst.Tooltip"));
+        wUseSubs.setToolTipText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.UseVariableSubst.Tooltip"));
         fdUseSubs = new FormData();
         fdUseSubs.left = new FormAttachment(middle, -margin);
         fdUseSubs.top = new FormAttachment(wcustomSQL, margin);
@@ -430,7 +429,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
     		
         // clear result rows ?
         wlClearResultList = new Label(wCustomGroup, SWT.RIGHT);
-        wlClearResultList.setText(Messages.getString("JobEntryEvalTableContent.ClearResultList.Label"));
+        wlClearResultList.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.ClearResultList.Label"));
         props.setLook(wlClearResultList);
         fdlClearResultList = new FormData();
         fdlClearResultList.left = new FormAttachment(0, -margin);
@@ -439,7 +438,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
         wlClearResultList.setLayoutData(fdlClearResultList);
         wClearResultList = new Button(wCustomGroup, SWT.CHECK);
         props.setLook(wClearResultList);
-        wClearResultList.setToolTipText(Messages.getString("JobEntryEvalTableContent.ClearResultList.Tooltip"));
+        wClearResultList.setToolTipText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.ClearResultList.Tooltip"));
         fdClearResultList = new FormData();
         fdClearResultList.left = new FormAttachment(middle, -margin);
         fdClearResultList.top = new FormAttachment(wUseSubs, margin);
@@ -455,7 +454,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
         
         // add rows to result?
         wlAddRowsToResult = new Label(wCustomGroup, SWT.RIGHT);
-        wlAddRowsToResult.setText(Messages.getString("JobEntryEvalTableContent.AddRowsToResult.Label"));
+        wlAddRowsToResult.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.AddRowsToResult.Label"));
         props.setLook(wlAddRowsToResult);
         fdlAddRowsToResult = new FormData();
         fdlAddRowsToResult.left = new FormAttachment(0, -margin);
@@ -464,7 +463,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
         wlAddRowsToResult.setLayoutData(fdlAddRowsToResult);
         wAddRowsToResult = new Button(wCustomGroup, SWT.CHECK);
         props.setLook(wAddRowsToResult);
-        wAddRowsToResult.setToolTipText(Messages.getString("JobEntryEvalTableContent.AddRowsToResult.Tooltip"));
+        wAddRowsToResult.setToolTipText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.AddRowsToResult.Tooltip"));
         fdAddRowsToResult = new FormData();
         fdAddRowsToResult.left = new FormAttachment(middle, -margin);
         fdAddRowsToResult.top = new FormAttachment(wClearResultList, margin);
@@ -489,7 +488,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
         
         // Script line
         wlSQL = new Label(wCustomGroup, SWT.NONE);
-        wlSQL.setText(Messages.getString("JobEntryEvalTableContent.Script.Label"));
+        wlSQL.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Script.Label"));
         props.setLook(wlSQL);
         fdlSQL = new FormData();
         fdlSQL.left = new FormAttachment(0, 0);
@@ -499,7 +498,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
     	
 		wbSQLTable=new Button(wCustomGroup, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbSQLTable);
-		wbSQLTable.setText(Messages.getString("JobEntryEvalTableContent.GetSQLAndSelectStatement")); //$NON-NLS-1$
+		wbSQLTable.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.GetSQLAndSelectStatement")); //$NON-NLS-1$
 		FormData fdbSQLTable=new FormData();
 		fdbSQLTable.right = new FormAttachment(100, 0);
 		fdbSQLTable.top   = new FormAttachment(wAddRowsToResult, margin);
@@ -629,8 +628,8 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 				wSQL.setText(sql);
 
 				MessageBox yn = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION);
-				yn.setMessage(Messages.getString("JobEntryEvalTableContent.IncludeFieldNamesInSQL")); //$NON-NLS-1$
-				yn.setText(Messages.getString("JobEntryEvalTableContent.DialogCaptionQuestion")); //$NON-NLS-1$
+				yn.setMessage(BaseMessages.getString(PKG, "JobEntryEvalTableContent.IncludeFieldNamesInSQL")); //$NON-NLS-1$
+				yn.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.DialogCaptionQuestion")); //$NON-NLS-1$
 				int id = yn.open();
 				switch(id)
 				{
@@ -657,16 +656,16 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 						else
 						{
 							MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-							mb.setMessage(Messages.getString("JobEntryEvalTableContent.ERROR_CouldNotRetrieveFields")+Const.CR+Messages.getString("JobEntryEvalTableContent.PerhapsNoPermissions")); //$NON-NLS-1$ //$NON-NLS-2$
-							mb.setText(Messages.getString("JobEntryEvalTableContent.DialogCaptionError2")); //$NON-NLS-1$
+							mb.setMessage(BaseMessages.getString(PKG, "JobEntryEvalTableContent.ERROR_CouldNotRetrieveFields")+Const.CR+BaseMessages.getString(PKG, "JobEntryEvalTableContent.PerhapsNoPermissions")); //$NON-NLS-1$ //$NON-NLS-2$
+							mb.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.DialogCaptionError2")); //$NON-NLS-1$
 							mb.open();
 						}
 					}
 					catch(KettleException e)
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setText(Messages.getString("JobEntryEvalTableContent.DialogCaptionError3")); //$NON-NLS-1$
-						mb.setMessage(Messages.getString("JobEntryEvalTableContent.AnErrorOccurred")+Const.CR+e.getMessage()); //$NON-NLS-1$
+						mb.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.DialogCaptionError3")); //$NON-NLS-1$
+						mb.setMessage(BaseMessages.getString(PKG, "JobEntryEvalTableContent.AnErrorOccurred")+Const.CR+e.getMessage()); //$NON-NLS-1$
 						mb.open(); 
 					}
 					finally
@@ -680,8 +679,8 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("JobEntryEvalTableContent.ConnectionNoLongerAvailable")); //$NON-NLS-1$
-			mb.setText(Messages.getString("JobEntryEvalTableContent.DialogCaptionError4")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "JobEntryEvalTableContent.ConnectionNoLongerAvailable")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.DialogCaptionError4")); //$NON-NLS-1$
 			mb.open();
 		}
 					
@@ -700,7 +699,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 			posnr--;
 			colnr++;
 		}
-		wlPosition.setText(Messages.getString("JobEntryEvalTableContent.Position.Label",""+linenr,""+colnr));
+		wlPosition.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Position.Label",""+linenr,""+colnr));
 
 	}
     private void setCustomerSQL()
@@ -812,8 +811,8 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("JobEntryEvalTableContent.ConnectionError2.DialogMessage"));
-			mb.setText(Messages.getString("System.Dialog.Error.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "JobEntryEvalTableContent.ConnectionError2.DialogMessage"));
+			mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
 			mb.open(); 
 		}    
 	}

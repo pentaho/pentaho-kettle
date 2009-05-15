@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -21,13 +22,12 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.core.Const;
 import org.w3c.dom.Node;
 
 
@@ -40,6 +40,7 @@ import org.w3c.dom.Node;
  */
 public class JobEntryConnectedToRepository extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryConnectedToRepository.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	private boolean isspecificrep;
 	private String repname;
 	private boolean isspecificuser;
@@ -52,7 +53,6 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
 		repname=null;
 		isspecificuser=false;
 		username=null;
-		setJobEntryType(JobEntryType.CONNECTED_TO_REPOSITORY);
 	}
 
 	public JobEntryConnectedToRepository()
@@ -96,10 +96,6 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
 	{
 		this.isspecificuser=isspecificuser;
 	}
-	public JobEntryConnectedToRepository(JobEntryBase jeb)
-	{
-		super(jeb);
-	}
 
     public Object clone()
     {
@@ -135,7 +131,7 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryConnectedToRepository.Meta.UnableToLoadFromXML"), e);
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryConnectedToRepository.Meta.UnableToLoadFromXML"), e);
 		}
 	}
 
@@ -153,7 +149,7 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryConnectedToRepository.Meta.UnableToLoadFromRep")+id_jobentry, dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryConnectedToRepository.Meta.UnableToLoadFromRep")+id_jobentry, dbe);
 
 
 		}
@@ -176,7 +172,7 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryConnectedToRepository.Meta.UnableToSaveToRep")+id_job, dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryConnectedToRepository.Meta.UnableToSaveToRep")+id_job, dbe);
 		}
 	}
 
@@ -196,20 +192,20 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
 		
 		if(rep==null)
 		{
-			log.logError(toString(), Messages.getString("JobEntryConnectedToRepository.Log.NotConnected"));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryConnectedToRepository.Log.NotConnected"));
 			return result;
 		}
 		if(isspecificrep)
 		{
 			if(Const.isEmpty(repname))
 			{
-				log.logError(toString(), Messages.getString("JobEntryConnectedToRepository.Error.NoRep"));
+				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryConnectedToRepository.Error.NoRep"));
 				return result;
 			}
 			String Reponame=environmentSubstitute(repname);
 			if(!Reponame.equals(rep.getName()))
 			{
-				log.logError(toString(), Messages.getString("JobEntryConnectedToRepository.Error.DiffRep",rep.getName(),Reponame));
+				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryConnectedToRepository.Error.DiffRep",rep.getName(),Reponame));
 				return result;
 			}
 		}
@@ -217,20 +213,20 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
 		{
 			if(Const.isEmpty(username))
 			{
-				log.logError(toString(), Messages.getString("JobEntryConnectedToRepository.Error.NoUser"));
+				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryConnectedToRepository.Error.NoUser"));
 				return result;
 			}
 			String Username=environmentSubstitute(username);
 			
 			if(!Username.equals(rep.getUserInfo().getLogin()))
 			{
-				log.logError(toString(), Messages.getString("JobEntryConnectedToRepository.Error.DiffUser",rep.getUserInfo().getLogin(),Username));
+				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryConnectedToRepository.Error.DiffUser",rep.getUserInfo().getLogin(),Username));
 				return result;
 			}
 		}
 		
 		
-		if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryConnectedToRepository.Log.Connected",rep.getName(),rep.getUserInfo().getLogin()));
+		if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryConnectedToRepository.Log.Connected",rep.getName(),rep.getUserInfo().getLogin()));
 		
 		result.setResult(true);
 		result.setNrErrors(0);

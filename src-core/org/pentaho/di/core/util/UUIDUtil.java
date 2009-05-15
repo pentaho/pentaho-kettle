@@ -31,10 +31,13 @@ package org.pentaho.di.core.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.di.i18n.BaseMessages;
 import org.safehaus.uuid.UUID;
 import org.safehaus.uuid.UUIDGenerator;
 
 public class UUIDUtil {
+	private static Class<?> PKG = UUIDUtil.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static Log log = LogFactory.getLog(UUIDUtil.class);
 
     static boolean nativeInitialized = false;
@@ -51,7 +54,7 @@ public class UUIDUtil {
          * This is always going to fail at the moment try {
          * System.loadLibrary("EthernetAddress"); //$NON-NLS-1$
          * nativeInitialized = true; } catch (Throwable t) { //
-         * log.warn(Messages.getString("UUIDUtil.ERROR_0001_LOADING_ETHERNET_ADDRESS") );
+         * log.warn(BaseMessages.getString(PKG, "UUIDUtil.ERROR_0001_LOADING_ETHERNET_ADDRESS") );
          * //$NON-NLS-1$ //$NON-NLS-2$ // Ignore for now. }
          */
         ug = UUIDGenerator.getInstance();
@@ -60,9 +63,9 @@ public class UUIDUtil {
                 com.ccg.net.ethernet.EthernetAddress ea = com.ccg.net.ethernet.EthernetAddress.getPrimaryAdapter();
                 eAddr = new org.safehaus.uuid.EthernetAddress(ea.getBytes());
             } catch (Exception ex) {
-                log.error(Messages.getString("UUIDUtil.ERROR_0002_GET_MAC_ADDR"), ex); //$NON-NLS-1$
+                log.error(BaseMessages.getString(PKG, "UUIDUtil.ERROR_0002_GET_MAC_ADDR"), ex); //$NON-NLS-1$
             } catch (UnsatisfiedLinkError ule) {
-                log.error(Messages.getString("UUIDUtil.ERROR_0002_GET_MAC_ADDR"), ule); //$NON-NLS-1$
+                log.error(BaseMessages.getString(PKG, "UUIDUtil.ERROR_0002_GET_MAC_ADDR"), ule); //$NON-NLS-1$
                 nativeInitialized = false;
             }
         }
@@ -92,7 +95,7 @@ public class UUIDUtil {
         // Generate a UUID to make sure everything is running OK.
         UUID olduuId = ug.generateTimeBasedUUID(eAddr);
         if (olduuId == null) {
-          log.error(Messages.getString("UUIDUtil.ERROR_0003_GENERATEFAILED")); //$NON-NLS-1$
+          log.error(BaseMessages.getString(PKG, "UUIDUtil.ERROR_0003_GENERATEFAILED")); //$NON-NLS-1$
         }
 
     }

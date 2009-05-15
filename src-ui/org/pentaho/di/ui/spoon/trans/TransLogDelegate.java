@@ -21,20 +21,21 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.BufferChangedListener;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
-import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 import org.pentaho.xul.toolbar.XulToolbar;
 
 public class TransLogDelegate extends SpoonDelegate {
-	
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final String XUL_FILE_TRANS_LOG_TOOLBAR = "ui/trans-log-toolbar.xul";
 	public static final String XUL_FILE_TRANS_LOG_TOOLBAR_PROPERTIES = "ui/trans-log-toolbar.properties";
 
@@ -80,7 +81,7 @@ public class TransLogDelegate extends SpoonDelegate {
 		//
 		transLogTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE);
 		transLogTab.setImage(GUIResource.getInstance().getImageShowLog());
-		transLogTab.setText(Messages.getString("Spoon.TransGraph.LogTab.Name"));
+		transLogTab.setText(BaseMessages.getString(PKG, "Spoon.TransGraph.LogTab.Name"));
 		
 		transLogComposite = new Composite(transGraph.extraViewTabFolder, SWT.NO_BACKGROUND | SWT.NO_FOCUS);
 		transLogComposite.setLayout(new FormLayout());
@@ -159,7 +160,7 @@ public class TransLogDelegate extends SpoonDelegate {
 	        toolBar.layout(true, true);
 		} catch (Throwable t ) {
 			log.logError(toString(), Const.getStackTracker(t));
-			new ErrorDialog(transLogComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR), new Exception(t));
+			new ErrorDialog(transLogComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR), new Exception(t));
 		}
 	}
 
@@ -184,8 +185,8 @@ public class TransLogDelegate extends SpoonDelegate {
 
 		} catch (Throwable t ) {
 			t.printStackTrace();
-			new ErrorDialog(transLogComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
-					Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR_PROPERTIES), new Exception(t));
+			new ErrorDialog(transLogComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
+					BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR_PROPERTIES), new Exception(t));
 		}
 	}
 
@@ -239,8 +240,8 @@ public class TransLogDelegate extends SpoonDelegate {
 			{
 				String line = all.substring(startpos, i);
 				String uLine = line.toUpperCase();
-				if (uLine.indexOf(Messages.getString("TransLog.System.ERROR")) >= 0 || //$NON-NLS-1$
-						uLine.indexOf(Messages.getString("TransLog.System.EXCEPTION")) >= 0 || //$NON-NLS-1$
+				if (uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.ERROR")) >= 0 || //$NON-NLS-1$
+						uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.EXCEPTION")) >= 0 || //$NON-NLS-1$
 						uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$ 
 						uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$
 				)
@@ -255,8 +256,8 @@ public class TransLogDelegate extends SpoonDelegate {
 		}
 		String line = all.substring(startpos);
 		String uLine = line.toUpperCase();
-		if (uLine.indexOf(Messages.getString("TransLog.System.ERROR2")) >= 0 || //$NON-NLS-1$
-				uLine.indexOf(Messages.getString("TransLog.System.EXCEPTION2")) >= 0 || //$NON-NLS-1$
+		if (uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.ERROR2")) >= 0 || //$NON-NLS-1$
+				uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.EXCEPTION2")) >= 0 || //$NON-NLS-1$
 				uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$ 
 				uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$
 		)
@@ -270,7 +271,7 @@ public class TransLogDelegate extends SpoonDelegate {
 			for (i = 0; i < err_lines.length; i++)
 				err_lines[i] = err.get(i);
 
-			EnterSelectionDialog esd = new EnterSelectionDialog(transGraph.getShell(), err_lines, Messages.getString("TransLog.Dialog.ErrorLines.Title"), Messages.getString("TransLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+			EnterSelectionDialog esd = new EnterSelectionDialog(transGraph.getShell(), err_lines, BaseMessages.getString(PKG, "TransLog.Dialog.ErrorLines.Title"), BaseMessages.getString(PKG, "TransLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
 			line = esd.open();
 			if (line != null)
 			{

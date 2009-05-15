@@ -10,7 +10,6 @@
 package org.pentaho.di.ui.job.entries.folderisempty;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -21,18 +20,18 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.folderisempty.JobEntryFolderIsEmpty;
-import org.pentaho.di.job.entries.folderisempty.Messages;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -51,7 +50,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  */
 public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
-	
+	private static Class<?> PKG = JobEntryFolderIsEmpty.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlName;
 	private Text         wName;
     private FormData     fdlName, fdName;
@@ -90,7 +90,7 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
 		super(parent, jobEntryInt, rep, jobMeta);
 		jobEntry = (JobEntryFolderIsEmpty) jobEntryInt;
 		if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(Messages.getString("JobFolderIsEmpty.Name.Default")); //$NON-NLS-1$
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobFolderIsEmpty.Name.Default")); //$NON-NLS-1$
 	}
 
 	public JobEntryInterface open()
@@ -116,14 +116,14 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobFolderIsEmpty.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobFolderIsEmpty.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Foldername line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobFolderIsEmpty.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobFolderIsEmpty.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -141,7 +141,7 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
 
 		// Foldername line
 		wlFoldername=new Label(shell, SWT.RIGHT);
-		wlFoldername.setText(Messages.getString("JobFolderIsEmpty.Foldername.Label"));
+		wlFoldername.setText(BaseMessages.getString(PKG, "JobFolderIsEmpty.Foldername.Label"));
  		props.setLook(wlFoldername);
 		fdlFoldername=new FormData();
 		fdlFoldername.left = new FormAttachment(0, 0);
@@ -151,7 +151,7 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
 
 		wbFoldername=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFoldername);
-		wbFoldername.setText(Messages.getString("System.Button.Browse"));
+		wbFoldername.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbFoldername=new FormData();
 		fdbFoldername.right= new FormAttachment(100, 0);
 		fdbFoldername.top  = new FormAttachment(wName, 0);
@@ -168,7 +168,7 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
 		
 		// Include sub folders?
         wlIncludeSubFolders = new Label(shell, SWT.RIGHT);
-        wlIncludeSubFolders.setText(Messages.getString("JobFolderIsEmpty.IncludeSubFolders.Label"));
+        wlIncludeSubFolders.setText(BaseMessages.getString(PKG, "JobFolderIsEmpty.IncludeSubFolders.Label"));
         props.setLook(wlIncludeSubFolders);
         fdlIncludeSubFolders = new FormData();
         fdlIncludeSubFolders.left = new FormAttachment(0, 0);
@@ -177,7 +177,7 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
         wlIncludeSubFolders.setLayoutData(fdlIncludeSubFolders);
         wIncludeSubFolders = new Button(shell, SWT.CHECK);
         props.setLook(wIncludeSubFolders);
-        wIncludeSubFolders.setToolTipText(Messages.getString("JobFolderIsEmpty.IncludeSubFolders.Tooltip"));
+        wIncludeSubFolders.setToolTipText(BaseMessages.getString(PKG, "JobFolderIsEmpty.IncludeSubFolders.Tooltip"));
         fdIncludeSubFolders = new FormData();
         fdIncludeSubFolders.left = new FormAttachment(middle, 0);
         fdIncludeSubFolders.top = new FormAttachment(wFoldername, margin);
@@ -193,7 +193,7 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
 	
         // Specify wildcard?
         wlSpecifyWildcard = new Label(shell, SWT.RIGHT);
-        wlSpecifyWildcard.setText(Messages.getString("JobFolderIsEmpty.SpecifyWildcard.Label"));
+        wlSpecifyWildcard.setText(BaseMessages.getString(PKG, "JobFolderIsEmpty.SpecifyWildcard.Label"));
         props.setLook(wlSpecifyWildcard);
         fdlSpecifyWildcard = new FormData();
         fdlSpecifyWildcard.left = new FormAttachment(0, 0);
@@ -202,7 +202,7 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
         wlSpecifyWildcard.setLayoutData(fdlSpecifyWildcard);
         wSpecifyWildcard = new Button(shell, SWT.CHECK);
         props.setLook(wSpecifyWildcard);
-        wSpecifyWildcard.setToolTipText(Messages.getString("JobFolderIsEmpty.SpecifyWildcard.Tooltip"));
+        wSpecifyWildcard.setToolTipText(BaseMessages.getString(PKG, "JobFolderIsEmpty.SpecifyWildcard.Tooltip"));
         fdSpecifyWildcard = new FormData();
         fdSpecifyWildcard.left = new FormAttachment(middle, 0);
         fdSpecifyWildcard.top = new FormAttachment(wIncludeSubFolders, margin);
@@ -221,7 +221,7 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
         
 		// Wildcard line
 		wlWildcard=new Label(shell, SWT.RIGHT);
-		wlWildcard.setText(Messages.getString("JobFolderIsEmpty.Wildcard.Label"));
+		wlWildcard.setText(BaseMessages.getString(PKG, "JobFolderIsEmpty.Wildcard.Label"));
  		props.setLook(wlWildcard);
 		fdlWildcard=new FormData();
 		fdlWildcard.left = new FormAttachment(0, 0);
@@ -280,9 +280,9 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
       
 		
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wWildcard);
 
@@ -353,8 +353,8 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
  	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
        }

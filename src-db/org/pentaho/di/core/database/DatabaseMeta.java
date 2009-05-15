@@ -34,6 +34,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.w3c.dom.Node;
@@ -49,6 +50,8 @@ import org.w3c.dom.Node;
  */
 public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInterface, SharedObjectInterface, VariableSpace
 {
+  private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   public static final String XML_TAG = "connection";
     
   // Comparator for sorting databases alphabetically by name
@@ -2409,12 +2412,12 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 			return factory.getConnectionTestReport(this);
 		} 
 		catch (ClassNotFoundException e) {
-			report.append(Messages.getString("BaseDatabaseMeta.TestConnectionReportNotImplemented.Message")).append(Const.CR); // $NON-NLS-1
-            report.append(Messages.getString("DatabaseMeta.report.ConnectionError", getName()) + e.toString() + Const.CR); //$NON-NLS-1$
+			report.append(BaseMessages.getString(PKG, "BaseDatabaseMeta.TestConnectionReportNotImplemented.Message")).append(Const.CR); // $NON-NLS-1
+            report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionError", getName()) + e.toString() + Const.CR); //$NON-NLS-1$
             report.append(Const.getStackTracker(e) + Const.CR);
 		} 
 		catch (Exception e) {
-            report.append(Messages.getString("DatabaseMeta.report.ConnectionError", getName()) + e.toString() + Const.CR); //$NON-NLS-1$
+            report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionError", getName()) + e.toString() + Const.CR); //$NON-NLS-1$
             report.append(Const.getStackTracker(e) + Const.CR);
 		}
         return report.toString();

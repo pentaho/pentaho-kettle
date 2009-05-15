@@ -19,12 +19,11 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExis
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
 import java.util.List;
-import org.w3c.dom.Node;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Result;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -33,8 +32,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -43,6 +42,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.w3c.dom.Node;
 
 /**
  * This defines a Truncate Tables job entry.
@@ -53,6 +53,8 @@ import org.pentaho.di.resource.ResourceEntry.ResourceType;
  */
 public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryTruncateTables.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public boolean argFromPrevious;
 	  
 	private DatabaseMeta connection;
@@ -73,7 +75,6 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 	    this.schemaname=null;
 	    this.connection=null;
 		setID(-1L);
-		setJobEntryType(JobEntryType.TRUNCATE_TABLES);
 	}
 
 	public JobEntryTruncateTables()
@@ -81,11 +82,6 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		this("");
 	}
 
-	public JobEntryTruncateTables(JobEntryBase jeb)
-	{
-		super(jeb);
-	}
-    
     public Object clone()
     {
         JobEntryTruncateTables je = (JobEntryTruncateTables) super.clone();
@@ -138,7 +134,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		}
 		catch(KettleException e)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryTruncateTables.UnableLoadXML"),e);
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryTruncateTables.UnableLoadXML"),e);
 		}
 	}
 
@@ -174,7 +170,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryTruncateTables.UnableLoadRep",""+id_jobentry), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryTruncateTables.UnableLoadRep",""+id_jobentry), dbe);
 		}
 	}
 	
@@ -197,7 +193,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryTruncateTables.UnableSaveRep",""+id_job), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryTruncateTables.UnableSaveRep",""+id_job), dbe);
 		}
 	}
 	
@@ -237,15 +233,15 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 				else
 					db.truncateTable(tablename);
 		
-				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryTruncateTables.Log.TableTruncated",realTablename));
+				if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryTruncateTables.Log.TableTruncated",realTablename));
 				
 				retval=true;
 			}else{
-				log.logError(toString(), Messages.getString("JobEntryTruncateTables.Error.CanNotFindTable",realTablename));
+				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryTruncateTables.Error.CanNotFindTable",realTablename));
 			}
 		}catch (Exception e)
 		{
-			log.logError(toString(), Messages.getString("JobEntryTruncateTables.Error.CanNotTruncateTables",realTablename,e.toString()));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryTruncateTables.Error.CanNotTruncateTables",realTablename,e.toString()));
 		}
 		return retval;
 	}
@@ -264,7 +260,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		
 	    if (argFromPrevious) {
 		      if(log.isDetailed()) 
-		    	  log.logDetailed(toString(), Messages.getString("JobEntryTruncateTables.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
+		    	  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryTruncateTables.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
 		      if(rows.size()==0) return result;
 	    }
 		if (connection!=null)
@@ -287,9 +283,9 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 				        if(!Const.isEmpty(tablename_previous))
 				        {
 				            if(log.isDetailed()) 
-				          	  log.logDetailed(toString(), Messages.getString("JobEntryTruncateTables.ProcessingRow", tablename_previous, schemaname_previous)); //$NON-NLS-1$
+				          	  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryTruncateTables.ProcessingRow", tablename_previous, schemaname_previous)); //$NON-NLS-1$
 				        }else{
-				      	  log.logError(toString(), Messages.getString("JobEntryTruncateTables.RowEmpty")); //$NON-NLS-1$ 
+				      	  log.logError(toString(), BaseMessages.getString(PKG, "JobEntryTruncateTables.RowEmpty")); //$NON-NLS-1$ 
 				        }
 			      }
 			        
@@ -299,7 +295,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 	             		 String realSchemaname = environmentSubstitute(schemaname[i]); 
 	        			 if(!Const.isEmpty(realTablename)) {
 		        	    	  if(log.isDetailed()) 
-		        	    		  log.logDetailed(toString(), Messages.getString("JobEntryTruncateTables.ProcessingArg", arguments[i], schemaname[i])); //$NON-NLS-1$
+		        	    		  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryTruncateTables.ProcessingArg", arguments[i], schemaname[i])); //$NON-NLS-1$
 		        			
 		        	    	  // let's truncate table
 		        	    	  if(TruncateTables(log, realTablename, realSchemaname, db)) 
@@ -307,21 +303,21 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		        	    	  else
 		        	    		  updateErrors();
 	        			 }else{
-	        				  log.logError(toString(), Messages.getString("JobEntryTruncateTables.ArgEmpty", arguments[i], schemaname[i])); //$NON-NLS-1$ 
+	        				  log.logError(toString(), BaseMessages.getString(PKG, "JobEntryTruncateTables.ArgEmpty", arguments[i], schemaname[i])); //$NON-NLS-1$ 
 	        			 }
 	        	      }	
 			      }
 			}
 			catch(Exception dbe){
 				result.setNrErrors(1);
-				log.logError(toString(), Messages.getString("JobEntryTruncateTables.Error.RunningEntry",dbe.getMessage()));
+				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryTruncateTables.Error.RunningEntry",dbe.getMessage()));
 			}finally{
 				if(db!=null) db.disconnect();
 			}
 		}
 		else {
 			result.setNrErrors(1);
-			log.logError(toString(),Messages.getString("JobEntryTruncateTables.NoDbConnection"));
+			log.logError(toString(),BaseMessages.getString(PKG, "JobEntryTruncateTables.NoDbConnection"));
 		}
 		
 		result.setNrErrors(NrErrors);

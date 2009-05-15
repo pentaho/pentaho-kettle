@@ -14,7 +14,6 @@ package org.pentaho.di.trans.steps.accessinput;
 
 import java.io.File;
 import java.util.Date;
-import com.healthmarketscience.jackcess.Database;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -25,6 +24,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -32,6 +32,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import com.healthmarketscience.jackcess.Database;
 
 /**
  * Read all Access files, convert them to rows and writes these to one or more output streams.
@@ -41,6 +43,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class AccessInput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = AccessInput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private AccessInputMeta meta;
 	private AccessInputData data;
 	
@@ -82,7 +86,7 @@ public class AccessInput extends BaseStep implements StepInterface
 	        }
 			else
 			{
-				logError(Messages.getString("AccessInput.ErrorInStepRunning",e.getMessage())); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "AccessInput.ErrorInStepRunning",e.getMessage())); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -214,7 +218,7 @@ public class AccessInput extends BaseStep implements StepInterface
 		 }
 		 catch (Exception e)
 		 { 
-			throw new KettleException(Messages.getString("AccessInput.Error.ErrorReadingFile"), e);
+			throw new KettleException(BaseMessages.getString(PKG, "AccessInput.Error.ErrorReadingFile"), e);
 		 }
 		 
 		return r;
@@ -227,7 +231,7 @@ public class AccessInput extends BaseStep implements StepInterface
 			{
 	            if (data.filenr>=data.files.nrOfFiles()) // finished processing!
 	            {
-	            	if (log.isDetailed()) logDetailed(Messages.getString("AccessInput.Log.FinishedProcessing"));
+	            	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "AccessInput.Log.FinishedProcessing"));
 	                return false;
 	            }
 	            
@@ -242,7 +246,7 @@ public class AccessInput extends BaseStep implements StepInterface
 				data.readrow=getRow();     // Get row from input rowset & set row busy!
 				if (data.readrow==null)
 			    {
-					if (log.isDetailed()) logDetailed(Messages.getString("AccessInput.Log.FinishedProcessing"));
+					if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "AccessInput.Log.FinishedProcessing"));
 			         return false;
 			    }
 				
@@ -270,8 +274,8 @@ public class AccessInput extends BaseStep implements StepInterface
 					// Check is filename field is provided
 					if (Const.isEmpty(meta.getDynamicFilenameField()))
 					{
-						logError(Messages.getString("AccessInput.Log.NoField"));
-						throw new KettleException(Messages.getString("AccessInput.Log.NoField"));
+						logError(BaseMessages.getString(PKG, "AccessInput.Log.NoField"));
+						throw new KettleException(BaseMessages.getString(PKG, "AccessInput.Log.NoField"));
 					}
 					
 					// cache the position of the field			
@@ -281,15 +285,15 @@ public class AccessInput extends BaseStep implements StepInterface
 						if (data.indexOfFilenameField<0)
 						{
 							// The field is unreachable !
-							logError(Messages.getString("AccessInput.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(Messages.getString("AccessInput.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(BaseMessages.getString(PKG, "AccessInput.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(BaseMessages.getString(PKG, "AccessInput.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}    
 		        }  // End if first
 				
 				
 				String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
-				if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("AccessInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
+				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "AccessInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
 
 				data.file= KettleVFS.getFileObject(filename);
 				// Check if file exists!
@@ -297,13 +301,13 @@ public class AccessInput extends BaseStep implements StepInterface
 			
 			if(meta.resetRowNumber()) data.rownr=0;
             
-			if (log.isDetailed()) logDetailed(Messages.getString("AccessInput.Log.OpeningFile", data.file.toString()));
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "AccessInput.Log.OpeningFile", data.file.toString()));
     
 			if(meta.isAddResultFile())
 			{
 				// Add this to the result file names...
 				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
-				resultFile.setComment(Messages.getString("AccessInput.Log.FileAddedResult"));
+				resultFile.setComment(BaseMessages.getString(PKG, "AccessInput.Log.FileAddedResult"));
 				addResultFile(resultFile);
 			}
 			
@@ -319,11 +323,11 @@ public class AccessInput extends BaseStep implements StepInterface
         	else
         		data.t=data.d.getTable(realTableName);
 
-			if (log.isDetailed()) logDetailed(Messages.getString("AccessInput.Log.FileOpened", data.file.toString()));
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "AccessInput.Log.FileOpened", data.file.toString()));
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("AccessInput.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
+			logError(BaseMessages.getString(PKG, "AccessInput.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
 			stopAll();
 			setErrors(1);
 			return false;
@@ -358,7 +362,7 @@ public class AccessInput extends BaseStep implements StepInterface
 				data.files = meta.getFiles(this);
 				if (data.files==null || data.files.nrOfFiles()==0)
 				{
-					logError(Messages.getString("AccessInput.Log.NoFiles"));
+					logError(BaseMessages.getString(PKG, "AccessInput.Log.NoFiles"));
 					return false;
 				}
 				try{
@@ -376,7 +380,7 @@ public class AccessInput extends BaseStep implements StepInterface
 				}
 				catch(Exception e)
 				{
-					logError(Messages.getString("AccessInput.ErrorInit",e.toString()));
+					logError(BaseMessages.getString(PKG, "AccessInput.ErrorInit",e.toString()));
 					logError(Const.getStackTracker(e));
 					return false;
 				}

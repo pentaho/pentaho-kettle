@@ -34,7 +34,6 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepCategory;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -46,7 +45,7 @@ import org.w3c.dom.Node;
  *
  */
 @Step(name="ClosureGenerator",image="ui/images/CLG.png",tooltip="ClosureGenerator.Step.ToolTip",description="ClosureGenerator.Step.Description",
-		category=StepCategory.CATEGORY_TRANSFORM)
+		categoryDescription="BaseStep.Category.Transform", i18nPackageName="org.pentaho.di.trans.step")
 public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private boolean rootIdZero;

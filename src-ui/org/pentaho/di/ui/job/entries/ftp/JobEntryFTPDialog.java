@@ -47,21 +47,19 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.LabelText;
-import org.pentaho.di.ui.core.widget.LabelTextVar;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.job.entries.ftp.JobEntryFTP;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.ftp.JobEntryFTP;
-import org.pentaho.di.job.entries.ftp.Messages;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.LabelText;
+import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
-
-
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 import com.enterprisedt.net.ftp.FTPClient;
 
@@ -75,6 +73,8 @@ import com.enterprisedt.net.ftp.FTPClient;
 
 public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryFTP.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private LabelText wName;
 
     private FormData fdName;
@@ -298,7 +298,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryFTP) jobEntryInt;
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobFTP.Name.Default"));
+            this.jobEntry.setName(BaseMessages.getString(PKG, "JobFTP.Name.Default"));
     }
 
 
@@ -327,14 +327,14 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobFTP.Title"));
+        shell.setText(BaseMessages.getString(PKG, "JobFTP.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         // Job entry name line
-        wName = new LabelText(shell, Messages.getString("JobFTP.Name.Label"), Messages
-            .getString("JobFTP.Name.Tooltip"));
+        wName = new LabelText(shell, BaseMessages.getString(PKG, "JobFTP.Name.Label"), 
+        		BaseMessages.getString(PKG, "JobFTP.Name.Tooltip"));
         wName.addModifyListener(lsMod);
         fdName = new FormData();
         fdName.top = new FormAttachment(0, 0);
@@ -353,7 +353,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 		
 		
 		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
-		wGeneralTab.setText(Messages.getString("JobFTP.Tab.General.Label"));
+		wGeneralTab.setText(BaseMessages.getString(PKG, "JobFTP.Tab.General.Label"));
 		
 		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wGeneralComp);
@@ -368,7 +368,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	     // /
 	    wServerSettings = new Group(wGeneralComp, SWT.SHADOW_NONE);
 	    props.setLook(wServerSettings);
-	    wServerSettings.setText(Messages.getString("JobFTP.ServerSettings.Group.Label"));
+	    wServerSettings.setText(BaseMessages.getString(PKG, "JobFTP.ServerSettings.Group.Label"));
 
 	    FormLayout ServerSettingsgroupLayout = new FormLayout();
 	    ServerSettingsgroupLayout.marginWidth = 10;
@@ -377,8 +377,8 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	    wServerSettings.setLayout(ServerSettingsgroupLayout);
 
         // ServerName line
-        wServerName = new LabelTextVar(jobMeta,wServerSettings, Messages.getString("JobFTP.Server.Label"), Messages
-            .getString("JobFTP.Server.Tooltip"));
+        wServerName = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobFTP.Server.Label"), 
+        		BaseMessages.getString(PKG, "JobFTP.Server.Tooltip"));
         props.setLook(wServerName);
         wServerName.addModifyListener(lsMod);
         fdServerName = new FormData();
@@ -388,7 +388,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wServerName.setLayoutData(fdServerName);
         
         // Server port line
-        wPort = new LabelTextVar(jobMeta,wServerSettings, Messages.getString("JobFTP.Port.Label"), Messages.getString("JobFTP.Port.Tooltip"));
+        wPort = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobFTP.Port.Label"), BaseMessages.getString(PKG, "JobFTP.Port.Tooltip"));
         props.setLook(wPort);
         wPort.addModifyListener(lsMod);
         fdPort = new FormData();
@@ -398,8 +398,8 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wPort.setLayoutData(fdPort);
 
         // UserName line
-        wUserName = new LabelTextVar(jobMeta,wServerSettings, Messages.getString("JobFTP.User.Label"), Messages
-            .getString("JobFTP.User.Tooltip"));
+        wUserName = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobFTP.User.Label"), 
+        		BaseMessages.getString(PKG, "JobFTP.User.Tooltip"));
         props.setLook(wUserName);
         wUserName.addModifyListener(lsMod);
         fdUserName = new FormData();
@@ -409,8 +409,8 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wUserName.setLayoutData(fdUserName);
 
         // Password line
-        wPassword = new LabelTextVar(jobMeta,wServerSettings, Messages.getString("JobFTP.Password.Label"), Messages
-            .getString("JobFTP.Password.Tooltip"));
+        wPassword = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobFTP.Password.Label"), 
+        		BaseMessages.getString(PKG, "JobFTP.Password.Tooltip"));
         props.setLook(wPassword);
         wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
@@ -431,7 +431,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 
         
         // Proxy host line
-        wProxyHost = new LabelTextVar(jobMeta,wServerSettings, Messages.getString("JobFTP.ProxyHost.Label"), Messages.getString("JobFTP.ProxyHost.Tooltip"));
+        wProxyHost = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobFTP.ProxyHost.Label"), BaseMessages.getString(PKG, "JobFTP.ProxyHost.Tooltip"));
         props.setLook(wProxyHost);
         wProxyHost.addModifyListener(lsMod);
         fdProxyHost = new FormData();
@@ -441,7 +441,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wProxyHost.setLayoutData(fdProxyHost);
 
         // Proxy port line
-        wProxyPort = new LabelTextVar(jobMeta,wServerSettings, Messages.getString("JobFTP.ProxyPort.Label"), Messages.getString("JobFTP.ProxyPort.Tooltip"));
+        wProxyPort = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobFTP.ProxyPort.Label"), BaseMessages.getString(PKG, "JobFTP.ProxyPort.Tooltip"));
         props.setLook(wProxyPort);
         wProxyPort.addModifyListener(lsMod);
         fdProxyPort = new FormData();
@@ -451,7 +451,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wProxyPort.setLayoutData(fdProxyPort);
 
         // Proxy username line
-        wProxyUsername = new LabelTextVar(jobMeta,wServerSettings, Messages.getString("JobFTP.ProxyUsername.Label"), Messages.getString("JobFTP.ProxyUsername.Tooltip"));
+        wProxyUsername = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobFTP.ProxyUsername.Label"), BaseMessages.getString(PKG, "JobFTP.ProxyUsername.Tooltip"));
         props.setLook(wProxyUsername);
         wProxyUsername.addModifyListener(lsMod);
         fdProxyUsername = new FormData();
@@ -461,7 +461,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wProxyUsername.setLayoutData(fdProxyUsername);
         
         // Proxy password line
-        wProxyPassword = new LabelTextVar(jobMeta,wServerSettings, Messages.getString("JobFTP.ProxyPassword.Label"), Messages.getString("JobFTP.ProxyPassword.Tooltip"));
+        wProxyPassword = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobFTP.ProxyPassword.Label"), BaseMessages.getString(PKG, "JobFTP.ProxyPassword.Tooltip"));
         props.setLook(wProxyPassword);
         wProxyPassword.addModifyListener(lsMod);
         fdProxyPasswd=new FormData();
@@ -472,10 +472,10 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         
 		// Test connection button
 		wTest=new Button(wServerSettings,SWT.PUSH);
-		wTest.setText(Messages.getString("JobFTP.TestConnection.Label"));
+		wTest.setText(BaseMessages.getString(PKG, "JobFTP.TestConnection.Label"));
  		props.setLook(wTest);
 		fdTest=new FormData();
-		wTest.setToolTipText(Messages.getString("JobFTP.TestConnection.Tooltip"));
+		wTest.setToolTipText(BaseMessages.getString(PKG, "JobFTP.TestConnection.Tooltip"));
 		//fdTest.left = new FormAttachment(middle, 0);
 		fdTest.top  = new FormAttachment(wProxyPassword, margin);
 		fdTest.right= new FormAttachment(100, 0);
@@ -497,7 +497,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	     // /
 	     wAdvancedSettings = new Group(wGeneralComp, SWT.SHADOW_NONE);
 	     props.setLook(wAdvancedSettings);
-	     wAdvancedSettings.setText(Messages.getString("JobFTP.AdvancedSettings.Group.Label"));
+	     wAdvancedSettings.setText(BaseMessages.getString(PKG, "JobFTP.AdvancedSettings.Group.Label"));
 	     FormLayout AdvancedSettingsgroupLayout = new FormLayout();
 	     AdvancedSettingsgroupLayout.marginWidth = 10;
 	     AdvancedSettingsgroupLayout.marginHeight = 10;
@@ -506,7 +506,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	    
 	     // Binary mode selection...
         wlBinaryMode = new Label(wAdvancedSettings, SWT.RIGHT);
-        wlBinaryMode.setText(Messages.getString("JobFTP.BinaryMode.Label"));
+        wlBinaryMode.setText(BaseMessages.getString(PKG, "JobFTP.BinaryMode.Label"));
         props.setLook(wlBinaryMode);
         fdlBinaryMode = new FormData();
         fdlBinaryMode.left = new FormAttachment(0, 0);
@@ -515,7 +515,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wlBinaryMode.setLayoutData(fdlBinaryMode);
         wBinaryMode = new Button(wAdvancedSettings, SWT.CHECK);
         props.setLook(wBinaryMode);
-        wBinaryMode.setToolTipText(Messages.getString("JobFTP.BinaryMode.Tooltip"));
+        wBinaryMode.setToolTipText(BaseMessages.getString(PKG, "JobFTP.BinaryMode.Tooltip"));
         fdBinaryMode = new FormData();
         fdBinaryMode.left = new FormAttachment(middle, margin);
         fdBinaryMode.top = new FormAttachment(wServerSettings, margin);
@@ -523,8 +523,8 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wBinaryMode.setLayoutData(fdBinaryMode);
 
         // Timeout line
-        wTimeout = new LabelTextVar(jobMeta,wAdvancedSettings, Messages.getString("JobFTP.Timeout.Label"), Messages
-            .getString("JobFTP.Timeout.Tooltip"));
+        wTimeout = new LabelTextVar(jobMeta,wAdvancedSettings, BaseMessages.getString(PKG, "JobFTP.Timeout.Label"), 
+        		BaseMessages.getString(PKG, "JobFTP.Timeout.Tooltip"));
         props.setLook(wTimeout);
         wTimeout.addModifyListener(lsMod);
         fdTimeout = new FormData();
@@ -536,7 +536,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 
         // active connection?
         wlActive = new Label(wAdvancedSettings, SWT.RIGHT);
-        wlActive.setText(Messages.getString("JobFTP.ActiveConns.Label"));
+        wlActive.setText(BaseMessages.getString(PKG, "JobFTP.ActiveConns.Label"));
         props.setLook(wlActive);
         fdlActive = new FormData();
         fdlActive.left = new FormAttachment(0, 0);
@@ -544,7 +544,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         fdlActive.right = new FormAttachment(middle, 0);
         wlActive.setLayoutData(fdlActive);
         wActive = new Button(wAdvancedSettings, SWT.CHECK);
-        wActive.setToolTipText(Messages.getString("JobFTP.ActiveConns.Tooltip"));
+        wActive.setToolTipText(BaseMessages.getString(PKG, "JobFTP.ActiveConns.Tooltip"));
         props.setLook(wActive);
         fdActive = new FormData();
         fdActive.left = new FormAttachment(middle, margin);
@@ -558,7 +558,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         // on one machine, but you may want to use it on your execution server
         //
         wlControlEncoding=new Label(wAdvancedSettings, SWT.RIGHT);
-        wlControlEncoding.setText(Messages.getString("JobFTP.ControlEncoding.Label"));
+        wlControlEncoding.setText(BaseMessages.getString(PKG, "JobFTP.ControlEncoding.Label"));
         props.setLook(wlControlEncoding);
         fdlControlEncoding=new FormData();
         fdlControlEncoding.left  = new FormAttachment(0, 0);
@@ -566,7 +566,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         fdlControlEncoding.right = new FormAttachment(middle, 0);
         wlControlEncoding.setLayoutData(fdlControlEncoding);
         wControlEncoding=new Combo(wAdvancedSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wControlEncoding.setToolTipText(Messages.getString("JobFTP.ControlEncoding.Tooltip"));
+        wControlEncoding.setToolTipText(BaseMessages.getString(PKG, "JobFTP.ControlEncoding.Tooltip"));
         wControlEncoding.setItems(encodings);
         props.setLook(wControlEncoding);
         fdControlEncoding=new FormData();
@@ -607,7 +607,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 		//////////////////////////
 		
  		wFilesTab=new CTabItem(wTabFolder, SWT.NONE);
-		wFilesTab.setText(Messages.getString("JobFTP.Tab.Files.Label"));
+		wFilesTab.setText(BaseMessages.getString(PKG, "JobFTP.Tab.Files.Label"));
 		
 		wFilesComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wFilesComp);
@@ -622,7 +622,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	     // /
 	    wRemoteSettings = new Group(wFilesComp, SWT.SHADOW_NONE);
 	    props.setLook(wRemoteSettings);
-	    wRemoteSettings.setText(Messages.getString("JobFTP.RemoteSettings.Group.Label"));
+	    wRemoteSettings.setText(BaseMessages.getString(PKG, "JobFTP.RemoteSettings.Group.Label"));
 
 	    FormLayout RemoteSettinsgroupLayout = new FormLayout();
 	    RemoteSettinsgroupLayout.marginWidth = 10;
@@ -633,7 +633,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	    
         // Move to directory
         wlFtpDirectory = new Label(wRemoteSettings, SWT.RIGHT);
-        wlFtpDirectory.setText(Messages.getString("JobFTP.RemoteDir.Label"));
+        wlFtpDirectory.setText(BaseMessages.getString(PKG, "JobFTP.RemoteDir.Label"));
         props.setLook(wlFtpDirectory);
         fdlFtpDirectory= new FormData();
         fdlFtpDirectory.left = new FormAttachment(0, 0);
@@ -644,14 +644,14 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	    // Test remote folder  button ...
 		wbTestChangeFolderExists=new Button(wRemoteSettings, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbTestChangeFolderExists);
-		wbTestChangeFolderExists.setText(Messages.getString("JobFTP.TestFolderExists.Label"));
+		wbTestChangeFolderExists.setText(BaseMessages.getString(PKG, "JobFTP.TestFolderExists.Label"));
 		fdbTestChangeFolderExists=new FormData();
 		fdbTestChangeFolderExists.right= new FormAttachment(100, 0);
 		fdbTestChangeFolderExists.top  = new FormAttachment(0, margin);
 		wbTestChangeFolderExists.setLayoutData(fdbTestChangeFolderExists);
 
-        wFtpDirectory = new TextVar(jobMeta,wRemoteSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-           .getString("JobFTP.RemoteDir.Tooltip"));
+        wFtpDirectory = new TextVar(jobMeta,wRemoteSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+        		BaseMessages.getString(PKG, "JobFTP.RemoteDir.Tooltip"));
        props.setLook(wFtpDirectory);
        wFtpDirectory.addModifyListener(lsMod);
        fdFtpDirectory = new FormData();
@@ -662,8 +662,8 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
        
         
         // Wildcard line
-        wWildcard = new LabelTextVar(jobMeta,wRemoteSettings, Messages.getString("JobFTP.Wildcard.Label"), Messages
-            .getString("JobFTP.Wildcard.Tooltip"));
+        wWildcard = new LabelTextVar(jobMeta,wRemoteSettings, BaseMessages.getString(PKG, "JobFTP.Wildcard.Label"), 
+        		BaseMessages.getString(PKG, "JobFTP.Wildcard.Tooltip"));
         props.setLook(wWildcard);
         wWildcard.addModifyListener(lsMod);
         fdWildcard = new FormData();
@@ -674,7 +674,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         
         // Remove files after retrieval...
         wlRemove = new Label(wRemoteSettings, SWT.RIGHT);
-        wlRemove.setText(Messages.getString("JobFTP.RemoveFiles.Label"));
+        wlRemove.setText(BaseMessages.getString(PKG, "JobFTP.RemoveFiles.Label"));
         props.setLook(wlRemove);
         fdlRemove = new FormData();
         fdlRemove.left = new FormAttachment(0, 0);
@@ -682,7 +682,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         fdlRemove.right = new FormAttachment(middle, 0);
         wlRemove.setLayoutData(fdlRemove);
         wRemove = new Button(wRemoteSettings, SWT.CHECK);
-        wRemove.setToolTipText(Messages.getString("JobFTP.RemoveFiles.Tooltip"));
+        wRemove.setToolTipText(BaseMessages.getString(PKG, "JobFTP.RemoveFiles.Tooltip"));
         props.setLook(wRemove);
         fdRemove = new FormData();
         fdRemove.left = new FormAttachment(middle, margin);
@@ -705,7 +705,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         
         // Move files after the transfert?...
         wlMove = new Label(wRemoteSettings, SWT.RIGHT);
-        wlMove.setText(Messages.getString("JobFTP.MoveFiles.Label"));
+        wlMove.setText(BaseMessages.getString(PKG, "JobFTP.MoveFiles.Label"));
         props.setLook(wlMove);
         fdlMove = new FormData();
         fdlMove.left = new FormAttachment(0, 0);
@@ -714,7 +714,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wlMove.setLayoutData(fdlMove);
         wMove = new Button(wRemoteSettings, SWT.CHECK);
         props.setLook(wMove);
-        wMove.setToolTipText(Messages.getString("JobFTP.MoveFiles.Tooltip"));
+        wMove.setToolTipText(BaseMessages.getString(PKG, "JobFTP.MoveFiles.Tooltip"));
         fdMove = new FormData();
         fdMove.left = new FormAttachment(middle, margin);
         fdMove.top = new FormAttachment(wRemove, margin);
@@ -735,7 +735,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         
         // Move to directory
         wlMoveToDirectory = new Label(wRemoteSettings, SWT.RIGHT);
-        wlMoveToDirectory.setText(Messages.getString("JobFTP.MoveFolder.Label"));
+        wlMoveToDirectory.setText(BaseMessages.getString(PKG, "JobFTP.MoveFolder.Label"));
         props.setLook(wlMoveToDirectory);
         fdlMoveToDirectory= new FormData();
         fdlMoveToDirectory.left = new FormAttachment(0, 0);
@@ -746,15 +746,15 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	    // Test remote folder  button ...
 		wbTestFolderExists=new Button(wRemoteSettings, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbTestFolderExists);
-		wbTestFolderExists.setText(Messages.getString("JobFTP.TestFolderExists.Label"));
+		wbTestFolderExists.setText(BaseMessages.getString(PKG, "JobFTP.TestFolderExists.Label"));
 		fdbTestFolderExists=new FormData();
 		fdbTestFolderExists.right= new FormAttachment(100, 0);
 		fdbTestFolderExists.top  = new FormAttachment(wMove, margin);
 		wbTestFolderExists.setLayoutData(fdbTestFolderExists);
         
-        wMoveToDirectory = new TextVar(jobMeta,wRemoteSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-            .getString("JobFTP.MoveToDirectory.Tooltip"));
-        wMoveToDirectory.setToolTipText(Messages.getString("JobFTP.MoveFolder.Tooltip"));
+        wMoveToDirectory = new TextVar(jobMeta,wRemoteSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+        		BaseMessages.getString(PKG, "JobFTP.MoveToDirectory.Tooltip"));
+        wMoveToDirectory.setToolTipText(BaseMessages.getString(PKG, "JobFTP.MoveFolder.Tooltip"));
         props.setLook(wMoveToDirectory);
         wMoveToDirectory.addModifyListener(lsMod);
         fdMoveToDirectory = new FormData();
@@ -766,7 +766,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         
         // create destination folder?...
         wlCreateMoveFolder = new Label(wRemoteSettings, SWT.RIGHT);
-        wlCreateMoveFolder.setText(Messages.getString("JobFTP.CreateMoveFolder.Label"));
+        wlCreateMoveFolder.setText(BaseMessages.getString(PKG, "JobFTP.CreateMoveFolder.Label"));
         props.setLook(wlCreateMoveFolder);
         fdlCreateMoveFolder = new FormData();
         fdlCreateMoveFolder.left = new FormAttachment(0, 0);
@@ -774,7 +774,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         fdlCreateMoveFolder.right = new FormAttachment(middle, 0);
         wlCreateMoveFolder.setLayoutData(fdlCreateMoveFolder);
         wCreateMoveFolder = new Button(wRemoteSettings, SWT.CHECK);
-        wCreateMoveFolder.setToolTipText(Messages.getString("JobFTP.CreateMoveFolder.Tooltip"));
+        wCreateMoveFolder.setToolTipText(BaseMessages.getString(PKG, "JobFTP.CreateMoveFolder.Tooltip"));
         props.setLook(wCreateMoveFolder);
         fdCreateMoveFolder = new FormData();
         fdCreateMoveFolder.left = new FormAttachment(middle, margin);
@@ -799,7 +799,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	     // /
 	    wLocalSettings = new Group(wFilesComp, SWT.SHADOW_NONE);
 	    props.setLook(wLocalSettings);
-	    wLocalSettings.setText(Messages.getString("JobFTP.LocalSettings.Group.Label"));
+	    wLocalSettings.setText(BaseMessages.getString(PKG, "JobFTP.LocalSettings.Group.Label"));
 
 	    FormLayout LocalSettinsgroupLayout = new FormLayout();
 	    LocalSettinsgroupLayout.marginWidth = 10;
@@ -811,7 +811,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	     
 	    // TargetDirectory
 		wlTargetDirectory = new Label(wLocalSettings, SWT.RIGHT);
-		wlTargetDirectory.setText(Messages.getString("JobFTP.TargetDir.Label"));
+		wlTargetDirectory.setText(BaseMessages.getString(PKG, "JobFTP.TargetDir.Label"));
 		props.setLook(wlTargetDirectory);
 		fdlTargetDirectory = new FormData();
 		fdlTargetDirectory.left = new FormAttachment(0, 0);
@@ -822,7 +822,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	    // Browse folders button ...
 		wbTargetDirectory=new Button(wLocalSettings, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbTargetDirectory);
-		wbTargetDirectory.setText(Messages.getString("JobFTP.BrowseFolders.Label"));
+		wbTargetDirectory.setText(BaseMessages.getString(PKG, "JobFTP.BrowseFolders.Label"));
 		fdbTargetDirectory=new FormData();
 		fdbTargetDirectory.right= new FormAttachment(100, 0);
 		fdbTargetDirectory.top  = new FormAttachment(wRemoteSettings, margin);
@@ -853,8 +853,8 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 			);
 			
 		
-		wTargetDirectory = new TextVar(jobMeta,wLocalSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobFTP.TargetDir.Tooltip"));
+		wTargetDirectory = new TextVar(jobMeta,wLocalSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobFTP.TargetDir.Tooltip"));
 		props.setLook(wTargetDirectory);
 		wTargetDirectory.addModifyListener(lsMod);
 		fdTargetDirectory = new FormData();
@@ -868,7 +868,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
        
 	   	// Create multi-part file?
 	   	wlAddDate=new Label(wLocalSettings, SWT.RIGHT);
-	   	wlAddDate.setText(Messages.getString("JobFTP.AddDate.Label"));
+	   	wlAddDate.setText(BaseMessages.getString(PKG, "JobFTP.AddDate.Label"));
 	   		props.setLook(wlAddDate);
 	   	fdlAddDate=new FormData();
 	   	fdlAddDate.left = new FormAttachment(0, 0);
@@ -877,7 +877,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	   	wlAddDate.setLayoutData(fdlAddDate);
 	   	wAddDate=new Button(wLocalSettings, SWT.CHECK);
    		props.setLook(wAddDate);
-   		wAddDate.setToolTipText(Messages.getString("JobFTP.AddDate.Tooltip"));
+   		wAddDate.setToolTipText(BaseMessages.getString(PKG, "JobFTP.AddDate.Tooltip"));
 	   	fdAddDate=new FormData();
 	   	fdAddDate.left = new FormAttachment(middle, margin);
 	   	fdAddDate.top  = new FormAttachment(wTargetDirectory, margin);
@@ -893,7 +893,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	   	);
 	   	// Create multi-part file?
 	   	wlAddTime=new Label(wLocalSettings, SWT.RIGHT);
-	   	wlAddTime.setText(Messages.getString("JobFTP.AddTime.Label"));
+	   	wlAddTime.setText(BaseMessages.getString(PKG, "JobFTP.AddTime.Label"));
    		props.setLook(wlAddTime);
 	   	fdlAddTime=new FormData();
 	   	fdlAddTime.left = new FormAttachment(0, 0);
@@ -902,7 +902,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	   	wlAddTime.setLayoutData(fdlAddTime);
 	   	wAddTime=new Button(wLocalSettings, SWT.CHECK);
    		props.setLook(wAddTime);
-   		wAddTime.setToolTipText(Messages.getString("JobFTP.AddTime.Tooltip"));
+   		wAddTime.setToolTipText(BaseMessages.getString(PKG, "JobFTP.AddTime.Tooltip"));
 	   	fdAddTime=new FormData();
 	   	fdAddTime.left = new FormAttachment(middle, margin);
 	   	fdAddTime.top  = new FormAttachment(wAddDate, margin);
@@ -919,7 +919,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	   	
 	   	// Specify date time format?
 	   	wlSpecifyFormat=new Label(wLocalSettings, SWT.RIGHT);
-	   	wlSpecifyFormat.setText(Messages.getString("JobFTP.SpecifyFormat.Label"));
+	   	wlSpecifyFormat.setText(BaseMessages.getString(PKG, "JobFTP.SpecifyFormat.Label"));
 	   	props.setLook(wlSpecifyFormat);
 	   	fdlSpecifyFormat=new FormData();
 	   	fdlSpecifyFormat.left = new FormAttachment(0, 0);
@@ -928,7 +928,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	   	wlSpecifyFormat.setLayoutData(fdlSpecifyFormat);
 	   	wSpecifyFormat=new Button(wLocalSettings, SWT.CHECK);
 	   	props.setLook(wSpecifyFormat);
-	   	wSpecifyFormat.setToolTipText(Messages.getString("JobFTP.SpecifyFormat.Tooltip"));
+	   	wSpecifyFormat.setToolTipText(BaseMessages.getString(PKG, "JobFTP.SpecifyFormat.Tooltip"));
        fdSpecifyFormat=new FormData();
 	   	fdSpecifyFormat.left = new FormAttachment(middle, margin);
 	   	fdSpecifyFormat.top  = new FormAttachment(wAddTime, margin);
@@ -951,7 +951,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
    	
    		// DateTimeFormat
 	   	wlDateTimeFormat=new Label(wLocalSettings, SWT.RIGHT);
-       wlDateTimeFormat.setText(Messages.getString("JobFTP.DateTimeFormat.Label"));
+       wlDateTimeFormat.setText(BaseMessages.getString(PKG, "JobFTP.DateTimeFormat.Label"));
        props.setLook(wlDateTimeFormat);
        fdlDateTimeFormat=new FormData();
        fdlDateTimeFormat.left = new FormAttachment(0, 0);
@@ -971,7 +971,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
        
        // Add Date before extension?
        wlAddDateBeforeExtension = new Label(wLocalSettings, SWT.RIGHT);
-       wlAddDateBeforeExtension.setText(Messages.getString("JobFTP.AddDateBeforeExtension.Label"));
+       wlAddDateBeforeExtension.setText(BaseMessages.getString(PKG, "JobFTP.AddDateBeforeExtension.Label"));
        props.setLook(wlAddDateBeforeExtension);
        fdlAddDateBeforeExtension = new FormData();
        fdlAddDateBeforeExtension.left = new FormAttachment(0, 0);
@@ -980,7 +980,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
        wlAddDateBeforeExtension.setLayoutData(fdlAddDateBeforeExtension);
        wAddDateBeforeExtension = new Button(wLocalSettings, SWT.CHECK);
        props.setLook(wAddDateBeforeExtension);
-       wAddDateBeforeExtension.setToolTipText(Messages.getString("JobFTP.AddDateBeforeExtension.Tooltip"));
+       wAddDateBeforeExtension.setToolTipText(BaseMessages.getString(PKG, "JobFTP.AddDateBeforeExtension.Tooltip"));
        fdAddDateBeforeExtension = new FormData();
        fdAddDateBeforeExtension.left = new FormAttachment(middle, margin);
        fdAddDateBeforeExtension.top = new FormAttachment(wDateTimeFormat, margin);
@@ -997,7 +997,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
        
        // OnlyNew files after retrieval...
        wlOnlyNew = new Label(wLocalSettings, SWT.RIGHT);
-       wlOnlyNew.setText(Messages.getString("JobFTP.DontOverwrite.Label"));
+       wlOnlyNew.setText(BaseMessages.getString(PKG, "JobFTP.DontOverwrite.Label"));
        props.setLook(wlOnlyNew);
        fdlOnlyNew = new FormData();
        fdlOnlyNew.left = new FormAttachment(0, 0);
@@ -1005,7 +1005,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
        fdlOnlyNew.right = new FormAttachment(middle, 0);
        wlOnlyNew.setLayoutData(fdlOnlyNew);
        wOnlyNew = new Button(wLocalSettings, SWT.CHECK);
-       wOnlyNew.setToolTipText(Messages.getString("JobFTP.DontOverwrite.Tooltip"));
+       wOnlyNew.setToolTipText(BaseMessages.getString(PKG, "JobFTP.DontOverwrite.Tooltip"));
        props.setLook(wOnlyNew);
        fdOnlyNew = new FormData();
        fdOnlyNew.left = new FormAttachment(middle, margin);
@@ -1023,7 +1023,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
        
        // Add filenames to result filenames...
        wlAddFilenameToResult = new Label(wLocalSettings, SWT.RIGHT);
-       wlAddFilenameToResult.setText(Messages.getString("JobFTP.AddFilenameToResult.Label"));
+       wlAddFilenameToResult.setText(BaseMessages.getString(PKG, "JobFTP.AddFilenameToResult.Label"));
        props.setLook(wlAddFilenameToResult);
        fdlAddFilenameToResult = new FormData();
        fdlAddFilenameToResult.left = new FormAttachment(0, 0);
@@ -1031,7 +1031,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
        fdlAddFilenameToResult.right = new FormAttachment(middle, 0);
        wlAddFilenameToResult.setLayoutData(fdlAddFilenameToResult);
        wAddFilenameToResult = new Button(wLocalSettings, SWT.CHECK);
-       wAddFilenameToResult.setToolTipText(Messages.getString("JobFTP.AddFilenameToResult.Tooltip"));
+       wAddFilenameToResult.setToolTipText(BaseMessages.getString(PKG, "JobFTP.AddFilenameToResult.Tooltip"));
        props.setLook(wAddFilenameToResult);
        fdAddFilenameToResult = new FormData();
        fdAddFilenameToResult.left = new FormAttachment(middle, margin);
@@ -1041,7 +1041,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
        
        // If File Exists
 		wlIfFileExists = new Label(wLocalSettings, SWT.RIGHT);
-		wlIfFileExists.setText(Messages.getString("JobFTP.IfFileExists.Label"));
+		wlIfFileExists.setText(BaseMessages.getString(PKG, "JobFTP.IfFileExists.Label"));
 		props.setLook(wlIfFileExists);
 		fdlIfFileExists = new FormData();
 		fdlIfFileExists.left = new FormAttachment(0, 0);
@@ -1049,9 +1049,9 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 		fdlIfFileExists.top = new FormAttachment(wOnlyNew, margin);
 		wlIfFileExists.setLayoutData(fdlIfFileExists);
 		wIfFileExists = new CCombo(wLocalSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wIfFileExists.add(Messages.getString("JobFTP.Skip.Label"));
-		wIfFileExists.add(Messages.getString("JobFTP.Give_Unique_Name.Label"));
-		wIfFileExists.add(Messages.getString("JobFTP.Fail.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobFTP.Skip.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobFTP.Give_Unique_Name.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobFTP.Fail.Label"));
 		wIfFileExists.select(0); // +1: starts at -1
 
 		props.setLook(wIfFileExists);
@@ -1079,7 +1079,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 
        // Add filenames to result filenames...
        wlAddFilenameToResult = new Label(wLocalSettings, SWT.RIGHT);
-       wlAddFilenameToResult.setText(Messages.getString("JobFTP.AddFilenameToResult.Label"));
+       wlAddFilenameToResult.setText(BaseMessages.getString(PKG, "JobFTP.AddFilenameToResult.Label"));
        props.setLook(wlAddFilenameToResult);
        fdlAddFilenameToResult = new FormData();
        fdlAddFilenameToResult.left = new FormAttachment(0, 0);
@@ -1087,7 +1087,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
        fdlAddFilenameToResult.right = new FormAttachment(middle, 0);
        wlAddFilenameToResult.setLayoutData(fdlAddFilenameToResult);
        wAddFilenameToResult = new Button(wLocalSettings, SWT.CHECK);
-       wAddFilenameToResult.setToolTipText(Messages.getString("JobFTP.AddFilenameToResult.Tooltip"));
+       wAddFilenameToResult.setToolTipText(BaseMessages.getString(PKG, "JobFTP.AddFilenameToResult.Tooltip"));
        props.setLook(wAddFilenameToResult);
        fdAddFilenameToResult = new FormData();
        fdAddFilenameToResult.left = new FormAttachment(middle, margin);
@@ -1127,7 +1127,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 		
 
 		wAdvancedTab=new CTabItem(wTabFolder, SWT.NONE);
-		wAdvancedTab.setText(Messages.getString("JobFTP.Tab.Advanced.Label"));
+		wAdvancedTab.setText(BaseMessages.getString(PKG, "JobFTP.Tab.Advanced.Label"));
 		
 		wAdvancedComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wAdvancedComp);
@@ -1143,7 +1143,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	     // /
 	    wSuccessOn= new Group(wAdvancedComp, SWT.SHADOW_NONE);
 	    props.setLook(wSuccessOn);
-	    wSuccessOn.setText(Messages.getString("JobFTP.SuccessOn.Group.Label"));
+	    wSuccessOn.setText(BaseMessages.getString(PKG, "JobFTP.SuccessOn.Group.Label"));
 
 	    FormLayout successongroupLayout = new FormLayout();
 	    successongroupLayout.marginWidth = 10;
@@ -1154,7 +1154,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 
 	    //Success Condition
 	  	wlSuccessCondition = new Label(wSuccessOn, SWT.RIGHT);
-	  	wlSuccessCondition.setText(Messages.getString("JobFTP.SuccessCondition.Label") + " ");
+	  	wlSuccessCondition.setText(BaseMessages.getString(PKG, "JobFTP.SuccessCondition.Label") + " ");
 	  	props.setLook(wlSuccessCondition);
 	  	fdlSuccessCondition = new FormData();
 	  	fdlSuccessCondition.left = new FormAttachment(0, 0);
@@ -1162,9 +1162,9 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	  	fdlSuccessCondition.top = new FormAttachment(0, margin);
 	  	wlSuccessCondition.setLayoutData(fdlSuccessCondition);
 	  	wSuccessCondition = new CCombo(wSuccessOn, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-	  	wSuccessCondition.add(Messages.getString("JobFTP.SuccessWhenAllWorksFine.Label"));
-	  	wSuccessCondition.add(Messages.getString("JobFTP.SuccessWhenAtLeat.Label"));
-	  	wSuccessCondition.add(Messages.getString("JobFTP.SuccessWhenNrErrorsLessThan.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobFTP.SuccessWhenAllWorksFine.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobFTP.SuccessWhenAtLeat.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobFTP.SuccessWhenNrErrorsLessThan.Label"));
 	  	wSuccessCondition.select(0); // +1: starts at -1
 	  	
 		props.setLook(wSuccessCondition);
@@ -1184,7 +1184,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 
 		// Success when number of errors less than
 		wlNrErrorsLessThan= new Label(wSuccessOn, SWT.RIGHT);
-		wlNrErrorsLessThan.setText(Messages.getString("JobFTP.NrBadFormedLessThan.Label") + " ");
+		wlNrErrorsLessThan.setText(BaseMessages.getString(PKG, "JobFTP.NrBadFormedLessThan.Label") + " ");
 		props.setLook(wlNrErrorsLessThan);
 		fdlNrErrorsLessThan= new FormData();
 		fdlNrErrorsLessThan.left = new FormAttachment(0, 0);
@@ -1193,8 +1193,8 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 		wlNrErrorsLessThan.setLayoutData(fdlNrErrorsLessThan);
 		
 		
-		wNrErrorsLessThan= new TextVar(jobMeta,wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobFTP.NrBadFormedLessThan.Tooltip"));
+		wNrErrorsLessThan= new TextVar(jobMeta,wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobFTP.NrBadFormedLessThan.Tooltip"));
 		props.setLook(wNrErrorsLessThan);
 		wNrErrorsLessThan.addModifyListener(lsMod);
 		fdNrErrorsLessThan= new FormData();
@@ -1241,9 +1241,9 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 		
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTabFolder);
 
@@ -1328,14 +1328,14 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     	if(connectToFTP(false,false))
     	{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-			mb.setMessage(Messages.getString("JobFTP.Connected.OK",wServerName.getText()) +Const.CR);
-			mb.setText(Messages.getString("JobFTP.Connected.Title.Ok"));
+			mb.setMessage(BaseMessages.getString(PKG, "JobFTP.Connected.OK",wServerName.getText()) +Const.CR);
+			mb.setText(BaseMessages.getString(PKG, "JobFTP.Connected.Title.Ok"));
 			mb.open();
 		}else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("JobFTP.Connected.NOK.ConnectionBad",wServerName.getText()) +Const.CR);
-			mb.setText(Messages.getString("JobFTP.Connected.Title.Bad"));
+			mb.setMessage(BaseMessages.getString(PKG, "JobFTP.Connected.NOK.ConnectionBad",wServerName.getText()) +Const.CR);
+			mb.setText(BaseMessages.getString(PKG, "JobFTP.Connected.Title.Bad"));
 			mb.open(); 
 	    }
 	   
@@ -1347,14 +1347,14 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	    	if(connectToFTP(FTPFolfer,checkMoveFolder))
 	    	{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-				mb.setMessage(Messages.getString("JobFTP.FolderExists.OK",foldername) +Const.CR);
-				mb.setText(Messages.getString("JobFTP.FolderExists.Title.Ok"));
+				mb.setMessage(BaseMessages.getString(PKG, "JobFTP.FolderExists.OK",foldername) +Const.CR);
+				mb.setText(BaseMessages.getString(PKG, "JobFTP.FolderExists.Title.Ok"));
 				mb.open();
 			}else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(Messages.getString("JobFTP.FolderExists.NOK",foldername) +Const.CR);
-				mb.setText(Messages.getString("JobFTP.FolderExists.Title.Bad"));
+				mb.setMessage(BaseMessages.getString(PKG, "JobFTP.FolderExists.NOK",foldername) +Const.CR);
+				mb.setText(BaseMessages.getString(PKG, "JobFTP.FolderExists.Title.Bad"));
 				mb.open(); 
 		    }
     	}
@@ -1434,8 +1434,8 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	     catch (Exception e)
 	    {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("JobFTP.ErrorConnect.NOK",e.getMessage()) +Const.CR);
-			mb.setText(Messages.getString("JobFTP.ErrorConnect.Title.Bad"));
+			mb.setMessage(BaseMessages.getString(PKG, "JobFTP.ErrorConnect.NOK",e.getMessage()) +Const.CR);
+			mb.setText(BaseMessages.getString(PKG, "JobFTP.ErrorConnect.Title.Bad"));
 			mb.open(); 
 	    } 
 	    return retval;
@@ -1572,8 +1572,8 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
  	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
        }

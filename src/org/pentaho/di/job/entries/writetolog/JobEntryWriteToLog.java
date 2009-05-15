@@ -24,8 +24,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -43,6 +43,8 @@ import org.w3c.dom.Node;
 
 public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryWriteToLog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String logmessage;
 	public  int     loglevel;
 	private String logsubject;
@@ -52,7 +54,6 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		super(n, "");
 		logmessage=null;
 		logsubject=null;
-		setJobEntryType(JobEntryType.WRITE_TO_LOG);
 	}
 	
 	
@@ -60,12 +61,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 	{
 		this("");
 	}
-	
-	public JobEntryWriteToLog(JobEntryBase jeb)
-	{
-		super(jeb);
-	}
-    
+
     public Object clone()
     {
         JobEntryWriteToLog je = (JobEntryWriteToLog) super.clone();
@@ -96,7 +92,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("WriteToLog.Error.UnableToLoadFromXML.Label"), e);
+			throw new KettleXMLException(BaseMessages.getString(PKG, "WriteToLog.Error.UnableToLoadFromXML.Label"), e);
 			
 		}
 	}
@@ -114,7 +110,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("WriteToLog.Error.UnableToLoadFromRepository.Label")+id_jobentry, dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "WriteToLog.Error.UnableToLoadFromRepository.Label")+id_jobentry, dbe);
 			
 		}
 	}
@@ -135,7 +131,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("WriteToLog.Error.UnableToSaveToRepository.Label")+id_job, dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "WriteToLog.Error.UnableToSaveToRepository.Label")+id_job, dbe);
 		}
 	}
 
@@ -204,7 +200,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		catch(Exception e)
 		{
 			result.setNrErrors(1);
-			log.logError(Messages.getString("WriteToLog.Error.Label"), Messages.getString("WriteToLog.Error.Description") + " : "+e.toString());
+			log.logError(BaseMessages.getString(PKG, "WriteToLog.Error.Label"), BaseMessages.getString(PKG, "WriteToLog.Error.Description") + " : "+e.toString());
 			return false;
 		}
 	

@@ -17,7 +17,6 @@
 package org.pentaho.di.ui.job.entries.msgboxinfo;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -32,13 +31,14 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.msgboxinfo.JobEntryMsgBoxInfo;
-import org.pentaho.di.job.entries.msgboxinfo.Messages;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -57,6 +57,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  */
 public class JobEntryMsgBoxInfoDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryMsgBoxInfo.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label wlName;
 
     private Text wName;
@@ -93,7 +95,7 @@ public class JobEntryMsgBoxInfoDialog extends JobEntryDialog implements JobEntry
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryMsgBoxInfo) jobEntryInt;
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("MsgBoxInfo.Name.Default"));
+            this.jobEntry.setName(BaseMessages.getString(PKG, "MsgBoxInfo.Name.Default"));
     }
 
     public JobEntryInterface open()
@@ -119,22 +121,22 @@ public class JobEntryMsgBoxInfoDialog extends JobEntryDialog implements JobEntry
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("MsgBoxInfo.Title"));
+        shell.setText(BaseMessages.getString(PKG, "MsgBoxInfo.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
         // at the bottom
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
 
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("MsgBoxInfo.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "MsgBoxInfo.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
@@ -153,7 +155,7 @@ public class JobEntryMsgBoxInfoDialog extends JobEntryDialog implements JobEntry
 
 		// Title Msgbox
 		wlTitleMessage = new Label(shell, SWT.RIGHT);
-		wlTitleMessage.setText(Messages.getString("MsgBoxInfo.TitleMessage.Label"));
+		wlTitleMessage.setText(BaseMessages.getString(PKG, "MsgBoxInfo.TitleMessage.Label"));
 		props.setLook(wlTitleMessage);
 		fdlTitleMessage = new FormData();
 		fdlTitleMessage.left = new FormAttachment(0, 0);
@@ -172,7 +174,7 @@ public class JobEntryMsgBoxInfoDialog extends JobEntryDialog implements JobEntry
 
         // Body Msgbox
 		wlBodyMessage = new Label(shell, SWT.RIGHT);
-        wlBodyMessage.setText(Messages.getString("MsgBoxInfo.BodyMessage.Label"));
+        wlBodyMessage.setText(BaseMessages.getString(PKG, "MsgBoxInfo.BodyMessage.Label"));
         props.setLook(wlBodyMessage);
         fdlBodyMessage = new FormData();
         fdlBodyMessage.left = new FormAttachment(0, 0);
@@ -181,7 +183,7 @@ public class JobEntryMsgBoxInfoDialog extends JobEntryDialog implements JobEntry
         wlBodyMessage.setLayoutData(fdlBodyMessage);
 
         wBodyMessage = new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-        wBodyMessage.setText(Messages.getString("MsgBoxInfo.Name.Default"));
+        wBodyMessage.setText(BaseMessages.getString(PKG, "MsgBoxInfo.Name.Default"));
         props.setLook(wBodyMessage,Props.WIDGET_STYLE_FIXED);
         wBodyMessage.addModifyListener(lsMod);
         fdBodyMessage = new FormData();
@@ -284,8 +286,8 @@ public class JobEntryMsgBoxInfoDialog extends JobEntryDialog implements JobEntry
  	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
        }

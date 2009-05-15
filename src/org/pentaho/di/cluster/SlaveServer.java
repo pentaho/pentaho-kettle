@@ -52,6 +52,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.www.AddExportServlet;
@@ -75,6 +76,8 @@ import org.w3c.dom.Node;
 
 public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace
 {
+	private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final String XML_TAG = "slaveserver"; //$NON-NLS-1$
 
     private static LogWriter log = LogWriter.getInstance();    
@@ -191,7 +194,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         RowMetaAndData row = rep.getSlaveServer(id_slave_server);
         if (row==null)
         {
-            throw new KettleDatabaseException(Messages.getString("SlaveServer.SlaveCouldNotBeFound", Long.toString(id_slave_server))); //$NON-NLS-1$
+            throw new KettleDatabaseException(BaseMessages.getString(PKG, "SlaveServer.SlaveCouldNotBeFound", Long.toString(id_slave_server))); //$NON-NLS-1$
         }
         
         name          = row.getString(Repository.FIELD_SLAVE_NAME, null); //$NON-NLS-1$
@@ -384,7 +387,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         // Prepare HTTP put
         // 
         String urlString = constructUrl(service);
-        log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
+        log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
         PutMethod putMethod = new PutMethod(urlString);
         
         // Request content will be retrieved directly from the input stream
@@ -415,7 +418,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
             int result = client.executeMethod(put);
             
             // The status code
-            log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
+            log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
             
             // the response
             InputStream inputStream = new BufferedInputStream(put.getResponseBodyAsStream(), 1000);
@@ -441,7 +444,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
             
 
             // String body = post.getResponseBodyAsString(); 
-            log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
+            log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
             
             return body;
         }
@@ -449,7 +452,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         {
             // Release current connection to the connection pool once you are done
             put.releaseConnection();
-            log.logDetailed(toString(), Messages.getString("SlaveServer.DETAILED_SentXmlToService", service, environmentSubstitute(hostname))); //$NON-NLS-1$
+            log.logDetailed(toString(), BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentXmlToService", service, environmentSubstitute(hostname))); //$NON-NLS-1$
         }
     }
 
@@ -469,7 +472,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     	}
 
         String urlString = constructUrl(serviceUrl);
-        log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
+        log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
 
         PutMethod putMethod = new PutMethod(urlString);
         
@@ -494,7 +497,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
             int result = client.executeMethod(putMethod);
             
             // The status code
-            log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
+            log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
             
             // the response
             InputStream inputStream = new BufferedInputStream(putMethod.getResponseBodyAsStream(), 1000);
@@ -520,7 +523,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
             
 
             // String body = post.getResponseBodyAsString(); 
-            log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
+            log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
             
             return body;
         }
@@ -528,7 +531,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         {
             // Release current connection to the connection pool once you are done
             putMethod.releaseConnection();
-            log.logDetailed(toString(), Messages.getString("SlaveServer.DETAILED_SentExportToService", AddExportServlet.CONTEXT_PATH, environmentSubstitute(hostname))); //$NON-NLS-1$
+            log.logDetailed(toString(), BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentExportToService", AddExportServlet.CONTEXT_PATH, environmentSubstitute(hostname))); //$NON-NLS-1$
         }
     }
 
@@ -572,7 +575,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
             int result = client.executeMethod(method);
             
             // The status code
-            log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
+            log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
             
             // the response
             InputStream inputStream = new BufferedInputStream(method.getResponseBodyAsStream());
@@ -587,8 +590,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
             
             String body = bodyBuffer.toString();
 
-            log.logDetailed(toString(), Messages.getString("SlaveServer.DETAILED_FinishedReading", Integer.toString(bodyBuffer.length()))); //$NON-NLS-1$
-            log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
+            log.logDetailed(toString(), BaseMessages.getString(PKG, "SlaveServer.DETAILED_FinishedReading", Integer.toString(bodyBuffer.length()))); //$NON-NLS-1$
+            log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
             
             return body;
         }
@@ -596,7 +599,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         {
             // Release current connection to the connection pool once you are done
             method.releaseConnection();
-            log.logDetailed(toString(), Messages.getString("SlaveServer.DETAILED_ExecutedService", service, hostname) ); //$NON-NLS-1$
+            log.logDetailed(toString(), BaseMessages.getString(PKG, "SlaveServer.DETAILED_ExecutedService", service, hostname) ); //$NON-NLS-1$
         }
 
     }
@@ -626,7 +629,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
             try
             {
                 if(log.isBasic())
-                	log.logBasic(toString(), Messages.getString("SlaveServer.DEBUG_ConnectingTo", urlToUse)); //$NON-NLS-1$
+                	log.logBasic(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlToUse)); //$NON-NLS-1$
 
                 if (proxyHostname!=null) 
                 {
@@ -651,7 +654,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
                 server = new URL(urlToUse);
                 URLConnection connection = server.openConnection();
                 
-                log.logDetailed(toString(), Messages.getString("SlaveServer.StartReadingReply")); //$NON-NLS-1$
+                log.logDetailed(toString(), BaseMessages.getString(PKG, "SlaveServer.StartReadingReply")); //$NON-NLS-1$
     
                 // Read the result from the server...
                 InputStream inputStream = new BufferedInputStream(connection.getInputStream(), 1000);
@@ -666,23 +669,23 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
                     bytesRead+=line.length();
                 }
                 if(log.isBasic())
-                	log.logBasic(toString(), Messages.getString("SlaveServer.FinishedReadingResponse"), bytesRead); //$NON-NLS-1$
+                	log.logBasic(toString(), BaseMessages.getString(PKG, "SlaveServer.FinishedReadingResponse"), bytesRead); //$NON-NLS-1$
                 if(log.isDebug())
                 	log.logDebug(toString(), "response from the webserver: {0}", result);
             }
             catch(MalformedURLException e)
             {
-                log.logError(toString(), Messages.getString("SlaveServer.UrlIsInvalid", urlToUse, e.getMessage())); //$NON-NLS-1$
+                log.logError(toString(), BaseMessages.getString(PKG, "SlaveServer.UrlIsInvalid", urlToUse, e.getMessage())); //$NON-NLS-1$
                 log.logError(toString(), Const.getStackTracker(e));
             }
             catch(IOException e)
             {
-                log.logError(toString(), Messages.getString("SlaveServer.CannotSaveDueToIOError", e.getMessage())); //$NON-NLS-1$
+                log.logError(toString(), BaseMessages.getString(PKG, "SlaveServer.CannotSaveDueToIOError", e.getMessage())); //$NON-NLS-1$
                 log.logError(toString(), Const.getStackTracker(e));
             }
             catch(Exception e)
             {
-                log.logError(toString(), Messages.getString("SlaveServer.ErrorReceivingFile", e.getMessage())); //$NON-NLS-1$
+                log.logError(toString(), BaseMessages.getString(PKG, "SlaveServer.ErrorReceivingFile", e.getMessage())); //$NON-NLS-1$
                 log.logError(toString(), Const.getStackTracker(e));
             }
             finally
@@ -694,7 +697,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
                 }
                 catch(Exception e)
                 {
-                    log.logError(toString(), Messages.getString("SlaveServer.CannotCloseStream", e.getMessage())); //$NON-NLS-1$
+                    log.logError(toString(), BaseMessages.getString(PKG, "SlaveServer.CannotCloseStream", e.getMessage())); //$NON-NLS-1$
                     log.logError(toString(), Const.getStackTracker(e));
                 }
 
@@ -710,7 +713,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         }
         catch(Exception e)
         {
-            throw new Exception(Messages.getString("SlaveServer.CannotContactURLForSecurityInformation", urlToUse), e); //$NON-NLS-1$
+            throw new Exception(BaseMessages.getString(PKG, "SlaveServer.CannotContactURLForSecurityInformation", urlToUse), e); //$NON-NLS-1$
         }
     }
     

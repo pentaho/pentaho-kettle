@@ -18,8 +18,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.pentaho.di.job.JobEntryType;
-
 /**
  * An alternative when defining Jobs. Classes annotated with "Job" are
  * automatically recognized and registered as a job.
@@ -43,8 +41,6 @@ public @interface Job
 
 	String image();
 
-	JobEntryType type();
-	
 	String version() default "";
 	
 	int category() default -1;

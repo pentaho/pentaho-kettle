@@ -33,6 +33,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
@@ -59,6 +60,8 @@ import org.w3c.dom.Node;
 public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface, SharedObjectInterface, 
                                                           CheckResultSourceInterface, ResourceExportInterface, ResourceHolderInterface
 {
+	private static Class<?> PKG = StepMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final String XML_TAG = "step";
 
 	public static final Object STRING_ID_MAPPING        = "Mapping";
@@ -214,7 +217,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 			stepname = XMLHandler.getTagValue(stepnode, "name"); //$NON-NLS-1$
 			stepid   = XMLHandler.getTagValue(stepnode, "type"); //$NON-NLS-1$
 	
-			log.logDebug("StepMeta()", Messages.getString("StepMeta.Log.LookingForTheRightStepNode",stepname)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			log.logDebug("StepMeta()", BaseMessages.getString(PKG, "StepMeta.Log.LookingForTheRightStepNode",stepname)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	
 			// Create a new StepMetaInterface object...
 			StepPlugin sp = steploader.findStepPluginWithID(stepid);
@@ -225,7 +228,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
             }
             else
             {
-                throw new KettleStepLoaderException(Messages.getString("StepMeta.Exception.UnableToLoadClass",stepid)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                throw new KettleStepLoaderException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadClass",stepid)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
 			
 			// Load the specifics from XML...
@@ -233,7 +236,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 			{
 				stepMetaInterface.loadXML(stepnode, databases, counters);
 			}
-			log.logDebug("StepMeta()", Messages.getString("StepMeta.Log.SpecificLoadedStep",stepname)); //$NON-NLS-1$ //$NON-NLS-2$
+			log.logDebug("StepMeta()", BaseMessages.getString(PKG, "StepMeta.Log.SpecificLoadedStep",stepname)); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			/* Handle info general to all step types...*/
 			description    = XMLHandler.getTagValue(stepnode, "description"); //$NON-NLS-1$
@@ -282,11 +285,11 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
             	remoteOutputSteps.add( new RemoteStep( XMLHandler.getSubNodeByNr(outputNode, RemoteStep.XML_TAG, i) ) );
             }
             
-			log.logDebug("StepMeta()", Messages.getString("StepMeta.Log.EndOfReadXML")); //$NON-NLS-1$ //$NON-NLS-2$
+			log.logDebug("StepMeta()", BaseMessages.getString(PKG, "StepMeta.Log.EndOfReadXML")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("StepMeta.Exception.UnableToLoadStepInfo")+e.toString(), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadStepInfo")+e.toString(), e); //$NON-NLS-1$
 		}
 	}
     
@@ -622,7 +625,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
                 }
                 else
                 {
-                    throw new KettleStepLoaderException(Messages.getString("StepMeta.Exception.UnableToLoadClass",stepid+Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    throw new KettleStepLoaderException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadClass",stepid+Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 }
 
 				stepMetaInterface = BaseStep.getStepInfo(sp, steploader);
@@ -640,12 +643,12 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 			}
 			else
 			{
-				throw new KettleException(Messages.getString("StepMeta.Exception.StepInfoCouldNotBeFound",String.valueOf(id_step))); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.StepInfoCouldNotBeFound",String.valueOf(id_step))); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("StepMeta.Exception.StepCouldNotBeLoaded",String.valueOf(getID())), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+			throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.StepCouldNotBeLoaded",String.valueOf(getID())), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -657,7 +660,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         
 		try
 		{
-			log.logDebug(toString(), Messages.getString("StepMeta.Log.SaveNewStep")); //$NON-NLS-1$
+			log.logDebug(toString(), BaseMessages.getString(PKG, "StepMeta.Log.SaveNewStep")); //$NON-NLS-1$
 			// Insert new Step in repository
 			setID(rep.insertStep(	id_transformation,
 									getName(), 
@@ -676,7 +679,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	
 			// The id_step is known, as well as the id_transformation
 			// This means we can now save the attributes of the step...
-			log.logDebug(toString(), Messages.getString("StepMeta.Log.SaveStepDetails")); //$NON-NLS-1$
+			log.logDebug(toString(), BaseMessages.getString(PKG, "StepMeta.Log.SaveStepDetails")); //$NON-NLS-1$
 			stepMetaInterface.saveRep(rep, id_transformation, getID());
             
             // Save the clustering schema that was chosen.
@@ -684,7 +687,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		}
 		catch(KettleException e)
 		{
-			throw new KettleException(Messages.getString("StepMeta.Exception.UnableToSaveStepInfo",String.valueOf(id_transformation)), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToSaveStepInfo",String.valueOf(id_transformation)), e); //$NON-NLS-1$
 		}
 	}
 

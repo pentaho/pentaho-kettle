@@ -2300,7 +2300,7 @@ public class RepositoryExplorerDialog extends Dialog
 		try
 		{
 			long idDatabase = rep.getDatabaseID(databasename);
-			DatabaseMeta databaseMeta = RepositoryUtil.loadDatabaseMeta(rep, idDatabase);
+			DatabaseMeta databaseMeta = rep.loadDatabaseMeta(idDatabase);
 
 			DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
 			String name = dd.open();
@@ -3192,7 +3192,7 @@ public class RepositoryExplorerDialog extends Dialog
         try
         {
             long id = rep.getClusterID(clusterName);
-            ClusterSchema cluster = new ClusterSchema(rep, id, rep.getSlaveServers());
+            ClusterSchema cluster = rep.loadClusterSchema(id, rep.getSlaveServers());
 
             ClusterSchemaDialog dd = new ClusterSchemaDialog(shell, cluster, rep.getSlaveServers());
             if (dd.open())

@@ -12,16 +12,15 @@
 
 package org.pentaho.di.job.entries.columnsexist;
 
-import org.w3c.dom.Node;
-
 import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
 import java.util.List;
-import org.pentaho.di.core.Const;
+
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -30,8 +29,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -39,6 +38,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.w3c.dom.Node;
 
 
 /**
@@ -51,6 +51,7 @@ import org.pentaho.di.resource.ResourceEntry.ResourceType;
 
 public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryColumnsExist.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	private String schemaname;
 	private String tablename;
 	private DatabaseMeta connection;
@@ -63,7 +64,6 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 		tablename=null;
 		connection=null;
 		setID(-1L);
-		setJobEntryType(JobEntryType.COLUMNS_EXIST);
 	}
 	
 	public JobEntryColumnsExist()
@@ -71,11 +71,6 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 		this("");
 	}
 
-	public JobEntryColumnsExist(JobEntryBase jeb)
-	{
-		super(jeb);
-	}
-    
     public Object clone()
     {
         JobEntryColumnsExist je = (JobEntryColumnsExist) super.clone();
@@ -132,7 +127,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 		}
 		catch(KettleException e)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryColumnsExist.Meta.UnableLoadXml"), e);
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryColumnsExist.Meta.UnableLoadXml"), e);
 		}
 	}
 
@@ -171,7 +166,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryColumnsExist.Meta.UnableLoadRep",""+id_jobentry), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryColumnsExist.Meta.UnableLoadRep",""+id_jobentry), dbe);
 		}
 	}
 	
@@ -196,7 +191,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryColumnsExist.Meta.UnableSaveRep",""+id_job), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryColumnsExist.Meta.UnableSaveRep",""+id_job), dbe);
 		}
 	}
 
@@ -252,12 +247,12 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 		
 		if(Const.isEmpty(tablename))
 		{
-			log.logError(toString(), Messages.getString("JobEntryColumnsExist.Error.TablenameEmpty"));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Error.TablenameEmpty"));
 			return result;
 		}
 		if(arguments == null) 
 		{
-			log.logError(toString(), Messages.getString("JobEntryColumnsExist.Error.ColumnameEmpty"));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Error.ColumnameEmpty"));
 			return result;
 		}
 		if (connection!=null)
@@ -278,7 +273,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 
 				if (db.checkTableExists(realTablename))
 				{
-					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryColumnsExist.Log.TableExists",realTablename));
+					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Log.TableExists",realTablename));
 				
 					for (int i = 0; i < arguments.length && !parentJob.isStopped(); i++) 
 				     {
@@ -287,23 +282,23 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 						 
 						 if (db.checkColumnExists(realColumnname,realTablename))
 						 {
-							if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryColumnsExist.Log.ColumnExists",realColumnname,realTablename));
+							if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Log.ColumnExists",realColumnname,realTablename));
 							nrexistcolums++;
 						 }else
 						 {
-							log.logError(toString(), Messages.getString("JobEntryColumnsExist.Log.ColumnNotExists",realColumnname,realTablename));
+							log.logError(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Log.ColumnNotExists",realColumnname,realTablename));
 							nrnotexistcolums++;
 						 }
 				     }
 				}
 				else
 				{
-					log.logError(toString(), Messages.getString("JobEntryColumnsExist.Log.TableNotExists",realTablename));
+					log.logError(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Log.TableNotExists",realTablename));
 				}	
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				log.logError(toString(), Messages.getString("JobEntryColumnsExist.Error.UnexpectedError",dbe.getMessage()));
+				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Error.UnexpectedError",dbe.getMessage()));
 			}finally
 			{
 				if(db!=null) try{db.disconnect();}catch(Exception e){};
@@ -311,7 +306,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 		}
 		else
 		{
-			log.logError(toString(), Messages.getString("JobEntryColumnsExist.Error.NoDbConnection"));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Error.NoDbConnection"));
 		}
 		
 		result.setEntryNr(nrnotexistcolums);

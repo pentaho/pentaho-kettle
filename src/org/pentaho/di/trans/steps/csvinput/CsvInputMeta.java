@@ -59,8 +59,8 @@ import org.w3c.dom.Node;
 
 public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, InputFileMetaInterface
 {
-	private static String PKG = "org.pentaho.di.trans.steps.csvinput"; // for i18n purposes, needed by Translator2   $NON-NLS-1$
-		
+	private static Class<?> PKG = CsvInput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	
 	private String filename;
 	
 	private String filenameField;

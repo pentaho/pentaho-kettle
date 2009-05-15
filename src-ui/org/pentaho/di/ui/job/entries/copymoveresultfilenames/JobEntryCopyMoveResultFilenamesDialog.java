@@ -10,10 +10,7 @@
 package org.pentaho.di.ui.job.entries.copymoveresultfilenames;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.widgets.MessageBox; 
-
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -27,24 +24,24 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.Const;
-
-import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.job.entries.copymoveresultfilenames.JobEntryCopyMoveResultFilenames;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.copymoveresultfilenames.JobEntryCopyMoveResultFilenames;
-import org.pentaho.di.job.entries.copymoveresultfilenames.Messages;
 
 
 /**
@@ -55,7 +52,8 @@ import org.pentaho.di.job.entries.copymoveresultfilenames.Messages;
  */
 public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
-	
+	private static Class<?> PKG = JobEntryCopyMoveResultFilenames.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlName;
 	private Text         wName;
     private FormData     fdlName, fdName;
@@ -150,7 +148,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
         jobEntry = (JobEntryCopyMoveResultFilenames) jobEntryInt;
 
 		if (this.jobEntry.getName() == null) 
-			this.jobEntry.setName(Messages.getString("JobEntryDeleteResultFilenames.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.Name.Default"));
 	}
 
 	public JobEntryInterface open()
@@ -176,14 +174,14 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobEntryCopyMoveResultFilenames.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Name line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobEntryCopyMoveResultFilenames.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -201,7 +199,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		
 		//Copy or Move
 	  	wlAction = new Label(shell, SWT.RIGHT);
-	  	wlAction.setText(Messages.getString("JobEntryCopyMoveResultFilenames.Action.Label"));
+	  	wlAction.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Action.Label"));
 	  	props.setLook(wlAction);
 	  	fdlAction = new FormData();
 	  	fdlAction.left = new FormAttachment(0,0);
@@ -209,8 +207,8 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 	  	fdlAction.top = new FormAttachment(wName, 2*margin);
 	  	wlAction.setLayoutData(fdlAction);
 	  	wAction = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-	  	wAction.add(Messages.getString("JobEntryCopyMoveResultFilenames.Copy.Label"));
-	  	wAction.add(Messages.getString("JobEntryCopyMoveResultFilenames.Move.Label"));
+	  	wAction.add(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Copy.Label"));
+	  	wAction.add(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Move.Label"));
 	  	wAction.select(0); // +1: starts at -1
 	  	
 		props.setLook(wAction);
@@ -223,7 +221,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		
 		// Foldername line
 		wlFoldername=new Label(shell, SWT.RIGHT);
-		wlFoldername.setText(Messages.getString("JobEntryCopyMoveResultFilenames.Foldername.Label"));
+		wlFoldername.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Foldername.Label"));
  		props.setLook(wlFoldername);
 		fdlFoldername=new FormData();
 		fdlFoldername.left = new FormAttachment(0, 0);
@@ -233,7 +231,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 
 		wbFoldername=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFoldername);
-		wbFoldername.setText(Messages.getString("System.Button.Browse"));
+		wbFoldername.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbFoldername=new FormData();
 		fdbFoldername.right= new FormAttachment(100, 0);
 		fdbFoldername.top  = new FormAttachment(wAction, 0);
@@ -281,7 +279,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		
 		// Create destination folder
 		wlCreateDestinationFolder = new Label(shell, SWT.RIGHT);
-		wlCreateDestinationFolder.setText(Messages.getString("JobEntryCopyMoveResultFilenames.CreateDestinationFolder.Label"));
+		wlCreateDestinationFolder.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.CreateDestinationFolder.Label"));
 		props.setLook(wlCreateDestinationFolder);
 		fdlCreateDestinationFolder = new FormData();
 		fdlCreateDestinationFolder.left = new FormAttachment(0, 0);
@@ -290,7 +288,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		wlCreateDestinationFolder.setLayoutData(fdlCreateDestinationFolder);
 		wCreateDestinationFolder = new Button(shell, SWT.CHECK);
 		props.setLook(wCreateDestinationFolder);
-		wCreateDestinationFolder.setToolTipText(Messages.getString("JobEntryCopyMoveResultFilenames.CreateDestinationFolder.Tooltip"));
+		wCreateDestinationFolder.setToolTipText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.CreateDestinationFolder.Tooltip"));
 		fdCreateDestinationFolder = new FormData();
 		fdCreateDestinationFolder.left = new FormAttachment(middle, 0);
 		fdCreateDestinationFolder.top = new FormAttachment(wFoldername, margin);
@@ -306,7 +304,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		
 		// Overwrite files
 		wlOverwriteFile = new Label(shell, SWT.RIGHT);
-		wlOverwriteFile.setText(Messages.getString("JobEntryCopyMoveResultFilenames.OverwriteFile.Label"));
+		wlOverwriteFile.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.OverwriteFile.Label"));
 		props.setLook(wlOverwriteFile);
 		fdlOverwriteFile = new FormData();
 		fdlOverwriteFile.left = new FormAttachment(0, 0);
@@ -315,7 +313,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		wlOverwriteFile.setLayoutData(fdlOverwriteFile);
 		wOverwriteFile = new Button(shell, SWT.CHECK);
 		props.setLook(wOverwriteFile);
-		wOverwriteFile.setToolTipText(Messages.getString("JobEntryCopyMoveResultFilenames.OverwriteFile.Tooltip"));
+		wOverwriteFile.setToolTipText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.OverwriteFile.Tooltip"));
 		fdOverwriteFile = new FormData();
 		fdOverwriteFile.left = new FormAttachment(middle, 0);
 		fdOverwriteFile.top = new FormAttachment(wCreateDestinationFolder, margin);
@@ -331,7 +329,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		
 		// Remove source filename from result filenames
 		wlRemovedSourceFilename = new Label(shell, SWT.RIGHT);
-		wlRemovedSourceFilename.setText(Messages.getString("JobEntryCopyMoveResultFilenames.RemovedSourceFilename.Label"));
+		wlRemovedSourceFilename.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.RemovedSourceFilename.Label"));
 		props.setLook(wlRemovedSourceFilename);
 		fdlRemovedSourceFilename = new FormData();
 		fdlRemovedSourceFilename.left = new FormAttachment(0, 0);
@@ -340,7 +338,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		wlRemovedSourceFilename.setLayoutData(fdlRemovedSourceFilename);
 		wRemovedSourceFilename = new Button(shell, SWT.CHECK);
 		props.setLook(wRemovedSourceFilename);
-		wRemovedSourceFilename.setToolTipText(Messages.getString("JobEntryCopyMoveResultFilenames.RemovedSourceFilename.Tooltip"));
+		wRemovedSourceFilename.setToolTipText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.RemovedSourceFilename.Tooltip"));
 		fdRemovedSourceFilename = new FormData();
 		fdRemovedSourceFilename.left = new FormAttachment(middle, 0);
 		fdRemovedSourceFilename.top = new FormAttachment(wOverwriteFile, margin);
@@ -356,7 +354,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		
 		// Add destination filename to result filenames
 		wlAddDestinationFilename = new Label(shell, SWT.RIGHT);
-		wlAddDestinationFilename.setText(Messages.getString("JobEntryCopyMoveResultFilenames.AddDestinationFilename.Label"));
+		wlAddDestinationFilename.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.AddDestinationFilename.Label"));
 		props.setLook(wlAddDestinationFilename);
 		fdlAddDestinationFilename = new FormData();
 		fdlAddDestinationFilename.left = new FormAttachment(0, 0);
@@ -365,7 +363,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		wlAddDestinationFilename.setLayoutData(fdlAddDestinationFilename);
 		wAddDestinationFilename = new Button(shell, SWT.CHECK);
 		props.setLook(wAddDestinationFilename);
-		wAddDestinationFilename.setToolTipText(Messages.getString("JobEntryCopyMoveResultFilenames.AddDestinationFilename.Tooltip"));
+		wAddDestinationFilename.setToolTipText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.AddDestinationFilename.Tooltip"));
 		fdAddDestinationFilename = new FormData();
 		fdAddDestinationFilename.left = new FormAttachment(middle, 0);
 		fdAddDestinationFilename.top = new FormAttachment(wRemovedSourceFilename, margin);
@@ -382,7 +380,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		
 		// Create multi-part file?
 		wlAddDate=new Label(shell, SWT.RIGHT);
-		wlAddDate.setText(Messages.getString("JobEntryCopyMoveResultFilenames.AddDate.Label"));
+		wlAddDate.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.AddDate.Label"));
  		props.setLook(wlAddDate);
 		fdlAddDate=new FormData();
 		fdlAddDate.left = new FormAttachment(0, 0);
@@ -391,7 +389,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		wlAddDate.setLayoutData(fdlAddDate);
 		wAddDate=new Button(shell, SWT.CHECK);
  		props.setLook(wAddDate);
- 		wAddDate.setToolTipText(Messages.getString("JobEntryCopyMoveResultFilenames.AddDate.Tooltip"));
+ 		wAddDate.setToolTipText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.AddDate.Tooltip"));
 		fdAddDate=new FormData();
 		fdAddDate.left = new FormAttachment(middle, 0);
 		fdAddDate.top  = new FormAttachment(wAddDestinationFilename, margin);
@@ -408,7 +406,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		);
 		// Create multi-part file?
 		wlAddTime=new Label(shell, SWT.RIGHT);
-		wlAddTime.setText(Messages.getString("JobEntryCopyMoveResultFilenames.AddTime.Label"));
+		wlAddTime.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.AddTime.Label"));
  		props.setLook(wlAddTime);
 		fdlAddTime=new FormData();
 		fdlAddTime.left = new FormAttachment(0, 0);
@@ -417,7 +415,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		wlAddTime.setLayoutData(fdlAddTime);
 		wAddTime=new Button(shell, SWT.CHECK);
  		props.setLook(wAddTime);
- 		wAddTime.setToolTipText(Messages.getString("JobEntryCopyMoveResultFilenames.AddTime.Tooltip"));
+ 		wAddTime.setToolTipText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.AddTime.Tooltip"));
 		fdAddTime=new FormData();
 		fdAddTime.left = new FormAttachment(middle, 0);
 		fdAddTime.top  = new FormAttachment(wAddDate, margin);
@@ -435,7 +433,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 
 		// Specify date time format?
 		wlSpecifyFormat=new Label(shell, SWT.RIGHT);
-		wlSpecifyFormat.setText(Messages.getString("JobEntryCopyMoveResultFilenames.SpecifyFormat.Label"));
+		wlSpecifyFormat.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.SpecifyFormat.Label"));
 		props.setLook(wlSpecifyFormat);
 		fdlSpecifyFormat=new FormData();
 		fdlSpecifyFormat.left = new FormAttachment(0, 0);
@@ -444,7 +442,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		wlSpecifyFormat.setLayoutData(fdlSpecifyFormat);
 		wSpecifyFormat=new Button(shell, SWT.CHECK);
 		props.setLook(wSpecifyFormat);
-		wSpecifyFormat.setToolTipText(Messages.getString("JobEntryCopyMoveResultFilenames.SpecifyFormat.Tooltip"));
+		wSpecifyFormat.setToolTipText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.SpecifyFormat.Tooltip"));
 	    fdSpecifyFormat=new FormData();
 		fdSpecifyFormat.left = new FormAttachment(middle, 0);
 		fdSpecifyFormat.top  = new FormAttachment(wAddTime, margin);
@@ -467,7 +465,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		
  		// DateTimeFormat
 		wlDateTimeFormat=new Label(shell, SWT.RIGHT);
-        wlDateTimeFormat.setText(Messages.getString("JobEntryCopyMoveResultFilenames.DateTimeFormat.Label"));
+        wlDateTimeFormat.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.DateTimeFormat.Label"));
         props.setLook(wlDateTimeFormat);
         fdlDateTimeFormat=new FormData();
         fdlDateTimeFormat.left = new FormAttachment(0, 0);
@@ -489,7 +487,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 
         // Add Date befor extension?
         wlAddDateBeforeExtension = new Label(shell, SWT.RIGHT);
-        wlAddDateBeforeExtension.setText(Messages.getString("JobEntryCopyMoveResultFilenames.AddDateBeforeExtension.Label"));
+        wlAddDateBeforeExtension.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.AddDateBeforeExtension.Label"));
         props.setLook(wlAddDateBeforeExtension);
         fdlAddDateBeforeExtension = new FormData();
         fdlAddDateBeforeExtension.left = new FormAttachment(0, 0);
@@ -498,7 +496,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
         wlAddDateBeforeExtension.setLayoutData(fdlAddDateBeforeExtension);
         wAddDateBeforeExtension = new Button(shell, SWT.CHECK);
         props.setLook(wAddDateBeforeExtension);
-        wAddDateBeforeExtension.setToolTipText(Messages.getString("JobEntryCopyMoveResultFilenames.AddDateBeforeExtension.Tooltip"));
+        wAddDateBeforeExtension.setToolTipText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.AddDateBeforeExtension.Tooltip"));
         fdAddDateBeforeExtension = new FormData();
         fdAddDateBeforeExtension.left = new FormAttachment(middle, 0);
         fdAddDateBeforeExtension.top = new FormAttachment(wDateTimeFormat, margin);
@@ -522,7 +520,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 
 		wLimitTo = new Group(shell, SWT.SHADOW_NONE);
 		props.setLook(wLimitTo);
-		wLimitTo.setText(Messages.getString("JobEntryCopyMoveResultFilenames.Group.LimitTo.Label"));
+		wLimitTo.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Group.LimitTo.Label"));
 
 		FormLayout groupLayout = new FormLayout();
 		groupLayout.marginWidth = 10;
@@ -532,7 +530,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		
         // Specify wildcard?
         wlSpecifyWildcard = new Label(wLimitTo, SWT.RIGHT);
-        wlSpecifyWildcard.setText(Messages.getString("JobEntryCopyMoveResultFilenames.SpecifyWildcard.Label"));
+        wlSpecifyWildcard.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.SpecifyWildcard.Label"));
         props.setLook(wlSpecifyWildcard);
         fdlSpecifyWildcard = new FormData();
         fdlSpecifyWildcard.left = new FormAttachment(0, 0);
@@ -541,7 +539,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
         wlSpecifyWildcard.setLayoutData(fdlSpecifyWildcard);
         wSpecifyWildcard = new Button(wLimitTo, SWT.CHECK);
         props.setLook(wSpecifyWildcard);
-        wSpecifyWildcard.setToolTipText(Messages.getString("JobEntryCopyMoveResultFilenames.SpecifyWildcard.Tooltip"));
+        wSpecifyWildcard.setToolTipText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.SpecifyWildcard.Tooltip"));
         fdSpecifyWildcard = new FormData();
         fdSpecifyWildcard.left = new FormAttachment(middle, 0);
         fdSpecifyWildcard.top = new FormAttachment(wAddDateBeforeExtension, margin);
@@ -560,7 +558,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
         
 		// Wildcard line
 		wlWildcard=new Label(wLimitTo, SWT.RIGHT);
-		wlWildcard.setText(Messages.getString("JobEntryCopyMoveResultFilenames.Wildcard.Label"));
+		wlWildcard.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Wildcard.Label"));
  		props.setLook(wlWildcard);
 		fdlWildcard=new FormData();
 		fdlWildcard.left = new FormAttachment(0, 0);
@@ -568,7 +566,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		fdlWildcard.right= new FormAttachment(middle, -margin);
 		wlWildcard.setLayoutData(fdlWildcard);
 		wWildcard=new TextVar(jobMeta,wLimitTo, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wWildcard.setToolTipText(Messages.getString("JobEntryCopyMoveResultFilenames.Wildcard.Tooltip"));
+		wWildcard.setToolTipText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Wildcard.Tooltip"));
  		props.setLook(wWildcard);
 		wWildcard.addModifyListener(lsMod);
 		fdWildcard=new FormData();
@@ -590,7 +588,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 
 		// wWildcardExclude
 		wlWildcardExclude=new Label(wLimitTo, SWT.RIGHT);
-		wlWildcardExclude.setText(Messages.getString("JobEntryCopyMoveResultFilenames.WildcardExclude.Label"));
+		wlWildcardExclude.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.WildcardExclude.Label"));
  		props.setLook(wlWildcardExclude);
 		fdlWildcardExclude=new FormData();
 		fdlWildcardExclude.left = new FormAttachment(0, 0);
@@ -598,7 +596,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		fdlWildcardExclude.right= new FormAttachment(middle, -margin);
 		wlWildcardExclude.setLayoutData(fdlWildcardExclude);
 		wWildcardExclude=new TextVar(jobMeta,wLimitTo, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wWildcardExclude.setToolTipText(Messages.getString("JobEntryCopyMoveResultFilenames.WildcardExclude.Tooltip"));
+		wWildcardExclude.setToolTipText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.WildcardExclude.Tooltip"));
  		props.setLook(wWildcardExclude);
 		wWildcardExclude.addModifyListener(lsMod);
 		fdWildcardExclude=new FormData();
@@ -637,7 +635,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 	     // /
 	    wSuccessOn= new Group(shell, SWT.SHADOW_NONE);
 	    props.setLook(wSuccessOn);
-	    wSuccessOn.setText(Messages.getString("JobEntryCopyMoveResultFilenames.SuccessOn.Group.Label"));
+	    wSuccessOn.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.SuccessOn.Group.Label"));
 
 	    FormLayout successongroupLayout = new FormLayout();
 	    successongroupLayout.marginWidth = 10;
@@ -648,7 +646,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 
 	    //Success Condition
 	  	wlSuccessCondition = new Label(wSuccessOn, SWT.RIGHT);
-	  	wlSuccessCondition.setText(Messages.getString("JobEntryCopyMoveResultFilenames.SuccessCondition.Label"));
+	  	wlSuccessCondition.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.SuccessCondition.Label"));
 	  	props.setLook(wlSuccessCondition);
 	  	fdlSuccessCondition = new FormData();
 	  	fdlSuccessCondition.left = new FormAttachment(0, 0);
@@ -656,9 +654,9 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 	  	fdlSuccessCondition.top = new FormAttachment(wLimitTo, 2*margin);
 	  	wlSuccessCondition.setLayoutData(fdlSuccessCondition);
 	  	wSuccessCondition = new CCombo(wSuccessOn, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-	  	wSuccessCondition.add(Messages.getString("JobEntryCopyMoveResultFilenames.SuccessWhenAllWorksFine.Label"));
-	  	wSuccessCondition.add(Messages.getString("JobEntryCopyMoveResultFilenames.SuccessWhenAtLeat.Label"));
-	  	wSuccessCondition.add(Messages.getString("JobEntryCopyMoveResultFilenames.SuccessWhenErrorsLessThan.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.SuccessWhenAllWorksFine.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.SuccessWhenAtLeat.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.SuccessWhenErrorsLessThan.Label"));
 	  	wSuccessCondition.select(0); // +1: starts at -1
 	  	
 		props.setLook(wSuccessCondition);
@@ -678,7 +676,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 
 		// Success when number of errors less than
 		wlNrErrorsLessThan= new Label(wSuccessOn, SWT.RIGHT);
-		wlNrErrorsLessThan.setText(Messages.getString("JobEntryCopyMoveResultFilenames.NrErrorsLessThan.Label"));
+		wlNrErrorsLessThan.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.NrErrorsLessThan.Label"));
 		props.setLook(wlNrErrorsLessThan);
 		fdlNrErrorsLessThan= new FormData();
 		fdlNrErrorsLessThan.left = new FormAttachment(0, 0);
@@ -687,8 +685,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		wlNrErrorsLessThan.setLayoutData(fdlNrErrorsLessThan);
 		
 		
-		wNrErrorsLessThan= new TextVar(jobMeta,wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobEntryCopyMoveResultFilenames.NrErrorsLessThan.Tooltip"));
+		wNrErrorsLessThan= new TextVar(jobMeta,wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.NrErrorsLessThan.Tooltip"));
 		props.setLook(wNrErrorsLessThan);
 		wNrErrorsLessThan.addModifyListener(lsMod);
 		fdNrErrorsLessThan= new FormData();
@@ -710,9 +707,9 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		
 		
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wSuccessOn);
 
@@ -853,8 +850,8 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		if(Const.isEmpty(wName.getText())) 
         {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
         }

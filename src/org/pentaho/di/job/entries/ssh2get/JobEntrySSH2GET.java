@@ -21,18 +21,15 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlank
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import java.io.FileOutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.vfs.FileType;
-import org.w3c.dom.Node;
-
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -42,9 +39,10 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -52,15 +50,15 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
-import org.pentaho.di.job.entries.ssh2get.FTPUtils;
+import org.w3c.dom.Node;
 
-import com.trilead.ssh2.SFTPv3DirectoryEntry;
 import com.trilead.ssh2.Connection;
-import com.trilead.ssh2.SFTPv3Client;
-import com.trilead.ssh2.KnownHosts;
-import com.trilead.ssh2.SFTPv3FileHandle;
-import com.trilead.ssh2.SFTPv3FileAttributes;
 import com.trilead.ssh2.HTTPProxyData;
+import com.trilead.ssh2.KnownHosts;
+import com.trilead.ssh2.SFTPv3Client;
+import com.trilead.ssh2.SFTPv3DirectoryEntry;
+import com.trilead.ssh2.SFTPv3FileAttributes;
+import com.trilead.ssh2.SFTPv3FileHandle;
 
 
 
@@ -74,6 +72,8 @@ import com.trilead.ssh2.HTTPProxyData;
 
 public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntrySSH2GET.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	LogWriter log = LogWriter.getInstance();
 	
 	private String serverName;
@@ -129,18 +129,11 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		cachehostkey=false;
 		timeout=0;
 		setID(-1L);
-		setJobEntryType(JobEntryType.SSH2_GET);
-		
 	}
 
 	public JobEntrySSH2GET()
 	{
 		this("");
-	}
-
-	public JobEntrySSH2GET(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -229,7 +222,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException(Messages.getString("JobSSH2GET.Log.UnableLoadXML", xe.getMessage()));
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobSSH2GET.Log.UnableLoadXML", xe.getMessage()));
 		}
 	}
 
@@ -273,7 +266,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException(Messages.getString("JobSSH2GET.Log.UnableLoadRep",""+id_jobentry,dbe.getMessage()));
+			throw new KettleException(BaseMessages.getString(PKG, "JobSSH2GET.Log.UnableLoadRep",""+id_jobentry,dbe.getMessage()));
 		}
 	}
 	
@@ -320,7 +313,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobSSH2GET.Log.UnableSaveRep",""+id_job,dbe.getMessage()));
+			throw new KettleException(BaseMessages.getString(PKG, "JobSSH2GET.Log.UnableSaveRep",""+id_job,dbe.getMessage()));
 		}
 	}
 
@@ -717,7 +710,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		Result result = previousResult;
 		result.setResult( false );
 		
-		if(log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("JobSSH2GET.Log.GettingFieldsValue"));
+		if(log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "JobSSH2GET.Log.GettingFieldsValue"));
 		
 		// Get real variable value
 		String realServerName=environmentSubstitute(serverName);
@@ -746,26 +739,26 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 			// Destination folder (Move to)
 			realDestinationFolder=FTPUtils.normalizePath(realDestinationFolder);
 		}catch(Exception e){
-			log.logError(toString(),Messages.getString("JobSSH2GET.Log.CanNotNormalizePath",e.getMessage()));
+			log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.CanNotNormalizePath",e.getMessage()));
 			result.setNrErrors(1);
 			return result;
 		}
 
 		// Check for mandatory fields
-		if(log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("JobSSH2GET.Log.CheckingMandatoryFields"));
+		if(log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "JobSSH2GET.Log.CheckingMandatoryFields"));
 		
 		boolean mandatoryok=true;
 		if(Const.isEmpty(realServerName))
 		{
 			mandatoryok=false;
-			log.logError(toString(),Messages.getString("JobSSH2GET.Log.ServernameMissing"));
+			log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.ServernameMissing"));
 		}
 		if(usehttpproxy)
 		{
 			if(Const.isEmpty(realProxyHost))
 			{
 				mandatoryok=false;
-				log.logError(toString(),Messages.getString("JobSSH2GET.Log.HttpProxyhostMissing"));
+				log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.HttpProxyhostMissing"));
 			}
 		}
 		if(publicpublickey)
@@ -773,14 +766,14 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 			if(Const.isEmpty(realKeyFilename))
 			{
 				mandatoryok=false;
-				log.logError(toString(),Messages.getString("JobSSH2GET.Log.KeyFileMissing"));
+				log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.KeyFileMissing"));
 			}else
 			{
 				// Let's check if key file exists...
 				if(!new File(realKeyFilename).exists())
 				{
 					mandatoryok=false;
-					log.logError(toString(),Messages.getString("JobSSH2GET.Log.KeyFileNotExist"));
+					log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.KeyFileNotExist"));
 				}
 			}
 		}
@@ -788,7 +781,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		if(Const.isEmpty(realLocalDirectory))
 		{
 			mandatoryok=false;
-			log.logError(toString(),Messages.getString("JobSSH2GET.Log.LocalFolderMissing"));
+			log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.LocalFolderMissing"));
 		}else{
 			// Check if target folder exists...
 			if(!new File(realLocalDirectory).exists())
@@ -802,13 +795,13 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 				}else
 				{
 					mandatoryok=false;
-					log.logError(toString(),Messages.getString("JobSSH2GET.Log.LocalFolderNotExists"));
+					log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.LocalFolderNotExists"));
 				}
 			}else{
 				if(!new File(realLocalDirectory).isDirectory())
 				{
 					mandatoryok=false;
-					log.logError(toString(),Messages.getString("JobSSH2GET.Log.LocalFolderNotFolder",realLocalDirectory));
+					log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.LocalFolderNotFolder",realLocalDirectory));
 				}
 			}
 		}
@@ -817,7 +810,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 			if(Const.isEmpty(realDestinationFolder))
 			{
 				mandatoryok=false;
-				log.logError(toString(),Messages.getString("JobSSH2GET.Log.DestinatFolderMissing"));
+				log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.DestinatFolderMissing"));
 			}
 		}
 		
@@ -832,7 +825,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 			{
 				// Create a connection instance 
 				conn = getConnection(realServerName,realServerPort,realProxyHost,realProxyPort,realproxyUserName,realProxyPassword);
-				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.ConnectionInstanceCreated"));
+				if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSSH2GET.Log.ConnectionInstanceCreated"));
 				if(timeout>0)
 				{
 					// Use timeout
@@ -860,14 +853,14 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	
 				// LET'S CHECK AUTHENTICATION ...
 				if (isAuthenticated == false)
-					log.logError(toString(),Messages.getString("JobSSH2GET.Log.AuthenticationFailed"));
+					log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.AuthenticationFailed"));
 				else
 				{
-					if(log.isBasic()) log.logBasic(toString(),Messages.getString("JobSSH2GET.Log.Connected",serverName,userName));
+					if(log.isBasic()) log.logBasic(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.Connected",serverName,userName));
 					
 					client = new SFTPv3Client(conn);
 					
-					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.ProtocolVersion",""+client.getProtocolVersion()));
+					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSSH2GET.Log.ProtocolVersion",""+client.getProtocolVersion()));
 					
 					// Check if ftp (source) directory exists
 					if(!Const.isEmpty(realftpDirectory))
@@ -875,10 +868,10 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 						if (!sshDirectoryExists(client, realftpDirectory)) 
 						{
 							good=false;
-							log.logError(toString(),Messages.getString("JobSSH2GET.Log.RemoteDirectoryNotExist",realftpDirectory));
+							log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.RemoteDirectoryNotExist",realftpDirectory));
 						}
 						else
-							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSSH2GET.Log.RemoteDirectoryExist",realftpDirectory));	
+							if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.RemoteDirectoryExist",realftpDirectory));	
 					}
 				
 					
@@ -893,7 +886,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 							}else
 							{
 								good=false;
-								log.logError(toString(),Messages.getString("JobSSH2GET.Log.DestinatFolderNotExist",realDestinationFolder));
+								log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.DestinatFolderNotExist",realDestinationFolder));
 							}
 						}
 					}
@@ -908,21 +901,21 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 				        
 						if(includeSubFolders)
 						{
-							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSSH2GET.Log.RecursiveModeOn"));
+							if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.RecursiveModeOn"));
 							copyRecursive( realftpDirectory ,realLocalDirectory, client,pattern,parentJob);
 						}else{
-							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSSH2GET.Log.RecursiveModeOff"));
+							if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.RecursiveModeOff"));
 							GetFiles(realftpDirectory, realLocalDirectory,client,pattern,parentJob);
 						}
 						
 						/********************************RESULT ********************/
 						if(log.isDetailed()) 
 						{
-							log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.Result.JobEntryEnd1"));
-						    log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.Result.TotalFiles",""+nbfilestoget));
-							log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.Result.TotalFilesPut",""+nbgot));
-							log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.Result.TotalFilesError",""+nbrerror));
-							log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.Result.JobEntryEnd2"));
+							log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSSH2GET.Log.Result.JobEntryEnd1"));
+						    log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSSH2GET.Log.Result.TotalFiles",""+nbfilestoget));
+							log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSSH2GET.Log.Result.TotalFilesPut",""+nbgot));
+							log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSSH2GET.Log.Result.TotalFilesError",""+nbrerror));
+							log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSSH2GET.Log.Result.JobEntryEnd2"));
 						}
 						if(nbrerror==0) result.setResult(true);
 						/********************************RESULT ********************/
@@ -934,7 +927,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 			catch (Exception e)
 			{
 				result.setNrErrors(nbrerror);
-				log.logError(toString(), Messages.getString("JobSSH2GET.Log.Error.ErrorFTP",e.getMessage()));
+				log.logError(toString(), BaseMessages.getString(PKG, "JobSSH2GET.Log.Error.ErrorFTP",e.getMessage()));
 			}
 			 finally 
 			 {
@@ -1098,10 +1091,10 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 			{
 				sftpClient.rm(filename);
 				retval=true;
-				if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.DeletedFile",filename));
+				if (log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSSH2GET.Log.DeletedFile",filename));
 			}catch (Exception e)
 			{
-				log.logError(toString(),Messages.getString("JobSSH2GET.Log.Error.CanNotDeleteRemoteFile",filename));
+				log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.Error.CanNotDeleteRemoteFile",filename));
 			}
 			
 		}
@@ -1112,10 +1105,10 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 			{
 				sftpClient.mv(filename, DestinationFullFilename);
 				retval=true;
-				if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.DeletedFile",filename));
+				if (log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSSH2GET.Log.DeletedFile",filename));
 			}catch (Exception e)
 			{
-				log.logError(toString(),Messages.getString("JobSSH2GET.Log.Error.MovedFile",filename,destinationFolder));
+				log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.Error.MovedFile",filename,destinationFolder));
 			}
 		
 		}
@@ -1248,7 +1241,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	            
 				remoteFileSize = this.getFileSize(sftpClient, sourceLocation);
 			    
-				if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSSH2GET.Log.ReceivingFile",sourceLocation,transferFile.getAbsolutePath(),""+remoteFileSize));              
+				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.ReceivingFile",sourceLocation,transferFile.getAbsolutePath(),""+remoteFileSize));              
 	            
 				sftpFileHandle = sftpClient.openFileRO(sourceLocation);
 
@@ -1273,12 +1266,12 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 				{
 					filecopied=false;
 				    nbrerror++;
-					log.logError(toString(),Messages.getString("JobSSH2GET.Log.Error.RemoteFileLocalDifferent",""+remoteFileSize,transferFile.length()+"","" + offset));
+					log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.Error.RemoteFileLocalDifferent",""+remoteFileSize,transferFile.length()+"","" + offset));
 				}
 				else
 				{
 				    nbgot++;
-				    if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSSH2GET.Log.RemoteFileLocalCopied",sourceLocation,transferFile+""));
+				    if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.RemoteFileLocalCopied",sourceLocation,transferFile+""));
 				}
 			}
 			// Let's now delete or move file if needed...
@@ -1291,7 +1284,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		catch (Exception e) 
 		{
 			nbrerror++;
-			log.logError(toString(),Messages.getString("JobSSH2GET.Log.Error.WritingFile",transferFile.getAbsolutePath(),e.getMessage()));
+			log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.Error.WritingFile",transferFile.getAbsolutePath(),e.getMessage()));
 		} 
 		finally 
 		{
@@ -1328,7 +1321,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     			if(createtargetfolder)
     			{
     				folder.createFolder();
-    				if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSSH2GET.Log.FolderCreated",folder.toString()));
+    				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.FolderCreated",folder.toString()));
     			}
     			else
     				return false;
@@ -1337,7 +1330,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     		return true;
 		}
 		catch (Exception e) {
-			log.logError(toString(),Messages.getString("JobSSH2GET.Log.CanNotCreateFolder", folder.toString()));
+			log.logError(toString(),BaseMessages.getString(PKG, "JobSSH2GET.Log.CanNotCreateFolder", folder.toString()));
 			
 		}
 		 finally {
@@ -1370,11 +1363,11 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     		{
     			sftpClient.mkdir(foldername, 0700);
     			retval=true;
-    			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.RemoteFolderCreated",foldername));
+    			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSSH2GET.Log.RemoteFolderCreated",foldername));
     			
     		}catch (Exception e)
     		{
-    			log.logError(toString(), Messages.getString("JobSSH2GET.Log.Error.CreatingRemoteFolder",foldername));
+    			log.logError(toString(), BaseMessages.getString(PKG, "JobSSH2GET.Log.Error.CreatingRemoteFolder",foldername));
     		}
     	}
     	return retval;

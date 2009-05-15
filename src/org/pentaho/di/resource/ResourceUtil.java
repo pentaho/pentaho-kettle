@@ -11,11 +11,14 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 
 
 public class ResourceUtil {
+
+	private static Class<?> PKG = ResourceUtil.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	/**
 	 * Serializes the referenced resource export interface (Job, Transformation, Mapping, Step, Job Entry, etc) to a ZIP file.
@@ -76,7 +79,7 @@ public class ResourceUtil {
 					
 					ZipEntry zipEntry = new ZipEntry(resourceDefinition.getFilename());
 					
-					String comment = Messages.getString("ResourceUtil.SerializeResourceExportInterface.ZipEntryComment.OriginatingFile", filename, Const.NVL(resourceDefinition.getOrigin(), "-"));
+					String comment = BaseMessages.getString(PKG, "ResourceUtil.SerializeResourceExportInterface.ZipEntryComment.OriginatingFile", filename, Const.NVL(resourceDefinition.getOrigin(), "-"));
 					zipEntry.setComment(comment);
 					out.putNextEntry(zipEntry);
 					
@@ -86,18 +89,18 @@ public class ResourceUtil {
 				String zipURL = fileObject.getName().toString();
 				return new TopLevelResource(topLevelResource, zipURL, "zip:"+zipURL+"!"+topLevelResource);
 			} else {
-				throw new KettleException(Messages.getString("ResourceUtil.Exception.NoResourcesFoundToExport"));
+				throw new KettleException(BaseMessages.getString(PKG, "ResourceUtil.Exception.NoResourcesFoundToExport"));
 			}
 		}
 		catch(Exception e) {
-			throw new KettleException(Messages.getString("ResourceUtil.Exception.ErrorSerializingExportInterface",resourceExportInterface.toString()), e);
+			throw new KettleException(BaseMessages.getString(PKG, "ResourceUtil.Exception.ErrorSerializingExportInterface",resourceExportInterface.toString()), e);
 		} 
 		finally {
 			if (out!=null) {
 				try {
 					out.close();
 				} catch (IOException e) {
-					throw new KettleException(Messages.getString("ResourceUtil.Exception.ErrorClosingZipStream", zipFilename));
+					throw new KettleException(BaseMessages.getString(PKG, "ResourceUtil.Exception.ErrorClosingZipStream", zipFilename));
 				}
 			}
 		}
@@ -126,7 +129,7 @@ public class ResourceUtil {
 			commandString+="'";
 		}
 
-		String message = Messages.getString("ResourceUtil.ExportResourcesExplanation", zipFilename, commandString, launchFile, Const.CR);
+		String message = BaseMessages.getString(PKG, "ResourceUtil.ExportResourcesExplanation", zipFilename, commandString, launchFile, Const.CR);
 		return message;
 	}
 }

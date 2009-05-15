@@ -21,7 +21,6 @@
 package org.pentaho.di.ui.job.entries.filesexist;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -32,29 +31,31 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.filesexist.JobEntryFilesExist;
-import org.pentaho.di.job.entries.filesexist.Messages;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
+
 /**
  * This dialog allows you to edit the Files exist job entry settings.
  * 
@@ -63,13 +64,12 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
  */
 public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryFilesExist.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static final String[] FILETYPES = new String[] {
-                                                            Messages
-                                                                .getString("JobFilesExist.Filetype.Text"),
-                                                            Messages
-                                                                .getString("JobFilesExist.Filetype.CSV"),
-                                                            Messages
-                                                                .getString("JobFilesExist.Filetype.All") };
+                                                            BaseMessages.getString(PKG, "JobFilesExist.Filetype.Text"),
+                                                            BaseMessages.getString(PKG, "JobFilesExist.Filetype.CSV"),
+                                                            BaseMessages.getString(PKG, "JobFilesExist.Filetype.All") };
 
     private Label wlName;
 
@@ -116,7 +116,7 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
 		super(parent, jobEntryInt, rep, jobMeta);
 		jobEntry = (JobEntryFilesExist) jobEntryInt;
 		if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(Messages.getString("JobFilesExist.Name.Default")); //$NON-NLS-1$
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobFilesExist.Name.Default")); //$NON-NLS-1$
 		
     }
 
@@ -143,14 +143,14 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobFilesExist.Title"));
+        shell.setText(BaseMessages.getString(PKG, "JobFilesExist.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("JobFilesExist.Name.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "JobFilesExist.Name.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
@@ -170,7 +170,7 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
         
         // Filename line
 		wlFilename=new Label(shell, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("JobFilesExist.Filename.Label"));
+		wlFilename.setText(BaseMessages.getString(PKG, "JobFilesExist.Filename.Label"));
 		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -183,7 +183,7 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
 		// Browse Source folders button ...
 		wbDirectory=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbDirectory);
-		wbDirectory.setText(Messages.getString("JobFilesExist.BrowseFolders.Label"));
+		wbDirectory.setText(BaseMessages.getString(PKG, "JobFilesExist.BrowseFolders.Label"));
 		fdbDirectory=new FormData();
 		fdbDirectory.right= new FormAttachment(100, -margin);
 		fdbDirectory.top  = new FormAttachment(wName, margin);
@@ -217,7 +217,7 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
 
 		wbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbFilename);
-		wbFilename.setText(Messages.getString("JobFilesExist.BrowseFiles.Label"));
+		wbFilename.setText(BaseMessages.getString(PKG, "JobFilesExist.BrowseFiles.Label"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(wName, margin);
@@ -226,7 +226,7 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
 
 		wbaFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbaFilename);
-		wbaFilename.setText(Messages.getString("JobFilesExist.FilenameAdd.Button"));
+		wbaFilename.setText(BaseMessages.getString(PKG, "JobFilesExist.FilenameAdd.Button"));
 		fdbaFilename=new FormData();
 		fdbaFilename.right= new FormAttachment(wbFilename, -margin);
 		fdbaFilename.top  = new FormAttachment(wName, margin);
@@ -277,8 +277,8 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
 		// Buttons to the right of the screen...
 		wbdFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbdFilename);
-		wbdFilename.setText(Messages.getString("JobFilesExist.FilenameDelete.Button"));
-		wbdFilename.setToolTipText(Messages.getString("JobFilesExist.FilenameDelete.Tooltip"));
+		wbdFilename.setText(BaseMessages.getString(PKG, "JobFilesExist.FilenameDelete.Button"));
+		wbdFilename.setToolTipText(BaseMessages.getString(PKG, "JobFilesExist.FilenameDelete.Tooltip"));
 		fdbdFilename=new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
 		fdbdFilename.top  = new FormAttachment (wFilename, 40);
@@ -286,8 +286,8 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
 
 		wbeFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbeFilename);
-		wbeFilename.setText(Messages.getString("JobFilesExist.FilenameEdit.Button"));
-		wbeFilename.setToolTipText(Messages.getString("JobFilesExist.FilenameEdit.Tooltip"));
+		wbeFilename.setText(BaseMessages.getString(PKG, "JobFilesExist.FilenameEdit.Button"));
+		wbeFilename.setToolTipText(BaseMessages.getString(PKG, "JobFilesExist.FilenameEdit.Tooltip"));
 		fdbeFilename=new FormData();
 		fdbeFilename.right = new FormAttachment(100, 0);
 		fdbeFilename.left = new FormAttachment(wbdFilename, 0, SWT.LEFT);
@@ -295,7 +295,7 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
 		wbeFilename.setLayoutData(fdbeFilename);
 
 		wlFields = new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("JobFilesExist.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "JobFilesExist.Fields.Label"));
 		props.setLook(wlFields);
 		fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -314,11 +314,11 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
 
 		ColumnInfo[] colinf=new ColumnInfo[]
 			{
-				new ColumnInfo(Messages.getString("JobFilesExist.Fields.Argument.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobFilesExist.Fields.Argument.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
 			};
 
 		colinf[0].setUsingVariables(true);
-		colinf[0].setToolTip(Messages.getString("JobFilesExist.Fields.Column"));
+		colinf[0].setToolTip(BaseMessages.getString(PKG, "JobFilesExist.Fields.Column"));
 
 		wFields = new TableView(jobMeta,shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
 			FieldsRows, lsMod, props);
@@ -380,7 +380,7 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
         
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         FormData fd = new FormData();
         fd.right = new FormAttachment(50, -10);
         fd.bottom = new FormAttachment(100, 0);
@@ -388,7 +388,7 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
         wOK.setLayoutData(fd);
 
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         fd = new FormData();
         fd.left = new FormAttachment(50, 10);
         fd.bottom = new FormAttachment(100, 0);
@@ -494,8 +494,8 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
  	   if(Const.isEmpty(wName.getText())) 
 	     {
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-				mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+				mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+				mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 				mb.open(); 
 				return;
 	     }

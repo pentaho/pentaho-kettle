@@ -25,8 +25,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.HashSet;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.Deflater;
@@ -50,8 +50,8 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -69,6 +69,8 @@ import org.w3c.dom.Node;
  */
 public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryZipFile.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String zipFilename;
 	public int compressionrate;
 	public int ifzipfileexists;
@@ -109,17 +111,11 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		SpecifyFormat=false;
 		createMoveToDirectory=false;
 		setID(-1L);
-		setJobEntryType(JobEntryType.ZIP_FILE);
 	}
 
 	public JobEntryZipFile()
 	{
 		this("");
-	}
-
-	public JobEntryZipFile(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -178,7 +174,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryZipFile.UnableLoadJobEntryXML"), xe);
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryZipFile.UnableLoadJobEntryXML"), xe);
 		}
 	}
 
@@ -208,7 +204,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryZipFile.UnableLoadJobEntryRep",""+id_jobentry), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryZipFile.UnableLoadJobEntryRep",""+id_jobentry), dbe);
 		}
 	}
 	
@@ -239,7 +235,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryZipFile.UnableSaveJobEntryRep",""+id_job), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryZipFile.UnableSaveJobEntryRep",""+id_job), dbe);
 		}
 	}
 
@@ -257,18 +253,18 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			
     		if(!parentfolder.exists())	
     		{
-    			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryZipFile.CanNotFindFolder",""+parentfolder.getName()));
+    			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryZipFile.CanNotFindFolder",""+parentfolder.getName()));
     			parentfolder.createFolder();
-    			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryZipFile.FolderCreated",""+parentfolder.getName()));
+    			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryZipFile.FolderCreated",""+parentfolder.getName()));
     		}
     		else
     		{
-    			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryZipFile.FolderExists", ""+parentfolder.getName()));
+    			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryZipFile.FolderExists", ""+parentfolder.getName()));
     		}
     		result= true;
 		}
 		catch (Exception e) {
-			log.logError(toString(),Messages.getString("JobEntryZipFile.CanNotCreateFolder",""+parentfolder.getName()));			
+			log.logError(toString(),BaseMessages.getString(PKG, "JobEntryZipFile.CanNotCreateFolder",""+parentfolder.getName()));			
 		}
 		finally {
          	if ( parentfolder != null )
@@ -326,8 +322,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 				{
 					Fileexists =true;
 					if(log.isDebug())
-						log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileExists1.Label")+ localrealZipfilename 
-											+ Messages.getString("JobZipFiles.Zip_FileExists2.Label"));
+						log.logDebug(toString(), BaseMessages.getString(PKG, "JobZipFiles.Zip_FileExists1.Label")+ localrealZipfilename 
+											+ BaseMessages.getString(PKG, "JobZipFiles.Zip_FileExists2.Label"));
 				} 
 				// Let's see if we need to create parent folder of destination zip filename
 				if(createparentfolder){createParentFolder(localrealZipfilename);}					
@@ -353,7 +349,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 				{
 					// After Zip, Move files..User must give a destination Folder
 					resultat = false;
-					log.logError(toString(), Messages.getString("JobZipFiles.AfterZip_No_DestinationFolder_Defined.Label"));
+					log.logError(toString(), BaseMessages.getString(PKG, "JobZipFiles.AfterZip_No_DestinationFolder_Defined.Label"));
 				}				
 				else 
 					// After Zip, Move files..User must give a destination Folder
@@ -374,12 +370,12 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					if(filelist.length==0)
 					{
 						resultat=false;
-						log.logError(toString(), Messages.getString("JobZipFiles.Log.FolderIsEmpty",
+						log.logError(toString(), BaseMessages.getString(PKG, "JobZipFiles.Log.FolderIsEmpty",
 								localSourceFilename));
 					}else if(!checkContainsFile(localSourceFilename, filelist, f.isDirectory()))
 					{
 						resultat=false;
-						log.logError(toString(), Messages.getString("JobZipFiles.Log.NoFilesInFolder",
+						log.logError(toString(), BaseMessages.getString(PKG, "JobZipFiles.Log.NoFilesInFolder",
 								localSourceFilename));
 					}else{
 						if(ifzipfileexists==0 && Fileexists)
@@ -395,8 +391,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 							
 							localrealZipfilename+= "_" + StringUtil.getFormattedDateTimeNow(true) +".zip";		
 							if(log.isDebug())
-								log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileNameChange1.Label") + localrealZipfilename + 
-													Messages.getString("JobZipFiles.Zip_FileNameChange1.Label"));
+								log.logDebug(toString(), BaseMessages.getString(PKG, "JobZipFiles.Zip_FileNameChange1.Label") + localrealZipfilename + 
+													BaseMessages.getString(PKG, "JobZipFiles.Zip_FileNameChange1.Label"));
 						}
 						else if(ifzipfileexists==1 && Fileexists)
 						{
@@ -412,18 +408,18 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 							
 							if (!renameOk)
 							{
-								log.logError(toString(), Messages.getString("JobZipFiles.Cant_Rename_Temp1.Label")+ fileZip.getAbsolutePath() + Messages.getString("JobZipFiles.Cant_Rename_Temp2.Label") 
-											+ tempFile.getAbsolutePath() + Messages.getString("JobZipFiles.Cant_Rename_Temp3.Label"));
+								log.logError(toString(), BaseMessages.getString(PKG, "JobZipFiles.Cant_Rename_Temp1.Label")+ fileZip.getAbsolutePath() + BaseMessages.getString(PKG, "JobZipFiles.Cant_Rename_Temp2.Label") 
+											+ tempFile.getAbsolutePath() + BaseMessages.getString(PKG, "JobZipFiles.Cant_Rename_Temp3.Label"));
 							}						
 							if(log.isDebug())
-								log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileAppend1.Label") + localrealZipfilename + 
-											Messages.getString("JobZipFiles.Zip_FileAppend2.Label"));
+								log.logDebug(toString(), BaseMessages.getString(PKG, "JobZipFiles.Zip_FileAppend1.Label") + localrealZipfilename + 
+											BaseMessages.getString(PKG, "JobZipFiles.Zip_FileAppend2.Label"));
 						}				
 						
 						if(log.isDetailed())	
-							log.logDetailed(toString(), Messages.getString("JobZipFiles.Files_Found1.Label") +filelist.length+ 
-											Messages.getString("JobZipFiles.Files_Found2.Label") + localSourceFilename + 
-											Messages.getString("JobZipFiles.Files_Found3.Label"));
+							log.logDetailed(toString(), BaseMessages.getString(PKG, "JobZipFiles.Files_Found1.Label") +filelist.length+ 
+											BaseMessages.getString(PKG, "JobZipFiles.Files_Found2.Label") + localSourceFilename + 
+											BaseMessages.getString(PKG, "JobZipFiles.Files_Found3.Label"));
 						
 						Pattern pattern = null;
 						Pattern patternexclude = null;
@@ -535,9 +531,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	
 								// We can add the file to the Zip Archive
 								if(log.isDebug())
-									log.logDebug(toString(), Messages.getString("JobZipFiles.Add_FilesToZip1.Label")+filelist[i]+
-											Messages.getString("JobZipFiles.Add_FilesToZip2.Label")+localSourceFilename+
-											Messages.getString("JobZipFiles.Add_FilesToZip3.Label"));
+									log.logDebug(toString(), BaseMessages.getString(PKG, "JobZipFiles.Add_FilesToZip1.Label")+filelist[i]+
+											BaseMessages.getString(PKG, "JobZipFiles.Add_FilesToZip2.Label")+localSourceFilename+
+											BaseMessages.getString(PKG, "JobZipFiles.Add_FilesToZip3.Label"));
 								
 								// Associate a file input stream for the current file
 								FileInputStream in = new FileInputStream(targetFilename);															
@@ -567,7 +563,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						buff.close();
 						dest.close();
 						
-						if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobZipFiles.Log.TotalZippedFiles", ""+zippedFiles.length));
+						if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "JobZipFiles.Log.TotalZippedFiles", ""+zippedFiles.length));
 						// Delete Temp File
 						if (tempFile !=null)
 						{
@@ -601,16 +597,16 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 										if ( ! deleted )
 										{	
 											resultat = false;
-											log.logError(toString(), Messages.getString("JobZipFiles.Cant_Delete_File1.Label")+
+											log.logError(toString(), BaseMessages.getString(PKG, "JobZipFiles.Cant_Delete_File1.Label")+
 													localSourceFilename+Const.FILE_SEPARATOR+zippedFiles[i]+
-													Messages.getString("JobZipFiles.Cant_Delete_File2.Label"));
+													BaseMessages.getString(PKG, "JobZipFiles.Cant_Delete_File2.Label"));
 	
 										}
 										// File deleted
 										if(log.isDebug())
-											log.logDebug(toString(), Messages.getString("JobZipFiles.File_Deleted1.Label") + 
+											log.logDebug(toString(), BaseMessages.getString(PKG, "JobZipFiles.File_Deleted1.Label") + 
 													localSourceFilename+Const.FILE_SEPARATOR+zippedFiles[i] + 
-											Messages.getString("JobZipFiles.File_Deleted2.Label"));
+											BaseMessages.getString(PKG, "JobZipFiles.File_Deleted2.Label"));
 									}
 									else if(afterzip == 2)
 									{
@@ -622,14 +618,14 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 										}
 										catch (IOException e) 
 										{
-											log.logError(toString(), Messages.getString("JobZipFiles.Cant_Move_File1.Label") +zippedFiles[i]+
-												Messages.getString("JobZipFiles.Cant_Move_File2.Label") + e.getMessage());
+											log.logError(toString(), BaseMessages.getString(PKG, "JobZipFiles.Cant_Move_File1.Label") +zippedFiles[i]+
+												BaseMessages.getString(PKG, "JobZipFiles.Cant_Move_File2.Label") + e.getMessage());
 											resultat = false;
 										}
 										// File moved
 										if(log.isDebug())
-											log.logDebug(toString(), Messages.getString("JobZipFiles.File_Moved1.Label") + zippedFiles[i] + 
-													Messages.getString("JobZipFiles.File_Moved2.Label"));
+											log.logDebug(toString(), BaseMessages.getString(PKG, "JobZipFiles.File_Moved1.Label") + zippedFiles[i] + 
+													BaseMessages.getString(PKG, "JobZipFiles.File_Moved2.Label"));
 									 }
 								}
 							}
@@ -648,8 +644,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			}
 			catch (Exception e) 
 			{
-       			log.logError(toString(), Messages.getString("JobZipFiles.Cant_CreateZipFile1.Label") +localrealZipfilename+
-		       							 Messages.getString("JobZipFiles.Cant_CreateZipFile2.Label") + e.getMessage());
+       			log.logError(toString(), BaseMessages.getString(PKG, "JobZipFiles.Cant_CreateZipFile1.Label") +localrealZipfilename+
+		       							 BaseMessages.getString(PKG, "JobZipFiles.Cant_CreateZipFile2.Label") + e.getMessage());
        			resultat = false;
 			}
 			finally 
@@ -673,8 +669,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		else
 		{	
 			resultat=true;
-			if (localrealZipfilename==null) log.logError(toString(), Messages.getString("JobZipFiles.No_ZipFile_Defined.Label"));
-			if (!orginexist) log.logError(toString(), Messages.getString("JobZipFiles.No_FolderCible_Defined.Label",localSourceFilename));			
+			if (localrealZipfilename==null) log.logError(toString(), BaseMessages.getString(PKG, "JobZipFiles.No_ZipFile_Defined.Label"));
+			if (!orginexist) log.logError(toString(), BaseMessages.getString(PKG, "JobZipFiles.No_FolderCible_Defined.Label",localSourceFilename));			
 		}			
 		//return  a verifier
 		return resultat;
@@ -715,7 +711,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			 if(Const.isEmpty(realMovetodirectory))
 			 {
 				 SanityControlOK=false;
-				 log.logError(toString(), Messages.getString("JobZipFiles.AfterZip_No_DestinationFolder_Defined.Label"));
+				 log.logError(toString(), BaseMessages.getString(PKG, "JobZipFiles.AfterZip_No_DestinationFolder_Defined.Label"));
 			 }else
 			 {
 				 FileObject moveToDirectory=null;
@@ -725,29 +721,29 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					 {
 						 if(moveToDirectory.getType()==FileType.FOLDER)
 						 {
-							 if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobZipFiles.Log.MoveToFolderExist",realMovetodirectory));
+							 if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobZipFiles.Log.MoveToFolderExist",realMovetodirectory));
 						 }else
 						 {
 							 SanityControlOK=false; 
-							 log.logError(toString(), Messages.getString("JobZipFiles.Log.MoveToFolderNotFolder",realMovetodirectory));
+							 log.logError(toString(), BaseMessages.getString(PKG, "JobZipFiles.Log.MoveToFolderNotFolder",realMovetodirectory));
 						 }
 					 }else
 					 {
-						 if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobZipFiles.Log.MoveToFolderNotNotExist",realMovetodirectory));
+						 if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobZipFiles.Log.MoveToFolderNotNotExist",realMovetodirectory));
 						 if(createMoveToDirectory)
 						 {
 							 moveToDirectory.createFolder();
-							 if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobZipFiles.Log.MoveToFolderCreaterd",realMovetodirectory));
+							 if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobZipFiles.Log.MoveToFolderCreaterd",realMovetodirectory));
 						 }else
 						 {
 							 SanityControlOK=false; 
-							 log.logError(toString(), Messages.getString("JobZipFiles.Log.MoveToFolderNotNotExist",realMovetodirectory));
+							 log.logError(toString(), BaseMessages.getString(PKG, "JobZipFiles.Log.MoveToFolderNotNotExist",realMovetodirectory));
 						 }
 					 }
 				 }catch(Exception e)
 				 {
 					 SanityControlOK=false;
-					 log.logError(toString(), Messages.getString("JobZipFiles.ErrorGettingMoveToFolder.Label",realMovetodirectory));
+					 log.logError(toString(), BaseMessages.getString(PKG, "JobZipFiles.ErrorGettingMoveToFolder.Label",realMovetodirectory));
 				 }finally
 				 {
 					 if(moveToDirectory!=null)
@@ -775,7 +771,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		
 		if (isfromprevious)
 		{
-		    if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobZipFiles.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));			
+		    if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobZipFiles.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));			
 		}
 		if (isfromprevious && rows!=null)
 		{

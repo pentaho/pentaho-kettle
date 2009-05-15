@@ -18,8 +18,8 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlank
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.List;
 import java.net.InetAddress;
+import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
@@ -31,8 +31,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -52,6 +52,8 @@ import org.w3c.dom.Node;
  */
 public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryPing.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String hostname;
 	private String timeout;
 	public String defaultTimeOut="3000";
@@ -77,17 +79,11 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 		nbrPackets="2";
 		timeout=defaultTimeOut;
 		setID(-1L);
-		setJobEntryType(JobEntryType.PING);
 	}
 
 	public JobEntryPing()
 	{
 		this("");
-	}
-
-	public JobEntryPing(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -273,7 +269,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         if (Const.isEmpty(hostname))
         {
             // No Host was specified
-            log.logError(toString(), Messages.getString("JobPing.SpecifyHost.Label"));
+            log.logError(toString(), BaseMessages.getString(PKG, "JobPing.SpecifyHost.Label"));
             return result;
         }
 
@@ -286,9 +282,9 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 	        	if(status)
 	        	{
 	                if(log.isDetailed())
-	                	log.logDetailed(Messages.getString("JobPing.SystemPing"), Messages.getString("JobPing.OK.Label",hostname));
+	                	log.logDetailed(BaseMessages.getString(PKG, "JobPing.SystemPing"), BaseMessages.getString(PKG, "JobPing.OK.Label",hostname));
 	        	}else
-	        		log.logError(Messages.getString("JobPing.SystemPing"),Messages.getString("JobPing.NOK.Label",hostname));
+	        		log.logError(BaseMessages.getString(PKG, "JobPing.SystemPing"),BaseMessages.getString(PKG, "JobPing.NOK.Label",hostname));
         	}
         	if((ipingtype==iclassicPing) || (ipingtype==ibothPings && !status))
         	{
@@ -297,24 +293,24 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         		if(status)
         		{
                     if(log.isDetailed())
-                    	log.logDetailed(Messages.getString("JobPing.ClassicPing"), Messages.getString("JobPing.OK.Label",hostname));
+                    	log.logDetailed(BaseMessages.getString(PKG, "JobPing.ClassicPing"), BaseMessages.getString(PKG, "JobPing.OK.Label",hostname));
         		}else
-        			log.logError(Messages.getString("JobPing.ClassicPing"),Messages.getString("JobPing.NOK.Label",hostname));
+        			log.logError(BaseMessages.getString(PKG, "JobPing.ClassicPing"),BaseMessages.getString(PKG, "JobPing.NOK.Label",hostname));
         	}	
         }
 
         catch (Exception ex)
         {
-            log.logError(toString(), Messages.getString("JobPing.Error.Label") + ex.getMessage());
+            log.logError(toString(), BaseMessages.getString(PKG, "JobPing.Error.Label") + ex.getMessage());
         }
     	if (status)
         {
         	if(log.isDetailed())
-        		log.logDetailed(toString(), Messages.getString("JobPing.OK.Label",hostname));
+        		log.logDetailed(toString(), BaseMessages.getString(PKG, "JobPing.OK.Label",hostname));
             result.setNrErrors(0);
             result.setResult(true);
         }else
-        	log.logError(toString(), Messages.getString("JobPing.NOK.Label",hostname));
+        	log.logError(toString(), BaseMessages.getString(PKG, "JobPing.NOK.Label",hostname));
         return result;
     }
 
@@ -331,20 +327,20 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
     		address=InetAddress.getByName(hostname);
 	    	if(address==null)
 	    	{
-	    		log.logError(toString(),Messages.getString("JobPing.CanNotGetAddress",hostname));
+	    		log.logError(toString(),BaseMessages.getString(PKG, "JobPing.CanNotGetAddress",hostname));
 	    		return retval;
 	    	}
     	
 	        if(log.isDetailed()) 
 	        {
-	        	log.logDetailed(toString(),Messages.getString("JobPing.HostName",address.getHostName()));
-	        	log.logDetailed(toString(),Messages.getString("JobPing.HostAddress",address.getHostAddress()));
+	        	log.logDetailed(toString(),BaseMessages.getString(PKG, "JobPing.HostName",address.getHostName()));
+	        	log.logDetailed(toString(),BaseMessages.getString(PKG, "JobPing.HostAddress",address.getHostAddress()));
 	        }
         	
 	        retval = address.isReachable(timeout);
 	    	}catch(Exception e)
 	    	{
-	    		log.logError(toString(),Messages.getString("JobPing.ErrorSystemPing",hostname,e.getMessage()));
+	    		log.logError(toString(),BaseMessages.getString(PKG, "JobPing.ErrorSystemPing",hostname,e.getMessage()));
 	    	}
 			return retval;
 	}
@@ -362,11 +358,11 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
               
         	  if(log.isDetailed()) 
         	  {
-        		  log.logDetailed(toString(), Messages.getString("JobPing.NbrPackets.Label", ""+nrpackets));
-        		  log.logDetailed(toString(), Messages.getString("JobPing.ExecClassicPing.Label", CmdPing));
+        		  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobPing.NbrPackets.Label", ""+nrpackets));
+        		  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobPing.ExecClassicPing.Label", CmdPing));
         	  }
         	  Process processPing = Runtime.getRuntime().exec(CmdPing);
-        	  if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobPing.Gettingresponse.Label",hostname));
+        	  if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobPing.Gettingresponse.Label",hostname));
         	  // Get ping response
               BufferedReader br = new BufferedReader(new InputStreamReader(processPing.getInputStream()));
 
@@ -384,7 +380,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 
           catch (IOException ex)
           {
-              log.logError(toString(), Messages.getString("JobPing.Error.Label") + ex.getMessage());
+              log.logError(toString(), BaseMessages.getString(PKG, "JobPing.Error.Label") + ex.getMessage());
           }
           return retval;
 	}

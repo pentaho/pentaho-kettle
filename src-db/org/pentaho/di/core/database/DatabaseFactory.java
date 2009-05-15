@@ -3,7 +3,7 @@ package org.pentaho.di.core.database;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.database.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * 
@@ -11,7 +11,9 @@ import org.pentaho.di.core.database.Messages;
  *
  */
 public class DatabaseFactory implements DatabaseFactoryInterface {
-	
+
+	private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public DatabaseFactory() 
 	{
 	}
@@ -31,11 +33,11 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
                     try
                     {
                         db.connect(partitioningInformation[i].getPartitionId());
-                        report.append(Messages.getString("DatabaseMeta.report.ConnectionWithPartOk", databaseMeta.getName(), partitioningInformation[i].getPartitionId()) + Const.CR); //$NON-NLS-1$
+                        report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionWithPartOk", databaseMeta.getName(), partitioningInformation[i].getPartitionId()) + Const.CR); //$NON-NLS-1$
                     }
                     catch (KettleException e)
                     {
-                        report.append(Messages.getString("DatabaseMeta.report.ConnectionWithPartError", databaseMeta.getName(), partitioningInformation[i].getPartitionId(), e.toString()) + Const.CR); //$NON-NLS-1$
+                        report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionWithPartError", databaseMeta.getName(), partitioningInformation[i].getPartitionId(), e.toString()) + Const.CR); //$NON-NLS-1$
                         report.append(Const.getStackTracker(e) + Const.CR);
                     }
                     finally
@@ -53,11 +55,11 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
                 try
                 {
                     db.connect();
-                    report.append(Messages.getString("DatabaseMeta.report.ConnectionOk", databaseMeta.getName()) + Const.CR); //$NON-NLS-1$
+                    report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionOk", databaseMeta.getName()) + Const.CR); //$NON-NLS-1$
                 }
                 catch (KettleException e)
                 {
-                    report.append(Messages.getString("DatabaseMeta.report.ConnectionError", databaseMeta.getName()) + e.toString() + Const.CR); //$NON-NLS-1$
+                    report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionError", databaseMeta.getName()) + e.toString() + Const.CR); //$NON-NLS-1$
                     report.append(Const.getStackTracker(e) + Const.CR);
                 }
                 finally
@@ -73,15 +75,15 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
 		}
 		else 
 		{
-			return Messages.getString("BaseDatabaseMeta.TestConnectionReportNotImplemented.Message"); // $NON-NLS-1
+			return BaseMessages.getString(PKG, "BaseDatabaseMeta.TestConnectionReportNotImplemented.Message"); // $NON-NLS-1
 		}
 
 	}
 	
 	private StringBuffer appendConnectionInfo(StringBuffer report, String hostName, String portNumber, String dbName) {
-        report.append(Messages.getString("DatabaseMeta.report.Hostname")).append(hostName).append(Const.CR); //$NON-NLS-1$
-        report.append(Messages.getString("DatabaseMeta.report.Port")).append(portNumber).append(Const.CR); //$NON-NLS-1$
-        report.append(Messages.getString("DatabaseMeta.report.DatabaseName")).append(dbName).append(Const.CR); //$NON-NLS-1$
+        report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.Hostname")).append(hostName).append(Const.CR); //$NON-NLS-1$
+        report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.Port")).append(portNumber).append(Const.CR); //$NON-NLS-1$
+        report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.DatabaseName")).append(dbName).append(Const.CR); //$NON-NLS-1$
         return report;
     }
 }

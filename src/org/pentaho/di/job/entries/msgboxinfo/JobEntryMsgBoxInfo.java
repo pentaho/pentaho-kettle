@@ -27,7 +27,6 @@ import org.pentaho.di.core.gui.ThreadDialogs;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -52,19 +51,13 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 		super(n, "");
 		bodymessage=null;
 		titremessage=null;
-		setJobEntryType(JobEntryType.MSGBOX_INFO);
 	}
 
 	public JobEntryMsgBoxInfo()
 	{
 		this("", "");
 	}
-
-	public JobEntryMsgBoxInfo(JobEntryBase jeb)
-	{
-		super(jeb);
-	}
-
+	
     public Object clone()
     {
         JobEntryMsgBoxInfo je = (JobEntryMsgBoxInfo) super.clone();

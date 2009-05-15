@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepStatus;
@@ -29,7 +30,6 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
@@ -37,7 +37,8 @@ import org.pentaho.xul.toolbar.XulToolbar;
 import org.pentaho.xul.toolbar.XulToolbarButton;
 
 public class TransGridDelegate extends SpoonDelegate {
-	
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-grid-toolbar.xul";
 	public static final String XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES = "ui/trans-grid-toolbar.properties";
 
@@ -103,7 +104,7 @@ public class TransGridDelegate extends SpoonDelegate {
 
 		transGridTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE);
 		transGridTab.setImage(GUIResource.getInstance().getImageShowGrid());
-		transGridTab.setText(Messages.getString("Spoon.TransGraph.GridTab.Name"));
+		transGridTab.setText(BaseMessages.getString(PKG, "Spoon.TransGraph.GridTab.Name"));
 
 		transGridComposite = new Composite(transGraph.extraViewTabFolder, SWT.NONE);
 		transGridComposite.setLayout(new FormLayout());
@@ -112,19 +113,19 @@ public class TransGridDelegate extends SpoonDelegate {
 		addToolBarListeners();
 		
 		ColumnInfo[] colinf = new ColumnInfo[] { 
-                new ColumnInfo(Messages.getString("TransLog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("TransLog.Column.Copynr"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("TransLog.Column.Read"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("TransLog.Column.Written"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("TransLog.Column.Input"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("TransLog.Column.Output"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("TransLog.Column.Updated"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("TransLog.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("TransLog.Column.Errors"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("TransLog.Column.Active"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("TransLog.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("TransLog.Column.Speed"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("TransLog.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Copynr"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Read"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Written"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Input"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Output"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Updated"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Errors"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Active"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Speed"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 		};
 
 		colinf[1].setAllignement(SWT.RIGHT);
@@ -216,7 +217,7 @@ public class TransGridDelegate extends SpoonDelegate {
 	        toolBar.layout(true, true);
 		} catch (Throwable t ) {
 			log.logError(toString(), Const.getStackTracker(t));
-			new ErrorDialog(transGridComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
+			new ErrorDialog(transGridComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
 		}
 	}
 
@@ -241,8 +242,8 @@ public class TransGridDelegate extends SpoonDelegate {
 
 		} catch (Throwable t ) {
 			t.printStackTrace();
-			new ErrorDialog(transGridComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
-					Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES), new Exception(t));
+			new ErrorDialog(transGridComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
+					BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES), new Exception(t));
 		}
 	}
 

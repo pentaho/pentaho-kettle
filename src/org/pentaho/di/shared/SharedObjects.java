@@ -32,6 +32,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Document;
@@ -48,6 +49,8 @@ import org.w3c.dom.NodeList;
  */
 public class SharedObjects
 {
+	private static Class<?> PKG = SharedObjects.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final String XML_TAG = "sharedobjects";
 	
 	private String filename;
@@ -95,7 +98,7 @@ public class SharedObjects
             // If we have a shared file, load the content, otherwise, just keep this one empty
             if (file.exists()) 
             {
-                LogWriter.getInstance().logDetailed(Messages.getString("SharedOjects.ReadingFile.Title"), Messages.getString("SharedOjects.ReadingFile.Message",""+file));
+                LogWriter.getInstance().logDetailed(BaseMessages.getString(PKG, "SharedOjects.ReadingFile.Title"), BaseMessages.getString(PKG, "SharedOjects.ReadingFile.Message",""+file));
                 Document document = XMLHandler.loadXMLFile(file);
                 Node sharedObjectsNode = XMLHandler.getSubNode(document, XML_TAG);
                 if (sharedObjectsNode!=null)
@@ -169,7 +172,7 @@ public class SharedObjects
         }
         catch(Exception e)
         {
-            throw new KettleXMLException(Messages.getString("SharedOjects.Readingfile.UnexpectedError", sharedObjectsFile), e);
+            throw new KettleXMLException(BaseMessages.getString(PKG, "SharedOjects.Readingfile.UnexpectedError", sharedObjectsFile), e);
         }
     }
     

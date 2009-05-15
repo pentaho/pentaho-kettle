@@ -40,13 +40,16 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.performance.StepPerformanceSnapShot;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.spoon.Messages;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.util.ImageUtil;
 
 public class StepPerformanceSnapShotDialog extends Dialog {
+
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private static final int DATA_CHOICE_WRITTEN = 0;
 	private static final int DATA_CHOICE_READ = 1;
@@ -58,14 +61,14 @@ public class StepPerformanceSnapShotDialog extends Dialog {
 	private static final int DATA_CHOICE_OUTPUT_BUFFER_SIZE = 7;
 	
 	private static String[] dataChoices = new String[] {
-			Messages.getString("StepPerformanceSnapShotDialog.Written"),
-			Messages.getString("StepPerformanceSnapShotDialog.Read"),
-			Messages.getString("StepPerformanceSnapShotDialog.Input"),
-			Messages.getString("StepPerformanceSnapShotDialog.Output"),
-			Messages.getString("StepPerformanceSnapShotDialog.Updated"),
-			Messages.getString("StepPerformanceSnapShotDialog.Rejected"),
-			Messages.getString("StepPerformanceSnapShotDialog.InputBufferSize"),
-			Messages.getString("StepPerformanceSnapShotDialog.OutputBufferSize"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.Written"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.Read"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.Input"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.Output"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.Updated"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.Rejected"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.InputBufferSize"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.OutputBufferSize"),
 		};
 	
 	private Shell parent, shell;
@@ -98,7 +101,7 @@ public class StepPerformanceSnapShotDialog extends Dialog {
 		
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
-		shell.setText(Messages.getString("StepPerformanceSnapShotDialog.Title"));
+		shell.setText(BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.Title"));
 		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 		
 		FormLayout formLayout = new FormLayout ();
@@ -320,8 +323,8 @@ public class StepPerformanceSnapShotDialog extends Dialog {
 			chartTitle+=" ("+selectedSteps[0]+")";
 		}
 		final JFreeChart chart = ChartFactory.createLineChart(chartTitle, // chart title
-				Messages.getString("StepPerformanceSnapShotDialog.TimeInSeconds.Label", Integer.toString(totalTimeInSeconds), Long.toString(timeDifference)), // domain axis label
-				Messages.getString("StepPerformanceSnapShotDialog.RowsPerSecond.Label"), // range axis label
+				BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.TimeInSeconds.Label", Integer.toString(totalTimeInSeconds), Long.toString(timeDifference)), // domain axis label
+				BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.RowsPerSecond.Label"), // range axis label
 				dataset, // data
 				PlotOrientation.VERTICAL, // orientation
 				true, // include legend

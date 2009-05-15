@@ -34,6 +34,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -58,6 +59,8 @@ import com.healthmarketscience.jackcess.Table;
   */
 public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = AccessOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String       filename;
     private boolean      fileCreated;
 	private String       tablename;
@@ -218,12 +221,12 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("AccessOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AccessOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("AccessOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AccessOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
 			remarks.add(cr);
 		}
 	}
@@ -247,7 +250,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
         {
             if (!file.exists() || !file.isFile())
             {
-                throw new KettleException(Messages.getString("AccessOutputMeta.Exception.FileDoesNotExist", realFilename));
+                throw new KettleException(BaseMessages.getString(PKG, "AccessOutputMeta.Exception.FileDoesNotExist", realFilename));
             }
             
             // open the database and get the table
@@ -256,7 +259,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
             Table table = db.getTable(realTablename);
             if (table==null)
             {
-                throw new KettleException(Messages.getString("AccessOutputMeta.Exception.TableDoesNotExist", realTablename));
+                throw new KettleException(BaseMessages.getString(PKG, "AccessOutputMeta.Exception.TableDoesNotExist", realTablename));
             }
             
             RowMetaInterface layout = getLayout(table);
@@ -264,7 +267,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch(Exception e)
         {
-            throw new KettleException(Messages.getString("AccessOutputMeta.Exception.ErrorGettingFields"), e);
+            throw new KettleException(BaseMessages.getString(PKG, "AccessOutputMeta.Exception.ErrorGettingFields"), e);
         }
         finally
         {
@@ -274,7 +277,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
             }
             catch(IOException e)
             {
-                throw new KettleException(Messages.getString("AccessOutputMeta.Exception.ErrorClosingDatabase"), e);
+                throw new KettleException(BaseMessages.getString(PKG, "AccessOutputMeta.Exception.ErrorClosingDatabase"), e);
             }
         }
     }

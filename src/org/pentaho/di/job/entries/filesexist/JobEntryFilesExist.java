@@ -30,8 +30,8 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -48,6 +48,8 @@ import org.w3c.dom.Node;
 
 public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryFilesExist.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String filename;
 	
 	public String arguments[];
@@ -56,19 +58,12 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 	{
 		super(n, ""); //$NON-NLS-1$
 		filename=null;
-		setID(-1L);
-		setJobEntryType(JobEntryType.FILES_EXIST);
-		
+		setID(-1L);	
 	}
 
 	public JobEntryFilesExist()
 	{
 		this("");
-	}
-
-	public JobEntryFilesExist(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -120,7 +115,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryFilesExist.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node", xe.getMessage()));
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryFilesExist.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node", xe.getMessage()));
 		}
 	}
 
@@ -143,7 +138,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryFilesExist.ERROR_0002_Cannot_Load_Job_From_Repository",""+id_jobentry, dbe.getMessage()));
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFilesExist.ERROR_0002_Cannot_Load_Job_From_Repository",""+id_jobentry, dbe.getMessage()));
 		}
 	}
 	
@@ -165,7 +160,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryFilesExist.ERROR_0003_Cannot_Save_Job_Entry",""+id_job, dbe.getMessage()));
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFilesExist.ERROR_0003_Cannot_Save_Job_Entry",""+id_job, dbe.getMessage()));
 		}
 	}
 
@@ -202,14 +197,14 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		    		    if (file.exists() && file.isReadable())
 		    		    {
 		    		    	if(log.isDetailed())
-		    		    		log.logDetailed(toString(), Messages.getString("JobEntryFilesExist.File_Exists", realFilefoldername)); //$NON-NLS-1$
+		    		    		log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFilesExist.File_Exists", realFilefoldername)); //$NON-NLS-1$
 		    		    }
 		                else
 		                {
 		                	missingfiles ++;
 		                	result.setNrErrors(missingfiles);
 		                	if(log.isDetailed())
-		                		log.logDetailed(toString(), Messages.getString("JobEntryFilesExist.File_Does_Not_Exist", realFilefoldername)); //$NON-NLS-1$
+		                		log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFilesExist.File_Does_Not_Exist", realFilefoldername)); //$NON-NLS-1$
 		                }
 		    		  
 		            }
@@ -217,7 +212,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		            {
 		    	  		missingfiles ++;
 		                result.setNrErrors(missingfiles);
-		                log.logError(toString(), Messages.getString("JobEntryFilesExist.ERROR_0004_IO_Exception", e.toString())); //$NON-NLS-1$
+		                log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFilesExist.ERROR_0004_IO_Exception", e.toString())); //$NON-NLS-1$
 		            }
 		    	  	finally
 		    	  	{

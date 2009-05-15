@@ -21,33 +21,31 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileDoesNotExistValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.w3c.dom.Node;
 import org.apache.commons.vfs.FileObject;
-
-import org.pentaho.di.core.ResultFile;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.w3c.dom.Node;
 
 
 
@@ -61,6 +59,8 @@ import org.pentaho.di.repository.Repository;
  */
 public class JobEntryDeleteResultFilenames extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryDeleteResultFilenames.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String foldername;
 	private boolean specifywildcard;
 	private String wildcard;
@@ -74,7 +74,6 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 		wildcard=null;
 		specifywildcard=false;
 		setID(-1L);
-		setJobEntryType(JobEntryType.DELETE_RESULT_FILENAMES);
 	}
 
 
@@ -82,13 +81,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 	{
 		this("");
 	}
-
-
-	public JobEntryDeleteResultFilenames(JobEntryBase jeb)
-	{
-		super(jeb);
-	}
-
+	
     public Object clone()
     {
     	JobEntryDeleteResultFilenames je = (JobEntryDeleteResultFilenames) super.clone();
@@ -124,7 +117,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryDeleteResultFilenames.CanNotLoadFromXML", xe.getMessage()));
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.CanNotLoadFromXML", xe.getMessage()));
 		}
 	}
 
@@ -143,7 +136,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryDeleteResultFilenames.CanNotLoadFromRep",""+id_jobentry, dbe.getMessage()));
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.CanNotLoadFromRep",""+id_jobentry, dbe.getMessage()));
 		}
 	}
 	
@@ -163,7 +156,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryDeleteResultFilenames.CanNotSaveToRep",""+id_job, dbe.getMessage()));
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.CanNotSaveToRep",""+id_job, dbe.getMessage()));
 		}
 	}
 	
@@ -223,12 +216,12 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 			{
 				int size=previousResult.getResultFiles().size();
 				if(log.isBasic())
-					log.logBasic(toString(),Messages.getString("JobEntryDeleteResultFilenames.log.FilesFound",""+size));
+					log.logBasic(toString(),BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.log.FilesFound",""+size));
 				if(!specifywildcard)
 				{
 					// Delete all files
 					previousResult.getResultFiles().clear();
-					if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobEntryDeleteResultFilenames.log.DeletedFiles",""+size));
+					if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.log.DeletedFiles",""+size));
 				}
 				else
 				{
@@ -248,7 +241,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 			            		// Remove file from result files list
 								result.getResultFiles().remove(resultFile.getFile().toString());
 								
-			            		if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobEntryDeleteResultFilenames.log.DeletedFile",file.toString()));
+			            		if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.log.DeletedFile",file.toString()));
 			  				}  
 			            	 
 			              }
@@ -259,7 +252,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 			}
 			catch(Exception e)
 			{
-				log.logError(toString(), Messages.getString("JobEntryDeleteResultFilenames.Error",e.toString()));
+				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.Error",e.toString()));
 			}
 		}	
 		return result;

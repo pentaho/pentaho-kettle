@@ -21,6 +21,7 @@ import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -40,6 +41,8 @@ import com.healthmarketscience.jackcess.Database;
  */
 public class AccessOutput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = AccessOutput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final int COMMIT_SIZE = 500;
     
 	private AccessOutputMeta meta;
@@ -128,7 +131,7 @@ public class AccessOutput extends BaseStep implements StepInterface
                     }
                     else
                     {
-                        logError(Messages.getString("AccessOutput.Error.TableDoesNotExist", realTablename));
+                        logError(BaseMessages.getString(PKG, "AccessOutput.Error.TableDoesNotExist", realTablename));
                         setErrors(1);
                         stopAll();
                         return false;
@@ -142,7 +145,7 @@ public class AccessOutput extends BaseStep implements StepInterface
             }
             catch(Exception e)
             {
-                logError(Messages.getString("AccessOutput.Exception.UnexpectedErrorCreatingTable", e.toString()));
+                logError(BaseMessages.getString(PKG, "AccessOutput.Exception.UnexpectedErrorCreatingTable", e.toString()));
                 logError(Const.getStackTracker(e));
                 setErrors(1);
                 stopAll();
@@ -170,7 +173,7 @@ public class AccessOutput extends BaseStep implements StepInterface
         }
         catch(IOException e)
         {
-            logError(Messages.getString("AccessOutput.Exception.UnexpectedErrorWritingRow", data.outputRowMeta.getString(rowData)));
+            logError(BaseMessages.getString(PKG, "AccessOutput.Exception.UnexpectedErrorWritingRow", data.outputRowMeta.getString(rowData)));
             logError(Const.getStackTracker(e));
             setErrors(1);
             stopAll();
@@ -209,7 +212,7 @@ public class AccessOutput extends BaseStep implements StepInterface
 		data.oneFileOpened=true;
         String realFilename = environmentSubstitute(meta.getFilename());
         if(log.isBasic())
-        	logBasic(Messages.getString("AccessOutput.log.WritingToFile", realFilename));
+        	logBasic(BaseMessages.getString(PKG, "AccessOutput.log.WritingToFile", realFilename));
         FileObject fileObject = KettleVFS.getFileObject(realFilename);
         File file = new File(KettleVFS.getFilename(fileObject));
         
@@ -222,7 +225,7 @@ public class AccessOutput extends BaseStep implements StepInterface
             }
             else
             {
-                logError(Messages.getString("AccessOutput.InitError.FileDoesNotExist", realFilename));
+                logError(BaseMessages.getString(PKG, "AccessOutput.InitError.FileDoesNotExist", realFilename));
                 return false;
             }
         }

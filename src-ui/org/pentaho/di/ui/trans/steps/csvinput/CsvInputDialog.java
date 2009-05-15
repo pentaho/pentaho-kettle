@@ -63,6 +63,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.csvinput.CsvInput;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
@@ -82,7 +83,7 @@ import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDial
 
 public class CsvInputDialog extends BaseStepDialog implements StepDialogInterface
 {
-	private static String PKG = "org.pentaho.di.trans.steps.csvinput"; // for i18n purposes, needed by Translator2   $NON-NLS-1$
+	private static Class<?> PKG = CsvInput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private CsvInputMeta inputMeta;
 	

@@ -20,7 +20,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -28,27 +27,27 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
+import org.pentaho.di.job.entries.simpleeval.JobEntrySimpleEval;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
-import org.pentaho.di.job.entries.simpleeval.JobEntrySimpleEval;
-import org.pentaho.di.job.entries.simpleeval.Messages;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 /**
@@ -60,7 +59,8 @@ import org.pentaho.di.job.entries.simpleeval.Messages;
 
 public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
-	
+	private static Class<?> PKG = JobEntrySimpleEval.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlName;
 	private Text         wName;
 	private FormData     fdlName, fdName;
@@ -148,14 +148,14 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobSimpleEval.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobSimpleEval.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobSimpleEval.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobSimpleEval.Name.Label"));
 		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -179,7 +179,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		//////////////////////////
 		
 		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
-		wGeneralTab.setText(Messages.getString("JobSimpleEval.Tab.General.Label"));
+		wGeneralTab.setText(BaseMessages.getString(PKG, "JobSimpleEval.Tab.General.Label"));
 		
 		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wGeneralComp);
@@ -197,7 +197,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 	     // /
 	    wSource= new Group(wGeneralComp, SWT.SHADOW_NONE);
 	    props.setLook(wSource);
-	    wSource.setText(Messages.getString("JobSimpleEval.Source.Group.Label"));
+	    wSource.setText(BaseMessages.getString(PKG, "JobSimpleEval.Source.Group.Label"));
 	    FormLayout sourcegroupLayout = new FormLayout();
 	    sourcegroupLayout.marginWidth = 10;
 	    sourcegroupLayout.marginHeight = 10;
@@ -206,7 +206,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 
 	    //Evaluate value (variable ou field from previous result entry)?
 	  	wlValueType = new Label(wSource, SWT.RIGHT);
-	  	wlValueType.setText(Messages.getString("JobSimpleEval.ValueType.Label"));
+	  	wlValueType.setText(BaseMessages.getString(PKG, "JobSimpleEval.ValueType.Label"));
 	  	props.setLook(wlValueType);
 	  	fdlValueType = new FormData();
 	  	fdlValueType.left = new FormAttachment(0, -margin);
@@ -235,7 +235,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 
 		// Name of the field to evaluate
 		wlFieldName= new Label(wSource, SWT.RIGHT);
-		wlFieldName.setText(Messages.getString("JobSimpleEval.FieldName.Label"));
+		wlFieldName.setText(BaseMessages.getString(PKG, "JobSimpleEval.FieldName.Label"));
 		props.setLook(wlFieldName);
 		fdlFieldName= new FormData();
 		fdlFieldName.left = new FormAttachment(0, 0);
@@ -243,8 +243,8 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		fdlFieldName.right = new FormAttachment(middle, -margin);
 		wlFieldName.setLayoutData(fdlFieldName);
 		
-		wFieldName= new TextVar(jobMeta ,wSource, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobSimpleEval.FieldName.Tooltip"));
+		wFieldName= new TextVar(jobMeta ,wSource, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobSimpleEval.FieldName.Tooltip"));
 		props.setLook(wFieldName);
 		wFieldName.addModifyListener(lsMod);
 		fdFieldName= new FormData();
@@ -255,7 +255,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		
 		// Name of the variable to evaluate
 		wlVariableName= new Label(wSource, SWT.RIGHT);
-		wlVariableName.setText(Messages.getString("JobSimpleEval.Variable.Label"));
+		wlVariableName.setText(BaseMessages.getString(PKG, "JobSimpleEval.Variable.Label"));
 		props.setLook(wlVariableName);
 		fdlVariableName= new FormData();
 		fdlVariableName.left = new FormAttachment(0, 0);
@@ -263,8 +263,8 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		fdlVariableName.right = new FormAttachment(middle, -margin);
 		wlVariableName.setLayoutData(fdlVariableName);
 		
-		wVariableName= new TextVar(jobMeta, wSource, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobSimpleEval.Variable.Tooltip"));
+		wVariableName= new TextVar(jobMeta, wSource, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobSimpleEval.Variable.Tooltip"));
 		props.setLook(wVariableName);
 		wVariableName.addModifyListener(lsMod);
 		fdVariableName= new FormData();
@@ -276,7 +276,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 
 	    //Field type
 	  	wlFieldType = new Label(wSource, SWT.RIGHT);
-	  	wlFieldType.setText(Messages.getString("JobSimpleEval.FieldType.Label"));
+	  	wlFieldType.setText(BaseMessages.getString(PKG, "JobSimpleEval.FieldType.Label"));
 	  	props.setLook(wlFieldType);
 	  	fdlFieldType = new FormData();
 	  	fdlFieldType.left = new FormAttachment(0, 0);
@@ -304,7 +304,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 
 	    //Mask
 	  	wlMask = new Label(wSource, SWT.RIGHT);
-	  	wlMask.setText(Messages.getString("JobSimpleEval.Mask.Label"));
+	  	wlMask.setText(BaseMessages.getString(PKG, "JobSimpleEval.Mask.Label"));
 	  	props.setLook(wlMask);
 	  	fdlMask = new FormData();
 	  	fdlMask.left = new FormAttachment(0, 0);
@@ -346,7 +346,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 	     // /
 	    wSuccessOn= new Group(wGeneralComp, SWT.SHADOW_NONE);
 	    props.setLook(wSuccessOn);
-	    wSuccessOn.setText(Messages.getString("JobSimpleEval.SuccessOn.Group.Label"));
+	    wSuccessOn.setText(BaseMessages.getString(PKG, "JobSimpleEval.SuccessOn.Group.Label"));
 
 	    FormLayout successongroupLayout = new FormLayout();
 	    successongroupLayout.marginWidth = 10;
@@ -357,7 +357,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 
 	    //Success Condition
 	  	wlSuccessCondition = new Label(wSuccessOn, SWT.RIGHT);
-	  	wlSuccessCondition.setText(Messages.getString("JobSimpleEval.SuccessCondition.Label"));
+	  	wlSuccessCondition.setText(BaseMessages.getString(PKG, "JobSimpleEval.SuccessCondition.Label"));
 	  	props.setLook(wlSuccessCondition);
 	  	fdlSuccessCondition = new FormData();
 	  	fdlSuccessCondition.left = new FormAttachment(0, 0);
@@ -366,8 +366,8 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 	  	wlSuccessCondition.setLayoutData(fdlSuccessCondition);
 	  	
 	  	wSuccessCondition = new CCombo(wSuccessOn, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-	  	wSuccessCondition.add(Messages.getString("JobSimpleEval.SuccessWhenEqual.Label"));
-	  	wSuccessCondition.add(Messages.getString("JobSimpleEval.SuccessWhenDifferent.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenEqual.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenDifferent.Label"));
 	  	wSuccessCondition.select(0); // +1: starts at -1
 	  	
 		props.setLook(wSuccessCondition);
@@ -386,7 +386,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		
 	    //Success number(date) Condition
 	  	wlSuccessNumberCondition = new Label(wSuccessOn, SWT.RIGHT);
-	  	wlSuccessNumberCondition.setText(Messages.getString("JobSimpleEval.SuccessNumberCondition.Label"));
+	  	wlSuccessNumberCondition.setText(BaseMessages.getString(PKG, "JobSimpleEval.SuccessNumberCondition.Label"));
 	  	props.setLook(wlSuccessNumberCondition);
 	  	fdlSuccessNumberCondition = new FormData();
 	  	fdlSuccessNumberCondition.left = new FormAttachment(0, 0);
@@ -417,7 +417,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 
 		// Compare with value
 		wlCompareValue= new Label(wSuccessOn, SWT.RIGHT);
-		wlCompareValue.setText(Messages.getString("JobSimpleEval.CompareValue.Label"));
+		wlCompareValue.setText(BaseMessages.getString(PKG, "JobSimpleEval.CompareValue.Label"));
 		props.setLook(wlCompareValue);
 		fdlCompareValue= new FormData();
 		fdlCompareValue.left = new FormAttachment(0, 0);
@@ -426,7 +426,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		wlCompareValue.setLayoutData(fdlCompareValue);
 		
 		wCompareValue= new TextVar(jobMeta ,wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
-				Messages.getString("JobSimpleEval.CompareValue.Tooltip"));
+				BaseMessages.getString(PKG, "JobSimpleEval.CompareValue.Tooltip"));
 		props.setLook(wCompareValue);
 		wCompareValue.addModifyListener(lsMod);
 		fdCompareValue= new FormData();
@@ -437,7 +437,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		
 		// Min value
 		wlMinValue= new Label(wSuccessOn, SWT.RIGHT);
-		wlMinValue.setText(Messages.getString("JobSimpleEval.MinValue.Label"));
+		wlMinValue.setText(BaseMessages.getString(PKG, "JobSimpleEval.MinValue.Label"));
 		props.setLook(wlMinValue);
 		fdlMinValue= new FormData();
 		fdlMinValue.left = new FormAttachment(0, 0);
@@ -446,7 +446,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		wlMinValue.setLayoutData(fdlMinValue);
 		
 		wMinValue= new TextVar(jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
-				Messages.getString("JobSimpleEval.MinValue.Tooltip"));
+				BaseMessages.getString(PKG, "JobSimpleEval.MinValue.Tooltip"));
 		props.setLook(wMinValue);
 		wMinValue.addModifyListener(lsMod);
 		fdMinValue= new FormData();
@@ -457,7 +457,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		
 		// Maximum value
 		wlMaxValue= new Label(wSuccessOn, SWT.RIGHT);
-		wlMaxValue.setText(Messages.getString("JobSimpleEval.MaxValue.Label"));
+		wlMaxValue.setText(BaseMessages.getString(PKG, "JobSimpleEval.MaxValue.Label"));
 		props.setLook(wlMaxValue);
 		fdlMaxValue= new FormData();
 		fdlMaxValue.left = new FormAttachment(0, 0);
@@ -465,8 +465,8 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		fdlMaxValue.right = new FormAttachment(middle, -margin);
 		wlMaxValue.setLayoutData(fdlMaxValue);
 		
-		wMaxValue= new TextVar(jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobSimpleEval.MaxValue.Tooltip"));
+		wMaxValue= new TextVar(jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobSimpleEval.MaxValue.Tooltip"));
 		props.setLook(wMaxValue);
 		wMaxValue.addModifyListener(lsMod);
 		fdMaxValue= new FormData();
@@ -514,9 +514,9 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		
 
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTabFolder);
 		
@@ -663,8 +663,8 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
        if(Const.isEmpty(wName.getText())) 
         {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setText(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setText(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
         }

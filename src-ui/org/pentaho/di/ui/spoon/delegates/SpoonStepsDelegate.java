@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -31,12 +32,13 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.StepErrorMetaDialog;
 
 public class SpoonStepsDelegate extends SpoonDelegate
 {
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public SpoonStepsDelegate(Spoon spoon)
 	{
 		super(spoon);
@@ -68,7 +70,7 @@ public class SpoonStepsDelegate extends SpoonDelegate
 	public void dupeStep(TransMeta transMeta, StepMeta stepMeta)
 	{
 		spoon.getLog().logDebug(toString(),
-				Messages.getString("Spoon.Log.DuplicateStep") + stepMeta.getName());// Duplicate
+				BaseMessages.getString(PKG, "Spoon.Log.DuplicateStep") + stepMeta.getName());// Duplicate
 		// step:
 
 		StepMeta stMeta = (StepMeta) stepMeta.clone();
@@ -143,8 +145,8 @@ public class SpoonStepsDelegate extends SpoonDelegate
 				{
 					stepname = newname;
 					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
-					mb.setMessage(Messages.getString("Spoon.Dialog.StepnameExists.Message", stepname)); // $NON-NLS-1$
-					mb.setText(Messages.getString("Spoon.Dialog.StepnameExists.Title")); // $NON-NLS-1$
+					mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.StepnameExists.Message", stepname)); // $NON-NLS-1$
+					mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.StepnameExists.Title")); // $NON-NLS-1$
 					mb.open();
 				}
 
@@ -180,7 +182,7 @@ public class SpoonStepsDelegate extends SpoonDelegate
 		{
 			if (spoon.getShell().isDisposed())
 				return null;
-			new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.UnableOpenDialog.Title"), Messages.getString("Spoon.Dialog.UnableOpenDialog.Message"), e);
+			new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.UnableOpenDialog.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.UnableOpenDialog.Message"), e);
 		}
 
 		if (refresh)
@@ -193,7 +195,7 @@ public class SpoonStepsDelegate extends SpoonDelegate
 
 	public void delStep(TransMeta transMeta, StepMeta stepMeta)
 	{
-		spoon.getLog().logDebug(toString(), Messages.getString("Spoon.Log.DeleteStep") + stepMeta.getName());// "Delete
+		spoon.getLog().logDebug(toString(), BaseMessages.getString(PKG, "Spoon.Log.DeleteStep") + stepMeta.getName());// "Delete
 		// step:
 		// "
 

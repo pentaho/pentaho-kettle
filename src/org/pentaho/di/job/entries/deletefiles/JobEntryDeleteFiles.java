@@ -38,8 +38,8 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -58,6 +58,8 @@ import org.w3c.dom.Node;
  */
 public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobEntryInterface {
 
+  private static Class<?> PKG = JobEntryDeleteFiles.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   public boolean argFromPrevious;
 
   public boolean includeSubfolders;
@@ -73,15 +75,10 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
     includeSubfolders = false;
     setID(-1L);
-    setJobEntryType(JobEntryType.DELETE_FILES);
   }
 
   public JobEntryDeleteFiles() {
     this(""); //$NON-NLS-1$
-  }
-
-  public JobEntryDeleteFiles(JobEntryBase jeb) {
-    super(jeb);
   }
 
   public Object clone() {
@@ -131,7 +128,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         filemasks[i] = XMLHandler.getTagValue(fnode, "filemask"); //$NON-NLS-1$
       }
     } catch (KettleXMLException xe) {
-      throw new KettleXMLException(Messages.getString("JobEntryDeleteFiles.UnableToLoadFromXml"), xe); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryDeleteFiles.UnableToLoadFromXml"), xe); //$NON-NLS-1$
     }
   }
 
@@ -152,7 +149,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         filemasks[a] = rep.getJobEntryAttributeString(id_jobentry, a, "filemask"); //$NON-NLS-1$
       }
     } catch (KettleException dbe) {
-      throw new KettleException(Messages.getString("JobEntryDeleteFiles.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "JobEntryDeleteFiles.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -172,7 +169,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       }
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(
-          Messages.getString("JobEntryDeleteFiles.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
+          BaseMessages.getString(PKG, "JobEntryDeleteFiles.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -190,7 +187,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
     if (argFromPrevious) {
       if(log.isDetailed())	
-    	  log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
+    	  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFiles.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
     }
 
     if (argFromPrevious && rows != null) // Copy the input row to the (command line) arguments
@@ -203,7 +200,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
           // ok we can process this file/folder
           if(log.isDetailed())	
-        	  log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingRow", args_previous, fmasks_previous)); //$NON-NLS-1$
+        	  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFiles.ProcessingRow", args_previous, fmasks_previous)); //$NON-NLS-1$
 
           if (!ProcessFile(args_previous, fmasks_previous,parentJob)) {
         	  NrErrFiles++;
@@ -215,7 +212,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         
           // ok we can process this file/folder
     	  if(log.isDetailed())	
-            log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
+            log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFiles.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
           if (!ProcessFile(arguments[i], filemasks[i],parentJob)) {
         	  NrErrFiles++;
           }
@@ -261,33 +258,33 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         {
           // It's a folder
           if (log.isDetailed())
-            log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingFolder", realFilefoldername)); //$NON-NLS-1$
+            log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFiles.ProcessingFolder", realFilefoldername)); //$NON-NLS-1$
           // Delete Files
           
           int Nr = filefolder.delete(new TextFileSelector(filefolder.toString(),realwildcard,parentJob));
 
           if (log.isDetailed())
-            log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.TotalDeleted", String.valueOf(Nr))); //$NON-NLS-1$
+            log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFiles.TotalDeleted", String.valueOf(Nr))); //$NON-NLS-1$
           rcode = true;
         } else {
           // It's a file
           if(log.isDetailed())	
-        	  log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingFile", realFilefoldername)); //$NON-NLS-1$
+        	  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFiles.ProcessingFile", realFilefoldername)); //$NON-NLS-1$
           boolean deleted = filefolder.delete();
           if (!deleted) {
-            log.logError(toString(), Messages.getString("JobEntryDeleteFiles.CouldNotDeleteFile", realFilefoldername)); //$NON-NLS-1$
+            log.logError(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFiles.CouldNotDeleteFile", realFilefoldername)); //$NON-NLS-1$
           } else {
-            if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobEntryDeleteFiles.FileDeleted", filename)); //$NON-NLS-1$
+            if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFiles.FileDeleted", filename)); //$NON-NLS-1$
             rcode = true;
           }
         }
       } else {
         // File already deleted, no reason to try to delete it
-    	  if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobEntryDeleteFiles.FileAlreadyDeleted", realFilefoldername)); //$NON-NLS-1$
+    	  if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFiles.FileAlreadyDeleted", realFilefoldername)); //$NON-NLS-1$
         rcode = true;
       }
     } catch (IOException e) {
-      log.logError(toString(), Messages.getString("JobEntryDeleteFiles.CouldNotProcess", realFilefoldername, e.getMessage())); //$NON-NLS-1$
+      log.logError(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFiles.CouldNotProcess", realFilefoldername, e.getMessage())); //$NON-NLS-1$
     } finally {
       if (filefolder != null) {
         try {
@@ -343,7 +340,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 						 if (includeSubfolders && (info.getFile().getType() == FileType.FILE) && GetFileWildcard(short_filename,file_wildcard))
 						 {
 							if (log.isDetailed()) 
-								log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.DeletingFile",info.getFile().toString())); //$NON-NLS-1$
+								log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFiles.DeletingFile",info.getFile().toString())); //$NON-NLS-1$
 
 							returncode= true; 				
 							 
@@ -356,7 +353,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 						 if ((info.getFile().getType() == FileType.FILE) && GetFileWildcard(short_filename,file_wildcard))
 						 {
 							if (log.isDetailed())
-								log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.DeletingFile",info.getFile().toString())); //$NON-NLS-1$
+								log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFiles.DeletingFile",info.getFile().toString())); //$NON-NLS-1$
 							
 							returncode= true; 				
 							 
@@ -371,7 +368,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 			{
 				
 
-				log.logError(Messages.getString("JobDeleteFiles.Error.Exception.DeleteProcessError") , Messages.getString("JobDeleteFiles.Error.Exception.DeleteProcess", 
+				log.logError(BaseMessages.getString(PKG, "JobDeleteFiles.Error.Exception.DeleteProcessError") , BaseMessages.getString(PKG, "JobDeleteFiles.Error.Exception.DeleteProcess", 
 					info.getFile().toString(),e.getMessage()));
 				
 				 returncode= false;

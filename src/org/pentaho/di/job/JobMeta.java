@@ -59,6 +59,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -85,6 +86,9 @@ import org.w3c.dom.Node;
  */
 public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMeta>, XMLInterface, UndoInterface,
 		HasDatabasesInterface, VariableSpace, EngineMetaInterface, ResourceExportInterface, HasSlaveServersInterface, NamedParams {
+	
+	private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final String XML_TAG = "job"; //$NON-NLS-1$
 
 	private static final String XML_TAG_SLAVESERVERS = "slaveservers"; //$NON-NLS-1$
@@ -256,7 +260,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		jobEntry.setEntry(jobEntrySpecial);
 		jobEntry.setLocation(50, 50);
 		jobEntry.setDrawn(false);
-		jobEntry.setDescription(Messages.getString("JobMeta.StartJobEntry.Description")); //$NON-NLS-1$
+		jobEntry.setDescription(BaseMessages.getString(PKG, "JobMeta.StartJobEntry.Description")); //$NON-NLS-1$
 		return jobEntry;
 
 	}
@@ -268,7 +272,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		jobEntry.setEntry(jobEntrySpecial);
 		jobEntry.setLocation(50, 50);
 		jobEntry.setDrawn(false);
-		jobEntry.setDescription(Messages.getString("JobMeta.DummyJobEntry.Description")); //$NON-NLS-1$
+		jobEntry.setDescription(BaseMessages.getString(PKG, "JobMeta.DummyJobEntry.Description")); //$NON-NLS-1$
 		return jobEntry;
 	}
 
@@ -495,7 +499,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			// The ID has to be assigned, even when it's a new item...
 			rep.insertJob(this);
 		} catch (KettleDatabaseException dbe) {
-			throw new KettleException(Messages.getString("JobMeta.Exception.UnableToSaveJobToRepository"), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Exception.UnableToSaveJobToRepository"), dbe); //$NON-NLS-1$
 		}
 	}
 
@@ -734,10 +738,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				// Do this at the end
 				setFilename(fname);
 			} else {
-				throw new KettleXMLException(Messages.getString("JobMeta.Exception.ErrorReadingFromXMLFile") + fname); //$NON-NLS-1$
+				throw new KettleXMLException(BaseMessages.getString(PKG, "JobMeta.Exception.ErrorReadingFromXMLFile") + fname); //$NON-NLS-1$
 			}
 		} catch (Exception e) {
-			throw new KettleXMLException(Messages.getString("JobMeta.Exception.UnableToLoadJobFromXMLFile") + fname + "]", e); //$NON-NLS-1$ //$NON-NLS-2$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobMeta.Exception.UnableToLoadJobFromXMLFile") + fname + "]", e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -823,7 +827,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				sharedObjects = readSharedObjects(rep);
 			} catch (Exception e) {
 				LogWriter.getInstance().logError(toString(),
-						Messages.getString("JobMeta.ErrorReadingSharedObjects.Message", e.toString())); // $NON-NLS-1$
+						BaseMessages.getString(PKG, "JobMeta.ErrorReadingSharedObjects.Message", e.toString())); // $NON-NLS-1$
 																										// //$NON-NLS-1$
 				LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
 			}
@@ -865,8 +869,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 						if (askOverwrite && prompter != null) 
 						{
 							overwrite = prompter.overwritePrompt(
-									Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon.getName()), 
-									Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage"),
+									BaseMessages.getString(PKG, "JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon.getName()), 
+									BaseMessages.getString(PKG, "JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage"),
 									Props.STRING_ASK_ABOUT_REPLACING_DATABASES
 								);
 						}
@@ -971,7 +975,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 			clearChanged();
 		} catch (Exception e) {
-			throw new KettleXMLException(Messages.getString("JobMeta.Exception.UnableToLoadJobFromXMLNode"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobMeta.Exception.UnableToLoadJobFromXMLNode"), e); //$NON-NLS-1$
 		} finally {
 			setInternalKettleVariables();
 		}
@@ -999,7 +1003,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		try {
 			long dbids[] = rep.getDatabaseIDs();
 			for (int i = 0; i < dbids.length; i++) {
-				DatabaseMeta databaseMeta = RepositoryUtil.loadDatabaseMeta(rep, dbids[i]);
+				DatabaseMeta databaseMeta = rep.loadDatabaseMeta(dbids[i]);
 				databaseMeta.shareVariablesWith(this);
 
 				DatabaseMeta check = findDatabase(databaseMeta.getName()); // Check
@@ -1024,9 +1028,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			}
 			setChanged(false);
 		} catch (KettleDatabaseException dbe) {
-			throw new KettleException(Messages.getString("JobMeta.Log.UnableToReadDatabaseIDSFromRepository"), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Log.UnableToReadDatabaseIDSFromRepository"), dbe); //$NON-NLS-1$
 		} catch (KettleException ke) {
-			throw new KettleException(Messages.getString("JobMeta.Log.UnableToReadDatabasesFromRepository"), ke); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Log.UnableToReadDatabasesFromRepository"), ke); //$NON-NLS-1$
 		}
 	}
 	
@@ -1059,7 +1063,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         }
         catch (KettleDatabaseException dbe)
         {
-            throw new KettleException(Messages.getString("JobMeta.Log.UnableToReadSlaveServersFromRepository"), dbe); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Log.UnableToReadSlaveServersFromRepository"), dbe); //$NON-NLS-1$
         }
     }
 
@@ -1148,7 +1152,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		try {
 			int nrWorks = 2 + nrDatabases() + nrNotes() + nrJobEntries() + nrJobHops();
 			if (monitor != null)
-				monitor.beginTask(Messages.getString("JobMeta.Monitor.SavingTransformation") + directory + Const.FILE_SEPARATOR + getName(), nrWorks); //$NON-NLS-1$
+				monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingTransformation") + directory + Const.FILE_SEPARATOR + getName(), nrWorks); //$NON-NLS-1$
 
 			rep.lockRepository();
 
@@ -1161,7 +1165,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			// If we find a transformation with the same name: ask!
 			//
 			if (monitor != null)
-				monitor.subTask(Messages.getString("JobMeta.Monitor.HandlingPreviousVersionOfJob")); //$NON-NLS-1$
+				monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.HandlingPreviousVersionOfJob")); //$NON-NLS-1$
 			setID(rep.getJobID(getName(), directory.getID()));
 
 			// If no valid id is available in the database, assign one...
@@ -1179,10 +1183,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			// First of all we need to verify that all database connections are
 			// saved.
 			//
-			if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobMeta.Log.SavingDatabaseConnections")); //$NON-NLS-1$
+			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobMeta.Log.SavingDatabaseConnections")); //$NON-NLS-1$
 			for (int i = 0; i < nrDatabases(); i++) {
 				if (monitor != null)
-					monitor.subTask(Messages.getString("JobMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + nrDatabases()); //$NON-NLS-1$ //$NON-NLS-2$
+					monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + nrDatabases()); //$NON-NLS-1$ //$NON-NLS-2$
 				DatabaseMeta databaseMeta = getDatabase(i);
 				// ONLY save the database connection if it has changed and
 				// nothing was saved in the repository
@@ -1198,7 +1202,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			// Everything else depends on this ID, including recursive job
 			// entries to the save job. (retry)
 			if (monitor != null)
-				monitor.subTask(Messages.getString("JobMeta.Monitor.SavingJobDetails")); //$NON-NLS-1$
+				monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingJobDetails")); //$NON-NLS-1$
 			if(log.isDetailed()) log.logDetailed(toString(), "Saving job info to repository..."); //$NON-NLS-1$
 			saveRepJob(rep);
 			if (monitor != null)
@@ -1217,7 +1221,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			if(log.isDetailed()) log.logDetailed(toString(), "Saving notes to repository..."); //$NON-NLS-1$
 			for (int i = 0; i < nrNotes(); i++) {
 				if (monitor != null)
-					monitor.subTask(Messages.getString("JobMeta.Monitor.SavingNoteNr") + (i + 1) + "/" + nrNotes()); //$NON-NLS-1$ //$NON-NLS-2$
+					monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingNoteNr") + (i + 1) + "/" + nrNotes()); //$NON-NLS-1$ //$NON-NLS-2$
 				NotePadMeta ni = getNote(i);
 				ni.saveRep(rep, getID());
 				if (ni.getID() > 0) {
@@ -1234,7 +1238,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			rep.updateJobEntryTypes();
 			for (int i = 0; i < nrJobEntries(); i++) {
 				if (monitor != null)
-					monitor.subTask(Messages.getString("JobMeta.Monitor.SavingJobEntryNr") + (i + 1) + "/" + nrJobEntries()); //$NON-NLS-1$ //$NON-NLS-2$
+					monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingJobEntryNr") + (i + 1) + "/" + nrJobEntries()); //$NON-NLS-1$ //$NON-NLS-2$
 				JobEntryCopy cge = getJobEntry(i);
 				cge.saveRep(rep, getID());
 				if (monitor != null)
@@ -1261,7 +1265,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				monitor.done();
 		} catch (KettleDatabaseException dbe) {
 			rep.rollback();
-			throw new KettleException(Messages.getString("JobMeta.Exception.UnableToSaveJobInRepositoryRollbackPerformed"), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Exception.UnableToSaveJobInRepositoryRollbackPerformed"), dbe); //$NON-NLS-1$
 		} finally {
 			// don't forget to unlock the repository.
 			// Normally this is done by the commit / rollback statement, but hey
@@ -1326,13 +1330,13 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	
 					int nrWork = 2 + noteids.length + jecids.length + hopid.length;
 					if (monitor != null)
-						monitor.beginTask(Messages.getString("JobMeta.Monitor.LoadingJob") + repdir + Const.FILE_SEPARATOR + jobname, nrWork); //$NON-NLS-1$
+						monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.LoadingJob") + repdir + Const.FILE_SEPARATOR + jobname, nrWork); //$NON-NLS-1$
 	
 					//
 					// get job info:
 					//
 					if (monitor != null)
-						monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobInformation")); //$NON-NLS-1$
+						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingJobInformation")); //$NON-NLS-1$
 					RowMetaAndData jobRow = rep.getJob(getID());
 	
 					setName( jobRow.getString(Repository.FIELD_JOB_NAME, null) ); //$NON-NLS-1$
@@ -1351,7 +1355,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 					long id_logdb = jobRow.getInteger(Repository.FIELD_JOB_ID_DATABASE_LOG, 0); //$NON-NLS-1$
 					if (id_logdb > 0) {
 						// Get the logconnection
-						logConnection = RepositoryUtil.loadDatabaseMeta(rep, id_logdb);
+						logConnection = rep.loadDatabaseMeta(id_logdb);
 						logConnection.shareVariablesWith(this);
 					}
 					useBatchId = jobRow.getBoolean(Repository.FIELD_JOB_USE_BATCH_ID, false); //$NON-NLS-1$
@@ -1368,14 +1372,14 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 					// Load the common database connections
 					//
 					if (monitor != null)
-						monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingAvailableDatabasesFromRepository")); //$NON-NLS-1$
+						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingAvailableDatabasesFromRepository")); //$NON-NLS-1$
 					// Read objects from the shared XML file & the repository
 					try {
 						sharedObjectsFile = jobRow.getString(Repository.FIELD_JOB_SHARED_FILE, null);
 						sharedObjects = readSharedObjects(rep);
 					} catch (Exception e) {
 						LogWriter.getInstance().logError(toString(),
-								Messages.getString("JobMeta.ErrorReadingSharedObjects.Message", e.toString())); // $NON-NLS-1$
+								BaseMessages.getString(PKG, "JobMeta.ErrorReadingSharedObjects.Message", e.toString())); // $NON-NLS-1$
 																												// //$NON-NLS-1$
 						LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
 					}
@@ -1385,7 +1389,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 					if(log.isDetailed()) log.logDetailed(toString(), "Loading " + noteids.length + " notes"); //$NON-NLS-1$ //$NON-NLS-2$
 					for (int i = 0; i < noteids.length; i++) {
 						if (monitor != null)
-							monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingNoteNr") + (i + 1) + "/" + noteids.length); //$NON-NLS-1$ //$NON-NLS-2$
+							monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingNoteNr") + (i + 1) + "/" + noteids.length); //$NON-NLS-1$ //$NON-NLS-2$
 						NotePadMeta ni = new NotePadMeta(log, rep, noteids[i]);
 						if (indexOfNote(ni) < 0)
 							addNote(ni);
@@ -1397,7 +1401,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 					if(log.isDetailed()) log.logDetailed(toString(), "Loading " + jecids.length + " job entries"); //$NON-NLS-1$ //$NON-NLS-2$
 					for (int i = 0; i < jecids.length; i++) {
 						if (monitor != null)
-							monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobEntryNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
+							monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingJobEntryNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
 	
 						JobEntryCopy jec = new JobEntryCopy(log, rep, getID(), jecids[i], jobentries, databases, slaveServers);
 						// Also set the copy number...
@@ -1427,7 +1431,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 					if(log.isDetailed()) log.logDetailed(toString(), "Loading " + hopid.length + " job hops"); //$NON-NLS-1$ //$NON-NLS-2$
 					for (int i = 0; i < hopid.length; i++) {
 						if (monitor != null)
-							monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobHopNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
+							monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingJobHopNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
 						JobHopMeta hi = new JobHopMeta(rep, hopid[i], this, jobcopies);
 						jobhops.add(hi);
 						if (monitor != null)
@@ -1439,14 +1443,14 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 					// Finally, clear the changed flags...
 					clearChanged();
 					if (monitor != null)
-						monitor.subTask(Messages.getString("JobMeta.Monitor.FinishedLoadOfJob")); //$NON-NLS-1$
+						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.FinishedLoadOfJob")); //$NON-NLS-1$
 					if (monitor != null)
 						monitor.done();
 				} else {
-					throw new KettleException(Messages.getString("JobMeta.Exception.CanNotFindJob") + jobname); //$NON-NLS-1$
+					throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Exception.CanNotFindJob") + jobname); //$NON-NLS-1$
 				}
 			} catch (KettleException dbe) {
-				throw new KettleException(Messages.getString("JobMeta.Exception.AnErrorOccuredReadingJob", jobname), dbe);
+				throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Exception.AnErrorOccuredReadingJob", jobname), dbe);
 			} finally {
 				initializeVariablesFrom(getParentVariableSpace());
 				setInternalKettleVariables();
@@ -2199,13 +2203,13 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 */
 	public List<SQLStatement> getSQLStatements(Repository repository, ProgressMonitorListener monitor) throws KettleException {
 		if (monitor != null)
-			monitor.beginTask(Messages.getString("JobMeta.Monitor.GettingSQLNeededForThisJob"), nrJobEntries() + 1); //$NON-NLS-1$
+			monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.GettingSQLNeededForThisJob"), nrJobEntries() + 1); //$NON-NLS-1$
 		List<SQLStatement> stats = new ArrayList<SQLStatement>();
 
 		for (int i = 0; i < nrJobEntries(); i++) {
 			JobEntryCopy copy = getJobEntry(i);
 			if (monitor != null)
-				monitor.subTask(Messages.getString("JobMeta.Monitor.GettingSQLForJobEntryCopy") + copy + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+				monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.GettingSQLForJobEntryCopy") + copy + "]"); //$NON-NLS-1$ //$NON-NLS-2$
 			List<SQLStatement> list = copy.getEntry().getSQLStatements(repository, this);
 			stats.addAll(list);
 			if (monitor != null)
@@ -2214,7 +2218,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 		// Also check the sql for the logtable...
 		if (monitor != null)
-			monitor.subTask(Messages.getString("JobMeta.Monitor.GettingSQLStatementsForJobLogTables")); //$NON-NLS-1$
+			monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.GettingSQLStatementsForJobLogTables")); //$NON-NLS-1$
 		if (logConnection != null && logTable != null && logTable.length() > 0) {
 			Database db = new Database(logConnection);
 			try {
@@ -2222,12 +2226,12 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				RowMetaInterface fields = Database.getJobLogrecordFields(false, useBatchId, logfieldUsed);
 				String sql = db.getDDL(logTable, fields);
 				if (sql != null && sql.length() > 0) {
-					SQLStatement stat = new SQLStatement(Messages.getString("JobMeta.SQLFeedback.ThisJob"), logConnection, sql); //$NON-NLS-1$
+					SQLStatement stat = new SQLStatement(BaseMessages.getString(PKG, "JobMeta.SQLFeedback.ThisJob"), logConnection, sql); //$NON-NLS-1$
 					stats.add(stat);
 				}
 			} catch (KettleDatabaseException dbe) {
-				SQLStatement stat = new SQLStatement(Messages.getString("JobMeta.SQLFeedback.ThisJob"), logConnection, null); //$NON-NLS-1$
-				stat.setError(Messages.getString("JobMeta.SQLFeedback.ErrorObtainingJobLogTableInfo") + dbe.getMessage()); //$NON-NLS-1$
+				SQLStatement stat = new SQLStatement(BaseMessages.getString(PKG, "JobMeta.SQLFeedback.ThisJob"), logConnection, null); //$NON-NLS-1$
+				stat.setError(BaseMessages.getString(PKG, "JobMeta.SQLFeedback.ErrorObtainingJobLogTableInfo") + dbe.getMessage()); //$NON-NLS-1$
 				stats.add(stat);
 			} finally {
 				db.disconnect();
@@ -2284,9 +2288,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			// vars are...
 			for (int i = 0; i < nrJobEntries(); i++) {
 				JobEntryCopy entryMeta = getJobEntry(i);
-				stringList.add(new StringSearchResult(entryMeta.getName(), entryMeta, this, Messages.getString("JobMeta.SearchMetadata.JobEntryName"))); //$NON-NLS-1$
+				stringList.add(new StringSearchResult(entryMeta.getName(), entryMeta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.JobEntryName"))); //$NON-NLS-1$
 				if (entryMeta.getDescription() != null)
-					stringList.add(new StringSearchResult(entryMeta.getDescription(), entryMeta, this, Messages.getString("JobMeta.SearchMetadata.JobEntryDescription"))); //$NON-NLS-1$
+					stringList.add(new StringSearchResult(entryMeta.getDescription(), entryMeta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.JobEntryDescription"))); //$NON-NLS-1$
 				JobEntryInterface metaInterface = entryMeta.getEntry();
 				StringSearcher.findMetaData(metaInterface, 1, stringList, entryMeta, this);
 			}
@@ -2297,15 +2301,15 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		if (searchDatabases) {
 			for (int i = 0; i < nrDatabases(); i++) {
 				DatabaseMeta meta = getDatabase(i);
-				stringList.add(new StringSearchResult(meta.getName(), meta, this, Messages.getString("JobMeta.SearchMetadata.DatabaseConnectionName"))); //$NON-NLS-1$
+				stringList.add(new StringSearchResult(meta.getName(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseConnectionName"))); //$NON-NLS-1$
 				if (meta.getDatabaseName() != null)
-					stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, Messages.getString("JobMeta.SearchMetadata.DatabaseName"))); //$NON-NLS-1$
+					stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseName"))); //$NON-NLS-1$
 				if (meta.getUsername() != null)
-					stringList.add(new StringSearchResult(meta.getUsername(), meta, this, Messages.getString("JobMeta.SearchMetadata.DatabaseUsername"))); //$NON-NLS-1$
+					stringList.add(new StringSearchResult(meta.getUsername(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseUsername"))); //$NON-NLS-1$
 				if (meta.getDatabaseTypeDesc() != null)
-					stringList.add(new StringSearchResult(meta.getDatabaseTypeDesc(), meta, this, Messages.getString("JobMeta.SearchMetadata.DatabaseTypeDescription"))); //$NON-NLS-1$
+					stringList.add(new StringSearchResult(meta.getDatabaseTypeDesc(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseTypeDescription"))); //$NON-NLS-1$
 				if (meta.getDatabasePortNumberString() != null)
-					stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, Messages.getString("JobMeta.SearchMetadata.DatabasePort"))); //$NON-NLS-1$
+					stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabasePort"))); //$NON-NLS-1$
 			}
 		}
 
@@ -2315,7 +2319,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			for (int i = 0; i < nrNotes(); i++) {
 				NotePadMeta meta = getNote(i);
 				if (meta.getNote() != null)
-					stringList.add(new StringSearchResult(meta.getNote(), meta, this, Messages.getString("JobMeta.SearchMetadata.NotepadText"))); //$NON-NLS-1$
+					stringList.add(new StringSearchResult(meta.getNote(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.NotepadText"))); //$NON-NLS-1$
 			}
 		}
 
@@ -2709,7 +2713,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	public void checkJobEntries(List<CheckResultInterface> remarks, boolean only_selected, ProgressMonitorListener monitor) {
 		remarks.clear(); // Empty remarks
 		if (monitor != null)
-			monitor.beginTask(Messages.getString("JobMeta.Monitor.VerifyingThisJobEntryTask.Title"), jobcopies.size() + 2); //$NON-NLS-1$
+			monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.VerifyingThisJobEntryTask.Title"), jobcopies.size() + 2); //$NON-NLS-1$
 		boolean stop_checking = false;
 		for (int i = 0; i < jobcopies.size() && !stop_checking; i++) {
 			JobEntryCopy copy = jobcopies.get(i); // get the job entry copy
@@ -2717,7 +2721,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				JobEntryInterface entry = copy.getEntry();
 				if (entry != null) {
 					if (monitor != null)
-						monitor.subTask(Messages.getString("JobMeta.Monitor.VerifyingJobEntry.Title", entry.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.VerifyingJobEntry.Title", entry.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 					entry.check(remarks, this);
 					if (monitor != null) {
 						monitor.worked(1); // progress bar...
@@ -2819,9 +2823,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				definitions.put(fullname, definition);
 			}
 		} catch (FileSystemException e) {
-			throw new KettleException(Messages.getString("JobMeta.Exception.AnErrorOccuredReadingJob", getFilename()), e);
+			throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Exception.AnErrorOccuredReadingJob", getFilename()), e);
 		} catch (IOException e) {
-			throw new KettleException(Messages.getString("JobMeta.Exception.AnErrorOccuredReadingJob", getFilename()), e);
+			throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Exception.AnErrorOccuredReadingJob", getFilename()), e);
 		}
 
 		return resourceName;

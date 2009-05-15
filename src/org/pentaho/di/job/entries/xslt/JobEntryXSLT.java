@@ -41,8 +41,8 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -63,6 +63,8 @@ import org.w3c.dom.Node;
  */
 public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryXSLT.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static String FACTORY_JAXP="JAXP";
 	public static String FACTORY_SAXON="SAXON";
 	
@@ -85,17 +87,11 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		addfiletoresult = false;
 		xsltfactory=FACTORY_JAXP;
 		setID(-1L);
-		setJobEntryType(JobEntryType.XSLT);
 	}
 
 	public JobEntryXSLT()
 	{
 		this("");
-	}
-
-	public JobEntryXSLT(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -236,8 +232,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 					{
 						//Output file exists
 						// User want to fail
-						log.logError(toString(), Messages.getString("JobEntryXSLT.OuputFileExists1.Label")
-										+ realoutputfilename + Messages.getString("JobEntryXSLT.OuputFileExists2.Label"));
+						log.logError(toString(), BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists1.Label")
+										+ realoutputfilename + BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists2.Label"));
 						result.setResult( false );
 						result.setNrErrors(1);
 					}
@@ -245,8 +241,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 					else if (outputfile.exists() && iffileexists==1)
 					{
 						// Do nothing
-						if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobEntryXSLT.OuputFileExists1.Label")
-								+ realoutputfilename + Messages.getString("JobEntryXSLT.OuputFileExists2.Label"));
+						if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists1.Label")
+								+ realoutputfilename + BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists2.Label"));
 						result.setResult( true );
 					}
 					else
@@ -271,10 +267,10 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 								}
 							    if(log.isDebug())
 							    {
-							    	log.logDebug(toString(),  Messages.getString("JobEntryXSLT.OuputFileExists1.Label") +
-							    	realoutputfilename +  Messages.getString("JobEntryXSLT.OuputFileExists2.Label"));
-							    	log.logDebug(toString(), Messages.getString("JobEntryXSLT.OuputFileNameChange1.Label") + realoutputfilename +
-							    				Messages.getString("JobEntryXSLT.OuputFileNameChange2.Label"));
+							    	log.logDebug(toString(),  BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists1.Label") +
+							    	realoutputfilename +  BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists2.Label"));
+							    	log.logDebug(toString(), BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileNameChange1.Label") + realoutputfilename +
+							    				BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileNameChange2.Label"));
 							    }
 							}
 
@@ -288,7 +284,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 							factory = new net.sf.saxon.TransformerFactoryImpl(); 
 						}
 						
-						if (log.isDetailed()) log.logDetailed(Messages.getString("JobEntryXSL.Log.TransformerFactoryInfos"),Messages.getString("JobEntryXSL.Log.TransformerFactory",factory.getClass().getName()));
+						if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerFactoryInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerFactory",factory.getClass().getName()));
 				
 								
 						// Use the factory to create a template containing the xsl file
@@ -297,7 +293,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 						// Use the template to create a transformer
 						Transformer xformer = template.newTransformer();
 						
-						if (log.isDetailed()) log.logDetailed(Messages.getString("JobEntryXSL.Log.TransformerClassInfos"),Messages.getString("JobEntryXSL.Log.TransformerClass",xformer.getClass().getName()));
+						if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClassInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClass",xformer.getClass().getName()));
 											
 						
 						// Prepare the input and output files
@@ -324,13 +320,13 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 
 					if(	!xmlfile.exists())
 					{
-						log.logError(toString(),  Messages.getString("JobEntryXSLT.FileDoesNotExist1.Label") +
-							realxmlfilename +  Messages.getString("JobEntryXSLT.FileDoesNotExist2.Label"));
+						log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryXSLT.FileDoesNotExist1.Label") +
+							realxmlfilename +  BaseMessages.getString(PKG, "JobEntryXSLT.FileDoesNotExist2.Label"));
 					}
 					if(!xslfile.exists())
 					{
-						log.logError(toString(),  Messages.getString("JobEntryXSLT.FileDoesNotExist1.Label") +
-							realxslfilename +  Messages.getString("JobEntryXSLT.FileDoesNotExist2.Label"));
+						log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryXSLT.FileDoesNotExist1.Label") +
+							realxslfilename +  BaseMessages.getString(PKG, "JobEntryXSLT.FileDoesNotExist2.Label"));
 					}
 					result.setResult( false );
 					result.setNrErrors(1);
@@ -339,18 +335,18 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			}
 			else
 			{
-				log.logError(toString(),  Messages.getString("JobEntryXSLT.AllFilesNotNull.Label"));
+				log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryXSLT.AllFilesNotNull.Label"));
 				result.setResult( false );
 				result.setNrErrors(1);
 			}
 		}
 		catch ( Exception e )
 		{
-			log.logError(toString(), Messages.getString("JobEntryXSLT.ErrorXLST.Label") +
-				Messages.getString("JobEntryXSLT.ErrorXLSTXML1.Label") + realxmlfilename +
-				Messages.getString("JobEntryXSLT.ErrorXLSTXML2.Label") +
-				Messages.getString("JobEntryXSLT.ErrorXLSTXSL1.Label") + realxslfilename +
-				Messages.getString("JobEntryXSLT.ErrorXLSTXSL2.Label") + e.getMessage());
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryXSLT.ErrorXLST.Label") +
+				BaseMessages.getString(PKG, "JobEntryXSLT.ErrorXLSTXML1.Label") + realxmlfilename +
+				BaseMessages.getString(PKG, "JobEntryXSLT.ErrorXLSTXML2.Label") +
+				BaseMessages.getString(PKG, "JobEntryXSLT.ErrorXLSTXSL1.Label") + realxslfilename +
+				BaseMessages.getString(PKG, "JobEntryXSLT.ErrorXLSTXSL2.Label") + e.getMessage());
 			result.setResult( false );
 			result.setNrErrors(1);
 		}

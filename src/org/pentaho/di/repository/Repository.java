@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.binary.Base64;
@@ -50,6 +51,7 @@ import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.partition.PartitionSchema;
@@ -66,6 +68,8 @@ import org.pentaho.di.trans.TransMeta;
  */
 public class Repository
 {
+	private static Class<?> PKG = Repository.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final String TABLE_R_VERSION             = "R_VERSION";
 	public static final String FIELD_VERSION_ID_VERSION    = "ID_VERSION";
 	public static final String FIELD_VERSION_MAJOR_VERSION = "MAJOR_VERSION";
@@ -687,8 +691,8 @@ public class Repository
 	            //
 	            if(log.isBasic()) 
 	            {
-	            	log.logBasic(toString(), Messages.getString("Repository.Error.GettingInfoVersionTable",versionTable));
-	            	log.logBasic(toString(), Messages.getString("Repository.Error.NewTable"));
+	            	log.logBasic(toString(), BaseMessages.getString(PKG, "Repository.Error.GettingInfoVersionTable",versionTable));
+	            	log.logBasic(toString(), BaseMessages.getString(PKG, "Repository.Error.NewTable"));
 	            	log.logBasic(toString(), "Stack trace: "+Const.getStackTracker(e));
 	            }
 	            majorVersion = 2;
@@ -698,7 +702,7 @@ public class Repository
         	}
         	catch(Exception ex)
         	{
-        		throw new KettleException(Messages.getString("Repository.NoRepositoryExists.Messages"));
+        		throw new KettleException(BaseMessages.getString(PKG, "Repository.NoRepositoryExists.Messages"));
         	}
         }
 
@@ -710,7 +714,7 @@ public class Repository
             
         if (majorVersion < REQUIRED_MAJOR_VERSION || ( majorVersion==REQUIRED_MAJOR_VERSION && minorVersion<REQUIRED_MINOR_VERSION))
         {
-            throw new KettleException(Messages.getString("Repository.UpgradeRequired.Message", getVersion(), getRequiredVersion()));
+            throw new KettleException(BaseMessages.getString(PKG, "Repository.UpgradeRequired.Message", getVersion(), getRequiredVersion()));
         }
         
         if (majorVersion==3 && minorVersion==0) {
@@ -724,7 +728,7 @@ public class Repository
     		RowMetaInterface tableFields = database.getTableFields(tableName);
     		if (tableFields.indexOfValue(errorColumn)>=0)
     		{
-    			throw new KettleException(Messages.getString("Repository.FixFor300Required.Message"));
+    			throw new KettleException(BaseMessages.getString(PKG, "Repository.FixFor300Required.Message"));
     		}        	
         }
     }
@@ -2238,9 +2242,9 @@ public class Repository
 	{
 		long id = getNextJobEntryID();
 
-		long id_jobentry_type = getJobEntryTypeID(jobEntryBase.getTypeCode());
+		long id_jobentry_type = getJobEntryTypeID(jobEntryBase.getTypeId());
 
-		log.logDebug(toString(), "ID_JobEntry_type = " + id_jobentry_type + " for type = [" + jobEntryBase.getTypeCode() + "]");
+		log.logDebug(toString(), "ID_JobEntry_type = " + id_jobentry_type + " for type = [" + jobEntryBase.getTypeId() + "]");
 
 		RowMetaAndData table = new RowMetaAndData();
 
@@ -3048,6 +3052,66 @@ public class Repository
 	{
 		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE), quote(FIELD_DATABASE_ID_DATABASE), id_database);
 	}
+	
+	/**
+     *  
+	 *  Load the Database Info 
+     */ 
+	public DatabaseMeta loadDatabaseMeta(long id_database) throws KettleException
+	{
+		DatabaseMeta databaseMeta = new DatabaseMeta();
+		try
+		{
+			RowMetaAndData r = getDatabase(id_database);
+			
+			if (r!=null)
+			{
+				long id_database_type = r.getInteger( FIELD_DATABASE_ID_DATABASE_TYPE, 0); // con_type
+				String dbTypeDesc = getDatabaseTypeCode(id_database_type);
+				if (dbTypeDesc!=null)
+				{
+					databaseMeta.setDatabaseInterface(DatabaseMeta.getDatabaseInterface(dbTypeDesc));
+					databaseMeta.setAttributes(new Properties()); // new attributes
+				}
+				else
+				{
+					// throw new KettleException("No database type was specified [id_database_type="+id_database_type+"]");
+				}
+
+				databaseMeta.setID(id_database);
+				databaseMeta.setName( r.getString(FIELD_DATABASE_NAME, "") );
+
+				long id_database_contype = r.getInteger(FIELD_DATABASE_ID_DATABASE_CONTYPE, 0); // con_access 
+				databaseMeta.setAccessType( DatabaseMeta.getAccessType( getDatabaseConTypeCode( id_database_contype)) );
+
+				databaseMeta.setHostname( r.getString(FIELD_DATABASE_HOST_NAME, "") );
+				databaseMeta.setDBName( r.getString(FIELD_DATABASE_DATABASE_NAME, "") );
+				databaseMeta.setDBPort( r.getString(FIELD_DATABASE_PORT, "") );
+				databaseMeta.setUsername( r.getString(FIELD_DATABASE_USERNAME, "") );
+				databaseMeta.setPassword( Encr.decryptPasswordOptionallyEncrypted( r.getString(FIELD_DATABASE_PASSWORD, "") ) );
+				databaseMeta.setServername( r.getString(FIELD_DATABASE_SERVERNAME, "") );
+				databaseMeta.setDataTablespace( r.getString(FIELD_DATABASE_DATA_TBS, "") );
+				databaseMeta.setIndexTablespace( r.getString(FIELD_DATABASE_INDEX_TBS, "") );
+                
+                // Also, load all the properties we can find...
+				final Collection<RowMetaAndData> attrs = getDatabaseAttributes(id_database);
+                for (RowMetaAndData row : attrs)
+                {
+                    String code = row.getString(FIELD_DATABASE_ATTRIBUTE_CODE, "");
+                    String attribute = row.getString(FIELD_DATABASE_ATTRIBUTE_VALUE_STR, "");
+                    // System.out.println("Attributes: "+(getAttributes()!=null)+", code: "+(code!=null)+", attribute: "+(attribute!=null));
+                    databaseMeta.getAttributes().put(code, Const.NVL(attribute, ""));
+                }
+			}
+			
+			return databaseMeta;
+		}
+		catch(KettleDatabaseException dbe)
+		{
+			throw new KettleException("Error loading database connection from repository (id_database="+id_database+")", dbe);
+		}
+	}
+
 
     public RowMetaAndData getDatabaseAttribute(long id_database_attribute) throws KettleException
     {
@@ -3187,6 +3251,32 @@ public class Repository
     public RowMetaAndData getClusterSchema(long id_cluster_schema) throws KettleException
     {
         return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER), quote(FIELD_CLUSTER_ID_CLUSTER), id_cluster_schema);
+    }
+    
+    public ClusterSchema loadClusterSchema(long id_cluster_schema, List<SlaveServer> slaveServers) throws KettleException
+    {
+    	ClusterSchema clusterSchema = new ClusterSchema();
+        RowMetaAndData row = getClusterSchema(id_cluster_schema);
+            
+        clusterSchema.setName( row.getString(Repository.FIELD_CLUSTER_NAME, null) );
+        clusterSchema.setBasePort( row.getString(Repository.FIELD_CLUSTER_BASE_PORT, null) );
+        clusterSchema.setSocketsBufferSize( row.getString(Repository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, null) );
+        clusterSchema.setSocketsFlushInterval( row.getString(Repository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, null) );
+        clusterSchema.setSocketsCompressed( row.getBoolean(Repository.FIELD_CLUSTER_SOCKETS_COMPRESSED, true) );
+        clusterSchema.setDynamic( row.getBoolean(Repository.FIELD_CLUSTER_DYNAMIC, true) );
+            
+        long[] pids = getSlaveIDs(id_cluster_schema);
+        for (int i=0;i<pids.length;i++)
+        {
+            SlaveServer slaveServer = new SlaveServer(this, pids[i]);
+            SlaveServer reference = SlaveServer.findSlaveServer(slaveServers, slaveServer.getName());
+            if (reference!=null) 
+                clusterSchema.getSlaveServers().add(reference);
+            else 
+                clusterSchema.getSlaveServers().add(slaveServer);
+        }
+        
+        return clusterSchema;
     }
 
     public RowMetaAndData getSlaveServer(long id_slave) throws KettleException
@@ -4444,7 +4534,7 @@ public class Repository
         long[] databaseIDs = getDatabaseIDs();
         for (int i=0;i<databaseIDs.length;i++)
         {
-            DatabaseMeta databaseMeta = RepositoryUtil.loadDatabaseMeta(this, databaseIDs[i]);
+            DatabaseMeta databaseMeta = loadDatabaseMeta(databaseIDs[i]);
             list.add(databaseMeta);
         }
             
@@ -4504,7 +4594,7 @@ public class Repository
 		long[] ids = getDatabaseIDs();
 		for (int i=0;i<ids.length;i++) 
 		{
-			DatabaseMeta databaseMeta = RepositoryUtil.loadDatabaseMeta(this, ids[i]);
+			DatabaseMeta databaseMeta = loadDatabaseMeta(ids[i]);
 			databases.add(databaseMeta);
 		}
 		return databases;

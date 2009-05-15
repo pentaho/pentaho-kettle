@@ -40,7 +40,6 @@ import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepCategory;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -56,7 +55,7 @@ import org.w3c.dom.Node;
  */
 
 @Step(name="FixedInput",image="ui/images/TFI.png",tooltip="BaseStep.TypeTooltipDesc.FixedInput",description="BaseStep.TypeLongDesc.FixedInput",
-		category=StepCategory.CATEGORY_INPUT)
+		categoryDescription="BaseStep.Category.Input", i18nPackageName="org.pentaho.di.trans.step")
 public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	public static final int FILE_TYPE_NONE = 0;

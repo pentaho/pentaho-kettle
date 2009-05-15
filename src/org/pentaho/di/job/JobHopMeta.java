@@ -19,6 +19,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
@@ -35,6 +36,8 @@ import org.w3c.dom.Node;
  */
 public class JobHopMeta implements Cloneable, XMLInterface
 {
+	private static Class<?> PKG = JobHopMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public JobEntryCopy from_entry, to_entry;
 	private boolean enabled;
 	private boolean split;
@@ -89,7 +92,7 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("JobHopMeta.Exception.UnableToLoadHopInfoXML"), e);
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobHopMeta.Exception.UnableToLoadHopInfoXML"), e);
 		}
 	}
 
@@ -134,7 +137,7 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobHopMeta.Exception.UnableToLoadHopInfoRep",""+id_job_hop) , dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobHopMeta.Exception.UnableToLoadHopInfoRep",""+id_job_hop) , dbe);
 			
 		}
 	}
@@ -154,7 +157,7 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobHopMeta.Exception.UnableToSaveHopInfoRep",""+id_job), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobHopMeta.Exception.UnableToSaveHopInfoRep",""+id_job), dbe);
 			
 		}
 	}
@@ -258,11 +261,11 @@ public class JobHopMeta implements Cloneable, XMLInterface
 	
 	public String getDescription()
 	{
-		if (isUnconditional()) return Messages.getString("JobHopMeta.Msg.ExecNextJobEntryUncondition");
+		if (isUnconditional()) return BaseMessages.getString(PKG, "JobHopMeta.Msg.ExecNextJobEntryUncondition");
 		else
 		{
-			if (getEvaluation()) return Messages.getString("JobHopMeta.Msg.ExecNextJobEntryFlawLess");
-			else                 return Messages.getString("JobHopMeta.Msg.ExecNextJobEntryFailed");
+			if (getEvaluation()) return BaseMessages.getString(PKG, "JobHopMeta.Msg.ExecNextJobEntryFlawLess");
+			else                 return BaseMessages.getString(PKG, "JobHopMeta.Msg.ExecNextJobEntryFailed");
 		}
 	}
 

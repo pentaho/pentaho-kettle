@@ -30,11 +30,11 @@ import java.util.Locale;
 
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Messages;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Node;
 
 /**
@@ -43,6 +43,8 @@ import org.w3c.dom.Node;
  */
 public class ValueMeta implements ValueMetaInterface
 {
+	private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final String DEFAULT_DATE_FORMAT_MASK = "yyyy/MM/dd HH:mm:ss.SSS";
     
 	public static final String XML_META_TAG = "value-meta";
@@ -105,8 +107,8 @@ public class ValueMeta implements ValueMetaInterface
 	/** 
 	 * The trim description
 	 */
-	public final static String trimTypeDesc[] = { Messages.getString("ValueMeta.TrimType.None"), Messages.getString("ValueMeta.TrimType.Left"),
-		Messages.getString("ValueMeta.TrimType.Right"), Messages.getString("ValueMeta.TrimType.Both") };
+	public final static String trimTypeDesc[] = { BaseMessages.getString(PKG, "ValueMeta.TrimType.None"), BaseMessages.getString(PKG, "ValueMeta.TrimType.Left"),
+		BaseMessages.getString(PKG, "ValueMeta.TrimType.Right"), BaseMessages.getString(PKG, "ValueMeta.TrimType.Both") };
 
     public ValueMeta()
     {

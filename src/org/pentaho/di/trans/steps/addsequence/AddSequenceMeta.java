@@ -29,6 +29,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
@@ -48,6 +49,8 @@ import org.w3c.dom.Node;
  */
 public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = AddSequenceMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String       valuename;	
 
 	private boolean      useDatabase;
@@ -249,7 +252,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("AddSequenceMeta.Exception.ErrorLoadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "AddSequenceMeta.Exception.ErrorLoadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -336,7 +339,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("AddSequenceMeta.Exception.UnableToReadStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "AddSequenceMeta.Exception.UnableToReadStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
@@ -363,7 +366,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("AddSequenceMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "AddSequenceMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
@@ -380,16 +383,16 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 				db.connect();
 				if (db.checkSequenceExists(schemaName, sequenceName))
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("AddSequenceMeta.CheckResult.SequenceExists.Title"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.SequenceExists.Title"), stepMeta); //$NON-NLS-1$
 				}
 				else
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("AddSequenceMeta.CheckResult.SequenceCouldNotBeFound.Title",sequenceName), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.SequenceCouldNotBeFound.Title",sequenceName), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 			catch(KettleException e)
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("AddSequenceMeta.CheckResult.UnableToConnectDB.Title")+Const.CR+e.getMessage(), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.UnableToConnectDB.Title")+Const.CR+e.getMessage(), stepMeta); //$NON-NLS-1$
 			}
 			finally
 			{
@@ -400,12 +403,12 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("AddSequenceMeta.CheckResult.StepIsReceving.Title"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.StepIsReceving.Title"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("AddSequenceMeta.CheckResult.NoInputReceived.Title"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.NoInputReceived.Title"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}
@@ -436,7 +439,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 				}
 				catch(KettleException e)
 				{
-					retval.setError(Messages.getString("AddSequenceMeta.ErrorMessage.UnableToConnectDB")+Const.CR+e.getMessage()); //$NON-NLS-1$
+					retval.setError(BaseMessages.getString(PKG, "AddSequenceMeta.ErrorMessage.UnableToConnectDB")+Const.CR+e.getMessage()); //$NON-NLS-1$
 				}
 				finally
 				{
@@ -445,7 +448,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			else
 			{
-				retval.setError(Messages.getString("AddSequenceMeta.ErrorMessage.NoConnectionDefined")); //$NON-NLS-1$
+				retval.setError(BaseMessages.getString(PKG, "AddSequenceMeta.ErrorMessage.NoConnectionDefined")); //$NON-NLS-1$
 			}
 		}
 

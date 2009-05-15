@@ -17,7 +17,6 @@
 package org.pentaho.di.ui.job.entries.tableexists;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -33,20 +32,21 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
+import org.pentaho.di.job.entries.tableexists.JobEntryTableExists;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.tableexists.JobEntryTableExists;
-import org.pentaho.di.job.entries.tableexists.Messages;
 
 /**
  * This dialog allows you to edit the Table Exists job entry settings. (select the connection and
@@ -56,7 +56,9 @@ import org.pentaho.di.job.entries.tableexists.Messages;
  * @since 19-06-2003
  */
 public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntryDialogInterface
-{
+{	
+	private static Class<?> PKG = JobEntryTableExists.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label wlName;
 
     private Text wName;
@@ -95,7 +97,7 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryTableExists) jobEntryInt;
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobTableExists.Name.Default"));
+            this.jobEntry.setName(BaseMessages.getString(PKG, "JobTableExists.Name.Default"));
     }
 
     public JobEntryInterface open()
@@ -121,14 +123,14 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobTableExists.Title"));
+        shell.setText(BaseMessages.getString(PKG, "JobTableExists.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("JobTableExists.Name.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "JobTableExists.Name.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
@@ -152,7 +154,7 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
        
         // Schema name line
         wlSchemaname = new Label(shell, SWT.RIGHT);
-        wlSchemaname.setText(Messages.getString("JobTableExists.Schemaname.Label"));
+        wlSchemaname.setText(BaseMessages.getString(PKG, "JobTableExists.Schemaname.Label"));
         props.setLook(wlSchemaname);
         fdlSchemaname = new FormData();
         fdlSchemaname.left = new FormAttachment(0, 0);
@@ -171,7 +173,7 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
 		
         // Table name line
         wlTablename = new Label(shell, SWT.RIGHT);
-        wlTablename.setText(Messages.getString("JobTableExists.Tablename.Label"));
+        wlTablename.setText(BaseMessages.getString(PKG, "JobTableExists.Tablename.Label"));
         props.setLook(wlTablename);
         fdlTablename = new FormData();
         fdlTablename.left = new FormAttachment(0, 0);
@@ -189,7 +191,7 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
         wTablename.setLayoutData(fdTablename);
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         FormData fd = new FormData();
         fd.right = new FormAttachment(50, -10);
         fd.bottom = new FormAttachment(100, 0);
@@ -197,7 +199,7 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
         wOK.setLayoutData(fd);
 
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         fd = new FormData();
         fd.left = new FormAttachment(50, 10);
         fd.bottom = new FormAttachment(100, 0);
@@ -296,8 +298,8 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
  	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
        }

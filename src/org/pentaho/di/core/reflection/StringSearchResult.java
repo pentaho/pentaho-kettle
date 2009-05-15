@@ -12,14 +12,17 @@
 */
 package org.pentaho.di.core.reflection;
 
-import org.pentaho.di.core.Messages;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 
 public class StringSearchResult
 {
+	private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private String string;
     private Object parentObject;
     private String fieldName;
@@ -62,10 +65,10 @@ public class StringSearchResult
     public static final RowMetaInterface getResultRowMeta()
     {
     	RowMetaInterface rowMeta = new RowMeta();
-        rowMeta.addValueMeta(new ValueMeta(Messages.getString("SearchResult.TransOrJob"), ValueMetaInterface.TYPE_STRING));
-        rowMeta.addValueMeta(new ValueMeta(Messages.getString("SearchResult.StepDatabaseNotice"), ValueMetaInterface.TYPE_STRING));
-        rowMeta.addValueMeta(new ValueMeta(Messages.getString("SearchResult.String"), ValueMetaInterface.TYPE_STRING));
-        rowMeta.addValueMeta(new ValueMeta(Messages.getString("SearchResult.FieldName"), ValueMetaInterface.TYPE_STRING));
+        rowMeta.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "SearchResult.TransOrJob"), ValueMetaInterface.TYPE_STRING));
+        rowMeta.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "SearchResult.StepDatabaseNotice"), ValueMetaInterface.TYPE_STRING));
+        rowMeta.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "SearchResult.String"), ValueMetaInterface.TYPE_STRING));
+        rowMeta.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "SearchResult.FieldName"), ValueMetaInterface.TYPE_STRING));
     	return rowMeta;
     }
 

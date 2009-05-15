@@ -17,7 +17,6 @@
 package org.pentaho.di.ui.job.entries.abort;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -32,20 +31,21 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.job.entries.abort.JobEntryAbort;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.abort.Messages;
 
 
 /**
@@ -56,6 +56,8 @@ import org.pentaho.di.job.entries.abort.Messages;
  */
 public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryAbort.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label wlName;
 
     private Text wName;
@@ -86,7 +88,7 @@ public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialo
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryAbort) jobEntryInt;
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobEntryAbortDialog.Jobname.Label"));
+            this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntryAbortDialog.Jobname.Label"));
     }
 
     public JobEntryInterface open()
@@ -112,7 +114,7 @@ public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialo
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobEntryAbortDialog.Title"));
+        shell.setText(BaseMessages.getString(PKG, "JobEntryAbortDialog.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
@@ -120,7 +122,7 @@ public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialo
         
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("JobEntryAbortDialog.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "JobEntryAbortDialog.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
@@ -138,7 +140,7 @@ public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialo
 
 		// Message line
 		wlMessageAbort = new Label(shell, SWT.RIGHT);
-		wlMessageAbort.setText(Messages.getString("JobEntryAbortDialog.MessageAbort.Label"));
+		wlMessageAbort.setText(BaseMessages.getString(PKG, "JobEntryAbortDialog.MessageAbort.Label"));
 		props.setLook(wlMessageAbort);
 		fdlMessageAbort = new FormData();
 		fdlMessageAbort.left = new FormAttachment(0, 0);
@@ -148,7 +150,7 @@ public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialo
 
 		wMessageAbort = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wMessageAbort);
-		wMessageAbort.setToolTipText(Messages.getString("JobEntryAbortDialog.MessageAbort.Tooltip"));
+		wMessageAbort.setToolTipText(BaseMessages.getString(PKG, "JobEntryAbortDialog.MessageAbort.Tooltip"));
 		wMessageAbort.addModifyListener(lsMod);
 		fdMessageAbort = new FormData();
 		fdMessageAbort.left = new FormAttachment(middle, 0);
@@ -157,9 +159,9 @@ public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialo
 		wMessageAbort.setLayoutData(fdMessageAbort);
 		
 		wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
         // at the bottom
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wMessageAbort);
@@ -251,8 +253,8 @@ public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialo
     	if(Const.isEmpty(wName.getText())) 
         {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
         }

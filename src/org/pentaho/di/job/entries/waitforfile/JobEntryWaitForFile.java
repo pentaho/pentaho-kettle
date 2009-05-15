@@ -33,8 +33,8 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -54,6 +54,8 @@ import org.w3c.dom.Node;
  */
 public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryWaitForFile.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String  filename;
 	private String  maximumTimeout;      // maximum timeout in seconds
 	private String  checkCycleTime;      // cycle time in seconds
@@ -74,17 +76,11 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 		fileSizeCheck    = false;
 		addFilenameToResult=false;
 		setID(-1L);
-		setJobEntryType(JobEntryType.WAIT_FOR_FILE);
 	}
 
 	public JobEntryWaitForFile()
 	{
 		this("");
-	}
-
-	public JobEntryWaitForFile(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -244,7 +240,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     					//add filename to result filenames
     					if(addFilenameToResult && fileObject.getType()==FileType.FILE){
     						ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , fileObject, parentJob.getJobname(), toString());
-    						resultFile.setComment(Messages.getString("JobWaitForFile.FilenameAdded"));
+    						resultFile.setComment(BaseMessages.getString(PKG, "JobWaitForFile.FilenameAdded"));
     						result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
     					 	}
     				}

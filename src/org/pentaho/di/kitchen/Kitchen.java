@@ -32,6 +32,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
@@ -48,6 +49,8 @@ import org.pentaho.di.version.BuildVersion;
 
 public class Kitchen
 {
+	private static Class<?> PKG = Kitchen.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final String STRING_KITCHEN = "Kitchen";
 	
 	public static void main(String[] a) throws KettleException
@@ -71,23 +74,23 @@ public class Kitchen
 
 		CommandLineOption options[] = new CommandLineOption[] 
             {
-			    new CommandLineOption("rep", Messages.getString("Kitchen.CmdLine.RepName"), optionRepname=new StringBuffer()),
-			    new CommandLineOption("user", Messages.getString("Kitchen.CmdLine.RepUsername"), optionUsername=new StringBuffer()),
-			    new CommandLineOption("pass", Messages.getString("Kitchen.CmdLine.RepPassword"), optionPassword=new StringBuffer()),
-			    new CommandLineOption("job", Messages.getString("Kitchen.CmdLine.RepJobName") , optionJobname=new StringBuffer()),
-			    new CommandLineOption("dir", Messages.getString("Kitchen.CmdLine.RepDir"), optionDirname=new StringBuffer()),
-			    new CommandLineOption("file", Messages.getString("Kitchen.CmdLine.XMLJob"), optionFilename=new StringBuffer()),
-			    new CommandLineOption("level", Messages.getString("Kitchen.CmdLine.LogLevel"), optionLoglevel=new StringBuffer()),
-			    new CommandLineOption("logfile", Messages.getString("Kitchen.CmdLine.LogFile"), optionLogfile=new StringBuffer()),
-			    new CommandLineOption("log", Messages.getString("Kitchen.CmdLine.LogFileOld"), optionLogfileOld=new StringBuffer(), false, true),
-			    new CommandLineOption("listdir", Messages.getString("Kitchen.CmdLine.ListDir"), optionListdir=new StringBuffer(), true, false),
-			    new CommandLineOption("listjobs", Messages.getString("Kitchen.CmdLine.ListJobsDir"), optionListjobs=new StringBuffer(), true, false),
-			    new CommandLineOption("listrep", Messages.getString("Kitchen.CmdLine.ListAvailableReps"), optionListrep=new StringBuffer(), true, false),
-		        new CommandLineOption("norep", Messages.getString("Kitchen.CmdLine.NoRep"), optionNorep=new StringBuffer(), true, false),
-                new CommandLineOption("version", Messages.getString("Kitchen.CmdLine.Version") , optionVersion=new StringBuffer(), true, false),
-                new CommandLineOption("param", Messages.getString("Kitchen.ComdLine.Param") , optionParams, false),
-		        new CommandLineOption("listparam", Messages.getString("Kitchen.ComdLine.ListParam"), optionListParam=new StringBuffer(), true, false),
-		        new CommandLineOption("export", Messages.getString("Kitchen.ComdLine.Export"), optionExport=new StringBuffer(), true, false),
+			    new CommandLineOption("rep", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepName"), optionRepname=new StringBuffer()),
+			    new CommandLineOption("user", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepUsername"), optionUsername=new StringBuffer()),
+			    new CommandLineOption("pass", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepPassword"), optionPassword=new StringBuffer()),
+			    new CommandLineOption("job", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepJobName") , optionJobname=new StringBuffer()),
+			    new CommandLineOption("dir", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepDir"), optionDirname=new StringBuffer()),
+			    new CommandLineOption("file", BaseMessages.getString(PKG, "Kitchen.CmdLine.XMLJob"), optionFilename=new StringBuffer()),
+			    new CommandLineOption("level", BaseMessages.getString(PKG, "Kitchen.CmdLine.LogLevel"), optionLoglevel=new StringBuffer()),
+			    new CommandLineOption("logfile", BaseMessages.getString(PKG, "Kitchen.CmdLine.LogFile"), optionLogfile=new StringBuffer()),
+			    new CommandLineOption("log", BaseMessages.getString(PKG, "Kitchen.CmdLine.LogFileOld"), optionLogfileOld=new StringBuffer(), false, true),
+			    new CommandLineOption("listdir", BaseMessages.getString(PKG, "Kitchen.CmdLine.ListDir"), optionListdir=new StringBuffer(), true, false),
+			    new CommandLineOption("listjobs", BaseMessages.getString(PKG, "Kitchen.CmdLine.ListJobsDir"), optionListjobs=new StringBuffer(), true, false),
+			    new CommandLineOption("listrep", BaseMessages.getString(PKG, "Kitchen.CmdLine.ListAvailableReps"), optionListrep=new StringBuffer(), true, false),
+		        new CommandLineOption("norep", BaseMessages.getString(PKG, "Kitchen.CmdLine.NoRep"), optionNorep=new StringBuffer(), true, false),
+                new CommandLineOption("version", BaseMessages.getString(PKG, "Kitchen.CmdLine.Version") , optionVersion=new StringBuffer(), true, false),
+                new CommandLineOption("param", BaseMessages.getString(PKG, "Kitchen.ComdLine.Param") , optionParams, false),
+		        new CommandLineOption("listparam", BaseMessages.getString(PKG, "Kitchen.ComdLine.ListParam"), optionListParam=new StringBuffer(), true, false),
+		        new CommandLineOption("export", BaseMessages.getString(PKG, "Kitchen.ComdLine.Export"), optionExport=new StringBuffer(), true, false),
             };
 
 		if (args.size()==0 ) 
@@ -129,13 +132,13 @@ public class Kitchen
         if (!Const.isEmpty(optionLoglevel)) 
         {
             log.setLogLevel(optionLoglevel.toString());
-            log.logMinimal(STRING_KITCHEN, Messages.getString("Kitchen.Log.LogLevel",log.getLogLevelLongDesc()));
+            log.logMinimal(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.LogLevel",log.getLogLevelLongDesc()));
         } 
 		
         if (!Const.isEmpty(optionVersion))
         {
             BuildVersion buildVersion = BuildVersion.getInstance();
-            log.logBasic("Kitchen", Messages.getString("Kitchen.Log.KettleVersion", buildVersion.getVersion(), buildVersion.getRevision(), buildVersion.getBuildDate()));
+            log.logBasic("Kitchen", BaseMessages.getString(PKG, "Kitchen.Log.KettleVersion", buildVersion.getVersion(), buildVersion.getRevision(), buildVersion.getBuildDate()));
             if (a.length==1) exitJVM(6);
         }
         
@@ -143,10 +146,10 @@ public class Kitchen
         //
         if (!Const.isEmpty(optionRepname) && !Const.isEmpty(optionUsername)) 	
         {
-        	if(log.isDetailed()) log.logDetailed(STRING_KITCHEN,  Messages.getString("Kitchen.Log.RepUsernameSupplied"));
+        	if(log.isDetailed()) log.logDetailed(STRING_KITCHEN,  BaseMessages.getString(PKG, "Kitchen.Log.RepUsernameSupplied"));
         }
 
-		log.logMinimal(STRING_KITCHEN, Messages.getString("Kitchen.Log.Starting"));
+		log.logMinimal(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.Starting"));
 		
 		
 		/* Load the plugins etc.*/
@@ -155,7 +158,7 @@ public class Kitchen
 		}
 		catch(KettleException e)
 		{
-			log.logError(STRING_KITCHEN, Messages.getString("Kitchen.Error.LoadingSteps"), e);
+			log.logError(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Error.LoadingSteps"), e);
 			
 			exitJVM(8);
 		}
@@ -168,7 +171,7 @@ public class Kitchen
 		}
 		catch(KettleException e)
         {
-            log.logError(STRING_KITCHEN, Messages.getString("Kitchen.Error.LoadingJobEntries"), e);
+            log.logError(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Error.LoadingJobEntries"), e);
             
             return;
         }
@@ -179,7 +182,7 @@ public class Kitchen
 		cal=Calendar.getInstance();
 		start=cal.getTime();
 				
-		if(log.isDebug()) log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.AllocateNewJob"));
+		if(log.isDebug()) log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.AllocateNewJob"));
 		
 		
 		JobMeta jobMeta = new JobMeta(log);
@@ -192,20 +195,20 @@ public class Kitchen
 			// Read kettle job specified on command-line?
 			if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename))
 			{
-				if(log.isDebug()) log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.ParsingCommandLine"));
+				if(log.isDebug()) log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.ParsingCommandLine"));
 				if (!Const.isEmpty(optionRepname) && !"Y".equalsIgnoreCase(optionNorep.toString()))
 				{
-					if(log.isDebug()) log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.LoadingRep"));
+					if(log.isDebug()) log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.LoadingRep"));
 					
 					RepositoriesMeta repsinfo = new RepositoriesMeta(log);
 					if (repsinfo.readData())
 					{
-						if(log.isDebug())log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.FindingRep",""+optionRepname));
+						if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.FindingRep",""+optionRepname));
 						repinfo = repsinfo.findRepository(optionRepname.toString());
 						if (repinfo!=null)
 						{
 							// Define and connect to the repository...
-							if(log.isDebug())log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.Alocate&ConnectRep"));
+							if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.Alocate&ConnectRep"));
 							 
 							repository = new Repository(log, repinfo, userinfo);
 							if (repository.connect("Kitchen commandline"))
@@ -221,7 +224,7 @@ public class Kitchen
 								if (directory!=null)
 								{
 									// Check username, password
-									if(log.isDebug())log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.CheckUserPass"));
+									if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.CheckUserPass"));
 									
 									userinfo = new UserInfo(repository, optionUsername.toString(), optionPassword.toString());
 									if (userinfo.getID()>0)
@@ -229,10 +232,10 @@ public class Kitchen
 									    // Load a job
 										if (!Const.isEmpty(optionJobname))
 										{
-											if(log.isDebug())log.logDebug(STRING_KITCHEN,Messages.getString("Kitchen.Log.LoadingJobInfo"));
+											if(log.isDebug())log.logDebug(STRING_KITCHEN,BaseMessages.getString(PKG, "Kitchen.Log.LoadingJobInfo"));
 											
 											jobMeta =  new JobMeta(log, repository, optionJobname.toString(), directory);
-											if(log.isDebug())log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.AllocateJob"));
+											if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.AllocateJob"));
 											
 											job = new Job(log, stepLoader, repository, jobMeta);
 										}
@@ -240,7 +243,7 @@ public class Kitchen
 										// List the jobs in the repository
 										if ("Y".equalsIgnoreCase(optionListjobs.toString()))
 										{
-											if(log.isDebug())log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.GettingLostJobsInDirectory",""+directory));
+											if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.GettingLostJobsInDirectory",""+directory));
 											
 											String jobnames[] = repository.getJobNames(directory.getID());
 											for (int i=0;i<jobnames.length;i++)
@@ -261,7 +264,7 @@ public class Kitchen
 									}
 									else
 									{
-										System.out.println(Messages.getString("Kitchen.Error.CanNotVerifyUserPass"));
+										System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.CanNotVerifyUserPass"));
 										
 										userinfo=null;
 										repinfo=null;
@@ -269,7 +272,7 @@ public class Kitchen
 								}
 								else
 								{
-									System.out.println(Messages.getString("Kitchen.Error.CanNotFindSuppliedDirectory",optionDirname+""));
+									System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.CanNotFindSuppliedDirectory",optionDirname+""));
 									
 									userinfo=null;
 									repinfo=null;
@@ -277,19 +280,19 @@ public class Kitchen
 							}
 							else
 							{
-								System.out.println(Messages.getString("Kitchen.Error.CanNotConnectRep"));
+								System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.CanNotConnectRep"));
 								
 							}
 						}
 						else
 						{
-							System.out.println(Messages.getString("Kitchen.Error.NoRepProvided"));
+							System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.NoRepProvided"));
 							
 						}
 					}
 					else
 					{
-						System.out.println(Messages.getString("Kitchen.Error.NoRepDefinied"));
+						System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.NoRepDefinied"));
 						
 					}
 				}
@@ -307,7 +310,7 @@ public class Kitchen
 				RepositoriesMeta ri = new RepositoriesMeta(log);
 				if (ri.readData())
 				{
-					System.out.println(Messages.getString("Kitchen.Log.ListRep"));
+					System.out.println(BaseMessages.getString(PKG, "Kitchen.Log.ListRep"));
 					
 					for (int i=0;i<ri.nrRepositories();i++)
 					{
@@ -317,7 +320,7 @@ public class Kitchen
 				}
 				else
 				{
-					System.out.println(Messages.getString("Kitchen.Error.UnableToReadXMLFile"));
+					System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.UnableToReadXMLFile"));
 					
 				}
 			}
@@ -326,7 +329,7 @@ public class Kitchen
 		{
 			job=null;
 			jobMeta=null;
-			System.out.println(Messages.getString("Kitchen.Error.StopProcess",e.getMessage()));
+			System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.StopProcess",e.getMessage()));
 			
 		}
 
@@ -337,7 +340,7 @@ public class Kitchen
 				!"Y".equalsIgnoreCase(optionListrep.toString()) 
 			    )
 			{
-				System.out.println(Messages.getString("Kitchen.Error.canNotLoadJob"));			    
+				System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.canNotLoadJob"));			    
 			}
 
 			exitJVM(7);
@@ -435,8 +438,8 @@ public class Kitchen
 			}
 			catch(KettleJobException je2)
 			{
-				log.logError(job.getJobname(), Messages.getString("Kitchen.Error.SeriousError",je2.getMessage()));
-                log.logError(job.getJobname(), Messages.getString("Kitchen.Error.SeriousError",je.getMessage()));
+				log.logError(job.getJobname(), BaseMessages.getString(PKG, "Kitchen.Error.SeriousError",je2.getMessage()));
+                log.logError(job.getJobname(), BaseMessages.getString(PKG, "Kitchen.Error.SeriousError",je.getMessage()));
 				
                 returnCode = 2;
 			}
@@ -446,12 +449,12 @@ public class Kitchen
             if (repository!=null) repository.disconnect();
         }
         
-		log.logMinimal(STRING_KITCHEN, Messages.getString("Kitchen.Log.Finished"));
+		log.logMinimal(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.Finished"));
 		
 		
 		if (result!=null && result.getNrErrors()!=0)
 		{
-			log.logError(STRING_KITCHEN, Messages.getString("Kitchen.Error.FinishedWithErrors"));
+			log.logError(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Error.FinishedWithErrors"));
             returnCode = 1;
 		}
 		cal=Calendar.getInstance();
@@ -459,16 +462,16 @@ public class Kitchen
 		String begin=df.format(start).toString();
 		String end  =df.format(stop).toString();
 
-		log.logMinimal(STRING_KITCHEN, Messages.getString("Kitchen.Log.StartStop",begin,end));
+		log.logMinimal(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.StartStop",begin,end));
 		
 		long seconds = (stop.getTime() - start.getTime()) / 1000;
 		if (seconds <= 60) {
-		    log.logMinimal(STRING_KITCHEN,  Messages.getString("Kitchen.Log.ProcessEndAfter", String.valueOf(seconds)));
+		    log.logMinimal(STRING_KITCHEN,  BaseMessages.getString(PKG, "Kitchen.Log.ProcessEndAfter", String.valueOf(seconds)));
 		}
 		else if (seconds <= 60 * 60) {
 		    int min = (int)(seconds / 60);
 		    int rem = (int)(seconds % 60);
-            log.logMinimal(STRING_KITCHEN,  Messages.getString("Kitchen.Log.ProcessEndAfterLong", String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+            log.logMinimal(STRING_KITCHEN,  BaseMessages.getString(PKG, "Kitchen.Log.ProcessEndAfterLong", String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
 		}
 		else if (seconds <= 60 * 60 * 24) {
 		    int rem;
@@ -476,7 +479,7 @@ public class Kitchen
             rem = (int)(seconds % (60 * 60)); 
             int min = rem / 60;
             rem = rem % 60;
-            log.logMinimal(STRING_KITCHEN,  Messages.getString("Kitchen.Log.ProcessEndAfterLonger", String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+            log.logMinimal(STRING_KITCHEN,  BaseMessages.getString(PKG, "Kitchen.Log.ProcessEndAfterLonger", String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
 		}
 		else {
             int rem;
@@ -486,7 +489,7 @@ public class Kitchen
             rem = rem % (60 * 60); 
             int min = rem / 60;
             rem = rem % 60;
-            log.logMinimal(STRING_KITCHEN,  Messages.getString("Kitchen.Log.ProcessEndAfterLongest", String.valueOf(days), String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+            log.logMinimal(STRING_KITCHEN,  BaseMessages.getString(PKG, "Kitchen.Log.ProcessEndAfterLongest", String.valueOf(days), String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
 		}
 		        
         exitJVM(returnCode);

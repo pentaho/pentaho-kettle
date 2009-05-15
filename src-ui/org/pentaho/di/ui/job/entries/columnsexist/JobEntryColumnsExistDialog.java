@@ -28,31 +28,29 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.MessageBox;
-
-
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.columnsexist.JobEntryColumnsExist;
+import org.pentaho.di.job.entry.JobEntryDialogInterface;
+import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
-import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.columnsexist.JobEntryColumnsExist;
-import org.pentaho.di.job.entries.columnsexist.Messages;
-import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
 
 
 /**
@@ -65,6 +63,8 @@ import org.pentaho.di.core.row.RowMetaInterface;
 
 public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryColumnsExist.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label wlName;
 
     private Text wName;
@@ -110,7 +110,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryColumnsExist) jobEntryInt;
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobEntryColumnsExist.Name.Default"));
+            this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntryColumnsExist.Name.Default"));
     }
 
     public JobEntryInterface open()
@@ -136,7 +136,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobEntryColumnsExist.Title"));
+        shell.setText(BaseMessages.getString(PKG, "JobEntryColumnsExist.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
@@ -144,7 +144,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("JobEntryColumnsExist.Name.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "JobEntryColumnsExist.Name.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
@@ -168,7 +168,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 		
 		// Schema name line
 		wlSchemaname = new Label(shell, SWT.RIGHT);
-		wlSchemaname.setText(Messages.getString("JobEntryColumnsExist.Schemaname.Label"));
+		wlSchemaname.setText(BaseMessages.getString(PKG, "JobEntryColumnsExist.Schemaname.Label"));
 		props.setLook(wlSchemaname);
 		fdlSchemaname = new FormData();
 		fdlSchemaname.left = new FormAttachment(0, 0);
@@ -178,7 +178,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 
 		wSchemaname = new TextVar(jobMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSchemaname);
-		wSchemaname.setToolTipText(Messages.getString("JobEntryColumnsExist.Schemaname.Tooltip"));
+		wSchemaname.setToolTipText(BaseMessages.getString(PKG, "JobEntryColumnsExist.Schemaname.Tooltip"));
 		wSchemaname.addModifyListener(lsMod);
 		fdSchemaname = new FormData();
 		fdSchemaname.left = new FormAttachment(middle, 0);
@@ -189,7 +189,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 
         // Table name line
         wlTablename = new Label(shell, SWT.RIGHT);
-        wlTablename.setText(Messages.getString("JobEntryColumnsExist.Tablename.Label"));
+        wlTablename.setText(BaseMessages.getString(PKG, "JobEntryColumnsExist.Tablename.Label"));
         props.setLook(wlTablename);
         fdlTablename = new FormData();
         fdlTablename.left = new FormAttachment(0, 0);
@@ -200,7 +200,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbTable);
-		wbTable.setText(Messages.getString("System.Button.Browse"));
+		wbTable.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		FormData fdbTable = new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
 		fdbTable.top  = new FormAttachment(wSchemaname, margin);
@@ -220,8 +220,8 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
         // Get columns button
 		wbGetColumns=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbGetColumns);
-		wbGetColumns.setText(Messages.getString("JobEntryColumnsExist.GetColums.Button"));
-		wbGetColumns.setToolTipText(Messages.getString("JobEntryColumnsExist.GetColums.Tooltip"));
+		wbGetColumns.setText(BaseMessages.getString(PKG, "JobEntryColumnsExist.GetColums.Button"));
+		wbGetColumns.setToolTipText(BaseMessages.getString(PKG, "JobEntryColumnsExist.GetColums.Tooltip"));
 		fdbGetColumns=new FormData();
 		fdbGetColumns.right = new FormAttachment(100, 0);
 		fdbGetColumns.top  = new FormAttachment (wTablename, margin);
@@ -230,15 +230,15 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
     	// Buttons to the right of the screen...
 		wbdFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbdFilename);
-		wbdFilename.setText(Messages.getString("JobEntryColumnsExist.FilenameDelete.Button"));
-		wbdFilename.setToolTipText(Messages.getString("JobEntryColumnsExist.FilenameDelete.Tooltip"));
+		wbdFilename.setText(BaseMessages.getString(PKG, "JobEntryColumnsExist.FilenameDelete.Button"));
+		wbdFilename.setToolTipText(BaseMessages.getString(PKG, "JobEntryColumnsExist.FilenameDelete.Tooltip"));
 		fdbdFilename=new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
 		fdbdFilename.top  = new FormAttachment (wbGetColumns, 40);
 		wbdFilename.setLayoutData(fdbdFilename);
 
 		wlFields = new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("JobEntryColumnsExist.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "JobEntryColumnsExist.Fields.Label"));
 		props.setLook(wlFields);
 		fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -257,11 +257,11 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 
 		ColumnInfo[] colinf=new ColumnInfo[]
 			{
-				new ColumnInfo(Messages.getString("JobEntryColumnsExist.Fields.Argument.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobEntryColumnsExist.Fields.Argument.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
 			};
 
 		colinf[0].setUsingVariables(true);
-		colinf[0].setToolTip(Messages.getString("JobEntryColumnsExist.Fields.Column"));
+		colinf[0].setToolTip(BaseMessages.getString(PKG, "JobEntryColumnsExist.Fields.Column"));
 
 		wFields = new TableView(jobMeta,shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
 			FieldsRows, lsMod, props);
@@ -296,7 +296,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 		});
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         FormData fd = new FormData();
         fd.right = new FormAttachment(50, -10);
         fd.bottom = new FormAttachment(100, 0);
@@ -304,7 +304,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
         wOK.setLayoutData(fd);
 
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         fd = new FormData();
         fd.left = new FormAttachment(50, 10);
         fd.bottom = new FormAttachment(100, 0);
@@ -388,8 +388,8 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("JobEntryColumnsExist.ConnectionError2.DialogMessage"));
-			mb.setText(Messages.getString("System.Dialog.Error.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "JobEntryColumnsExist.ConnectionError2.DialogMessage"));
+			mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
 			mb.open(); 
 		}
                     
@@ -440,8 +440,8 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
  	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
        }
@@ -504,14 +504,14 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 					}else
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage(Messages.getString("JobEntryColumnsExist.GetListColumsNoRow.DialogMessage"));
-						mb.setText(Messages.getString("System.Dialog.Error.Title"));
+						mb.setMessage(BaseMessages.getString(PKG, "JobEntryColumnsExist.GetListColumsNoRow.DialogMessage"));
+						mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
 						mb.open(); 
 					}
 				}
 				catch(Exception e)
 				{
-					new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("JobEntryColumnsExist.ConnectionError2.DialogMessage",wTablename.getText()), e);
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "JobEntryColumnsExist.ConnectionError2.DialogMessage",wTablename.getText()), e);
 				}
 				finally
 				{

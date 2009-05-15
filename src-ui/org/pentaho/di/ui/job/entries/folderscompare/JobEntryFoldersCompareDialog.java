@@ -10,9 +10,7 @@
 package org.pentaho.di.ui.job.entries.folderscompare;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -23,26 +21,28 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.folderscompare.JobEntryFoldersCompare;
+import org.pentaho.di.job.entry.JobEntryDialogInterface;
+import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
-import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.folderscompare.JobEntryFoldersCompare;
-import org.pentaho.di.job.entries.folderscompare.Messages;
 
 
 /**
@@ -53,8 +53,10 @@ import org.pentaho.di.job.entries.folderscompare.Messages;
  */
 public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryFoldersCompare.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
    private static final String[] FILETYPES = new String[] {
-           Messages.getString("JobFoldersCompare.Filetype.All") };
+           BaseMessages.getString(PKG, "JobFoldersCompare.Filetype.All") };
 
 	private Label        wlName;
 	private Text         wName;
@@ -108,7 +110,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryFoldersCompare) jobEntryInt;
 		if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(Messages.getString("JobFoldersCompare.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobFoldersCompare.Name.Default"));
 	}
 
 	public JobEntryInterface open()
@@ -134,14 +136,14 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobFoldersCompare.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobFoldersCompare.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Name line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobFoldersCompare.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobFoldersCompare.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -165,7 +167,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 
 		wSettings = new Group(shell, SWT.SHADOW_NONE);
 		props.setLook(wSettings);
-		wSettings.setText(Messages.getString("JobFoldersCompare.Settings.Label"));
+		wSettings.setText(BaseMessages.getString(PKG, "JobFoldersCompare.Settings.Label"));
 
 		FormLayout groupLayout = new FormLayout();
 		groupLayout.marginWidth = 10;
@@ -173,7 +175,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		wSettings.setLayout(groupLayout);
 		
 		wlIncludeSubfolders = new Label(wSettings, SWT.RIGHT);
-		wlIncludeSubfolders.setText(Messages.getString("JobFoldersCompare.IncludeSubfolders.Label"));
+		wlIncludeSubfolders.setText(BaseMessages.getString(PKG, "JobFoldersCompare.IncludeSubfolders.Label"));
 		props.setLook(wlIncludeSubfolders);
 		fdlIncludeSubfolders = new FormData();
 		fdlIncludeSubfolders.left = new FormAttachment(0, 0);
@@ -182,7 +184,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		wlIncludeSubfolders.setLayoutData(fdlIncludeSubfolders);
 		wIncludeSubfolders = new Button(wSettings, SWT.CHECK);
 		props.setLook(wIncludeSubfolders);
-		wIncludeSubfolders.setToolTipText(Messages.getString("JobFoldersCompare.IncludeSubfolders.Tooltip"));
+		wIncludeSubfolders.setToolTipText(BaseMessages.getString(PKG, "JobFoldersCompare.IncludeSubfolders.Tooltip"));
 		fdIncludeSubfolders = new FormData();
 		fdIncludeSubfolders.left = new FormAttachment(middle, 0);
 		fdIncludeSubfolders.top = new FormAttachment(wName, margin);
@@ -199,7 +201,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		
 		//Compare Only?
 		wlCompareOnly = new Label(wSettings, SWT.RIGHT);
-		wlCompareOnly.setText(Messages.getString("JobFoldersCompare.CompareOnly.Label"));
+		wlCompareOnly.setText(BaseMessages.getString(PKG, "JobFoldersCompare.CompareOnly.Label"));
 		props.setLook(wlCompareOnly);
 		fdlCompareOnly = new FormData();
 		fdlCompareOnly.left = new FormAttachment(0, 0);
@@ -207,10 +209,10 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		fdlCompareOnly.top = new FormAttachment(wIncludeSubfolders, margin);
 		wlCompareOnly.setLayoutData(fdlCompareOnly);
 		wCompareOnly = new CCombo(wSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wCompareOnly.add(Messages.getString("JobFoldersCompare.All_CompareOnly.Label"));
-		wCompareOnly.add(Messages.getString("JobFoldersCompare.Files_CompareOnly.Label"));
-		wCompareOnly.add(Messages.getString("JobFoldersCompare.Folders_CompareOnly.Label"));
-		wCompareOnly.add(Messages.getString("JobFoldersCompare.Specify_CompareOnly.Label"));
+		wCompareOnly.add(BaseMessages.getString(PKG, "JobFoldersCompare.All_CompareOnly.Label"));
+		wCompareOnly.add(BaseMessages.getString(PKG, "JobFoldersCompare.Files_CompareOnly.Label"));
+		wCompareOnly.add(BaseMessages.getString(PKG, "JobFoldersCompare.Folders_CompareOnly.Label"));
+		wCompareOnly.add(BaseMessages.getString(PKG, "JobFoldersCompare.Specify_CompareOnly.Label"));
 
 		wCompareOnly.select(0); // +1: starts at -1
 
@@ -232,15 +234,15 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		
 		// Wildcard
 		wlWildcard = new Label(wSettings, SWT.RIGHT);
-		wlWildcard.setText(Messages.getString("JobFoldersCompare.Wildcard.Label"));
+		wlWildcard.setText(BaseMessages.getString(PKG, "JobFoldersCompare.Wildcard.Label"));
 		props.setLook(wlWildcard);
 		fdlWildcard = new FormData();
 		fdlWildcard.left = new FormAttachment(0, 0);
 		fdlWildcard.top = new FormAttachment(wCompareOnly, margin);
 		fdlWildcard.right = new FormAttachment(middle, -margin);
 		wlWildcard.setLayoutData(fdlWildcard);
-		wWildcard = new TextVar(jobMeta,wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobFoldersCompare.Wildcard.Tooltip"));
+		wWildcard = new TextVar(jobMeta,wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobFoldersCompare.Wildcard.Tooltip"));
 		props.setLook(wWildcard);
 		wWildcard.addModifyListener(lsMod);
 		fdWildcard = new FormData();
@@ -250,7 +252,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		wWildcard.setLayoutData(fdWildcard);
 		
 		wlCompareFileSize = new Label(wSettings, SWT.RIGHT);
-		wlCompareFileSize.setText(Messages.getString("JobFoldersCompare.CompareFileSize.Label"));
+		wlCompareFileSize.setText(BaseMessages.getString(PKG, "JobFoldersCompare.CompareFileSize.Label"));
 		props.setLook(wlCompareFileSize);
 		fdlCompareFileSize = new FormData();
 		fdlCompareFileSize.left = new FormAttachment(0, 0);
@@ -259,7 +261,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		wlCompareFileSize.setLayoutData(fdlCompareFileSize);
 		wCompareFileSize = new Button(wSettings, SWT.CHECK);
 		props.setLook(wCompareFileSize);
-		wCompareFileSize.setToolTipText(Messages.getString("JobFoldersCompare.CompareFileSize.Tooltip"));
+		wCompareFileSize.setToolTipText(BaseMessages.getString(PKG, "JobFoldersCompare.CompareFileSize.Tooltip"));
 		fdCompareFileSize = new FormData();
 		fdCompareFileSize.left = new FormAttachment(middle, 0);
 		fdCompareFileSize.top = new FormAttachment(wWildcard, margin);
@@ -275,7 +277,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		
 		
 		wlCompareFileContent = new Label(wSettings, SWT.RIGHT);
-		wlCompareFileContent.setText(Messages.getString("JobFoldersCompare.CompareFileContent.Label"));
+		wlCompareFileContent.setText(BaseMessages.getString(PKG, "JobFoldersCompare.CompareFileContent.Label"));
 		props.setLook(wlCompareFileContent);
 		fdlCompareFileContent = new FormData();
 		fdlCompareFileContent.left = new FormAttachment(0, 0);
@@ -284,7 +286,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		wlCompareFileContent.setLayoutData(fdlCompareFileContent);
 		wCompareFileContent = new Button(wSettings, SWT.CHECK);
 		props.setLook(wCompareFileContent);
-		wCompareFileContent.setToolTipText(Messages.getString("JobFoldersCompare.CompareFileContent.Tooltip"));
+		wCompareFileContent.setToolTipText(BaseMessages.getString(PKG, "JobFoldersCompare.CompareFileContent.Tooltip"));
 		fdCompareFileContent = new FormData();
 		fdCompareFileContent.left = new FormAttachment(middle, 0);
 		fdCompareFileContent.top = new FormAttachment(wCompareFileSize, margin);
@@ -313,7 +315,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		
 		// Filename 1 line
 		wlFilename1=new Label(shell, SWT.RIGHT);
-		wlFilename1.setText(Messages.getString("JobFoldersCompare.Filename1.Label"));
+		wlFilename1.setText(BaseMessages.getString(PKG, "JobFoldersCompare.Filename1.Label"));
  		props.setLook(wlFilename1);
 		fdlFilename1=new FormData();
 		fdlFilename1.left = new FormAttachment(0, 0);
@@ -324,7 +326,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		// Browse folders button ...
 		wbDirectory1=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbDirectory1);
-		wbDirectory1.setText(Messages.getString("JobFoldersCompare.FolderBrowse.Label"));
+		wbDirectory1.setText(BaseMessages.getString(PKG, "JobFoldersCompare.FolderBrowse.Label"));
 		fdbDirectory1=new FormData();
 		fdbDirectory1.right= new FormAttachment(100, -margin);
 		fdbDirectory1.top  = new FormAttachment(wSettings, 2*margin);
@@ -358,7 +360,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		// Browse files ..
 		wbFilename1=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFilename1);
-		wbFilename1.setText(Messages.getString("JobFoldersCompare.FileBrowse.Label"));
+		wbFilename1.setText(BaseMessages.getString(PKG, "JobFoldersCompare.FileBrowse.Label"));
 		fdbFilename1=new FormData();
 		fdbFilename1.right= new FormAttachment(wbDirectory1, -margin);
 		fdbFilename1.top  = new FormAttachment(wSettings, 2*margin);
@@ -409,7 +411,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 
 		// Filename 2 line
 		wlFilename2=new Label(shell, SWT.RIGHT);
-		wlFilename2.setText(Messages.getString("JobFoldersCompare.Filename2.Label"));
+		wlFilename2.setText(BaseMessages.getString(PKG, "JobFoldersCompare.Filename2.Label"));
  		props.setLook(wlFilename2);
 		fdlFilename2=new FormData();
 		fdlFilename2.left = new FormAttachment(0, 0);
@@ -420,7 +422,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		// Browse folders button ...
 		wbDirectory2=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbDirectory2);
-		wbDirectory2.setText(Messages.getString("JobFoldersCompare.FolderBrowse.Label"));
+		wbDirectory2.setText(BaseMessages.getString(PKG, "JobFoldersCompare.FolderBrowse.Label"));
 		fdbDirectory2=new FormData();
 		fdbDirectory2.right= new FormAttachment(100, -margin);
 		fdbDirectory2.top  = new FormAttachment(wFilename1, margin);
@@ -454,7 +456,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		// Browse files...
 		wbFilename2=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFilename2);
-		wbFilename2.setText(Messages.getString("JobFoldersCompare.FileBrowse.Label"));
+		wbFilename2.setText(BaseMessages.getString(PKG, "JobFoldersCompare.FileBrowse.Label"));
 		fdbFilename2=new FormData();
 		fdbFilename2.right= new FormAttachment(wbDirectory2, -margin);
 		fdbFilename2.top  = new FormAttachment(wFilename1, margin);
@@ -501,9 +503,9 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		);
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFilename2);
 
@@ -599,8 +601,8 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
  	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
        }

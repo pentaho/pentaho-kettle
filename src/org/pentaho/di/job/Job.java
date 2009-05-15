@@ -42,6 +42,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -65,7 +66,9 @@ import org.pentaho.di.www.WebResult;
  * 
  */
 public class Job extends Thread implements VariableSpace, NamedParams
-{   
+{
+	private static Class<?> PKG = Job.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final String	CONFIGURATION_IN_EXPORT_FILENAME	= "__job_execution_configuration__.xml";
 	
 	private LogWriter log;
@@ -211,7 +214,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
         }   
         catch(Exception e)
         {
-            String message = Messages.getString("Job.Log.ErrorAllocatingNewJob", e.toString());
+            String message = BaseMessages.getString(PKG, "Job.Log.ErrorAllocatingNewJob", e.toString());
             LogWriter.getInstance().logError("Create Job in new ClassLoader", message);
             LogWriter.getInstance().logError("Create Job in new ClassLoader", Const.getStackTracker(e));
             throw new KettleException(message, e);
@@ -254,7 +257,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		}
 		catch(Throwable je)
 		{
-			log.logError(toString(), Messages.getString("Job.Log.ErrorExecJob", je.getMessage()));
+			log.logError(toString(), BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", je.getMessage()));
             log.logError(toString(), Const.getStackTracker(je));
             //
             // we don't have result object because execute() threw a curve-ball.
@@ -278,7 +281,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 			} 
 			catch (KettleJobException e) 
 			{
-				log.logError(toString(), Messages.getString("Job.Log.ErrorExecJob", e.getMessage()));
+				log.logError(toString(), BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", e.getMessage()));
 	            log.logError(toString(), Const.getStackTracker(e));
 			}
 			
@@ -313,7 +316,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		stopped=false;
 
         // Start the tracking...
-        JobEntryResult jerStart = new JobEntryResult(null, Messages.getString("Job.Comment.JobStarted"), Messages.getString("Job.Reason.Started"), null);
+        JobEntryResult jerStart = new JobEntryResult(null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), BaseMessages.getString(PKG, "Job.Reason.Started"), null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
 
         active = true;
@@ -322,17 +325,17 @@ public class Job extends Thread implements VariableSpace, NamedParams
         JobEntryCopy startpoint;
         beginProcessing();
         startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
-        if (startpoint == null) { throw new KettleJobException(Messages.getString("Job.Log.CounldNotFindStartingPoint")); }
+        if (startpoint == null) { throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.CounldNotFindStartingPoint")); }
         JobEntrySpecial jes = (JobEntrySpecial) startpoint.getEntry();
         Result res = null;
         boolean isFirst = true;
         while ( (jes.isRepeat() || isFirst) && !isStopped())
         {
             isFirst = false;
-            res = execute(0, null, startpoint, null, Messages.getString("Job.Reason.Started"));
+            res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
         }
         // Save this result...
-        JobEntryResult jerEnd = new JobEntryResult(res, Messages.getString("Job.Comment.JobFinished"), Messages.getString("Job.Reason.Finished"), null);
+        JobEntryResult jerEnd = new JobEntryResult(res, BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
 
         active = false;
@@ -371,10 +374,10 @@ public class Job extends Thread implements VariableSpace, NamedParams
         startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
         if (startpoint == null) 
         {
-            throw new KettleJobException(Messages.getString("Job.Log.CounldNotFindStartingPoint"));
+            throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.CounldNotFindStartingPoint"));
         }
 
-		Result res =  execute(nr, result, startpoint, null, Messages.getString("Job.Reason.StartOfJobentry"));
+		Result res =  execute(nr, result, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.StartOfJobentry"));
 
 		// Tell the world that we've finished processing this job...
 		//
@@ -425,7 +428,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		JobEntryInterface jei = startpoint.getEntry();
 
         // Track the fact that we are going to launch the next job entry...
-        JobEntryResult jerBefore = new JobEntryResult(null, Messages.getString("Job.Comment.JobStarted"), reason, startpoint);
+        JobEntryResult jerBefore = new JobEntryResult(null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), reason, startpoint);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerBefore));
 
         Result prevResult = null;
@@ -449,7 +452,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		addErrors((int)result.getNrErrors());
 		
         // Save this result as well...
-        JobEntryResult jerAfter = new JobEntryResult(result, Messages.getString("Job.Comment.JobFinished"), null, startpoint);
+        JobEntryResult jerAfter = new JobEntryResult(result, BaseMessages.getString(PKG, "Job.Comment.JobFinished"), null, startpoint);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
 			
 		// Try all next job entries.
@@ -477,17 +480,17 @@ public class Job extends Thread implements VariableSpace, NamedParams
 			final String nextComment;
 			if (hi.isUnconditional()) 
 			{
-				nextComment = Messages.getString("Job.Comment.FollowedUnconditional");
+				nextComment = BaseMessages.getString(PKG, "Job.Comment.FollowedUnconditional");
 			}
 			else
 			{
 				if (result.getResult())
                 {
-					nextComment = Messages.getString("Job.Comment.FollowedSuccess");
+					nextComment = BaseMessages.getString(PKG, "Job.Comment.FollowedSuccess");
                 }
 				else
                 {
-					nextComment = Messages.getString("Job.Comment.FollowedFailure");
+					nextComment = BaseMessages.getString(PKG, "Job.Comment.FollowedFailure");
                 }
 			}
 
@@ -498,7 +501,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 			if (  hi.isUnconditional() || ( startpoint.evaluates() && ( ! ( hi.getEvaluation() ^ result.getResult() ) ) ) ) 
 			{				
 				// Start this next step!
-				if(log.isBasic()) log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.StartingEntry",nextEntry.getName()));
+				if(log.isBasic()) log.logBasic(jobMeta.toString(), BaseMessages.getString(PKG, "Job.Log.StartingEntry",nextEntry.getName()));
                 
                 // Pass along the previous result, perhaps the next job can use it...
                 // However, set the number of errors back to 0 (if it should be reset)
@@ -525,7 +528,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
             				catch(Throwable e)
                             {
                             	log.logError(toString(), Const.getStackTracker(e));
-                            	threadExceptions.add(new KettleException(Messages.getString("Job.Log.UnexpectedError",nextEntry.toString()), e));
+                            	threadExceptions.add(new KettleException(BaseMessages.getString(PKG, "Job.Log.UnexpectedError",nextEntry.toString()), e));
                             	Result threadResult = new Result();
                             	threadResult.setResult(false);
                             	threadResult.setNrErrors(1L);
@@ -536,7 +539,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
             		Thread thread = new Thread(runnable);
             		threads.add(thread);
             		thread.start();
-            		if(log.isBasic()) log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.LaunchedJobEntryInParallel",nextEntry.getName()));
+            		if(log.isBasic()) log.logBasic(jobMeta.toString(), BaseMessages.getString(PKG, "Job.Log.LaunchedJobEntryInParallel",nextEntry.getName()));
             	}
             	else
             	{
@@ -549,9 +552,9 @@ public class Job extends Thread implements VariableSpace, NamedParams
                     catch(Throwable e)
                     {
                     	log.logError(toString(), Const.getStackTracker(e));
-                    	throw new KettleException(Messages.getString("Job.Log.UnexpectedError",nextEntry.toString()), e);
+                    	throw new KettleException(BaseMessages.getString(PKG, "Job.Log.UnexpectedError",nextEntry.toString()), e);
                     }
-                    if(log.isBasic()) log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.FinishedJobEntry",nextEntry.getName(),res.getResult()+""));
+                    if(log.isBasic()) log.logBasic(jobMeta.toString(), BaseMessages.getString(PKG, "Job.Log.FinishedJobEntry",nextEntry.getName(),res.getResult()+""));
             	}
 			}
 		}
@@ -571,11 +574,11 @@ public class Job extends Thread implements VariableSpace, NamedParams
 				} 
 				catch (InterruptedException e) 
 				{
-	                log.logError(jobMeta.toString(), Messages.getString("Job.Log.UnexpectedErrorWhileWaitingForJobEntry",nextEntry.getName()));
-	                threadExceptions.add(new KettleException(Messages.getString("Job.Log.UnexpectedErrorWhileWaitingForJobEntry",nextEntry.getName()), e));
+	                log.logError(jobMeta.toString(), BaseMessages.getString(PKG, "Job.Log.UnexpectedErrorWhileWaitingForJobEntry",nextEntry.getName()));
+	                threadExceptions.add(new KettleException(BaseMessages.getString(PKG, "Job.Log.UnexpectedErrorWhileWaitingForJobEntry",nextEntry.getName()), e));
 				}
 			}
-			// if(log.isBasic()) log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.FinishedJobEntry",startpoint.getName(),res.getResult()+""));
+			// if(log.isBasic()) log.logBasic(jobMeta.toString(), BaseMessages.getString(PKG, "Job.Log.FinishedJobEntry",startpoint.getName(),res.getResult()+""));
 		}
 		
 		// Perhaps we don't have next steps??
@@ -744,7 +747,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
                     }
                     catch (KettleValueException e)
                     {
-                        throw new KettleJobException(Messages.getString("Job.Log.ConversionError",""+jobMeta.getLogTable()), e);
+                        throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.ConversionError",""+jobMeta.getLogTable()), e);
                     }
 					if (last!=null)
 					{
@@ -773,7 +776,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 			catch(KettleDatabaseException dbe)
 			{
 				addErrors(1);  // This is even before actual execution 
-				throw new KettleJobException(Messages.getString("Job.Log.UnableToProcessLoggingStart",""+jobMeta.getLogTable()), dbe);
+				throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.UnableToProcessLoggingStart",""+jobMeta.getLogTable()), dbe);
 			}
 			finally
 			{
@@ -1211,9 +1214,9 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		SlaveServer slaveServer = executionConfiguration.getRemoteServer();
 
 		if (slaveServer == null)
-			throw new KettleException(Messages.getString("Job.Log.NoSlaveServerSpecified"));
+			throw new KettleException(BaseMessages.getString(PKG, "Job.Log.NoSlaveServerSpecified"));
 		if (Const.isEmpty(jobMeta.getName()))
-			throw new KettleException(Messages.getString("Job.Log.UniqueJobName"));
+			throw new KettleException(BaseMessages.getString(PKG, "Job.Log.UniqueJobName"));
 
 		try
 		{

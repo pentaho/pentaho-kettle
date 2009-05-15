@@ -23,14 +23,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.w3c.dom.Node;
-
-import com.healthmarketscience.jackcess.Database;
-
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -39,14 +36,16 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.core.ResultFile;
+import org.w3c.dom.Node;
+
+import com.healthmarketscience.jackcess.Database;
 
 
 /**
@@ -59,6 +58,8 @@ import org.pentaho.di.core.ResultFile;
  */
 public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryMSAccessBulkLoad.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private boolean add_result_filenames;
 	private boolean include_subfolders;
 	private boolean is_args_from_previous;
@@ -95,19 +96,13 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
      	target_table=null;
      	
 		setID(-1L);
-		setJobEntryType(JobEntryType.MS_ACCESS_BULK_LOAD);
 	}
 
 	public JobEntryMSAccessBulkLoad()
 	{
 		this("");
 	}
-
-	public JobEntryMSAccessBulkLoad(JobEntryBase jeb)
-	{
-		super(jeb);
-	}
-
+	
     public Object clone()
     {
         JobEntryMSAccessBulkLoad je = (JobEntryMSAccessBulkLoad)super.clone();
@@ -204,7 +199,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryMSAccessBulkLoad.Meta.UnableLoadXML",xe.getMessage()), xe);
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Meta.UnableLoadXML",xe.getMessage()), xe);
 		}
 	}
 
@@ -240,16 +235,16 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryMSAccessBulkLoad.Meta.UnableLoadRep",""+id_jobentry,dbe.getMessage()), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Meta.UnableLoadRep",""+id_jobentry,dbe.getMessage()), dbe);
 		}
 	}
 	private void displayResults(LogWriter log)
 	{
 		if(log.isDetailed()){
 			log.logDetailed(toString(), "=======================================");
-			log.logDetailed(toString(), Messages.getString("JobEntryMSAccessBulkLoad.Log.Info.FilesToLoad","" + NrFilesToProcess));
-			log.logDetailed(toString(), Messages.getString("JobEntryMSAccessBulkLoad.Log.Info.FilesLoaded","" + NrSuccess));
-			log.logDetailed(toString(), Messages.getString("JobEntryMSAccessBulkLoad.Log.Info.NrErrors","" + NrErrors));
+			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.Info.FilesToLoad","" + NrFilesToProcess));
+			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.Info.FilesLoaded","" + NrSuccess));
+			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.Info.NrErrors","" + NrErrors));
 			log.logDetailed(toString(), "=======================================");
 		}
 	}
@@ -277,10 +272,10 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 	    
 			if(log.isDebug()){
 				log.logDebug(toString()," ------ ");
-				log.logDebug(toString(),Messages.getString("JobEntryMSAccessBulkLoad.Log.FileAddedToResultFilesName",fileaddentry));
+				log.logDebug(toString(),BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.FileAddedToResultFilesName",fileaddentry));
 			}
 		}catch (Exception e){
-			log.logError(Messages.getString("JobEntryMSAccessBulkLoad.Error.AddingToFilenameResult"),fileaddentry + ""+e.getMessage());
+			log.logError(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Error.AddingToFilenameResult"),fileaddentry + ""+e.getMessage());
 		}
    }
 	public void saveRep(Repository rep, long id_job)
@@ -311,7 +306,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryMSAccessBulkLoad.Meta.UnableSave",""+id_job,dbe.getMessage()), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Meta.UnableSave",""+id_job,dbe.getMessage()), dbe);
 		}
 	}
 	/**********************************************************
@@ -343,7 +338,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 		File sourcefilefolder=new File(sourceFileFolder);
 		if(!sourcefilefolder.exists())
 		{
-			log.logError(toString(),Messages.getString("JobEntryMSAccessBulkLoad.Error.CanNotFindFile",sourceFileFolder));
+			log.logError(toString(),BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Error.CanNotFindFile",sourceFileFolder));
 			return retval;
 		}
 		if(sourcefilefolder.isFile())
@@ -382,11 +377,11 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 				}
 			}else
 			{
-				log.logBasic(toString(), Messages.getString("JobEntryMSAccessBulkLoad.Log.FolderEmpty",sourceFileFolder));
+				log.logBasic(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.FolderEmpty",sourceFileFolder));
 			}
 			
 		}else
-			log.logError(toString(), Messages.getString("JobEntryMSAccessBulkLoad.Log.UnknowType",sourceFileFolder));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.UnknowType",sourceFileFolder));
 		}catch(Exception e){
 			log.logError(toString(), e.getMessage());
 			incrErrors();
@@ -409,26 +404,26 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 			if(!targetDbFile.exists()) 
 			{
 				Database.create(targetDbFile);
-				log.logBasic(toString(),Messages.getString("JobEntryMSAccessBulkLoad.Log.DbCreated",targetFilename));
+				log.logBasic(toString(),BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.DbCreated",targetFilename));
 			}else
 			{
 				// Database exists
 				Database db=Database.open(targetDbFile);
-				log.logBasic(toString(),Messages.getString("JobEntryMSAccessBulkLoad.Log.DbOpened",targetFilename));
+				log.logBasic(toString(),BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.DbOpened",targetFilename));
 				// Let's check table
 				if(db.getTable(tablename)!=null)
 				{
-					log.logBasic(toString(), Messages.getString("JobEntryMSAccessBulkLoad.Log.TableExists",tablename));
+					log.logBasic(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.TableExists",tablename));
 				}
 				
 				// close database
 				if(db!=null) db.close();
-				log.logBasic(toString(),Messages.getString("JobEntryMSAccessBulkLoad.Log.DbCosed",targetFilename));
+				log.logBasic(toString(),BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.DbCosed",targetFilename));
 			}
 			// load data from file
 			Database.open(targetDbFile).importFile(tablename, sourceDataFile, delimiter);
 			
-			log.logBasic(toString(), Messages.getString("JobEntryMSAccessBulkLoad.Log.FileImported",sourceFilename,	tablename,targetFilename));
+			log.logBasic(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.FileImported",sourceFilename,	tablename,targetFilename));
 			
 			// add filename to result filename
 			if(add_result_filenames)
@@ -439,7 +434,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 		}
 		catch ( Exception e )
 		{
-			log.logError(toString(), Messages.getString("JobEntryMSAccessBulkLoad.Error.LoadingDataToFile",
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Error.LoadingDataToFile",
 					sourceFilename,targetFilename,e.getMessage()));
 			
 		}	
@@ -507,7 +502,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 			
 			if (is_args_from_previous){
 				if (log.isDetailed())
-					log.logDetailed(toString(), Messages.getString("JobEntryMSAccessBulkLoad.Log.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));
+					log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));
 			}
 			if (is_args_from_previous && rows!=null){
 				for (int iteration=0;iteration<rows.size() && !parentJob.isStopped() && continueProcessing;iteration++) {	
@@ -543,7 +538,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 		}
 		catch ( Exception e ){
 			incrErrors();
-			log.logError(toString(), Messages.getString("JobEntryMSAccessBulkLoad.UnexpectedError",e.getMessage()));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.UnexpectedError",e.getMessage()));
 		}	
 		
 		// Success Condition

@@ -42,7 +42,6 @@ import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepCategory;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -54,7 +53,7 @@ import org.w3c.dom.Node;
  *
  */
 @Step(name="CubeInput",image="ui/images/CIP.png",tooltip="BaseStep.TypeTooltipDesc.Cubeinput",description="BaseStep.TypeLongDesc.CubeInput",
-		category=StepCategory.CATEGORY_INPUT)
+		categoryDescription="BaseStep.Category.Input", i18nPackageName="org.pentaho.di.trans.step")
 public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private String filename;

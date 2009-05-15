@@ -20,9 +20,8 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
-import org.pentaho.di.trans.Messages;
-import org.pentaho.di.trans.StepPlugin;
 
 /**
  * Contains the description of a job-entry of a job-entry plugin, what jars to
@@ -34,28 +33,17 @@ import org.pentaho.di.trans.StepPlugin;
  */
 public class JobPlugin extends Plugin<String>
 {
+	private static Class<?> PKG = JobPlugin.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String category;
-	
-	private JobEntryType jobType;
-	
+
+    public static final String[] typeDesc = new String[] { BaseMessages.getString(PKG, "JobEntryPlugin.Type.All.Desc"), BaseMessages.getString(PKG, "JobEntryPlugin.Type.Native.Desc"), BaseMessages.getString(PKG, "JobPlugin.Type.Plugin.Desc"), }; 
+
 	private Map<String, String> localizedCategories;
 
 	private Map<String, String> localizedDescriptions;
 
 	private Map<String, String> localizedTooltips;
-
-	public JobPlugin(int type, String id, JobEntryType jobType, String tooltip, String directory,
-			String jarfiles[], String icon_filename, String classname, String category)
-	{
-
-		super(type, id, jobType.getDescription(), tooltip, directory, jarfiles, icon_filename, classname);
-		this.jobType = jobType;
-		this.category = category;
-		
-		this.localizedCategories = new Hashtable<String, String>();
-		this.localizedDescriptions = new Hashtable<String, String>();
-		this.localizedTooltips = new Hashtable<String, String>();
-	}
 
 	public JobPlugin(int type, String id, String description, String tooltip, String directory,
 			String jarfiles[], String icon_filename, String classname, String category)
@@ -66,11 +54,6 @@ public class JobPlugin extends Plugin<String>
 		this.localizedCategories = new Hashtable<String, String>();
 		this.localizedDescriptions = new Hashtable<String, String>();
 		this.localizedTooltips = new Hashtable<String, String>();
-	}
-
-	public JobEntryType getJobType()
-	{
-		return jobType;
 	}
 
 	public int hashCode()
@@ -102,7 +85,7 @@ public class JobPlugin extends Plugin<String>
 			return localizedCategory;
 		}
 		if (category == null)
-			return Messages.getString("StepPlugin.Label"); //$NON-NLS-1$
+			return BaseMessages.getString(PKG, "JobPlugin.Label"); //$NON-NLS-1$
 		return category;
 	}
 
@@ -180,6 +163,11 @@ public class JobPlugin extends Plugin<String>
 	{
 		return localizedTooltips;
 	}
+	
+    public String getTypeDesc()
+    {
+    	return typeDesc[super.getType()];
+    }
 
 	/**
 	 * @param localizedTooltips
@@ -211,17 +199,17 @@ public class JobPlugin extends Plugin<String>
     {
     	RowMetaInterface row = new RowMeta();
     	
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Type.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ID.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Description.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ToolTip.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Directory.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.JarFiles.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.IconFile.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ClassName.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Category.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ErrorHelpFile.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.SeparateClassloader.Label"), ValueMetaInterface.TYPE_BOOLEAN));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "JobPlugin.Information.Type.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "JobPlugin.Information.ID.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "JobPlugin.Information.Description.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "JobPlugin.Information.ToolTip.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "JobPlugin.Information.Directory.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "JobPlugin.Information.JarFiles.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "JobPlugin.Information.IconFile.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "JobPlugin.Information.ClassName.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "JobPlugin.Information.Category.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "JobPlugin.Information.ErrorHelpFile.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "JobPlugin.Information.SeparateClassloader.Label"), ValueMetaInterface.TYPE_BOOLEAN));
 
         return row;
     }
@@ -231,14 +219,7 @@ public class JobPlugin extends Plugin<String>
     	Object[] row = new Object[getPluginInformationRowMeta().size()];
     	int rowIndex=0;
     	
-    	String jobTypeDesc;
-    	if (jobType==null || jobType.equals(JobEntryType.NONE)) {
-    		jobTypeDesc = StepPlugin.typeDesc[StepPlugin.TYPE_PLUGIN];
-    	} else {
-    		jobTypeDesc = StepPlugin.typeDesc[StepPlugin.TYPE_NATIVE];
-    	}
-    	    	
-    	row[rowIndex++] = jobTypeDesc;
+    	row[rowIndex++] = getTypeDesc();
     	row[rowIndex++] = getID();
     	row[rowIndex++] = getDescription();
     	row[rowIndex++] = getTooltip();

@@ -12,6 +12,7 @@
 */
 package org.pentaho.di.core;
 
+
 public interface CheckResultInterface {
 
   public static final int TYPE_RESULT_NONE = 0;
@@ -23,14 +24,6 @@ public interface CheckResultInterface {
   public static final int TYPE_RESULT_WARNING = 3;
 
   public static final int TYPE_RESULT_ERROR = 4;
-
-  public static final String typeDesc[] = {
-                                           "", //$NON-NLS-1$
-                                           Messages.getString("CheckResult.OK"), //$NON-NLS-1$
-                                           Messages.getString("CheckResult.Remark"), //$NON-NLS-1$
-                                           Messages.getString("CheckResult.Warning"), //$NON-NLS-1$
-                                           Messages.getString("CheckResult.Error") //$NON-NLS-1$
-                                           };
 
   /**
    * @return The type of the Check Result (0-4)

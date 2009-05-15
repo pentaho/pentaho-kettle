@@ -42,10 +42,11 @@ public @interface Step
 
 	String image();
 
-	int category();
+	@Deprecated
+	int category() default 0;
 	
-	String categoryDescription() default "";
+	String categoryDescription();
 	
-	String i18nPackageName() default "";
+	String i18nPackageName();
 	
 }

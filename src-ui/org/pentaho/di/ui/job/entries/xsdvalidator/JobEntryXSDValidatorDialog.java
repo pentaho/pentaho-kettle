@@ -21,7 +21,6 @@
 package org.pentaho.di.ui.job.entries.xsdvalidator;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -37,20 +36,21 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
+import org.pentaho.di.job.entries.xsdvalidator.JobEntryXSDValidator;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.xsdvalidator.JobEntryXSDValidator;
-import org.pentaho.di.job.entries.xsdvalidator.Messages;
 
 /**
  * This dialog allows you to edit the XSD Validator job entry settings.
@@ -60,14 +60,16 @@ import org.pentaho.di.job.entries.xsdvalidator.Messages;
  */
 public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
-   private static final String[] FILETYPES_XML = new String[] {
-           Messages.getString("JobEntryXSDValidator.Filetype.Xml"),
-		   Messages.getString("JobEntryXSDValidator.Filetype.All") };
+	private static Class<?> PKG = JobEntryXSDValidator.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+    private static final String[] FILETYPES_XML = new String[] {
+           BaseMessages.getString(PKG, "JobEntryXSDValidator.Filetype.Xml"),
+		   BaseMessages.getString(PKG, "JobEntryXSDValidator.Filetype.All") };
 
 	private static final String[] FILETYPES_XSD = new String[] 
 		{
-			Messages.getString("JobEntryXSDValidator.Filetype.Xsd"),
-			Messages.getString("JobEntryXSDValidator.Filetype.All")};
+			BaseMessages.getString(PKG, "JobEntryXSDValidator.Filetype.Xsd"),
+			BaseMessages.getString(PKG, "JobEntryXSDValidator.Filetype.All")};
 
 
 	private Label        wlName;
@@ -100,7 +102,7 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryXSDValidator) jobEntryInt;
         if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(Messages.getString("JobEntryXSDValidator.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntryXSDValidator.Name.Default"));
     }
 
 	public JobEntryInterface open()
@@ -126,14 +128,14 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobEntryXSDValidator.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobEntryXSDValidator.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Name line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobEntryXSDValidator.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobEntryXSDValidator.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -151,7 +153,7 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
 
 		// Filename 1 line
 		wlxmlFilename=new Label(shell, SWT.RIGHT);
-		wlxmlFilename.setText(Messages.getString("JobEntryXSDValidator.xmlFilename.Label"));
+		wlxmlFilename.setText(BaseMessages.getString(PKG, "JobEntryXSDValidator.xmlFilename.Label"));
  		props.setLook(wlxmlFilename);
 		fdlxmlFilename=new FormData();
 		fdlxmlFilename.left = new FormAttachment(0, 0);
@@ -160,7 +162,7 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
 		wlxmlFilename.setLayoutData(fdlxmlFilename);
 		wbxmlFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbxmlFilename);
-		wbxmlFilename.setText(Messages.getString("System.Button.Browse"));
+		wbxmlFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbxmlFilename=new FormData();
 		fdbxmlFilename.right= new FormAttachment(100, 0);
 		fdbxmlFilename.top  = new FormAttachment(wName, 0);
@@ -207,7 +209,7 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
 
 		// Filename 2 line
 		wlxsdFilename=new Label(shell, SWT.RIGHT);
-		wlxsdFilename.setText(Messages.getString("JobEntryXSDValidator.xsdFilename.Label"));
+		wlxsdFilename.setText(BaseMessages.getString(PKG, "JobEntryXSDValidator.xsdFilename.Label"));
  		props.setLook(wlxsdFilename);
 		fdlxsdFilename=new FormData();
 		fdlxsdFilename.left = new FormAttachment(0, 0);
@@ -216,7 +218,7 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
 		wlxsdFilename.setLayoutData(fdlxsdFilename);
 		wbxsdFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbxsdFilename);
-		wbxsdFilename.setText(Messages.getString("System.Button.Browse"));
+		wbxsdFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbxsdFilename=new FormData();
 		fdbxsdFilename.right= new FormAttachment(100, 0);
 		fdbxsdFilename.top  = new FormAttachment(wxmlFilename, 0);
@@ -264,9 +266,9 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
 
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wxsdFilename);
 
@@ -331,8 +333,8 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
 	   if(Const.isEmpty(wName.getText())) 
          {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
          }

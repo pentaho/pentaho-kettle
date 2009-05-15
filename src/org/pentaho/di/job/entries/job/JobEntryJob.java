@@ -41,8 +41,8 @@ import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
@@ -70,6 +70,8 @@ import org.w3c.dom.Node;
  */
 public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryJob.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static final LogWriter log = LogWriter.getInstance();
 
 	private String              jobname;
@@ -103,7 +105,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     public JobEntryJob(String name)
 	{
 		super(name, "");
-		setJobEntryType(JobEntryType.JOB);
 	}
 
 	public JobEntryJob()
@@ -117,11 +118,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         JobEntryJob je = (JobEntryJob) super.clone();
         return je;
     }
-
-	public JobEntryJob(JobEntryBase jeb)
-	{
-		super(jeb);
-	}
 
 	public void setFileName(String n)
 	{
@@ -471,7 +467,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         	String realRemoteSlaveServerName = environmentSubstitute(remoteSlaveServerName);
         	remoteSlaveServer = parentJob.getJobMeta().findSlaveServer(realRemoteSlaveServerName);
         	if (remoteSlaveServer==null) {
-        		throw new KettleException(Messages.getString("JobJob.Exception.UnableToFindRemoteSlaveServer",realRemoteSlaveServerName));
+        		throw new KettleException(BaseMessages.getString(PKG, "JobJob.Exception.UnableToFindRemoteSlaveServer",realRemoteSlaveServerName));
         	}
         }
         try
@@ -943,7 +939,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		//
 		if (jobMeta.getFilename()!=null && jobMeta.getFilename().equals(parentJobMeta.getFilename()))
 		{
-			throw new KettleException(Messages.getString("JobJobError.Recursive", jobMeta.getFilename()));
+			throw new KettleException(BaseMessages.getString(PKG, "JobJobError.Recursive", jobMeta.getFilename()));
 		}
 
 		// Different directories: OK
@@ -956,7 +952,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		//
 		if (parentJobMeta.getName().equals(jobMeta.getName()))
 		{
-			throw new KettleException(Messages.getString("JobJobError.Recursive", jobMeta.getFilename()));
+			throw new KettleException(BaseMessages.getString(PKG, "JobJobError.Recursive", jobMeta.getFilename()));
 		}
 		
 		// Also compare with the grand-parent (if there is any)

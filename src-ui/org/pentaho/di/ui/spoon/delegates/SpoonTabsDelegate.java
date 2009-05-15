@@ -23,10 +23,10 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonBrowser;
 import org.pentaho.di.ui.spoon.TabItemInterface;
@@ -40,6 +40,8 @@ import org.pentaho.xul.swt.tab.TabSet;
 
 public class SpoonTabsDelegate extends SpoonDelegate
 {
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	/**
 	 * This contains a list of the tab map entries
 	 */
@@ -200,12 +202,12 @@ public class SpoonTabsDelegate extends SpoonDelegate
 
 	public String makeLogTabName(TransMeta transMeta)
 	{
-		return Messages.getString("Spoon.Title.LogTransView", makeTransGraphTabName(transMeta));
+		return BaseMessages.getString(PKG, "Spoon.Title.LogTransView", makeTransGraphTabName(transMeta));
 	}
 
 	public String makeHistoryTabName(TransMeta transMeta)
 	{
-		return Messages.getString("Spoon.Title.LogTransHistoryView", makeTransGraphTabName(transMeta));
+		return BaseMessages.getString(PKG, "Spoon.Title.LogTransHistoryView", makeTransGraphTabName(transMeta));
 	}
 
 	public String makeSlaveTabName(SlaveServer slaveServer)
@@ -308,7 +310,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 				{
 					TransMeta transMeta = (TransMeta) managedObject;
 					entry.getTabItem().setText(makeTransGraphTabName(transMeta));
-					String toolTipText = Messages.getString("Spoon.TabTrans.Tooltip", makeTransGraphTabName(transMeta));
+					String toolTipText = BaseMessages.getString(PKG, "Spoon.TabTrans.Tooltip", makeTransGraphTabName(transMeta));
 					if (Const.isWindows() && !Const.isEmpty(transMeta.getFilename())) toolTipText+=Const.CR+Const.CR+transMeta.getFilename();
 					entry.getTabItem().setToolTipText(toolTipText);
 				} 
@@ -316,7 +318,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 				{
 					JobMeta jobMeta = (JobMeta) managedObject;
 					entry.getTabItem().setText(makeJobGraphTabName(jobMeta));
-					String toolTipText = Messages.getString("Spoon.TabJob.Tooltip", makeJobGraphTabName(jobMeta));
+					String toolTipText = BaseMessages.getString(PKG, "Spoon.TabJob.Tooltip", makeJobGraphTabName(jobMeta));
 					if (Const.isWindows() && !Const.isEmpty(jobMeta.getFilename())) toolTipText+=Const.CR+Const.CR+jobMeta.getFilename();
 					entry.getTabItem().setToolTipText(toolTipText);
 				}
@@ -366,12 +368,12 @@ public class SpoonTabsDelegate extends SpoonDelegate
 
 	public String makeJobLogTabName(JobMeta jobMeta)
 	{
-		return Messages.getString("Spoon.Title.LogJobView", makeJobGraphTabName(jobMeta));
+		return BaseMessages.getString(PKG, "Spoon.Title.LogJobView", makeJobGraphTabName(jobMeta));
 	}
 
 	public String makeJobHistoryTabName(JobMeta jobMeta)
 	{
-		return Messages.getString("Spoon.Title.LogJobHistoryView", makeJobGraphTabName(jobMeta));
+		return BaseMessages.getString(PKG, "Spoon.Title.LogJobHistoryView", makeJobGraphTabName(jobMeta));
 	}
 
 	public String makeJobGraphTabName(JobMeta jobMeta)

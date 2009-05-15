@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
@@ -25,6 +24,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.www.SlaveServerDetection;
@@ -40,6 +40,8 @@ import org.w3c.dom.Node;
  */
 public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace
 {
+	private static Class<?> PKG = ClusterSchema.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final String XML_TAG = "clusterschema"; //$NON-NLS-1$
     
     /** the name of the cluster schema */
@@ -220,34 +222,6 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         }
     }
     
-    public ClusterSchema(Repository rep, long id_cluster_schema, List<SlaveServer> slaveServers) throws KettleException
-    {
-        this();
-        
-        setId(id_cluster_schema);
-        
-        RowMetaAndData row = rep.getClusterSchema(id_cluster_schema);
-        
-        name = row.getString(Repository.FIELD_CLUSTER_NAME, null); //$NON-NLS-1$
-        basePort = row.getString(Repository.FIELD_CLUSTER_BASE_PORT, null); //$NON-NLS-1$
-        socketsBufferSize = row.getString(Repository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, null); //$NON-NLS-1$
-        socketsFlushInterval = row.getString(Repository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, null); //$NON-NLS-1$
-        socketsCompressed = row.getBoolean(Repository.FIELD_CLUSTER_SOCKETS_COMPRESSED, true); //$NON-NLS-1$
-        dynamic = row.getBoolean(Repository.FIELD_CLUSTER_DYNAMIC, true); //$NON-NLS-1$
-        
-        long[] pids = rep.getSlaveIDs(id_cluster_schema);
-        for (int i=0;i<pids.length;i++)
-        {
-            SlaveServer slaveServer = new SlaveServer(rep, pids[i]);
-            SlaveServer reference = SlaveServer.findSlaveServer(slaveServers, slaveServer.getName());
-            if (reference!=null) 
-                this.slaveServers.add(reference);
-            else 
-                this.slaveServers.add(slaveServer);
-        }
-    }
-
-    
     /**
      * @return the name
      */
@@ -334,9 +308,9 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         }
         if (slaveServers.size()>0)
         {
-            throw new KettleException(Messages.getString("ClusterSchema.NoMasterServerDefined", name)); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "ClusterSchema.NoMasterServerDefined", name)); //$NON-NLS-1$
         }
-        throw new KettleException(Messages.getString("ClusterSchema.NoSlaveServerDefined", name)); //$NON-NLS-1$
+        throw new KettleException(BaseMessages.getString(PKG, "ClusterSchema.NoSlaveServerDefined", name)); //$NON-NLS-1$
     }
     
     /**

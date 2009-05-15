@@ -32,16 +32,18 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.abort.Abort;
 import org.pentaho.di.trans.steps.abort.AbortMeta;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.trans.steps.abort.Messages;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 public class AbortDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = Abort.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	
 	private Label        wlRowThreshold;
 	private TextVar      wRowThreshold;
 	private FormData     fdlRowThreshold, fdRowThreshold;
@@ -85,14 +87,14 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("AbortDialog.Shell.Title")); //$NON-NLS-1$
+        shell.setText(BaseMessages.getString(PKG, "AbortDialog.Shell.Title")); //$NON-NLS-1$
         
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
         
         // Stepname line
         wlStepname=new Label(shell, SWT.RIGHT);
-        wlStepname.setText(Messages.getString("AbortDialog.Stepname.Label")); //$NON-NLS-1$
+        wlStepname.setText(BaseMessages.getString(PKG, "AbortDialog.Stepname.Label")); //$NON-NLS-1$
         props.setLook(wlStepname);
         fdlStepname=new FormData();
         fdlStepname.left = new FormAttachment(0, 0);
@@ -111,7 +113,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface
         
 		// RowThreshold line
 		wlRowThreshold=new Label(shell, SWT.RIGHT);
-		wlRowThreshold.setText(Messages.getString("AbortDialog.RowThreshold.Label")); //$NON-NLS-1$
+		wlRowThreshold.setText(BaseMessages.getString(PKG, "AbortDialog.RowThreshold.Label")); //$NON-NLS-1$
  		props.setLook(wlRowThreshold);
 		fdlRowThreshold=new FormData();
 		fdlRowThreshold.left = new FormAttachment(0, 0);
@@ -122,7 +124,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface
 		wRowThreshold.setText(""); //$NON-NLS-1$
  		props.setLook(wRowThreshold);
  		wRowThreshold.addModifyListener(lsMod);
- 		wRowThreshold.setToolTipText(Messages.getString("AbortDialog.RowThreshold.Tooltip"));
+ 		wRowThreshold.setToolTipText(BaseMessages.getString(PKG, "AbortDialog.RowThreshold.Tooltip"));
 		wRowThreshold.addModifyListener(lsMod);
 		fdRowThreshold=new FormData();
 		fdRowThreshold.left = new FormAttachment(middle, 0);
@@ -132,7 +134,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface
 						
 		// Message line
 		wlMessage=new Label(shell, SWT.RIGHT);
-		wlMessage.setText(Messages.getString("AbortDialog.AbortMessage.Label")); //$NON-NLS-1$
+		wlMessage.setText(BaseMessages.getString(PKG, "AbortDialog.AbortMessage.Label")); //$NON-NLS-1$
  		props.setLook(wlMessage);
 		fdlMessage=new FormData();
 		fdlMessage.left = new FormAttachment(0, 0);
@@ -143,7 +145,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface
 		wMessage.setText(""); //$NON-NLS-1$
  		props.setLook(wMessage);
  		wMessage.addModifyListener(lsMod);
- 		wMessage.setToolTipText(Messages.getString("AbortDialog.AbortMessage.Tooltip"));
+ 		wMessage.setToolTipText(BaseMessages.getString(PKG, "AbortDialog.AbortMessage.Tooltip"));
 		wMessage.addModifyListener(lsMod);
 		fdMessage=new FormData();
 		fdMessage.left = new FormAttachment(middle, 0);
@@ -152,7 +154,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface
 		wMessage.setLayoutData(fdMessage);
 	
         wlAlwaysLogRows = new Label(shell, SWT.RIGHT);
-        wlAlwaysLogRows.setText(Messages.getString("AbortDialog.AlwaysLogRows.Label"));
+        wlAlwaysLogRows.setText(BaseMessages.getString(PKG, "AbortDialog.AlwaysLogRows.Label"));
         props.setLook(wlAlwaysLogRows);
         fdlAlwaysLogRows = new FormData();
         fdlAlwaysLogRows.left = new FormAttachment(0, 0);
@@ -161,7 +163,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface
         wlAlwaysLogRows.setLayoutData(fdlAlwaysLogRows);
         wAlwaysLogRows = new Button(shell, SWT.CHECK);
         props.setLook(wAlwaysLogRows);
-        wAlwaysLogRows.setToolTipText(Messages.getString("AbortDialog.AlwaysLogRows.Tooltip"));
+        wAlwaysLogRows.setToolTipText(BaseMessages.getString(PKG, "AbortDialog.AlwaysLogRows.Tooltip"));
         fdAlwaysLogRows = new FormData();
         fdAlwaysLogRows.left = new FormAttachment(middle, 0);
         fdAlwaysLogRows.top = new FormAttachment(wMessage, margin);
@@ -177,9 +179,9 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface
 		
         // Some buttons
         wOK=new Button(shell, SWT.PUSH);
-        wOK.setText(BaseMessages.getString(getClass().getPackage().getName(), "System.Button.OK")); //$NON-NLS-1$
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
         wCancel=new Button(shell, SWT.PUSH);
-        wCancel.setText(BaseMessages.getString(getClass().getPackage().getName(), "System.Button.Cancel")); //$NON-NLS-1$
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
         
         setButtonPositions(new Button[] { wOK, wCancel }, margin, wAlwaysLogRows);        
 

@@ -24,15 +24,13 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullV
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.Iterator;
-
 import java.util.HashMap;
-import java.util.Set;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
@@ -49,8 +47,8 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -70,6 +68,8 @@ import org.w3c.dom.Node;
  */
 public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryFoldersCompare.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String filename1;
 	private String filename2;
 	private String wildcard;
@@ -90,9 +90,8 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
      	filename1=null;
      	filename2=null;
 		setID(-1L);
-		setJobEntryType(JobEntryType.FOLDERS_COMPARE);
-
 	}
+	
 	public void setCompareOnly(String comparevalue)
 	{
 		this.compareonly=comparevalue;
@@ -104,11 +103,6 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 	public JobEntryFoldersCompare()
 	{
 		this("");
-	}
-
-	public JobEntryFoldersCompare(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -153,7 +147,7 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException(Messages.getString("JobFoldersCompare.Meta.UnableLoadXML",xe.getMessage()));
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobFoldersCompare.Meta.UnableLoadXML",xe.getMessage()));
 		}
 	}
 
@@ -173,7 +167,7 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException(Messages.getString("JobFoldersCompare.Meta.UnableLoadRep",""+id_jobentry, dbe.getMessage()));
+			throw new KettleException(BaseMessages.getString(PKG, "JobFoldersCompare.Meta.UnableLoadRep",""+id_jobentry, dbe.getMessage()));
 		}
 	}
 
@@ -195,7 +189,7 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobFoldersCompare.Meta.UnableSaveRep",""+id_job, dbe.getMessage()));
+			throw new KettleException(BaseMessages.getString(PKG, "JobFoldersCompare.Meta.UnableSaveRep",""+id_job, dbe.getMessage()));
 		}
 	}
 	public void setIncludeSubfolders(boolean includeSubfolders) 
@@ -308,21 +302,21 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 					if(!folder1.getType().equals(folder2.getType()))
 					{
 						// pb...we try to compare file with folder !!!
-						log.logError(toString(),Messages.getString("JobFoldersCompare.Log.CanNotCompareFilesFolders"));
+						log.logError(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.CanNotCompareFilesFolders"));
 						
 						if(folder1.getType()==FileType.FILE)
-							log.logError(toString(),Messages.getString("JobFoldersCompare.Log.IsAFile",realFilename1));
+							log.logError(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.IsAFile",realFilename1));
 						else if(folder1.getType()==FileType.FOLDER)
-							log.logError(toString(),Messages.getString("JobFoldersCompare.Log.IsAFolder",realFilename1));
+							log.logError(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.IsAFolder",realFilename1));
 						else 
-							log.logError(toString(),Messages.getString("JobFoldersCompare.Log.IsUnknownFileType",realFilename1));
+							log.logError(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.IsUnknownFileType",realFilename1));
 						
 						if(folder2.getType()==FileType.FILE)
-							log.logError(toString(),Messages.getString("JobFoldersCompare.Log.IsAFile",realFilename2));
+							log.logError(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.IsAFile",realFilename2));
 						else if(folder2.getType()==FileType.FOLDER)
-							log.logError(toString(),Messages.getString("JobFoldersCompare.Log.IsAFolder",realFilename2));
+							log.logError(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.IsAFolder",realFilename2));
 						else 
-							log.logError(toString(),Messages.getString("JobFoldersCompare.Log.IsUnknownFileType",realFilename2));
+							log.logError(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.IsUnknownFileType",realFilename2));
 						
 					}
 					else
@@ -347,8 +341,8 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 							
 							if(log.isDetailed()) 
 							{
-								log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.FolderContains",realFilename1, ""+lenList1 ));
-								log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.FolderContains",realFilename2, ""+lenList2 ));
+								log.logDetailed(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.FolderContains",realFilename1, ""+lenList1 ));
+								log.logDetailed(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.FolderContains",realFilename2, ""+lenList2 ));
 							}
 							if(lenList1==lenList2)
 							{
@@ -384,11 +378,11 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 								   {
 									   ok=false;
 									   if(log.isDetailed())
-										   log.logDetailed(toString(), Messages.getString("JobFoldersCompare.Log.FileCanNotBeFoundIn",entree.getKey().toString(),realFilename2));
+										   log.logDetailed(toString(), BaseMessages.getString(PKG, "JobFoldersCompare.Log.FileCanNotBeFoundIn",entree.getKey().toString(),realFilename2));
 								   }
 								   else
 								   {
-									   if(log.isDebug()) log.logDebug(toString(),Messages.getString("JobFoldersCompare.Log.FileIsFoundIn",entree.getKey().toString(),realFilename2));
+									   if(log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.FileIsFoundIn",entree.getKey().toString(),realFilename2));
 									   
 									   filefolder1= KettleVFS.getFileObject(entree.getValue().toString());
 									   filefolder2= KettleVFS.getFileObject(collection2.get(entree.getKey()).toString());
@@ -398,21 +392,21 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 										   // The file1 exist in the folder2..but they don't have the same type
 										   ok=false;
 										   if(log.isDetailed())
-											   log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.FilesNotSameType", filefolder1.toString(),filefolder2.toString()));
+											   log.logDetailed(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.FilesNotSameType", filefolder1.toString(),filefolder2.toString()));
 									
 										   if(filefolder1.getType()==FileType.FILE)
-												log.logError(toString(),Messages.getString("JobFoldersCompare.Log.IsAFile",filefolder1.toString()));
+												log.logError(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.IsAFile",filefolder1.toString()));
 											else if(filefolder1.getType()==FileType.FOLDER)
-												log.logError(toString(),Messages.getString("JobFoldersCompare.Log.IsAFolder",filefolder1.toString()));
+												log.logError(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.IsAFolder",filefolder1.toString()));
 											else 
-												log.logError(toString(),Messages.getString("JobFoldersCompare.Log.IsUnknownFileType",filefolder1.toString()));
+												log.logError(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.IsUnknownFileType",filefolder1.toString()));
 										   
 										   if(filefolder2.getType()==FileType.FILE)
-												log.logError(toString(),Messages.getString("JobFoldersCompare.Log.IsAFile",filefolder2.toString()));
+												log.logError(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.IsAFile",filefolder2.toString()));
 											else if(filefolder2.getType()==FileType.FOLDER)
-												log.logError(toString(),Messages.getString("JobFoldersCompare.Log.IsAFolder",filefolder2.toString()));
+												log.logError(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.IsAFolder",filefolder2.toString()));
 											else 
-												log.logError(toString(),Messages.getString("JobFoldersCompare.Log.IsUnknownFileType",filefolder2.toString()));
+												log.logError(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.IsUnknownFileType",filefolder2.toString()));
 											
 										   
 									   }
@@ -431,9 +425,9 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 													   ok=false;
 													   if(log.isDetailed())
 													   {
-														   log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.FilesNotSameSize",filefolder1.toString(),filefolder2.toString()));
-														   log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.SizeFileIs",filefolder1.toString(),""+filefolder1_size));
-														   log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.SizeFileIs",filefolder2.toString(),""+filefolder2_size));
+														   log.logDetailed(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.FilesNotSameSize",filefolder1.toString(),filefolder2.toString()));
+														   log.logDetailed(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.SizeFileIs",filefolder1.toString(),""+filefolder1_size));
+														   log.logDetailed(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.SizeFileIs",filefolder2.toString(),""+filefolder2_size));
 													   }
 													 }
 											   }
@@ -447,7 +441,7 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 														{
 														   ok=false;
 														   if(log.isDetailed())
-															   log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.FilesNotSameContent",filefolder1.toString(),filefolder2.toString()));
+															   log.logDetailed(toString(),BaseMessages.getString(PKG, "JobFoldersCompare.Log.FilesNotSameContent",filefolder1.toString(),filefolder2.toString()));
 														}
 												   }
 											   }
@@ -465,7 +459,7 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 							{
 								// The 2 folders don't have the same files number
 								if(log.isDetailed())
-									log.logDetailed(toString(), Messages.getString("JobFoldersCompare.Log.FoldersDifferentFiles",realFilename1.toString(),realFilename2.toString()));
+									log.logDetailed(toString(), BaseMessages.getString(PKG, "JobFoldersCompare.Log.FoldersDifferentFiles",realFilename1.toString(),realFilename2.toString()));
 							}
 							
 						}
@@ -481,23 +475,23 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 				else
 				{
 					if ( ! folder1.exists() )
-						log.logError(toString(), Messages.getString("JobFileCompare.Log.FileNotExist",realFilename1));
+						log.logError(toString(), BaseMessages.getString(PKG, "JobFileCompare.Log.FileNotExist",realFilename1));
 					if ( ! folder2.exists() )
-						log.logError(toString(), Messages.getString("JobFileCompare.Log.FileNotExist",realFilename2));
+						log.logError(toString(), BaseMessages.getString(PKG, "JobFileCompare.Log.FileNotExist",realFilename2));
 					result.setResult( false );
 					result.setNrErrors(1);
 				}
 			}
 			else
 			{
-				log.logError(toString(), Messages.getString("JobFoldersCompare.Log.Need2Files"));
+				log.logError(toString(), BaseMessages.getString(PKG, "JobFoldersCompare.Log.Need2Files"));
 			}
 		}
 		catch ( Exception e )
 		{
 			result.setResult( false );
 			result.setNrErrors(1);
-			log.logError(toString(), Messages.getString("JobFoldersCompare.Log.ErrorComparing",realFilename2, realFilename2,e.getMessage()));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobFoldersCompare.Log.ErrorComparing",realFilename2, realFilename2,e.getMessage()));
 		}	
 		finally
 		{

@@ -21,7 +21,6 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileDoesNotExistValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
@@ -29,14 +28,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.w3c.dom.Node;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileUtil;
-import org.pentaho.di.core.ResultFile;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -44,13 +42,14 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.w3c.dom.Node;
 
 
 
@@ -65,6 +64,7 @@ import org.pentaho.di.repository.Repository;
  */
 public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+    private static Class<?> PKG = JobEntryCopyMoveResultFilenames.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	private String foldername;
 	private boolean specifywildcard;
 	private String wildcard;
@@ -119,21 +119,12 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		action="copy";
 		success_condition=SUCCESS_IF_NO_ERRORS;
 		setID(-1L);
-		setJobEntryType(JobEntryType.COPY_MOVE_RESULT_FILENAMES);
-		
-		
 	}
 
 
 	public JobEntryCopyMoveResultFilenames()
 	{
 		this("");
-	}
-
-
-	public JobEntryCopyMoveResultFilenames(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -201,7 +192,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryCopyMoveResultFilenames.CanNotLoadFromXML", xe.getMessage()));
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.CanNotLoadFromXML", xe.getMessage()));
 		}
 	}
 
@@ -235,7 +226,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryCopyMoveResultFilenames.CanNotLoadFromRep",""+id_jobentry, dbe.getMessage()));
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.CanNotLoadFromRep",""+id_jobentry, dbe.getMessage()));
 		}
 	}
 	
@@ -270,7 +261,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryCopyMoveResultFilenames.CanNotSaveToRep",""+id_job, dbe.getMessage()));
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.CanNotSaveToRep",""+id_job, dbe.getMessage()));
 		}
 	}
 	
@@ -469,7 +460,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			try
 			{
 				int size=result.getResultFiles().size();
-				if(log.isBasic()) log.logBasic(toString(),Messages.getString("JobEntryCopyMoveResultFilenames.log.FilesFound",""+size));
+				if(log.isBasic()) log.logBasic(toString(),BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.log.FilesFound",""+size));
 
 				List <ResultFile> resultFiles = result.getResultFilesList();
 			    if (resultFiles != null && resultFiles.size() > 0)
@@ -478,8 +469,8 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			        {
 			      		if(successConditionBroken)
 						{
-							log.logError(toString(), Messages.getString("JobEntryCopyMoveResultFilenames.Error.SuccessConditionbroken",""+NrErrors));
-							throw new Exception(Messages.getString("JobEntryCopyMoveResultFilenames.Error.SuccessConditionbroken",""+NrErrors));	
+							log.logError(toString(), BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Error.SuccessConditionbroken",""+NrErrors));
+							throw new Exception(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Error.SuccessConditionbroken",""+NrErrors));	
 						}
 			      		
 			       	  ResultFile resultFile = (ResultFile) it.next();
@@ -501,7 +492,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			           	 
 			           }else
 			           {
-			        	   log.logError(toString(),Messages.getString("JobEntryCopyMoveResultFilenames.log.ErrorCanNotFindFile",file.toString()));  
+			        	   log.logError(toString(),BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.log.ErrorCanNotFindFile",file.toString()));  
 						   // Update Errors
 						   updateErrors();
 			           }
@@ -510,7 +501,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			}
 			catch(Exception e)
 			{
-				log.logError(toString(), Messages.getString("JobEntryCopyMoveResultFilenames.Error",e.toString()));
+				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Error",e.toString()));
 			}	
 			finally 
 			{
@@ -571,21 +562,21 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			
     		if(!folder.exists())	
     		{
-    			log.logError(toString(), Messages.getString("JobEntryCopyMoveResultFilenames.Log.FolderNotExists", foldername));
+    			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Log.FolderNotExists", foldername));
     			if(isCreateDestinationFolder())
     				folder.createFolder();
     			else
     				return false;
-    			if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobEntryCopyMoveResultFilenames.Log.FolderCreated",foldername));
+    			if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Log.FolderCreated",foldername));
     		}else
     		{
     			if(log.isDetailed())
-    				log.logDetailed(toString(), Messages.getString("JobEntryCopyMoveResultFilenames.Log.FolderExists",foldername));	
+    				log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Log.FolderExists",foldername));	
     		}
     		return true;
 		}
 		catch (Exception e) {
-			log.logError(toString(), Messages.getString("JobEntryCopyMoveResultFilenames.Log.CanNotCreatedFolder", foldername,e.toString()));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Log.CanNotCreatedFolder", foldername,e.toString()));
 			
 		}
 		 finally {
@@ -615,7 +606,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			if(filexists)
 			{
 				if(log.isDetailed())
-					log.logDetailed(toString(),Messages.getString("JobEntryCopyMoveResultFilenames.Log.FileExists",destinationFilename));
+					log.logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Log.FileExists",destinationFilename));
 			}
 			if((!filexists)  || (filexists && isOverwriteFile()))
 			{
@@ -624,12 +615,12 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 					// Copy file
 					FileUtil.copyContent(sourcefile, destinationfile);
 					if(log.isDetailed()) 
-						log.logDetailed(toString(),Messages.getString("JobEntryCopyMoveResultFilenames.log.CopiedFile",sourcefile.toString(),destinationFolder));
+						log.logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.log.CopiedFile",sourcefile.toString(),destinationFolder));
 				}else{
 					// Move file
 					sourcefile.moveTo(destinationfile);	
 					if(log.isDetailed()) 
-						log.logDetailed(toString(),Messages.getString("JobEntryCopyMoveResultFilenames.log.MovedFile",sourcefile.toString(),destinationFolder));
+						log.logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.log.MovedFile",sourcefile.toString(),destinationFolder));
 				}
 				
 				if(isRemovedSourceFilename())
@@ -637,7 +628,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 					// Remove source file from result files list
 					result.getResultFiles().remove(sourcefile.toString());
 					if(log.isDetailed())
-						log.logDetailed(toString(),Messages.getString("JobEntryCopyMoveResultFilenames.RemovedFileFromResult",sourcefile.toString()));
+						log.logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.RemovedFileFromResult",sourcefile.toString()));
 				}
 				if(isAddDestinationFilename())
 				{
@@ -645,13 +636,13 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(destinationfile.toString()), parentJob.getJobname(), toString());
 					result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 					if(log.isDetailed())
-						log.logDetailed(toString(),Messages.getString("JobEntryCopyMoveResultFilenames.AddedFileToResult",destinationfile.toString()));
+						log.logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.AddedFileToResult",destinationfile.toString()));
 				}
 			}
 			retval=true;
 		}catch(Exception e)
 		{
-			log.logError(toString(), Messages.getString("JobEntryCopyMoveResultFilenames.Log.ErrorProcessing", e.toString()));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Log.ErrorProcessing", e.toString()));
 		}
 		
 		return retval;

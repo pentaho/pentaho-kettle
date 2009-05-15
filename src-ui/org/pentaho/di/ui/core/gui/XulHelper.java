@@ -25,6 +25,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.xul.Messages;
 import org.pentaho.xul.swt.menu.Menu;
 import org.pentaho.xul.swt.menu.MenuBar;
@@ -34,6 +36,8 @@ import org.w3c.dom.Document;
 
 public class XulHelper
 {
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private XulHelper()
 	{
 	}
@@ -52,7 +56,7 @@ public class XulHelper
 
 		} catch (IOException e)
 		{
-			throw new KettleException(org.pentaho.di.ui.spoon.Messages.getString("Spoon.Exception.XULFileNotFound.Message", menuFile));
+			throw new KettleException(BaseMessages.getString(PKG, "Spoon.Exception.XULFileNotFound.Message", menuFile));
 		}
 
 	}
@@ -69,12 +73,12 @@ public class XulHelper
 			resource = XulHelper.class.getResource(url);
 
 		if (resource == null)
-			throw new KettleException(org.pentaho.di.ui.spoon.Messages.getString("Spoon.Exception.XULFileNotFound.Message", url));
+			throw new KettleException(BaseMessages.getString(PKG, "Spoon.Exception.XULFileNotFound.Message", url));
 
 		URLConnection conn = resource.openConnection();
 		if (conn instanceof HttpURLConnection
 				&& ((HttpURLConnection) conn).getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND)
-			throw new KettleException(org.pentaho.di.ui.spoon.Messages.getString("Spoon.Exception.XULFileNotFound.Message", url));
+			throw new KettleException(BaseMessages.getString(PKG, "Spoon.Exception.XULFileNotFound.Message", url));
 
 		return resource;
 	}

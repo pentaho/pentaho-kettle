@@ -21,7 +21,6 @@
 package org.pentaho.di.ui.job.entries.waitforfile;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -37,20 +36,21 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
+import org.pentaho.di.job.entries.waitforfile.JobEntryWaitForFile;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.waitforfile.JobEntryWaitForFile;
-import org.pentaho.di.job.entries.waitforfile.Messages;
 
 /**
  * This dialog allows you to edit the Wait For File job entry settings.
@@ -60,8 +60,10 @@ import org.pentaho.di.job.entries.waitforfile.Messages;
  */
 public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
-   private static final String[] FILETYPES = new String[] {
-           Messages.getString("JobWaitForFile.Filetype.All") };
+	private static Class<?> PKG = JobEntryWaitForFile.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+    private static final String[] FILETYPES = new String[] {
+           BaseMessages.getString(PKG, "JobWaitForFile.Filetype.All") };
 	
 	private Label        wlName;
 	private Text         wName;
@@ -106,7 +108,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryWaitForFile) jobEntryInt;
         if (this.jobEntry.getName() == null) 
-			this.jobEntry.setName(Messages.getString("JobWaitForFile.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobWaitForFile.Name.Default"));
     }
 
 	public JobEntryInterface open()
@@ -132,14 +134,14 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobWaitForFile.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobWaitForFile.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobWaitForFile.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobWaitForFile.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -157,7 +159,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
 
 		// Filename line
 		wlFilename=new Label(shell, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("JobWaitForFile.Filename.Label"));
+		wlFilename.setText(BaseMessages.getString(PKG, "JobWaitForFile.Filename.Label"));
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -167,7 +169,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
 
 		wbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFilename);
-		wbFilename.setText(Messages.getString("System.Button.Browse"));
+		wbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(wName, 0);
@@ -215,7 +217,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
 
         // Maximum timeout
         wlMaximumTimeout = new Label(shell, SWT.RIGHT);
-        wlMaximumTimeout.setText(Messages.getString("JobWaitForFile.MaximumTimeout.Label"));
+        wlMaximumTimeout.setText(BaseMessages.getString(PKG, "JobWaitForFile.MaximumTimeout.Label"));
         props.setLook(wlMaximumTimeout);
         fdlMaximumTimeout = new FormData();
         fdlMaximumTimeout.left = new FormAttachment(0, 0);
@@ -224,7 +226,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
         wlMaximumTimeout.setLayoutData(fdlMaximumTimeout);
         wMaximumTimeout = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wMaximumTimeout);
-        wMaximumTimeout.setToolTipText(Messages.getString("JobWaitForFile.MaximumTimeout.Tooltip"));
+        wMaximumTimeout.setToolTipText(BaseMessages.getString(PKG, "JobWaitForFile.MaximumTimeout.Tooltip"));
         wMaximumTimeout.addModifyListener(lsMod);
         fdMaximumTimeout = new FormData();
         fdMaximumTimeout.left = new FormAttachment(middle, 0);
@@ -234,7 +236,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
 
         // Cycle time
         wlCheckCycleTime = new Label(shell, SWT.RIGHT);
-        wlCheckCycleTime.setText(Messages.getString("JobWaitForFile.CheckCycleTime.Label"));
+        wlCheckCycleTime.setText(BaseMessages.getString(PKG, "JobWaitForFile.CheckCycleTime.Label"));
         props.setLook(wlCheckCycleTime);
         fdlCheckCycleTime = new FormData();
         fdlCheckCycleTime.left = new FormAttachment(0, 0);
@@ -243,7 +245,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
         wlCheckCycleTime.setLayoutData(fdlCheckCycleTime);
         wCheckCycleTime = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wCheckCycleTime);
-        wCheckCycleTime.setToolTipText(Messages.getString("JobWaitForFile.CheckCycleTime.Tooltip"));
+        wCheckCycleTime.setToolTipText(BaseMessages.getString(PKG, "JobWaitForFile.CheckCycleTime.Tooltip"));
         wCheckCycleTime.addModifyListener(lsMod);
         fdCheckCycleTime = new FormData();
         fdCheckCycleTime.left = new FormAttachment(middle, 0);
@@ -253,7 +255,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
 	        
         // Success on timeout		
         wlSuccesOnTimeout = new Label(shell, SWT.RIGHT);
-        wlSuccesOnTimeout.setText(Messages.getString("JobWaitForFile.SuccessOnTimeout.Label"));
+        wlSuccesOnTimeout.setText(BaseMessages.getString(PKG, "JobWaitForFile.SuccessOnTimeout.Label"));
         props.setLook(wlSuccesOnTimeout);
         fdlSuccesOnTimeout = new FormData();
         fdlSuccesOnTimeout.left = new FormAttachment(0, 0);
@@ -262,7 +264,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
         wlSuccesOnTimeout.setLayoutData(fdlSuccesOnTimeout);
         wSuccesOnTimeout = new Button(shell, SWT.CHECK);
         props.setLook(wSuccesOnTimeout);
-        wSuccesOnTimeout.setToolTipText(Messages.getString("JobWaitForFile.SuccessOnTimeout.Tooltip"));
+        wSuccesOnTimeout.setToolTipText(BaseMessages.getString(PKG, "JobWaitForFile.SuccessOnTimeout.Tooltip"));
         fdSuccesOnTimeout = new FormData();
         fdSuccesOnTimeout.left = new FormAttachment(middle, 0);
         fdSuccesOnTimeout.top = new FormAttachment(wCheckCycleTime, margin);
@@ -278,7 +280,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
 
         // Check file size		
         wlFileSizeCheck = new Label(shell, SWT.RIGHT);
-        wlFileSizeCheck.setText(Messages.getString("JobWaitForFile.FileSizeCheck.Label"));
+        wlFileSizeCheck.setText(BaseMessages.getString(PKG, "JobWaitForFile.FileSizeCheck.Label"));
         props.setLook(wlFileSizeCheck);
         fdlFileSizeCheck = new FormData();
         fdlFileSizeCheck.left = new FormAttachment(0, 0);
@@ -287,7 +289,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
         wlFileSizeCheck.setLayoutData(fdlFileSizeCheck);
         wFileSizeCheck = new Button(shell, SWT.CHECK);
         props.setLook(wFileSizeCheck);
-        wFileSizeCheck.setToolTipText(Messages.getString("JobWaitForFile.FileSizeCheck.Tooltip"));
+        wFileSizeCheck.setToolTipText(BaseMessages.getString(PKG, "JobWaitForFile.FileSizeCheck.Tooltip"));
         fdFileSizeCheck = new FormData();
         fdFileSizeCheck.left = new FormAttachment(middle, 0);
         fdFileSizeCheck.top = new FormAttachment(wSuccesOnTimeout, margin);
@@ -302,7 +304,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
         });        
         // Add filename to result filenames		
         wlAddFilenameResult = new Label(shell, SWT.RIGHT);
-        wlAddFilenameResult.setText(Messages.getString("JobWaitForFile.AddFilenameResult.Label"));
+        wlAddFilenameResult.setText(BaseMessages.getString(PKG, "JobWaitForFile.AddFilenameResult.Label"));
         props.setLook(wlAddFilenameResult);
         fdlAddFilenameResult = new FormData();
         fdlAddFilenameResult.left = new FormAttachment(0, 0);
@@ -311,7 +313,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
         wlAddFilenameResult.setLayoutData(fdlAddFilenameResult);
         wAddFilenameResult = new Button(shell, SWT.CHECK);
         props.setLook(wAddFilenameResult);
-        wAddFilenameResult.setToolTipText(Messages.getString("JobWaitForFile.AddFilenameResult.Tooltip"));
+        wAddFilenameResult.setToolTipText(BaseMessages.getString(PKG, "JobWaitForFile.AddFilenameResult.Tooltip"));
         fdAddFilenameResult = new FormData();
         fdAddFilenameResult.left = new FormAttachment(middle, 0);
         fdAddFilenameResult.top = new FormAttachment(wFileSizeCheck, margin);
@@ -325,9 +327,9 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
             }
         }); 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wAddFilenameResult);
 
@@ -396,8 +398,8 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
 	   if(Const.isEmpty(wName.getText())) 
          {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
          }

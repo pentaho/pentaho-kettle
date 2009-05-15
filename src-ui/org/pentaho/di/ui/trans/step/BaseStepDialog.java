@@ -51,12 +51,13 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.Messages;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.ui.core.PropsUI;
@@ -69,6 +70,8 @@ import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 
 public class BaseStepDialog extends Dialog {
+  private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   protected static VariableSpace variables = new Variables();
 
   protected LogWriter log;
@@ -444,7 +447,7 @@ public class BaseStepDialog extends Dialog {
 
     addDatabases(wConnection);
 
-    wlConnection.setText(Messages.getString("BaseStepDialog.Connection.Label")); //$NON-NLS-1$
+    wlConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.Connection.Label")); //$NON-NLS-1$
     props.setLook(wlConnection);
     fdlConnection = new FormData();
     fdlConnection.left = new FormAttachment(0, 0);
@@ -458,7 +461,7 @@ public class BaseStepDialog extends Dialog {
     // 
     // NEW button
     //
-    wbnConnection.setText(Messages.getString("BaseStepDialog.NewConnectionButton.Label")); //$NON-NLS-1$
+    wbnConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.NewConnectionButton.Label")); //$NON-NLS-1$
     wbnConnection.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         DatabaseMeta databaseMeta = new DatabaseMeta();
@@ -484,7 +487,7 @@ public class BaseStepDialog extends Dialog {
     //
     // Edit button
     //
-    wbeConnection.setText(Messages.getString("BaseStepDialog.EditConnectionButton.Label")); //$NON-NLS-1$
+    wbeConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.EditConnectionButton.Label")); //$NON-NLS-1$
     wbeConnection.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
@@ -659,7 +662,7 @@ public class BaseStepDialog extends Dialog {
     } catch (KettleException ke) {
       new ErrorDialog(
           tableView.getShell(),
-          Messages.getString("BaseStepDialog.FailedToGetFields.Title"), Messages.getString("BaseStepDialog.FailedToGetFields.Message", stepMeta.getName()), ke); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "BaseStepDialog.FailedToGetFields.Title"), BaseMessages.getString(PKG, "BaseStepDialog.FailedToGetFields.Message", stepMeta.getName()), ke); //$NON-NLS-1$ //$NON-NLS-2$
     }
   }
 
@@ -696,11 +699,11 @@ public class BaseStepDialog extends Dialog {
     if (keys.size() > 0) {
       // Ask what we should do with the existing data in the step.
       //
-      MessageDialog md = new MessageDialog(tableView.getShell(), Messages.getString("BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"  //$NON-NLS-1$
-          null, Messages.getString("BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size()), //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
-          MessageDialog.WARNING, new String[] { Messages.getString("BaseStepDialog.AddNew"), //$NON-NLS-1$
-              Messages.getString("BaseStepDialog.Add"), Messages.getString("BaseStepDialog.ClearAndAdd"), //$NON-NLS-1$  //$NON-NLS-2$
-              Messages.getString("BaseStepDialog.Cancel"), }, 0); //$NON-NLS-1$
+      MessageDialog md = new MessageDialog(tableView.getShell(), BaseMessages.getString(PKG, "BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"  //$NON-NLS-1$
+          null, BaseMessages.getString(PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size()), //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
+          MessageDialog.WARNING, new String[] { BaseMessages.getString(PKG, "BaseStepDialog.AddNew"), //$NON-NLS-1$
+              BaseMessages.getString(PKG, "BaseStepDialog.Add"), BaseMessages.getString(PKG, "BaseStepDialog.ClearAndAdd"), //$NON-NLS-1$  //$NON-NLS-2$
+              BaseMessages.getString(PKG, "BaseStepDialog.Cancel"), }, 0); //$NON-NLS-1$
       MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
       int idx = md.open();
       choice = idx & 0xFF;
@@ -780,8 +783,8 @@ public class BaseStepDialog extends Dialog {
 			 // Select value if possible...
 			 if(indexField>-1) comboVar.select(indexField); else { if(selectedField!=null) comboVar.setText(selectedField);};
 		 }catch(KettleException ke){
-				new ErrorDialog(comboVar.getShell(),Messages.getString("BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle"),
-						Messages.getString("BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage"),ke);
+				new ErrorDialog(comboVar.getShell(),BaseMessages.getString(PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle"),
+						BaseMessages.getString(PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage"),ke);
 			}
 	 }
   

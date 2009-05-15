@@ -29,6 +29,7 @@ import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Node;
 
 
@@ -47,6 +48,8 @@ import org.w3c.dom.Node;
  */
 public class Row implements XMLInterface, Comparable<Row>, Serializable
 {
+	private static Class<?> PKG = Row.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final String XML_TAG = "row"; //$NON-NLS-1$
     
     private final List<Value> list = new ArrayList<Value>();
@@ -465,7 +468,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 		}
 		catch(Exception e)
 		{
-			throw new KettleFileException(Messages.getString("Row.ErrorWritingRow"), e); //$NON-NLS-1$
+			throw new KettleFileException(BaseMessages.getString(PKG, "Row.ErrorWritingRow"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -496,11 +499,11 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 		}
 		catch(EOFException e)
 		{
-			throw new KettleEOFException(Messages.getString("Row.EndOfFileReached"), e); //$NON-NLS-1$
+			throw new KettleEOFException(BaseMessages.getString(PKG, "Row.EndOfFileReached"), e); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleFileException(Messages.getString("Row.ErrorReadingRowData"), e); //$NON-NLS-1$
+			throw new KettleFileException(BaseMessages.getString(PKG, "Row.ErrorReadingRowData"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -536,11 +539,11 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 		}
 		catch(KettleEOFException e)
         {
-            throw new KettleEOFException(Messages.getString("Row.EndOfFileReadingRow"), e); //$NON-NLS-1$
+            throw new KettleEOFException(BaseMessages.getString(PKG, "Row.EndOfFileReadingRow"), e); //$NON-NLS-1$
         }
 		catch(Exception e)
 		{
-			throw new KettleFileException(Messages.getString("Row.RowError"),e); //$NON-NLS-1$
+			throw new KettleFileException(BaseMessages.getString(PKG, "Row.RowError"),e); //$NON-NLS-1$
 		}
 	}
 
@@ -951,7 +954,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
         }
         catch(Exception e)
         {
-            throw new RuntimeException(Messages.getString("Row.ErrorSerializing")+row, e); //$NON-NLS-1$
+            throw new RuntimeException(BaseMessages.getString(PKG, "Row.ErrorSerializing")+row, e); //$NON-NLS-1$
         }
     }
     
@@ -965,7 +968,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
         }
         catch(Exception e)
         {
-            throw new RuntimeException(Messages.getString("Row.ErrorDeserializing"), e); //$NON-NLS-1$
+            throw new RuntimeException(BaseMessages.getString(PKG, "Row.ErrorDeserializing"), e); //$NON-NLS-1$
         }
     }
 

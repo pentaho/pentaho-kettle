@@ -45,7 +45,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class CsvInput extends BaseStep implements StepInterface
 {
-	private static String PKG = "org.pentaho.di.trans.steps.csvinput"; // for i18n purposes, needed by Translator2   $NON-NLS-1$
+	private static Class<?> PKG = CsvInput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private CsvInputMeta meta;
 	private CsvInputData data;

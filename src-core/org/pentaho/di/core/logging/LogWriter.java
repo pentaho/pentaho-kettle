@@ -31,6 +31,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 
 
 
@@ -44,6 +45,8 @@ import org.pentaho.di.core.vfs.KettleVFS;
  */
 public class LogWriter 
 {
+	private static Class<?> PKG = LogWriter.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static LogWriter logWriter;
 	
 	public static final int LOG_LEVEL_NOTHING    =  0;
@@ -67,13 +70,13 @@ public class LogWriter
 
 	public static final String log_level_desc_long[] = 
 		{
-            Messages.getString("LogWriter.Level.Nothing.LongDesc"),
-            Messages.getString("LogWriter.Level.Error.LongDesc"),
-            Messages.getString("LogWriter.Level.Minimal.LongDesc"),
-            Messages.getString("LogWriter.Level.Basic.LongDesc"),
-            Messages.getString("LogWriter.Level.Detailed.LongDesc"),
-            Messages.getString("LogWriter.Level.Debug.LongDesc"),
-            Messages.getString("LogWriter.Level.Rowlevel.LongDesc"),
+            BaseMessages.getString(PKG, "LogWriter.Level.Nothing.LongDesc"),
+            BaseMessages.getString(PKG, "LogWriter.Level.Error.LongDesc"),
+            BaseMessages.getString(PKG, "LogWriter.Level.Minimal.LongDesc"),
+            BaseMessages.getString(PKG, "LogWriter.Level.Basic.LongDesc"),
+            BaseMessages.getString(PKG, "LogWriter.Level.Detailed.LongDesc"),
+            BaseMessages.getString(PKG, "LogWriter.Level.Debug.LongDesc"),
+            BaseMessages.getString(PKG, "LogWriter.Level.Rowlevel.LongDesc"),
 		};
 	
 	public static final String STRING_PENTAHO_DI_LOGGER_NAME = "org.pentaho.di";

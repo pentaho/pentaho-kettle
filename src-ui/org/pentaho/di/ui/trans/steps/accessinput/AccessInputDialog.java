@@ -58,6 +58,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
@@ -65,7 +66,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.accessinput.AccessInputField;
 import org.pentaho.di.trans.steps.accessinput.AccessInputMeta;
-import org.pentaho.di.trans.steps.accessinput.Messages;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -84,6 +84,8 @@ import com.healthmarketscience.jackcess.Table;
 
 public class AccessInputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = AccessInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
@@ -201,14 +203,14 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("AccessInputDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "AccessInputDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -232,7 +234,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		// START OF FILE TAB   ///
 		//////////////////////////
 		wFileTab=new CTabItem(wTabFolder, SWT.NONE);
-		wFileTab.setText(Messages.getString("AccessInputDialog.File.Tab"));
+		wFileTab.setText(BaseMessages.getString(PKG, "AccessInputDialog.File.Tab"));
 		
 		wFileComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wFileComp);
@@ -249,7 +251,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
 		wOriginFiles = new Group(wFileComp, SWT.SHADOW_NONE);
 		props.setLook(wOriginFiles);
-		wOriginFiles.setText(Messages.getString("AccessInputDialog.wOriginFiles.Label"));
+		wOriginFiles.setText(BaseMessages.getString(PKG, "AccessInputDialog.wOriginFiles.Label"));
 		
 		FormLayout OriginFilesgroupLayout = new FormLayout();
 		OriginFilesgroupLayout.marginWidth = 10;
@@ -258,7 +260,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		
 		//Is Filename defined in a Field		
 		wlFileField = new Label(wOriginFiles, SWT.RIGHT);
-		wlFileField.setText(Messages.getString("AccessInputDialog.FileField.Label"));
+		wlFileField.setText(BaseMessages.getString(PKG, "AccessInputDialog.FileField.Label"));
 		props.setLook(wlFileField);
 		fdlFileField = new FormData();
 		fdlFileField.left = new FormAttachment(0, -margin);
@@ -269,7 +271,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		
 		wFileField = new Button(wOriginFiles, SWT.CHECK);
 		props.setLook(wFileField);
-		wFileField.setToolTipText(Messages.getString("AccessInputDialog.FileField.Tooltip"));
+		wFileField.setToolTipText(BaseMessages.getString(PKG, "AccessInputDialog.FileField.Tooltip"));
 		fdFileField = new FormData();
 		fdFileField.left = new FormAttachment(middle, -margin);
 		fdFileField.top = new FormAttachment(0, margin);
@@ -286,7 +288,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         
 		// Filename field
 		wlFilenameField=new Label(wOriginFiles, SWT.RIGHT);
-        wlFilenameField.setText(Messages.getString("AccessInputDialog.wlFilenameField.Label"));
+        wlFilenameField.setText(BaseMessages.getString(PKG, "AccessInputDialog.wlFilenameField.Label"));
         props.setLook(wlFilenameField);
         fdlFilenameField=new FormData();
         fdlFilenameField.left = new FormAttachment(0, -margin);
@@ -336,7 +338,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
 		// Filename line
 		wlFilename=new Label(wFileComp, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("AccessInputDialog.Filename.Label"));
+		wlFilename.setText(BaseMessages.getString(PKG, "AccessInputDialog.Filename.Label"));
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -346,8 +348,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
 		wbbFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbbFilename);
-		wbbFilename.setText(Messages.getString("AccessInputDialog.FilenameBrowse.Button"));
-		wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+		wbbFilename.setText(BaseMessages.getString(PKG, "AccessInputDialog.FilenameBrowse.Button"));
+		wbbFilename.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(wOriginFiles, margin);
@@ -355,8 +357,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
 		wbaFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbaFilename);
-		wbaFilename.setText(Messages.getString("AccessInputDialog.FilenameAdd.Button"));
-		wbaFilename.setToolTipText(Messages.getString("AccessInputDialog.FilenameAdd.Tooltip"));
+		wbaFilename.setText(BaseMessages.getString(PKG, "AccessInputDialog.FilenameAdd.Button"));
+		wbaFilename.setToolTipText(BaseMessages.getString(PKG, "AccessInputDialog.FilenameAdd.Tooltip"));
 		fdbaFilename=new FormData();
 		fdbaFilename.right= new FormAttachment(wbbFilename, -margin);
 		fdbaFilename.top  = new FormAttachment(wOriginFiles, margin);
@@ -374,7 +376,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wFilename.setLayoutData(fdFilename);
 
 		wlFilemask=new Label(wFileComp, SWT.RIGHT);
-		wlFilemask.setText(Messages.getString("AccessInputDialog.RegExp.Label"));
+		wlFilemask.setText(BaseMessages.getString(PKG, "AccessInputDialog.RegExp.Label"));
  		props.setLook(wlFilemask);
 		fdlFilemask=new FormData();
 		fdlFilemask.left = new FormAttachment(0, 0);
@@ -392,7 +394,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
 		// Filename list line
 		wlFilenameList=new Label(wFileComp, SWT.RIGHT);
-		wlFilenameList.setText(Messages.getString("AccessInputDialog.FilenameList.Label"));
+		wlFilenameList.setText(BaseMessages.getString(PKG, "AccessInputDialog.FilenameList.Label"));
  		props.setLook(wlFilenameList);
 		fdlFilenameList=new FormData();
 		fdlFilenameList.left = new FormAttachment(0, 0);
@@ -403,8 +405,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		// Buttons to the right of the screen...
 		wbdFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbdFilename);
-		wbdFilename.setText(Messages.getString("AccessInputDialog.FilenameRemove.Button"));
-		wbdFilename.setToolTipText(Messages.getString("AccessInputDialog.FilenameRemove.Tooltip"));
+		wbdFilename.setText(BaseMessages.getString(PKG, "AccessInputDialog.FilenameRemove.Button"));
+		wbdFilename.setToolTipText(BaseMessages.getString(PKG, "AccessInputDialog.FilenameRemove.Tooltip"));
 		fdbdFilename=new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
 		fdbdFilename.top  = new FormAttachment (wFilemask, 40);
@@ -412,8 +414,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
 		wbeFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbeFilename);
-		wbeFilename.setText(Messages.getString("AccessInputDialog.FilenameEdit.Button"));
-		wbeFilename.setToolTipText(Messages.getString("AccessInputDialog.FilenameEdit.Tooltip"));
+		wbeFilename.setText(BaseMessages.getString(PKG, "AccessInputDialog.FilenameEdit.Button"));
+		wbeFilename.setToolTipText(BaseMessages.getString(PKG, "AccessInputDialog.FilenameEdit.Tooltip"));
 		fdbeFilename=new FormData();
 		fdbeFilename.right = new FormAttachment(100, 0);
 		fdbeFilename.top  = new FormAttachment (wbdFilename, margin);
@@ -422,7 +424,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
 		wbShowFiles=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbShowFiles);
-		wbShowFiles.setText(Messages.getString("AccessInputDialog.ShowFiles.Button"));
+		wbShowFiles.setText(BaseMessages.getString(PKG, "AccessInputDialog.ShowFiles.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left   = new FormAttachment(middle, 0);
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
@@ -430,17 +432,17 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
 		ColumnInfo[] colinfo=new ColumnInfo[2];
 		colinfo[ 0]=new ColumnInfo(
-          Messages.getString("AccessInputDialog.Files.Filename.Column"),
+          BaseMessages.getString(PKG, "AccessInputDialog.Files.Filename.Column"),
           ColumnInfo.COLUMN_TYPE_TEXT,
           false);
 		colinfo[ 1]=new ColumnInfo(
-          Messages.getString("AccessInputDialog.Files.Wildcard.Column"),
+          BaseMessages.getString(PKG, "AccessInputDialog.Files.Wildcard.Column"),
           ColumnInfo.COLUMN_TYPE_TEXT,
           false);
 		
 		colinfo[0].setUsingVariables(true);
 		colinfo[1].setUsingVariables(true);
-		colinfo[1].setToolTip(Messages.getString("AccessInputDialog.Files.Wildcard.Tooltip"));
+		colinfo[1].setToolTip(BaseMessages.getString(PKG, "AccessInputDialog.Files.Wildcard.Tooltip"));
 				
 		wFilenameList = new TableView(transMeta,wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
@@ -476,7 +478,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		// START OF CONTENT TAB///
 		///
 		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-		wContentTab.setText(Messages.getString("AccessInputDialog.Content.Tab"));
+		wContentTab.setText(BaseMessages.getString(PKG, "AccessInputDialog.Content.Tab"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;
@@ -488,8 +490,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		
 		wbbTablename=new Button(wContentComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbbTablename);
- 		wbbTablename.setText(Messages.getString("AccessInputDialog.TableBrowse.Button"));
- 		wbbTablename.setToolTipText(Messages.getString("AccessInputDialog.TableBrowse.Tooltip"));
+ 		wbbTablename.setText(BaseMessages.getString(PKG, "AccessInputDialog.TableBrowse.Button"));
+ 		wbbTablename.setToolTipText(BaseMessages.getString(PKG, "AccessInputDialog.TableBrowse.Tooltip"));
 		fdbTablename=new FormData();
 		fdbTablename.right= new FormAttachment(100, 0);
 		fdbTablename.top  = new FormAttachment(0, 0);
@@ -498,7 +500,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wbbTablename.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getTableName(); } } );
 		
 		wlTable=new Label(wContentComp, SWT.RIGHT);
-        wlTable.setText(Messages.getString("AccessInputDialog.Table.Label"));
+        wlTable.setText(BaseMessages.getString(PKG, "AccessInputDialog.Table.Label"));
         props.setLook(wlTable);
         fdlTable=new FormData();
         fdlTable.left = new FormAttachment(0, 0);
@@ -506,7 +508,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         fdlTable.right= new FormAttachment(middle, -margin);
         wlTable.setLayoutData(fdlTable);
         wTable=new TextVar(transMeta,wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wTable.setToolTipText(Messages.getString("AccessInputDialog.Table.Tooltip"));
+        wTable.setToolTipText(BaseMessages.getString(PKG, "AccessInputDialog.Table.Tooltip"));
         props.setLook(wTable);
         wTable.addModifyListener(lsMod);
         fdTable=new FormData();
@@ -521,7 +523,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
 		wAdditionalGroup = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wAdditionalGroup);
-		wAdditionalGroup.setText(Messages.getString("AccessInputDialog.Group.AdditionalGroup.Label"));
+		wAdditionalGroup.setText(BaseMessages.getString(PKG, "AccessInputDialog.Group.AdditionalGroup.Label"));
 		
 		FormLayout additionalgroupLayout = new FormLayout();
 		additionalgroupLayout.marginWidth = 10;
@@ -529,7 +531,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wAdditionalGroup.setLayout(additionalgroupLayout);
 
 		wlInclFilename=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlInclFilename.setText(Messages.getString("AccessInputDialog.InclFilename.Label"));
+		wlInclFilename.setText(BaseMessages.getString(PKG, "AccessInputDialog.InclFilename.Label"));
  		props.setLook(wlInclFilename);
 		fdlInclFilename=new FormData();
 		fdlInclFilename.left = new FormAttachment(0, 0);
@@ -538,14 +540,14 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wlInclFilename.setLayoutData(fdlInclFilename);
 		wInclFilename=new Button(wAdditionalGroup, SWT.CHECK );
  		props.setLook(wInclFilename);
-		wInclFilename.setToolTipText(Messages.getString("AccessInputDialog.InclFilename.Tooltip"));
+		wInclFilename.setToolTipText(BaseMessages.getString(PKG, "AccessInputDialog.InclFilename.Tooltip"));
 		fdInclFilename=new FormData();
 		fdInclFilename.left = new FormAttachment(middle, 0);
 		fdInclFilename.top  = new FormAttachment(wTable, 2*margin);
 		wInclFilename.setLayoutData(fdInclFilename);
 
 		wlInclFilenameField=new Label(wAdditionalGroup, SWT.LEFT);
-		wlInclFilenameField.setText(Messages.getString("AccessInputDialog.InclFilenameField.Label"));
+		wlInclFilenameField.setText(BaseMessages.getString(PKG, "AccessInputDialog.InclFilenameField.Label"));
  		props.setLook(wlInclFilenameField);
 		fdlInclFilenameField=new FormData();
 		fdlInclFilenameField.left = new FormAttachment(wInclFilename, margin);
@@ -561,7 +563,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wInclFilenameField.setLayoutData(fdInclFilenameField);
 
 		wlInclTablename=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlInclTablename.setText(Messages.getString("AccessInputDialog.InclTablename.Label"));
+		wlInclTablename.setText(BaseMessages.getString(PKG, "AccessInputDialog.InclTablename.Label"));
  		props.setLook(wlInclTablename);
 		fdlInclTablename=new FormData();
 		fdlInclTablename.left = new FormAttachment(0, 0);
@@ -570,7 +572,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wlInclTablename.setLayoutData(fdlInclTablename);
 		wInclTablename=new Button(wAdditionalGroup, SWT.CHECK );
  		props.setLook(wInclTablename);
-		wInclTablename.setToolTipText(Messages.getString("AccessInputDialog.InclTablename.Tooltip"));
+		wInclTablename.setToolTipText(BaseMessages.getString(PKG, "AccessInputDialog.InclTablename.Tooltip"));
 		fdInclTablename=new FormData();
 		fdInclTablename.left = new FormAttachment(middle, 0);
 		fdInclTablename.top  = new FormAttachment(wInclFilenameField, margin);
@@ -578,7 +580,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		
 		
 		wlInclTablenameField=new Label(wAdditionalGroup, SWT.LEFT);
-		wlInclTablenameField.setText(Messages.getString("AccessInputDialog.InclTablenameField.Label"));
+		wlInclTablenameField.setText(BaseMessages.getString(PKG, "AccessInputDialog.InclTablenameField.Label"));
  		props.setLook(wlInclTablenameField);
 		fdlInclTablenameField=new FormData();
 		fdlInclTablenameField.left = new FormAttachment(wInclFilename, margin);
@@ -595,7 +597,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
 	
 		wlInclRownum=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlInclRownum.setText(Messages.getString("AccessInputDialog.InclRownum.Label"));
+		wlInclRownum.setText(BaseMessages.getString(PKG, "AccessInputDialog.InclRownum.Label"));
  		props.setLook(wlInclRownum);
 		fdlInclRownum=new FormData();
 		fdlInclRownum.left = new FormAttachment(0, 0);
@@ -604,14 +606,14 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wlInclRownum.setLayoutData(fdlInclRownum);
 		wInclRownum=new Button(wAdditionalGroup, SWT.CHECK );
  		props.setLook(wInclRownum);
-		wInclRownum.setToolTipText(Messages.getString("AccessInputDialog.InclRownum.Tooltip"));
+		wInclRownum.setToolTipText(BaseMessages.getString(PKG, "AccessInputDialog.InclRownum.Tooltip"));
 		fdRownum=new FormData();
 		fdRownum.left = new FormAttachment(middle, 0);
 		fdRownum.top  = new FormAttachment(wInclTablenameField, margin);
 		wInclRownum.setLayoutData(fdRownum);
 
 		wlInclRownumField=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlInclRownumField.setText(Messages.getString("AccessInputDialog.InclRownumField.Label"));
+		wlInclRownumField.setText(BaseMessages.getString(PKG, "AccessInputDialog.InclRownumField.Label"));
  		props.setLook(wlInclRownumField);
 		fdlInclRownumField=new FormData();
 		fdlInclRownumField.left = new FormAttachment(wInclRownum, margin);
@@ -628,7 +630,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		
 		
 		wlResetRownum=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlResetRownum.setText(Messages.getString("AccessInputDialog.ResetRownum.Label"));
+		wlResetRownum.setText(BaseMessages.getString(PKG, "AccessInputDialog.ResetRownum.Label"));
  		props.setLook(wlResetRownum);
 		fdlResetRownum=new FormData();
 		fdlResetRownum.left = new FormAttachment(wInclRownum, margin);
@@ -636,7 +638,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wlResetRownum.setLayoutData(fdlResetRownum);
 		wResetRownum=new Button(wAdditionalGroup, SWT.CHECK );
  		props.setLook(wResetRownum);
-		wResetRownum.setToolTipText(Messages.getString("AccessInputDialog.ResetRownum.Tooltip"));
+		wResetRownum.setToolTipText(BaseMessages.getString(PKG, "AccessInputDialog.ResetRownum.Tooltip"));
 		fdRownum=new FormData();
 		fdRownum.left = new FormAttachment(wlResetRownum, margin);
 		fdRownum.top  = new FormAttachment(wInclRownumField, margin);	
@@ -655,7 +657,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		
 		
 		wlLimit=new Label(wContentComp, SWT.RIGHT);
-		wlLimit.setText(Messages.getString("AccessInputDialog.Limit.Label"));
+		wlLimit.setText(BaseMessages.getString(PKG, "AccessInputDialog.Limit.Label"));
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -677,7 +679,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
 		wAddFileResult = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wAddFileResult);
-		wAddFileResult.setText(Messages.getString("AccessInputDialog.wAddFileResult.Label"));
+		wAddFileResult.setText(BaseMessages.getString(PKG, "AccessInputDialog.wAddFileResult.Label"));
 		
 		FormLayout AddFileResultgroupLayout = new FormLayout();
 		AddFileResultgroupLayout.marginWidth = 10;
@@ -685,7 +687,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wAddFileResult.setLayout(AddFileResultgroupLayout);
 
 		wlAddResult=new Label(wAddFileResult, SWT.RIGHT);
-		wlAddResult.setText(Messages.getString("AccessInputDialog.AddResult.Label"));
+		wlAddResult.setText(BaseMessages.getString(PKG, "AccessInputDialog.AddResult.Label"));
  		props.setLook(wlAddResult);
 		fdlAddResult=new FormData();
 		fdlAddResult.left = new FormAttachment(0, 0);
@@ -694,7 +696,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wlAddResult.setLayoutData(fdlAddResult);
 		wAddResult=new Button(wAddFileResult, SWT.CHECK );
  		props.setLook(wAddResult);
-		wAddResult.setToolTipText(Messages.getString("AccessInputDialog.AddResult.Tooltip"));
+		wAddResult.setToolTipText(BaseMessages.getString(PKG, "AccessInputDialog.AddResult.Tooltip"));
 		fdAddResult=new FormData();
 		fdAddResult.left = new FormAttachment(middle, 0);
 		fdAddResult.top  = new FormAttachment(wLimit, margin);
@@ -729,7 +731,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		// Fields tab...
 		//
 		wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
-		wFieldsTab.setText(Messages.getString("AccessInputDialog.Fields.Tab"));
+		wFieldsTab.setText(BaseMessages.getString(PKG, "AccessInputDialog.Fields.Tab"));
 		
 		FormLayout fieldsLayout = new FormLayout ();
 		fieldsLayout.marginWidth  = Const.FORM_MARGIN;
@@ -740,7 +742,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
  		props.setLook(wFieldsComp);
 		
  		wGet=new Button(wFieldsComp, SWT.PUSH);
-		wGet.setText(Messages.getString("AccessInputDialog.GetFields.Button"));
+		wGet.setText(BaseMessages.getString(PKG, "AccessInputDialog.GetFields.Button"));
 		fdGet=new FormData();
 		fdGet.left=new FormAttachment(50, 0);
 		fdGet.bottom =new FormAttachment(100, 0);
@@ -750,47 +752,47 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		
 		ColumnInfo[] colinf=new ColumnInfo[]
             {
-			 new ColumnInfo(Messages.getString("AccessInputDialog.FieldsTable.Name.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
-         new ColumnInfo(Messages.getString("AccessInputDialog.FieldsTable.Attribut.Column"),ColumnInfo.COLUMN_TYPE_TEXT,false),
-		 new ColumnInfo(Messages.getString("AccessInputDialog.FieldsTable.Type.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,ValueMeta.getTypes(),true ),
-		 new ColumnInfo(Messages.getString("AccessInputDialog.FieldsTable.Format.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO,Const.getConversionFormats()),
+			 new ColumnInfo(BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Name.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
+         new ColumnInfo(BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Attribut.Column"),ColumnInfo.COLUMN_TYPE_TEXT,false),
+		 new ColumnInfo(BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Type.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,ValueMeta.getTypes(),true ),
+		 new ColumnInfo(BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Format.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO,Const.getConversionFormats()),
          new ColumnInfo(
-         Messages.getString("AccessInputDialog.FieldsTable.Length.Column"),
+         BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Length.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("AccessInputDialog.FieldsTable.Precision.Column"),
+         BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Precision.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("AccessInputDialog.FieldsTable.Currency.Column"),
+         BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Currency.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("AccessInputDialog.FieldsTable.Decimal.Column"),
+         BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Decimal.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("AccessInputDialog.FieldsTable.Group.Column"),
+         BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Group.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("AccessInputDialog.FieldsTable.TrimType.Column"),
+         BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.TrimType.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
          AccessInputField.trimTypeDesc,
          true ),
 			 new ColumnInfo(
-         Messages.getString("AccessInputDialog.FieldsTable.Repeat.Column"),
+         BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Repeat.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
-         new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") },
+         new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") },
          true ),
      
     };
 		
 		colinf[0].setUsingVariables(true);
-		colinf[0].setToolTip(Messages.getString("AccessInputDialog.FieldsTable.Name.Column.Tooltip"));
+		colinf[0].setToolTip(BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Name.Column.Tooltip"));
 		colinf[1].setUsingVariables(true);
-		colinf[1].setToolTip(Messages.getString("AccessInputDialog.FieldsTable.Attribut.Column.Tooltip"));
+		colinf[1].setToolTip(BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Attribut.Column.Tooltip"));
 		
 		wFields=new TableView(transMeta,wFieldsComp, 
 						      SWT.FULL_SELECTION | SWT.MULTI, 
@@ -825,13 +827,13 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wTabFolder.setLayoutData(fdTabFolder);
 		
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 
 		wPreview=new Button(shell, SWT.PUSH);
-		wPreview.setText(Messages.getString("AccessInputDialog.Button.PreviewRows"));
+		wPreview.setText(BaseMessages.getString(PKG, "AccessInputDialog.Button.PreviewRows"));
 		
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
 
@@ -914,7 +916,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     					
     					if (files.length > 0)
     			        {
-    			            EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("AccessInputDialog.FilesReadSelection.DialogTitle"), Messages.getString("AccessInputDialog.FilesReadSelection.DialogMessage"));
+    			            EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, BaseMessages.getString(PKG, "AccessInputDialog.FilesReadSelection.DialogTitle"), BaseMessages.getString(PKG, "AccessInputDialog.FilesReadSelection.DialogMessage"));
     			            esd.setViewOnly();
     			            esd.open();
     			        }
@@ -922,14 +924,14 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     					else
     					{
     			            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-    			            mb.setMessage(Messages.getString("AccessInputDialog.NoFileFound.DialogMessage"));
-    			            mb.setText(Messages.getString("System.Dialog.Error.Title"));
+    			            mb.setMessage(BaseMessages.getString(PKG, "AccessInputDialog.NoFileFound.DialogMessage"));
+    			            mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
     			            mb.open(); 
     					}
                     }
                     catch(KettleException ex)
                     {
-                        new ErrorDialog(shell, Messages.getString("AccessInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("AccessInputDialog.ErrorParsingData.DialogMessage"), ex);
+                        new ErrorDialog(shell, BaseMessages.getString(PKG, "AccessInputDialog.ErrorParsingData.DialogTitle"), BaseMessages.getString(PKG, "AccessInputDialog.ErrorParsingData.DialogMessage"), ex);
                     }
 				}
 			}
@@ -1008,7 +1010,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 							dialog.setFileName( fname );
 						}
 						
-						dialog.setFilterNames(new String[] {Messages.getString("AccessInputDialog.FileType.AccessFiles"), Messages.getString("System.FileType.AllFiles")});
+						dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "AccessInputDialog.FileType.AccessFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
 						
 						if (dialog.open()!=null)
 						{
@@ -1059,7 +1061,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 			 if(field!=null) wFilenameField.setText(field);
 			
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, Messages.getString("AccessInputDialog.FailedToGetFields.DialogTitle"), Messages.getString("AccessInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "AccessInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "AccessInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 	 }
 	private void get()
@@ -1135,7 +1137,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     		}
             catch(Exception e)
     		{
-        		 new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("AccessInputDialog.ErrorReadingFile.DialogMessage", e.toString()), e);
+        		 new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "AccessInputDialog.ErrorReadingFile.DialogMessage", e.toString()), e);
     		} 
 
             
@@ -1157,8 +1159,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     		else
     		{
     			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-    			mb.setMessage(Messages.getString("AccessInputDialog.UnableToFindFields.DialogTitle"));
-    			mb.setText(Messages.getString("AccessInputDialog.UnableToFindFields.DialogMessage"));
+    			mb.setMessage(BaseMessages.getString(PKG, "AccessInputDialog.UnableToFindFields.DialogTitle"));
+    			mb.setText(BaseMessages.getString(PKG, "AccessInputDialog.UnableToFindFields.DialogMessage"));
     			mb.open(); 
     		}
             
@@ -1247,7 +1249,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wResetRownum.setSelection(in.resetRowNumber());
 		wLimit.setText(""+in.getRowLimit());
 
-		log.logDebug(toString(), Messages.getString("AccessInputDialog.Log.GettingFieldsInfo"));
+		log.logDebug(toString(), BaseMessages.getString(PKG, "AccessInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
 		    AccessInputField field = in.getInputFields()[i];
@@ -1265,7 +1267,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     			String group    = field.getGroupSymbol();
     			String decim    = field.getDecimalSymbol();
     			String trim     = field.getTrimTypeDesc();
-    			String rep      = field.isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No");
+    			String rep      = field.isRepeated()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No");
     			
                 if (name    !=null) item.setText( 1, name);
                 if (xpath   !=null) item.setText( 2, xpath);
@@ -1309,7 +1311,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("AccessInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("AccessInputDialog.ErrorParsingData.DialogMessage"), e);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "AccessInputDialog.ErrorParsingData.DialogTitle"), BaseMessages.getString(PKG, "AccessInputDialog.ErrorParsingData.DialogMessage"), e);
         }
 		dispose();
 	}
@@ -1355,7 +1357,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 			field.setDecimalSymbol( item.getText(8) );
 			field.setGroupSymbol( item.getText(9) );
 			field.setTrimType( AccessInputField.getTrimTypeByDesc(item.getText(10)) );
-			field.setRepeated( Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(11)) );		
+			field.setRepeated( BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(11)) );		
             
 			in.getInputFields()[i] = field;
 		}	
@@ -1379,7 +1381,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         
             TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
             
-            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("AccessInputDialog.NumberRows.DialogTitle"), Messages.getString("AccessInputDialog.NumberRows.DialogMessage"));
+            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "AccessInputDialog.NumberRows.DialogTitle"), BaseMessages.getString(PKG, "AccessInputDialog.NumberRows.DialogMessage"));
             
             int previewSize = numberDialog.open();
             if (previewSize>0)
@@ -1394,8 +1396,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
                     
                     if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                     {
-                    	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
-                    			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+                    	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
+                    			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true );
                     	etd.setReadOnly();
                     	etd.open();
                     }
@@ -1410,7 +1412,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("AccessInputDialog.ErrorPreviewingData.DialogTitle"), Messages.getString("AccessInputDialog.ErrorPreviewingData.DialogMessage"), e);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "AccessInputDialog.ErrorPreviewingData.DialogTitle"), BaseMessages.getString(PKG, "AccessInputDialog.ErrorPreviewingData.DialogMessage"), e);
        }
 	}
 	// check if the table name is given
@@ -1418,8 +1420,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         if (meta.getTableName()==null || meta.getTableName().length()<1)
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage(Messages.getString("AccessInputDialog.TableMissing.DialogMessage"));
-            mb.setText(Messages.getString("System.Dialog.Error.Title"));
+            mb.setMessage(BaseMessages.getString(PKG, "AccessInputDialog.TableMissing.DialogMessage"));
+            mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
             mb.open(); 
 
             return false;
@@ -1473,14 +1475,14 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
 					String[] tablenames = (String[]) settables.toArray(new String[settables.size()]);
 
-					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, tablenames, Messages.getString("AccessInputDialog.Dialog.SelectATable.Title"), Messages.getString("AccessInputDialog.Dialog.SelectATable.Message"));
+					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, tablenames, BaseMessages.getString(PKG, "AccessInputDialog.Dialog.SelectATable.Title"), BaseMessages.getString(PKG, "AccessInputDialog.Dialog.SelectATable.Message"));
 					String tablename = dialog.open();
 					if (tablename != null) {
 						wTable.setText(tablename);
 					}
 				} else {
 					// The file not exists !
-					throw new KettleException(Messages.getString("AccessInputMeta.Exception.FileDoesNotExist", KettleVFS
+					throw new KettleException(BaseMessages.getString(PKG, "AccessInputMeta.Exception.FileDoesNotExist", KettleVFS
 							.getFilename(fileInputList.getFile(0))));
 				}				
 			}
@@ -1488,14 +1490,14 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 			{
 				// No file specified
 				 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-		            mb.setMessage(Messages.getString("AccessInputDialog.FilesMissing.DialogMessage"));
-		            mb.setText(Messages.getString("System.Dialog.Error.Title"));
+		            mb.setMessage(BaseMessages.getString(PKG, "AccessInputDialog.FilesMissing.DialogMessage"));
+		            mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
 		            mb.open(); 
 			}
 		}
 		catch(Throwable e)
 	    {
-	        new ErrorDialog(shell, Messages.getString("AccessInputDialog.UnableToGetListOfTables.Title"), Messages.getString("AccessInputDialog.UnableToGetListOfTables.Message"), e);
+	        new ErrorDialog(shell, BaseMessages.getString(PKG, "AccessInputDialog.UnableToGetListOfTables.Title"), BaseMessages.getString(PKG, "AccessInputDialog.UnableToGetListOfTables.Message"), e);
 	    }
 	    finally
 	    {

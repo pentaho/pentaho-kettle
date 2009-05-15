@@ -17,10 +17,8 @@ package org.pentaho.di.job.entries.snmptrap;
 
 import java.net.InetAddress;
 import java.util.List;
+
 import org.apache.log4j.Logger;
-import org.w3c.dom.Node;
-
-
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -30,34 +28,33 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-
-import org.snmp4j.Snmp;
 import org.snmp4j.CommunityTarget;
-import org.snmp4j.UserTarget;
-import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.TransportMapping;
-import org.snmp4j.transport.DefaultUdpTransportMapping;
+import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
 import org.snmp4j.ScopedPDU;
-import org.snmp4j.PDU;
-import org.snmp4j.security.USM;
-
-import org.snmp4j.security.UsmUser;
-import org.snmp4j.security.PrivDES;
-import org.snmp4j.security.AuthMD5;
-import org.snmp4j.smi.OctetString;
-import org.snmp4j.smi.UdpAddress;
+import org.snmp4j.Snmp;
+import org.snmp4j.TransportMapping;
+import org.snmp4j.UserTarget;
+import org.snmp4j.event.ResponseEvent;
+import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.smi.OID;
-import org.snmp4j.smi.VariableBinding;
+import org.snmp4j.security.AuthMD5;
+import org.snmp4j.security.PrivDES;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityProtocols;
-import org.snmp4j.mp.MPv3;
+import org.snmp4j.security.USM;
+import org.snmp4j.security.UsmUser;
+import org.snmp4j.smi.OID;
+import org.snmp4j.smi.OctetString;
+import org.snmp4j.smi.UdpAddress;
+import org.snmp4j.smi.VariableBinding;
+import org.snmp4j.transport.DefaultUdpTransportMapping;
+import org.w3c.dom.Node;
 
 
 
@@ -71,7 +68,9 @@ import org.snmp4j.mp.MPv3;
 
 public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntryInterface
 {
-private static Logger log4j = Logger.getLogger(JobEntrySNMPTrap.class);
+	private static Class<?> PKG = JobEntrySNMPTrap.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+	private static Logger log4j = Logger.getLogger(JobEntrySNMPTrap.class);
 	
 	private String serverName;
 	private String port;
@@ -100,7 +99,7 @@ private static Logger log4j = Logger.getLogger(JobEntrySNMPTrap.class);
      */
     public static int DEFAULT_PORT = 162;    
     
-	public static final String[] target_type_Desc = new String[] { Messages.getString("JobSNMPTrap.TargetType.Community"), Messages.getString("JobSNMPTrap.TargetType.User") };
+	public static final String[] target_type_Desc = new String[] { BaseMessages.getString(PKG, "JobSNMPTrap.TargetType.Community"), BaseMessages.getString(PKG, "JobSNMPTrap.TargetType.User") };
 	public static final String[] target_type_Code = new String[] {"community", "user"};
     
 	public JobEntrySNMPTrap(String n)
@@ -119,17 +118,11 @@ private static Logger log4j = Logger.getLogger(JobEntrySNMPTrap.class);
 		engineid=null;
 		
 		setID(-1L);
-		setJobEntryType(JobEntryType.SNMP_TRAP);
 	}
 
 	public JobEntrySNMPTrap()
 	{
 		this("");
-	}
-
-	public JobEntrySNMPTrap(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -406,7 +399,7 @@ private static Logger log4j = Logger.getLogger(JobEntrySNMPTrap.class);
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{		
 		LogWriter log = LogWriter.getInstance();
-		log4j.info(Messages.getString("JobEntrySNMPTrap.Started", serverName)); //$NON-NLS-1$
+		log4j.info(BaseMessages.getString(PKG, "JobEntrySNMPTrap.Started", serverName)); //$NON-NLS-1$
 		
 		Result result = previousResult;
 		result.setNrErrors(1);
@@ -531,7 +524,7 @@ private static Logger log4j = Logger.getLogger(JobEntrySNMPTrap.class);
 			result.setResult(true);
 		}
 		catch(Exception e){
-			log.logError(toString(), Messages.getString("JobEntrySNMPTrap.ErrorGetting", e.getMessage())); //$NON-NLS-1$
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntrySNMPTrap.ErrorGetting", e.getMessage())); //$NON-NLS-1$
 		}
         finally{
         	try{

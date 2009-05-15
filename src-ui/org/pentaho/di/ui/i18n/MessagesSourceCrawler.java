@@ -79,7 +79,9 @@ public class MessagesSourceCrawler {
 	
 	private Pattern packagePattern;
 	private Pattern importPattern;
-	private Pattern pkgPattern;
+	private Pattern importMessagesPattern;
+	private Pattern stringPkgPattern;
+	private Pattern	classPkgPattern;
 
 	/**
 	 * @param sourceDirectories
@@ -97,8 +99,10 @@ public class MessagesSourceCrawler {
 		this.xmlFolders = xmlFolders;
 		
 		packagePattern = Pattern.compile("^\\s*package .*;[ \t]*$");
-		importPattern = Pattern.compile("^\\s*import [a-z\\._0-9]*\\.Messages;[ \t]*$");
-		pkgPattern = Pattern.compile("^.*private static String PKG .*$");
+		importPattern = Pattern.compile("^\\s*import [a-z\\._0-9]*\\.[A-Z].*;[ \t]*$");
+		importMessagesPattern = Pattern.compile("^\\s*import [a-z\\._0-9]*\\.Messages;[ \t]*$");
+		stringPkgPattern = Pattern.compile("^.*private static String PKG.*=.*$");
+		classPkgPattern = Pattern.compile("^.*private static Class\\<\\?\\> PKG.*=.*$");
 	}
 
 	/**
@@ -297,7 +301,10 @@ public class MessagesSourceCrawler {
 
 		String messagesPackage = null;
 		int row = 0;
-
+		String classPackage = null;
+		
+		Map<String, String> importedClasses = new Hashtable<String, String>(); // Remember the imports we do...
+		
 		String line = reader.readLine();
 		while (line != null) {
 			row++;
@@ -312,13 +319,33 @@ public class MessagesSourceCrawler {
 				int beginIndex = line.indexOf("org.pentaho.");
 				int endIndex = line.indexOf(';');
 				messagesPackage = line.substring(beginIndex, endIndex); // this is the default
+				classPackage = messagesPackage;
+			}
+			
+			// Remember all the imports...
+			//
+			if (importPattern.matcher(line).matches()) {
+				int beginIndex = line.indexOf("import")+"import".length()+1;
+				int endIndex = line.indexOf(";", beginIndex);
+				String expression = line.substring(beginIndex, endIndex);
+				// The last word is the Class imported...
+				// If it's * we ignore it.
+				//
+				int lastDotIndex = expression.lastIndexOf('.');
+				if (lastDotIndex>0) {
+					String packageName = expression.substring(0, lastDotIndex);
+					String className = expression.substring(lastDotIndex+1);
+					if (!"*".equals(className)) {
+						importedClasses.put(className, packageName);
+					}
+				}
 			}
 
 			// This is the alternative location of the messages package:
 			//
 			// "import org.pentaho.di.trans.steps.sortedmerge.Messages;"
 			//
-			if (importPattern.matcher(line).matches()) {
+			if (importMessagesPattern.matcher(line).matches()) {
 				int beginIndex = line.indexOf("org.pentaho.");
 				int endIndex = line.indexOf(".Messages;");
 				messagesPackage = line.substring(beginIndex, endIndex); // if there is any specified, we take this one.
@@ -328,11 +355,39 @@ public class MessagesSourceCrawler {
 			//
 			// 	private static String PKG = "org.pentaho.foo.bar.somepkg";
 			//
-			if (pkgPattern.matcher(line).matches()) {
+			if (stringPkgPattern.matcher(line).matches()) {
 				int beginIndex = line.indexOf('"')+1;
 				int endIndex = line.indexOf('"', beginIndex);
 				messagesPackage = line.substring(beginIndex, endIndex);   
 			}
+			
+			// Look for the value of the PKG value as a fully qualified class...
+			//
+			// 	private static Class<?> PKG = Abort.class;
+			// 
+			if (classPackage!=null && classPkgPattern.matcher(line).matches()) {
+
+				int fromIndex=line.indexOf('=')+1;
+				int toIndex=line.indexOf(".class", fromIndex);
+				String expression = Const.trim(line.substring(fromIndex, toIndex));
+				// System.out.println("expression : "+expression);
+				
+				// If the expression doesn't contain any package, we'll look up the package in the imports.  If not found there, it's a local package.
+				//
+				if (expression.contains(".")) {
+					int lastDotIndex = expression.lastIndexOf('.');
+					messagesPackage = expression.substring(0, lastDotIndex);
+				} else {
+					String packageName = importedClasses.get(expression);
+					if (packageName==null) {
+						messagesPackage = classPackage; // Local package
+					} else {
+						messagesPackage = packageName; // imported
+					}
+				}
+				
+			}
+			
 
 			// Now look for occurrences of "Messages.getString(", "BaseMessages.getString(PKG", ...
 			//

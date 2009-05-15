@@ -42,20 +42,20 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.mysqlbulkfile.JobEntryMysqlBulkFile;
+import org.pentaho.di.job.entry.JobEntryDialogInterface;
+import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
-import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.mysqlbulkfile.JobEntryMysqlBulkFile;
-import org.pentaho.di.job.entries.mysqlbulkfile.Messages;
 
 /**
  * This dialog allows you to edit the MYSQL Bulk Load To a file entry settings. 
@@ -67,10 +67,11 @@ import org.pentaho.di.job.entries.mysqlbulkfile.Messages;
  */
 public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryMysqlBulkFile.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private static final String[] FILETYPES = new String[] 
 		{
-			Messages.getString("JobMysqlBulkFile.Filetype.Text"), Messages.getString("JobMysqlBulkFile.Filetype.All") };
+			BaseMessages.getString(PKG, "JobMysqlBulkFile.Filetype.Text"), BaseMessages.getString(PKG, "JobMysqlBulkFile.Filetype.All") };
 
 	private Label wlName;
 
@@ -183,7 +184,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryMysqlBulkFile) jobEntryInt;
         if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(Messages.getString("JobMysqlBulkFile.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobMysqlBulkFile.Name.Default"));
     }
 
 	public JobEntryInterface open()
@@ -209,14 +210,14 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobMysqlBulkFile.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlName = new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobMysqlBulkFile.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.Name.Label"));
 		props.setLook(wlName);
 		fdlName = new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -239,7 +240,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 		
 		// Schema name line
 		wlSchemaname = new Label(shell, SWT.RIGHT);
-		wlSchemaname.setText(Messages.getString("JobMysqlBulkFile.Schemaname.Label"));
+		wlSchemaname.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.Schemaname.Label"));
 		props.setLook(wlSchemaname);
 		fdlSchemaname = new FormData();
 		fdlSchemaname.left = new FormAttachment(0, 0);
@@ -249,7 +250,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 		wSchemaname = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSchemaname);
-		wSchemaname.setToolTipText(Messages.getString("JobMysqlBulkFile.Schemaname.Tooltip"));
+		wSchemaname.setToolTipText(BaseMessages.getString(PKG, "JobMysqlBulkFile.Schemaname.Tooltip"));
 		wSchemaname.addModifyListener(lsMod);
 		fdSchemaname = new FormData();
 		fdSchemaname.left = new FormAttachment(middle, 0);
@@ -259,7 +260,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 		
 		// Table name line
 		wlTablename = new Label(shell, SWT.RIGHT);
-		wlTablename.setText(Messages.getString("JobMysqlBulkFile.Tablename.Label"));
+		wlTablename.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.Tablename.Label"));
 		props.setLook(wlTablename);
 		fdlTablename = new FormData();
 		fdlTablename.left = new FormAttachment(0, 0);
@@ -269,7 +270,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
         wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
         props.setLook(wbTable);
-        wbTable.setText(Messages.getString("System.Button.Browse"));
+        wbTable.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
         FormData fdbTable = new FormData();
         fdbTable.right= new FormAttachment(100, 0);
         fdbTable.top  = new FormAttachment(wSchemaname, margin/2);
@@ -278,7 +279,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 		wTablename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wTablename);
-		wTablename.setToolTipText(Messages.getString("JobMysqlBulkFile.Tablename.Tooltip"));
+		wTablename.setToolTipText(BaseMessages.getString(PKG, "JobMysqlBulkFile.Tablename.Tooltip"));
 		wTablename.addModifyListener(lsMod);
 		fdTablename = new FormData();
 		fdTablename.left = new FormAttachment(middle, 0);
@@ -289,7 +290,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 		// Filename line
 		wlFilename = new Label(shell, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("JobMysqlBulkFile.Filename.Label"));
+		wlFilename.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.Filename.Label"));
 		props.setLook(wlFilename);
 		fdlFilename = new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -299,7 +300,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 		wbFilename = new Button(shell, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbFilename);
-		wbFilename.setText(Messages.getString("System.Button.Browse"));
+		wbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbFilename = new FormData();
 		fdbFilename.right = new FormAttachment(100, 0);
 		fdbFilename.top = new FormAttachment(wTablename, 0);
@@ -347,7 +348,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 		//High Priority ?
 		wlHighPriority = new Label(shell, SWT.RIGHT);
-		wlHighPriority.setText(Messages.getString("JobMysqlBulkFile.HighPriority.Label"));
+		wlHighPriority.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.HighPriority.Label"));
 		props.setLook(wlHighPriority);
 		fdlHighPriority = new FormData();
 		fdlHighPriority.left = new FormAttachment(0, 0);
@@ -356,7 +357,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 		wlHighPriority.setLayoutData(fdlHighPriority);
 		wHighPriority = new Button(shell, SWT.CHECK);
 		props.setLook(wHighPriority);
-		wHighPriority.setToolTipText(Messages.getString("JobMysqlBulkFile.HighPriority.Tooltip"));
+		wHighPriority.setToolTipText(BaseMessages.getString(PKG, "JobMysqlBulkFile.HighPriority.Tooltip"));
 		fdHighPriority = new FormData();
 		fdHighPriority.left = new FormAttachment(middle, 0);
 		fdHighPriority.top = new FormAttachment(wFilename, margin);
@@ -374,7 +375,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 		// Out Dump
 		wlOutDumpValue = new Label(shell, SWT.RIGHT);
-		wlOutDumpValue.setText(Messages.getString("JobMysqlBulkFile.OutDumpValue.Label"));
+		wlOutDumpValue.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.OutDumpValue.Label"));
 		props.setLook(wlOutDumpValue);
 		fdlOutDumpValue = new FormData();
 		fdlOutDumpValue.left = new FormAttachment(0, 0);
@@ -382,8 +383,8 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 		fdlOutDumpValue.top = new FormAttachment(wHighPriority, margin);
 		wlOutDumpValue.setLayoutData(fdlOutDumpValue);
 		wOutDumpValue = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-					wOutDumpValue.add(Messages.getString("JobMysqlBulkFile.OutFileValue.Label"));
-					wOutDumpValue.add(Messages.getString("JobMysqlBulkFile.DumpFileValue.Label"));
+					wOutDumpValue.add(BaseMessages.getString(PKG, "JobMysqlBulkFile.OutFileValue.Label"));
+					wOutDumpValue.add(BaseMessages.getString(PKG, "JobMysqlBulkFile.DumpFileValue.Label"));
 					wOutDumpValue.select(0); // +1: starts at -1
 
 		props.setLook(wOutDumpValue);
@@ -412,7 +413,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 		// Separator
 		wlSeparator = new Label(shell, SWT.RIGHT);
-		wlSeparator.setText(Messages.getString("JobMysqlBulkFile.Separator.Label"));
+		wlSeparator.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.Separator.Label"));
 		props.setLook(wlSeparator);
 		fdlSeparator = new FormData();
 		fdlSeparator.left = new FormAttachment(0, 0);
@@ -431,7 +432,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 		// enclosed
 		wlEnclosed = new Label(shell, SWT.RIGHT);
-		wlEnclosed.setText(Messages.getString("JobMysqlBulkFile.Enclosed.Label"));
+		wlEnclosed.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.Enclosed.Label"));
 		props.setLook(wlEnclosed);
 		fdlEnclosed = new FormData();
 		fdlEnclosed.left = new FormAttachment(0, 0);
@@ -450,7 +451,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 		//Optionnally enclosed ?
 		wlOptionEnclosed = new Label(shell, SWT.RIGHT);
-		wlOptionEnclosed.setText(Messages.getString("JobMysqlBulkFile.OptionEnclosed.Label"));
+		wlOptionEnclosed.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.OptionEnclosed.Label"));
 		props.setLook(wlOptionEnclosed);
 		fdlOptionEnclosed = new FormData();
 		fdlOptionEnclosed.left = new FormAttachment(0, 0);
@@ -459,7 +460,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 		wlOptionEnclosed.setLayoutData(fdlOptionEnclosed);
 		wOptionEnclosed = new Button(shell, SWT.CHECK);
 		props.setLook(wOptionEnclosed);
-		wOptionEnclosed.setToolTipText(Messages.getString("JobMysqlBulkFile.OptionEnclosed.Tooltip"));
+		wOptionEnclosed.setToolTipText(BaseMessages.getString(PKG, "JobMysqlBulkFile.OptionEnclosed.Tooltip"));
 		fdOptionEnclosed = new FormData();
 		fdOptionEnclosed.left = new FormAttachment(middle, 0);
 		fdOptionEnclosed.top = new FormAttachment(wEnclosed, margin);
@@ -476,7 +477,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 		// Line terminated
 		wlLineterminated = new Label(shell, SWT.RIGHT);
-		wlLineterminated.setText(Messages.getString("JobMysqlBulkFile.Lineterminated.Label"));
+		wlLineterminated.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.Lineterminated.Label"));
 		props.setLook(wlLineterminated);
 		fdlLineterminated = new FormData();
 		fdlLineterminated.left = new FormAttachment(0, 0);
@@ -496,7 +497,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 		
 		// List of columns to set for
 		wlListColumn = new Label(shell, SWT.RIGHT);
-		wlListColumn.setText(Messages.getString("JobMysqlBulkFile.ListColumn.Label"));
+		wlListColumn.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.ListColumn.Label"));
 		props.setLook(wlListColumn);
 		fdlListColumn = new FormData();
 		fdlListColumn.left = new FormAttachment(0, 0);
@@ -506,7 +507,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
         wbListColumns=new Button(shell, SWT.PUSH| SWT.CENTER);
         props.setLook(wbListColumns);
-        wbListColumns.setText(Messages.getString("System.Button.Edit"));
+        wbListColumns.setText(BaseMessages.getString(PKG, "System.Button.Edit"));
         FormData fdbListColumns = new FormData();
         fdbListColumns.right= new FormAttachment(100, 0);
         fdbListColumns.top  = new FormAttachment(wLineterminated, margin);
@@ -515,7 +516,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 		wListColumn = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wListColumn);
-		wListColumn.setToolTipText(Messages.getString("JobMysqlBulkFile.ListColumn.Tooltip"));
+		wListColumn.setToolTipText(BaseMessages.getString(PKG, "JobMysqlBulkFile.ListColumn.Tooltip"));
 		wListColumn.addModifyListener(lsMod);
 		fdListColumn = new FormData();
 		fdListColumn.left = new FormAttachment(middle, 0);
@@ -528,7 +529,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 		// Nbr of lines to Limit
 		wlLimitlines = new Label(shell, SWT.RIGHT);
-		wlLimitlines.setText(Messages.getString("JobMysqlBulkFile.Limitlines.Label"));
+		wlLimitlines.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.Limitlines.Label"));
 		props.setLook(wlLimitlines);
 		fdlLimitlines = new FormData();
 		fdlLimitlines.left = new FormAttachment(0, 0);
@@ -538,7 +539,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 		wLimitlines = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wLimitlines);
-		wLimitlines.setToolTipText(Messages.getString("JobMysqlBulkFile.Limitlines.Tooltip"));
+		wLimitlines.setToolTipText(BaseMessages.getString(PKG, "JobMysqlBulkFile.Limitlines.Tooltip"));
 		wLimitlines.addModifyListener(lsMod);
 		fdLimitlines = new FormData();
 		fdLimitlines.left = new FormAttachment(middle, 0);
@@ -549,7 +550,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 		//IF File Exists
 		wlIfFileExists = new Label(shell, SWT.RIGHT);
-		wlIfFileExists.setText(Messages.getString("JobMysqlBulkFile.IfFileExists.Label"));
+		wlIfFileExists.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.IfFileExists.Label"));
 		props.setLook(wlIfFileExists);
 		fdlIfFileExists = new FormData();
 		fdlIfFileExists.left = new FormAttachment(0, 0);
@@ -557,9 +558,9 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 		fdlIfFileExists.top = new FormAttachment(wLimitlines, margin);
 		wlIfFileExists.setLayoutData(fdlIfFileExists);
 		wIfFileExists = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wIfFileExists.add(Messages.getString("JobMysqlBulkFile.Create_NewFile_IfFileExists.Label"));
-		wIfFileExists.add(Messages.getString("JobMysqlBulkFile.Do_Nothing_IfFileExists.Label"));
-		wIfFileExists.add(Messages.getString("JobMysqlBulkFile.Fail_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobMysqlBulkFile.Create_NewFile_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobMysqlBulkFile.Do_Nothing_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobMysqlBulkFile.Fail_IfFileExists.Label"));
 		wIfFileExists.select(2); // +1: starts at -1
 
 		props.setLook(wIfFileExists);
@@ -581,7 +582,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 	     // /
 	    wFileResult = new Group(shell, SWT.SHADOW_NONE);
 	    props.setLook(wFileResult);
-	    wFileResult.setText(Messages.getString("JobMysqlBulkFile.FileResult.Group.Label"));
+	    wFileResult.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.FileResult.Group.Label"));
 
 	    FormLayout groupLayout = new FormLayout();
 	    groupLayout.marginWidth = 10;
@@ -592,7 +593,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 	      
 	  	//Add file to result
 		wlAddFileToResult = new Label(wFileResult, SWT.RIGHT);
-		wlAddFileToResult.setText(Messages.getString("JobMysqlBulkFile.AddFileToResult.Label"));
+		wlAddFileToResult.setText(BaseMessages.getString(PKG, "JobMysqlBulkFile.AddFileToResult.Label"));
 		props.setLook(wlAddFileToResult);
 		fdlAddFileToResult = new FormData();
 		fdlAddFileToResult.left = new FormAttachment(0, 0);
@@ -601,7 +602,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 		wlAddFileToResult.setLayoutData(fdlAddFileToResult);
 		wAddFileToResult = new Button(wFileResult, SWT.CHECK);
 		props.setLook(wAddFileToResult);
-		wAddFileToResult.setToolTipText(Messages.getString("JobMysqlBulkFile.AddFileToResult.Tooltip"));
+		wAddFileToResult.setToolTipText(BaseMessages.getString(PKG, "JobMysqlBulkFile.AddFileToResult.Tooltip"));
 		fdAddFileToResult = new FormData();
 		fdAddFileToResult.left = new FormAttachment(middle, 0);
 		fdAddFileToResult.top = new FormAttachment(wIfFileExists, margin);
@@ -630,7 +631,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		FormData fd = new FormData();
 		fd.right = new FormAttachment(50, -10);
 		fd.bottom = new FormAttachment(100, 0);
@@ -638,7 +639,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 		wOK.setLayoutData(fd);
 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		fd = new FormData();
 		fd.left = new FormAttachment(50, 10);
 		fd.bottom = new FormAttachment(100, 0);
@@ -807,8 +808,8 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 	   if(Const.isEmpty(wName.getText())) 
          {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
          }
@@ -856,8 +857,8 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
         else
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage(Messages.getString("JobMysqlBulkFile.ConnectionError2.DialogMessage"));
-            mb.setText(Messages.getString("System.Dialog.Error.Title"));
+            mb.setMessage(BaseMessages.getString(PKG, "JobMysqlBulkFile.ConnectionError2.DialogMessage"));
+            mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
             mb.open(); 
         }
                     
@@ -891,7 +892,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
                     String source[] = wListColumn.getText().split(",");
                     for (int i=0;i<source.length;i++) source[i] = Const.trim(source[i]);
                     int idxSource[] = Const.indexsOfStrings(source, available);
-                    EnterSelectionDialog dialog = new EnterSelectionDialog(shell, available, Messages.getString("JobMysqlBulkFile.SelectColumns.Title"), Messages.getString("JobMysqlBulkFile.SelectColumns.Message"));
+                    EnterSelectionDialog dialog = new EnterSelectionDialog(shell, available, BaseMessages.getString(PKG, "JobMysqlBulkFile.SelectColumns.Title"), BaseMessages.getString(PKG, "JobMysqlBulkFile.SelectColumns.Message"));
                     dialog.setMulti(true);
                     dialog.setSelectedNrs(idxSource);
                     if (dialog.open()!=null)
@@ -908,7 +909,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
                 }
                 catch(KettleDatabaseException e)
                 {
-                    new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("JobMysqlBulkFile.ConnectionError2.DialogMessage"), e);
+                    new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "JobMysqlBulkFile.ConnectionError2.DialogMessage"), e);
                 }
                 finally
                 {

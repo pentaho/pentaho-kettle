@@ -14,7 +14,6 @@
 package org.pentaho.di.ui.job.entries.msaccessbulkload;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -33,28 +32,28 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Group;
-
-import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.msaccessbulkload.JobEntryMSAccessBulkLoad;
+import org.pentaho.di.job.entry.JobEntryDialogInterface;
+import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
-import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.msaccessbulkload.JobEntryMSAccessBulkLoad;
-import org.pentaho.di.job.entries.msaccessbulkload.Messages;
 
 /**
  * This dialog allows you to edit the Microsoft Access Bulk Load job entry settings.
@@ -64,8 +63,10 @@ import org.pentaho.di.job.entries.msaccessbulkload.Messages;
  */
 public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryMSAccessBulkLoad.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
    private static final String[] FILETYPES = new String[] {
-           Messages.getString("JobEntryMSAccessBulkLoad.Filetype.All") };
+           BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Filetype.All") };
 
 	private Label        wlName;
 	private Text         wName;
@@ -162,7 +163,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
         jobEntry = (JobEntryMSAccessBulkLoad) jobEntryInt;
 
 		if (this.jobEntry.getName() == null) 
-			this.jobEntry.setName(Messages.getString("JobEntryMSAccessBulkLoad.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Name.Default"));
     }
 	public JobEntryInterface open()
 	{
@@ -187,14 +188,14 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobEntryMSAccessBulkLoad.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Name line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobEntryMSAccessBulkLoad.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -218,7 +219,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		//////////////////////////
 		
 		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
-		wGeneralTab.setText(Messages.getString("JobEntryMSAccessBulkLoad.Tab.General.Label"));
+		wGeneralTab.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Tab.General.Label"));
 		
 		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wGeneralComp);
@@ -233,7 +234,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 	     // /
 	    wSourceGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
 	    props.setLook(wSourceGroup);
-	    wSourceGroup.setText(Messages.getString("JobEntryMSAccessBulkLoad.SourceGroup.Group.Label"));
+	    wSourceGroup.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.SourceGroup.Group.Label"));
 	    FormLayout SourceGroupgroupLayout = new FormLayout();
 	    SourceGroupgroupLayout.marginWidth = 10;
 	    SourceGroupgroupLayout.marginHeight = 10;
@@ -241,7 +242,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 	      
 		// previous
 		wlPrevious = new Label(wSourceGroup, SWT.RIGHT);
-		wlPrevious.setText(Messages.getString("JobEntryMSAccessBulkLoad.Previous.Label"));
+		wlPrevious.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Previous.Label"));
 		props.setLook(wlPrevious);
 		fdlPrevious = new FormData();
 		fdlPrevious.left = new FormAttachment(0, 0);
@@ -250,7 +251,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		wlPrevious.setLayoutData(fdlPrevious);
 		wPrevious = new Button(wSourceGroup, SWT.CHECK);
 		props.setLook(wPrevious);
-		wPrevious.setToolTipText(Messages.getString("JobEntryMSAccessBulkLoad.Previous.Tooltip"));
+		wPrevious.setToolTipText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Previous.Tooltip"));
 		fdPrevious = new FormData();
 		fdPrevious.left = new FormAttachment(middle, 0);
 		fdPrevious.top = new FormAttachment(wName, margin );
@@ -268,7 +269,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		
 		// FileFoldername line
 		WSourceFileFoldername=new Label(wSourceGroup, SWT.RIGHT);
-		WSourceFileFoldername.setText(Messages.getString("JobEntryMSAccessBulkLoad.FileFoldername.Label"));
+		WSourceFileFoldername.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.FileFoldername.Label"));
  		props.setLook(WSourceFileFoldername);
 		fdlSourceFileFoldername=new FormData();
 		fdlSourceFileFoldername.left = new FormAttachment(0, 0);
@@ -279,7 +280,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		// Browse Destination folders button ...
 		wbSourceFolder=new Button(wSourceGroup, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbSourceFolder);
-		wbSourceFolder.setText(Messages.getString("JobEntryMSAccessBulkLoad.BrowseFolders.Label"));
+		wbSourceFolder.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.BrowseFolders.Label"));
 		fdbSourceFolder=new FormData();
 		fdbSourceFolder.right= new FormAttachment(100, 0);
 		fdbSourceFolder.top  = new FormAttachment(wPrevious, margin);
@@ -314,7 +315,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		// Browse source file button ...
 		wbFileFoldername=new Button(wSourceGroup, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFileFoldername);
-		wbFileFoldername.setText(Messages.getString("JobEntryMSAccessBulkLoad.BrowseFiles.Label"));
+		wbFileFoldername.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.BrowseFiles.Label"));
 		fdbSourceFileFoldername=new FormData();
 		fdbSourceFileFoldername.right= new FormAttachment(wbSourceFolder, -margin);
 		fdbSourceFileFoldername.top  = new FormAttachment(wPrevious, margin);
@@ -363,7 +364,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 
 		//Include sub folders
 		wlincludeSubFolders = new Label(wSourceGroup, SWT.RIGHT);
-		wlincludeSubFolders.setText(Messages.getString("JobEntryMSAccessBulkLoad.includeSubFolders.Label"));
+		wlincludeSubFolders.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.includeSubFolders.Label"));
 		props.setLook(wlincludeSubFolders);
 		fdlincludeSubFolders = new FormData();
 		fdlincludeSubFolders.left = new FormAttachment(0, 0);
@@ -372,7 +373,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		wlincludeSubFolders.setLayoutData(fdlincludeSubFolders);
 		wincludeSubFolders = new Button(wSourceGroup, SWT.CHECK);
 		props.setLook(wincludeSubFolders);
-		wincludeSubFolders.setToolTipText(Messages.getString("JobEntryMSAccessBulkLoad.includeSubFolders.Tooltip"));
+		wincludeSubFolders.setToolTipText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.includeSubFolders.Tooltip"));
 		fdincludeSubFolders = new FormData();
 		fdincludeSubFolders.left = new FormAttachment(middle, 0);
 		fdincludeSubFolders.top = new FormAttachment(wSourceFileFoldername, margin);
@@ -388,7 +389,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 
 		// Wildcard
 		wlWildcard=new Label(wSourceGroup, SWT.RIGHT);
-		wlWildcard.setText(Messages.getString("JobEntryMSAccessBulkLoad.Wildcard.Label"));
+		wlWildcard.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Wildcard.Label"));
  		props.setLook(wlWildcard);
 		fdlWildcard=new FormData();
 		fdlWildcard.left = new FormAttachment(0, 0);
@@ -397,7 +398,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		wlWildcard.setLayoutData(fdlWildcard);
 		wWildcard=new TextVar(jobMeta,wSourceGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wWildcard);
- 		wWildcard.setToolTipText(Messages.getString("JobEntryMSAccessBulkLoad.Wildcard.Tooltip"));
+ 		wWildcard.setToolTipText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Wildcard.Tooltip"));
 		wWildcard.addModifyListener(lsMod);
 		fdWildcard=new FormData();
 		fdWildcard.left = new FormAttachment(middle, 0);
@@ -417,7 +418,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		
 		// Delimiter
 		wlDelimiter=new Label(wSourceGroup, SWT.RIGHT);
-		wlDelimiter.setText(Messages.getString("JobEntryMSAccessBulkLoad.Delimiter.Label"));
+		wlDelimiter.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Delimiter.Label"));
  		props.setLook(wlDelimiter);
 		fdlDelimiter=new FormData();
 		fdlDelimiter.left = new FormAttachment(0, 0);
@@ -426,7 +427,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		wlDelimiter.setLayoutData(fdlDelimiter);
 		wDelimiter=new TextVar(jobMeta,wSourceGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wDelimiter);
- 		wDelimiter.setToolTipText(Messages.getString("JobEntryMSAccessBulkLoad.Delimiter.Tooltip"));
+ 		wDelimiter.setToolTipText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Delimiter.Tooltip"));
 		wDelimiter.addModifyListener(lsMod);
 		fdDelimiter=new FormData();
 		fdDelimiter.left = new FormAttachment(middle, 0);
@@ -459,7 +460,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 	     // /
 	    wTargetGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
 	    props.setLook(wTargetGroup);
-	    wTargetGroup.setText(Messages.getString("JobEntryMSAccessBulkLoad.TargetGroup.Group.Label"));
+	    wTargetGroup.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.TargetGroup.Group.Label"));
 	    FormLayout TargetGroupgroupLayout = new FormLayout();
 	    TargetGroupgroupLayout.marginWidth = 10;
 	    TargetGroupgroupLayout.marginHeight = 10;
@@ -468,7 +469,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 
 		// Target Db name line
 		wlTargetDbname=new Label(wTargetGroup, SWT.RIGHT);
-		wlTargetDbname.setText(Messages.getString("JobEntryMSAccessBulkLoad.TargetDbname.Label"));
+		wlTargetDbname.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.TargetDbname.Label"));
  		props.setLook(wlTargetDbname);
 		fdlTargetDbname=new FormData();
 		fdlTargetDbname.left = new FormAttachment(0, 0);
@@ -477,7 +478,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		wlTargetDbname.setLayoutData(fdlTargetDbname);
 		wbTargetDbname=new Button(wTargetGroup, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbTargetDbname);
-		wbTargetDbname.setText(Messages.getString("System.Button.Browse"));
+		wbTargetDbname.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbTargetDbname=new FormData();
 		fdbTargetDbname.right= new FormAttachment(100, 0);
 		fdbTargetDbname.top  = new FormAttachment(wSourceGroup, margin);
@@ -524,7 +525,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		
 		// Tablename
 		wlTablename=new Label(wTargetGroup, SWT.RIGHT);
-		wlTablename.setText(Messages.getString("JobEntryMSAccessBulkLoad.Tablename.Label"));
+		wlTablename.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Tablename.Label"));
  		props.setLook(wlTablename);
 		fdlTablename=new FormData();
 		fdlTablename.left = new FormAttachment(0, 0);
@@ -533,7 +534,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		wlTablename.setLayoutData(fdlTablename);
 		wTablename=new TextVar(jobMeta,wTargetGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTablename);
- 		wTablename.setToolTipText(Messages.getString("JobEntryMSAccessBulkLoad.Tablename.Tooltip"));
+ 		wTablename.setToolTipText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Tablename.Tooltip"));
 		wTablename.addModifyListener(lsMod);
 		fdTablename=new FormData();
 		fdTablename.left = new FormAttachment(middle, 0);
@@ -564,8 +565,8 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		// add button ...
 		wbaEntry=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbaEntry);
-		wbaEntry.setText(Messages.getString("JobEntryMSAccessBulkLoad.FilenameAdd.Button"));
-		wbaEntry.setToolTipText(Messages.getString("JobEntryMSAccessBulkLoad.FilenameAdd.Button.Tooltip"));
+		wbaEntry.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.FilenameAdd.Button"));
+		wbaEntry.setToolTipText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.FilenameAdd.Button.Tooltip"));
 		fdbaEntry=new FormData();
 		fdbaEntry.left= new FormAttachment(0, 0);
 		fdbaEntry.right= new FormAttachment(100, -margin);
@@ -575,8 +576,8 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		// Buttons to the right of the screen...
 		wbDelete=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbDelete);
-		wbDelete.setText(Messages.getString("JobEntryMSAccessBulkLoad.FilenameDelete.Button"));
-		wbDelete.setToolTipText(Messages.getString("JobEntryMSAccessBulkLoad.FilenameDelete.Tooltip"));
+		wbDelete.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.FilenameDelete.Button"));
+		wbDelete.setToolTipText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.FilenameDelete.Tooltip"));
 		fdbdDelete=new FormData();
 		fdbdDelete.right = new FormAttachment(100, 0);
 		fdbdDelete.top  = new FormAttachment (wbaEntry, 10*margin);
@@ -584,7 +585,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 
 		wbEdit=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbEdit);
-		wbEdit.setText(Messages.getString("JobEntryMSAccessBulkLoad.FilenameEdit.Button"));
+		wbEdit.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.FilenameEdit.Button"));
 		fdbeSourceFileFolder=new FormData();
 		fdbeSourceFileFolder.right = new FormAttachment(100, 0);
 		fdbeSourceFileFolder.left = new FormAttachment(wbDelete, 0, SWT.LEFT);
@@ -593,7 +594,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		
 
 		wlFields = new Label(wGeneralComp, SWT.NONE);
-		wlFields.setText(Messages.getString("JobEntryMSAccessBulkLoad.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Fields.Label"));
 		props.setLook(wlFields);
 		fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -610,23 +611,23 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 
 		ColumnInfo[] colinf=new ColumnInfo[]
 			{
-				new ColumnInfo(Messages.getString("JobEntryMSAccessBulkLoad.Fields.SourceFileFolder.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
-				new ColumnInfo(Messages.getString("JobEntryMSAccessBulkLoad.Fields.Wildcard.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
-				new ColumnInfo(Messages.getString("JobEntryMSAccessBulkLoad.Fields.FieldsDelimiter.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
-				new ColumnInfo(Messages.getString("JobEntryMSAccessBulkLoad.Fields.TargetDb.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
-				new ColumnInfo(Messages.getString("JobEntryMSAccessBulkLoad.Fields.TargetTable.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Fields.SourceFileFolder.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Fields.Wildcard.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Fields.FieldsDelimiter.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Fields.TargetDb.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Fields.TargetTable.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
 			};
 
 		colinf[0].setUsingVariables(true);
-		colinf[0].setToolTip(Messages.getString("JobEntryMSAccessBulkLoad.Fields.SourceFileFolder.Tooltip"));
+		colinf[0].setToolTip(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Fields.SourceFileFolder.Tooltip"));
 		colinf[1].setUsingVariables(true);
-		colinf[1].setToolTip(Messages.getString("JobEntryMSAccessBulkLoad.Fields.Wildcard.Tooltip"));
+		colinf[1].setToolTip(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Fields.Wildcard.Tooltip"));
 		colinf[2].setUsingVariables(true);
-		colinf[2].setToolTip(Messages.getString("JobCopyFiles.Fields.FieldsDelimiter.Tooltip"));
+		colinf[2].setToolTip(BaseMessages.getString(PKG, "JobCopyFiles.Fields.FieldsDelimiter.Tooltip"));
 		colinf[3].setUsingVariables(true);
-		colinf[3].setToolTip(Messages.getString("JobCopyFiles.Fields.TargetDb.Tooltip"));
+		colinf[3].setToolTip(BaseMessages.getString(PKG, "JobCopyFiles.Fields.TargetDb.Tooltip"));
 		colinf[4].setUsingVariables(true);
-		colinf[4].setToolTip(Messages.getString("JobCopyFiles.Fields.TargetTable.Tooltip"));
+		colinf[4].setToolTip(BaseMessages.getString(PKG, "JobCopyFiles.Fields.TargetTable.Tooltip"));
 		wFields = new TableView(jobMeta,
 				wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,	FieldsRows, lsMod, props);
 
@@ -657,7 +658,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		//////////////////////////
 		
 		wAdvancedTab=new CTabItem(wTabFolder, SWT.NONE);
-		wAdvancedTab.setText(Messages.getString("JobEntryMSAccessBulkLoad.Tab.Advanced.Label"));
+		wAdvancedTab.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Tab.Advanced.Label"));
 		
 		wAdvancedComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wAdvancedComp);
@@ -673,7 +674,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 	     // /
 	    wSuccessOn= new Group(wAdvancedComp, SWT.SHADOW_NONE);
 	    props.setLook(wSuccessOn);
-	    wSuccessOn.setText(Messages.getString("JobEntryMSAccessBulkLoad.SuccessOn.Group.Label"));
+	    wSuccessOn.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.SuccessOn.Group.Label"));
 
 	    FormLayout successongroupLayout = new FormLayout();
 	    successongroupLayout.marginWidth = 10;
@@ -684,7 +685,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 
 	    //Success Condition
 	  	wlSuccessCondition = new Label(wSuccessOn, SWT.RIGHT);
-	  	wlSuccessCondition.setText(Messages.getString("JobEntryMSAccessBulkLoad.SuccessCondition.Label"));
+	  	wlSuccessCondition.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.SuccessCondition.Label"));
 	  	props.setLook(wlSuccessCondition);
 	  	fdlSuccessCondition = new FormData();
 	  	fdlSuccessCondition.left = new FormAttachment(0, 0);
@@ -692,9 +693,9 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 	  	fdlSuccessCondition.top = new FormAttachment(0, margin);
 	  	wlSuccessCondition.setLayoutData(fdlSuccessCondition);
 	  	wSuccessCondition = new CCombo(wSuccessOn, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-	  	wSuccessCondition.add(Messages.getString("JobEntryMSAccessBulkLoad.SuccessWhenAllWorksFine.Label"));
-	  	wSuccessCondition.add(Messages.getString("JobEntryMSAccessBulkLoad.SuccessWhenAtLeat.Label"));
-	  	wSuccessCondition.add(Messages.getString("JobEntryMSAccessBulkLoad.SuccessWhenErrorsLessThan.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.SuccessWhenAllWorksFine.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.SuccessWhenAtLeat.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.SuccessWhenErrorsLessThan.Label"));
 	  	
 	  	wSuccessCondition.select(0); // +1: starts at -1
 	  	
@@ -715,7 +716,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 
 		// Success when number of errors less than
 		wlNrErrorsLessThan= new Label(wSuccessOn, SWT.RIGHT);
-		wlNrErrorsLessThan.setText(Messages.getString("JobEntryMSAccessBulkLoad.NrErrorsLessThan.Label"));
+		wlNrErrorsLessThan.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.NrErrorsLessThan.Label"));
 		props.setLook(wlNrErrorsLessThan);
 		fdlNrErrorsLessThan= new FormData();
 		fdlNrErrorsLessThan.left = new FormAttachment(0, 0);
@@ -724,8 +725,8 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		wlNrErrorsLessThan.setLayoutData(fdlNrErrorsLessThan);
 		
 		
-		wNrErrorsLessThan= new TextVar(jobMeta,wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobEntryMSAccessBulkLoad.NrErrorsLessThan.Tooltip"));
+		wNrErrorsLessThan= new TextVar(jobMeta,wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.NrErrorsLessThan.Tooltip"));
 		props.setLook(wNrErrorsLessThan);
 		wNrErrorsLessThan.addModifyListener(lsMod);
 		fdNrErrorsLessThan= new FormData();
@@ -750,7 +751,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 	     // /
 	    wFileResult = new Group(wAdvancedComp, SWT.SHADOW_NONE);
 	    props.setLook(wFileResult);
-	    wFileResult.setText(Messages.getString("JobEntryMSAccessBulkLoad.FileResult.Group.Label"));
+	    wFileResult.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.FileResult.Group.Label"));
 	    FormLayout fileresultgroupLayout = new FormLayout();
 	    fileresultgroupLayout.marginWidth = 10;
 	    fileresultgroupLayout.marginHeight = 10;
@@ -759,7 +760,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		
 	  	//Add file to result
 		wlAddFileToResult = new Label(wFileResult, SWT.RIGHT);
-		wlAddFileToResult.setText(Messages.getString("JobEntryMSAccessBulkLoad.AddFileToResult.Label"));
+		wlAddFileToResult.setText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.AddFileToResult.Label"));
 		props.setLook(wlAddFileToResult);
 		fdlAddFileToResult = new FormData();
 		fdlAddFileToResult.left = new FormAttachment(0, 0);
@@ -768,7 +769,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		wlAddFileToResult.setLayoutData(fdlAddFileToResult);
 		wAddFileToResult = new Button(wFileResult, SWT.CHECK);
 		props.setLook(wAddFileToResult);
-		wAddFileToResult.setToolTipText(Messages.getString("JobEntryMSAccessBulkLoad.AddFileToResult.Tooltip"));
+		wAddFileToResult.setToolTipText(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.AddFileToResult.Tooltip"));
 		fdAddFileToResult = new FormData();
 		fdAddFileToResult.left = new FormAttachment(middle, 0);
 		fdAddFileToResult.top = new FormAttachment(wSuccessOn, margin);
@@ -873,9 +874,9 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		
 		
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTabFolder);
 
@@ -999,8 +1000,8 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 	   if(Const.isEmpty(wName.getText())) 
          {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
          }

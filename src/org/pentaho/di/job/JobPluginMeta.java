@@ -23,8 +23,6 @@ public class JobPluginMeta
 
 	protected String id;
 
-	protected JobEntryType type;
-	
 	protected String name;
 
 	protected String tooltipDesc;
@@ -41,11 +39,10 @@ public class JobPluginMeta
 	}
 
 
-	public JobPluginMeta(Class<?> className, String id, JobEntryType type, String name, String tooltipDesc, String imageFileName, String category)
+	public JobPluginMeta(Class<?> className, String id, String name, String tooltipDesc, String imageFileName, String category)
 	{
 		this.className = className;
 		this.id = id;
-		this.type = type;
 		this.name = name;
 		this.tooltipDesc = tooltipDesc;
 		this.imageFileName = imageFileName;
@@ -127,21 +124,4 @@ public class JobPluginMeta
 	public void setName(String name) {
 		this.name = name;
 	}
-
-
-	/**
-	 * @return the type
-	 */
-	public JobEntryType getType() {
-		return type;
-	}
-
-
-	/**
-	 * @param type the type to set
-	 */
-	public void setType(JobEntryType type) {
-		this.type = type;
-	}
-
 }

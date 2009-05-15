@@ -43,16 +43,17 @@ import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.performance.StepPerformanceSnapShot;
 import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.util.ImageUtil;
 
 public class TransPerfDelegate extends SpoonDelegate {
-	
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	// private static final LogWriter log = LogWriter.getInstance();
 	
 	private static final int DATA_CHOICE_WRITTEN = 0;
@@ -65,14 +66,14 @@ public class TransPerfDelegate extends SpoonDelegate {
 	private static final int DATA_CHOICE_OUTPUT_BUFFER_SIZE = 7;
 	
 	private static String[] dataChoices = new String[] {
-			Messages.getString("StepPerformanceSnapShotDialog.Written"),
-			Messages.getString("StepPerformanceSnapShotDialog.Read"),
-			Messages.getString("StepPerformanceSnapShotDialog.Input"),
-			Messages.getString("StepPerformanceSnapShotDialog.Output"),
-			Messages.getString("StepPerformanceSnapShotDialog.Updated"),
-			Messages.getString("StepPerformanceSnapShotDialog.Rejected"),
-			Messages.getString("StepPerformanceSnapShotDialog.InputBufferSize"),
-			Messages.getString("StepPerformanceSnapShotDialog.OutputBufferSize"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.Written"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.Read"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.Input"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.Output"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.Updated"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.Rejected"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.InputBufferSize"),
+			BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.OutputBufferSize"),
 		};
 
 	private TransGraph transGraph;
@@ -118,7 +119,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 		//
 		transPerfTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE );
 		transPerfTab.setImage(GUIResource.getInstance().getImageShowPerf());
-		transPerfTab.setText(Messages.getString("Spoon.TransGraph.PerfTab.Name"));
+		transPerfTab.setText(BaseMessages.getString(PKG, "Spoon.TransGraph.PerfTab.Name"));
 		
 		// Create a composite, slam everything on there like it was in the history tab.
 		//
@@ -176,7 +177,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 		// Then put a canvas with the graph on the right side
 		// 
 		Label dataListLabel = new Label(perfComposite, SWT.NONE);
-		dataListLabel.setText(Messages.getString("StepPerformanceSnapShotDialog.Metrics.Label"));
+		dataListLabel.setText(BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.Metrics.Label"));
 		spoon.props.setLook(dataListLabel);
     FormData fdDataListLabel = new FormData();
 
@@ -210,7 +211,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 		dataList.setLayoutData(fdDataList);
 
     Label stepsListLabel = new Label(perfComposite, SWT.NONE);
-    stepsListLabel.setText(Messages.getString("StepPerformanceSnapShotDialog.Steps.Label"));
+    stepsListLabel.setText(BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.Steps.Label"));
     
     spoon.props.setLook(stepsListLabel);
 
@@ -299,7 +300,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 		emptyGraph = true;
 
 		Label label = new Label(perfComposite, SWT.CENTER);
-		label.setText(Messages.getString("TransLog.Dialog.PerformanceMonitoringNotEnabled.Message"));
+		label.setText(BaseMessages.getString(PKG, "TransLog.Dialog.PerformanceMonitoringNotEnabled.Message"));
 		label.setBackground(perfComposite.getBackground());
 		label.setFont(GUIResource.getInstance().getFontMedium());
 		
@@ -310,7 +311,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 		label.setLayoutData(fdLabel);
 		
     Button button = new Button(perfComposite, SWT.CENTER);
-    button.setText(Messages.getString("TransLog.Dialog.PerformanceMonitoring.Button"));
+    button.setText(BaseMessages.getString(PKG, "TransLog.Dialog.PerformanceMonitoring.Button"));
     button.setBackground(perfComposite.getBackground());
     button.setFont(GUIResource.getInstance().getFontMedium());
     
@@ -466,8 +467,8 @@ public class TransPerfDelegate extends SpoonDelegate {
 			chartTitle+=" ("+selectedSteps[0]+")";
 		}
 		final JFreeChart chart = ChartFactory.createLineChart(chartTitle, // chart title
-				Messages.getString("StepPerformanceSnapShotDialog.TimeInSeconds.Label", Integer.toString(totalTimeInSeconds), Long.toString(timeDifference)), // domain axis label
-				Messages.getString("StepPerformanceSnapShotDialog.RowsPerSecond.Label"), // range axis label
+				BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.TimeInSeconds.Label", Integer.toString(totalTimeInSeconds), Long.toString(timeDifference)), // domain axis label
+				BaseMessages.getString(PKG, "StepPerformanceSnapShotDialog.RowsPerSecond.Label"), // range axis label
 				dataset, // data
 				PlotOrientation.VERTICAL, // orientation
 				true, // include legend

@@ -10,7 +10,6 @@
 package org.pentaho.di.ui.job.entries.createfolder;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -21,26 +20,26 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.createfolder.JobEntryCreateFolder;
+import org.pentaho.di.job.entry.JobEntryDialogInterface;
+import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
-import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.createfolder.JobEntryCreateFolder;
-import org.pentaho.di.job.entries.createfolder.Messages;
 
 
 /**
@@ -51,6 +50,7 @@ import org.pentaho.di.job.entries.createfolder.Messages;
  */
 public class JobEntryCreateFolderDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryCreateFolder.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
 	private Label        wlName;
 	private Text         wName;
@@ -80,7 +80,7 @@ public class JobEntryCreateFolderDialog extends JobEntryDialog implements JobEnt
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryCreateFolder) jobEntryInt;
 		if (this.jobEntry.getName() == null) 
-			this.jobEntry.setName(Messages.getString("JobCreateFolder.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobCreateFolder.Name.Default"));
 	}
 
 	public JobEntryInterface open()
@@ -106,14 +106,14 @@ public class JobEntryCreateFolderDialog extends JobEntryDialog implements JobEnt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobCreateFolder.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobCreateFolder.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Foldername line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobCreateFolder.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobCreateFolder.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -131,7 +131,7 @@ public class JobEntryCreateFolderDialog extends JobEntryDialog implements JobEnt
 
 		// Foldername line
 		wlFoldername=new Label(shell, SWT.RIGHT);
-		wlFoldername.setText(Messages.getString("JobCreateFolder.Foldername.Label"));
+		wlFoldername.setText(BaseMessages.getString(PKG, "JobCreateFolder.Foldername.Label"));
  		props.setLook(wlFoldername);
 		fdlFoldername=new FormData();
 		fdlFoldername.left = new FormAttachment(0, 0);
@@ -141,7 +141,7 @@ public class JobEntryCreateFolderDialog extends JobEntryDialog implements JobEnt
 
 		wbFoldername=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFoldername);
-		wbFoldername.setText(Messages.getString("System.Button.Browse"));
+		wbFoldername.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbFoldername=new FormData();
 		fdbFoldername.right= new FormAttachment(100, 0);
 		fdbFoldername.top  = new FormAttachment(wName, 0);
@@ -188,7 +188,7 @@ public class JobEntryCreateFolderDialog extends JobEntryDialog implements JobEnt
 		);
 
         wlAbortExists = new Label(shell, SWT.RIGHT);
-        wlAbortExists.setText(Messages.getString("JobCreateFolder.FailIfExists.Label"));
+        wlAbortExists.setText(BaseMessages.getString(PKG, "JobCreateFolder.FailIfExists.Label"));
         props.setLook(wlAbortExists);
         fdlAbortExists = new FormData();
         fdlAbortExists.left = new FormAttachment(0, 0);
@@ -197,7 +197,7 @@ public class JobEntryCreateFolderDialog extends JobEntryDialog implements JobEnt
         wlAbortExists.setLayoutData(fdlAbortExists);
         wAbortExists = new Button(shell, SWT.CHECK);
         props.setLook(wAbortExists);
-        wAbortExists.setToolTipText(Messages.getString("JobCreateFolder.FailIfExists.Tooltip"));
+        wAbortExists.setToolTipText(BaseMessages.getString(PKG, "JobCreateFolder.FailIfExists.Tooltip"));
         fdAbortExists = new FormData();
         fdAbortExists.left = new FormAttachment(middle, 0);
         fdAbortExists.top = new FormAttachment(wFoldername, margin);
@@ -212,9 +212,9 @@ public class JobEntryCreateFolderDialog extends JobEntryDialog implements JobEnt
         });
 		
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wAbortExists);
 
@@ -275,8 +275,8 @@ public class JobEntryCreateFolderDialog extends JobEntryDialog implements JobEnt
 	    if(Const.isEmpty(wName.getText())) 
         {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
         }

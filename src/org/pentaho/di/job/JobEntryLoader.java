@@ -36,7 +36,6 @@ import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.plugins.PluginLoader;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.i18n.LoaderInputStreamProvider;
-import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
@@ -116,9 +115,9 @@ public class JobEntryLoader implements LoaderInputStreamProvider
 			jobs.addAll(cjobs);
 
 			for (JobPluginMeta job : jobs)
-				if (job.getType() != JobEntryType.NONE)
-					pluginList.add(new JobPlugin(JobPlugin.TYPE_NATIVE, job.getId(), job.getType(), job.getTooltipDesc(), null, null, job.getImageFileName(), job.getClassName()
-							.getName(), job.getCategory()));
+				pluginList.add(
+						new JobPlugin(JobPlugin.TYPE_NATIVE, job.getId(), job.getName(), job.getTooltipDesc(), null, null, job.getImageFileName(), job.getClassName().getName(), job.getCategory())
+					);
 		} catch (KettleConfigException e)
 		{
 			e.printStackTrace();
@@ -232,16 +231,12 @@ public class JobEntryLoader implements LoaderInputStreamProvider
 
 				if (sp.getType() == JobPlugin.TYPE_PLUGIN)
 				{
-					res.setPluginID(sp.getID());
+					res.setTypeId(sp.getID());
 				}
 
 				res.setDescription(sp.getDescription());
 				res.setName(sp.getID());
 				res.setConfigId(sp.getID());
-
-				// set the type
-				if (res.getJobEntryType() == null)
-					res.setJobEntryType(sp.getJobType());
 
 				return res;
 			} catch (ClassNotFoundException e)
@@ -555,8 +550,8 @@ public class JobEntryLoader implements LoaderInputStreamProvider
             {
                 // What is the index of retval[b] and retval[b+1]?
             	//
-                int idx1 = Const.indexOfString(retval[b  ], JobEntryBase.category_order);
-                int idx2 = Const.indexOfString(retval[b+1], JobEntryBase.category_order);
+                int idx1 = Const.indexOfString(retval[b  ], JobEntryCategory.STANDARD_CATEGORIES);
+                int idx2 = Const.indexOfString(retval[b+1], JobEntryCategory.STANDARD_CATEGORIES);
                 
                 if (idx1>idx2)
                 {

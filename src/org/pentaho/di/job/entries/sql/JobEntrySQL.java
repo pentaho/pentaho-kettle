@@ -15,17 +15,16 @@ import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
-import java.util.List;
 import java.io.BufferedInputStream;
-import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
 
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.apache.commons.vfs.FileObject;
-
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -33,9 +32,10 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -44,8 +44,6 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
-
-import org.pentaho.di.core.Const;
 
 
 
@@ -59,6 +57,8 @@ import org.pentaho.di.core.Const;
  */
 public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntrySQL.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String sql;
 	private DatabaseMeta connection;
 	private boolean useVariableSubstitution = false;
@@ -71,17 +71,11 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 		sql=null;
 		connection=null;
 		setID(-1L);
-		setJobEntryType(JobEntryType.SQL);
 	}
 
 	public JobEntrySQL()
 	{
 		this("");
-	}
-
-	public JobEntrySQL(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -260,17 +254,17 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 				if(sqlfromfile)
 				{
 					if(sqlfilename==null)
-						throw new KettleDatabaseException(Messages.getString("JobSQL.NoSQLFileSpecified"));
+						throw new KettleDatabaseException(BaseMessages.getString(PKG, "JobSQL.NoSQLFileSpecified"));
 					
 					try{
 						String realfilename=environmentSubstitute(sqlfilename);
 						SQLfile=KettleVFS.getFileObject(realfilename);
 						if(!SQLfile.exists()) 
 						{
-							log.logError(toString(),Messages.getString("JobSQL.SQLFileNotExist",realfilename));
-							throw new KettleDatabaseException(Messages.getString("JobSQL.SQLFileNotExist",realfilename));
+							log.logError(toString(),BaseMessages.getString(PKG, "JobSQL.SQLFileNotExist",realfilename));
+							throw new KettleDatabaseException(BaseMessages.getString(PKG, "JobSQL.SQLFileNotExist",realfilename));
 						}
-						if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSQL.SQLFileExists",realfilename));
+						if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobSQL.SQLFileExists",realfilename));
 						
 						InputStream IS = KettleVFS.getInputStream(SQLfile);
 						InputStreamReader BIS = new InputStreamReader(new BufferedInputStream(IS, 500));
@@ -296,12 +290,12 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 						
 						if(!Const.isEmpty(SFullLine))
 						{
-							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSQL.Log.SQlStatement",SFullLine));
+							if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobSQL.Log.SQlStatement",SFullLine));
 							db.execStatement(SFullLine);
 						}
 					}catch (Exception e)
 					{
-						throw new KettleDatabaseException(Messages.getString("JobSQL.ErrorRunningSQLfromFile"),e);
+						throw new KettleDatabaseException(BaseMessages.getString(PKG, "JobSQL.ErrorRunningSQLfromFile"),e);
 					}
 					
 				}else
@@ -317,7 +311,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 			catch(KettleDatabaseException je)
 			{
 				result.setNrErrors(1);
-				log.logError(toString(), Messages.getString("JobSQL.ErrorRunJobEntry",je.getMessage()));
+				log.logError(toString(), BaseMessages.getString(PKG, "JobSQL.ErrorRunJobEntry",je.getMessage()));
 			}
 			finally
 			{
@@ -333,7 +327,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 		else
 		{
 			result.setNrErrors(1);
-			log.logError(toString(), Messages.getString("JobSQL.NoDatabaseConnection"));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobSQL.NoDatabaseConnection"));
 		}
 
 		if (result.getNrErrors()==0)

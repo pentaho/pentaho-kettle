@@ -12,6 +12,8 @@
 */
 package org.pentaho.di.job;
 
+import org.pentaho.di.i18n.BaseMessages;
+
 /**
  * Different types of job entry categories.<br>
  * Used by the Job annotation as well as in the kettlle-jobs.xml file.<br>
@@ -21,20 +23,30 @@ package org.pentaho.di.job;
  */
 public class JobEntryCategory
 {
+	private static Class<?> PKG = JobEntryCategory.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	// Note: also set the Spoon category order in JobEntryBase.category_order...
-	
-	public static final JobEntryCategory GENERAL         = new JobEntryCategory(Messages.getString("JobCategory.Category.General"));
-	public static final JobEntryCategory MAIL            = new JobEntryCategory(Messages.getString("JobCategory.Category.Mail"));
-	public static final JobEntryCategory FILE_MANAGEMENT = new JobEntryCategory(Messages.getString("JobCategory.Category.FileManagement"));
-	public static final JobEntryCategory CONDITIONS      = new JobEntryCategory(Messages.getString("JobCategory.Category.Conditions"));
-	public static final JobEntryCategory SCRIPTING       = new JobEntryCategory(Messages.getString("JobCategory.Category.Scripting"));
-	public static final JobEntryCategory BULK_LOADING    = new JobEntryCategory(Messages.getString("JobCategory.Category.BulkLoading"));
-	public static final JobEntryCategory XML             = new JobEntryCategory(Messages.getString("JobCategory.Category.XML"));
-	public static final JobEntryCategory REPOSITORY      = new JobEntryCategory(Messages.getString("JobCategory.Category.Repository"));
-	public static final JobEntryCategory FILE_TRANSFER   = new JobEntryCategory(Messages.getString("JobCategory.Category.FileTransfer"));
-	public static final JobEntryCategory EXPERIMENTAL   = new JobEntryCategory(Messages.getString("JobCategory.Category.Experimental"));
-	
-	public static final int CATEGORY_USER_DEFINED    = -1;
+	@Deprecated
+	public static final JobEntryCategory GENERAL         = new JobEntryCategory(BaseMessages.getString(PKG, "JobCategory.Category.General"));
+	@Deprecated
+	public static final JobEntryCategory MAIL            = new JobEntryCategory(BaseMessages.getString(PKG, "JobCategory.Category.Mail"));
+	@Deprecated
+	public static final JobEntryCategory FILE_MANAGEMENT = new JobEntryCategory(BaseMessages.getString(PKG, "JobCategory.Category.FileManagement"));
+	@Deprecated
+	public static final JobEntryCategory CONDITIONS      = new JobEntryCategory(BaseMessages.getString(PKG, "JobCategory.Category.Conditions"));
+	@Deprecated
+	public static final JobEntryCategory SCRIPTING       = new JobEntryCategory(BaseMessages.getString(PKG, "JobCategory.Category.Scripting"));
+	@Deprecated
+	public static final JobEntryCategory BULK_LOADING    = new JobEntryCategory(BaseMessages.getString(PKG, "JobCategory.Category.BulkLoading"));
+	@Deprecated
+	public static final JobEntryCategory XML             = new JobEntryCategory(BaseMessages.getString(PKG, "JobCategory.Category.XML"));
+	@Deprecated
+	public static final JobEntryCategory REPOSITORY      = new JobEntryCategory(BaseMessages.getString(PKG, "JobCategory.Category.Repository"));
+	@Deprecated
+	public static final JobEntryCategory FILE_TRANSFER   = new JobEntryCategory(BaseMessages.getString(PKG, "JobCategory.Category.FileTransfer"));
+	@Deprecated
+	public static final JobEntryCategory EXPERIMENTAL   = new JobEntryCategory(BaseMessages.getString(PKG, "JobCategory.Category.Experimental"));
+
 	public static final int CATEGORY_GENERAL         =  0;
 	public static final int CATEGORY_MAIL            =  1;
 	public static final int CATEGORY_FILE_MANAGEMENT =  2;
@@ -46,10 +58,19 @@ public class JobEntryCategory
 	public static final int CATEGORY_FILE_TRANSFER   =  8;
 	public static final int CATEGORY_EXPERIMENTAL    =  9;
 	
-	public static final JobEntryCategory[] STANDARD_CATEGORIES = new JobEntryCategory[] { 
-			GENERAL, MAIL, FILE_MANAGEMENT, CONDITIONS, SCRIPTING, BULK_LOADING, XML, REPOSITORY,FILE_TRANSFER,
-			EXPERIMENTAL,
-		};
+	public static final String STANDARD_CATEGORIES[] = { 
+		BaseMessages.getString(PKG, "JobCategory.Category.General"),
+		BaseMessages.getString(PKG, "JobCategory.Category.Mail"),
+		BaseMessages.getString(PKG, "JobCategory.Category.FileManagement"),
+		BaseMessages.getString(PKG, "JobCategory.Category.Conditions"),
+		BaseMessages.getString(PKG, "JobCategory.Category.Scripting"),
+		BaseMessages.getString(PKG, "JobCategory.Category.BulkLoading"),
+		BaseMessages.getString(PKG, "JobCategory.Category.XML"),
+		BaseMessages.getString(PKG, "JobCategory.Category.Repository"),
+		BaseMessages.getString(PKG, "JobCategory.Category.FileTransfer"),
+		BaseMessages.getString(PKG, "JobCategory.Category.Experimental"),
+
+	};
 
 	private String name;
 	

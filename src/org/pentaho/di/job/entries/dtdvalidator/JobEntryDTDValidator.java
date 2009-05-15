@@ -40,8 +40,8 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -64,6 +64,8 @@ import org.w3c.dom.Node;
 
 public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryDTDValidator.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String xmlfilename;
 	private String dtdfilename;
 	private boolean dtdintern;
@@ -78,17 +80,11 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
      	dtdintern=false;
 
 		setID(-1L);
-		setJobEntryType(JobEntryType.DTD_VALIDATOR);
 	}
 
 	public JobEntryDTDValidator()
 	{
 		this("");
-	}
-
-	public JobEntryDTDValidator(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -238,12 +234,12 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 						if (xmlStartDTD != -1)
 						{
 							if(log.isBasic())
-								log.logBasic(toString(),  Messages.getString("JobEntryDTDValidator.ERRORDTDFound.Label", realxmlfilename));
+								log.logBasic(toString(),  BaseMessages.getString(PKG, "JobEntryDTDValidator.ERRORDTDFound.Label", realxmlfilename));
 						}
 						else
 						{
 							if(log.isBasic())
-								log.logBasic(toString(),  Messages.getString("JobEntryDTDValidator.ERRORDTDNotFound.Label", realxmlfilename));
+								log.logBasic(toString(),  BaseMessages.getString(PKG, "JobEntryDTDValidator.ERRORDTDNotFound.Label", realxmlfilename));
 						}
 							
 					
@@ -278,7 +274,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 						}
 						else
 						{
-							log.logError(Messages.getString("JobEntryDTDValidator.ERRORDTDFileNotExists.Subject"), Messages.getString("JobEntryDTDValidator.ERRORDTDFileNotExists.Msg",realDTDfilename));
+							log.logError(BaseMessages.getString(PKG, "JobEntryDTDValidator.ERRORDTDFileNotExists.Subject"), BaseMessages.getString(PKG, "JobEntryDTDValidator.ERRORDTDFileNotExists.Msg",realDTDfilename));
 						}
 					}
 						
@@ -295,8 +291,8 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 											
 						xmlDocDTD = DocBuilder.parse(new ByteArrayInputStream(xmlStringbuffer.toString().getBytes(encoding)));
 						if(log.isDetailed())
-							log.logDetailed(Messages.getString("JobEntryDTDValidator.DTDValidatorOK.Subject"),
-								Messages.getString("JobEntryDTDValidator.DTDValidatorOK.Label",		
+							log.logDetailed(BaseMessages.getString(PKG, "JobEntryDTDValidator.DTDValidatorOK.Subject"),
+								BaseMessages.getString(PKG, "JobEntryDTDValidator.DTDValidatorOK.Label",		
 										realxmlfilename));
 						
 						// Everything is OK
@@ -309,7 +305,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 
 					if(	!xmlfile.exists())
 					{
-						log.logError(toString(),  Messages.getString("JobEntryDTDValidator.FileDoesNotExist.Label",	realxmlfilename));
+						log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryDTDValidator.FileDoesNotExist.Label",	realxmlfilename));
 					}
 					
 					result.setResult( false );
@@ -319,7 +315,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 			}
 			else
 			{
-				log.logError(toString(),  Messages.getString("JobEntryDTDValidator.AllFilesNotNull.Label"));
+				log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryDTDValidator.AllFilesNotNull.Label"));
 				result.setResult( false );
 				result.setNrErrors(1);
 			}
@@ -330,8 +326,8 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 	
 		catch ( Exception e )
 		{
-			log.logError(Messages.getString("JobEntryDTDValidator.ErrorDTDValidator.Subject"),
-					Messages.getString("JobEntryDTDValidator.ErrorDTDValidator.Label",		
+			log.logError(BaseMessages.getString(PKG, "JobEntryDTDValidator.ErrorDTDValidator.Subject"),
+					BaseMessages.getString(PKG, "JobEntryDTDValidator.ErrorDTDValidator.Label",		
 							realxmlfilename,realDTDfilename,e.getMessage()));
 			
 			result.setResult( false );

@@ -21,8 +21,9 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.pentaho.di.core.database.DataSourceNamingException;
-import org.pentaho.di.core.database.Messages;
 import org.pentaho.di.core.database.DataSourceProviderInterface;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Provides default implementation for looking data sources up in
@@ -34,6 +35,7 @@ import org.pentaho.di.core.database.DataSourceProviderInterface;
 
 public class DatabaseUtil implements DataSourceProviderInterface
 {
+  private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   /**
    * Implementation of DatasourceProviderInterface.
@@ -128,6 +130,6 @@ public class DatabaseUtil implements DataSourceProviderInterface
     {
       throw firstNe;
     }
-    throw new NamingException(Messages.getString("DatabaseUtil.DSNotFound", dsName)); //$NON-NLS-1$
+    throw new NamingException(BaseMessages.getString(PKG, "DatabaseUtil.DSNotFound", dsName)); //$NON-NLS-1$
   }
 }

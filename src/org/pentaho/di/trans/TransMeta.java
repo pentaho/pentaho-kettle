@@ -2178,7 +2178,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             long dbids[] = rep.getDatabaseIDs();
             for (int i = 0; i < dbids.length; i++)
             {
-                DatabaseMeta databaseMeta = RepositoryUtil.loadDatabaseMeta(rep, dbids[i]);
+                DatabaseMeta databaseMeta = rep.loadDatabaseMeta(dbids[i]);
                 databaseMeta.shareVariablesWith(this);
                 
                 DatabaseMeta check = findDatabase(databaseMeta.getName()); // Check if there already is one in the transformation
@@ -2279,7 +2279,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             long dbids[] = rep.getClusterIDs();
             for (int i = 0; i < dbids.length; i++)
             {
-                ClusterSchema clusterSchema = new ClusterSchema(rep, dbids[i], slaveServers);
+                ClusterSchema clusterSchema = rep.loadClusterSchema(dbids[i], slaveServers);
                 clusterSchema.shareVariablesWith(this);
                 ClusterSchema check = findClusterSchema(clusterSchema.getName()); // Check if there already is one in the transformation
                 if (check==null || overWriteShared) 

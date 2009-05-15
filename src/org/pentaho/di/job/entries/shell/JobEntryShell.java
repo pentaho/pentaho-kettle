@@ -42,8 +42,8 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -63,6 +63,8 @@ import org.w3c.dom.Node;
  */
 public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryShell.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String filename;
 
 	private String workDirectory;
@@ -90,19 +92,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	public JobEntryShell(String name)
 	{
 		super(name, "");
-		setJobEntryType(JobEntryType.SHELL);
 	}
 
 	public JobEntryShell()
 	{
 		this("");
 		clear();
-	}
-
-	public JobEntryShell(JobEntryBase jeb)
-	{
-		super(jeb);
-		setJobEntryType(JobEntryType.SHELL);
 	}
 
 	public Object clone()
@@ -351,7 +346,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 				appender = LogWriter.createFileAppender(environmentSubstitute(getLogFilename()), true,setAppendLogfile);
 			} catch (KettleException e)
 			{
-				log.logError(toString(),Messages.getString("JobEntryShell.Error.UnableopenAppenderFile",getLogFilename(), e.toString()));
+				log.logError(toString(),BaseMessages.getString(PKG, "JobEntryShell.Error.UnableopenAppenderFile",getLogFilename(), e.toString()));
 				log.logError(toString(), Const.getStackTracker(e));
 				result.setNrErrors(1);
 				result.setResult(false);
@@ -381,7 +376,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		List<RowMetaAndData> rows = result.getRows();
 		
 		if(log.isDetailed())
-			log.logDetailed(toString(), Messages.getString("JobEntryShell.Log.FoundPreviousRows",""+(rows != null ? rows.size() : 0)));
+			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryShell.Log.FoundPreviousRows",""+(rows != null ? rows.size() : 0)));
 		
 
 		while ((first && !execPerRow)
@@ -474,7 +469,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			String base[] = null;
 			List<String> cmds = new ArrayList<String>();
 
-			if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobShell.RunningOn",Const.getOS()));
+			if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "JobShell.RunningOn",Const.getOS()));
 
 			if(insertScript)
 			{
@@ -637,7 +632,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 					first = false;
 				command.append((String) it.next());
 			}
-			if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobShell.ExecCommand",command.toString()));
+			if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "JobShell.ExecCommand",command.toString()));
 			
 
 			// Build the environment variable list...
@@ -668,7 +663,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			new Thread(outputLogger).start();
 
 			proc.waitFor();
-			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobShell.CommandFinished",command.toString()));
+			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobShell.CommandFinished",command.toString()));
 			
 			
 			
@@ -678,7 +673,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			if (result.getExitStatus() != 0)
 			{
 				if(log.isDetailed()) 
-					log.logDetailed(toString(), Messages.getString("JobShell.ExitStatus",environmentSubstitute(getFilename()),""+result.getExitStatus()));
+					log.logDetailed(toString(), BaseMessages.getString(PKG, "JobShell.ExitStatus",environmentSubstitute(getFilename()),""+result.getExitStatus()));
 
 				result.setNrErrors(1);
 			}
@@ -690,15 +685,15 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	
 		} catch (IOException ioe)
 		{
-			log.logError(toString(), Messages.getString("JobShell.ErrorRunningShell",environmentSubstitute(getFilename()),ioe.toString()));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobShell.ErrorRunningShell",environmentSubstitute(getFilename()),ioe.toString()));
 			result.setNrErrors(1);
 		} catch (InterruptedException ie)
 		{
-			log.logError(toString(), Messages.getString("JobShell.Shellinterupted",environmentSubstitute(getFilename()),ie.toString()));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobShell.Shellinterupted",environmentSubstitute(getFilename()),ie.toString()));
 			result.setNrErrors(1);
 		} catch (Exception e)
 		{
-			log.logError(toString(), Messages.getString("JobShell.UnexpectedError",environmentSubstitute(getFilename()),e.toString()));
+			log.logError(toString(), BaseMessages.getString(PKG, "JobShell.UnexpectedError",environmentSubstitute(getFilename()),e.toString()));
 			result.setNrErrors(1);
 		}
 		finally {
@@ -709,7 +704,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 					tempFile.delete();
 				}
 				catch(Exception e) {
-					Messages.getString("JobShell.UnexpectedError",tempFile.toString(),e.toString());
+					BaseMessages.getString(PKG, "JobShell.UnexpectedError",tempFile.toString(),e.toString());
 				}
 			}
 		}

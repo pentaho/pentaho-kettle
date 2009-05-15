@@ -19,6 +19,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -35,7 +36,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @since 13-may-2003
  */
 public class AddSequence extends BaseStep implements StepInterface
-{
+{	
+	private static Class<?> PKG = AddSequence.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private AddSequenceMeta meta;	
 	private AddSequenceData data;
 	
@@ -67,11 +70,11 @@ public class AddSequence extends BaseStep implements StepInterface
 						                                 environmentSubstitute(meta.getSequenceName()), 
 						                                 meta.getValuename());
 			} catch (KettleDatabaseException dbe) {
-				throw new KettleStepException(Messages.getString("AddSequence.Exception.ErrorReadingSequence", meta.getSequenceName()), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleStepException(BaseMessages.getString(PKG, "AddSequence.Exception.ErrorReadingSequence", meta.getSequenceName()), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		} else {
 			// This should never happen, but if it does, don't continue!!!
-			throw new KettleStepException(Messages.getString("AddSequence.Exception.NoSpecifiedMethod")); //$NON-NLS-1$
+			throw new KettleStepException(BaseMessages.getString(PKG, "AddSequence.Exception.NoSpecifiedMethod")); //$NON-NLS-1$
 		}
 		
 		if (next!=null)
@@ -85,7 +88,7 @@ public class AddSequence extends BaseStep implements StepInterface
 		}
 		else
 		{
-			throw new KettleStepException(Messages.getString("AddSequence.Exception.CouldNotFindNextValueForSequence")+meta.getValuename()); //$NON-NLS-1$
+			throw new KettleStepException(BaseMessages.getString(PKG, "AddSequence.Exception.CouldNotFindNextValueForSequence")+meta.getValuename()); //$NON-NLS-1$
 		}
 	}
 	
@@ -109,21 +112,21 @@ public class AddSequence extends BaseStep implements StepInterface
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
         }
 
-        if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("AddSequence.Log.ReadRow")+getLinesRead()+" : "+getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
+        if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "AddSequence.Log.ReadRow")+getLinesRead()+" : "+getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		try
 		{
 			putRow(data.outputRowMeta, addSequence(getInputRowMeta(), r)); 			
 			
-            if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("AddSequence.Log.WriteRow")+getLinesWritten()+" : "+getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
+            if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "AddSequence.Log.WriteRow")+getLinesWritten()+" : "+getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
 			if (checkFeedback(getLinesRead())) 
 			{
-				if(log.isBasic()) logBasic(Messages.getString("AddSequence.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+				if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "AddSequence.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			}
 		}
 		catch(KettleException e)
 		{
-			logError(Messages.getString("AddSequence.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "AddSequence.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
@@ -155,12 +158,12 @@ public class AddSequence extends BaseStep implements StepInterface
 					{
 						data.getDb().connect(getPartitionID()); 
 					}
-					if (log.isDetailed()) logDetailed(Messages.getString("AddSequence.Log.ConnectedDB")); //$NON-NLS-1$
+					if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "AddSequence.Log.ConnectedDB")); //$NON-NLS-1$
 					return true;
 				}
 				catch(KettleDatabaseException dbe)
 				{
-					logError(Messages.getString("AddSequence.Log.CouldNotConnectToDB")+dbe.getMessage()); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "AddSequence.Log.CouldNotConnectToDB")+dbe.getMessage()); //$NON-NLS-1$
 				}
 			}
 			else
@@ -174,7 +177,7 @@ public class AddSequence extends BaseStep implements StepInterface
 				}
 				catch ( NumberFormatException ex)
 				{
-					logError(Messages.getString("AddSequence.Log.CouldNotParseCounterValue", "start", meta.getStartAt(), environmentSubstitute(meta.getStartAt()), ex.getMessage())); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "AddSequence.Log.CouldNotParseCounterValue", "start", meta.getStartAt(), environmentSubstitute(meta.getStartAt()), ex.getMessage())); //$NON-NLS-1$
 					doAbort = true;
 				}
 				
@@ -184,7 +187,7 @@ public class AddSequence extends BaseStep implements StepInterface
 				}
 				catch ( NumberFormatException ex)
 				{
-					logError(Messages.getString("AddSequence.Log.CouldNotParseCounterValue", "increment", meta.getIncrementBy(), environmentSubstitute(meta.getIncrementBy()), ex.getMessage())); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "AddSequence.Log.CouldNotParseCounterValue", "increment", meta.getIncrementBy(), environmentSubstitute(meta.getIncrementBy()), ex.getMessage())); //$NON-NLS-1$
 					doAbort = true;
 				}				
 
@@ -194,7 +197,7 @@ public class AddSequence extends BaseStep implements StepInterface
 				}
 				catch ( NumberFormatException ex)
 				{
-					logError(Messages.getString("AddSequence.Log.CouldNotParseCounterValue", "increment", meta.getMaxValue(), environmentSubstitute(meta.getMaxValue()), ex.getMessage())); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "AddSequence.Log.CouldNotParseCounterValue", "increment", meta.getMaxValue(), environmentSubstitute(meta.getMaxValue()), ex.getMessage())); //$NON-NLS-1$
 					doAbort = true;
 				}				
 				
@@ -231,7 +234,7 @@ public class AddSequence extends BaseStep implements StepInterface
 							   	 (data.counter.getIncrement() != data.increment) ||								 
 								 (data.counter.getMaximum() != data.maximum) )
 							{
-								logError(Messages.getString("AddSequence.Log.CountersWithDifferentCharacteristics", data.getLookup())); //$NON-NLS-1$
+								logError(BaseMessages.getString(PKG, "AddSequence.Log.CountersWithDifferentCharacteristics", data.getLookup())); //$NON-NLS-1$
 								return false;
 						    }
 						}
@@ -240,12 +243,12 @@ public class AddSequence extends BaseStep implements StepInterface
 				}
 				else
 				{
-					logError(Messages.getString("AddSequence.Log.TransformationCountersHashtableNotAllocated")); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "AddSequence.Log.TransformationCountersHashtableNotAllocated")); //$NON-NLS-1$
 				}
 			}
 			else
 			{
-				logError(Messages.getString("AddSequence.Log.NeedToSelectSequence")); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "AddSequence.Log.NeedToSelectSequence")); //$NON-NLS-1$
 			}
 		}
 		return false;

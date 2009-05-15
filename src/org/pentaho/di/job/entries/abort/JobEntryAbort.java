@@ -24,8 +24,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -39,20 +39,17 @@ import org.w3c.dom.Node;
  * @since 12-02-2007
  */
 public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryInterface {
+  private static Class<?> PKG = JobEntryAbort.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   private String messageAbort;
 
   public JobEntryAbort(String n, String scr) {
     super(n, ""); //$NON-NLS-1$
     messageAbort = null;
-    setJobEntryType(JobEntryType.ABORT);
   }
 
   public JobEntryAbort() {
     this("", ""); //$NON-NLS-1$//$NON-NLS-2$
-  }
-
-  public JobEntryAbort(JobEntryBase jeb) {
-    super(jeb);
   }
 
   public Object clone() {
@@ -74,7 +71,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
       super.loadXML(entrynode, databases, slaveServers);
       messageAbort = XMLHandler.getTagValue(entrynode, "message"); //$NON-NLS-1$
     } catch (Exception e) {
-      throw new KettleXMLException(Messages.getString("JobEntryAbort.UnableToLoadFromXml.Label"), e); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryAbort.UnableToLoadFromXml.Label"), e); //$NON-NLS-1$
     }
   }
 
@@ -83,7 +80,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
       super.loadRep(rep, id_jobentry, databases, slaveServers);
       messageAbort = rep.getJobEntryAttributeString(id_jobentry, "message"); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
-      throw new KettleException(Messages.getString("JobEntryAbort.UnableToLoadFromRepo.Label", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "JobEntryAbort.UnableToLoadFromRepo.Label", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -96,7 +93,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
 
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(
-          Messages.getString("JobEntryAbort.UnableToSaveToRepo.Label", String.valueOf(id_job)), dbe); //$NON-NLS-1$
+          BaseMessages.getString(PKG, "JobEntryAbort.UnableToSaveToRepo.Label", String.valueOf(id_job)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -108,7 +105,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
     try {
       // Return False
       if (RealMessageabort == null) {
-        Returnmessage = Messages.getString("JobEntryAbort.Meta.CheckResult.Label"); //$NON-NLS-1$
+        Returnmessage = BaseMessages.getString(PKG, "JobEntryAbort.Meta.CheckResult.Label"); //$NON-NLS-1$
       } else {
         Returnmessage = RealMessageabort;
 
@@ -118,7 +115,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
       return false;
     } catch (Exception e) {
       result.setNrErrors(1);
-      log.logError(toString(), Messages.getString("JobEntryAbort.Meta.CheckResult.CouldNotExecute") + e.toString()); //$NON-NLS-1$
+      log.logError(toString(), BaseMessages.getString(PKG, "JobEntryAbort.Meta.CheckResult.CouldNotExecute") + e.toString()); //$NON-NLS-1$
       return false;
     }
   }

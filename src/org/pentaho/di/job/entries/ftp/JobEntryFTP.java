@@ -37,10 +37,11 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -48,14 +49,13 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
-import org.pentaho.di.core.util.StringUtil;
 import org.w3c.dom.Node;
 
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPException;
-import com.enterprisedt.net.ftp.FTPTransferType;
 import com.enterprisedt.net.ftp.FTPFile;
+import com.enterprisedt.net.ftp.FTPTransferType;
 /**
  * This defines an FTP job entry.
  *
@@ -66,6 +66,8 @@ import com.enterprisedt.net.ftp.FTPFile;
 
 public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryFTP.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static Logger log4j = Logger.getLogger(JobEntryFTP.class);
 	
 	private String serverName;
@@ -160,18 +162,12 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		createmovefolder=false;
 		
 		setID(-1L);
-	    setJobEntryType(JobEntryType.FTP);
 		setControlEncoding(DEFAULT_CONTROL_ENCODING);
 	}
 
 	public JobEntryFTP()
 	{
 		this("");
-	}
-
-	public JobEntryFTP(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -799,7 +795,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
-		log4j.info(Messages.getString("JobEntryFTP.Started", serverName)); //$NON-NLS-1$
+		log4j.info(BaseMessages.getString(PKG, "JobEntryFTP.Started", serverName)); //$NON-NLS-1$
 		
 		Result result = previousResult;
 		result.setNrErrors(1);
@@ -816,13 +812,13 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		{
 			if(Const.isEmpty(movetodirectory))
 			{
-				log.logError(toString(), Messages.getString("JobEntryFTP.MoveToFolderEmpty"));
+				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFTP.MoveToFolderEmpty"));
 				return result;
 			}
 				
 		}
 		
-		if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.Start")); //$NON-NLS-1$
+		if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.Start")); //$NON-NLS-1$
 
         FTPClient ftpclient=null;
         String realMoveToFolder=null;
@@ -844,7 +840,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
           	  String realProxy_host = environmentSubstitute(proxyHost);
           	  ftpclient.setRemoteAddr(InetAddress.getByName(realProxy_host));
           	  if ( log.isDetailed() )
-          	      log.logDetailed(toString(), Messages.getString("JobEntryFTP.OpenedProxyConnectionOn",realProxy_host));
+          	      log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.OpenedProxyConnectionOn",realProxy_host));
 
           	  // FIXME: Proper default port for proxy    	  
           	  int port = Const.toInt(environmentSubstitute(proxyPort), 21);
@@ -858,26 +854,26 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
                 ftpclient.setRemoteAddr(InetAddress.getByName(realServername));
                 
                 if ( log.isDetailed() )
-          	      log.logDetailed(toString(), Messages.getString("JobEntryFTP.OpenedConnectionTo",realServername));                
+          	      log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.OpenedConnectionTo",realServername));                
             }
             
             
 			// set activeConnection connectmode ...
             if (activeConnection){
                 ftpclient.setConnectMode(FTPConnectMode.ACTIVE);
-                if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetActive")); //$NON-NLS-1$
+                if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.SetActive")); //$NON-NLS-1$
             }
             else{
                 ftpclient.setConnectMode(FTPConnectMode.PASV);
-                if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetPassive")); //$NON-NLS-1$
+                if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.SetPassive")); //$NON-NLS-1$
             }
 			
 			// Set the timeout
 			ftpclient.setTimeout(timeout);
-		      if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetTimeout", String.valueOf(timeout))); //$NON-NLS-1$
+		      if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.SetTimeout", String.valueOf(timeout))); //$NON-NLS-1$
 			
 			ftpclient.setControlEncoding(controlEncoding);
-		      if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetEncoding", controlEncoding)); //$NON-NLS-1$
+		      if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.SetEncoding", controlEncoding)); //$NON-NLS-1$
 
 			// login to ftp host ...
             ftpclient.connect();
@@ -893,14 +889,14 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
             
             ftpclient.login(realUsername, realPassword);
 			//  Remove password from logging, you don't know where it ends up.
-			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.LoggedIn", realUsername)); //$NON-NLS-1$
+			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.LoggedIn", realUsername)); //$NON-NLS-1$
 
 			// move to spool dir ...
 			if (!Const.isEmpty(ftpDirectory)) {
                 String realFtpDirectory = environmentSubstitute(ftpDirectory);
                 realFtpDirectory=normalizePath(realFtpDirectory);
                 ftpclient.chdir(realFtpDirectory);
-                if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.ChangedDir", realFtpDirectory)); //$NON-NLS-1$
+                if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.ChangedDir", realFtpDirectory)); //$NON-NLS-1$
 			}	
 
 			//Create move to folder if necessary
@@ -919,9 +915,9 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 				if(!folderExist){
 					if(createmovefolder){
 						ftpclient.mkdir(realMoveToFolder);
-						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.MoveToFolderCreated",realMoveToFolder));
+						if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.MoveToFolderCreated",realMoveToFolder));
 					}else{
-						log.logError(toString(),Messages.getString("JobEntryFTP.MoveToFolderNotExist"));
+						log.logError(toString(),BaseMessages.getString(PKG, "JobEntryFTP.MoveToFolderNotExist"));
 						exitjobentry=true;
 						NrErrors++;
 					}
@@ -933,19 +929,19 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 				// Get all the files in the current directory...
 				FTPFile[] ftpFiles = ftpclient.dirDetails(".");
 				
-			    //if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.FoundNFiles", String.valueOf(filelist.length))); //$NON-NLS-1$
-				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.FoundNFiles", String.valueOf(ftpFiles.length))); //$NON-NLS-1$
+			    //if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.FoundNFiles", String.valueOf(filelist.length))); //$NON-NLS-1$
+				if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.FoundNFiles", String.valueOf(ftpFiles.length))); //$NON-NLS-1$
 			    
 				// set transfertype ...
 				if (binaryMode) 
 				{
 					ftpclient.setType(FTPTransferType.BINARY);
-			        if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetBinary")); //$NON-NLS-1$
+			        if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.SetBinary")); //$NON-NLS-1$
 				}
 				else
 				{
 					ftpclient.setType(FTPTransferType.ASCII);
-			        if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetAscii")); //$NON-NLS-1$
+			        if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.SetAscii")); //$NON-NLS-1$
 				}
 	
 				// Some FTP servers return a message saying no files found as a string in the filenlist
@@ -978,17 +974,17 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 					
 					if(parentJob.isStopped()){
 						exitjobentry=true;
-						throw new Exception(Messages.getString("JobEntryFTP.JobStopped"));
+						throw new Exception(BaseMessages.getString(PKG, "JobEntryFTP.JobStopped"));
 					}
 					
 					if(successConditionBroken){
-						throw new Exception(Messages.getString("JobEntryFTP.SuccesConditionBroken",""+NrErrors));
+						throw new Exception(BaseMessages.getString(PKG, "JobEntryFTP.SuccesConditionBroken",""+NrErrors));
 					}
 				
 					boolean getIt = true;
 					
 					String filename=ftpFile.getName();
-					if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobEntryFTP.AnalysingFile",filename));
+					if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobEntryFTP.AnalysingFile",filename));
 					
 					// We get only files
 					if(ftpFile.isDir() || ftpFile.isLink()) getIt=false;
@@ -1008,14 +1004,14 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 					}catch (Exception e){
 						// Update errors number
 						updateErrors();
-						log.logError(toString(),Messages.getString("JobFTP.UnexpectedError",e.getMessage()));
+						log.logError(toString(),BaseMessages.getString(PKG, "JobFTP.UnexpectedError",e.getMessage()));
 					}
 				} // end for
 			}
 		}
 		catch(Exception e){
 			if(!successConditionBroken && !exitjobentry) updateErrors();
-			log.logError(toString(), Messages.getString("JobEntryFTP.ErrorGetting", e.getMessage())); //$NON-NLS-1$
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFTP.ErrorGetting", e.getMessage())); //$NON-NLS-1$
 		}
         finally{
             if (ftpclient!=null) {
@@ -1023,7 +1019,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
                     ftpclient.quit();
                 }
                 catch(Exception e) {
-                	log.logError(toString(), Messages.getString("JobEntryFTP.ErrorQuitting", e.getMessage())); //$NON-NLS-1$
+                	log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFTP.ErrorQuitting", e.getMessage())); //$NON-NLS-1$
                 }
             }
         }
@@ -1044,12 +1040,12 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
         if ((!onlyGettingNewFiles) ||
         	(onlyGettingNewFiles && needsDownload(targetFilename)))
         {
-        	if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.GettingFile",filename, environmentSubstitute(targetDirectory)));  //$NON-NLS-1$
+        	if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.GettingFile",filename, environmentSubstitute(targetDirectory)));  //$NON-NLS-1$
 			ftpclient.get(targetFilename, filename);
 					
 			// Update retrieved files
 			updateRetrievedFiles();
-            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.GotFile", filename)); //$NON-NLS-1$
+            if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.GotFile", filename)); //$NON-NLS-1$
 			
             // Add filename to result filenames
             addFilenameToResultFilenames(log, result, parentJob, targetFilename);
@@ -1058,7 +1054,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			if (remove) {
 				ftpclient.delete(filename);
 				if(log.isDetailed()) 
-		            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.DeletedFile", filename)); //$NON-NLS-1$
+		            if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.DeletedFile", filename)); //$NON-NLS-1$
 			}else
 			{
 				if(movefiles){
@@ -1066,7 +1062,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 					ftpclient.rename(filename, realMoveToFolder+FILE_SEPARATOR+filename);
 					
 					if(log.isDetailed()) 
-						log.logDetailed(toString(), Messages.getString("JobEntryFTP.MovedFile",filename,realMoveToFolder));
+						log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.MovedFile",filename,realMoveToFolder));
 				}
 			}
         }
@@ -1096,10 +1092,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			
 			// Add to the result files...
 			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(), toString());
-            resultFile.setComment(Messages.getString("JobEntryFTP.Downloaded", serverName)); //$NON-NLS-1$
+            resultFile.setComment(BaseMessages.getString(PKG, "JobEntryFTP.Downloaded", serverName)); //$NON-NLS-1$
 			result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 			
-            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.FileAddedToResult", filename)); //$NON-NLS-1$
+            if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.FileAddedToResult", filename)); //$NON-NLS-1$
 		}catch (Exception e){
 			throw new KettleException(e);
 		}
@@ -1115,8 +1111,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	{
 		if(log.isDetailed()){
 			log.logDetailed(toString(), "=======================================");
-			log.logDetailed(toString(), Messages.getString("JobEntryFTP.Log.Info.FilesInError","" + NrErrors));
-			log.logDetailed(toString(), Messages.getString("JobEntryFTP.Log.Info.FilesRetrieved","" + NrfilesRetrieved));
+			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.Log.Info.FilesInError","" + NrErrors));
+			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.Log.Info.FilesRetrieved","" + NrfilesRetrieved));
 			log.logDetailed(toString(), "=======================================");
 		}
 	}

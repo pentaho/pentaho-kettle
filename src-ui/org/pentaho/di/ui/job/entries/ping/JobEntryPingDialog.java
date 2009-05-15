@@ -17,7 +17,6 @@
 package org.pentaho.di.ui.job.entries.ping;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -33,20 +32,21 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
+import org.pentaho.di.job.entries.ping.JobEntryPing;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.ping.JobEntryPing;
-import org.pentaho.di.job.entries.ping.Messages;
 
 /**
  * This dialog allows you to edit the ping job entry settings. 
@@ -56,6 +56,8 @@ import org.pentaho.di.job.entries.ping.Messages;
  */
 public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryPing.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label    wlName;
     private Text     wName;
     private FormData fdlName, fdName;
@@ -94,7 +96,7 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryPing) jobEntryInt;
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobPing.Name.Default"));
+            this.jobEntry.setName(BaseMessages.getString(PKG, "JobPing.Name.Default"));
     }
 
     public JobEntryInterface open()
@@ -120,14 +122,14 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobPing.Title"));
+        shell.setText(BaseMessages.getString(PKG, "JobPing.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("JobPing.Name.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "JobPing.Name.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
@@ -145,7 +147,7 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
 
         // hostname line
         wlHostname = new Label(shell, SWT.RIGHT);
-        wlHostname.setText(Messages.getString("JobPing.Hostname.Label"));
+        wlHostname.setText(BaseMessages.getString(PKG, "JobPing.Hostname.Label"));
         props.setLook(wlHostname);
         fdlHostname = new FormData();
         fdlHostname.left = new FormAttachment(0, 0);
@@ -172,7 +174,7 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
         });
         
     	wlPingType = new Label(shell, SWT.RIGHT);
-     	wlPingType.setText(Messages.getString("JobPing.PingType.Label"));
+     	wlPingType.setText(BaseMessages.getString(PKG, "JobPing.PingType.Label"));
      	props.setLook(wlPingType);
      	fdlPingType = new FormData();
      	fdlPingType.left = new FormAttachment(0, 0);
@@ -180,9 +182,9 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
      	fdlPingType.top = new FormAttachment(wHostname, margin);
      	wlPingType.setLayoutData(fdlPingType);
      	wPingType = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-     	wPingType.add(Messages.getString("JobPing.ClassicPing.Label"));
-     	wPingType.add(Messages.getString("JobPing.SystemPing.Label"));
-     	wPingType.add(Messages.getString("JobPing.BothPings.Label"));
+     	wPingType.add(BaseMessages.getString(PKG, "JobPing.ClassicPing.Label"));
+     	wPingType.add(BaseMessages.getString(PKG, "JobPing.SystemPing.Label"));
+     	wPingType.add(BaseMessages.getString(PKG, "JobPing.BothPings.Label"));
      	wPingType.select(1); // +1: starts at -1
      	props.setLook(wPingType);
      	fdPingType = new FormData();
@@ -202,7 +204,7 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
 
 		// Timeout
 		wlTimeOut = new Label(shell, SWT.RIGHT);
-		wlTimeOut.setText(Messages.getString("JobPing.TimeOut.Label"));
+		wlTimeOut.setText(BaseMessages.getString(PKG, "JobPing.TimeOut.Label"));
 		props.setLook(wlTimeOut);
 		fdlTimeOut = new FormData();
 		fdlTimeOut.left = new FormAttachment(0, 0);
@@ -211,7 +213,7 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
 		wlTimeOut.setLayoutData(fdlTimeOut);
 
 		wTimeOut = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wlTimeOut.setToolTipText(Messages.getString("JobPing.TimeOut.Tooltip"));
+		wlTimeOut.setToolTipText(BaseMessages.getString(PKG, "JobPing.TimeOut.Tooltip"));
 		props.setLook(wTimeOut);
 		wTimeOut.addModifyListener(lsMod);
 		fdTimeOut = new FormData();
@@ -223,7 +225,7 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
 
 		// Nbr packets to send
 		wlNbrPackets = new Label(shell, SWT.RIGHT);
-		wlNbrPackets.setText(Messages.getString("JobPing.NrPackets.Label"));
+		wlNbrPackets.setText(BaseMessages.getString(PKG, "JobPing.NrPackets.Label"));
 		props.setLook(wlNbrPackets);
 		fdlNbrPackets = new FormData();
 		fdlNbrPackets.left = new FormAttachment(0, 0);
@@ -242,7 +244,7 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
 
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         FormData fd = new FormData();
         fd.right = new FormAttachment(50, -10);
         fd.bottom = new FormAttachment(100, 0);
@@ -250,7 +252,7 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
         wOK.setLayoutData(fd);
 
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         fd = new FormData();
         fd.left = new FormAttachment(50, 10);
         fd.bottom = new FormAttachment(100, 0);
@@ -359,8 +361,8 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
  	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
        }

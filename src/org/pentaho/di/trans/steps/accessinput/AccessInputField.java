@@ -11,8 +11,9 @@
  
 package org.pentaho.di.trans.steps.accessinput;
 
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 
 
 /**
@@ -23,6 +24,8 @@ import org.pentaho.di.core.row.ValueMeta;
  */
 public class AccessInputField implements Cloneable
 {
+	private static Class<?> PKG = AccessInputField.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public final static int TYPE_TRIM_NONE  = 0;
     public final static int TYPE_TRIM_LEFT  = 1;
     public final static int TYPE_TRIM_RIGHT = 2;
@@ -31,10 +34,10 @@ public class AccessInputField implements Cloneable
     public final static String trimTypeCode[] = { "none", "left", "right", "both" };
     
     public final static String trimTypeDesc[] = {
-      Messages.getString("AccessInputField.TrimType.None"),
-      Messages.getString("AccessInputField.TrimType.Left"),
-      Messages.getString("AccessInputField.TrimType.Right"),
-      Messages.getString("AccessInputField.TrimType.Both")
+      BaseMessages.getString(PKG, "AccessInputField.TrimType.None"),
+      BaseMessages.getString(PKG, "AccessInputField.TrimType.Left"),
+      BaseMessages.getString(PKG, "AccessInputField.TrimType.Right"),
+      BaseMessages.getString(PKG, "AccessInputField.TrimType.Both")
     };
     
     

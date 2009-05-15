@@ -13,19 +13,17 @@
 
 
 package org.pentaho.di.job.entries.evaluatetablecontent;
-import java.util.ArrayList;
-
-import org.w3c.dom.Node;
 import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Result;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -35,8 +33,8 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -44,6 +42,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.w3c.dom.Node;
 
 
 /**
@@ -55,6 +54,8 @@ import org.pentaho.di.resource.ResourceEntry.ResourceType;
  */
 public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryEvalTableContent.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public boolean isAddRowsResult;
 	
 	public boolean isClearResultList;
@@ -74,12 +75,12 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 	private static final String selectCount="SELECT count(*) FROM ";
 	
 	public static final String[] successConditionsDesc = new String[] { 
-		Messages.getString("JobEntryEvalTableContent.SuccessWhenRowCountEqual.Label"), 
-		Messages.getString("JobEntryEvalTableContent.SuccessWhenRowCountDifferent.Label"),
-		Messages.getString("JobEntryEvalTableContent.SuccessWhenRowCountSmallerThan.Label"),
-		Messages.getString("JobEntryEvalTableContent.SuccessWhenRowCountSmallerOrEqualThan.Label"),
-		Messages.getString("JobEntryEvalTableContent.SuccessWhenRowCountGreaterThan.Label"),
-		Messages.getString("JobEntryEvalTableContent.SuccessWhenRowCountGreaterOrEqual.Label")
+		BaseMessages.getString(PKG, "JobEntryEvalTableContent.SuccessWhenRowCountEqual.Label"), 
+		BaseMessages.getString(PKG, "JobEntryEvalTableContent.SuccessWhenRowCountDifferent.Label"),
+		BaseMessages.getString(PKG, "JobEntryEvalTableContent.SuccessWhenRowCountSmallerThan.Label"),
+		BaseMessages.getString(PKG, "JobEntryEvalTableContent.SuccessWhenRowCountSmallerOrEqualThan.Label"),
+		BaseMessages.getString(PKG, "JobEntryEvalTableContent.SuccessWhenRowCountGreaterThan.Label"),
+		BaseMessages.getString(PKG, "JobEntryEvalTableContent.SuccessWhenRowCountGreaterOrEqual.Label")
 	
 	};
 	public static final String[] successConditionsCode = new String[] { 
@@ -116,7 +117,6 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 	    tablename=null;
 		connection=null;
 		setID(-1L);
-		setJobEntryType(JobEntryType.EVAL_TABLE_CONTENT);
 	}
 
 	public JobEntryEvalTableContent()
@@ -124,11 +124,6 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		this("");
 	}
 
-	public JobEntryEvalTableContent(JobEntryBase jeb)
-	{
-		super(jeb);
-	}
-    
     public Object clone()
     {
     	JobEntryEvalTableContent je = (JobEntryEvalTableContent) super.clone();
@@ -207,7 +202,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		}
 		catch(KettleException e)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryEvalTableContent.UnableLoadXML"),e);
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryEvalTableContent.UnableLoadXML"),e);
 		}
 	}
 
@@ -243,7 +238,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryEvalTableContent.UnableLoadRep",""+id_jobentry), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryEvalTableContent.UnableLoadRep",""+id_jobentry), dbe);
 		}
 	}
 	private static int getSuccessConditionByCode(String tt) {
@@ -281,7 +276,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryEvalTableContent.UnableSaveRep",""+id_job), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryEvalTableContent.UnableSaveRep",""+id_job), dbe);
 		}
 	}
 	
@@ -317,7 +312,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		boolean successOK=false;
 		
 		int nrRowsLimit=Const.toInt(environmentSubstitute(limit),0);
-		if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryEvalTableContent.Log.nrRowsLimit",""+nrRowsLimit));
+		if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Log.nrRowsLimit",""+nrRowsLimit));
     	
 
 		if (connection!=null)
@@ -332,13 +327,13 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		        {
 		        	String realCustomSQL=customSQL;
 		        	if(isUseVars) realCustomSQL=environmentSubstitute(realCustomSQL);
-		        	if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobEntryEvalTableContent.Log.EnteredCustomSQL",realCustomSQL));
+		        	if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Log.EnteredCustomSQL",realCustomSQL));
 		        	
 		        	if(!Const.isEmpty(realCustomSQL))
 		        	{
 		        		countSQLStatement=realCustomSQL;
 		        	}else
-		        		log.logError(toString(), Messages.getString("JobEntryEvalTableContent.Error.NoCustomSQL"));
+		        		log.logError(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Error.NoCustomSQL"));
 		        	
 		        }else
 		        {
@@ -355,12 +350,12 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 			        		countSQLStatement=selectCount + db.getDatabaseMeta().quoteField(realTablename);
 			        	}
 		        	}else
-		        		log.logError(toString(), Messages.getString("JobEntryEvalTableContent.Error.NoTableName"));
+		        		log.logError(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Error.NoTableName"));
 		        }
 		       
 				if(countSQLStatement!=null)
 				{
-					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryEvalTableContent.Log.RunSQLStatement",countSQLStatement));
+					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Log.RunSQLStatement",countSQLStatement));
 						
 					if(iscustomSQL)
 					{
@@ -382,7 +377,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 							if(isAddRowsResult && iscustomSQL)  if(rows!=null) result.getRows().addAll(rows);	
 						}else
 						{
-							if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobEntryEvalTableContent.Log.customSQLreturnedNothing",countSQLStatement));
+							if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Log.customSQLreturnedNothing",countSQLStatement));
 						}
 						
 					}else
@@ -393,7 +388,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 							rowsCount=row.getInteger(0);
 						}
 					}
-					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryEvalTableContent.Log.NrRowsReturned",""+rowsCount));
+					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Log.NrRowsReturned",""+rowsCount));
 					switch(successCondition)
 		             {				
 		                case JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_EQUAL: 
@@ -421,14 +416,14 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 			}
 			catch(KettleException dbe)
 			{
-				log.logError(toString(), Messages.getString("JobEntryEvalTableContent.Error.RunningEntry",dbe.getMessage()));
+				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Error.RunningEntry",dbe.getMessage()));
 			}finally{
 				if(db!=null) db.disconnect();
 			}
 		}
 		else
 		{
-			log.logError(toString(),Messages.getString("JobEntryEvalTableContent.NoDbConnection"));
+			log.logError(toString(),BaseMessages.getString(PKG, "JobEntryEvalTableContent.NoDbConnection"));
 		}
 
 		if(successOK)

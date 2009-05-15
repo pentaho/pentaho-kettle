@@ -40,11 +40,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.accessoutput.AccessOutputMeta;
-import org.pentaho.di.trans.steps.accessoutput.Messages;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.TextVar;
@@ -55,6 +55,8 @@ import com.healthmarketscience.jackcess.Database;
 
 public class AccessOutputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = AccessOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label        wlFilename;
     private Button       wbbFilename; // Browse: add file or directory
     private TextVar      wFilename;
@@ -132,11 +134,11 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("AccessOutputDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "AccessOutputDialog.DialogTitle"));
 		
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -155,7 +157,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 
         // Filename line
         wlFilename=new Label(shell, SWT.RIGHT);
-        wlFilename.setText(Messages.getString("AccessOutputDialog.Filename.Label"));
+        wlFilename.setText(BaseMessages.getString(PKG, "AccessOutputDialog.Filename.Label"));
         props.setLook(wlFilename);
         fdlFilename=new FormData();
         fdlFilename.left = new FormAttachment(0, 0);
@@ -165,15 +167,15 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 
         wbbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
         props.setLook(wbbFilename);
-        wbbFilename.setText(Messages.getString("System.Button.Browse"));
-        wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+        wbbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+        wbbFilename.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
         fdbFilename=new FormData();
         fdbFilename.right= new FormAttachment(100, 0);
         fdbFilename.top  = new FormAttachment(wStepname, margin);
         wbbFilename.setLayoutData(fdbFilename);
 
         wFilename=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wFilename.setToolTipText(Messages.getString("AccessOutputDialog.Filename.Tooltip"));
+        wFilename.setToolTipText(BaseMessages.getString(PKG, "AccessOutputDialog.Filename.Tooltip"));
         props.setLook(wFilename);
         wFilename.addModifyListener(lsMod);
         fdFilename=new FormData();
@@ -184,7 +186,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         
 		// Open new File at Init
 		wlDoNotOpenNewFileInit=new Label(shell, SWT.RIGHT);
-		wlDoNotOpenNewFileInit.setText(Messages.getString("AccessOutputDialog.DoNotOpenNewFileInit.Label"));
+		wlDoNotOpenNewFileInit.setText(BaseMessages.getString(PKG, "AccessOutputDialog.DoNotOpenNewFileInit.Label"));
  		props.setLook(wlDoNotOpenNewFileInit);
 		fdlDoNotOpenNewFileInit=new FormData();
 		fdlDoNotOpenNewFileInit.left = new FormAttachment(0, 0);
@@ -192,7 +194,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 		fdlDoNotOpenNewFileInit.right= new FormAttachment(middle, -margin);
 		wlDoNotOpenNewFileInit.setLayoutData(fdlDoNotOpenNewFileInit);
 		wDoNotOpenNewFileInit=new Button(shell, SWT.CHECK );
-		wDoNotOpenNewFileInit.setToolTipText(Messages.getString("AccessOutputDialog.DoNotOpenNewFileInit.Tooltip"));
+		wDoNotOpenNewFileInit.setToolTipText(BaseMessages.getString(PKG, "AccessOutputDialog.DoNotOpenNewFileInit.Tooltip"));
  		props.setLook(wDoNotOpenNewFileInit);
 		fdDoNotOpenNewFileInit=new FormData();
 		fdDoNotOpenNewFileInit.left = new FormAttachment(middle, margin);
@@ -211,8 +213,8 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 
         // Create file?
         wlCreateFile=new Label(shell, SWT.RIGHT);
-        wlCreateFile.setText(Messages.getString("AccessOutputDialog.CreateFile.Label"));
-        wlCreateFile.setToolTipText(Messages.getString("AccessOutputDialog.CreateFile.Tooltip"));
+        wlCreateFile.setText(BaseMessages.getString(PKG, "AccessOutputDialog.CreateFile.Label"));
+        wlCreateFile.setToolTipText(BaseMessages.getString(PKG, "AccessOutputDialog.CreateFile.Tooltip"));
         props.setLook(wlCreateFile);
         fdlCreateFile=new FormData();
         fdlCreateFile.left  = new FormAttachment(0, 0);
@@ -220,7 +222,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         fdlCreateFile.right = new FormAttachment(middle, 0);
         wlCreateFile.setLayoutData(fdlCreateFile);
         wCreateFile=new Button(shell, SWT.CHECK);
-        wCreateFile.setToolTipText(Messages.getString("AccessOutputDialog.CreateFile.Tooltip"));
+        wCreateFile.setToolTipText(BaseMessages.getString(PKG, "AccessOutputDialog.CreateFile.Tooltip"));
         props.setLook(wCreateFile);
         fdCreateFile=new FormData();
         fdCreateFile.left  = new FormAttachment(middle, margin);
@@ -232,14 +234,14 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 		// Table line...
         wbbTablename=new Button(shell, SWT.PUSH| SWT.CENTER);
         props.setLook(wbbTablename);
-        wbbTablename.setText(Messages.getString("System.Button.Browse"));
+        wbbTablename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
         fdbTablename=new FormData();
         fdbTablename.right= new FormAttachment(100, 0);
         fdbTablename.top  = new FormAttachment(wCreateFile, margin);
         wbbTablename.setLayoutData(fdbTablename);
 
         wlTablename=new Label(shell, SWT.RIGHT);
-        wlTablename.setText(Messages.getString("AccessOutputDialog.TargetTable.Label"));
+        wlTablename.setText(BaseMessages.getString(PKG, "AccessOutputDialog.TargetTable.Label"));
         props.setLook(wlTablename);
         fdlTablename=new FormData();
         fdlTablename.left = new FormAttachment(0, 0);
@@ -248,7 +250,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         wlTablename.setLayoutData(fdlTablename);
 
         wTablename=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wTablename.setToolTipText(Messages.getString("AccessOutputDialog.TargetTable.Tooltip"));
+        wTablename.setToolTipText(BaseMessages.getString(PKG, "AccessOutputDialog.TargetTable.Tooltip"));
  		props.setLook(wTablename);
 		fdTablename=new FormData();
         fdTablename.left = new FormAttachment(middle, margin);
@@ -258,8 +260,8 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 
 		// Create table?
 		wlCreateTable=new Label(shell, SWT.RIGHT);
-		wlCreateTable.setText(Messages.getString("AccessOutputDialog.CreateTable.Label"));
-        wlCreateTable.setToolTipText(Messages.getString("AccessOutputDialog.CreateTable.Tooltip"));
+		wlCreateTable.setText(BaseMessages.getString(PKG, "AccessOutputDialog.CreateTable.Label"));
+        wlCreateTable.setToolTipText(BaseMessages.getString(PKG, "AccessOutputDialog.CreateTable.Tooltip"));
  		props.setLook(wlCreateTable);
 		fdlCreateTable=new FormData();
 		fdlCreateTable.left  = new FormAttachment(0, 0);
@@ -267,7 +269,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 		fdlCreateTable.right = new FormAttachment(middle, 0);
 		wlCreateTable.setLayoutData(fdlCreateTable);
 		wCreateTable=new Button(shell, SWT.CHECK);
-        wCreateTable.setToolTipText(Messages.getString("AccessOutputDialog.CreateTable.Tooltip"));
+        wCreateTable.setToolTipText(BaseMessages.getString(PKG, "AccessOutputDialog.CreateTable.Tooltip"));
  		props.setLook(wCreateTable);
 		fdCreateTable=new FormData();
 		fdCreateTable.left  = new FormAttachment(middle, margin);
@@ -278,7 +280,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         
         // The commit size...
         wlCommitSize=new Label(shell, SWT.RIGHT);
-        wlCommitSize.setText(Messages.getString("AccessOutputDialog.CommitSize.Label"));
+        wlCommitSize.setText(BaseMessages.getString(PKG, "AccessOutputDialog.CommitSize.Label"));
         props.setLook(wlCommitSize);
         fdlCommitSize=new FormData();
         fdlCommitSize.left = new FormAttachment(0, 0);
@@ -287,7 +289,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         wlCommitSize.setLayoutData(fdlCommitSize);
 
         wCommitSize=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wCommitSize.setToolTipText(Messages.getString("AccessOutputDialog.CommitSize.Tooltip"));
+        wCommitSize.setToolTipText(BaseMessages.getString(PKG, "AccessOutputDialog.CommitSize.Tooltip"));
         props.setLook(wCommitSize);
         fdCommitSize=new FormData();
         fdCommitSize.left = new FormAttachment(middle, margin);
@@ -298,7 +300,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 
 		// Add File to the result files name
 		wlAddToResult=new Label(shell, SWT.RIGHT);
-		wlAddToResult.setText(Messages.getString("AccessOutputMeta.AddFileToResult.Label"));
+		wlAddToResult.setText(BaseMessages.getString(PKG, "AccessOutputMeta.AddFileToResult.Label"));
 		props.setLook(wlAddToResult);
 		fdlAddToResult=new FormData();
 		fdlAddToResult.left  = new FormAttachment(0, 0);
@@ -306,7 +308,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 		fdlAddToResult.right = new FormAttachment(middle, -margin);
 		wlAddToResult.setLayoutData(fdlAddToResult);
 		wAddToResult=new Button(shell, SWT.CHECK);
-		wAddToResult.setToolTipText(Messages.getString("AccessOutputMeta.AddFileToResult.Tooltip"));
+		wAddToResult.setToolTipText(BaseMessages.getString(PKG, "AccessOutputMeta.AddFileToResult.Tooltip"));
  		props.setLook(wAddToResult);
 		fdAddToResult=new FormData();
 		fdAddToResult.left  = new FormAttachment(middle, margin);
@@ -325,9 +327,9 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wAddToResult);
 
@@ -370,7 +372,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
                         dialog.setFileName( fname );
                     }
                     
-                    dialog.setFilterNames(new String[] {Messages.getString("AccessOutputDialog.FileType.AccessFiles"), Messages.getString("System.FileType.AllFiles")});
+                    dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "AccessOutputDialog.FileType.AccessFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
                     
                     if (dialog.open()!=null)
                     {
@@ -459,13 +461,13 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
             
             if (!file.exists() || !file.isFile())
             {
-                throw new KettleException(Messages.getString("AccessOutputMeta.Exception.FileDoesNotExist", realFilename));
+                throw new KettleException(BaseMessages.getString(PKG, "AccessOutputMeta.Exception.FileDoesNotExist", realFilename));
             }
 
             database = Database.open(file);
             Set<String> set= database.getTableNames();
             String[] tablenames = set.toArray(new String[set.size()]);
-            EnterSelectionDialog dialog = new EnterSelectionDialog(shell, tablenames, Messages.getString("AccessOutputDialog.Dialog.SelectATable.Title"), Messages.getString("AccessOutputDialog.Dialog.SelectATable.Message"));
+            EnterSelectionDialog dialog = new EnterSelectionDialog(shell, tablenames, BaseMessages.getString(PKG, "AccessOutputDialog.Dialog.SelectATable.Title"), BaseMessages.getString(PKG, "AccessOutputDialog.Dialog.SelectATable.Message"));
             String tablename = dialog.open();
             if (tablename!=null)
             {
@@ -474,7 +476,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         }
         catch(Throwable e)
         {
-            new ErrorDialog(shell, Messages.getString("AccessOutputDialog.UnableToGetListOfTables.Title"), Messages.getString("AccessOutputDialog.UnableToGetListOfTables.Message"), e);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "AccessOutputDialog.UnableToGetListOfTables.Title"), BaseMessages.getString(PKG, "AccessOutputDialog.UnableToGetListOfTables.Message"), e);
         }
         finally
         {

@@ -32,6 +32,7 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.undo.TransAction;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
@@ -43,7 +44,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.job.JobGraph;
@@ -54,6 +54,8 @@ import org.pentaho.xul.swt.tab.TabItem;
 
 public class SpoonTransformationDelegate extends SpoonDelegate
 {
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	/**
 	 * This contains a map between the name of a transformation and the
 	 * TransMeta object. If the transformation has no name it will be mapped
@@ -119,17 +121,17 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			if (!same)
 			{
 				ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK
-						| SWT.ICON_INFORMATION, Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title"),
+						| SWT.ICON_INFORMATION, BaseMessages.getString(PKG, "Spoon.Dialog.TransAlreadyLoaded.Title"),
 						"'" + key + "'" + Const.CR + Const.CR
-								+ Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Message"));
+								+ BaseMessages.getString(PKG, "Spoon.Dialog.TransAlreadyLoaded.Message"));
 				dialog.setTimeOut(6);
 				dialog.open();
 				/*
 				 * MessageBox mb = new MessageBox(shell, SWT.OK |
 				 * SWT.ICON_INFORMATION);
-				 * mb.setMessage("'"+key+"'"+Const.CR+Const.CR+Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Message")); //
+				 * mb.setMessage("'"+key+"'"+Const.CR+Const.CR+BaseMessages.getString(PKG, "Spoon.Dialog.TransAlreadyLoaded.Message")); //
 				 * Transformation is already loaded
-				 * mb.setText(Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title")); //
+				 * mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.TransAlreadyLoaded.Title")); //
 				 * Sorry! mb.open();
 				 */
 			}
@@ -184,7 +186,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			{
 				TransGraph transGraph = new TransGraph(spoon.tabfolder.getSwtTabset(), spoon, transMeta);
 				tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
-				String toolTipText = Messages.getString("Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTransGraphTabName(transMeta));
+				String toolTipText = BaseMessages.getString(PKG, "Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTransGraphTabName(transMeta));
 				if (!Const.isEmpty(transMeta.getFilename())) toolTipText+=Const.CR+Const.CR+transMeta.getFilename();
 				tabItem.setToolTipText(toolTipText);
 				tabItem.setImage(GUIResource.getInstance().getImageTransGraph());
@@ -875,8 +877,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				if (transDebugMeta.getNrOfUsedSteps()==0)
 				{
 					MessageBox box = new MessageBox(spoon.getShell(), SWT.ICON_WARNING | SWT.YES | SWT.NO);
-					box.setText(Messages.getString("Spoon.Dialog.Warning.NoPreviewOrDebugSteps.Title"));
-					box.setMessage(Messages.getString("Spoon.Dialog.Warning.NoPreviewOrDebugSteps.Message"));
+					box.setText(BaseMessages.getString(PKG, "Spoon.Dialog.Warning.NoPreviewOrDebugSteps.Title"));
+					box.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.Warning.NoPreviewOrDebugSteps.Message"));
 					int answer = box.open();
 					if (answer!=SWT.YES)
 					{
@@ -908,8 +910,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 					
 				} else {
 					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
-					mb.setMessage(Messages.getString("Spoon.Dialog.NoRemoteServerSpecified.Message"));
-					mb.setText(Messages.getString("Spoon.Dialog.NoRemoteServerSpecified.Title"));
+					mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.NoRemoteServerSpecified.Message"));
+					mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.NoRemoteServerSpecified.Title"));
 					mb.open();
 				}
 				

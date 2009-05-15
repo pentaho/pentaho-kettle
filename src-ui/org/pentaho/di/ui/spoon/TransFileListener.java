@@ -19,6 +19,7 @@ import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -26,6 +27,8 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.w3c.dom.Node;
 
 public class TransFileListener implements FileListener {
+
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     public boolean open(Node transNode, String fname, boolean importfile)
     {
@@ -38,9 +41,9 @@ public class TransFileListener implements FileListener {
 			
             	public boolean overwritePrompt(String message, String rememberText, String rememberPropertyName) {
             		MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-                		Object res[] = spoon.messageDialogWithToggle(Messages.getString("System.Button.Yes"), null, message, Const.WARNING, 
-                					new String[] { Messages.getString("System.Button.Yes"), //$NON-NLS-1$ 
-                     						   Messages.getString("System.Button.No") },//$NON-NLS-1$
+                		Object res[] = spoon.messageDialogWithToggle(BaseMessages.getString(PKG, "System.Button.Yes"), null, message, Const.WARNING, 
+                					new String[] { BaseMessages.getString(PKG, "System.Button.Yes"), //$NON-NLS-1$ 
+                     						   BaseMessages.getString(PKG, "System.Button.No") },//$NON-NLS-1$
                 						1,
                 						rememberText,
                 						!props.askAboutReplacingDatabaseConnections() );
@@ -67,7 +70,7 @@ public class TransFileListener implements FileListener {
         }
         catch(KettleException e)
         {
-            new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorOpening.Title"), Messages.getString("Spoon.Dialog.ErrorOpening.Message")+fname, e);
+            new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Message")+fname, e);
         }
         return false;
     }

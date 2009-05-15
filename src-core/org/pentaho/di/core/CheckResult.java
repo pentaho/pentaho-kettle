@@ -11,6 +11,8 @@
 
 package org.pentaho.di.core;
 
+import org.pentaho.di.i18n.BaseMessages;
+
 
 /**
  * This class is used to store results of transformation and step verifications.
@@ -21,7 +23,16 @@ package org.pentaho.di.core;
  */
 public class CheckResult implements CheckResultInterface
 {
+	private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	  public static final String typeDesc[] = {
+          "", //$NON-NLS-1$
+          BaseMessages.getString(PKG, "CheckResult.OK"), //$NON-NLS-1$
+          BaseMessages.getString(PKG, "CheckResult.Remark"), //$NON-NLS-1$
+          BaseMessages.getString(PKG, "CheckResult.Warning"), //$NON-NLS-1$
+          BaseMessages.getString(PKG, "CheckResult.Error") //$NON-NLS-1$
+          };
+	  
     private int type;
 
     private String text;
@@ -58,7 +69,7 @@ public class CheckResult implements CheckResultInterface
 
     public String getTypeDesc()
     {
-        return CheckResultInterface.typeDesc[type];
+        return typeDesc[type];
     }
 
     public String getText()
@@ -74,7 +85,7 @@ public class CheckResult implements CheckResultInterface
     public String toString()
     {
         StringBuffer sb = new StringBuffer();
-        sb.append(CheckResultInterface.typeDesc[type]).append(": ").append(text); //$NON-NLS-1$
+        sb.append(typeDesc[type]).append(": ").append(text); //$NON-NLS-1$
 
         if (sourceMeta != null)
             sb.append(" (").append(sourceMeta.getName()).append(")");  //$NON-NLS-1$ //$NON-NLS-2$

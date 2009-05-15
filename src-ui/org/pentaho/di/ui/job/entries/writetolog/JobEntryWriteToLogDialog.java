@@ -17,7 +17,6 @@
 package org.pentaho.di.ui.job.entries.writetolog;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -33,14 +32,15 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.writetolog.JobEntryWriteToLog;
-import org.pentaho.di.job.entries.writetolog.Messages;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -60,6 +60,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryWriteToLog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label wlName;
 
     private Text wName;
@@ -103,7 +105,7 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryWriteToLog) jobEntryInt;
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("WriteToLog.Name.Default"));
+            this.jobEntry.setName(BaseMessages.getString(PKG, "WriteToLog.Name.Default"));
     }
     
     
@@ -130,22 +132,22 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("WriteToLog.Title"));
+        shell.setText(BaseMessages.getString(PKG, "WriteToLog.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
         // at the bottom
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
 
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("WriteToLog.Jobname.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "WriteToLog.Jobname.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
@@ -163,7 +165,7 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
 
         // Log Level
         wlLoglevel = new Label(shell, SWT.RIGHT);
-        wlLoglevel.setText(Messages.getString("WriteToLog.Loglevel.Label"));
+        wlLoglevel.setText(BaseMessages.getString(PKG, "WriteToLog.Loglevel.Label"));
         props.setLook(wlLoglevel);
         fdlLoglevel = new FormData();
         fdlLoglevel.left = new FormAttachment(0, 0);
@@ -184,7 +186,7 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
 
         // Subject
 		wlLogSubject = new Label(shell, SWT.RIGHT);
-		wlLogSubject.setText(Messages.getString("WriteToLog.LogSubject.Label"));
+		wlLogSubject.setText(BaseMessages.getString(PKG, "WriteToLog.LogSubject.Label"));
         props.setLook(wlLogSubject);
         fdlLogSubject = new FormData();
         fdlLogSubject.left = new FormAttachment(0, 0);
@@ -193,7 +195,7 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
         wlLogSubject.setLayoutData(fdlLogSubject);
 
         wLogSubject = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wLogSubject.setText(Messages.getString("WriteToLog.Name.Default"));
+        wLogSubject.setText(BaseMessages.getString(PKG, "WriteToLog.Name.Default"));
         props.setLook(wLogSubject);
         wLogSubject.addModifyListener(lsMod);
         fdLogSubject = new FormData();
@@ -206,7 +208,7 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
 
         // Log message to display
 		wlLogMessage = new Label(shell, SWT.RIGHT);
-        wlLogMessage.setText(Messages.getString("WriteToLog.LogMessage.Label"));
+        wlLogMessage.setText(BaseMessages.getString(PKG, "WriteToLog.LogMessage.Label"));
         props.setLook(wlLogMessage);
         fdlLogMessage = new FormData();
         fdlLogMessage.left = new FormAttachment(0, 0);
@@ -215,7 +217,7 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
         wlLogMessage.setLayoutData(fdlLogMessage);
 
         wLogMessage = new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-        wLogMessage.setText(Messages.getString("WriteToLog.Name.Default"));
+        wLogMessage.setText(BaseMessages.getString(PKG, "WriteToLog.Name.Default"));
         props.setLook(wLogMessage,Props.WIDGET_STYLE_FIXED);
         wLogMessage.addModifyListener(lsMod);
         fdLogMessage = new FormData();
@@ -320,8 +322,8 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
  	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
        }

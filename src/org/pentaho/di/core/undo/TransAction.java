@@ -16,6 +16,7 @@ package org.pentaho.di.core.undo;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.trans.TransHopMeta;
@@ -41,6 +42,8 @@ import org.pentaho.di.trans.step.StepMeta;
  */
 public class TransAction 
 {
+	private static Class<?> PKG = TransAction.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final int  TYPE_ACTION_NONE                   = 0;
 	public static final int  TYPE_ACTION_CHANGE_STEP            = 1;
 	public static final int  TYPE_ACTION_CHANGE_CONNECTION      = 2;
@@ -93,22 +96,22 @@ public class TransAction
 	public static final String desc_action[] = new String[]
 		{
 			"",
-      Messages.getString("TransAction.label.ChangeStep"), Messages.getString("TransAction.label.ChangeConnection"), Messages.getString("TransAction.label.ChangeHop"), Messages.getString("TransAction.label.ChangeNote"),
-      Messages.getString("TransAction.label.NewStep"), Messages.getString("TransAction.label.NewConnection"), Messages.getString("TransAction.label.NewHop"), Messages.getString("TransAction.label.NewNote"),
-      Messages.getString("TransAction.label.DeleteStep"), Messages.getString("TransAction.label.DeleteConnection"), Messages.getString("TransAction.label.DeleteHop"), Messages.getString("TransAction.label.DeleteNote"),
-      Messages.getString("TransAction.label.PositionStep"), Messages.getString("TransAction.label.PositionNote"),
-      Messages.getString("TransAction.label.ChangeJobEntry"), Messages.getString("TransAction.label.ChangeJobHop"),
-      Messages.getString("TransAction.label.NewJobEntry"), Messages.getString("TransAction.label.NewJobHop"),
-      Messages.getString("TransAction.label.DeleteJobEntry"), Messages.getString("TransAction.label.DeleteJobHop"),
-      Messages.getString("TransAction.label.PositionJobEntry"),
-      Messages.getString("TransAction.label.ChangeTableRow"),
-      Messages.getString("TransAction.label.NewTableRow"),
-      Messages.getString("TransAction.label.DeleteTableRow"),
-      Messages.getString("TransAction.label.PositionTableRow"),
-      Messages.getString("TransAction.label.ChangeTable"), Messages.getString("TransAction.label.ChangeRelationship"),
-      Messages.getString("TransAction.label.NewTable"), Messages.getString("TransAction.label.NewRelationship"),
-			Messages.getString("TransAction.label.DeleteTable"), Messages.getString("TransAction.label.DeleteRelationship"),
-      Messages.getString("TransAction.label.PositionTable")
+      BaseMessages.getString(PKG, "TransAction.label.ChangeStep"), BaseMessages.getString(PKG, "TransAction.label.ChangeConnection"), BaseMessages.getString(PKG, "TransAction.label.ChangeHop"), BaseMessages.getString(PKG, "TransAction.label.ChangeNote"),
+      BaseMessages.getString(PKG, "TransAction.label.NewStep"), BaseMessages.getString(PKG, "TransAction.label.NewConnection"), BaseMessages.getString(PKG, "TransAction.label.NewHop"), BaseMessages.getString(PKG, "TransAction.label.NewNote"),
+      BaseMessages.getString(PKG, "TransAction.label.DeleteStep"), BaseMessages.getString(PKG, "TransAction.label.DeleteConnection"), BaseMessages.getString(PKG, "TransAction.label.DeleteHop"), BaseMessages.getString(PKG, "TransAction.label.DeleteNote"),
+      BaseMessages.getString(PKG, "TransAction.label.PositionStep"), BaseMessages.getString(PKG, "TransAction.label.PositionNote"),
+      BaseMessages.getString(PKG, "TransAction.label.ChangeJobEntry"), BaseMessages.getString(PKG, "TransAction.label.ChangeJobHop"),
+      BaseMessages.getString(PKG, "TransAction.label.NewJobEntry"), BaseMessages.getString(PKG, "TransAction.label.NewJobHop"),
+      BaseMessages.getString(PKG, "TransAction.label.DeleteJobEntry"), BaseMessages.getString(PKG, "TransAction.label.DeleteJobHop"),
+      BaseMessages.getString(PKG, "TransAction.label.PositionJobEntry"),
+      BaseMessages.getString(PKG, "TransAction.label.ChangeTableRow"),
+      BaseMessages.getString(PKG, "TransAction.label.NewTableRow"),
+      BaseMessages.getString(PKG, "TransAction.label.DeleteTableRow"),
+      BaseMessages.getString(PKG, "TransAction.label.PositionTableRow"),
+      BaseMessages.getString(PKG, "TransAction.label.ChangeTable"), BaseMessages.getString(PKG, "TransAction.label.ChangeRelationship"),
+      BaseMessages.getString(PKG, "TransAction.label.NewTable"), BaseMessages.getString(PKG, "TransAction.label.NewRelationship"),
+			BaseMessages.getString(PKG, "TransAction.label.DeleteTable"), BaseMessages.getString(PKG, "TransAction.label.DeleteRelationship"),
+      BaseMessages.getString(PKG, "TransAction.label.PositionTable")
 		};
 		
 	private int type;

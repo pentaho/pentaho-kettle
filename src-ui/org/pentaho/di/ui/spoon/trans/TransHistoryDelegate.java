@@ -35,13 +35,13 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
@@ -49,7 +49,8 @@ import org.pentaho.xul.toolbar.XulToolbar;
 import org.pentaho.xul.toolbar.XulToolbarButton;
 
 public class TransHistoryDelegate extends SpoonDelegate {
-	
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-history-toolbar.xul";
 	public static final String XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES = "ui/trans-history-toolbar.properties";
 
@@ -105,7 +106,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
 		//
 		transHistoryTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE);
 		transHistoryTab.setImage(GUIResource.getInstance().getImageShowHistory());
-		transHistoryTab.setText(Messages.getString("Spoon.TransGraph.HistoryTab.Name"));
+		transHistoryTab.setText(BaseMessages.getString(PKG, "Spoon.TransGraph.HistoryTab.Name"));
 		
 		// Create a composite, slam everything on there like it was in the history tab.
 		//
@@ -122,21 +123,21 @@ public class TransHistoryDelegate extends SpoonDelegate {
 		
 		final int FieldsRows=1;
 		colinf=new ColumnInfo[] {
-            new ColumnInfo(Messages.getString("TransHistory.Column.Name"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("TransHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("TransHistory.Column.Status"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("TransHistory.Column.Duration"),       ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("TransHistory.Column.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("TransHistory.Column.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("TransHistory.Column.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("TransHistory.Column.Input"),          ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("TransHistory.Column.Output"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("TransHistory.Column.Errors"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("TransHistory.Column.StartDate"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("TransHistory.Column.EndDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("TransHistory.Column.LogDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("TransHistory.Column.DependencyDate"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("TransHistory.Column.ReplayDate"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Name"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Status"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+    		new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Duration"),       ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Input"),          ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Output"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Errors"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.StartDate"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.EndDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+    		new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.LogDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.DependencyDate"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.ReplayDate"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
         };
 		
         for (int i=3;i<10;i++) colinf[i].setAllignement(SWT.RIGHT);
@@ -244,7 +245,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
 	        toolBar.layout(true, true);
 		} catch (Throwable t ) {
 			log.logError(toString(), Const.getStackTracker(t));
-			new ErrorDialog(transHistoryComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
+			new ErrorDialog(transHistoryComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
 		}
 	}
 
@@ -269,8 +270,8 @@ public class TransHistoryDelegate extends SpoonDelegate {
 
 		} catch (Throwable t ) {
 			t.printStackTrace();
-			new ErrorDialog(transHistoryComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
-					Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES), new Exception(t));
+			new ErrorDialog(transHistoryComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
+					BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES), new Exception(t));
 		}
 	}
 
@@ -286,8 +287,8 @@ public class TransHistoryDelegate extends SpoonDelegate {
     	if (databaseMeta!=null && !Const.isEmpty(logTable)) {
     	
 	    	MessageBox mb = new MessageBox(transGraph.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-	        mb.setMessage(Messages.getString("TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", logTable)); // Nothing found that matches your criteria
-			mb.setText(Messages.getString("TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title")); // Sorry!
+	        mb.setMessage(BaseMessages.getString(PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", logTable)); // Nothing found that matches your criteria
+			mb.setText(BaseMessages.getString(PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title")); // Sorry!
 			if (mb.open()==SWT.YES) {
 				Database database = new Database(databaseMeta);
 				try {
@@ -295,8 +296,8 @@ public class TransHistoryDelegate extends SpoonDelegate {
 					database.truncateTable(logTable);
 				}
 				catch(Exception e) {
-					new ErrorDialog(transGraph.getShell(), Messages.getString("TransGraph.Dialog.ErrorClearningLoggingTable.Title"), 
-							Messages.getString("TransGraph.Dialog.ErrorClearningLoggingTable.Message"), e);
+					new ErrorDialog(transGraph.getShell(), BaseMessages.getString(PKG, "TransGraph.Dialog.ErrorClearningLoggingTable.Title"), 
+							BaseMessages.getString(PKG, "TransGraph.Dialog.ErrorClearningLoggingTable.Message"), e);
 				}
 				finally
 				{
@@ -343,8 +344,8 @@ public class TransHistoryDelegate extends SpoonDelegate {
 				spoon.executeTransformation(transGraph.getManagedObject(), true, false, false, false, false, replayDate, false);
 			} catch (KettleException e1) {
 				new ErrorDialog(transGraph.getShell(), 
-						Messages.getString("TransHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
-						Messages.getString("TransHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
+						BaseMessages.getString(PKG, "TransHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "TransHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
 			}
 		}
 	}
@@ -516,7 +517,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
                     catch(KettleException e)
                     {
                         StringBuffer message = new StringBuffer();
-                        message.append(Messages.getString("TransHistory.Error.GettingInfoFromLoggingTable")).append(Const.CR).append(Const.CR);
+                        message.append(BaseMessages.getString(PKG, "TransHistory.Error.GettingInfoFromLoggingTable")).append(Const.CR).append(Const.CR);
                         message.append(e.toString()).append(Const.CR).append(Const.CR);
                         message.append(Const.getStackTracker(e)).append(Const.CR);
                         wText.setText(message.toString());
@@ -554,9 +555,9 @@ public class TransHistoryDelegate extends SpoonDelegate {
         	String message;
         	TransMeta transMeta = transGraph.getManagedObject();
         	if (transMeta.getLogConnection()==null || Const.isEmpty(transMeta.getLogTable())) {
-        		message = Messages.getString("TransHistory.HistoryConfiguration.Message");
+        		message = BaseMessages.getString(PKG, "TransHistory.HistoryConfiguration.Message");
         	} else {
-            	message = Messages.getString("TransHistory.PleaseRefresh.Message");
+            	message = BaseMessages.getString(PKG, "TransHistory.PleaseRefresh.Message");
         	}
         	wText.setText(message);
             return;

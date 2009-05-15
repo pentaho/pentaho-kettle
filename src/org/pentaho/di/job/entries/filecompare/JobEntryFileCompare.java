@@ -36,8 +36,8 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -60,6 +60,8 @@ import org.w3c.dom.Node;
  */
 public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryFileCompare.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String filename1;
 	private String filename2;
 	private boolean addFilenameToResult;
@@ -71,17 +73,11 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
      	filename2=null;
      	addFilenameToResult=false;
 		setID(-1L);
-		setJobEntryType(JobEntryType.FILE_COMPARE);
 	}
 
 	public JobEntryFileCompare()
 	{
 		this(""); //$NON-NLS-1$
-	}
-
-	public JobEntryFileCompare(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -113,7 +109,7 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryFileCompare.ERROR_0001_Unable_To_Load_From_Xml_Node"), xe); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0001_Unable_To_Load_From_Xml_Node"), xe); //$NON-NLS-1$
 		}
 	}
 
@@ -128,7 +124,7 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryFileCompare.ERROR_0002_Unable_To_Load_Job_From_Repository", Long.toString(id_jobentry)), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0002_Unable_To_Load_Job_From_Repository", Long.toString(id_jobentry)), dbe); //$NON-NLS-1$
 		}
 	}
 
@@ -145,7 +141,7 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryFileCompare.ERROR_0003_Unable_To_Save_Job", Long.toString(id_job)), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0003_Unable_To_Save_Job", Long.toString(id_job)), dbe); //$NON-NLS-1$
 		}
 	}
 
@@ -229,33 +225,33 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 					if(addFilenameToResult && file1.getType()==FileType.FILE && file2.getType()==FileType.FILE)
 					{
 						ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , file1, parentJob.getJobname(), toString());
-						resultFile.setComment(Messages.getString("JobWaitForFile.FilenameAdded"));
+						resultFile.setComment(BaseMessages.getString(PKG, "JobWaitForFile.FilenameAdded"));
 						result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 						resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , file2, parentJob.getJobname(), toString());
-						resultFile.setComment(Messages.getString("JobWaitForFile.FilenameAdded"));
+						resultFile.setComment(BaseMessages.getString(PKG, "JobWaitForFile.FilenameAdded"));
 						result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 					 }
 				}
 				else
 				{
 					if ( ! file1.exists() )
-						log.logError(toString(), Messages.getString("JobEntryFileCompare.ERROR_0004_File1_Does_Not_Exist", realFilename1)); //$NON-NLS-1$
+						log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0004_File1_Does_Not_Exist", realFilename1)); //$NON-NLS-1$
 					if ( ! file2.exists() )
-						log.logError(toString(), Messages.getString("JobEntryFileCompare.ERROR_0005_File2_Does_Not_Exist", realFilename2)); //$NON-NLS-1$
+						log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0005_File2_Does_Not_Exist", realFilename2)); //$NON-NLS-1$
 					result.setResult( false );
 					result.setNrErrors(1);
 				}
 			}
 			else
 			{
-				log.logError(toString(), Messages.getString("JobEntryFileCompare.ERROR_0006_Need_Two_Filenames")); //$NON-NLS-1$
+				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0006_Need_Two_Filenames")); //$NON-NLS-1$
 			}
 		}
 		catch ( Exception e )
 		{
 			result.setResult( false );
 			result.setNrErrors(1);
-			log.logError(toString(), Messages.getString("JobEntryFileCompare.ERROR_0007_Comparing_Files", realFilename2, realFilename2, e.getMessage())); //$NON-NLS-1$
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0007_Comparing_Files", realFilename2, realFilename2, e.getMessage())); //$NON-NLS-1$
 		}
 		finally
 		{

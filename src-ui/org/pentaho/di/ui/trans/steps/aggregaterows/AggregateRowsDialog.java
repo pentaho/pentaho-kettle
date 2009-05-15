@@ -36,11 +36,11 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.aggregaterows.AggregateRowsMeta;
-import org.pentaho.di.trans.steps.aggregaterows.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -48,6 +48,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = AggregateRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
@@ -83,14 +85,14 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("AggregateRowsDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("AggregateRowsDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -109,16 +111,16 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("AggregateRowsDialog.GetButton.Label")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.GetButton.Label")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("AggregateRowsDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -129,9 +131,9 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("AggregateRowsDialog.ColumnInfo.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		colinf[1]=new ColumnInfo(Messages.getString("AggregateRowsDialog.ColumnInfo.NewName"),   ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		colinf[2]=new ColumnInfo(Messages.getString("AggregateRowsDialog.ColumnInfo.AgrregateType"),  ColumnInfo.COLUMN_TYPE_CCOMBO, AggregateRowsMeta.aggregateTypeDesc); //$NON-NLS-1$
+		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "AggregateRowsDialog.ColumnInfo.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "AggregateRowsDialog.ColumnInfo.NewName"),   ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "AggregateRowsDialog.ColumnInfo.AgrregateType"),  ColumnInfo.COLUMN_TYPE_CCOMBO, AggregateRowsMeta.aggregateTypeDesc); //$NON-NLS-1$
 		
 		wFields=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -262,14 +264,14 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 			{
 				MessageBox mb;
 				mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-				mb.setMessage(Messages.getString("AggregateRowsDialog.CouldNotRetrieveFields.DialogMessage",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
-				mb.setText(Messages.getString("AggregateRowsDialog.CouldNotRetrieveFields.DialogTitle")); //$NON-NLS-1$
+				mb.setMessage(BaseMessages.getString(PKG, "AggregateRowsDialog.CouldNotRetrieveFields.DialogMessage",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+				mb.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.CouldNotRetrieveFields.DialogTitle")); //$NON-NLS-1$
 				mb.open();
 			}
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("AggregateRowsDialog.GetFieldsFailed.DialogTitle"), Messages.getString("AggregateRowsDialog.GetFieldsFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "AggregateRowsDialog.GetFieldsFailed.DialogTitle"), BaseMessages.getString(PKG, "AggregateRowsDialog.GetFieldsFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 }

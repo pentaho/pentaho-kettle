@@ -26,9 +26,12 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 
 public class ConnectionPoolUtil
 {
+	private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static PoolingDriver pd=new PoolingDriver();
     
     public static final int defaultInitialNrOfConnections=5;
@@ -43,13 +46,13 @@ public class ConnectionPoolUtil
         } 
         catch (SQLException e)
         {
-            throw new KettleDatabaseException(Messages.getString("Database.UnableToCheckIfConnectionPoolExists.Exception"), e);
+            throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.UnableToCheckIfConnectionPoolExists.Exception"), e);
         }
     }
     
     private static void createPool(DatabaseMeta databaseMeta, String partitionId, int initialSize, int maximumSize) throws KettleDatabaseException
     {
-    	LogWriter.getInstance().logBasic(databaseMeta.toString(), Messages.getString("Database.CreatingConnectionPool", databaseMeta.getName()));
+    	LogWriter.getInstance().logBasic(databaseMeta.toString(), BaseMessages.getString(PKG, "Database.CreatingConnectionPool", databaseMeta.getName()));
         GenericObjectPool gpool=new GenericObjectPool();
         
         gpool.setMaxIdle(-1);
@@ -63,7 +66,7 @@ public class ConnectionPoolUtil
         }
         catch(Exception e)
         {
-            throw new KettleDatabaseException(Messages.getString("Database.UnableToLoadConnectionPoolDriver.Exception", databaseMeta.getName(), clazz), e);
+            throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.UnableToLoadConnectionPoolDriver.Exception", databaseMeta.getName(), clazz), e);
         }
         
         String url;
@@ -113,13 +116,13 @@ public class ConnectionPoolUtil
             }
             catch(Exception e)
             {
-                throw new KettleDatabaseException(Messages.getString("Database.UnableToPreLoadConnectionToConnectionPool.Exception"), e);
+                throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.UnableToPreLoadConnectionToConnectionPool.Exception"), e);
             }
         }
         
         pd.registerPool(databaseMeta.getName(),gpool);
     
-        LogWriter.getInstance().logBasic(databaseMeta.toString(), Messages.getString("Database.CreatedConnectionPool", databaseMeta.getName()));
+        LogWriter.getInstance().logBasic(databaseMeta.toString(), BaseMessages.getString(PKG, "Database.CreatedConnectionPool", databaseMeta.getName()));
     }
     
     

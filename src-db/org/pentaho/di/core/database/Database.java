@@ -71,6 +71,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.i18n.BaseMessages;
 
 
 /**
@@ -83,6 +84,8 @@ import org.pentaho.di.core.variables.Variables;
  */
 public class Database implements VariableSpace
 {
+	private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final String LOG_STATUS_START = "start"; //$NON-NLS-1$
     public static final String LOG_STATUS_END = "end"; //$NON-NLS-1$
     public static final String LOG_STATUS_STOP = "stop"; //$NON-NLS-1$
@@ -589,9 +592,9 @@ public class Database implements VariableSpace
 			connection.setAutoCommit(useAutoCommit);
 		} catch (SQLException e) {
 			if (useAutoCommit) {
-				throw new KettleDatabaseException(Messages.getString("Database.Exception.UnableToEnableAutoCommit", toString()));
+				throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToEnableAutoCommit", toString()));
 			} else {
-				throw new KettleDatabaseException(Messages.getString("Database.Exception.UnableToDisableAutoCommit", toString()));
+				throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToDisableAutoCommit", toString()));
 			}
 			
 		}
@@ -4816,7 +4819,7 @@ public class Database implements VariableSpace
     	try {
 			return connection.setSavepoint();
 		} catch (SQLException e) {
-			throw new KettleDatabaseException(Messages.getString("Database.Exception.UnableToSetSavepoint"), e);
+			throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToSetSavepoint"), e);
 		}
     }
 
@@ -4824,7 +4827,7 @@ public class Database implements VariableSpace
     	try {
 			return connection.setSavepoint(savePointName);
 		} catch (SQLException e) {
-			throw new KettleDatabaseException(Messages.getString("Database.Exception.UnableToSetSavepointName", savePointName), e);
+			throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToSetSavepointName", savePointName), e);
 		}
     }
 
@@ -4832,7 +4835,7 @@ public class Database implements VariableSpace
 		try {
 			connection.releaseSavepoint(savepoint);
 		} catch (SQLException e) {
-			throw new KettleDatabaseException(Messages.getString("Database.Exception.UnableToReleaseSavepoint"), e);
+			throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToReleaseSavepoint"), e);
 		}
 	}
 
@@ -4840,7 +4843,7 @@ public class Database implements VariableSpace
 		try {
 			connection.rollback(savepoint);
 		} catch (SQLException e) {
-			throw new KettleDatabaseException(Messages.getString("Database.Exception.UnableToRollbackToSavepoint"), e);
+			throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToRollbackToSavepoint"), e);
 		}
 	}
 

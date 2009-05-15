@@ -29,6 +29,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryUtil;
@@ -47,13 +48,14 @@ import org.pentaho.di.ui.core.database.dialog.XulDatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.SQLStatementsDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.dialog.GetJobSQLProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.GetSQLProgressDialog;
 
 public class SpoonDBDelegate extends SpoonDelegate
 {
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public SpoonDBDelegate(Spoon spoon)
 	{
 		super(spoon);
@@ -103,7 +105,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 		if (databaseMeta != null)
 		{
 			DatabaseMeta databaseMetaCopy = (DatabaseMeta) databaseMeta.clone();
-			String dupename = Messages.getString("Spoon.Various.DupeName") + name; // "(copy
+			String dupename = BaseMessages.getString(PKG, "Spoon.Various.DupeName") + name; // "(copy
 			// of)
 			// "
 			databaseMetaCopy.setName(dupename);
@@ -156,7 +158,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 				} catch (KettleException dbe)
 				{
 
-					new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Title"), Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Message", db.getName()), dbe);// "Error
+					new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingConnection.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingConnection.Message", db.getName()), dbe);// "Error
 					// deleting
 					// connection
 					// ["+db+"]
@@ -165,9 +167,9 @@ public class SpoonDBDelegate extends SpoonDelegate
 				}
 			} else
 			{
-				new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Title"), 
-						Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Message", db.getName()), 
-						new KettleException(Messages.getString("Spoon.Dialog.Exception.ReadOnlyUser")));// "Error
+				new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingConnection.Title"), 
+						BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingConnection.Message", db.getName()), 
+						new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.Exception.ReadOnlyUser")));// "Error
 				// deleting
 				// connection
 				// ["+db+"]
@@ -253,8 +255,8 @@ public class SpoonDBDelegate extends SpoonDelegate
 			} else
 			{
 				MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
-				mb.setMessage(Messages.getString("Spoon.Dialog.NoSQLNeedEexecuted.Message"));
-				mb.setText(Messages.getString("Spoon.Dialog.NoSQLNeedEexecuted.Title"));// "SQL"
+				mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.NoSQLNeedEexecuted.Message"));
+				mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.NoSQLNeedEexecuted.Title"));// "SQL"
 				mb.open();
 			}
 		}
@@ -280,8 +282,8 @@ public class SpoonDBDelegate extends SpoonDelegate
 			} else
 			{
 				MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
-				mb.setMessage(Messages.getString("Spoon.Dialog.JobNoSQLNeedEexecuted.Message")); //$NON-NLS-1$
-				mb.setText(Messages.getString("Spoon.Dialog.JobNoSQLNeedEexecuted.Title")); //$NON-NLS-1$
+				mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.JobNoSQLNeedEexecuted.Message")); //$NON-NLS-1$
+				mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.JobNoSQLNeedEexecuted.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 		}
@@ -301,11 +303,11 @@ public class SpoonDBDelegate extends SpoonDelegate
 			//
 			// Add a note
 			//
-			String note = Messages.getString("Spoon.Message.Note.ReadInformationFromTableOnDB", tablename,
+			String note = BaseMessages.getString(PKG, "Spoon.Message.Note.ReadInformationFromTableOnDB", tablename,
 					sourceDBInfo.getDatabaseName())
 					+ Const.CR;// "Reads information from table ["+tablename+"]
 			// on database ["+sourceDBInfo+"]"
-			note += Messages.getString("Spoon.Message.Note.WriteInformationToTableOnDB", tablename,
+			note += BaseMessages.getString(PKG, "Spoon.Message.Note.WriteInformationToTableOnDB", tablename,
 					targetDBInfo.getDatabaseName());// "After that, it writes
 			// the information to table
 			// ["+tablename+"] on
@@ -317,7 +319,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 			// 
 			// create the source step...
 			//
-			String fromstepname = Messages.getString("Spoon.Message.Note.ReadFromTable", tablename); // "read
+			String fromstepname = BaseMessages.getString(PKG, "Spoon.Message.Note.ReadFromTable", tablename); // "read
 			// from
 			// ["+tablename+"]";
 			TableInputMeta tii = new TableInputMeta();
@@ -330,7 +332,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 			StepMeta fromstep = new StepMeta(fromstepid, fromstepname, tii);
 			fromstep.setLocation(150, 100);
 			fromstep.setDraw(true);
-			fromstep.setDescription(Messages.getString("Spoon.Message.Note.ReadInformationFromTableOnDB",
+			fromstep.setDescription(BaseMessages.getString(PKG, "Spoon.Message.Note.ReadInformationFromTableOnDB",
 					tablename, sourceDBInfo.getDatabaseName()));
 			meta.addStep(fromstep);
 
@@ -364,14 +366,14 @@ public class SpoonDBDelegate extends SpoonDelegate
 					}
 				}
 
-				String selstepname = Messages.getString("Spoon.Message.Note.HandleReservedWords"); // "Handle
+				String selstepname = BaseMessages.getString(PKG, "Spoon.Message.Note.HandleReservedWords"); // "Handle
 				// reserved
 				// words";
 				String selstepid = steploader.getStepPluginID(svi);
 				StepMeta selstep = new StepMeta(selstepid, selstepname, svi);
 				selstep.setLocation(350, 100);
 				selstep.setDraw(true);
-				selstep.setDescription(Messages.getString("Spoon.Message.Note.RenamesReservedWords",
+				selstep.setDescription(BaseMessages.getString(PKG, "Spoon.Message.Note.RenamesReservedWords",
 						targetDBInfo.getDatabaseTypeDesc()));// "Renames
 				// reserved
 				// words for
@@ -389,7 +391,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 			//
 			// Add the TableOutputMeta step...
 			//
-			String tostepname = Messages.getString("Spoon.Message.Note.WriteToTable", tablename);
+			String tostepname = BaseMessages.getString(PKG, "Spoon.Message.Note.WriteToTable", tablename);
 			TableOutputMeta toi = new TableOutputMeta();
 			toi.setDatabaseMeta(targetDBInfo);
 			toi.setTablename(tablename);
@@ -400,7 +402,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 			StepMeta tostep = new StepMeta(tostepid, tostepname, toi);
 			tostep.setLocation(550, 100);
 			tostep.setDraw(true);
-			tostep.setDescription(Messages.getString("Spoon.Message.Note.WriteInformationToTableOnDB2",
+			tostep.setDescription(BaseMessages.getString(PKG, "Spoon.Message.Note.WriteInformationToTableOnDB2",
 					tablename, targetDBInfo.getDatabaseName()));
 			meta.addStep(tostep);
 
@@ -429,8 +431,8 @@ public class SpoonDBDelegate extends SpoonDelegate
 			spoon.refreshTree();
 		} catch (Exception e)
 		{
-			new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.UnexpectedError.Title"),
-					Messages.getString("Spoon.Dialog.UnexpectedError.Message"), new KettleException(e
+			new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.UnexpectedError.Title"),
+					BaseMessages.getString(PKG, "Spoon.Dialog.UnexpectedError.Message"), new KettleException(e
 							.getMessage(), e));
 			return false;
 		}
@@ -453,7 +455,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 
 					RepositoryUtil.saveDatabaseMeta(db, rep);
 					spoon.getLog().logDetailed(toString(),
-							Messages.getString("Spoon.Log.SavedDatabaseConnection", db.getDatabaseName()));
+							BaseMessages.getString(PKG, "Spoon.Log.SavedDatabaseConnection", db.getDatabaseName()));
 
 					// Put a commit behind it!
 					rep.commit();
@@ -462,7 +464,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 				} catch (KettleException ke)
 				{
 					rep.rollback(); // In case of failure: undo changes!
-					new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorSavingConnection.Title"), Messages.getString("Spoon.Dialog.ErrorSavingConnection.Message", db.getDatabaseName()), ke);
+					new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Message", db.getDatabaseName()), ke);
 				} 
 				finally
 				{
@@ -480,9 +482,9 @@ public class SpoonDBDelegate extends SpoonDelegate
 			{
 				new ErrorDialog(
 						spoon.getShell(),
-						Messages.getString("Spoon.Dialog.UnableSave.Title"),
-						Messages.getString("Spoon.Dialog.ErrorSavingConnection.Message", db.getDatabaseName()),
-						new KettleException(Messages.getString("Spoon.Dialog.Exception.ReadOnlyRepositoryUser")));// This
+						BaseMessages.getString(PKG, "Spoon.Dialog.UnableSave.Title"),
+						BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Message", db.getDatabaseName()),
+						new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser")));// This
 				// repository
 				// user
 				// is
@@ -534,12 +536,12 @@ public class SpoonDBDelegate extends SpoonDelegate
 					}
 					else
 					{
-						throw new KettleException(Messages.getString("Spoon.Dialog.Exception.ReadOnlyRepositoryUser"));
+						throw new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser"));
 					}
 				} 
 				catch (KettleException e) 
 				{
-					new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorSavingConnection.Title"), Messages.getString("Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName()), e);
+					new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName()), e);
 				}
 			}
 		}

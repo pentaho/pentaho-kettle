@@ -23,8 +23,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.StepPluginMeta;
-import org.pentaho.di.trans.step.Messages;
-import org.pentaho.di.trans.step.StepCategory;
+import org.pentaho.di.trans.step.BaseStep;
 
 /**
  * Registers classes annotated with @Step as Kettle/PDI steps, without the need for XML configurations.
@@ -37,6 +36,8 @@ import org.pentaho.di.trans.step.StepCategory;
  */
 public class AnnotatedStepsConfigManager<T extends StepPluginMeta> extends BasicConfigManager<T> 
 {
+	private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	@Inject
 	String packages;
 	
@@ -69,7 +70,7 @@ public class AnnotatedStepsConfigManager<T extends StepPluginMeta> extends Basic
 			// The package name to get the descriptions or tool tip from...
 			//
 			String packageName = step.i18nPackageName();
-			if (Const.isEmpty(packageName)) packageName = org.pentaho.di.trans.step.Messages.class.getPackage().getName();
+			if (Const.isEmpty(packageName)) packageName = BaseStep.class.getPackage().getName();
 			
 			// An alternative package to get the description or tool tip from...
 			//
@@ -80,7 +81,7 @@ public class AnnotatedStepsConfigManager<T extends StepPluginMeta> extends Basic
 			
 			LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messages for missing locale
 			String description = BaseMessages.getString(packageName, step.description());
-			if (description.startsWith("!") && description.endsWith("!")) description=Messages.getString(step.description());
+			if (description.startsWith("!") && description.endsWith("!")) description=BaseMessages.getString(PKG, step.description());
 			LogWriter.getInstance().setLogLevel(oldLogLevel); // restore loglevel, when the last alternative fails, log it when loglevel is detailed
 			if (description.startsWith("!") && description.endsWith("!")) description=BaseMessages.getString(altPackageName, step.description());
 			
@@ -88,25 +89,20 @@ public class AnnotatedStepsConfigManager<T extends StepPluginMeta> extends Basic
 			//
 			LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messsages for missing locale
 			String tooltip = BaseMessages.getString(packageName, step.tooltip());
-			if (tooltip.startsWith("!") && tooltip.endsWith("!")) tooltip=Messages.getString(step.tooltip());
+			if (tooltip.startsWith("!") && tooltip.endsWith("!")) tooltip=BaseMessages.getString(PKG, step.tooltip());
 			LogWriter.getInstance().setLogLevel(oldLogLevel); // restore loglevel, when the last alternative fails, log it when loglevel is detailed
 			if (tooltip.startsWith("!") && tooltip.endsWith("!")) tooltip=BaseMessages.getString(altPackageName, step.tooltip());
 			
 			// If the step should have a separate category, this is the place to calculate that
-			// This calculation is only used if the category is USER_DEFINED
 			//
-			String category;
-			if (step.category()!=StepCategory.CATEGORY_USER_DEFINED) {
-				category = StepCategory.BRIDGE_ANNOTATION_CATEGORY_NUMBERS[step.category()].getName();
-			}
-			else {
-				LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messsages for missing locale
-				category = BaseMessages.getString(packageName, step.categoryDescription());
-				if (category.startsWith("!") && category.endsWith("!")) category=Messages.getString(step.categoryDescription());
-				LogWriter.getInstance().setLogLevel(oldLogLevel); // restore loglevel, when the last alternative fails, log it when loglevel is detailed
-				if (category.startsWith("!") && category.endsWith("!")) category=BaseMessages.getString(altPackageName, step.categoryDescription());
-			}
+			LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messsages for missing locale
+			String category = BaseMessages.getString(packageName, step.categoryDescription());
+			if (category.startsWith("!") && category.endsWith("!")) category=BaseMessages.getString(PKG, step.categoryDescription());
+			LogWriter.getInstance().setLogLevel(oldLogLevel); // restore loglevel, when the last alternative fails, log it when loglevel is detailed
+			if (category.startsWith("!") && category.endsWith("!")) category=BaseMessages.getString(altPackageName, step.categoryDescription());
 			
+			// Add the step to the list...
+			//
 			steps.add(new StepPluginMeta(clazz, stepName, description, tooltip, step.image(), category));
 		}
 		

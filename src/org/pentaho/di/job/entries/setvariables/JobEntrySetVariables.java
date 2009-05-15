@@ -20,11 +20,10 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullV
 
 import java.util.List;
 
-import org.w3c.dom.Node;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Result;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -32,8 +31,8 @@ import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -42,6 +41,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.w3c.dom.Node;
 
 
 
@@ -53,6 +53,7 @@ import org.pentaho.di.resource.ResourceEntry.ResourceType;
  */
 public class JobEntrySetVariables extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+  private static Class<?> PKG = JobEntrySetVariables.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   public boolean replaceVars;
 
@@ -70,10 +71,10 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
   private static final String variableTypeCode[] = { "JVM", "CURRENT_JOB","PARENT_JOB", "ROOT_JOB" };
   private static final String variableTypeDesc[] = 
       { 
-	  	Messages.getString("JobEntrySetVariables.VariableType.JVM"),
-	  	Messages.getString("JobEntrySetVariables.VariableType.CurrentJob"),
-	  	Messages.getString("JobEntrySetVariables.VariableType.ParentJob"),
-	  	Messages.getString("JobEntrySetVariables.VariableType.RootJob"),
+	  	BaseMessages.getString(PKG, "JobEntrySetVariables.VariableType.JVM"),
+	  	BaseMessages.getString(PKG, "JobEntrySetVariables.VariableType.CurrentJob"),
+	  	BaseMessages.getString(PKG, "JobEntrySetVariables.VariableType.ParentJob"),
+	  	BaseMessages.getString(PKG, "JobEntrySetVariables.VariableType.RootJob"),
       };
   
   public JobEntrySetVariables(String n) {
@@ -83,15 +84,10 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
     variableValue=null;
 
     setID(-1L);
-	setJobEntryType(JobEntryType.SET_VARIABLES);
   }
 
   public JobEntrySetVariables() {
     this(""); //$NON-NLS-1$
-  }
-
-  public JobEntrySetVariables(JobEntryBase jeb) {
-    super(jeb);
   }
 
   public Object clone() {
@@ -142,7 +138,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
       }
     } catch (KettleXMLException xe) {
-      throw new KettleXMLException(Messages.getString("JobEntrySetVariables.Meta.UnableLoadXML",xe.getMessage()), xe); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntrySetVariables.Meta.UnableLoadXML",xe.getMessage()), xe); //$NON-NLS-1$
     }
   }
 
@@ -167,7 +163,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
           variableType[a] = getVariableType(rep.getJobEntryAttributeString(id_jobentry, a, "variable_type")); 
       }
     } catch (KettleException dbe) {
-      throw new KettleException(Messages.getString("JobEntrySetVariables.Meta.UnableLoadRep", String.valueOf(id_jobentry),dbe.getMessage()), dbe); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "JobEntrySetVariables.Meta.UnableLoadRep", String.valueOf(id_jobentry),dbe.getMessage()), dbe); //$NON-NLS-1$
     }
   }
 
@@ -188,7 +184,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
       }
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(
-          Messages.getString("JobEntrySetVariables.Meta.UnableSaveRep", String.valueOf(id_job),dbe.getMessage()), dbe); //$NON-NLS-1$
+          BaseMessages.getString(PKG, "JobEntrySetVariables.Meta.UnableSaveRep", String.valueOf(id_job),dbe.getMessage()), dbe); //$NON-NLS-1$
     }
   }
 
@@ -236,7 +232,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 		               if (parentJob!=null)
 		            	   parentJob.setVariable(varname, value);
 		               else
-		                  throw new KettleJobException(Messages.getString("JobEntrySetVariables.Error.UnableSetVariableCurrentJob",varname));
+		                  throw new KettleJobException(BaseMessages.getString(PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob",varname));
 		           }
 		          break;
 		          case VARIABLE_TYPE_PARENT_JOB: {
@@ -248,10 +244,10 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 		                      if (gpJob!=null)
 		                          gpJob.setVariable(varname, value);
 		                      else
-		                          throw new KettleJobException(Messages.getString("JobEntrySetVariables.Error.UnableSetVariableParentJob",varname));
+		                          throw new KettleJobException(BaseMessages.getString(PKG, "JobEntrySetVariables.Error.UnableSetVariableParentJob",varname));
 		                  }
 		                  else {
-		                	  throw new KettleJobException(Messages.getString("JobEntrySetVariables.Error.UnableSetVariableCurrentJob",varname));
+		                	  throw new KettleJobException(BaseMessages.getString(PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob",varname));
 		                  }  
 		              }
 		              break;
@@ -262,12 +258,12 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 	          
 	          // ok we can process this line
 	    	  if(log.isDetailed()) 
-	    		  log.logDetailed(toString(), Messages.getString("JobEntrySetVariables.Log.SetVariableToValue", varname, value)); //$NON-NLS-1$
+	    		  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntrySetVariables.Log.SetVariableToValue", varname, value)); //$NON-NLS-1$
 	      }
 	    }
     }catch(Exception e)
     {
-    	log.logError(toString(),Messages.getString("JobEntrySetVariables.UnExcpectedError",e.getMessage()));
+    	log.logError(toString(),BaseMessages.getString(PKG, "JobEntrySetVariables.UnExcpectedError",e.getMessage()));
     }
 
     return result;

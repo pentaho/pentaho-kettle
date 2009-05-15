@@ -52,11 +52,11 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.addxml.AddXMLMeta;
-import org.pentaho.di.trans.steps.addxml.Messages;
 import org.pentaho.di.trans.steps.addxml.XMLField;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -66,6 +66,8 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = AddXMLMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private CTabFolder   wTabFolder;
     private FormData     fdTabFolder;
     
@@ -127,14 +129,14 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("AddXMLDialog.DialogTitle"));
+        shell.setText(BaseMessages.getString(PKG, "AddXMLDialog.DialogTitle"));
         
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         // Stepname line
         wlStepname=new Label(shell, SWT.RIGHT);
-        wlStepname.setText(Messages.getString("System.Label.StepName"));
+        wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
         props.setLook(wlStepname);
         fdlStepname=new FormData();
         fdlStepname.left  = new FormAttachment(0, 0);
@@ -158,7 +160,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         // START OF CONTENT TAB///
         ///
         wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-        wContentTab.setText(Messages.getString("AddXMLDialog.ContentTab.TabTitle"));
+        wContentTab.setText(BaseMessages.getString(PKG, "AddXMLDialog.ContentTab.TabTitle"));
         
 
         FormLayout contentLayout = new FormLayout ();
@@ -170,7 +172,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         wContentComp.setLayout(contentLayout);
 
         wlEncoding=new Label(wContentComp, SWT.RIGHT);
-        wlEncoding.setText(Messages.getString("AddXMLDialog.Encoding.Label"));
+        wlEncoding.setText(BaseMessages.getString(PKG, "AddXMLDialog.Encoding.Label"));
         props.setLook(wlEncoding);
         fdlEncoding=new FormData();
         fdlEncoding.left = new FormAttachment(0, 0);
@@ -204,7 +206,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         );
 
         wlOutputValue=new Label(wContentComp, SWT.RIGHT);
-        wlOutputValue.setText(Messages.getString("AddXMLDialog.OutputValue.Label"));
+        wlOutputValue.setText(BaseMessages.getString(PKG, "AddXMLDialog.OutputValue.Label"));
         props.setLook(wlOutputValue);
         fdlOutputValue=new FormData();
         fdlOutputValue.left = new FormAttachment(0, 0);
@@ -222,7 +224,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         wOutputValue.setLayoutData(fdOutputValue);
 
         wlRepeatElement=new Label(wContentComp, SWT.RIGHT);
-        wlRepeatElement.setText(Messages.getString("AddXMLDialog.RepeatElement.Label"));
+        wlRepeatElement.setText(BaseMessages.getString(PKG, "AddXMLDialog.RepeatElement.Label"));
         props.setLook(wlRepeatElement);
         fdlRepeatElement=new FormData();
         fdlRepeatElement.left = new FormAttachment(0, 0);
@@ -240,7 +242,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         wRepeatElement.setLayoutData(fdRepeatElement);
 
         wlOmitXMLHeader=new Label(wContentComp, SWT.RIGHT);
-        wlOmitXMLHeader.setText(Messages.getString("AddXMLDialog.OmitXMLHeader.Label"));
+        wlOmitXMLHeader.setText(BaseMessages.getString(PKG, "AddXMLDialog.OmitXMLHeader.Label"));
         props.setLook(wlOmitXMLHeader);
         fdlOmitXMLHeader=new FormData();
         fdlOmitXMLHeader.left = new FormAttachment(0, 0);
@@ -280,7 +282,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         // Fields tab...
         //
         wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
-        wFieldsTab.setText(Messages.getString("AddXMLDialog.FieldsTab.TabTitle"));
+        wFieldsTab.setText(BaseMessages.getString(PKG, "AddXMLDialog.FieldsTab.TabTitle"));
         
         FormLayout fieldsLayout = new FormLayout ();
         fieldsLayout.marginWidth  = Const.FORM_MARGIN;
@@ -291,12 +293,12 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         props.setLook(wFieldsComp);
 
         wGet=new Button(wFieldsComp, SWT.PUSH);
-        wGet.setText(Messages.getString("AddXMLDialog.Get.Button"));
-        wGet.setToolTipText(Messages.getString("AddXMLDialog.Get.Tooltip"));
+        wGet.setText(BaseMessages.getString(PKG, "AddXMLDialog.Get.Button"));
+        wGet.setToolTipText(BaseMessages.getString(PKG, "AddXMLDialog.Get.Tooltip"));
 
         wMinWidth =new Button(wFieldsComp, SWT.PUSH);
-        wMinWidth.setText(Messages.getString("AddXMLDialog.MinWidth.Label"));
-        wMinWidth.setToolTipText(Messages.getString("AddXMLDialog.MinWidth.Tooltip"));
+        wMinWidth.setText(BaseMessages.getString(PKG, "AddXMLDialog.MinWidth.Label"));
+        wMinWidth.setToolTipText(BaseMessages.getString(PKG, "AddXMLDialog.MinWidth.Tooltip"));
 
         setButtonPositions(new Button[] { wGet, wMinWidth}, margin, null);
 
@@ -312,18 +314,18 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         
         ColumnInfo[] colinf=new ColumnInfo[]
           {
-            new ColumnInfo(Messages.getString("AddXMLDialog.Fieldname.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,   false),
-            new ColumnInfo(Messages.getString("AddXMLDialog.ElementName.Column"), ColumnInfo.COLUMN_TYPE_TEXT,   false),
-            new ColumnInfo(Messages.getString("AddXMLDialog.Type.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-            new ColumnInfo(Messages.getString("AddXMLDialog.Format.Column"),      ColumnInfo.COLUMN_TYPE_CCOMBO, formats),
-            new ColumnInfo(Messages.getString("AddXMLDialog.Length.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
-            new ColumnInfo(Messages.getString("AddXMLDialog.Precision.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,   false),
-            new ColumnInfo(Messages.getString("AddXMLDialog.Currency.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
-            new ColumnInfo(Messages.getString("AddXMLDialog.Decimal.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
-            new ColumnInfo(Messages.getString("AddXMLDialog.Group.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
-            new ColumnInfo(Messages.getString("AddXMLDialog.Null.Column"),        ColumnInfo.COLUMN_TYPE_TEXT,   false),
-            new ColumnInfo(Messages.getString("AddXMLDialog.Attribute.Column"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") }, true),
-            new ColumnInfo(Messages.getString("AddXMLDialog.AttributeParentName.Column"), ColumnInfo.COLUMN_TYPE_TEXT,   false)
+            new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.Fieldname.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,   false),
+            new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.ElementName.Column"), ColumnInfo.COLUMN_TYPE_TEXT,   false),
+            new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.Type.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+            new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.Format.Column"),      ColumnInfo.COLUMN_TYPE_CCOMBO, formats),
+            new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.Length.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
+            new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.Precision.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,   false),
+            new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.Currency.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
+            new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.Decimal.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
+            new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.Group.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
+            new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.Null.Column"),        ColumnInfo.COLUMN_TYPE_TEXT,   false),
+            new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.Attribute.Column"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") }, true),
+            new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.AttributeParentName.Column"), ColumnInfo.COLUMN_TYPE_TEXT,   false)
           };
         wFields=new TableView(transMeta, wFieldsComp, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -358,10 +360,10 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         wTabFolder.setLayoutData(fdTabFolder);
         
         wOK=new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         
         wCancel=new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
         setButtonPositions(new Button[] { wOK, wCancel }, margin, wTabFolder);
 
@@ -446,7 +448,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         
         wOmitXMLHeader.setSelection(input.isOmitXMLheader());
         
-        log.logDebug(toString(), Messages.getString("AddXMLDialog.Log.GettingFieldsInfo"));
+        log.logDebug(toString(), BaseMessages.getString(PKG, "AddXMLDialog.Log.GettingFieldsInfo"));
         
         for (int i=0;i<input.getOutputFields().length;i++)
         {
@@ -463,7 +465,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
             if (field.getDecimalSymbol()!=null) item.setText(8, field.getDecimalSymbol());
             if (field.getGroupingSymbol()!=null) item.setText(9, field.getGroupingSymbol());
             if (field.getNullString()!=null) item.setText(10, field.getNullString());
-            item.setText(11, field.isAttribute() ? Messages.getString("System.Combo.Yes") : Messages.getString("System.Combo.No"));
+            item.setText(11, field.isAttribute() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG, "System.Combo.No"));
             if (field.getAttributeParentName()!=null) item.setText(12, field.getAttributeParentName());
         }
         
@@ -512,7 +514,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
             field.setDecimalSymbol( item.getText(8) );
             field.setGroupingSymbol( item.getText(9) );
             field.setNullString( item.getText(10) );
-            field.setAttribute( Messages.getString("System.Combo.Yes").equals(item.getText(11)) );
+            field.setAttribute( BaseMessages.getString(PKG, "System.Combo.Yes").equals(item.getText(11)) );
             field.setAttributeParentName(item.getText(12));
             
             tfoi.getOutputFields()[i]  = field;
@@ -574,7 +576,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         }
         catch(KettleException ke)
         {
-            new ErrorDialog(shell, Messages.getString("System.Dialog.GetFieldsFailed.Title"), Messages.getString("System.Dialog.GetFieldsFailed.Message"), ke);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Title"), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"), ke);
         }
 
     }

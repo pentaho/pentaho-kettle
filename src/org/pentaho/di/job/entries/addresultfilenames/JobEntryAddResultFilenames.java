@@ -21,22 +21,20 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.w3c.dom.Node;
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileType;
-import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileSelectInfo;
-
-import org.pentaho.di.core.ResultFile;
-import org.pentaho.di.core.Const;
+import org.apache.commons.vfs.FileSelector;
+import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -45,13 +43,14 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.w3c.dom.Node;
 
 
 /**
@@ -62,6 +61,7 @@ import org.pentaho.di.repository.Repository;
  */
 public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+  private static Class<?> PKG = JobEntryAddResultFilenames.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   public boolean argFromPrevious;
   
@@ -81,15 +81,10 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
 
     includeSubfolders = false;
     setID(-1L);
-    setJobEntryType(JobEntryType.ADD_RESULT_FILENAMES);
   }
 
   public JobEntryAddResultFilenames() {
     this(""); //$NON-NLS-1$
-  }
-
-  public JobEntryAddResultFilenames(JobEntryBase jeb) {
-    super(jeb);
   }
 
   public Object clone() {
@@ -145,7 +140,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
         filemasks[i] = XMLHandler.getTagValue(fnode, "filemask"); //$NON-NLS-1$
       }
     } catch (KettleXMLException xe) {
-      throw new KettleXMLException(Messages.getString("JobEntryAddResultFilenames.UnableToLoadFromXml"), xe); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.UnableToLoadFromXml"), xe); //$NON-NLS-1$
     }
   }
 
@@ -170,7 +165,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
         filemasks[a] = rep.getJobEntryAttributeString(id_jobentry, a, "filemask"); //$NON-NLS-1$
       }
     } catch (KettleException dbe) {
-      throw new KettleException(Messages.getString("JobEntryAddResultFilenames.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -191,7 +186,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
         }
       }
     } catch (KettleDatabaseException dbe) {
-      throw new KettleException(Messages.getString("JobEntryAddResultFilenames.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -208,17 +203,17 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
 	{
     	// clear result filenames
     	int size=result.getResultFiles().size();
-    	if(log.isBasic()) log.logBasic(toString(),Messages.getString("JobEntryAddResultFilenames.log.FilesFound",""+size));
+    	if(log.isBasic()) log.logBasic(toString(),BaseMessages.getString(PKG, "JobEntryAddResultFilenames.log.FilesFound",""+size));
 	
 		result.getResultFiles().clear();
-		if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobEntryAddResultFilenames.log.DeletedFiles",""+size));
+		if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryAddResultFilenames.log.DeletedFiles",""+size));
 	}
     
     
     if (argFromPrevious) 
     {
     	if(log.isDetailed()) 
-    		log.logDetailed(toString(), Messages.getString("JobEntryAddResultFilenames.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
+    		log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryAddResultFilenames.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
     }
 
     if (argFromPrevious && rows != null) // Copy the input row to the (command line) arguments
@@ -231,7 +226,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
         String fmasks_previous = resultRow.getString(1,null);       
 
          // ok we can process this file/folder
-        if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryAddResultFilenames.ProcessingRow", filefolder_previous, fmasks_previous)); //$NON-NLS-1$
+        if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryAddResultFilenames.ProcessingRow", filefolder_previous, fmasks_previous)); //$NON-NLS-1$
 
           if (!ProcessFile(filefolder_previous, fmasks_previous,parentJob,result, log)) {
         	  nrErrFiles++;
@@ -243,7 +238,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
       for (int i = 0; i < arguments.length  && !parentJob.isStopped(); i++) {
         
           // ok we can process this file/folder
-    	  if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryAddResultFilenames.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
+    	  if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryAddResultFilenames.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
           if (!ProcessFile(arguments[i], filemasks[i],parentJob,result, log)) {
         	  nrErrFiles++;
           }
@@ -284,7 +279,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
 	    if(filefolder.getType()==FileType.FILE)
 	    {
 	    	// Add filename to Resultfilenames ...
-	    	if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobEntryAddResultFilenames.AddingFileToResult",filefolder.toString()));
+	    	if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryAddResultFilenames.AddingFileToResult",filefolder.toString()));
         	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filefolder.toString()), parentJob.getJobname(), toString());
             result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 	    }
@@ -295,7 +290,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
 	    	for ( int i=0; i < list.length  && !parentJob.isStopped(); i++ ) 
 			{
 				// Add filename to Resultfilenames ...
-	    		if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobEntryAddResultFilenames.AddingFileToResult",list[i].toString()));
+	    		if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryAddResultFilenames.AddingFileToResult",list[i].toString()));
 	        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(list[i].toString()), parentJob.getJobname(), toString());
 	            result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 	        }
@@ -303,12 +298,12 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
 
       } else {
         // File can not be found
-    	  if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobEntryAddResultFilenames.FileCanNotbeFound", realFilefoldername)); //$NON-NLS-1$
+    	  if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "JobEntryAddResultFilenames.FileCanNotbeFound", realFilefoldername)); //$NON-NLS-1$
     	  rcode = false;
       }
     } catch (IOException e) {
     	rcode = false;
-        log.logError(toString(), Messages.getString("JobEntryAddResultFilenames.CouldNotProcess", realFilefoldername, e.getMessage())); //$NON-NLS-1$
+        log.logError(toString(), BaseMessages.getString(PKG, "JobEntryAddResultFilenames.CouldNotProcess", realFilefoldername, e.getMessage())); //$NON-NLS-1$
     } finally {
       if (filefolder != null) {
         try {

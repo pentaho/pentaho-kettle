@@ -35,29 +35,31 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
+import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.special.JobEntrySpecial;
-import org.pentaho.di.job.entries.special.Messages;
 
 
 public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
-    private final static String NOSCHEDULING = Messages.getString("JobSpecial.Type.NoScheduling");
+	private static Class<?> PKG = JobEntrySpecial.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    private final static String INTERVAL = Messages.getString("JobSpecial.Type.Interval");
+    private final static String NOSCHEDULING = BaseMessages.getString(PKG, "JobSpecial.Type.NoScheduling");
 
-    private final static String DAILY = Messages.getString("JobSpecial.Type.Daily");
+    private final static String INTERVAL = BaseMessages.getString(PKG, "JobSpecial.Type.Interval");
 
-    private final static String WEEKLY = Messages.getString("JobSpecial.Type.Weekly");
+    private final static String DAILY = BaseMessages.getString(PKG, "JobSpecial.Type.Daily");
 
-    private final static String MONTHLY = Messages.getString("JobSpecial.Type.Monthly");
+    private final static String WEEKLY = BaseMessages.getString(PKG, "JobSpecial.Type.Weekly");
+
+    private final static String MONTHLY = BaseMessages.getString(PKG, "JobSpecial.Type.Monthly");
 
     private Button wOK, wCancel;
 
@@ -117,7 +119,7 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobSpecial.Scheduling.Label"));
+        shell.setText(BaseMessages.getString(PKG, "JobSpecial.Scheduling.Label"));
 
         int margin = Const.MARGIN;
 
@@ -129,7 +131,7 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
                 enableDisableControls();
             }
         });
-        placeControl(shell, Messages.getString("JobSpecial.Repeat.Label"), wRepeat, null);
+        placeControl(shell, BaseMessages.getString(PKG, "JobSpecial.Repeat.Label"), wRepeat, null);
 
         wType = new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wType.addModifyListener(lsMod);
@@ -147,18 +149,18 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
         wType.add(MONTHLY);
         wType.setEditable(false);
         wType.setVisibleItemCount(wType.getItemCount());
-        placeControl(shell, Messages.getString("JobSpecial.Type.Label"), wType, wRepeat);
+        placeControl(shell, BaseMessages.getString(PKG, "JobSpecial.Type.Label"), wType, wRepeat);
 
         wIntervalSeconds = new Spinner(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wIntervalSeconds.setMinimum(0);
         wIntervalSeconds.setMaximum(Integer.MAX_VALUE);
-        placeControl(shell, Messages.getString("JobSpecial.IntervalSeconds.Label"), wIntervalSeconds,
+        placeControl(shell, BaseMessages.getString(PKG, "JobSpecial.IntervalSeconds.Label"), wIntervalSeconds,
             wType);
 
         wIntervalMinutes = new Spinner(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wIntervalMinutes.setMinimum(0);
         wIntervalMinutes.setMaximum(Integer.MAX_VALUE);
-        placeControl(shell, Messages.getString("JobSpecial.IntervalMinutes.Label"), wIntervalMinutes,
+        placeControl(shell, BaseMessages.getString(PKG, "JobSpecial.IntervalMinutes.Label"), wIntervalMinutes,
             wIntervalSeconds);
 
         Composite time = new Composite(shell, SWT.NONE);
@@ -169,33 +171,33 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
         wMinutes = new Spinner(time, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wMinutes.setMinimum(0);
         wMinutes.setMaximum(59);
-        placeControl(shell, Messages.getString("JobSpecial.TimeOfDay.Label"), time, wIntervalMinutes);
+        placeControl(shell, BaseMessages.getString(PKG, "JobSpecial.TimeOfDay.Label"), time, wIntervalMinutes);
 
         wDayOfWeek = new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wDayOfWeek.addModifyListener(lsMod);
-        wDayOfWeek.add(Messages.getString("JobSpecial.DayOfWeek.Sunday"));
-        wDayOfWeek.add(Messages.getString("JobSpecial.DayOfWeek.Monday"));
-        wDayOfWeek.add(Messages.getString("JobSpecial.DayOfWeek.Tuesday"));
-        wDayOfWeek.add(Messages.getString("JobSpecial.DayOfWeek.Wednesday"));
-        wDayOfWeek.add(Messages.getString("JobSpecial.DayOfWeek.Thursday"));
-        wDayOfWeek.add(Messages.getString("JobSpecial.DayOfWeek.Friday"));
-        wDayOfWeek.add(Messages.getString("JobSpecial.DayOfWeek.Saturday"));
+        wDayOfWeek.add(BaseMessages.getString(PKG, "JobSpecial.DayOfWeek.Sunday"));
+        wDayOfWeek.add(BaseMessages.getString(PKG, "JobSpecial.DayOfWeek.Monday"));
+        wDayOfWeek.add(BaseMessages.getString(PKG, "JobSpecial.DayOfWeek.Tuesday"));
+        wDayOfWeek.add(BaseMessages.getString(PKG, "JobSpecial.DayOfWeek.Wednesday"));
+        wDayOfWeek.add(BaseMessages.getString(PKG, "JobSpecial.DayOfWeek.Thursday"));
+        wDayOfWeek.add(BaseMessages.getString(PKG, "JobSpecial.DayOfWeek.Friday"));
+        wDayOfWeek.add(BaseMessages.getString(PKG, "JobSpecial.DayOfWeek.Saturday"));
         wDayOfWeek.setEditable(false);
         wDayOfWeek.setVisibleItemCount(wDayOfWeek.getItemCount());
-        placeControl(shell, Messages.getString("JobSpecial.DayOfWeek.Label"), wDayOfWeek, time);
+        placeControl(shell, BaseMessages.getString(PKG, "JobSpecial.DayOfWeek.Label"), wDayOfWeek, time);
 
         wDayOfMonth = new Spinner(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wDayOfMonth.addModifyListener(lsMod);
         wDayOfMonth.setMinimum(1);
         wDayOfMonth.setMaximum(30);
-        placeControl(shell, Messages.getString("JobSpecial.DayOfMonth.Label"), wDayOfMonth,
+        placeControl(shell, BaseMessages.getString(PKG, "JobSpecial.DayOfMonth.Label"), wDayOfMonth,
             wDayOfWeek);
 
         // Some buttons
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wDayOfMonth);
 

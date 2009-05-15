@@ -8,7 +8,6 @@
 package org.pentaho.di.ui.job.entries.addresultfilenames;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -19,32 +18,31 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
-
-import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.job.entries.addresultfilenames.JobEntryAddResultFilenames;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.addresultfilenames.JobEntryAddResultFilenames;
-import org.pentaho.di.job.entries.addresultfilenames.Messages;
 
 /**
  * This dialog allows you to edit the Delete Files job entry settings.
@@ -55,8 +53,10 @@ import org.pentaho.di.job.entries.addresultfilenames.Messages;
 
 public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
-   private static final String[] FILETYPES = new String[] {
-           Messages.getString("JobEntryAddResultFilenames.Filetype.All") };
+    private static Class<?> PKG = JobEntryAddResultFilenames.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+    private static final String[] FILETYPES = new String[] {
+           BaseMessages.getString(PKG, "JobEntryAddResultFilenames.Filetype.All") };
 	
 	private Label        wlName;
 	private Text         wName;
@@ -111,7 +111,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
         jobEntry = (JobEntryAddResultFilenames) jobEntryInt;
 
 		if (this.jobEntry.getName() == null) 
-			this.jobEntry.setName(Messages.getString("JobEntryAddResultFilenames.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.Name.Default"));
 	}
 
 	public JobEntryInterface open()
@@ -137,14 +137,14 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobEntryAddResultFilenames.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobEntryAddResultFilenames.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -167,7 +167,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 
 		wSettings = new Group(shell, SWT.SHADOW_NONE);
 		props.setLook(wSettings);
-		wSettings.setText(Messages.getString("JobEntryAddResultFilenames.Settings.Label"));
+		wSettings.setText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.Settings.Label"));
 
 		FormLayout groupLayout = new FormLayout();
 		groupLayout.marginWidth = 10;
@@ -175,7 +175,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 		wSettings.setLayout(groupLayout);
 
 		wlIncludeSubfolders = new Label(wSettings, SWT.RIGHT);
-		wlIncludeSubfolders.setText(Messages.getString("JobEntryAddResultFilenames.IncludeSubfolders.Label"));
+		wlIncludeSubfolders.setText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.IncludeSubfolders.Label"));
 		props.setLook(wlIncludeSubfolders);
 		fdlIncludeSubfolders = new FormData();
 		fdlIncludeSubfolders.left = new FormAttachment(0, 0);
@@ -184,7 +184,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 		wlIncludeSubfolders.setLayoutData(fdlIncludeSubfolders);
 		wIncludeSubfolders = new Button(wSettings, SWT.CHECK);
 		props.setLook(wIncludeSubfolders);
-		wIncludeSubfolders.setToolTipText(Messages.getString("JobEntryAddResultFilenames.IncludeSubfolders.Tooltip"));
+		wIncludeSubfolders.setToolTipText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.IncludeSubfolders.Tooltip"));
 		fdIncludeSubfolders = new FormData();
 		fdIncludeSubfolders.left = new FormAttachment(middle, 0);
 		fdIncludeSubfolders.top = new FormAttachment(wName, margin);
@@ -200,7 +200,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 		
 	
 		wlPrevious = new Label(wSettings, SWT.RIGHT);
-		wlPrevious.setText(Messages.getString("JobEntryAddResultFilenames.Previous.Label"));
+		wlPrevious.setText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.Previous.Label"));
 		props.setLook(wlPrevious);
 		fdlPrevious = new FormData();
 		fdlPrevious.left = new FormAttachment(0, 0);
@@ -210,7 +210,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 		wPrevious = new Button(wSettings, SWT.CHECK);
 		props.setLook(wPrevious);
 		wPrevious.setSelection(jobEntry.argFromPrevious);
-		wPrevious.setToolTipText(Messages.getString("JobEntryAddResultFilenames.Previous.Tooltip"));
+		wPrevious.setToolTipText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.Previous.Tooltip"));
 		fdPrevious = new FormData();
 		fdPrevious.left = new FormAttachment(middle, 0);
 		fdPrevious.top = new FormAttachment(wIncludeSubfolders, margin );
@@ -227,7 +227,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 		});
 		
 		wlDeleteAllBefore = new Label(wSettings, SWT.RIGHT);
-		wlDeleteAllBefore.setText(Messages.getString("JobEntryAddResultFilenames.DeleteAllBefore.Label"));
+		wlDeleteAllBefore.setText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.DeleteAllBefore.Label"));
 		props.setLook(wlDeleteAllBefore);
 		fdlDeleteAllBefore = new FormData();
 		fdlDeleteAllBefore.left = new FormAttachment(0, 0);
@@ -236,7 +236,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 		wlDeleteAllBefore.setLayoutData(fdlDeleteAllBefore);
 		wDeleteAllBefore = new Button(wSettings, SWT.CHECK);
 		props.setLook(wDeleteAllBefore);
-		wDeleteAllBefore.setToolTipText(Messages.getString("JobEntryAddResultFilenames.DeleteAllBefore.Tooltip"));
+		wDeleteAllBefore.setToolTipText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.DeleteAllBefore.Tooltip"));
 		fdDeleteAllBefore = new FormData();
 		fdDeleteAllBefore.left = new FormAttachment(middle, 0);
 		fdDeleteAllBefore.top = new FormAttachment(wPrevious, margin);
@@ -264,7 +264,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 
 		// Filename line
 		wlFilename=new Label(shell, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("JobEntryAddResultFilenames.Filename.Label"));
+		wlFilename.setText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.Filename.Label"));
 		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -277,7 +277,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 		// Browse Source folders button ...
 		wbDirectory=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbDirectory);
-		wbDirectory.setText(Messages.getString("JobEntryAddResultFilenames.BrowseFolders.Label"));
+		wbDirectory.setText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.BrowseFolders.Label"));
 		fdbDirectory=new FormData();
 		fdbDirectory.right= new FormAttachment(100, -margin);
 		fdbDirectory.top  = new FormAttachment(wSettings, margin);
@@ -311,7 +311,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 
 		wbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbFilename);
-		wbFilename.setText(Messages.getString("JobEntryAddResultFilenames.BrowseFiles.Label"));
+		wbFilename.setText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.BrowseFiles.Label"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(wSettings, margin);
@@ -320,7 +320,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 
 		wbaFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbaFilename);
-		wbaFilename.setText(Messages.getString("JobEntryAddResultFilenames.FilenameAdd.Button"));
+		wbaFilename.setText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.FilenameAdd.Button"));
 		fdbaFilename=new FormData();
 		fdbaFilename.right= new FormAttachment(wbFilename, -margin);
 		fdbaFilename.top  = new FormAttachment(wSettings, margin);
@@ -368,7 +368,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 		
 		// Filemask
 		wlFilemask = new Label(shell, SWT.RIGHT);
-		wlFilemask.setText(Messages.getString("JobEntryAddResultFilenames.Wildcard.Label"));
+		wlFilemask.setText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.Wildcard.Label"));
 		props.setLook(wlFilemask);
 		fdlFilemask = new FormData();
 		fdlFilemask.left = new FormAttachment(0, 0);
@@ -376,7 +376,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 		fdlFilemask.right = new FormAttachment(middle, -margin);
 		wlFilemask.setLayoutData(fdlFilemask);
 		wFilemask = new TextVar(jobMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
-				                Messages.getString("JobEntryAddResultFilenames.Wildcard.Tooltip"));
+				                BaseMessages.getString(PKG, "JobEntryAddResultFilenames.Wildcard.Tooltip"));
 		props.setLook(wFilemask);
 		wFilemask.addModifyListener(lsMod);
 		fdFilemask = new FormData();
@@ -388,8 +388,8 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 		// Buttons to the right of the screen...
 		wbdFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbdFilename);
-		wbdFilename.setText(Messages.getString("JobEntryAddResultFilenames.FilenameDelete.Button"));
-		wbdFilename.setToolTipText(Messages.getString("JobEntryAddResultFilenames.FilenameDelete.Tooltip"));
+		wbdFilename.setText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.FilenameDelete.Button"));
+		wbdFilename.setToolTipText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.FilenameDelete.Tooltip"));
 		fdbdFilename=new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
 		fdbdFilename.top  = new FormAttachment (wFilemask, 40);
@@ -397,8 +397,8 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 
 		wbeFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbeFilename);
-		wbeFilename.setText(Messages.getString("JobEntryAddResultFilenames.FilenameEdit.Button"));
-		wbeFilename.setToolTipText(Messages.getString("JobEntryAddResultFilenames.FilenameEdit.Tooltip"));
+		wbeFilename.setText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.FilenameEdit.Button"));
+		wbeFilename.setToolTipText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.FilenameEdit.Tooltip"));
 		fdbeFilename=new FormData();
 		fdbeFilename.right = new FormAttachment(100, 0);
 		fdbeFilename.left = new FormAttachment(wbdFilename, 0, SWT.LEFT);
@@ -406,7 +406,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 		wbeFilename.setLayoutData(fdbeFilename);
 
 		wlFields = new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("JobEntryAddResultFilenames.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.Fields.Label"));
 		props.setLook(wlFields);
 		fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -423,14 +423,14 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 
 		ColumnInfo[] colinf=new ColumnInfo[]
 			{
-				new ColumnInfo(Messages.getString("JobEntryAddResultFilenames.Fields.Argument.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
-				new ColumnInfo(Messages.getString("JobEntryAddResultFilenames.Fields.Wildcard.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.Fields.Argument.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.Fields.Wildcard.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
 			};
 
 		colinf[0].setUsingVariables(true);
-		colinf[0].setToolTip(Messages.getString("JobEntryAddResultFilenames.Fields.Column"));
+		colinf[0].setToolTip(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.Fields.Column"));
 		colinf[1].setUsingVariables(true);
-		colinf[1].setToolTip(Messages.getString("JobEntryAddResultFilenames.Wildcard.Column"));
+		colinf[1].setToolTip(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.Wildcard.Column"));
 
 		wFields = new TableView(jobMeta,shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
 			FieldsRows, lsMod, props);
@@ -492,9 +492,9 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 		});
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFields);
 
@@ -594,8 +594,8 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 		if(Const.isEmpty(wName.getText())) 
         {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
         }

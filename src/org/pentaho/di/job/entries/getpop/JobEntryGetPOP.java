@@ -58,8 +58,8 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -82,6 +82,8 @@ import com.sun.mail.pop3.POP3SSLStore;
 
 public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+  private static Class<?> PKG = JobEntryGetPOP.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   private String servername;
 
   private String username;
@@ -117,17 +119,11 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     delete = false;
 
     setID(-1L);
-    setJobEntryType(JobEntryType.GET_POP);
   }
 
   public JobEntryGetPOP()
   {
     this(""); //$NON-NLS-1$
-  }
-
-  public JobEntryGetPOP(JobEntryBase jeb)
-  {
-    super(jeb);
   }
 
   public Object clone()
@@ -172,7 +168,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       delete = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "delete")); //$NON-NLS-1$ //$NON-NLS-2$
     } catch (KettleXMLException xe)
     {
-      throw new KettleXMLException(Messages.getString("JobEntryGetPOP.UnableToLoadFromXml"), xe); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryGetPOP.UnableToLoadFromXml"), xe); //$NON-NLS-1$
     }
   }
 
@@ -199,7 +195,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     } catch (KettleException dbe)
     {
       throw new KettleException(
-          Messages.getString("JobEntryGetPOP.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
+          BaseMessages.getString(PKG, "JobEntryGetPOP.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -221,7 +217,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       rep.saveJobEntryAttribute(id_job, getID(), "delete", delete); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe)
     {
-      throw new KettleException(Messages.getString("JobEntryGetPOP.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "JobEntryGetPOP.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -397,7 +393,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       // Check if output folder exists
       if (!fileObject.exists())
       {
-        log.logError(toString(), Messages.getString("JobGetMailsFromPOP.FolderNotExists.Label", realOutputFolder)); //$NON-NLS-1$
+        log.logError(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.FolderNotExists.Label", realOutputFolder)); //$NON-NLS-1$
       } else
       {
     	  if (fileObject.getType() == FileType.FOLDER) 
@@ -432,7 +428,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	          st.connect();
 	        }
 	        if(log.isDetailed())	
-	        	log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.LoggedWithUser.Label") + user); //$NON-NLS-1$
+	        	log.logDetailed(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.LoggedWithUser.Label") + user); //$NON-NLS-1$
 
 	        //Open the INBOX FOLDER
 	        // For POP3, the only folder available is the INBOX.
@@ -440,7 +436,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
 	        if (f == null)
 	        {
-	          log.logError(toString(), Messages.getString("JobGetMailsFromPOP.InvalidFolder.Label")); //$NON-NLS-1$
+	          log.logError(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.InvalidFolder.Label")); //$NON-NLS-1$
 
 	        } else
 	        {
@@ -453,8 +449,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	          Message messageList[] = f.getMessages();
 	          if(log.isDetailed())	
 	          {
-	        	  log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.TotalMessagesFolder.Label", f.getName(), String.valueOf(messageList.length))); //$NON-NLS-1$
-	        	  log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.TotalUnreadMessagesFolder.Label", f.getName(), String.valueOf(f.getUnreadMessageCount()))); //$NON-NLS-1$
+	        	  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.TotalMessagesFolder.Label", f.getName(), String.valueOf(messageList.length))); //$NON-NLS-1$
+	        	  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.TotalUnreadMessagesFolder.Label", f.getName(), String.valueOf(f.getUnreadMessageCount()))); //$NON-NLS-1$
 	          }
 	          // Get emails
 	          Message msg_list[] = getPOPMessages(f, retrievemails);
@@ -478,13 +474,13 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	                Message msg_POP = msg_list[i];
 	                if(log.isDetailed())	
 	                {
-	                	log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.EmailFrom.Label", msg_list[i].getFrom()[0].toString())); //$NON-NLS-1$
-	                	log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.EmailSubject.Label", msg_list[i].getSubject())); //$NON-NLS-1$
+	                	log.logDetailed(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.EmailFrom.Label", msg_list[i].getFrom()[0].toString())); //$NON-NLS-1$
+	                	log.logDetailed(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.EmailSubject.Label", msg_list[i].getSubject())); //$NON-NLS-1$
 	                }
 	                String localfilename_message = startpattern
 	                    + "_" + StringUtil.getFormattedDateTimeNow(true) + "_" + (i + 1) + ".mail"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	                if(log.isDetailed())	
-	                	log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.LocalFilename.Label", localfilename_message)); //$NON-NLS-1$
+	                	log.logDetailed(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.LocalFilename.Label", localfilename_message)); //$NON-NLS-1$
 
 	                File filename_message = new File(realOutputFolder, localfilename_message);
 	                OutputStream os_filename = new FileOutputStream(filename_message);
@@ -521,7 +517,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	                if (delete)
 	                {
 	                  if(log.isDetailed())	
-	                	  log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.DeleteEmail.Label")); //$NON-NLS-1$
+	                	  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.DeleteEmail.Label")); //$NON-NLS-1$
 	                  msg_POP.setFlag(javax.mail.Flags.Flag.DELETED, true);
 	                }
 	              }
@@ -535,20 +531,20 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     		  
     	  }else
     	  {
-    		  log.logError(toString(), Messages.getString("JobGetMailsFromPOP.Error.NotAFolder",realOutputFolder));
+    		  log.logError(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.Error.NotAFolder",realOutputFolder));
     	  }
       }
     }
     catch (NoSuchProviderException e)
     {
-      log.logError(toString(), Messages.getString("JobEntryGetPOP.ProviderException", e.getMessage())); //$NON-NLS-1$
+      log.logError(toString(), BaseMessages.getString(PKG, "JobEntryGetPOP.ProviderException", e.getMessage())); //$NON-NLS-1$
     } catch (MessagingException e)
     {
-      log.logError(toString(), Messages.getString("JobEntryGetPOP.MessagingException", e.getMessage())); //$NON-NLS-1$
+      log.logError(toString(), BaseMessages.getString(PKG, "JobEntryGetPOP.MessagingException", e.getMessage())); //$NON-NLS-1$
     }
     catch (Exception e)
     {
-      log.logError(toString(), Messages.getString("JobEntryGetPOP.GeneralException", e.getMessage())); //$NON-NLS-1$
+      log.logError(toString(), BaseMessages.getString(PKG, "JobEntryGetPOP.GeneralException", e.getMessage())); //$NON-NLS-1$
     }
     finally
     {

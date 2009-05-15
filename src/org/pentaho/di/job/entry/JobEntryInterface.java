@@ -22,7 +22,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
@@ -43,7 +42,6 @@ import org.w3c.dom.Node;
 
 public interface JobEntryInterface
 {
-	
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
 	
 	public void    clear();
@@ -51,9 +49,14 @@ public interface JobEntryInterface
 	public void    setID(long id);
 	public String  getName();
 	public void    setName(String name);
-	public String getConfigId();
-	public void setConfigId(String configId);
-	
+
+	// ConfigId and TypeId are the same, should be refactored out later.
+	//
+	public String  getConfigId();
+	public void    setConfigId(String configId);
+    public String  getTypeId();
+    public void    setTypeId(String typeId);
+    
 	public String  getDescription();
 	public void    setDescription(String description);
 	public void    setChanged();
@@ -64,13 +67,6 @@ public interface JobEntryInterface
 	public String  getXML();
 	public void    loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException;
 	public void    saveRep(Repository rep, long id_job) throws KettleException;
-	
-	public JobEntryType     getJobEntryType();
-	public void     setJobEntryType(JobEntryType e);
-	
-	public String  getTypeCode();
-    public String  getPluginID();
-
 
 	public boolean isStart();
 	public boolean isDummy();
@@ -105,8 +101,6 @@ public interface JobEntryInterface
      *         Return an empty array if no connections are used.
      */
     public DatabaseMeta[] getUsedDatabaseConnections();
-
-    public void setPluginID(String id);
     
     /**
      * Allows JobEntry objects to check themselves for consistency

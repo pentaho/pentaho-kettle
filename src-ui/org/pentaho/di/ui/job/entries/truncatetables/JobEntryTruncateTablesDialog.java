@@ -13,7 +13,6 @@
 package org.pentaho.di.ui.job.entries.truncatetables;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -29,28 +28,28 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-
-import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
-import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.truncatetables.JobEntryTruncateTables;
-import org.pentaho.di.job.entries.truncatetables.Messages;
-import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.truncatetables.JobEntryTruncateTables;
+import org.pentaho.di.job.entry.JobEntryDialogInterface;
+import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Truncate Tables job entry settings. (select the connection and
@@ -61,6 +60,8 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
  */
 public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryTruncateTables.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Button wbTable;
 	
     private Label wlName;
@@ -99,7 +100,7 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryTruncateTables) jobEntryInt;
         if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(Messages.getString("JobTruncateTables.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobTruncateTables.Name.Default"));
     }
 
     public JobEntryInterface open()
@@ -125,14 +126,14 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobTruncateTables.Title"));
+        shell.setText(BaseMessages.getString(PKG, "JobTruncateTables.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("JobTruncateTables.Name.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "JobTruncateTables.Name.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
@@ -154,7 +155,7 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
 		wConnection.addModifyListener(lsMod);
 		
 		wlPrevious = new Label(shell, SWT.RIGHT);
-		wlPrevious.setText(Messages.getString("JobTruncateTables.Previous.Label"));
+		wlPrevious.setText(BaseMessages.getString(PKG, "JobTruncateTables.Previous.Label"));
 		props.setLook(wlPrevious);
 		fdlPrevious = new FormData();
 		fdlPrevious.left = new FormAttachment(0, 0);
@@ -163,7 +164,7 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
 		wlPrevious.setLayoutData(fdlPrevious);
 		wPrevious = new Button(shell, SWT.CHECK);
 		props.setLook(wPrevious);
-		wPrevious.setToolTipText(Messages.getString("JobTruncateTables.Previous.Tooltip"));
+		wPrevious.setToolTipText(BaseMessages.getString(PKG, "JobTruncateTables.Previous.Tooltip"));
 		fdPrevious = new FormData();
 		fdPrevious.left = new FormAttachment(middle, 0);
 		fdPrevious.top = new FormAttachment(wConnection, margin );
@@ -182,7 +183,7 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
         
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbTable);
-		wbTable.setText(Messages.getString("JobTruncateTables.GetTablenamesList.Auto"));
+		wbTable.setText(BaseMessages.getString(PKG, "JobTruncateTables.GetTablenamesList.Auto"));
 		FormData fdbTable = new FormData();
 		fdbTable.left= new FormAttachment(0, margin);
 		fdbTable.right= new FormAttachment(100, -margin);
@@ -193,15 +194,15 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
 		// Buttons to the right of the screen...
 		wbdTablename=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbdTablename);
-		wbdTablename.setText(Messages.getString("JobTruncateTables.TableDelete.Button"));
-		wbdTablename.setToolTipText(Messages.getString("JobTruncateTables.TableDelete.Tooltip"));
+		wbdTablename.setText(BaseMessages.getString(PKG, "JobTruncateTables.TableDelete.Button"));
+		wbdTablename.setToolTipText(BaseMessages.getString(PKG, "JobTruncateTables.TableDelete.Tooltip"));
 		fdbdTablename=new FormData();
 		fdbdTablename.right = new FormAttachment(100, 0);
 		fdbdTablename.top  = new FormAttachment (wbTable, 2*middle);
 		wbdTablename.setLayoutData(fdbdTablename);
         
         wlFields = new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("JobTruncateTables.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "JobTruncateTables.Fields.Label"));
 		props.setLook(wlFields);
 		fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -218,14 +219,14 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
 
 		ColumnInfo[] colinf=new ColumnInfo[]
 			{
-				new ColumnInfo(Messages.getString("JobTruncateTables.Fields.Table.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
-				new ColumnInfo(Messages.getString("JobTruncateTables.Fields.Schema.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobTruncateTables.Fields.Table.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobTruncateTables.Fields.Schema.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
 			};
 
 		colinf[0].setUsingVariables(true);
-		colinf[0].setToolTip(Messages.getString("JobTruncateTables.Fields.Table.Tooltip"));
+		colinf[0].setToolTip(BaseMessages.getString(PKG, "JobTruncateTables.Fields.Table.Tooltip"));
 		colinf[1].setUsingVariables(true);
-		colinf[1].setToolTip(Messages.getString("JobTruncateTables.Fields.Schema.Tooltip"));
+		colinf[1].setToolTip(BaseMessages.getString(PKG, "JobTruncateTables.Fields.Schema.Tooltip"));
 
 		wFields = new TableView(jobMeta,shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
 			FieldsRows, lsMod, props);
@@ -252,7 +253,7 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
 		
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         FormData fd = new FormData();
         fd.right = new FormAttachment(50, -10);
         fd.bottom = new FormAttachment(100, 0);
@@ -260,7 +261,7 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
         wOK.setLayoutData(fd);
 
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         fd = new FormData();
         fd.left = new FormAttachment(50, 10);
         fd.bottom = new FormAttachment(100, 0);
@@ -370,8 +371,8 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
  	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
        }
@@ -418,7 +419,7 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
 			{
 				database.connect();
 				String Tablenames[]=database.getTablenames();
-				EnterSelectionDialog dialog = new EnterSelectionDialog(shell, Tablenames, Messages.getString("JobTruncateTables.SelectTables.Title"), Messages.getString("JobTruncateTables.SelectTables.Message"));
+				EnterSelectionDialog dialog = new EnterSelectionDialog(shell, Tablenames, BaseMessages.getString(PKG, "JobTruncateTables.SelectTables.Title"), BaseMessages.getString(PKG, "JobTruncateTables.SelectTables.Message"));
 				dialog.setMulti(true);
 
 				if (dialog.open()!=null)
@@ -433,7 +434,7 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
 			}
 			catch(KettleDatabaseException e)
 			{
-				new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("JobEntryTruncateTables.ConnectionError.DialogMessage"), e);
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "JobEntryTruncateTables.ConnectionError.DialogMessage"), e);
 			}
 			finally
 			{

@@ -21,7 +21,6 @@
 package org.pentaho.di.ui.job.entries.filecompare;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -37,20 +36,21 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.filecompare.JobEntryFileCompare;
+import org.pentaho.di.job.entry.JobEntryDialogInterface;
+import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
-import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.filecompare.JobEntryFileCompare;
-import org.pentaho.di.job.entries.filecompare.Messages;
 
 /**
  * This dialog allows you to edit the File compare job entry settings.
@@ -60,8 +60,10 @@ import org.pentaho.di.job.entries.filecompare.Messages;
  */
 public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryFileCompare.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
    private static final String[] FILETYPES = new String[] {
-           Messages.getString("JobFileCompare.Filetype.All") };
+           BaseMessages.getString(PKG, "JobFileCompare.Filetype.All") };
 
 	private Label        wlName;
 	private Text         wName;
@@ -95,7 +97,7 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryFileCompare) jobEntryInt;
 		if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(Messages.getString("JobFileCompare.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobFileCompare.Name.Default"));
     }
 
 	public JobEntryInterface open()
@@ -121,14 +123,14 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobFileCompare.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobFileCompare.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Name line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobFileCompare.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobFileCompare.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -146,7 +148,7 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
 
 		// Filename 1 line
 		wlFilename1=new Label(shell, SWT.RIGHT);
-		wlFilename1.setText(Messages.getString("JobFileCompare.Filename1.Label"));
+		wlFilename1.setText(BaseMessages.getString(PKG, "JobFileCompare.Filename1.Label"));
  		props.setLook(wlFilename1);
 		fdlFilename1=new FormData();
 		fdlFilename1.left = new FormAttachment(0, 0);
@@ -155,7 +157,7 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
 		wlFilename1.setLayoutData(fdlFilename1);
 		wbFilename1=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFilename1);
-		wbFilename1.setText(Messages.getString("System.Button.Browse"));
+		wbFilename1.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbFilename1=new FormData();
 		fdbFilename1.right= new FormAttachment(100, 0);
 		fdbFilename1.top  = new FormAttachment(wName, 0);
@@ -202,7 +204,7 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
 
 		// Filename 2 line
 		wlFilename2=new Label(shell, SWT.RIGHT);
-		wlFilename2.setText(Messages.getString("JobFileCompare.Filename2.Label"));
+		wlFilename2.setText(BaseMessages.getString(PKG, "JobFileCompare.Filename2.Label"));
  		props.setLook(wlFilename2);
 		fdlFilename2=new FormData();
 		fdlFilename2.left = new FormAttachment(0, 0);
@@ -211,7 +213,7 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
 		wlFilename2.setLayoutData(fdlFilename2);
 		wbFilename2=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFilename2);
-		wbFilename2.setText(Messages.getString("System.Button.Browse"));
+		wbFilename2.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbFilename2=new FormData();
 		fdbFilename2.right= new FormAttachment(100, 0);
 		fdbFilename2.top  = new FormAttachment(wFilename1, 0);
@@ -257,7 +259,7 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
 		);
 		// Add filename to result filenames		
         wlAddFilenameResult = new Label(shell, SWT.RIGHT);
-        wlAddFilenameResult.setText(Messages.getString("JobFileCompare.AddFilenameResult.Label"));
+        wlAddFilenameResult.setText(BaseMessages.getString(PKG, "JobFileCompare.AddFilenameResult.Label"));
         props.setLook(wlAddFilenameResult);
         fdlAddFilenameResult = new FormData();
         fdlAddFilenameResult.left = new FormAttachment(0, 0);
@@ -266,7 +268,7 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
         wlAddFilenameResult.setLayoutData(fdlAddFilenameResult);
         wAddFilenameResult = new Button(shell, SWT.CHECK);
         props.setLook(wAddFilenameResult);
-        wAddFilenameResult.setToolTipText(Messages.getString("JobFileCompare.AddFilenameResult.Tooltip"));
+        wAddFilenameResult.setToolTipText(BaseMessages.getString(PKG, "JobFileCompare.AddFilenameResult.Tooltip"));
         fdAddFilenameResult = new FormData();
         fdAddFilenameResult.left = new FormAttachment(middle, 0);
         fdAddFilenameResult.top = new FormAttachment(wbFilename2, margin);
@@ -281,9 +283,9 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
         }); 
         
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wAddFilenameResult);
 
@@ -346,8 +348,8 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
  	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
        }

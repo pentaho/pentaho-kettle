@@ -17,7 +17,6 @@
 package org.pentaho.di.ui.job.entries.eval;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
@@ -38,21 +37,22 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.job.entries.eval.JobEntryEval;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.eval.JobEntryEval;
-import org.pentaho.di.job.entries.eval.Messages;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit a JobEntryEval object.
@@ -62,6 +62,8 @@ import org.pentaho.di.ui.core.widget.StyledTextComp;
  */
 public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryEval.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label wlName;
 
     private Text wName;
@@ -95,7 +97,7 @@ public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialog
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryEval) jobEntryInt;
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobEval.Name.Default"));
+            this.jobEntry.setName(BaseMessages.getString(PKG, "JobEval.Name.Default"));
     }
 
     public JobEntryInterface open()
@@ -121,22 +123,22 @@ public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialog
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobEval.Title"));
+        shell.setText(BaseMessages.getString(PKG, "JobEval.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
         // at the bottom
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
 
         // Filename line
         wlName = new Label(shell, SWT.NONE);
-        wlName.setText(Messages.getString("JobEval.Jobname.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "JobEval.Jobname.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
@@ -152,7 +154,7 @@ public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialog
         wName.setLayoutData(fdName);
 
         wlPosition = new Label(shell, SWT.NONE);
-        wlPosition.setText(Messages.getString("JobEval.LineNr.Label", "0"));
+        wlPosition.setText(BaseMessages.getString(PKG, "JobEval.LineNr.Label", "0"));
         props.setLook(wlPosition);
         fdlPosition = new FormData();
         fdlPosition.left = new FormAttachment(0, 0);
@@ -161,14 +163,14 @@ public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialog
 
         // Script line
         wlScript = new Label(shell, SWT.NONE);
-        wlScript.setText(Messages.getString("JobEval.Script.Label"));
+        wlScript.setText(BaseMessages.getString(PKG, "JobEval.Script.Label"));
         props.setLook(wlScript);
         fdlScript = new FormData();
         fdlScript.left = new FormAttachment(0, 0);
         fdlScript.top = new FormAttachment(wName, margin);
         wlScript.setLayoutData(fdlScript);
         wScript=new StyledTextComp(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
-        wScript.setText(Messages.getString("JobEval.Script.Default"));
+        wScript.setText(BaseMessages.getString(PKG, "JobEval.Script.Default"));
         props.setLook(wScript, Props.WIDGET_STYLE_FIXED);
         wScript.addModifyListener(lsMod);
         fdScript = new FormData();
@@ -270,7 +272,7 @@ public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialog
 			posnr--;
 			colnr++;
 		}
-		wlPosition.setText(Messages.getString("JobEval.Position.Label",""+linenr,""+colnr));
+		wlPosition.setText(BaseMessages.getString(PKG, "JobEval.Position.Label",""+linenr,""+colnr));
 
 	}
     public void dispose()
@@ -304,8 +306,8 @@ public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialog
  	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
        }

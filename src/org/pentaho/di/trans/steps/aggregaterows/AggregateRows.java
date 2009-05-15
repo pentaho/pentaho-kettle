@@ -16,6 +16,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -32,6 +33,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class AggregateRows extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = AggregateRows.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private AggregateRowsMeta meta;
 	private AggregateRowsData data;
 	
@@ -178,7 +181,7 @@ public class AggregateRows extends BaseStep implements StepInterface
 				data.fieldnrs[i]=getInputRowMeta().indexOfValue(meta.getFieldName()[i]);
 				if (data.fieldnrs[i]<0)
 				{
-					logError(Messages.getString("AggregateRows.Log.CouldNotFindField",meta.getFieldName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "AggregateRows.Log.CouldNotFindField",meta.getFieldName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -190,7 +193,7 @@ public class AggregateRows extends BaseStep implements StepInterface
 		AddAggregate(getInputRowMeta(), r);
 		
         if (checkFeedback(getLinesRead())) 
-        	if(log.isBasic()) logBasic(Messages.getString("AggregateRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "AggregateRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 		
 		return true;
 	}

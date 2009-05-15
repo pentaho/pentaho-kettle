@@ -14,6 +14,7 @@ package org.pentaho.di.repository;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 
 
 /**
@@ -25,6 +26,8 @@ import org.pentaho.di.core.exception.KettleException;
  */
 public class PermissionMeta 
 {
+	private static Class<?> PKG = PermissionMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private long id;
 	private int  type;
 	
@@ -48,11 +51,11 @@ public class PermissionMeta
 	public static final String permissionTypeDesc[] =
 	{
 		 "-",
-		 Messages.getString("PermissionMeta.Permission.ReadOnly"),
-		 Messages.getString("PermissionMeta.Permission.Administrator"),
-		 Messages.getString("PermissionMeta.Permission.UseTransformations"),
-		 Messages.getString("PermissionMeta.Permission.UseJobs"),
-		 Messages.getString("PermissionMeta.Permission.UseSchemas")
+		 BaseMessages.getString(PKG, "PermissionMeta.Permission.ReadOnly"),
+		 BaseMessages.getString(PKG, "PermissionMeta.Permission.Administrator"),
+		 BaseMessages.getString(PKG, "PermissionMeta.Permission.UseTransformations"),
+		 BaseMessages.getString(PKG, "PermissionMeta.Permission.UseJobs"),
+		 BaseMessages.getString(PKG, "PermissionMeta.Permission.UseSchemas")
 	};
 	
 	public PermissionMeta(int type)
@@ -77,7 +80,7 @@ public class PermissionMeta
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("PermissionMeta.Error.LoadPermisson", Long.toString(id_permission)), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "PermissionMeta.Error.LoadPermisson", Long.toString(id_permission)), dbe);
 		}
 	}
 	

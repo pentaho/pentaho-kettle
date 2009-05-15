@@ -10,7 +10,6 @@
 package org.pentaho.di.ui.job.entries.deleteresultfilenames;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -25,22 +24,21 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.Const;
-
-import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.job.entries.deleteresultfilenames.JobEntryDeleteResultFilenames;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.deleteresultfilenames.JobEntryDeleteResultFilenames;
-import org.pentaho.di.job.entries.deleteresultfilenames.Messages;
 
 
 /**
@@ -51,7 +49,8 @@ import org.pentaho.di.job.entries.deleteresultfilenames.Messages;
  */
 public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
-	
+	private static Class<?> PKG = JobEntryDeleteResultFilenames.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlName;
 	private Text         wName;
     private FormData     fdlName, fdName;
@@ -85,7 +84,7 @@ public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implemen
         jobEntry = (JobEntryDeleteResultFilenames) jobEntryInt;
 
 		if (this.jobEntry.getName() == null) 
-			this.jobEntry.setName(Messages.getString("JobEntryDeleteResultFilenames.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.Name.Default"));
 	}
 
 	public JobEntryInterface open()
@@ -111,14 +110,14 @@ public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implemen
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobEntryDeleteResultFilenames.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Foldername line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobEntryDeleteResultFilenames.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -136,7 +135,7 @@ public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implemen
 	
         // Specify wildcard?
         wlSpecifyWildcard = new Label(shell, SWT.RIGHT);
-        wlSpecifyWildcard.setText(Messages.getString("JobEntryDeleteResultFilenames.SpecifyWildcard.Label"));
+        wlSpecifyWildcard.setText(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.SpecifyWildcard.Label"));
         props.setLook(wlSpecifyWildcard);
         fdlSpecifyWildcard = new FormData();
         fdlSpecifyWildcard.left = new FormAttachment(0, 0);
@@ -145,7 +144,7 @@ public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implemen
         wlSpecifyWildcard.setLayoutData(fdlSpecifyWildcard);
         wSpecifyWildcard = new Button(shell, SWT.CHECK);
         props.setLook(wSpecifyWildcard);
-        wSpecifyWildcard.setToolTipText(Messages.getString("JobEntryDeleteResultFilenames.SpecifyWildcard.Tooltip"));
+        wSpecifyWildcard.setToolTipText(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.SpecifyWildcard.Tooltip"));
         fdSpecifyWildcard = new FormData();
         fdSpecifyWildcard.left = new FormAttachment(middle, 0);
         fdSpecifyWildcard.top = new FormAttachment(wName, margin);
@@ -164,7 +163,7 @@ public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implemen
         
 		// Wildcard line
 		wlWildcard=new Label(shell, SWT.RIGHT);
-		wlWildcard.setText(Messages.getString("JobEntryDeleteResultFilenames.Wildcard.Label"));
+		wlWildcard.setText(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.Wildcard.Label"));
  		props.setLook(wlWildcard);
 		fdlWildcard=new FormData();
 		fdlWildcard.left = new FormAttachment(0, 0);
@@ -172,7 +171,7 @@ public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implemen
 		fdlWildcard.right= new FormAttachment(middle, -margin);
 		wlWildcard.setLayoutData(fdlWildcard);
 		wWildcard=new TextVar(jobMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wWildcard.setToolTipText(Messages.getString("JobEntryDeleteResultFilenames.Wildcard.Tooltip"));
+		wWildcard.setToolTipText(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.Wildcard.Tooltip"));
  		props.setLook(wWildcard);
 		wWildcard.addModifyListener(lsMod);
 		fdWildcard=new FormData();
@@ -194,7 +193,7 @@ public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implemen
 
 		// wWildcardExclude
 		wlWildcardExclude=new Label(shell, SWT.RIGHT);
-		wlWildcardExclude.setText(Messages.getString("JobEntryDeleteResultFilenames.WildcardExclude.Label"));
+		wlWildcardExclude.setText(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.WildcardExclude.Label"));
  		props.setLook(wlWildcardExclude);
 		fdlWildcardExclude=new FormData();
 		fdlWildcardExclude.left = new FormAttachment(0, 0);
@@ -202,7 +201,7 @@ public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implemen
 		fdlWildcardExclude.right= new FormAttachment(middle, -margin);
 		wlWildcardExclude.setLayoutData(fdlWildcardExclude);
 		wWildcardExclude=new TextVar(jobMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wWildcardExclude.setToolTipText(Messages.getString("JobEntryDeleteResultFilenames.WildcardExclude.Tooltip"));
+		wWildcardExclude.setToolTipText(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.WildcardExclude.Tooltip"));
  		props.setLook(wWildcardExclude);
 		wWildcardExclude.addModifyListener(lsMod);
 		fdWildcardExclude=new FormData();
@@ -223,9 +222,9 @@ public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implemen
 		);
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wWildcardExclude);
 
@@ -295,8 +294,8 @@ public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implemen
 	   if(Const.isEmpty(wName.getText())) 
         {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
         }

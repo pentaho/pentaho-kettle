@@ -17,7 +17,6 @@
 package org.pentaho.di.ui.job.entries.http;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -32,20 +31,21 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
+import org.pentaho.di.job.entries.http.JobEntryHTTP;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.http.JobEntryHTTP;
-import org.pentaho.di.job.entries.http.Messages;
 
 /**
  * This dialog allows you to edit the SQL job entry settings. (select the connection and the sql
@@ -56,6 +56,8 @@ import org.pentaho.di.job.entries.http.Messages;
  */
 public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryHTTP.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label wlName;
 
     private Text wName;
@@ -157,7 +159,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryHTTP) jobEntryInt;
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobHTTP.Name.Default"));
+            this.jobEntry.setName(BaseMessages.getString(PKG, "JobHTTP.Name.Default"));
     }
 
     public JobEntryInterface open()
@@ -183,14 +185,14 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobHTTP.Title"));
+        shell.setText(BaseMessages.getString(PKG, "JobHTTP.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         // Job entry name line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("JobHTTP.Name.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "JobHTTP.Name.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
@@ -208,14 +210,14 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
         // URL line
         wlURL = new Label(shell, SWT.RIGHT);
-        wlURL.setText(Messages.getString("JobHTTP.URL.Label"));
+        wlURL.setText(BaseMessages.getString(PKG, "JobHTTP.URL.Label"));
         props.setLook(wlURL);
         fdlURL = new FormData();
         fdlURL.left = new FormAttachment(0, 0);
         fdlURL.top = new FormAttachment(wName, margin);
         fdlURL.right = new FormAttachment(middle, -margin);
         wlURL.setLayoutData(fdlURL);
-        wURL = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobHTTP.URL.Tooltip"));
+        wURL = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(PKG, "JobHTTP.URL.Tooltip"));
         props.setLook(wURL);
         wURL.addModifyListener(lsMod);
         fdURL = new FormData();
@@ -226,7 +228,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
         // RunEveryRow line
         wlRunEveryRow = new Label(shell, SWT.RIGHT);
-        wlRunEveryRow.setText(Messages.getString("JobHTTP.RunForEveryRow.Label"));
+        wlRunEveryRow.setText(BaseMessages.getString(PKG, "JobHTTP.RunForEveryRow.Label"));
         props.setLook(wlRunEveryRow);
         fdlRunEveryRow = new FormData();
         fdlRunEveryRow.left = new FormAttachment(0, 0);
@@ -234,7 +236,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         fdlRunEveryRow.right = new FormAttachment(middle, -margin);
         wlRunEveryRow.setLayoutData(fdlRunEveryRow);
         wRunEveryRow = new Button(shell, SWT.CHECK);
-        wRunEveryRow.setToolTipText(Messages.getString("JobHTTP.RunForEveryRow.Tooltip"));
+        wRunEveryRow.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.RunForEveryRow.Tooltip"));
         props.setLook(wRunEveryRow);
         fdRunEveryRow = new FormData();
         fdRunEveryRow.left = new FormAttachment(middle, 0);
@@ -251,7 +253,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
         // FieldURL line
         wlFieldURL = new Label(shell, SWT.RIGHT);
-        wlFieldURL.setText(Messages.getString("JobHTTP.InputField.Label"));
+        wlFieldURL.setText(BaseMessages.getString(PKG, "JobHTTP.InputField.Label"));
         props.setLook(wlFieldURL);
         fdlFieldURL = new FormData();
         fdlFieldURL.left = new FormAttachment(0, 0);
@@ -260,7 +262,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wlFieldURL.setLayoutData(fdlFieldURL);
         wFieldURL = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wFieldURL);
-        wFieldURL.setToolTipText(Messages.getString("JobHTTP.InputField.Tooltip"));
+        wFieldURL.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.InputField.Tooltip"));
         wFieldURL.addModifyListener(lsMod);
         fdFieldURL = new FormData();
         fdFieldURL.left = new FormAttachment(middle, 0);
@@ -270,7 +272,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
         // TargetFile line
         wlTargetFile = new Label(shell, SWT.RIGHT);
-        wlTargetFile.setText(Messages.getString("JobHTTP.TargetFile.Label"));
+        wlTargetFile.setText(BaseMessages.getString(PKG, "JobHTTP.TargetFile.Label"));
         props.setLook(wlTargetFile);
         fdlTargetFile = new FormData();
         fdlTargetFile.left = new FormAttachment(0, 0);
@@ -279,7 +281,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wlTargetFile.setLayoutData(fdlTargetFile);
         wTargetFile = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wTargetFile);
-        wTargetFile.setToolTipText(Messages.getString("JobHTTP.TargetFile.Tooltip"));
+        wTargetFile.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.TargetFile.Tooltip"));
         wTargetFile.addModifyListener(lsMod);
         fdTargetFile = new FormData();
         fdTargetFile.left = new FormAttachment(middle, 0);
@@ -289,7 +291,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
         // Append line
         wlAppend = new Label(shell, SWT.RIGHT);
-        wlAppend.setText(Messages.getString("JobHTTP.TargetFileAppend.Label"));
+        wlAppend.setText(BaseMessages.getString(PKG, "JobHTTP.TargetFileAppend.Label"));
         props.setLook(wlAppend);
         fdlAppend = new FormData();
         fdlAppend.left = new FormAttachment(0, 0);
@@ -298,7 +300,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wlAppend.setLayoutData(fdlAppend);
         wAppend = new Button(shell, SWT.CHECK);
         props.setLook(wAppend);
-        wAppend.setToolTipText(Messages.getString("JobHTTP.TargetFileAppend.Tooltip"));
+        wAppend.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.TargetFileAppend.Tooltip"));
         fdAppend = new FormData();
         fdAppend.left = new FormAttachment(middle, 0);
         fdAppend.top = new FormAttachment(wTargetFile, margin);
@@ -307,7 +309,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
         // DateTimeAdded line
         wlDateTimeAdded = new Label(shell, SWT.RIGHT);
-        wlDateTimeAdded.setText(Messages.getString("JobHTTP.TargetFilenameAddDate.Label"));
+        wlDateTimeAdded.setText(BaseMessages.getString(PKG, "JobHTTP.TargetFilenameAddDate.Label"));
         props.setLook(wlDateTimeAdded);
         fdlDateTimeAdded = new FormData();
         fdlDateTimeAdded.left = new FormAttachment(0, 0);
@@ -316,7 +318,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wlDateTimeAdded.setLayoutData(fdlDateTimeAdded);
         wDateTimeAdded = new Button(shell, SWT.CHECK);
         props.setLook(wDateTimeAdded);
-        wDateTimeAdded.setToolTipText(Messages.getString("JobHTTP.TargetFilenameAddDate.Tooltip"));
+        wDateTimeAdded.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.TargetFilenameAddDate.Tooltip"));
         fdDateTimeAdded = new FormData();
         fdDateTimeAdded.left = new FormAttachment(middle, 0);
         fdDateTimeAdded.top = new FormAttachment(wAppend, margin);
@@ -332,7 +334,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
         // TargetExt line
         wlTargetExt = new Label(shell, SWT.RIGHT);
-        wlTargetExt.setText(Messages.getString("JobHTTP.TargetFileExt.Label"));
+        wlTargetExt.setText(BaseMessages.getString(PKG, "JobHTTP.TargetFileExt.Label"));
         props.setLook(wlTargetExt);
         fdlTargetExt = new FormData();
         fdlTargetExt.left = new FormAttachment(0, 0);
@@ -341,7 +343,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wlTargetExt.setLayoutData(fdlTargetExt);
         wTargetExt = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wTargetExt);
-        wTargetExt.setToolTipText(Messages.getString("JobHTTP.TargetFileExt.Tooltip"));
+        wTargetExt.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.TargetFileExt.Tooltip"));
         wTargetExt.addModifyListener(lsMod);
         fdTargetExt = new FormData();
         fdTargetExt.left = new FormAttachment(middle, 0);
@@ -358,7 +360,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
         // UploadFile line
         wlUploadFile = new Label(shell, SWT.RIGHT);
-        wlUploadFile.setText(Messages.getString("JobHTTP.UploadFile.Label"));
+        wlUploadFile.setText(BaseMessages.getString(PKG, "JobHTTP.UploadFile.Label"));
         props.setLook(wlUploadFile);
         fdlUploadFile = new FormData();
         fdlUploadFile.left = new FormAttachment(0, 0);
@@ -367,7 +369,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wlUploadFile.setLayoutData(fdlUploadFile);
         wUploadFile = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wUploadFile);
-        wUploadFile.setToolTipText(Messages.getString("JobHTTP.UploadFile.Tooltip"));
+        wUploadFile.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.UploadFile.Tooltip"));
         wUploadFile.addModifyListener(lsMod);
         fdUploadFile = new FormData();
         fdUploadFile.left = new FormAttachment(middle, 0);
@@ -377,7 +379,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
         // UserName line
         wlUserName = new Label(shell, SWT.RIGHT);
-        wlUserName.setText(Messages.getString("JobHTTP.UploadUser.Label"));
+        wlUserName.setText(BaseMessages.getString(PKG, "JobHTTP.UploadUser.Label"));
         props.setLook(wlUserName);
         fdlUserName = new FormData();
         fdlUserName.left = new FormAttachment(0, 0);
@@ -386,7 +388,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wlUserName.setLayoutData(fdlUserName);
         wUserName = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wUserName);
-        wUserName.setToolTipText(Messages.getString("JobHTTP.UploadUser.Tooltip"));
+        wUserName.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.UploadUser.Tooltip"));
         wUserName.addModifyListener(lsMod);
         fdUserName = new FormData();
         fdUserName.left = new FormAttachment(middle, 0);
@@ -396,7 +398,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
         // Password line
         wlPassword = new Label(shell, SWT.RIGHT);
-        wlPassword.setText(Messages.getString("JobHTTP.UploadPassword.Label"));
+        wlPassword.setText(BaseMessages.getString(PKG, "JobHTTP.UploadPassword.Label"));
         props.setLook(wlPassword);
         fdlPassword = new FormData();
         fdlPassword.left = new FormAttachment(0, 0);
@@ -405,7 +407,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wlPassword.setLayoutData(fdlPassword);
         wPassword = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wPassword);
-        wPassword.setToolTipText(Messages.getString("JobHTTP.UploadPassword.Tooltip"));
+        wPassword.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.UploadPassword.Tooltip"));
         wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
         fdPassword = new FormData();
@@ -416,7 +418,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
         // ProxyServer line
         wlProxyServer = new Label(shell, SWT.RIGHT);
-        wlProxyServer.setText(Messages.getString("JobHTTP.ProxyHost.Label"));
+        wlProxyServer.setText(BaseMessages.getString(PKG, "JobHTTP.ProxyHost.Label"));
         props.setLook(wlProxyServer);
         fdlProxyServer = new FormData();
         fdlProxyServer.left = new FormAttachment(0, 0);
@@ -425,7 +427,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wlProxyServer.setLayoutData(fdlProxyServer);
         wProxyServer = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wProxyServer);
-        wProxyServer.setToolTipText(Messages.getString("JobHTTP.ProxyHost.Tooltip"));
+        wProxyServer.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.ProxyHost.Tooltip"));
         wProxyServer.addModifyListener(lsMod);
         fdProxyServer = new FormData();
         fdProxyServer.left = new FormAttachment(middle, 0);
@@ -435,7 +437,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
         // ProxyPort line
         wlProxyPort = new Label(shell, SWT.RIGHT);
-        wlProxyPort.setText(Messages.getString("JobHTTP.ProxyPort.Label"));
+        wlProxyPort.setText(BaseMessages.getString(PKG, "JobHTTP.ProxyPort.Label"));
         props.setLook(wlProxyPort);
         fdlProxyPort = new FormData();
         fdlProxyPort.left = new FormAttachment(0, 0);
@@ -444,7 +446,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wlProxyPort.setLayoutData(fdlProxyPort);
         wProxyPort = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wProxyPort);
-        wProxyPort.setToolTipText(Messages.getString("JobHTTP.ProxyPort.Tooltip"));
+        wProxyPort.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.ProxyPort.Tooltip"));
         wProxyPort.addModifyListener(lsMod);
         fdProxyPort = new FormData();
         fdProxyPort.left = new FormAttachment(middle, 0);
@@ -454,7 +456,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
         // IgnoreHosts line
         wlNonProxyHosts = new Label(shell, SWT.RIGHT);
-        wlNonProxyHosts.setText(Messages.getString("JobHTTP.ProxyIgnoreRegexp.Label"));
+        wlNonProxyHosts.setText(BaseMessages.getString(PKG, "JobHTTP.ProxyIgnoreRegexp.Label"));
         props.setLook(wlNonProxyHosts);
         fdlNonProxyHosts = new FormData();
         fdlNonProxyHosts.left = new FormAttachment(0, 0);
@@ -463,7 +465,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wlNonProxyHosts.setLayoutData(fdlNonProxyHosts);
         wNonProxyHosts = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wNonProxyHosts);
-        wNonProxyHosts.setToolTipText(Messages.getString("JobHTTP.ProxyIgnoreRegexp.Tooltip"));
+        wNonProxyHosts.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.ProxyIgnoreRegexp.Tooltip"));
         wNonProxyHosts.addModifyListener(lsMod);
         fdNonProxyHosts = new FormData();
         fdNonProxyHosts.left = new FormAttachment(middle, 0);
@@ -472,9 +474,9 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wNonProxyHosts.setLayoutData(fdNonProxyHosts);
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin,
             wNonProxyHosts);
@@ -597,8 +599,8 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
  	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
        }

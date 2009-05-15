@@ -18,6 +18,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 
 
 /*
@@ -27,6 +28,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class ProfileMeta 
 {
+	private static Class<?> PKG = ProfileMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private long id;
 	
 	private String name;        // Long name
@@ -75,12 +78,12 @@ public class ProfileMeta
 			}
 			else
 			{
-				throw new KettleException(Messages.getString("ProfileMeta.Error.NotFound", Long.toString(id_profile)));
+				throw new KettleException(BaseMessages.getString(PKG, "ProfileMeta.Error.NotFound", Long.toString(id_profile)));
 			}
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("ProfileMeta.Error.NotCreated", Long.toString(id_profile)), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "ProfileMeta.Error.NotCreated", Long.toString(id_profile)), dbe);
 		}
 	}
 	
@@ -118,7 +121,7 @@ public class ProfileMeta
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("ProfileMeta.Error.NotSaved", Long.toString(getID())), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "ProfileMeta.Error.NotSaved", Long.toString(getID())), dbe);
 		}
 		return true;
 	}
@@ -153,7 +156,7 @@ public class ProfileMeta
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("ProfileMeta.Error.PermissionNotSaved", Long.toString(getID())), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "ProfileMeta.Error.PermissionNotSaved", Long.toString(getID())), dbe);
 		}
 	}
 	

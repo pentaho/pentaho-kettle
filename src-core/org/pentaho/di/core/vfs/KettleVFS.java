@@ -31,9 +31,12 @@ import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.UUIDUtil;
+import org.pentaho.di.i18n.BaseMessages;
 
 public class KettleVFS
 {
+	private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static KettleVFS kettleVFS;
   
     private KettleVFS()
@@ -160,7 +163,7 @@ public class KettleVFS
         {
             if (!parent.exists())
             {
-                throw new IOException(Messages.getString("KettleVFS.Exception.ParentDirectoryDoesNotExist", getFilename(parent)));
+                throw new IOException(BaseMessages.getString(PKG, "KettleVFS.Exception.ParentDirectoryDoesNotExist", getFilename(parent)));
             }
         }
         try
@@ -262,7 +265,7 @@ public class KettleVFS
 		if (!(fileObject instanceof LocalFile)) {
 			// We can only use NIO on local files at the moment, so that's what we limit ourselves to.
 			//
-			throw new IOException(Messages.getString("FixedInput.Log.OnlyLocalFilesAreSupported"));
+			throw new IOException(BaseMessages.getString(PKG, "FixedInput.Log.OnlyLocalFilesAreSupported"));
 		}
 				
 		return new FileInputStream( fileObject.getName().getPathDecoded() );

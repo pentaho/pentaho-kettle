@@ -453,7 +453,7 @@ public class PluginLoader
 			Job jobAnnot = (Job) annot;
 			String[] libs = getLibs(directory);
 			Set<JobPlugin> jps = (Set<JobPlugin>) this.plugins.get(Job.class);
-			JobPlugin pg = new JobPlugin(Plugin.TYPE_PLUGIN, jobAnnot.id(), jobAnnot.type().getDescription(),
+			JobPlugin pg = new JobPlugin(Plugin.TYPE_PLUGIN, jobAnnot.id(), jobAnnot.name(),
 					jobAnnot.tooltip(), directory.getURL().getFile(), libs, jobAnnot.image(), match.getName(), jobAnnot.categoryDescription());
 
 			pg.setClassLoader(match.getClassLoader());

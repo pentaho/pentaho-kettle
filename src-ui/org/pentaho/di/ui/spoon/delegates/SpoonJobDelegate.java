@@ -37,9 +37,9 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryLoader;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
@@ -64,7 +64,6 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.job.dialog.JobExecutionConfigurationDialog;
-import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.job.JobGraph;
@@ -77,6 +76,8 @@ import org.w3c.dom.Node;
 
 public class SpoonJobDelegate extends SpoonDelegate
 {
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	/**
 	 * This contains a map between the name of a transformation and the
 	 * TransMeta object. If the transformation has no name it will be mapped
@@ -184,27 +185,26 @@ public class SpoonJobDelegate extends SpoonDelegate
 		{
 			new ErrorDialog(
 					spoon.getShell(),
-					Messages.getString("Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Title"), 
-					Messages.getString("Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Message"), 
+					BaseMessages.getString(PKG, "Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Title"), 
+					BaseMessages.getString(PKG, "Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Message"), 
 					new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		}
 	}
 
-	public JobEntryDialogInterface getJobEntryDialog(JobEntryInterface jei, JobMeta jobMeta)
+	public JobEntryDialogInterface getJobEntryDialog(JobEntryInterface jobEntryInterface, JobMeta jobMeta)
 	{
 
-		String dialogClassName = jei.getDialogClassName();
+		String dialogClassName = jobEntryInterface.getDialogClassName();
 		try
 		{
 			Class<?> dialogClass;
 			Class<?>[] paramClasses = new Class[] { spoon.getShell().getClass(), JobEntryInterface.class,
 					Repository.class, JobMeta.class };
-			Object[] paramArgs = new Object[] { spoon.getShell(), jei, spoon.getRepository(), jobMeta };
+			Object[] paramArgs = new Object[] { spoon.getShell(), jobEntryInterface, spoon.getRepository(), jobMeta };
 			Constructor<?> dialogConstructor;
-			dialogClass = jei.getPluginID()!=null?
-					JobEntryLoader.getInstance().loadClassByID(jei.getPluginID(),dialogClassName):
-						JobEntryLoader.getInstance().loadClass(jei.getJobEntryType().getDescription(), dialogClassName);
+			
+			dialogClass = JobEntryLoader.getInstance().loadClassByID(jobEntryInterface.getTypeId(), dialogClassName);
 			dialogConstructor = dialogClass.getConstructor(paramClasses);
 			return (JobEntryDialogInterface) dialogConstructor.newInstance(paramArgs);
 		} catch (Throwable t)
@@ -241,7 +241,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 	{
 		try
 		{
-			spoon.getLog().logBasic(spoon.toString(), Messages.getString("Spoon.Log.EditJobEntry", je.getName())); //$NON-NLS-1$
+			spoon.getLog().logBasic(spoon.toString(), BaseMessages.getString(PKG, "Spoon.Log.EditJobEntry", je.getName())); //$NON-NLS-1$
 
 			JobEntryCopy before = (JobEntryCopy) je.clone_deep();
 
@@ -275,8 +275,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 			else
 			{
 				MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
-				mb.setMessage(Messages.getString("Spoon.Dialog.JobEntryCanNotBeChanged.Message")); //$NON-NLS-1$
-				mb.setText(Messages.getString("Spoon.Dialog.JobEntryCanNotBeChanged.Title")); //$NON-NLS-1$
+				mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.JobEntryCanNotBeChanged.Message")); //$NON-NLS-1$
+				mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.JobEntryCanNotBeChanged.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 
@@ -285,22 +285,9 @@ public class SpoonJobDelegate extends SpoonDelegate
 			if (!spoon.getShell().isDisposed())
 				new ErrorDialog(
 						spoon.getShell(),
-						Messages.getString("Spoon.ErrorDialog.ErrorEditingJobEntry.Title"), 
-						Messages.getString("Spoon.ErrorDialog.ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+						BaseMessages.getString(PKG, "Spoon.ErrorDialog.ErrorEditingJobEntry.Title"), 
+						BaseMessages.getString(PKG, "Spoon.ErrorDialog.ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-	}
-
-	public JobEntryTrans newJobEntry(JobMeta jobMeta, JobEntryType type)
-	{
-		JobEntryTrans je = new JobEntryTrans();
-		je.setJobEntryType(type);
-		String basename = type.getDescription();
-		int nr = jobMeta.generateJobEntryNameNr(basename);
-		je.setName(basename + " " + nr); //$NON-NLS-1$
-
-		spoon.setShellText();
-
-		return je;
 	}
 
 	public void deleteJobEntryCopies(JobMeta jobMeta, JobEntryCopy jobEntry)
@@ -347,8 +334,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 		if (jobEntry.isStart())
 		{
 			MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
-			mb.setMessage(Messages.getString("Spoon.Dialog.OnlyUseStartOnce.Message"));
-			mb.setText(Messages.getString("Spoon.Dialog.OnlyUseStartOnce.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.OnlyUseStartOnce.Message"));
+			mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.OnlyUseStartOnce.Title"));
 			mb.open();
 			return;
 		}
@@ -464,7 +451,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		{
 			new ErrorDialog(
 					spoon.getShell(),
-					Messages.getString("Spoon.ErrorDialog.ErrorPasingJobEntries.Title"), Messages.getString("Spoon.ErrorDialog.ErrorPasingJobEntries.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "Spoon.ErrorDialog.ErrorPasingJobEntries.Title"), BaseMessages.getString(PKG, "Spoon.ErrorDialog.ErrorPasingJobEntries.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -599,7 +586,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 				// LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(),
 				// parentThread.getName(), true);
 
-				monitor.beginTask(Messages.getString("Spoon.RipDB.Monitor.BuildingNewJob"), tables.length); //$NON-NLS-1$
+				monitor.beginTask(BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.BuildingNewJob"), tables.length); //$NON-NLS-1$
 				monitor.worked(0);
 				JobEntryCopy previous = start;
 
@@ -607,11 +594,11 @@ public class SpoonJobDelegate extends SpoonDelegate
 				for (int i = 0; i < tables.length && !monitor.isCanceled(); i++)
 				{
 					monitor
-							.setTaskName(Messages.getString("Spoon.RipDB.Monitor.ProcessingTable") + tables[i] + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
+							.setTaskName(BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.ProcessingTable") + tables[i] + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
 					//
 					// Create the new transformation...
 					//
-					String transname = Messages.getString("Spoon.RipDB.Monitor.Transname1") + sourceDbInfo + "].[" + tables[i] + Messages.getString("Spoon.RipDB.Monitor.Transname2") + targetDbInfo + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+					String transname = BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.Transname1") + sourceDbInfo + "].[" + tables[i] + BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.Transname2") + targetDbInfo + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 					TransMeta transMeta = new TransMeta((String) null, transname, null);
 
@@ -630,15 +617,15 @@ public class SpoonJobDelegate extends SpoonDelegate
 					//
 					// Add a note
 					//
-					String note = Messages.getString("Spoon.RipDB.Monitor.Note1") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.Note2") + sourceDbInfo + "]" + Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					note += Messages.getString("Spoon.RipDB.Monitor.Note3") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.Note4") + targetDbInfo + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					String note = BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.Note1") + tables[i] + BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.Note2") + sourceDbInfo + "]" + Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					note += BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.Note3") + tables[i] + BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.Note4") + targetDbInfo + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					NotePadMeta ni = new NotePadMeta(note, 150, 10, -1, -1);
 					transMeta.addNote(ni);
 
 					//
 					// Add the TableInputMeta step...
 					// 
-					String fromstepname = Messages.getString("Spoon.RipDB.Monitor.FromStep.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+					String fromstepname = BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.FromStep.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 					TableInputMeta tii = new TableInputMeta();
 					tii.setDatabaseMeta(sourceDbInfo);
 					tii.setSQL("SELECT * FROM " + tables[i]); //$NON-NLS-1$ // It's already quoted!
@@ -648,13 +635,13 @@ public class SpoonJobDelegate extends SpoonDelegate
 					fromstep.setLocation(150, 100);
 					fromstep.setDraw(true);
 					fromstep
-							.setDescription(Messages.getString("Spoon.RipDB.Monitor.FromStep.Description") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.FromStep.Description2") + sourceDbInfo + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							.setDescription(BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.FromStep.Description") + tables[i] + BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.FromStep.Description2") + sourceDbInfo + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					transMeta.addStep(fromstep);
 
 					//
 					// Add the TableOutputMeta step...
 					//
-					String tostepname = Messages.getString("Spoon.RipDB.Monitor.ToStep.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+					String tostepname = BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.ToStep.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 					TableOutputMeta toi = new TableOutputMeta();
 					toi.setDatabaseMeta(targetDbInfo);
 					toi.setTablename(tables[i]);
@@ -666,7 +653,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 					tostep.setLocation(500, 100);
 					tostep.setDraw(true);
 					tostep
-							.setDescription(Messages.getString("Spoon.RipDB.Monitor.ToStep.Description1") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.ToStep.Description2") + targetDbInfo + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							.setDescription(BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.ToStep.Description1") + tables[i] + BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.ToStep.Description2") + targetDbInfo + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					transMeta.addStep(tostep);
 
 					//
@@ -690,7 +677,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 					{
 						throw new InvocationTargetException(
 								kse,
-								Messages.getString("Spoon.RipDB.Exception.ErrorGettingSQLFromTransformation") + transMeta + "] : " + kse.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+								BaseMessages.getString(PKG, "Spoon.RipDB.Exception.ErrorGettingSQLFromTransformation") + transMeta + "] : " + kse.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					// remove the limit
 					tii.setSQL(tmpSql);
@@ -709,8 +696,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 					if (!ok)
 					{
 						throw new InvocationTargetException(
-								new Exception(Messages.getString("Spoon.RipDB.Exception.UnableToSaveTransformationToRepository")), //$NON-NLS-1$
-								Messages.getString("Spoon.RipDB.Exception.UnableToSaveTransformationToRepository")); //$NON-NLS-1$
+								new Exception(BaseMessages.getString(PKG, "Spoon.RipDB.Exception.UnableToSaveTransformationToRepository")), //$NON-NLS-1$
+								BaseMessages.getString(PKG, "Spoon.RipDB.Exception.UnableToSaveTransformationToRepository")); //$NON-NLS-1$
 					}
 
 					// We can now continue with the population of the job...
@@ -729,11 +716,11 @@ public class SpoonJobDelegate extends SpoonDelegate
 					//
 					if (!Const.isEmpty(sql))
 					{
-						String jesqlname = Messages.getString("Spoon.RipDB.JobEntrySQL.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+						String jesqlname = BaseMessages.getString(PKG, "Spoon.RipDB.JobEntrySQL.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 						JobEntrySQL jesql = new JobEntrySQL(jesqlname);
 						jesql.setDatabase(targetDbInfo);
 						jesql.setSQL(sql);
-						jesql.setDescription(Messages.getString("Spoon.RipDB.JobEntrySQL.Description") + targetDbInfo + "].[" + tables[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						jesql.setDescription(BaseMessages.getString(PKG, "Spoon.RipDB.JobEntrySQL.Description") + targetDbInfo + "].[" + tables[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 						JobEntryCopy jecsql = new JobEntryCopy();
 						jecsql.setEntry(jesql);						
@@ -750,7 +737,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 					//
 					// Add the jobentry for the transformation too...
 					//
-					String jetransname = Messages.getString("Spoon.RipDB.JobEntryTrans.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+					String jetransname = BaseMessages.getString(PKG, "Spoon.RipDB.JobEntryTrans.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 					JobEntryTrans jetrans = new JobEntryTrans(jetransname);
 					jetrans.setTransname(transMeta.getName());
 					if (spoon.getRepository() != null)
@@ -763,7 +750,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 					}
 
 					JobEntryCopy jectrans = new JobEntryCopy(spoon.getLog(), jetrans);
-					jectrans.setDescription(Messages.getString("Spoon.RipDB.JobEntryTrans.Description1") + Const.CR + Messages.getString("Spoon.RipDB.JobEntryTrans.Description2") + sourceDbInfo + "].[" + tables[i] + "]" + Const.CR + Messages.getString("Spoon.RipDB.JobEntryTrans.Description3") + targetDbInfo + "].[" + tables[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+					jectrans.setDescription(BaseMessages.getString(PKG, "Spoon.RipDB.JobEntryTrans.Description1") + Const.CR + BaseMessages.getString(PKG, "Spoon.RipDB.JobEntryTrans.Description2") + sourceDbInfo + "].[" + tables[i] + "]" + Const.CR + BaseMessages.getString(PKG, "Spoon.RipDB.JobEntryTrans.Description3") + targetDbInfo + "].[" + tables[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 					jectrans.setDrawn();
 					location.x += 400;
 					jectrans.setLocation(new Point(location.x, location.y));
@@ -790,13 +777,13 @@ public class SpoonJobDelegate extends SpoonDelegate
 		{
 			new ErrorDialog(
 					spoon.getShell(),
-					Messages.getString("Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), BaseMessages.getString(PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		} catch (InterruptedException e)
 		{
 			new ErrorDialog(
 					spoon.getShell(),
-					Messages.getString("Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), BaseMessages.getString(PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		} finally
 		{
@@ -820,7 +807,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		{
 			JobHistory jobHistory = new JobHistory(spoon.tabfolder.getSwtTabset(), spoon, jobMeta);
 			tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
-			tabItem.setToolTipText(Messages.getString("Spoon.Title.ExecHistoryJobView.Tooltip", spoon.delegates.tabs
+			tabItem.setToolTipText(BaseMessages.getString(PKG, "Spoon.Title.ExecHistoryJobView.Tooltip", spoon.delegates.tabs
 					.makeJobGraphTabName(jobMeta)));
 			tabItem.setControl(jobHistory);
 
@@ -912,8 +899,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 			}
 			if (!same) {
 				ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION,
-						Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Title"), "'" + key + "'" + Const.CR
-								+ Const.CR + Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Message"));
+						BaseMessages.getString(PKG, "Spoon.Dialog.JobAlreadyLoaded.Title"), "'" + key + "'" + Const.CR
+								+ Const.CR + BaseMessages.getString(PKG, "Spoon.Dialog.JobAlreadyLoaded.Message"));
 				dialog.setTimeOut(6);
 				dialog.open();
 			}
@@ -967,7 +954,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			{
 				JobGraph jobGraph = new JobGraph(spoon.tabfolder.getSwtTabset(), spoon, jobMeta);
 				tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
-				String toolTipText = Messages.getString("Spoon.TabJob.Tooltip", spoon.delegates.tabs.makeJobGraphTabName(jobMeta));
+				String toolTipText = BaseMessages.getString(PKG, "Spoon.TabJob.Tooltip", spoon.delegates.tabs.makeJobGraphTabName(jobMeta));
 				if (!Const.isEmpty(jobMeta.getFilename())) toolTipText+=Const.CR+Const.CR+jobMeta.getFilename();
 				tabItem.setToolTipText(toolTipText);
 				tabItem.setImage(GUIResource.getInstance().getImageJobGraph());
@@ -1007,7 +994,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			JobLog jobLog = new JobLog(spoon.tabfolder.getSwtTabset(), spoon, jobMeta);
 			tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
 			tabItem.setText(tabName);
-			tabItem.setToolTipText(Messages.getString("Spoon.Title.ExecLogJobView.Tooltip", spoon.delegates.tabs
+			tabItem.setToolTipText(BaseMessages.getString(PKG, "Spoon.Title.ExecLogJobView.Tooltip", spoon.delegates.tabs
 					.makeJobGraphTabName(jobMeta)));
 			tabItem.setControl(jobLog);
 
@@ -1465,8 +1452,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 					spoon.delegates.slaves.addSpoonSlave(executionConfiguration.getRemoteServer());
 				} else {
 					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_ERROR);
-					mb.setMessage(Messages.getString("Spoon.Dialog.NoRemoteServerSpecified.Message"));
-					mb.setText(Messages.getString("Spoon.Dialog.NoRemoteServerSpecified.Title"));
+					mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.NoRemoteServerSpecified.Message"));
+					mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.NoRemoteServerSpecified.Title"));
 					mb.open();
 				}
 			}

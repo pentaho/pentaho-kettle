@@ -21,8 +21,8 @@
 
 package org.pentaho.di.ui.job.entries.movefiles;
 
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
@@ -38,31 +38,30 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.MessageBox; 
-
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.job.entries.movefiles.JobEntryMoveFiles;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.movefiles.JobEntryMoveFiles;
-import org.pentaho.di.job.entries.movefiles.Messages;
 
 /**
  * This dialog allows you to edit the Move Files job entry settings.
@@ -73,10 +72,10 @@ import org.pentaho.di.job.entries.movefiles.Messages;
 
 public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryMoveFiles.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private static final String[] FILETYPES = new String[] 
-		{
-			Messages.getString("JobMoveFiles.Filetype.All") };
+	private static final String[] FILETYPES = new String[] {
+			BaseMessages.getString(PKG, "JobMoveFiles.Filetype.All") };
 	
 	private Label        wlName;
 	private Text         wName;
@@ -251,7 +250,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
         jobEntry = (JobEntryMoveFiles) jobEntryInt;
 
 		if (this.jobEntry.getName() == null) 
-			this.jobEntry.setName(Messages.getString("JobMoveFiles.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobMoveFiles.Name.Default"));
     }
 
     
@@ -278,14 +277,14 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobMoveFiles.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobMoveFiles.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobMoveFiles.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobMoveFiles.Name.Label"));
 		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -314,7 +313,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 		
 		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
-		wGeneralTab.setText(Messages.getString("JobMoveFiles.Tab.General.Label"));
+		wGeneralTab.setText(BaseMessages.getString(PKG, "JobMoveFiles.Tab.General.Label"));
 		
 		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wGeneralComp);
@@ -332,7 +331,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
 		wSettings = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wSettings);
-		wSettings.setText(Messages.getString("JobMoveFiles.Settings.Label"));
+		wSettings.setText(BaseMessages.getString(PKG, "JobMoveFiles.Settings.Label"));
 
 		FormLayout groupLayout = new FormLayout();
 		groupLayout.marginWidth = 10;
@@ -340,7 +339,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wSettings.setLayout(groupLayout);
 		
 		wlIncludeSubfolders = new Label(wSettings, SWT.RIGHT);
-		wlIncludeSubfolders.setText(Messages.getString("JobMoveFiles.IncludeSubfolders.Label"));
+		wlIncludeSubfolders.setText(BaseMessages.getString(PKG, "JobMoveFiles.IncludeSubfolders.Label"));
 		props.setLook(wlIncludeSubfolders);
 		fdlIncludeSubfolders = new FormData();
 		fdlIncludeSubfolders.left = new FormAttachment(0, 0);
@@ -349,7 +348,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlIncludeSubfolders.setLayoutData(fdlIncludeSubfolders);
 		wIncludeSubfolders = new Button(wSettings, SWT.CHECK);
 		props.setLook(wIncludeSubfolders);
-		wIncludeSubfolders.setToolTipText(Messages.getString("JobMoveFiles.IncludeSubfolders.Tooltip"));
+		wIncludeSubfolders.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.IncludeSubfolders.Tooltip"));
 		fdIncludeSubfolders = new FormData();
 		fdIncludeSubfolders.left = new FormAttachment(middle, 0);
 		fdIncludeSubfolders.top = new FormAttachment(wName, margin);
@@ -368,7 +367,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 		// Copy empty folders
 		wlMoveEmptyFolders = new Label(wSettings, SWT.RIGHT);
-		wlMoveEmptyFolders.setText(Messages.getString("JobMoveFiles.MoveEmptyFolders.Label"));
+		wlMoveEmptyFolders.setText(BaseMessages.getString(PKG, "JobMoveFiles.MoveEmptyFolders.Label"));
 		props.setLook(wlMoveEmptyFolders);
 		fdlMoveEmptyFolders = new FormData();
 		fdlMoveEmptyFolders.left = new FormAttachment(0, 0);
@@ -377,7 +376,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlMoveEmptyFolders.setLayoutData(fdlMoveEmptyFolders);
 		wMoveEmptyFolders = new Button(wSettings, SWT.CHECK);
 		props.setLook(wMoveEmptyFolders);
-		wMoveEmptyFolders.setToolTipText(Messages.getString("JobMoveFiles.MoveEmptyFolders.Tooltip"));
+		wMoveEmptyFolders.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.MoveEmptyFolders.Tooltip"));
 		fdMoveEmptyFolders = new FormData();
 		fdMoveEmptyFolders.left = new FormAttachment(middle, 0);
 		fdMoveEmptyFolders.top = new FormAttachment(wIncludeSubfolders, margin);
@@ -393,7 +392,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 		// Simulate?
 		wlSimulate=new Label(wSettings, SWT.RIGHT);
-		wlSimulate.setText(Messages.getString("JobMoveFiles.Simulate.Label"));
+		wlSimulate.setText(BaseMessages.getString(PKG, "JobMoveFiles.Simulate.Label"));
  		props.setLook(wlSimulate);
 		fdlSimulate=new FormData();
 		fdlSimulate.left = new FormAttachment(0, 0);
@@ -402,7 +401,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlSimulate.setLayoutData(fdlSimulate);
 		wSimulate=new Button(wSettings, SWT.CHECK);
  		props.setLook(wSimulate);
- 		wSimulate.setToolTipText(Messages.getString("JobMoveFiles.Simulate.Tooltip"));
+ 		wSimulate.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.Simulate.Tooltip"));
 		fdSimulate=new FormData();
 		fdSimulate.left = new FormAttachment(middle, 0);
 		fdSimulate.top  = new FormAttachment(wMoveEmptyFolders, margin);
@@ -419,7 +418,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 		// previous
 		wlPrevious = new Label(wSettings, SWT.RIGHT);
-		wlPrevious.setText(Messages.getString("JobMoveFiles.Previous.Label"));
+		wlPrevious.setText(BaseMessages.getString(PKG, "JobMoveFiles.Previous.Label"));
 		props.setLook(wlPrevious);
 		fdlPrevious = new FormData();
 		fdlPrevious.left = new FormAttachment(0, 0);
@@ -429,7 +428,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wPrevious = new Button(wSettings, SWT.CHECK);
 		props.setLook(wPrevious);
 		wPrevious.setSelection(jobEntry.arg_from_previous);
-		wPrevious.setToolTipText(Messages.getString("JobMoveFiles.Previous.Tooltip"));
+		wPrevious.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.Previous.Tooltip"));
 		fdPrevious = new FormData();
 		fdPrevious.left = new FormAttachment(middle, 0);
 		fdPrevious.top = new FormAttachment(wSimulate, margin );
@@ -456,7 +455,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
 		// SourceFileFolder line
 		wlSourceFileFolder=new Label(wGeneralComp, SWT.RIGHT);
-		wlSourceFileFolder.setText(Messages.getString("JobMoveFiles.SourceFileFolder.Label"));
+		wlSourceFileFolder.setText(BaseMessages.getString(PKG, "JobMoveFiles.SourceFileFolder.Label"));
 		props.setLook(wlSourceFileFolder);
 		fdlSourceFileFolder=new FormData();
 		fdlSourceFileFolder.left = new FormAttachment(0, 0);
@@ -467,7 +466,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		// Browse Source folders button ...
 		wbSourceDirectory=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbSourceDirectory);
-		wbSourceDirectory.setText(Messages.getString("JobMoveFiles.BrowseFolders.Label"));
+		wbSourceDirectory.setText(BaseMessages.getString(PKG, "JobMoveFiles.BrowseFolders.Label"));
 		fdbSourceDirectory=new FormData();
 		fdbSourceDirectory.right= new FormAttachment(100, 0);
 		fdbSourceDirectory.top  = new FormAttachment(wSettings, margin);
@@ -501,7 +500,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		// Browse Source files button ...
 		wbSourceFileFolder=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbSourceFileFolder);
-		wbSourceFileFolder.setText(Messages.getString("JobMoveFiles.BrowseFiles.Label"));
+		wbSourceFileFolder.setText(BaseMessages.getString(PKG, "JobMoveFiles.BrowseFiles.Label"));
 		fdbSourceFileFolder=new FormData();
 		fdbSourceFileFolder.right= new FormAttachment(wbSourceDirectory, -margin);
 		fdbSourceFileFolder.top  = new FormAttachment(wSettings, margin);
@@ -510,14 +509,14 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		// Browse Destination file add button ...
 		wbaSourceFileFolder=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbaSourceFileFolder);
-		wbaSourceFileFolder.setText(Messages.getString("JobMoveFiles.FilenameAdd.Button"));
+		wbaSourceFileFolder.setText(BaseMessages.getString(PKG, "JobMoveFiles.FilenameAdd.Button"));
 		fdbaSourceFileFolder=new FormData();
 		fdbaSourceFileFolder.right= new FormAttachment(wbSourceFileFolder, -margin);
 		fdbaSourceFileFolder.top  = new FormAttachment(wSettings, margin);
 		wbaSourceFileFolder.setLayoutData(fdbaSourceFileFolder);
 
 		wSourceFileFolder=new TextVar(jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wSourceFileFolder.setToolTipText(Messages.getString("JobMoveFiles.SourceFileFolder.Tooltip"));
+		wSourceFileFolder.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.SourceFileFolder.Tooltip"));
 		
 		props.setLook(wSourceFileFolder);
 		wSourceFileFolder.addModifyListener(lsMod);
@@ -560,7 +559,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 		// Destination
 		wlDestinationFileFolder = new Label(wGeneralComp, SWT.RIGHT);
-		wlDestinationFileFolder.setText(Messages.getString("JobMoveFiles.DestinationFileFolder.Label"));
+		wlDestinationFileFolder.setText(BaseMessages.getString(PKG, "JobMoveFiles.DestinationFileFolder.Label"));
 		props.setLook(wlDestinationFileFolder);
 		fdlDestinationFileFolder = new FormData();
 		fdlDestinationFileFolder.left = new FormAttachment(0, 0);
@@ -573,7 +572,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		// Browse Destination folders button ...
 		wbDestinationDirectory=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbDestinationDirectory);
-		wbDestinationDirectory.setText(Messages.getString("JobMoveFiles.BrowseFolders.Label"));
+		wbDestinationDirectory.setText(BaseMessages.getString(PKG, "JobMoveFiles.BrowseFolders.Label"));
 		fdbDestinationDirectory=new FormData();
 		fdbDestinationDirectory.right= new FormAttachment(100, 0);
 		fdbDestinationDirectory.top  = new FormAttachment(wSourceFileFolder, margin);
@@ -612,7 +611,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		// Browse Destination file browse button ...
 		wbDestinationFileFolder=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbDestinationFileFolder);
-		wbDestinationFileFolder.setText(Messages.getString("JobMoveFiles.BrowseFiles.Label"));
+		wbDestinationFileFolder.setText(BaseMessages.getString(PKG, "JobMoveFiles.BrowseFiles.Label"));
 		fdbDestinationFileFolder=new FormData();
 		fdbDestinationFileFolder.right= new FormAttachment(wbDestinationDirectory, -margin);
 		fdbDestinationFileFolder.top  = new FormAttachment(wSourceFileFolder, margin);
@@ -621,7 +620,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 				
 		
 		wDestinationFileFolder = new TextVar(jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER); 
-		wDestinationFileFolder.setToolTipText(Messages.getString("JobMoveFiles.DestinationFileFolder.Tooltip"));
+		wDestinationFileFolder.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.DestinationFileFolder.Tooltip"));
 		props.setLook(wDestinationFileFolder);
 		wDestinationFileFolder.addModifyListener(lsMod);
 		fdDestinationFileFolder = new FormData();
@@ -654,8 +653,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		// Buttons to the right of the screen...
 		wbdSourceFileFolder=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbdSourceFileFolder);
-		wbdSourceFileFolder.setText(Messages.getString("JobMoveFiles.FilenameDelete.Button"));
-		wbdSourceFileFolder.setToolTipText(Messages.getString("JobMoveFiles.FilenameDelete.Tooltip"));
+		wbdSourceFileFolder.setText(BaseMessages.getString(PKG, "JobMoveFiles.FilenameDelete.Button"));
+		wbdSourceFileFolder.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.FilenameDelete.Tooltip"));
 		fdbdSourceFileFolder=new FormData();
 		fdbdSourceFileFolder.right = new FormAttachment(100, 0);
 		fdbdSourceFileFolder.top  = new FormAttachment (wDestinationFileFolder, 40);
@@ -663,8 +662,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
 		wbeSourceFileFolder=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbeSourceFileFolder);
-		wbeSourceFileFolder.setText(Messages.getString("JobMoveFiles.FilenameEdit.Button"));
-		wbeSourceFileFolder.setToolTipText(Messages.getString("JobMoveFiles.FilenameEdit.Tooltip"));
+		wbeSourceFileFolder.setText(BaseMessages.getString(PKG, "JobMoveFiles.FilenameEdit.Button"));
+		wbeSourceFileFolder.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.FilenameEdit.Tooltip"));
 		fdbeSourceFileFolder=new FormData();
 		fdbeSourceFileFolder.right = new FormAttachment(100, 0);
 		fdbeSourceFileFolder.left = new FormAttachment(wbdSourceFileFolder, 0, SWT.LEFT);
@@ -675,7 +674,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 		// Wildcard
 		wlWildcard = new Label(wGeneralComp, SWT.RIGHT);
-		wlWildcard.setText(Messages.getString("JobMoveFiles.Wildcard.Label"));
+		wlWildcard.setText(BaseMessages.getString(PKG, "JobMoveFiles.Wildcard.Label"));
 		props.setLook(wlWildcard);
 		fdlWildcard = new FormData();
 		fdlWildcard.left = new FormAttachment(0, 0);
@@ -684,7 +683,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlWildcard.setLayoutData(fdlWildcard);
 		
 		wWildcard = new TextVar(jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wWildcard.setToolTipText(Messages.getString("JobMoveFiles.Wildcard.Tooltip"));
+		wWildcard.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.Wildcard.Tooltip"));
 		props.setLook(wWildcard);
 		wWildcard.addModifyListener(lsMod);
 		fdWildcard = new FormData();
@@ -694,7 +693,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wWildcard.setLayoutData(fdWildcard);
 
 		wlFields = new Label(wGeneralComp, SWT.NONE);
-		wlFields.setText(Messages.getString("JobMoveFiles.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "JobMoveFiles.Fields.Label"));
 		props.setLook(wlFields);
 		fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -711,17 +710,17 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
 		ColumnInfo[] colinf=new ColumnInfo[]
 			{
-				new ColumnInfo(Messages.getString("JobMoveFiles.Fields.SourceFileFolder.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
-				new ColumnInfo(Messages.getString("JobMoveFiles.Fields.DestinationFileFolder.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
-				new ColumnInfo(Messages.getString("JobMoveFiles.Fields.Wildcard.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobMoveFiles.Fields.SourceFileFolder.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobMoveFiles.Fields.DestinationFileFolder.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobMoveFiles.Fields.Wildcard.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
 			};
 
 		colinf[0].setUsingVariables(true);
-		colinf[0].setToolTip(Messages.getString("JobMoveFiles.Fields.SourceFileFolder.Tooltip"));
+		colinf[0].setToolTip(BaseMessages.getString(PKG, "JobMoveFiles.Fields.SourceFileFolder.Tooltip"));
 		colinf[1].setUsingVariables(true);
-		colinf[1].setToolTip(Messages.getString("JobMoveFiles.Fields.DestinationFileFolder.Tooltip"));
+		colinf[1].setToolTip(BaseMessages.getString(PKG, "JobMoveFiles.Fields.DestinationFileFolder.Tooltip"));
 		colinf[2].setUsingVariables(true);
-		colinf[2].setToolTip(Messages.getString("JobMoveFiles.Fields.Wildcard.Tooltip"));
+		colinf[2].setToolTip(BaseMessages.getString(PKG, "JobMoveFiles.Fields.Wildcard.Tooltip"));
 
 		wFields = new TableView(jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,	FieldsRows, lsMod, props);
 
@@ -809,7 +808,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 		
 		wDestinationFileTab=new CTabItem(wTabFolder, SWT.NONE);
-		wDestinationFileTab.setText(Messages.getString("JobMoveFiles.DestinationFileTab.Label"));
+		wDestinationFileTab.setText(BaseMessages.getString(PKG, "JobMoveFiles.DestinationFileTab.Label"));
 
 		FormLayout DestcontentLayout = new FormLayout ();
 		DestcontentLayout.marginWidth  = 3;
@@ -826,7 +825,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
 		wDestinationFile = new Group(wDestinationFileComp, SWT.SHADOW_NONE);
 		props.setLook(wDestinationFile);
-		wDestinationFile.setText(Messages.getString("JobMoveFiles.GroupDestinationFile.Label"));
+		wDestinationFile.setText(BaseMessages.getString(PKG, "JobMoveFiles.GroupDestinationFile.Label"));
 
 		FormLayout groupLayoutFile = new FormLayout();
 		groupLayoutFile.marginWidth = 10;
@@ -837,7 +836,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
 		// Create destination folder/parent folder
 		wlCreateDestinationFolder = new Label(wDestinationFile, SWT.RIGHT);
-		wlCreateDestinationFolder.setText(Messages.getString("JobMoveFiles.CreateDestinationFolder.Label"));
+		wlCreateDestinationFolder.setText(BaseMessages.getString(PKG, "JobMoveFiles.CreateDestinationFolder.Label"));
 		props.setLook(wlCreateDestinationFolder);
 		fdlCreateDestinationFolder = new FormData();
 		fdlCreateDestinationFolder.left = new FormAttachment(0, 0);
@@ -846,7 +845,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlCreateDestinationFolder.setLayoutData(fdlCreateDestinationFolder);
 		wCreateDestinationFolder = new Button(wDestinationFile, SWT.CHECK);
 		props.setLook(wCreateDestinationFolder);
-		wCreateDestinationFolder.setToolTipText(Messages.getString("JobMoveFiles.CreateDestinationFolder.Tooltip"));
+		wCreateDestinationFolder.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.CreateDestinationFolder.Tooltip"));
 		fdCreateDestinationFolder = new FormData();
 		fdCreateDestinationFolder.left = new FormAttachment(middle, 0);
 		fdCreateDestinationFolder.top = new FormAttachment(0, margin);
@@ -863,7 +862,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 		// Destination is a file?
 		wlDestinationIsAFile = new Label(wDestinationFile, SWT.RIGHT);
-		wlDestinationIsAFile.setText(Messages.getString("JobMoveFiles.DestinationIsAFile.Label"));
+		wlDestinationIsAFile.setText(BaseMessages.getString(PKG, "JobMoveFiles.DestinationIsAFile.Label"));
 		props.setLook(wlDestinationIsAFile);
 		fdlDestinationIsAFile = new FormData();
 		fdlDestinationIsAFile.left = new FormAttachment(0, 0);
@@ -872,7 +871,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlDestinationIsAFile.setLayoutData(fdlDestinationIsAFile);
 		wDestinationIsAFile = new Button(wDestinationFile, SWT.CHECK);
 		props.setLook(wDestinationIsAFile);
-		wDestinationIsAFile.setToolTipText(Messages.getString("JobMoveFiles.DestinationIsAFile.Tooltip"));
+		wDestinationIsAFile.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.DestinationIsAFile.Tooltip"));
 		fdDestinationIsAFile = new FormData();
 		fdDestinationIsAFile.left = new FormAttachment(middle, 0);
 		fdDestinationIsAFile.top = new FormAttachment(wCreateDestinationFolder, margin);
@@ -893,7 +892,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 		// Do not keep folder structure?
 		wlDoNotKeepFolderStructure=new Label(wDestinationFile, SWT.RIGHT);
-		wlDoNotKeepFolderStructure.setText(Messages.getString("JobMoveFiles.DoNotKeepFolderStructure.Label"));
+		wlDoNotKeepFolderStructure.setText(BaseMessages.getString(PKG, "JobMoveFiles.DoNotKeepFolderStructure.Label"));
  		props.setLook(wlDoNotKeepFolderStructure);
 		fdlDoNotKeepFolderStructure=new FormData();
 		fdlDoNotKeepFolderStructure.left = new FormAttachment(0, 0);
@@ -902,7 +901,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlDoNotKeepFolderStructure.setLayoutData(fdlDoNotKeepFolderStructure);
 		wDoNotKeepFolderStructure=new Button(wDestinationFile, SWT.CHECK);
  		props.setLook(wDoNotKeepFolderStructure);
- 		wDoNotKeepFolderStructure.setToolTipText(Messages.getString("JobMoveFiles.DoNotKeepFolderStructure.Tooltip"));
+ 		wDoNotKeepFolderStructure.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.DoNotKeepFolderStructure.Tooltip"));
 		fdDoNotKeepFolderStructure=new FormData();
 		fdDoNotKeepFolderStructure.left = new FormAttachment(middle, 0);
 		fdDoNotKeepFolderStructure.top  = new FormAttachment(wDestinationIsAFile, margin);
@@ -919,7 +918,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 		// Create multi-part file?
 		wlAddDate=new Label(wDestinationFile, SWT.RIGHT);
-		wlAddDate.setText(Messages.getString("JobMoveFiles.AddDate.Label"));
+		wlAddDate.setText(BaseMessages.getString(PKG, "JobMoveFiles.AddDate.Label"));
  		props.setLook(wlAddDate);
 		fdlAddDate=new FormData();
 		fdlAddDate.left = new FormAttachment(0, 0);
@@ -928,7 +927,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlAddDate.setLayoutData(fdlAddDate);
 		wAddDate=new Button(wDestinationFile, SWT.CHECK);
  		props.setLook(wAddDate);
- 		wAddDate.setToolTipText(Messages.getString("JobMoveFiles.AddDate.Tooltip"));
+ 		wAddDate.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.AddDate.Tooltip"));
 		fdAddDate=new FormData();
 		fdAddDate.left = new FormAttachment(middle, 0);
 		fdAddDate.top  = new FormAttachment(wDoNotKeepFolderStructure, margin);
@@ -945,7 +944,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		);
 		// Create multi-part file?
 		wlAddTime=new Label(wDestinationFile, SWT.RIGHT);
-		wlAddTime.setText(Messages.getString("JobMoveFiles.AddTime.Label"));
+		wlAddTime.setText(BaseMessages.getString(PKG, "JobMoveFiles.AddTime.Label"));
  		props.setLook(wlAddTime);
 		fdlAddTime=new FormData();
 		fdlAddTime.left = new FormAttachment(0, 0);
@@ -954,7 +953,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlAddTime.setLayoutData(fdlAddTime);
 		wAddTime=new Button(wDestinationFile, SWT.CHECK);
  		props.setLook(wAddTime);
- 		wAddTime.setToolTipText(Messages.getString("JobMoveFiles.AddTime.Tooltip"));
+ 		wAddTime.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.AddTime.Tooltip"));
 		fdAddTime=new FormData();
 		fdAddTime.left = new FormAttachment(middle, 0);
 		fdAddTime.top  = new FormAttachment(wAddDate, margin);
@@ -972,7 +971,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
 		// Specify date time format?
 		wlSpecifyFormat=new Label(wDestinationFile, SWT.RIGHT);
-		wlSpecifyFormat.setText(Messages.getString("JobMoveFiles.SpecifyFormat.Label"));
+		wlSpecifyFormat.setText(BaseMessages.getString(PKG, "JobMoveFiles.SpecifyFormat.Label"));
 		props.setLook(wlSpecifyFormat);
 		fdlSpecifyFormat=new FormData();
 		fdlSpecifyFormat.left = new FormAttachment(0, 0);
@@ -981,7 +980,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlSpecifyFormat.setLayoutData(fdlSpecifyFormat);
 		wSpecifyFormat=new Button(wDestinationFile, SWT.CHECK);
 		props.setLook(wSpecifyFormat);
-		wSpecifyFormat.setToolTipText(Messages.getString("JobMoveFiles.SpecifyFormat.Tooltip"));
+		wSpecifyFormat.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.SpecifyFormat.Tooltip"));
 	    fdSpecifyFormat=new FormData();
 		fdSpecifyFormat.left = new FormAttachment(middle, 0);
 		fdSpecifyFormat.top  = new FormAttachment(wAddTime, margin);
@@ -1001,7 +1000,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
  		// DateTimeFormat
 		wlDateTimeFormat=new Label(wDestinationFile, SWT.RIGHT);
-        wlDateTimeFormat.setText(Messages.getString("JobMoveFiles.DateTimeFormat.Label"));
+        wlDateTimeFormat.setText(BaseMessages.getString(PKG, "JobMoveFiles.DateTimeFormat.Label"));
         props.setLook(wlDateTimeFormat);
         fdlDateTimeFormat=new FormData();
         fdlDateTimeFormat.left = new FormAttachment(0, 0);
@@ -1025,7 +1024,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
         // Add Date before extension?
         wlAddDateBeforeExtension = new Label(wDestinationFile, SWT.RIGHT);
-        wlAddDateBeforeExtension.setText(Messages.getString("JobMoveFiles.AddDateBeforeExtension.Label"));
+        wlAddDateBeforeExtension.setText(BaseMessages.getString(PKG, "JobMoveFiles.AddDateBeforeExtension.Label"));
         props.setLook(wlAddDateBeforeExtension);
         fdlAddDateBeforeExtension = new FormData();
         fdlAddDateBeforeExtension.left = new FormAttachment(0, 0);
@@ -1034,7 +1033,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
         wlAddDateBeforeExtension.setLayoutData(fdlAddDateBeforeExtension);
         wAddDateBeforeExtension = new Button(wDestinationFile, SWT.CHECK);
         props.setLook(wAddDateBeforeExtension);
-        wAddDateBeforeExtension.setToolTipText(Messages.getString("JobMoveFiles.AddDateBeforeExtension.Tooltip"));
+        wAddDateBeforeExtension.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.AddDateBeforeExtension.Tooltip"));
         fdAddDateBeforeExtension = new FormData();
         fdAddDateBeforeExtension.left = new FormAttachment(middle, 0);
         fdAddDateBeforeExtension.top = new FormAttachment(wDateTimeFormat, margin);
@@ -1050,7 +1049,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
         // If File Exists
 		wlIfFileExists = new Label(wDestinationFile, SWT.RIGHT);
-		wlIfFileExists.setText(Messages.getString("JobMoveFiles.IfFileExists.Label"));
+		wlIfFileExists.setText(BaseMessages.getString(PKG, "JobMoveFiles.IfFileExists.Label"));
 		props.setLook(wlIfFileExists);
 		fdlIfFileExists = new FormData();
 		fdlIfFileExists.left = new FormAttachment(0, 0);
@@ -1058,12 +1057,12 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		fdlIfFileExists.top = new FormAttachment(wAddDateBeforeExtension, margin);
 		wlIfFileExists.setLayoutData(fdlIfFileExists);
 		wIfFileExists = new CCombo(wDestinationFile, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wIfFileExists.add(Messages.getString("JobMoveFiles.Do_Nothing_IfFileExists.Label"));
-		wIfFileExists.add(Messages.getString("JobMoveFiles.Overwrite_File_IfFileExists.Label"));
-		wIfFileExists.add(Messages.getString("JobMoveFiles.Unique_Name_IfFileExists.Label"));
-		wIfFileExists.add(Messages.getString("JobMoveFiles.Delete_Source_File_IfFileExists.Label"));
-		wIfFileExists.add(Messages.getString("JobMoveFiles.Move_To_Folder_IfFileExists.Label"));
-		wIfFileExists.add(Messages.getString("JobMoveFiles.Fail_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobMoveFiles.Do_Nothing_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobMoveFiles.Overwrite_File_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobMoveFiles.Unique_Name_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobMoveFiles.Delete_Source_File_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobMoveFiles.Move_To_Folder_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobMoveFiles.Fail_IfFileExists.Label"));
 		wIfFileExists.select(0); // +1: starts at -1
 
 		props.setLook(wIfFileExists);
@@ -1113,7 +1112,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
 		wMoveToGroup = new Group(wDestinationFileComp, SWT.SHADOW_NONE);
 		props.setLook(wMoveToGroup);
-		wMoveToGroup.setText(Messages.getString("JobMoveFiles.GroupMoveToGroup.Label"));
+		wMoveToGroup.setText(BaseMessages.getString(PKG, "JobMoveFiles.GroupMoveToGroup.Label"));
 
 		FormLayout MovetoLayoutFile = new FormLayout();
 		MovetoLayoutFile.marginWidth = 10;
@@ -1122,7 +1121,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 		// DestinationFolder line
 		wlDestinationFolder=new Label(wMoveToGroup, SWT.RIGHT);
-		wlDestinationFolder.setText(Messages.getString("JobMoveFiles.DestinationFolder.Label"));
+		wlDestinationFolder.setText(BaseMessages.getString(PKG, "JobMoveFiles.DestinationFolder.Label"));
  		props.setLook(wlDestinationFolder);
 		fdlDestinationFolder=new FormData();
 		fdlDestinationFolder.left = new FormAttachment(0, 0);
@@ -1132,7 +1131,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
 		wbDestinationFolder=new Button(wMoveToGroup, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbDestinationFolder);
-		wbDestinationFolder.setText(Messages.getString("System.Button.Browse"));
+		wbDestinationFolder.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbDestinationFolder=new FormData();
 		fdbDestinationFolder.right= new FormAttachment(100, 0);
 		fdbDestinationFolder.top  = new FormAttachment(wDestinationFile, 0);
@@ -1180,7 +1179,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 		// Create destination folder/parent folder
 		wlCreateMoveToFolder = new Label(wMoveToGroup, SWT.RIGHT);
-		wlCreateMoveToFolder.setText(Messages.getString("JobMoveFiles.CreateMoveToFolder.Label"));
+		wlCreateMoveToFolder.setText(BaseMessages.getString(PKG, "JobMoveFiles.CreateMoveToFolder.Label"));
 		props.setLook(wlCreateMoveToFolder);
 		fdlCreateMoveToFolder = new FormData();
 		fdlCreateMoveToFolder.left = new FormAttachment(0, 0);
@@ -1189,7 +1188,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlCreateMoveToFolder.setLayoutData(fdlCreateMoveToFolder);
 		wCreateMoveToFolder = new Button(wMoveToGroup, SWT.CHECK);
 		props.setLook(wCreateMoveToFolder);
-		wCreateMoveToFolder.setToolTipText(Messages.getString("JobMoveFiles.CreateMoveToFolder.Tooltip"));
+		wCreateMoveToFolder.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.CreateMoveToFolder.Tooltip"));
 		fdCreateMoveToFolder = new FormData();
 		fdCreateMoveToFolder.left = new FormAttachment(middle, 0);
 		fdCreateMoveToFolder.top = new FormAttachment(wDestinationFolder, margin);
@@ -1205,7 +1204,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
 		// Create multi-part file?
 		wlAddMovedDate=new Label(wMoveToGroup, SWT.RIGHT);
-		wlAddMovedDate.setText(Messages.getString("JobMoveFiles.AddMovedDate.Label"));
+		wlAddMovedDate.setText(BaseMessages.getString(PKG, "JobMoveFiles.AddMovedDate.Label"));
  		props.setLook(wlAddMovedDate);
 		fdlAddMovedDate=new FormData();
 		fdlAddMovedDate.left = new FormAttachment(0, 0);
@@ -1214,7 +1213,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlAddMovedDate.setLayoutData(fdlAddMovedDate);
 		wAddMovedDate=new Button(wMoveToGroup, SWT.CHECK);
  		props.setLook(wAddMovedDate);
- 		wAddMovedDate.setToolTipText(Messages.getString("JobMoveFiles.AddMovedDate.Tooltip"));
+ 		wAddMovedDate.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.AddMovedDate.Tooltip"));
 		fdAddMovedDate=new FormData();
 		fdAddMovedDate.left = new FormAttachment(middle, 0);
 		fdAddMovedDate.top  = new FormAttachment(wCreateMoveToFolder, margin);
@@ -1231,7 +1230,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		);
 		// Create multi-part file?
 		wlAddMovedTime=new Label(wMoveToGroup, SWT.RIGHT);
-		wlAddMovedTime.setText(Messages.getString("JobMoveFiles.AddMovedTime.Label"));
+		wlAddMovedTime.setText(BaseMessages.getString(PKG, "JobMoveFiles.AddMovedTime.Label"));
  		props.setLook(wlAddMovedTime);
 		fdlAddMovedTime=new FormData();
 		fdlAddMovedTime.left = new FormAttachment(0, 0);
@@ -1240,7 +1239,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlAddMovedTime.setLayoutData(fdlAddMovedTime);
 		wAddMovedTime=new Button(wMoveToGroup, SWT.CHECK);
  		props.setLook(wAddMovedTime);
- 		wAddMovedTime.setToolTipText(Messages.getString("JobMoveFiles.AddMovedTime.Tooltip"));
+ 		wAddMovedTime.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.AddMovedTime.Tooltip"));
 		fdAddMovedTime=new FormData();
 		fdAddMovedTime.left = new FormAttachment(middle, 0);
 		fdAddMovedTime.top  = new FormAttachment(wAddMovedDate, margin);
@@ -1258,7 +1257,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
 		// Specify date time format?
 		wlSpecifyMoveFormat=new Label(wMoveToGroup, SWT.RIGHT);
-		wlSpecifyMoveFormat.setText(Messages.getString("JobMoveFiles.SpecifyMoveFormat.Label"));
+		wlSpecifyMoveFormat.setText(BaseMessages.getString(PKG, "JobMoveFiles.SpecifyMoveFormat.Label"));
 		props.setLook(wlSpecifyMoveFormat);
 		fdlSpecifyMoveFormat=new FormData();
 		fdlSpecifyMoveFormat.left = new FormAttachment(0, 0);
@@ -1267,7 +1266,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlSpecifyMoveFormat.setLayoutData(fdlSpecifyMoveFormat);
 		wSpecifyMoveFormat=new Button(wMoveToGroup, SWT.CHECK);
 		props.setLook(wSpecifyMoveFormat);
-		wSpecifyMoveFormat.setToolTipText(Messages.getString("JobMoveFiles.SpecifyMoveFormat.Tooltip"));
+		wSpecifyMoveFormat.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.SpecifyMoveFormat.Tooltip"));
 	    fdSpecifyMoveFormat=new FormData();
 		fdSpecifyMoveFormat.left = new FormAttachment(middle, 0);
 		fdSpecifyMoveFormat.top  = new FormAttachment(wAddMovedTime, margin);
@@ -1290,7 +1289,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 		// Moved DateTimeFormat
 		wlMovedDateTimeFormat=new Label(wMoveToGroup, SWT.RIGHT);
-        wlMovedDateTimeFormat.setText(Messages.getString("JobMoveFiles.MovedDateTimeFormat.Label"));
+        wlMovedDateTimeFormat.setText(BaseMessages.getString(PKG, "JobMoveFiles.MovedDateTimeFormat.Label"));
         props.setLook(wlMovedDateTimeFormat);
         fdlMovedDateTimeFormat=new FormData();
         fdlMovedDateTimeFormat.left = new FormAttachment(0, 0);
@@ -1312,7 +1311,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
         // Add Date before extension?
         wlAddMovedDateBeforeExtension = new Label(wMoveToGroup, SWT.RIGHT);
-        wlAddMovedDateBeforeExtension.setText(Messages.getString("JobMoveFiles.AddMovedDateBeforeExtension.Label"));
+        wlAddMovedDateBeforeExtension.setText(BaseMessages.getString(PKG, "JobMoveFiles.AddMovedDateBeforeExtension.Label"));
         props.setLook(wlAddMovedDateBeforeExtension);
         fdlAddMovedDateBeforeExtension = new FormData();
         fdlAddMovedDateBeforeExtension.left = new FormAttachment(0, 0);
@@ -1321,7 +1320,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
         wlAddMovedDateBeforeExtension.setLayoutData(fdlAddMovedDateBeforeExtension);
         wAddMovedDateBeforeExtension = new Button(wMoveToGroup, SWT.CHECK);
         props.setLook(wAddMovedDateBeforeExtension);
-        wAddMovedDateBeforeExtension.setToolTipText(Messages.getString("JobMoveFiles.AddMovedDateBeforeExtension.Tooltip"));
+        wAddMovedDateBeforeExtension.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.AddMovedDateBeforeExtension.Tooltip"));
         fdAddMovedDateBeforeExtension = new FormData();
         fdAddMovedDateBeforeExtension.left = new FormAttachment(middle, 0);
         fdAddMovedDateBeforeExtension.top = new FormAttachment(wMovedDateTimeFormat, margin);
@@ -1337,7 +1336,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
     	// If moved File Exists
 		wlIfMovedFileExists = new Label(wMoveToGroup, SWT.RIGHT);
-		wlIfMovedFileExists.setText(Messages.getString("JobMoveFiles.IfMovedFileExists.Label"));
+		wlIfMovedFileExists.setText(BaseMessages.getString(PKG, "JobMoveFiles.IfMovedFileExists.Label"));
 		props.setLook(wlIfMovedFileExists);
 		fdlIfMovedFileExists = new FormData();
 		fdlIfMovedFileExists.left = new FormAttachment(0, 0);
@@ -1345,10 +1344,10 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		fdlIfMovedFileExists.top = new FormAttachment(wAddMovedDateBeforeExtension, margin);
 		wlIfMovedFileExists.setLayoutData(fdlIfMovedFileExists);
 		wIfMovedFileExists = new CCombo(wMoveToGroup, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wIfMovedFileExists.add(Messages.getString("JobMoveFiles.Do_Nothing_IfMovedFileExists.Label"));
-		wIfMovedFileExists.add(Messages.getString("JobMoveFiles.Overwrite_Filename_IffMovedFileExists.Label"));
-		wIfMovedFileExists.add(Messages.getString("JobMoveFiles.UniqueName_IfMovedFileExists.Label"));
-		wIfMovedFileExists.add(Messages.getString("JobMoveFiles.Fail_IfMovedFileExists.Label"));
+		wIfMovedFileExists.add(BaseMessages.getString(PKG, "JobMoveFiles.Do_Nothing_IfMovedFileExists.Label"));
+		wIfMovedFileExists.add(BaseMessages.getString(PKG, "JobMoveFiles.Overwrite_Filename_IffMovedFileExists.Label"));
+		wIfMovedFileExists.add(BaseMessages.getString(PKG, "JobMoveFiles.UniqueName_IfMovedFileExists.Label"));
+		wIfMovedFileExists.add(BaseMessages.getString(PKG, "JobMoveFiles.Fail_IfMovedFileExists.Label"));
 		wIfMovedFileExists.select(0); // +1: starts at -1
 
 		props.setLook(wIfMovedFileExists);
@@ -1405,7 +1404,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 		
 		wAdvancedTab=new CTabItem(wTabFolder, SWT.NONE);
-		wAdvancedTab.setText(Messages.getString("JobMoveFiles.Tab.Advanced.Label"));
+		wAdvancedTab.setText(BaseMessages.getString(PKG, "JobMoveFiles.Tab.Advanced.Label"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;
@@ -1424,7 +1423,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 	     // /
 	    wSuccessOn= new Group(wAdvancedComp, SWT.SHADOW_NONE);
 	    props.setLook(wSuccessOn);
-	    wSuccessOn.setText(Messages.getString("JobMoveFiles.SuccessOn.Group.Label"));
+	    wSuccessOn.setText(BaseMessages.getString(PKG, "JobMoveFiles.SuccessOn.Group.Label"));
 
 	    FormLayout successongroupLayout = new FormLayout();
 	    successongroupLayout.marginWidth = 10;
@@ -1435,7 +1434,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
 	    //Success Condition
 	  	wlSuccessCondition = new Label(wSuccessOn, SWT.RIGHT);
-	  	wlSuccessCondition.setText(Messages.getString("JobMoveFiles.SuccessCondition.Label"));
+	  	wlSuccessCondition.setText(BaseMessages.getString(PKG, "JobMoveFiles.SuccessCondition.Label"));
 	  	props.setLook(wlSuccessCondition);
 	  	fdlSuccessCondition = new FormData();
 	  	fdlSuccessCondition.left = new FormAttachment(0, 0);
@@ -1443,9 +1442,9 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 	  	fdlSuccessCondition.top = new FormAttachment(0, margin);
 	  	wlSuccessCondition.setLayoutData(fdlSuccessCondition);
 	  	wSuccessCondition = new CCombo(wSuccessOn, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-	  	wSuccessCondition.add(Messages.getString("JobMoveFiles.SuccessWhenAllWorksFine.Label"));
-	  	wSuccessCondition.add(Messages.getString("JobMoveFiles.SuccessWhenAtLeat.Label"));
-	  	wSuccessCondition.add(Messages.getString("JobMoveFiles.SuccessWhenErrorsLessThan.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobMoveFiles.SuccessWhenAllWorksFine.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobMoveFiles.SuccessWhenAtLeat.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobMoveFiles.SuccessWhenErrorsLessThan.Label"));
 	  	
 	  	wSuccessCondition.select(0); // +1: starts at -1
 	  	
@@ -1466,7 +1465,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
 		// Success when number of errors less than
 		wlNrErrorsLessThan= new Label(wSuccessOn, SWT.RIGHT);
-		wlNrErrorsLessThan.setText(Messages.getString("JobMoveFiles.NrErrorsLessThan.Label"));
+		wlNrErrorsLessThan.setText(BaseMessages.getString(PKG, "JobMoveFiles.NrErrorsLessThan.Label"));
 		props.setLook(wlNrErrorsLessThan);
 		fdlNrErrorsLessThan= new FormData();
 		fdlNrErrorsLessThan.left = new FormAttachment(0, 0);
@@ -1475,8 +1474,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlNrErrorsLessThan.setLayoutData(fdlNrErrorsLessThan);
 		
 		
-		wNrErrorsLessThan= new TextVar(jobMeta,wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobMoveFiles.NrErrorsLessThan.Tooltip"));
+		wNrErrorsLessThan= new TextVar(jobMeta,wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobMoveFiles.NrErrorsLessThan.Tooltip"));
 		props.setLook(wNrErrorsLessThan);
 		wNrErrorsLessThan.addModifyListener(lsMod);
 		fdNrErrorsLessThan= new FormData();
@@ -1501,7 +1500,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 	     // /
 	    wFileResult = new Group(wAdvancedComp, SWT.SHADOW_NONE);
 	    props.setLook(wFileResult);
-	    wFileResult.setText(Messages.getString("JobMoveFiles.FileResult.Group.Label"));
+	    wFileResult.setText(BaseMessages.getString(PKG, "JobMoveFiles.FileResult.Group.Label"));
 
 	    FormLayout fileresultgroupLayout = new FormLayout();
 	    fileresultgroupLayout.marginWidth = 10;
@@ -1512,7 +1511,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 	      
 	  	//Add file to result
 		wlAddFileToResult = new Label(wFileResult, SWT.RIGHT);
-		wlAddFileToResult.setText(Messages.getString("JobMoveFiles.AddFileToResult.Label"));
+		wlAddFileToResult.setText(BaseMessages.getString(PKG, "JobMoveFiles.AddFileToResult.Label"));
 		props.setLook(wlAddFileToResult);
 		fdlAddFileToResult = new FormData();
 		fdlAddFileToResult.left = new FormAttachment(0, 0);
@@ -1521,7 +1520,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wlAddFileToResult.setLayoutData(fdlAddFileToResult);
 		wAddFileToResult = new Button(wFileResult, SWT.CHECK);
 		props.setLook(wAddFileToResult);
-		wAddFileToResult.setToolTipText(Messages.getString("JobMoveFiles.AddFileToResult.Tooltip"));
+		wAddFileToResult.setToolTipText(BaseMessages.getString(PKG, "JobMoveFiles.AddFileToResult.Tooltip"));
 		fdAddFileToResult = new FormData();
 		fdAddFileToResult.left = new FormAttachment(middle, 0);
 		fdAddFileToResult.top = new FormAttachment(wSuccessOn, margin);
@@ -1576,9 +1575,9 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTabFolder);
 		
@@ -1847,8 +1846,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 	   if(Const.isEmpty(wName.getText())) 
          {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
          }

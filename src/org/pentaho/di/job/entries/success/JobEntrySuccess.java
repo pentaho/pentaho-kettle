@@ -19,8 +19,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -37,21 +37,16 @@ import org.w3c.dom.Node;
  */
 public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntrySuccess.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	public JobEntrySuccess(String n, String scr)
 	{
 		super(n, "");
-		setJobEntryType(JobEntryType.SUCCESS);
 	}
 
 	public JobEntrySuccess()
 	{
 		this("", "");
-	}
-
-	public JobEntrySuccess(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -78,7 +73,7 @@ public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntry
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntrySuccess.Meta.UnableToLoadFromXML"), e);
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntrySuccess.Meta.UnableToLoadFromXML"), e);
 		}
 	}
 
@@ -91,7 +86,7 @@ public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntry
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntrySuccess.Meta.UnableToLoadFromRep")+id_jobentry, dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntrySuccess.Meta.UnableToLoadFromRep")+id_jobentry, dbe);
 
 
 		}
@@ -109,7 +104,7 @@ public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntry
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntrySuccess.Meta.UnableToSaveToRep")+id_job, dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntrySuccess.Meta.UnableToSaveToRep")+id_job, dbe);
 		}
 	}
 

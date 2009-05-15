@@ -36,34 +36,33 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Group;
-
-import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
+import org.pentaho.di.job.entries.waitforsql.JobEntryWaitForSQL;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.waitforsql.JobEntryWaitForSQL;
-import org.pentaho.di.job.entries.waitforsql.Messages;
-import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
-import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.StyledTextComp;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 /**
  * This dialog allows you to edit the Wait for SQL job entry settings.
@@ -73,6 +72,8 @@ import org.pentaho.di.core.exception.KettleException;
  */
 public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryWaitForSQL.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Button wbTable,wbSQLTable;
 	
     private Label wlName;
@@ -171,7 +172,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryWaitForSQL) jobEntryInt;
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobEntryWaitForSQL.Name.Default"));
+            this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntryWaitForSQL.Name.Default"));
     }
 
     public JobEntryInterface open()
@@ -197,13 +198,13 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobEntryWaitForSQL.Title"));
+        shell.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
         
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         FormData fd = new FormData();
         fd.right = new FormAttachment(50, -10);
         fd.bottom = new FormAttachment(100, 0);
@@ -211,7 +212,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
         wOK.setLayoutData(fd);
 
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         fd = new FormData();
         fd.left = new FormAttachment(50, 10);
         fd.bottom = new FormAttachment(100, 0);
@@ -224,7 +225,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
         
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("JobEntryWaitForSQL.Name.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.Name.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
@@ -246,7 +247,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 		wConnection.addModifyListener(lsMod);
 		// Schema name line
 		wlSchemaname = new Label(shell, SWT.RIGHT);
-		wlSchemaname.setText(Messages.getString("JobEntryWaitForSQL.Schemaname.Label"));
+		wlSchemaname.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.Schemaname.Label"));
 		props.setLook(wlSchemaname);
 		fdlSchemaname = new FormData();
 		fdlSchemaname.left = new FormAttachment(0, 0);
@@ -256,7 +257,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 
 		wSchemaname = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSchemaname);
-		wSchemaname.setToolTipText(Messages.getString("JobEntryWaitForSQL.Schemaname.Tooltip"));
+		wSchemaname.setToolTipText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.Schemaname.Tooltip"));
 		wSchemaname.addModifyListener(lsMod);
 		fdSchemaname = new FormData();
 		fdSchemaname.left = new FormAttachment(middle, 0);
@@ -266,7 +267,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 
 		// Table name line
 		wlTablename = new Label(shell, SWT.RIGHT);
-		wlTablename.setText(Messages.getString("JobEntryWaitForSQL.Tablename.Label"));
+		wlTablename.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.Tablename.Label"));
 		props.setLook(wlTablename);
 		fdlTablename = new FormData();
 		fdlTablename.left = new FormAttachment(0, 0);
@@ -276,7 +277,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbTable);
-		wbTable.setText(Messages.getString("System.Button.Browse"));
+		wbTable.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		FormData fdbTable = new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
 		fdbTable.top  = new FormAttachment(wSchemaname, margin/2);
@@ -285,7 +286,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 
 		wTablename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wTablename);
-		wTablename.setToolTipText(Messages.getString("JobEntryWaitForSQL.Tablename.Tooltip"));
+		wTablename.setToolTipText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.Tablename.Tooltip"));
 		wTablename.addModifyListener(lsMod);
 		fdTablename = new FormData();
 		fdTablename.left = new FormAttachment(middle, 0);
@@ -298,7 +299,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 	    // ///////////////////////////////
 	    wSuccessGroup = new Group(shell, SWT.SHADOW_NONE);
 	    props.setLook(wSuccessGroup);
-	    wSuccessGroup.setText(Messages.getString("JobEntryWaitForSQL.SuccessGroup.Group.Label"));
+	    wSuccessGroup.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.SuccessGroup.Group.Label"));
 
 	    FormLayout SuccessGroupLayout = new FormLayout();
 	    SuccessGroupLayout .marginWidth = 10;
@@ -308,7 +309,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 
 	    //Success Condition
 	  	wlSuccessCondition = new Label(wSuccessGroup, SWT.RIGHT);
-	  	wlSuccessCondition.setText(Messages.getString("JobEntryWaitForSQL.SuccessCondition.Label"));
+	  	wlSuccessCondition.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.SuccessCondition.Label"));
 	  	props.setLook(wlSuccessCondition);
 	  	fdlSuccessCondition = new FormData();
 	  	fdlSuccessCondition.left = new FormAttachment(0, -margin);
@@ -336,7 +337,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 
 		// Success when number of errors less than
 		wlRowsCountValue= new Label(wSuccessGroup, SWT.RIGHT);
-		wlRowsCountValue.setText(Messages.getString("JobEntryWaitForSQL.RowsCountValue.Label"));
+		wlRowsCountValue.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.RowsCountValue.Label"));
 		props.setLook(wlRowsCountValue);
 		fdlRowsCountValue= new FormData();
 		fdlRowsCountValue.left = new FormAttachment(0, -margin);
@@ -345,8 +346,8 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 		wlRowsCountValue.setLayoutData(fdlRowsCountValue);
 		
 		
-		wRowsCountValue= new TextVar(jobMeta, wSuccessGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobEntryWaitForSQL.RowsCountValue.Tooltip"));
+		wRowsCountValue= new TextVar(jobMeta, wSuccessGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobEntryWaitForSQL.RowsCountValue.Tooltip"));
 		props.setLook(wRowsCountValue);
 		wRowsCountValue.addModifyListener(lsMod);
 		fdRowsCountValue= new FormData();
@@ -357,7 +358,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 		
 		 // Maximum timeout
         wlMaximumTimeout = new Label(wSuccessGroup, SWT.RIGHT);
-        wlMaximumTimeout.setText(Messages.getString("JobEntryWaitForSQL.MaximumTimeout.Label"));
+        wlMaximumTimeout.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.MaximumTimeout.Label"));
         props.setLook(wlMaximumTimeout);
         fdlMaximumTimeout = new FormData();
         fdlMaximumTimeout.left = new FormAttachment(0, -margin);
@@ -366,7 +367,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
         wlMaximumTimeout.setLayoutData(fdlMaximumTimeout);
         wMaximumTimeout = new TextVar(jobMeta, wSuccessGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wMaximumTimeout);
-        wMaximumTimeout.setToolTipText(Messages.getString("JobEntryWaitForSQL.MaximumTimeout.Tooltip"));
+        wMaximumTimeout.setToolTipText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.MaximumTimeout.Tooltip"));
         wMaximumTimeout.addModifyListener(lsMod);
         fdMaximumTimeout = new FormData();
         fdMaximumTimeout.left = new FormAttachment(middle, -margin);
@@ -376,7 +377,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 
         // Cycle time
         wlCheckCycleTime = new Label(wSuccessGroup, SWT.RIGHT);
-        wlCheckCycleTime.setText(Messages.getString("JobEntryWaitForSQL.CheckCycleTime.Label"));
+        wlCheckCycleTime.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.CheckCycleTime.Label"));
         props.setLook(wlCheckCycleTime);
         fdlCheckCycleTime = new FormData();
         fdlCheckCycleTime.left = new FormAttachment(0, -margin);
@@ -385,7 +386,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
         wlCheckCycleTime.setLayoutData(fdlCheckCycleTime);
         wCheckCycleTime = new TextVar(jobMeta, wSuccessGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wCheckCycleTime);
-        wCheckCycleTime.setToolTipText(Messages.getString("JobEntryWaitForSQL.CheckCycleTime.Tooltip"));
+        wCheckCycleTime.setToolTipText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.CheckCycleTime.Tooltip"));
         wCheckCycleTime.addModifyListener(lsMod);
         fdCheckCycleTime = new FormData();
         fdCheckCycleTime.left = new FormAttachment(middle, -margin);
@@ -395,7 +396,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 	        
         // Success on timeout		
         wlSuccesOnTimeout = new Label(wSuccessGroup, SWT.RIGHT);
-        wlSuccesOnTimeout.setText(Messages.getString("JobEntryWaitForSQL.SuccessOnTimeout.Label"));
+        wlSuccesOnTimeout.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.SuccessOnTimeout.Label"));
         props.setLook(wlSuccesOnTimeout);
         fdlSuccesOnTimeout = new FormData();
         fdlSuccesOnTimeout.left = new FormAttachment(0, -margin);
@@ -404,7 +405,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
         wlSuccesOnTimeout.setLayoutData(fdlSuccesOnTimeout);
         wSuccesOnTimeout = new Button(wSuccessGroup, SWT.CHECK);
         props.setLook(wSuccesOnTimeout);
-        wSuccesOnTimeout.setToolTipText(Messages.getString("JobEntryWaitForSQL.SuccessOnTimeout.Tooltip"));
+        wSuccesOnTimeout.setToolTipText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.SuccessOnTimeout.Tooltip"));
         fdSuccesOnTimeout = new FormData();
         fdSuccesOnTimeout.left = new FormAttachment(middle, -margin);
         fdSuccesOnTimeout.top = new FormAttachment(wCheckCycleTime, margin);
@@ -439,7 +440,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 	    // ///////////////////////////////
 	    wCustomGroup = new Group(shell, SWT.SHADOW_NONE);
 	    props.setLook(wCustomGroup);
-	    wCustomGroup.setText(Messages.getString("JobEntryWaitForSQL.CustomGroup.Group.Label"));
+	    wCustomGroup.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.CustomGroup.Group.Label"));
 
 	    FormLayout CustomGroupLayout = new FormLayout();
 	    CustomGroupLayout .marginWidth = 10;
@@ -451,7 +452,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 		
 		  // custom SQL?
         wlcustomSQL= new Label(wCustomGroup, SWT.RIGHT);
-        wlcustomSQL.setText(Messages.getString("JobEntryWaitForSQL.customSQL.Label"));
+        wlcustomSQL.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.customSQL.Label"));
         props.setLook(wlcustomSQL);
         fdlcustomSQL= new FormData();
         fdlcustomSQL.left = new FormAttachment(0, -margin);
@@ -460,7 +461,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
         wlcustomSQL.setLayoutData(fdlcustomSQL);
         wcustomSQL= new Button(wCustomGroup, SWT.CHECK);
         props.setLook(wcustomSQL);
-        wcustomSQL.setToolTipText(Messages.getString("JobEntryWaitForSQL.customSQL.Tooltip"));
+        wcustomSQL.setToolTipText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.customSQL.Tooltip"));
         fdcustomSQL= new FormData();
         fdcustomSQL.left = new FormAttachment(middle, -margin);
         fdcustomSQL.top = new FormAttachment(wSuccessGroup, margin);
@@ -477,7 +478,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 		}); 
         // use Variable substitution?
         wlUseSubs = new Label(wCustomGroup, SWT.RIGHT);
-        wlUseSubs.setText(Messages.getString("JobEntryWaitForSQL.UseVariableSubst.Label"));
+        wlUseSubs.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.UseVariableSubst.Label"));
         props.setLook(wlUseSubs);
         fdlUseSubs = new FormData();
         fdlUseSubs.left = new FormAttachment(0, -margin);
@@ -486,7 +487,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
         wlUseSubs.setLayoutData(fdlUseSubs);
         wUseSubs = new Button(wCustomGroup, SWT.CHECK);
         props.setLook(wUseSubs);
-        wUseSubs.setToolTipText(Messages.getString("JobEntryWaitForSQL.UseVariableSubst.Tooltip"));
+        wUseSubs.setToolTipText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.UseVariableSubst.Tooltip"));
         fdUseSubs = new FormData();
         fdUseSubs.left = new FormAttachment(middle, -margin);
         fdUseSubs.top = new FormAttachment(wcustomSQL, margin);
@@ -502,7 +503,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
         
         // clear result rows ?
         wlClearResultList = new Label(wCustomGroup, SWT.RIGHT);
-        wlClearResultList.setText(Messages.getString("JobEntryWaitForSQL.ClearResultList.Label"));
+        wlClearResultList.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.ClearResultList.Label"));
         props.setLook(wlClearResultList);
         fdlClearResultList = new FormData();
         fdlClearResultList.left = new FormAttachment(0, -margin);
@@ -511,7 +512,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
         wlClearResultList.setLayoutData(fdlClearResultList);
         wClearResultList = new Button(wCustomGroup, SWT.CHECK);
         props.setLook(wClearResultList);
-        wClearResultList.setToolTipText(Messages.getString("JobEntryWaitForSQL.ClearResultList.Tooltip"));
+        wClearResultList.setToolTipText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.ClearResultList.Tooltip"));
         fdClearResultList = new FormData();
         fdClearResultList.left = new FormAttachment(middle, -margin);
         fdClearResultList.top = new FormAttachment(wUseSubs, margin);
@@ -528,7 +529,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
     		
         // add rows to result?
         wlAddRowsToResult = new Label(wCustomGroup, SWT.RIGHT);
-        wlAddRowsToResult.setText(Messages.getString("JobEntryWaitForSQL.AddRowsToResult.Label"));
+        wlAddRowsToResult.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.AddRowsToResult.Label"));
         props.setLook(wlAddRowsToResult);
         fdlAddRowsToResult = new FormData();
         fdlAddRowsToResult.left = new FormAttachment(0, -margin);
@@ -537,7 +538,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
         wlAddRowsToResult.setLayoutData(fdlAddRowsToResult);
         wAddRowsToResult = new Button(wCustomGroup, SWT.CHECK);
         props.setLook(wAddRowsToResult);
-        wAddRowsToResult.setToolTipText(Messages.getString("JobEntryWaitForSQL.AddRowsToResult.Tooltip"));
+        wAddRowsToResult.setToolTipText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.AddRowsToResult.Tooltip"));
         fdAddRowsToResult = new FormData();
         fdAddRowsToResult.left = new FormAttachment(middle, -margin);
         fdAddRowsToResult.top = new FormAttachment(wClearResultList, margin);
@@ -562,7 +563,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
         
         // Script line
         wlSQL = new Label(wCustomGroup, SWT.NONE);
-        wlSQL.setText(Messages.getString("JobEntryWaitForSQL.Script.Label"));
+        wlSQL.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.Script.Label"));
         props.setLook(wlSQL);
         fdlSQL = new FormData();
         fdlSQL.left = new FormAttachment(0, 0);
@@ -572,7 +573,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
     	
 		wbSQLTable=new Button(wCustomGroup, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbSQLTable);
-		wbSQLTable.setText(Messages.getString("JobEntryWaitForSQL.GetSQLAndSelectStatement")); //$NON-NLS-1$
+		wbSQLTable.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.GetSQLAndSelectStatement")); //$NON-NLS-1$
 		FormData fdbSQLTable=new FormData();
 		fdbSQLTable.right = new FormAttachment(100, 0);
 		fdbSQLTable.top   = new FormAttachment(wAddRowsToResult, margin);
@@ -702,8 +703,8 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 				wSQL.setText(sql);
 
 				MessageBox yn = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION);
-				yn.setMessage(Messages.getString("JobEntryWaitForSQL.IncludeFieldNamesInSQL")); //$NON-NLS-1$
-				yn.setText(Messages.getString("JobEntryWaitForSQL.DialogCaptionQuestion")); //$NON-NLS-1$
+				yn.setMessage(BaseMessages.getString(PKG, "JobEntryWaitForSQL.IncludeFieldNamesInSQL")); //$NON-NLS-1$
+				yn.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.DialogCaptionQuestion")); //$NON-NLS-1$
 				int id = yn.open();
 				switch(id)
 				{
@@ -730,16 +731,16 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 						else
 						{
 							MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-							mb.setMessage(Messages.getString("JobEntryWaitForSQL.ERROR_CouldNotRetrieveFields")+Const.CR+Messages.getString("JobEntryWaitForSQL.PerhapsNoPermissions")); //$NON-NLS-1$ //$NON-NLS-2$
-							mb.setText(Messages.getString("JobEntryWaitForSQL.DialogCaptionError2")); //$NON-NLS-1$
+							mb.setMessage(BaseMessages.getString(PKG, "JobEntryWaitForSQL.ERROR_CouldNotRetrieveFields")+Const.CR+BaseMessages.getString(PKG, "JobEntryWaitForSQL.PerhapsNoPermissions")); //$NON-NLS-1$ //$NON-NLS-2$
+							mb.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.DialogCaptionError2")); //$NON-NLS-1$
 							mb.open();
 						}
 					}
 					catch(KettleException e)
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setText(Messages.getString("JobEntryWaitForSQL.DialogCaptionError3")); //$NON-NLS-1$
-						mb.setMessage(Messages.getString("JobEntryWaitForSQL.AnErrorOccurred")+Const.CR+e.getMessage()); //$NON-NLS-1$
+						mb.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.DialogCaptionError3")); //$NON-NLS-1$
+						mb.setMessage(BaseMessages.getString(PKG, "JobEntryWaitForSQL.AnErrorOccurred")+Const.CR+e.getMessage()); //$NON-NLS-1$
 						mb.open(); 
 					}
 					finally
@@ -753,8 +754,8 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("JobEntryWaitForSQL.ConnectionNoLongerAvailable")); //$NON-NLS-1$
-			mb.setText(Messages.getString("JobEntryWaitForSQL.DialogCaptionError4")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "JobEntryWaitForSQL.ConnectionNoLongerAvailable")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.DialogCaptionError4")); //$NON-NLS-1$
 			mb.open();
 		}
 					
@@ -773,7 +774,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 			posnr--;
 			colnr++;
 		}
-		wlPosition.setText(Messages.getString("JobEntryWaitForSQL.Position.Label",""+linenr,""+colnr));
+		wlPosition.setText(BaseMessages.getString(PKG, "JobEntryWaitForSQL.Position.Label",""+linenr,""+colnr));
 
 	}
     private void setCustomerSQL()
@@ -890,8 +891,8 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("JobEntryWaitForSQL.ConnectionError2.DialogMessage"));
-			mb.setText(Messages.getString("System.Dialog.Error.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "JobEntryWaitForSQL.ConnectionError2.DialogMessage"));
+			mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
 			mb.open(); 
 		}    
 	}

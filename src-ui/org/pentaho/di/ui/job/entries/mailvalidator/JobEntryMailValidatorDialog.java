@@ -32,14 +32,13 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.MessageBox; 
-
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.mailvalidator.JobEntryMailValidator;
-import org.pentaho.di.job.entries.mailvalidator.Messages;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -57,6 +56,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  */
 public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryMailValidator.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     private Label wlName;
 
@@ -108,7 +108,7 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
         jobEntry = (JobEntryMailValidator) jobEntryInt;
 
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobEntryMailValidatorDialog.Name.Default"));
+            this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.Name.Default"));
     }
 
     public JobEntryInterface open()
@@ -134,14 +134,14 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobEntryMailValidatorDialog.Title"));
+        shell.setText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
         
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("JobEntryMailValidatorDialog.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
@@ -159,8 +159,8 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
         
 		// eMail address
 		wMailAddress = new LabelTextVar(jobMeta,shell, 
-			Messages.getString("JobEntryMailValidatorDialog.MailAddress.Label"), 
-			Messages.getString("JobEntryMailValidatorDialog.MailAddress.Tooltip"));
+			BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.MailAddress.Label"), 
+			BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.MailAddress.Tooltip"));
 		wMailAddress.addModifyListener(lsMod);
 		fdMailAddress = new FormData();
 		fdMailAddress.left = new FormAttachment(0, 0);
@@ -174,7 +174,7 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 
 		wSettingsGroup = new Group(shell, SWT.SHADOW_NONE);
 		props.setLook(wSettingsGroup);
-		wSettingsGroup.setText(Messages.getString("JobEntryMailValidatorDialog.Group.SettingsAddress.Label"));
+		wSettingsGroup.setText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.Group.SettingsAddress.Label"));
 		
 		FormLayout SettingsgroupLayout = new FormLayout();
 		SettingsgroupLayout.marginWidth = 10;
@@ -183,7 +183,7 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 		
 		 // perform SMTP check?
         wlSMTPCheck = new Label(wSettingsGroup, SWT.RIGHT);
-        wlSMTPCheck.setText(Messages.getString("JobEntryMailValidatorDialog.SMTPCheck.Label"));
+        wlSMTPCheck.setText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.SMTPCheck.Label"));
 		props.setLook(wlSMTPCheck);
 		fdlSMTPCheck = new FormData();
 		fdlSMTPCheck.left = new FormAttachment(0, 0);
@@ -192,7 +192,7 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 		wlSMTPCheck.setLayoutData(fdlSMTPCheck);
 		wSMTPCheck = new Button(wSettingsGroup, SWT.CHECK);
 		props.setLook(wSMTPCheck);
-		wSMTPCheck.setToolTipText(Messages.getString("JobEntryMailValidatorDialog.SMTPCheck.Tooltip"));
+		wSMTPCheck.setToolTipText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.SMTPCheck.Tooltip"));
 		fdSMTPCheck = new FormData();
 		fdSMTPCheck.left = new FormAttachment(middle, -margin);
 		fdSMTPCheck.top = new FormAttachment(wMailAddress, margin);
@@ -208,7 +208,7 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 
 		// TimeOut fieldname ...
 		wlTimeOut=new Label(wSettingsGroup, SWT.RIGHT);
-		wlTimeOut.setText(Messages.getString("JobEntryMailValidatorDialog.TimeOutField.Label")); //$NON-NLS-1$
+		wlTimeOut.setText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.TimeOutField.Label")); //$NON-NLS-1$
  		props.setLook(wlTimeOut);
 		fdlTimeOut=new FormData();
 		fdlTimeOut.left = new FormAttachment(0, 0);
@@ -217,7 +217,7 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 		wlTimeOut.setLayoutData(fdlTimeOut);
 
 		wTimeOut=new TextVar(jobMeta,wSettingsGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wTimeOut.setToolTipText(Messages.getString("JobEntryMailValidatorDialog.TimeOutField.Tooltip"));
+		wTimeOut.setToolTipText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.TimeOutField.Tooltip"));
  		props.setLook(wTimeOut);
 		wTimeOut.addModifyListener(lsMod);
 		fdTimeOut=new FormData();
@@ -228,7 +228,7 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 		
 		// eMailSender fieldname ...
 		wleMailSender=new Label(wSettingsGroup, SWT.RIGHT);
-		wleMailSender.setText(Messages.getString("JobEntryMailValidatorDialog.eMailSenderField.Label")); //$NON-NLS-1$
+		wleMailSender.setText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.eMailSenderField.Label")); //$NON-NLS-1$
  		props.setLook(wleMailSender);
 		fdleMailSender=new FormData();
 		fdleMailSender.left = new FormAttachment(0, 0);
@@ -237,7 +237,7 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 		wleMailSender.setLayoutData(fdleMailSender);
 
 		weMailSender=new TextVar(jobMeta,wSettingsGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		weMailSender.setToolTipText(Messages.getString("JobEntryMailValidatorDialog.eMailSenderField.Tooltip"));
+		weMailSender.setToolTipText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.eMailSenderField.Tooltip"));
  		props.setLook(weMailSender);
 		weMailSender.addModifyListener(lsMod);
 		fdeMailSender=new FormData();
@@ -249,7 +249,7 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 
 		// DefaultSMTP fieldname ...
 		wlDefaultSMTP=new Label(wSettingsGroup, SWT.RIGHT);
-		wlDefaultSMTP.setText(Messages.getString("JobEntryMailValidatorDialog.DefaultSMTPField.Label")); //$NON-NLS-1$
+		wlDefaultSMTP.setText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.DefaultSMTPField.Label")); //$NON-NLS-1$
  		props.setLook(wlDefaultSMTP);
 		fdlDefaultSMTP=new FormData();
 		fdlDefaultSMTP.left = new FormAttachment(0, 0);
@@ -258,7 +258,7 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 		wlDefaultSMTP.setLayoutData(fdlDefaultSMTP);
 
 		wDefaultSMTP=new TextVar(jobMeta,wSettingsGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wDefaultSMTP.setToolTipText(Messages.getString("JobEntryMailValidatorDialog.DefaultSMTPField.Tooltip"));
+		wDefaultSMTP.setToolTipText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.DefaultSMTPField.Tooltip"));
  		props.setLook(wDefaultSMTP);
 		wDefaultSMTP.addModifyListener(lsMod);
 		fdDefaultSMTP=new FormData();
@@ -280,9 +280,9 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 		
 		
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         // at the bottom
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wSettingsGroup);
 	
@@ -382,8 +382,8 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
   	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
        }

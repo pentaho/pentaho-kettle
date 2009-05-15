@@ -30,6 +30,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -51,6 +52,8 @@ import org.w3c.dom.NodeList;
  */
 public class AddXML extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = AddXML.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private AddXMLMeta meta;
     private AddXMLData data;
     
@@ -90,7 +93,7 @@ public class AddXML extends BaseStep implements StepInterface
         		data.fieldIndexes[i] = getInputRowMeta().indexOfValue(meta.getOutputFields()[i].getFieldName());
         		if (data.fieldIndexes[i]<0) 
         		{
-        			throw new KettleException(Messages.getString("AddXML.Exception.FieldNotFound"));
+        			throw new KettleException(BaseMessages.getString(PKG, "AddXML.Exception.FieldNotFound"));
         		}
         	}
         }

@@ -17,6 +17,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 
 
 /*
@@ -26,6 +27,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class UserInfo 
 {
+	private static Class<?> PKG = UserInfo.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private long id;
 	
 	private String login;       // Login ID
@@ -81,19 +84,19 @@ public class UserInfo
 				else
 				{
 					setID(-1L);
-					throw new KettleDatabaseException(Messages.getString("UserInfo.Error.UserNotFound", login));
+					throw new KettleDatabaseException(BaseMessages.getString(PKG, "UserInfo.Error.UserNotFound", login));
 				}
 			}
             else
             {
                 setID(-1L);
-                throw new KettleDatabaseException(Messages.getString("UserInfo.Error.UserNotFound", login));
+                throw new KettleDatabaseException(BaseMessages.getString(PKG, "UserInfo.Error.UserNotFound", login));
             }
 		}
 		catch(KettleDatabaseException dbe)
 		{
-            rep.log.logError(toString(), Messages.getString("UserInfo.Error.UserNotLoaded", login, dbe.getMessage()));
-			throw new KettleException(Messages.getString("UserInfo.Error.UserNotLoaded", login, ""), dbe);
+            rep.log.logError(toString(), BaseMessages.getString(PKG, "UserInfo.Error.UserNotLoaded", login, dbe.getMessage()));
+			throw new KettleException(BaseMessages.getString(PKG, "UserInfo.Error.UserNotLoaded", login, ""), dbe);
 		}
 	}
 	
@@ -107,7 +110,7 @@ public class UserInfo
 		// Verify the password:
 		if ( getID()<0 || !passwd.equals(getPassword()) )
 		{
-            throw new KettleDatabaseException(Messages.getString("UserInfo.Error.IncorrectPasswortLogin"));
+            throw new KettleDatabaseException(BaseMessages.getString(PKG, "UserInfo.Error.IncorrectPasswortLogin"));
 		}
 		
 		rep.setUserInfo(this);
@@ -139,7 +142,7 @@ public class UserInfo
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("UserInfo.Error.SavingUser", login), dbe);
+			throw new KettleException(BaseMessages.getString(PKG, "UserInfo.Error.SavingUser", login), dbe);
 		}
 		
 	}

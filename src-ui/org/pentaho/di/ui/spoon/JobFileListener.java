@@ -15,12 +15,15 @@ package org.pentaho.di.ui.spoon;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.w3c.dom.Node;
 
 public class JobFileListener implements FileListener {
 
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	
     public boolean open(Node jobNode, String fname, boolean importfile)
     {
     	Spoon spoon = Spoon.getInstance();
@@ -42,7 +45,7 @@ public class JobFileListener implements FileListener {
         }
         catch(KettleException e)
         {
-            new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorOpening.Title"), Messages.getString("Spoon.Dialog.ErrorOpening.Message")+fname, e);
+            new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Message")+fname, e);
         }
         return false;
     }

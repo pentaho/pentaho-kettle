@@ -30,8 +30,8 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -54,6 +54,8 @@ import org.w3c.dom.Node;
 
 public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryFileExists.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String filename;
 
 	public JobEntryFileExists(String n)
@@ -61,17 +63,11 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 		super(n, ""); //$NON-NLS-1$
 		filename=null;
 		setID(-1L);
-		setJobEntryType(JobEntryType.FILE_EXISTS);
 	}
 
 	public JobEntryFileExists()
 	{
 		this(""); //$NON-NLS-1$
-	}
-
-	public JobEntryFileExists(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -99,7 +95,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryFileExists.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node"), xe); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node"), xe); //$NON-NLS-1$
 		}
 	}
 
@@ -112,7 +108,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryFileExists.ERROR_0002_Cannot_Load_Job_From_Repository", Long.toString(id_jobentry)), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0002_Cannot_Load_Job_From_Repository", Long.toString(id_jobentry)), dbe); //$NON-NLS-1$
 		}
 	}
 
@@ -127,7 +123,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryFileExists.ERROR_0003_Cannot_Save_Job_Entry", Long.toString(id_job)), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0003_Cannot_Save_Job_Entry", Long.toString(id_job)), dbe); //$NON-NLS-1$
 		}
 	}
 
@@ -160,24 +156,24 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
                 FileObject file = KettleVFS.getFileObject(realFilename);
                 if (file.exists() && file.isReadable())
                 {
-                    log.logDetailed(toString(), Messages.getString("JobEntryFileExists.File_Exists", realFilename)); //$NON-NLS-1$
+                    log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFileExists.File_Exists", realFilename)); //$NON-NLS-1$
                     result.setResult( true );
                 }
                 else
                 {
-                    log.logDetailed(toString(), Messages.getString("JobEntryFileExists.File_Does_Not_Exist", realFilename)); //$NON-NLS-1$
+                    log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFileExists.File_Does_Not_Exist", realFilename)); //$NON-NLS-1$
                 }
             }
             catch (IOException e)
             {
                 result.setNrErrors(1);
-                log.logError(toString(), Messages.getString("JobEntryFileExists.ERROR_0004_IO_Exception", e.toString())); //$NON-NLS-1$
+                log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0004_IO_Exception", e.toString())); //$NON-NLS-1$
             }
 		}
 		else
 		{
 			result.setNrErrors(1);
-			log.logError(toString(), Messages.getString("JobEntryFileExists.ERROR_0005_No_Filename_Defined")); //$NON-NLS-1$
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0005_No_Filename_Defined")); //$NON-NLS-1$
 		}
 
 		return result;

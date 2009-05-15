@@ -21,7 +21,6 @@
 package org.pentaho.di.ui.job.entries.deletefile;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -37,20 +36,21 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.deletefile.JobEntryDeleteFile;
+import org.pentaho.di.job.entry.JobEntryDialogInterface;
+import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
-import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.deletefile.JobEntryDeleteFile;
-import org.pentaho.di.job.entries.deletefile.Messages;
 
 /**
  * This dialog allows you to edit the Delete File job entry settings.
@@ -60,8 +60,10 @@ import org.pentaho.di.job.entries.deletefile.Messages;
  */
 public class JobEntryDeleteFileDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
-   private static final String[] FILETYPES = new String[] {
-           Messages.getString("JobDeleteFile.Filetype.All") };
+	private static Class<?> PKG = JobEntryDeleteFile.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+    private static final String[] FILETYPES = new String[] {
+           BaseMessages.getString(PKG, "JobDeleteFile.Filetype.All") };
 	
 	private Label        wlName;
 	private Text         wName;
@@ -92,7 +94,7 @@ public class JobEntryDeleteFileDialog extends JobEntryDialog implements JobEntry
         jobEntry = (JobEntryDeleteFile) jobEntryInt;
 
 		if (this.jobEntry.getName() == null) 
-			this.jobEntry.setName(Messages.getString("JobDeleteFile.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobDeleteFile.Name.Default"));
     }
 
 	public JobEntryInterface open()
@@ -118,14 +120,14 @@ public class JobEntryDeleteFileDialog extends JobEntryDialog implements JobEntry
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobDeleteFile.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobDeleteFile.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobDeleteFile.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobDeleteFile.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -143,7 +145,7 @@ public class JobEntryDeleteFileDialog extends JobEntryDialog implements JobEntry
 
 		// Filename line
 		wlFilename=new Label(shell, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("JobDeleteFile.Filename.Label"));
+		wlFilename.setText(BaseMessages.getString(PKG, "JobDeleteFile.Filename.Label"));
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -153,7 +155,7 @@ public class JobEntryDeleteFileDialog extends JobEntryDialog implements JobEntry
 
 		wbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFilename);
-		wbFilename.setText(Messages.getString("System.Button.Browse"));
+		wbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(wName, 0);
@@ -200,7 +202,7 @@ public class JobEntryDeleteFileDialog extends JobEntryDialog implements JobEntry
 		);
 
         wlAbortExists = new Label(shell, SWT.RIGHT);
-        wlAbortExists.setText(Messages.getString("JobDeleteFile.FailIfExists.Label"));
+        wlAbortExists.setText(BaseMessages.getString(PKG, "JobDeleteFile.FailIfExists.Label"));
         props.setLook(wlAbortExists);
         fdlAbortExists = new FormData();
         fdlAbortExists.left = new FormAttachment(0, 0);
@@ -209,7 +211,7 @@ public class JobEntryDeleteFileDialog extends JobEntryDialog implements JobEntry
         wlAbortExists.setLayoutData(fdlAbortExists);
         wAbortExists = new Button(shell, SWT.CHECK);
         props.setLook(wAbortExists);
-        wAbortExists.setToolTipText(Messages.getString("JobDeleteFile.FailIfExists.Tooltip"));
+        wAbortExists.setToolTipText(BaseMessages.getString(PKG, "JobDeleteFile.FailIfExists.Tooltip"));
         fdAbortExists = new FormData();
         fdAbortExists.left = new FormAttachment(middle, 0);
         fdAbortExists.top = new FormAttachment(wFilename, margin);
@@ -224,9 +226,9 @@ public class JobEntryDeleteFileDialog extends JobEntryDialog implements JobEntry
         });
 		
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wAbortExists);
 
@@ -287,8 +289,8 @@ public class JobEntryDeleteFileDialog extends JobEntryDialog implements JobEntry
  	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
         }

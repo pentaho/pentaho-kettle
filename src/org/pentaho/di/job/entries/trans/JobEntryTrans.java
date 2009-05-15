@@ -42,9 +42,8 @@ import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryCategory;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -73,12 +72,15 @@ import org.w3c.dom.Node;
 (
 		image="ui/images/TRN.png",
 		id="TRANS",
-		type=JobEntryType.TRANS,
+		name="JobEntry.Trans.TypeDesc",
 		tooltip="JobEntry.Trans.Tooltip",
-		category=JobEntryCategory.CATEGORY_GENERAL
+		categoryDescription="JobCategory.Category.General",
+		i18nPackageName="org.pentaho.di.job"
 )
 public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String              transname;
 	private String              filename;
 	private String              directory;
@@ -114,7 +116,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	public JobEntryTrans(String name)
 	{
 		super(name, "");
-		setJobEntryType(JobEntryType.TRANS);
 	}
 
 	public JobEntryTrans()
@@ -128,11 +129,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         JobEntryTrans je = (JobEntryTrans) super.clone();
         return je;
     }
-
-	public JobEntryTrans(JobEntryBase jeb)
-	{
-		super(jeb);
-	}
 
 	public void setFileName(String n)
 	{
@@ -496,7 +492,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             }
             catch(KettleException e)
             {
-                log.logError(toString(), Messages.getString("JobTrans.Error.UnableOpenAppender",getLogFilename(),e.toString()));
+                log.logError(toString(), BaseMessages.getString(PKG, "JobTrans.Error.UnableOpenAppender",getLogFilename(),e.toString()));
                 
                 log.logError(toString(), Const.getStackTracker(e));
                 result.setNrErrors(1);
@@ -514,21 +510,21 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         	String realRemoteSlaveServerName = environmentSubstitute(remoteSlaveServerName);
         	remoteSlaveServer = parentJob.getJobMeta().findSlaveServer(realRemoteSlaveServerName);
         	if (remoteSlaveServer==null) {
-        		throw new KettleException(Messages.getString("JobTrans.Exception.UnableToFindRemoteSlaveServer",realRemoteSlaveServerName));
+        		throw new KettleException(BaseMessages.getString(PKG, "JobTrans.Exception.UnableToFindRemoteSlaveServer",realRemoteSlaveServerName));
         	}
         }
         
 		// Open the transformation...
 		// Default directory for now...
         // XXX: This seems a bit odd here.  These three log messages all work off of getFilename().  Why are there three?
-        if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobTrans.Log.OpeningFile",environmentSubstitute(getFilename())));
+        if (log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobTrans.Log.OpeningFile",environmentSubstitute(getFilename())));
         if (!Const.isEmpty(getFilename()))
         {
-            if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobTrans.Log.OpeningTrans",environmentSubstitute(getFilename())));
+            if (log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobTrans.Log.OpeningTrans",environmentSubstitute(getFilename())));
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobTrans.Log.OpeningTransInDirec",environmentSubstitute(getFilename()),environmentSubstitute(directory)));
+            if (log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobTrans.Log.OpeningTransInDirec",environmentSubstitute(getFilename()),environmentSubstitute(directory)));
         }
 
         // Load the transformation only once for the complete loop!
@@ -605,7 +601,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     		try
     		{
-                if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobTrans.StartingTrans",getFilename(),getName(),getDescription()));
+                if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobTrans.StartingTrans",getFilename(),getName(),getDescription()));
 
                 // Set the result rows for the next one...
                 transMeta.setPreviousResult(result);
@@ -834,7 +830,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 						} 
                 		catch (Exception e1) {
                 			
-							log.logError(toString(), Messages.getString("JobTrans.Error.UnableContactSlaveServer",""+remoteSlaveServer,transMeta.getName()));
+							log.logError(toString(), BaseMessages.getString(PKG, "JobTrans.Error.UnableContactSlaveServer",""+remoteSlaveServer,transMeta.getName()));
 							result.setNrErrors(result.getNrErrors()+1L);
 							break; // Stop looking too, chances are too low the server will come back on-line
 						}
@@ -931,7 +927,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     }
                     catch (KettleException e) {
                     	
-                        log.logError(toString(), Messages.getString("JobTrans.Error.UnablePrepareExec"), e);
+                        log.logError(toString(), BaseMessages.getString(PKG, "JobTrans.Error.UnablePrepareExec"), e);
         				result.setNrErrors(1);
 					}
                 }
@@ -939,7 +935,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     		catch(Exception e)
     		{
     			
-    			log.logError(toString(), Messages.getString("JobTrans.ErrorUnableOpenTrans",e.getMessage()));
+    			log.logError(toString(), BaseMessages.getString(PKG, "JobTrans.ErrorUnableOpenTrans",e.getMessage()));
                 log.logError(toString(), Const.getStackTracker(e));
     			result.setNrErrors(1);
     		}
@@ -994,7 +990,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	        {
 	        	String filename = environmentSubstitute(getTransname());
 	        	
-	            log.logBasic(toString(), Messages.getString("JobTrans.Log.LoadingTransRepDirec",filename,""+getDirectory()));
+	            log.logBasic(toString(), BaseMessages.getString(PKG, "JobTrans.Log.LoadingTransRepDirec",filename,""+getDirectory()));
 	
 	            if ( rep != null )
 	            {
@@ -1007,12 +1003,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	            else
 	            {
 	            	
-	            	throw new KettleException(Messages.getString("JobTrans.Exception.NoRepDefined"));
+	            	throw new KettleException(BaseMessages.getString(PKG, "JobTrans.Exception.NoRepDefined"));
 	            }
 	        }
 	        else
 	        {
-	            throw new KettleJobException(Messages.getString("JobTrans.Exception.TransNotSpecified"));
+	            throw new KettleJobException(BaseMessages.getString(PKG, "JobTrans.Exception.TransNotSpecified"));
 	        }
 	
 	        // Set the arguments...
@@ -1023,7 +1019,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		catch(Exception e)
 		{
 			
-			throw new KettleException(Messages.getString("JobTrans.Exception.MetaDataLoad"), e);
+			throw new KettleException(BaseMessages.getString(PKG, "JobTrans.Exception.MetaDataLoad"), e);
 		}
     }
 

@@ -21,7 +21,6 @@
 package org.pentaho.di.ui.job.entries.xslt;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -33,27 +32,28 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
+import org.pentaho.di.job.entries.xslt.JobEntryXSLT;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.xslt.JobEntryXSLT;
-import org.pentaho.di.job.entries.xslt.Messages;
 
 /**
  * This dialog allows you to edit the XSLT job entry settings.
@@ -63,15 +63,17 @@ import org.pentaho.di.job.entries.xslt.Messages;
  */
 public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryXSLT.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
    private static final String[] FILETYPES_XML = new String[] {
-           Messages.getString("JobEntryXSLT.Filetype.Xml"),
-		   Messages.getString("JobEntryXSLT.Filetype.All") };
+           BaseMessages.getString(PKG, "JobEntryXSLT.Filetype.Xml"),
+		   BaseMessages.getString(PKG, "JobEntryXSLT.Filetype.All") };
 
 	private static final String[] FILETYPES_XSL = new String[] 
 		{
-			Messages.getString("JobEntryXSLT.Filetype.Xsl"),
-			Messages.getString("JobEntryXSLT.Filetype.Xslt"),
-			Messages.getString("JobEntryXSLT.Filetype.All")};
+			BaseMessages.getString(PKG, "JobEntryXSLT.Filetype.Xsl"),
+			BaseMessages.getString(PKG, "JobEntryXSLT.Filetype.Xslt"),
+			BaseMessages.getString(PKG, "JobEntryXSLT.Filetype.All")};
 
 
 	private Label        wlName;
@@ -128,7 +130,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryXSLT) jobEntryInt;
         if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(Messages.getString("JobEntryXSLT.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntryXSLT.Name.Default"));
     }
 
 	public JobEntryInterface open()
@@ -154,14 +156,14 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobEntryXSLT.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobEntryXSLT.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Name line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobEntryXSLT.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobEntryXSLT.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -179,7 +181,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 
 		// Filename 1 line
 		wlxmlFilename=new Label(shell, SWT.RIGHT);
-		wlxmlFilename.setText(Messages.getString("JobEntryXSLT.xmlFilename.Label"));
+		wlxmlFilename.setText(BaseMessages.getString(PKG, "JobEntryXSLT.xmlFilename.Label"));
  		props.setLook(wlxmlFilename);
 		fdlxmlFilename=new FormData();
 		fdlxmlFilename.left = new FormAttachment(0, 0);
@@ -188,7 +190,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		wlxmlFilename.setLayoutData(fdlxmlFilename);
 		wbxmlFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbxmlFilename);
-		wbxmlFilename.setText(Messages.getString("System.Button.Browse"));
+		wbxmlFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbxmlFilename=new FormData();
 		fdbxmlFilename.right= new FormAttachment(100, 0);
 		fdbxmlFilename.top  = new FormAttachment(wName, 0);
@@ -235,7 +237,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 
 		// Filename 2 line
 		wlxslFilename=new Label(shell, SWT.RIGHT);
-		wlxslFilename.setText(Messages.getString("JobEntryXSLT.xslFilename.Label"));
+		wlxslFilename.setText(BaseMessages.getString(PKG, "JobEntryXSLT.xslFilename.Label"));
  		props.setLook(wlxslFilename);
 		fdlxslFilename=new FormData();
 		fdlxslFilename.left = new FormAttachment(0, 0);
@@ -244,7 +246,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		wlxslFilename.setLayoutData(fdlxslFilename);
 		wbxslFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbxslFilename);
-		wbxslFilename.setText(Messages.getString("System.Button.Browse"));
+		wbxslFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbxslFilename=new FormData();
 		fdbxslFilename.right= new FormAttachment(100, 0);
 		fdbxslFilename.top  = new FormAttachment(wxmlFilename, 0);
@@ -293,7 +295,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		
 		 // XSLTFactory
         wlXSLTFactory=new Label(shell, SWT.RIGHT);
-        wlXSLTFactory.setText(Messages.getString("JobEntryXSLT.XSLTFactory.Label"));
+        wlXSLTFactory.setText(BaseMessages.getString(PKG, "JobEntryXSLT.XSLTFactory.Label"));
         props.setLook(wlXSLTFactory);
         fdlXSLTFactory=new FormData();
         fdlXSLTFactory.left = new FormAttachment(0, 0);
@@ -316,7 +318,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		// Browse Source folders button ...
 		wbOutputDirectory=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbOutputDirectory);
-		wbOutputDirectory.setText(Messages.getString("System.Button.Browse"));
+		wbOutputDirectory.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbOutputDirectory=new FormData();
 		fdbOutputDirectory.right= new FormAttachment(100, 0);
 		fdbOutputDirectory.top  = new FormAttachment(wXSLTFactory, margin);
@@ -351,7 +353,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		
 		// OutputFilename
 		wlOutputFilename = new Label(shell, SWT.RIGHT);
-		wlOutputFilename.setText(Messages.getString("JobEntryXSLT.OutputFilename.Label"));
+		wlOutputFilename.setText(BaseMessages.getString(PKG, "JobEntryXSLT.OutputFilename.Label"));
 		props.setLook(wlOutputFilename);
 		fdlOutputFilename = new FormData();
 		fdlOutputFilename.left = new FormAttachment(0, 0);
@@ -383,7 +385,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 
 		//IF File Exists
 		wlIfFileExists = new Label(shell, SWT.RIGHT);
-		wlIfFileExists.setText(Messages.getString("JobEntryXSLT.IfFileExists.Label"));
+		wlIfFileExists.setText(BaseMessages.getString(PKG, "JobEntryXSLT.IfFileExists.Label"));
 		props.setLook(wlIfFileExists);
 		fdlIfFileExists = new FormData();
 		fdlIfFileExists.left = new FormAttachment(0, 0);
@@ -391,9 +393,9 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		fdlIfFileExists.top = new FormAttachment(wOutputFilename, 2*margin);
 		wlIfFileExists.setLayoutData(fdlIfFileExists);
 		wIfFileExists = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wIfFileExists.add(Messages.getString("JobEntryXSLT.Create_NewFile_IfFileExists.Label"));
-		wIfFileExists.add(Messages.getString("JobEntryXSLT.Do_Nothing_IfFileExists.Label"));
-		wIfFileExists.add(Messages.getString("JobEntryXSLT.Fail_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobEntryXSLT.Create_NewFile_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobEntryXSLT.Do_Nothing_IfFileExists.Label"));
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobEntryXSLT.Fail_IfFileExists.Label"));
 		wIfFileExists.select(1); // +1: starts at -1
 
 		props.setLook(wIfFileExists);
@@ -416,7 +418,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 	     // /
 	    wFileResult = new Group(shell, SWT.SHADOW_NONE);
 	    props.setLook(wFileResult);
-	    wFileResult.setText(Messages.getString("JobEntryXSLT.FileResult.Group.Label"));
+	    wFileResult.setText(BaseMessages.getString(PKG, "JobEntryXSLT.FileResult.Group.Label"));
 
 	    FormLayout groupLayout = new FormLayout();
 	    groupLayout.marginWidth = 10;
@@ -427,7 +429,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 	      
 	  	//Add file to result
 		wlAddFileToResult = new Label(wFileResult, SWT.RIGHT);
-		wlAddFileToResult.setText(Messages.getString("JobEntryXSLT.AddFileToResult.Label"));
+		wlAddFileToResult.setText(BaseMessages.getString(PKG, "JobEntryXSLT.AddFileToResult.Label"));
 		props.setLook(wlAddFileToResult);
 		fdlAddFileToResult = new FormData();
 		fdlAddFileToResult.left = new FormAttachment(0, 0);
@@ -436,7 +438,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		wlAddFileToResult.setLayoutData(fdlAddFileToResult);
 		wAddFileToResult = new Button(wFileResult, SWT.CHECK);
 		props.setLook(wAddFileToResult);
-		wAddFileToResult.setToolTipText(Messages.getString("JobEntryXSLT.AddFileToResult.Tooltip"));
+		wAddFileToResult.setToolTipText(BaseMessages.getString(PKG, "JobEntryXSLT.AddFileToResult.Tooltip"));
 		fdAddFileToResult = new FormData();
 		fdAddFileToResult.left = new FormAttachment(middle, 0);
 		fdAddFileToResult.top = new FormAttachment(wIfFileExists, margin);
@@ -462,9 +464,9 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFileResult);
 
@@ -548,8 +550,8 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 	   if(Const.isEmpty(wName.getText())) 
          {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
          }

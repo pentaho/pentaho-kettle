@@ -28,6 +28,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.SortedFileOutputStream;
+import org.pentaho.di.i18n.BaseMessages;
 
 
 /**
@@ -39,6 +40,8 @@ import org.pentaho.di.core.util.SortedFileOutputStream;
  */
 public class Props implements Cloneable
 {
+	private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	protected static Props props;
 	
 	public static final String STRING_FONT_FIXED_NAME  = "FontFixedName";
@@ -292,20 +295,20 @@ public class Props implements Cloneable
 			try 
 			{
 				out = new FileOutputStream(file);
-				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line01", Const.VERSION)+Const.CR).getBytes());
-				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line02")+Const.CR).getBytes());
-				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line03")+Const.CR).getBytes());
-				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line04")+Const.CR).getBytes());
-				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line05")+Const.CR).getBytes());
-				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line06")+Const.CR).getBytes());
-				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line07")+Const.CR).getBytes());
-				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line08")+Const.CR).getBytes());
-				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line09")+Const.CR).getBytes());
-				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line10")+Const.CR).getBytes());
+				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line01", Const.VERSION)+Const.CR).getBytes());
+				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line02")+Const.CR).getBytes());
+				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line03")+Const.CR).getBytes());
+				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line04")+Const.CR).getBytes());
+				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line05")+Const.CR).getBytes());
+				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line06")+Const.CR).getBytes());
+				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line07")+Const.CR).getBytes());
+				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line08")+Const.CR).getBytes());
+				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line09")+Const.CR).getBytes());
+				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line10")+Const.CR).getBytes());
 			} 
 			catch (IOException e) 
 			{
-				log.logError(Const.KETTLE_PROPERTIES, Messages.getString("Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile), e);
+				log.logError(Const.KETTLE_PROPERTIES, BaseMessages.getString(PKG, "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile), e);
 			}
 			finally 
 			{
@@ -313,7 +316,7 @@ public class Props implements Cloneable
 					try {
 						out.close();
 					} catch (IOException e) {
-						log.logError(Const.KETTLE_PROPERTIES, Messages.getString("Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile), e);
+						log.logError(Const.KETTLE_PROPERTIES, BaseMessages.getString(PKG, "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile), e);
 					}
 				}
 			}
@@ -383,7 +386,7 @@ public class Props implements Cloneable
             fos.setLogger(log);
 			properties.store(fos, "Kettle Properties file");
             fos.close();
-            log.logDetailed(toString(), org.pentaho.di.core.Messages.getString("Spoon.Log.SaveProperties"));
+            log.logDetailed(toString(), BaseMessages.getString(PKG, "Spoon.Log.SaveProperties"));
 		}
 		catch(IOException e)
 		{
@@ -394,12 +397,12 @@ public class Props implements Cloneable
             if (spoonRc.isHidden() && filename.indexOf('\\') != -1)
             {
                 // If filename contains a backslash we consider Spoon as running on Windows
-                log.logError(toString(), org.pentaho.di.core.Messages.getString("Spoon.Log.SavePropertiesFailedWindowsBugAttr", filename));
+                log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.SavePropertiesFailedWindowsBugAttr", filename));
             }
             else
             {
                 // Another reason why the save failed
-                log.logError(toString(), org.pentaho.di.core.Messages.getString("Spoon.Log.SavePropertiesFailed") + e.getMessage());
+                log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.SavePropertiesFailed") + e.getMessage());
             }
 		}
 	}

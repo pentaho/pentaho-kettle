@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.xul.swt.toolbar.Toolbar;
@@ -45,6 +46,8 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
 
 public class SpoonBrowser implements TabItemInterface
 {
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final LogWriter log = LogWriter.getInstance();
 	
 	private static final String XUL_FILE_BROWSER_TOOLBAR = "ui/browser-toolbar.xul";
@@ -89,7 +92,7 @@ public class SpoonBrowser implements TabItemInterface
         final XulToolbarButton back = toolbar.getButtonById("browse-back");
         back.setEnable(false);
         final XulToolbarButton forward = toolbar.getButtonById("browse-forward");
-        forward.setText(Messages.getString("SpoonBrowser.Dialog.Forward"));
+        forward.setText(BaseMessages.getString(PKG, "SpoonBrowser.Dialog.Forward"));
         forward.setEnable(false);
         
         browser = new Browser(composite, SWT.NONE);
@@ -137,7 +140,7 @@ public class SpoonBrowser implements TabItemInterface
 			addToolBarListeners();
 		} catch (Throwable t ) {
 			log.logError(toString(), Const.getStackTracker(t));
-			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_BROWSER_TOOLBAR), new Exception(t));
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_BROWSER_TOOLBAR), new Exception(t));
 		}
 	}
 
@@ -162,8 +165,8 @@ public class SpoonBrowser implements TabItemInterface
 
 		} catch (Throwable t ) {
 			t.printStackTrace();
-			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
-					Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_BROWSER_TOOLBAR_PROPERTIES), new Exception(t));
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
+					BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_BROWSER_TOOLBAR_PROPERTIES), new Exception(t));
 		}
 	}
 	

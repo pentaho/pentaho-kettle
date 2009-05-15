@@ -27,6 +27,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -43,6 +44,8 @@ import org.w3c.dom.Node;
  */
 public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = AggregateRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public final static int TYPE_AGGREGATE_NONE       = 0;
 	public final static int TYPE_AGGREGATE_SUM        = 1;
 	public final static int TYPE_AGGREGATE_AVERAGE    = 2;
@@ -57,16 +60,16 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 	 
 	public final static String aggregateTypeDesc[] =
 		{
-			Messages.getString("AggregateRowsMeta.AggregateTypeDesc.NONE"),     //$NON-NLS-1$
-			Messages.getString("AggregateRowsMeta.AggregateTypeDesc.SUM"),     //$NON-NLS-1$
-            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.AVERAGE"),//$NON-NLS-1$
-            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.COUNT"), //$NON-NLS-1$
-            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.MIN"),  //$NON-NLS-1$
-            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.MAX"),          //$NON-NLS-1$
-            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.FIRST"),        //$NON-NLS-1$
-            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.LAST"),        //$NON-NLS-1$
-            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.FIRST_NULL"), //$NON-NLS-1$
-            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.LAST_NULL"), //$NON-NLS-1$
+			BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.NONE"),     //$NON-NLS-1$
+			BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.SUM"),     //$NON-NLS-1$
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.AVERAGE"),//$NON-NLS-1$
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.COUNT"), //$NON-NLS-1$
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.MIN"),  //$NON-NLS-1$
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.MAX"),          //$NON-NLS-1$
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.FIRST"),        //$NON-NLS-1$
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.LAST"),        //$NON-NLS-1$
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.FIRST_NULL"), //$NON-NLS-1$
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.LAST_NULL"), //$NON-NLS-1$
 		};
 	
 	private  String fieldName[];
@@ -198,7 +201,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("AggregateRowsMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "AggregateRowsMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -212,8 +215,8 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (i=0;i<nrfields;i++)
 		{
-			fieldName[i]     = Messages.getString("AggregateRowsMeta.Fieldname.Label"); //$NON-NLS-1$
-			fieldNewName[i]  = Messages.getString("AggregateRowsMeta.NewName.Label"); //$NON-NLS-1$
+			fieldName[i]     = BaseMessages.getString(PKG, "AggregateRowsMeta.Fieldname.Label"); //$NON-NLS-1$
+			fieldNewName[i]  = BaseMessages.getString(PKG, "AggregateRowsMeta.NewName.Label"); //$NON-NLS-1$
 			aggregateType[i] = TYPE_AGGREGATE_SUM; 
 		}
 	}
@@ -287,7 +290,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("AggregateRowsMeta.Exception.UnexpectedErrorWhileReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "AggregateRowsMeta.Exception.UnexpectedErrorWhileReadingStepInfo"), e); //$NON-NLS-1$
 		}
 
 	}
@@ -305,7 +308,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(KettleException e)
 		{
-			throw new KettleException(Messages.getString("AggregateRowsMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "AggregateRowsMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
 	
@@ -318,7 +321,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			boolean error_found=false;
 			// See if all fields are available in the input stream...
-			message=Messages.getString("AggregateRowsMeta.CheckResult.FieldsNotFound.DialogMessage")+Const.CR; //$NON-NLS-1$
+			message=BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.FieldsNotFound.DialogMessage")+Const.CR; //$NON-NLS-1$
 			for (int i=0;i<fieldName.length;i++)
 			{
 				if (prev.indexOfValue(fieldName[i])<0)
@@ -333,13 +336,13 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			else
 			{
-				message = Messages.getString("AggregateRowsMeta.CheckResult.AllFieldsOK.DialogMessage"); //$NON-NLS-1$
+				message = BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.AllFieldsOK.DialogMessage"); //$NON-NLS-1$
 				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, message, stepMeta);
 			}
 			remarks.add(cr);
 			
 			// See which fields are dropped: comment on it!
-			message=Messages.getString("AggregateRowsMeta.CheckResult.IgnoredFields.DialogMessage")+Const.CR; //$NON-NLS-1$
+			message=BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.IgnoredFields.DialogMessage")+Const.CR; //$NON-NLS-1$
 			error_found=false;
 			
 			for (int i=0;i<prev.size();i++)
@@ -365,26 +368,26 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			else
 			{
-				message = Messages.getString("AggregateRowsMeta.CheckResult.AllFieldsUsed.DialogMessage"); //$NON-NLS-1$
+				message = BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.AllFieldsUsed.DialogMessage"); //$NON-NLS-1$
 				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, message, stepMeta);
 			}
 			remarks.add(cr);
 		}
 		else
 		{
-			message = Messages.getString("AggregateRowsMeta.CheckResult.NothingSpecified.DialogMessage"); //$NON-NLS-1$
+			message = BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.NothingSpecified.DialogMessage"); //$NON-NLS-1$
 			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, message, stepMeta);
 			remarks.add(cr);
 		}
 
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("AggregateRowsMeta.CheckResult.StepReceiveInfo.DialogMessage"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.StepReceiveInfo.DialogMessage"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("AggregateRowsMeta.CheckResult.NoInputReceived.DialogMessage"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.NoInputReceived.DialogMessage"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		

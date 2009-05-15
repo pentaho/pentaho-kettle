@@ -21,7 +21,6 @@
 package org.pentaho.di.ui.job.entries.deletefolders;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -39,23 +38,24 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.deletefolders.JobEntryDeleteFolders;
+import org.pentaho.di.job.entry.JobEntryDialogInterface;
+import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
-import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.deletefolders.JobEntryDeleteFolders;
-import org.pentaho.di.job.entries.deletefolders.Messages;
 
 /**
  * This dialog allows you to edit the Delete Folders job entry settings.
@@ -65,6 +65,7 @@ import org.pentaho.di.job.entries.deletefolders.Messages;
  */
 public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryDeleteFolders.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
 	private Label        wlName;
 	private Text         wName;
@@ -118,7 +119,7 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
         jobEntry = (JobEntryDeleteFolders) jobEntryInt;
 
 		if (this.jobEntry.getName() == null) 
-			this.jobEntry.setName(Messages.getString("JobDeleteFolders.Name.Default"));
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobDeleteFolders.Name.Default"));
     }
 
 	public JobEntryInterface open()
@@ -144,14 +145,14 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobDeleteFolders.Title"));
+		shell.setText(BaseMessages.getString(PKG, "JobDeleteFolders.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobDeleteFolders.Name.Label"));
+		wlName.setText(BaseMessages.getString(PKG, "JobDeleteFolders.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -174,7 +175,7 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 
 		wSettings = new Group(shell, SWT.SHADOW_NONE);
 		props.setLook(wSettings);
-		wSettings.setText(Messages.getString("JobDeleteFolders.Settings.Label"));
+		wSettings.setText(BaseMessages.getString(PKG, "JobDeleteFolders.Settings.Label"));
 
 		FormLayout groupLayout = new FormLayout();
 		groupLayout.marginWidth = 10;
@@ -182,7 +183,7 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 		wSettings.setLayout(groupLayout);
 	
 		wlPrevious = new Label(wSettings, SWT.RIGHT);
-		wlPrevious.setText(Messages.getString("JobDeleteFolders.Previous.Label"));
+		wlPrevious.setText(BaseMessages.getString(PKG, "JobDeleteFolders.Previous.Label"));
 		props.setLook(wlPrevious);
 		fdlPrevious = new FormData();
 		fdlPrevious.left = new FormAttachment(0, 0);
@@ -192,7 +193,7 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 		wPrevious = new Button(wSettings, SWT.CHECK);
 		props.setLook(wPrevious);
 		wPrevious.setSelection(jobEntry.argFromPrevious);
-		wPrevious.setToolTipText(Messages.getString("JobDeleteFolders.Previous.Tooltip"));
+		wPrevious.setToolTipText(BaseMessages.getString(PKG, "JobDeleteFolders.Previous.Tooltip"));
 		fdPrevious = new FormData();
 		fdPrevious.left = new FormAttachment(middle, 0);
 		fdPrevious.top = new FormAttachment(wName, margin );
@@ -222,7 +223,7 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 	     // /
 	    wSuccessOn= new Group(shell, SWT.SHADOW_NONE);
 	    props.setLook(wSuccessOn);
-	    wSuccessOn.setText(Messages.getString("JobDeleteFolders.SuccessOn.Group.Label"));
+	    wSuccessOn.setText(BaseMessages.getString(PKG, "JobDeleteFolders.SuccessOn.Group.Label"));
 
 	    FormLayout successongroupLayout = new FormLayout();
 	    successongroupLayout.marginWidth = 10;
@@ -233,7 +234,7 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 
 	    //Success Condition
 	  	wlSuccessCondition = new Label(wSuccessOn, SWT.RIGHT);
-	  	wlSuccessCondition.setText(Messages.getString("JobDeleteFolders.SuccessCondition.Label"));
+	  	wlSuccessCondition.setText(BaseMessages.getString(PKG, "JobDeleteFolders.SuccessCondition.Label"));
 	  	props.setLook(wlSuccessCondition);
 	  	fdlSuccessCondition = new FormData();
 	  	fdlSuccessCondition.left = new FormAttachment(0, 0);
@@ -241,9 +242,9 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 	  	fdlSuccessCondition.top = new FormAttachment(wSettings, margin);
 	  	wlSuccessCondition.setLayoutData(fdlSuccessCondition);
 	  	wSuccessCondition = new CCombo(wSuccessOn, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-	  	wSuccessCondition.add(Messages.getString("JobDeleteFolders.SuccessWhenAllWorksFine.Label"));
-	  	wSuccessCondition.add(Messages.getString("JobDeleteFolders.SuccessWhenAtLeat.Label"));
-	  	wSuccessCondition.add(Messages.getString("JobDeleteFolders.SuccessWhenErrorsLessThan.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobDeleteFolders.SuccessWhenAllWorksFine.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobDeleteFolders.SuccessWhenAtLeat.Label"));
+	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobDeleteFolders.SuccessWhenErrorsLessThan.Label"));
 	  	
 	  	wSuccessCondition.select(0); // +1: starts at -1
 	  	
@@ -264,7 +265,7 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 
 		// Success when number of errors less than
 		wlNrErrorsLessThan= new Label(wSuccessOn, SWT.RIGHT);
-		wlNrErrorsLessThan.setText(Messages.getString("JobDeleteFolders.LimitFolders.Label"));
+		wlNrErrorsLessThan.setText(BaseMessages.getString(PKG, "JobDeleteFolders.LimitFolders.Label"));
 		props.setLook(wlNrErrorsLessThan);
 		fdlNrErrorsLessThan= new FormData();
 		fdlNrErrorsLessThan.left = new FormAttachment(0, 0);
@@ -273,8 +274,7 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 		wlNrErrorsLessThan.setLayoutData(fdlNrErrorsLessThan);
 		
 		
-		wLimitFolders= new TextVar(jobMeta,wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobDeleteFolders.LimitFolders.Tooltip"));
+		wLimitFolders= new TextVar(jobMeta,wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(PKG, "JobDeleteFolders.LimitFolders.Tooltip"));
 		props.setLook(wLimitFolders);
 		wLimitFolders.addModifyListener(lsMod);
 		fdNrErrorsLessThan= new FormData();
@@ -295,7 +295,7 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 		
 		// Filename line
 		wlFilename=new Label(shell, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("JobDeleteFolders.Filename.Label"));
+		wlFilename.setText(BaseMessages.getString(PKG, "JobDeleteFolders.Filename.Label"));
 		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -308,7 +308,7 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 		// Browse Source folders button ...
 		wbDirectory=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbDirectory);
-		wbDirectory.setText(Messages.getString("JobDeleteFolders.BrowseFolders.Label"));
+		wbDirectory.setText(BaseMessages.getString(PKG, "JobDeleteFolders.BrowseFolders.Label"));
 		fdbDirectory=new FormData();
 		fdbDirectory.right= new FormAttachment(100, -margin);
 		fdbDirectory.top  = new FormAttachment(wSuccessOn, margin);
@@ -342,7 +342,7 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 
 		wbaFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbaFilename);
-		wbaFilename.setText(Messages.getString("JobDeleteFolders.FilenameAdd.Button"));
+		wbaFilename.setText(BaseMessages.getString(PKG, "JobDeleteFolders.FilenameAdd.Button"));
 		fdbaFilename=new FormData();
 		fdbaFilename.right= new FormAttachment(wbDirectory, -margin);
 		fdbaFilename.top  = new FormAttachment(wSuccessOn, margin);
@@ -370,8 +370,8 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 		// Buttons to the right of the screen...
 		wbdFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbdFilename);
-		wbdFilename.setText(Messages.getString("JobDeleteFolders.FilenameDelete.Button"));
-		wbdFilename.setToolTipText(Messages.getString("JobDeleteFolders.FilenameDelete.Tooltip"));
+		wbdFilename.setText(BaseMessages.getString(PKG, "JobDeleteFolders.FilenameDelete.Button"));
+		wbdFilename.setToolTipText(BaseMessages.getString(PKG, "JobDeleteFolders.FilenameDelete.Tooltip"));
 		fdbdFilename=new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
 		fdbdFilename.top  = new FormAttachment (wFilename, 40);
@@ -379,8 +379,8 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 
 		wbeFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbeFilename);
-		wbeFilename.setText(Messages.getString("JobDeleteFolders.FilenameEdit.Button"));
-		wbeFilename.setToolTipText(Messages.getString("JobDeleteFolders.FilenameEdit.Tooltip"));
+		wbeFilename.setText(BaseMessages.getString(PKG, "JobDeleteFolders.FilenameEdit.Button"));
+		wbeFilename.setToolTipText(BaseMessages.getString(PKG, "JobDeleteFolders.FilenameEdit.Tooltip"));
 		fdbeFilename=new FormData();
 		fdbeFilename.right = new FormAttachment(100, 0);
 		fdbeFilename.left = new FormAttachment(wbdFilename, 0, SWT.LEFT);
@@ -388,7 +388,7 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 		wbeFilename.setLayoutData(fdbeFilename);
 
 		wlFields = new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("JobDeleteFolders.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "JobDeleteFolders.Fields.Label"));
 		props.setLook(wlFields);
 		fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -405,11 +405,11 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 
 		ColumnInfo[] colinf=new ColumnInfo[]
 			{
-				new ColumnInfo(Messages.getString("JobDeleteFolders.Fields.Argument.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobDeleteFolders.Fields.Argument.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
 			};
 
 		colinf[0].setUsingVariables(true);
-		colinf[0].setToolTip(Messages.getString("JobDeleteFolders.Fields.Column"));
+		colinf[0].setToolTip(BaseMessages.getString(PKG, "JobDeleteFolders.Fields.Column"));
 
 		wFields = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
 			FieldsRows, lsMod, props);
@@ -469,9 +469,9 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 		});
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFields);
 
@@ -581,8 +581,8 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 	   if(Const.isEmpty(wName.getText())) 
         {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
         }

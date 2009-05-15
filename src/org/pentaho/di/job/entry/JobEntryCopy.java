@@ -28,7 +28,6 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobEntryLoader;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.repository.Repository;
@@ -237,7 +236,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 			// OK, the entry is saved.
 			// Get the entry type...
-			long id_jobentry_type = rep.getJobEntryTypeID(entry.getTypeCode());
+			long id_jobentry_type = rep.getJobEntryTypeID(entry.getTypeId());
 
 			// Oops, not found: update the repository!
 			if (id_jobentry_type < 0)
@@ -245,7 +244,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 				rep.updateJobEntryTypes();
 
 				// Try again!
-				id_jobentry_type = rep.getJobEntryTypeID(entry.getTypeCode());
+				id_jobentry_type = rep.getJobEntryTypeID(entry.getTypeId());
 			}
 
 			// Save the entry copy..
@@ -333,20 +332,14 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		return entry;
 	}
 
-	public JobEntryType getJobEntryType()
-	{
-		return entry.getJobEntryType();
-	}
-
 	/**
 	 * @return entry in JobEntryInterface.typeCode[] for native jobs,
 	 *         entry.getTypeCode() for plugins
 	 */
 	public String getTypeDesc()
 	{
-		if (getJobEntryType() == JobEntryType.NONE)
-			return entry.getTypeCode();
-		return getTypeDesc(entry);
+		JobPlugin plugin = JobEntryLoader.getInstance().findJobPluginWithID(entry.getTypeId());
+		return plugin.getDescription();
 	}
 
 	public void setLocation(int x, int y)
@@ -422,41 +415,6 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		return launchingInParallel;
 	}
 
-	public static final JobEntryType getType(String dsc)
-	{
-		if (dsc != null)
-		{
-			JobEntryType[] types = JobEntryType.values();
-
-			for (JobEntryType type : types)
-			{
-				if (type.getTypeCode().equalsIgnoreCase(dsc))
-					return type;
-			}
-			// Try the long description!
-			for (JobEntryType type : types)
-			{
-				if (type.getDescription().equalsIgnoreCase(dsc))
-					return type;
-			}
-		}
-
-		return JobEntryType.NONE;
-	}
-
-	public static final String getTypeDesc(int ty)
-	{
-		if (ty > 0 && ty < JobEntryType.values().length)
-			return JobEntryType.values()[ty].toString();
-
-		return JobEntryType.NONE.toString();
-	}
-
-	public static final String getTypeDesc(JobEntryInterface ty)
-	{
-		return ty.getJobEntryType().toString();
-	}
-
 	public void setSelected(boolean sel)
 	{
 		selected = sel;
@@ -494,12 +452,12 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 	public boolean isTransformation()
 	{
-		return getJobEntryType() == JobEntryType.TRANS;
+		return entry.isTransformation();
 	}
 
 	public boolean isJob()
 	{
-		return getJobEntryType() == JobEntryType.JOB;
+		return entry.isJob();
 	}
 
 	public boolean evaluates()
@@ -518,22 +476,17 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 	public boolean isEvaluation()
 	{
-		return getJobEntryType() == JobEntryType.EVAL;
+		return entry.isEvaluation();
 	}
 
 	public boolean isMail()
 	{
-		return getJobEntryType() == JobEntryType.MAIL;
-	}
-
-	public boolean isSQL()
-	{
-		return getJobEntryType() == JobEntryType.MAIL;
+		return entry.isMail();
 	}
 
 	public boolean isSpecial()
 	{
-		return getJobEntryType() == JobEntryType.SPECIAL;
+		return entry.isSpecial();
 	}
 
 	public String toString()

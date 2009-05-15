@@ -19,7 +19,6 @@ package org.pentaho.di.ui.job.entries.getpop;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -35,21 +34,22 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
+import org.pentaho.di.job.entries.getpop.JobEntryGetPOP;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.getpop.JobEntryGetPOP;
-import org.pentaho.di.job.entries.getpop.Messages;
 
 
 /**
@@ -60,6 +60,7 @@ import org.pentaho.di.job.entries.getpop.Messages;
  */
 public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static Class<?> PKG = JobEntryGetPOP.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     private Label wlName;
 
@@ -128,7 +129,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryGetPOP) jobEntryInt;
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobGetPOP.Name.Default"));
+            this.jobEntry.setName(BaseMessages.getString(PKG, "JobGetPOP.Name.Default"));
     }
 
     public JobEntryInterface open()
@@ -154,14 +155,14 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobGetPOP.Title"));
+        shell.setText(BaseMessages.getString(PKG, "JobGetPOP.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("JobGetPOP.Name.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "JobGetPOP.Name.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
@@ -180,7 +181,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
 		// ServerName line
 		wlServerName=new Label(shell, SWT.RIGHT);
-		wlServerName.setText(Messages.getString("JobGetPOP.Server.Label"));
+		wlServerName.setText(BaseMessages.getString(PKG, "JobGetPOP.Server.Label"));
 		props.setLook(wlServerName);
 		fdlServerName=new FormData();
 		fdlServerName.left = new FormAttachment(0, 0);
@@ -199,7 +200,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
 		// UserName line
 		wlUserName=new Label(shell, SWT.RIGHT);
-		wlUserName.setText(Messages.getString("JobGetPOP.Username.Label"));
+		wlUserName.setText(BaseMessages.getString(PKG, "JobGetPOP.Username.Label"));
 		props.setLook(wlUserName);
 		fdlUserName=new FormData();
 		fdlUserName.left = new FormAttachment(0, 0);
@@ -208,7 +209,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		wlUserName.setLayoutData(fdlUserName);
 		wUserName=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wUserName);
-		wUserName.setToolTipText(Messages.getString("JobGetPOP.Username.Tooltip"));
+		wUserName.setToolTipText(BaseMessages.getString(PKG, "JobGetPOP.Username.Tooltip"));
 		wUserName.addModifyListener(lsMod);
 		fdUserName=new FormData();
 		fdUserName.left = new FormAttachment(middle, 0);
@@ -219,7 +220,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
 		// Password line
 		wlPassword=new Label(shell, SWT.RIGHT);
-		wlPassword.setText(Messages.getString("JobGetPOP.Password.Label"));
+		wlPassword.setText(BaseMessages.getString(PKG, "JobGetPOP.Password.Label"));
 		props.setLook(wlPassword);
 		fdlPassword=new FormData();
 		fdlPassword.left = new FormAttachment(0, 0);
@@ -248,7 +249,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
 		// USE POP3 connection with SSL
 		wlUseSSL=new Label(shell, SWT.RIGHT);
-		wlUseSSL.setText(Messages.getString("JobGetPOP.UseSSLMails.Label"));
+		wlUseSSL.setText(BaseMessages.getString(PKG, "JobGetPOP.UseSSLMails.Label"));
 		props.setLook(wlUseSSL);
 		fdlUseSSL=new FormData();
 		fdlUseSSL.left = new FormAttachment(0, 0);
@@ -258,7 +259,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		wUseSSL=new Button(shell, SWT.CHECK);
 		props.setLook(wUseSSL);
 		fdUseSSL=new FormData();
-		wUseSSL.setToolTipText(Messages.getString("JobGetPOP.UseSSLMails.Tooltip"));
+		wUseSSL.setToolTipText(BaseMessages.getString(PKG, "JobGetPOP.UseSSLMails.Tooltip"));
 		fdUseSSL.left = new FormAttachment(middle, 0);
 		fdUseSSL.top  = new FormAttachment(wPassword, margin);
 		fdUseSSL.right= new FormAttachment(100, 0);
@@ -276,7 +277,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
 		// port
 		wlSSLPort=new Label(shell, SWT.RIGHT);
-		wlSSLPort.setText(Messages.getString("JobGetPOP.SSLPort.Label"));
+		wlSSLPort.setText(BaseMessages.getString(PKG, "JobGetPOP.SSLPort.Label"));
 		props.setLook(wlSSLPort);
 		fdlSSLPort=new FormData();
 		fdlSSLPort.left = new FormAttachment(0, 0);
@@ -285,7 +286,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		wlSSLPort.setLayoutData(fdlSSLPort);
 		wSSLPort=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSSLPort);
-		wSSLPort.setToolTipText(Messages.getString("JobGetPOP.SSLPort.Tooltip"));
+		wSSLPort.setToolTipText(BaseMessages.getString(PKG, "JobGetPOP.SSLPort.Tooltip"));
 		wSSLPort.addModifyListener(lsMod);
 		fdSSLPort=new FormData();
 		fdSSLPort.left = new FormAttachment(middle, 0);
@@ -296,7 +297,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
 		// OutputDirectory line
 		wlOutputDirectory=new Label(shell, SWT.RIGHT);
-		wlOutputDirectory.setText(Messages.getString("JobGetPOP.OutputDirectory.Label"));
+		wlOutputDirectory.setText(BaseMessages.getString(PKG, "JobGetPOP.OutputDirectory.Label"));
 		props.setLook(wlOutputDirectory);
 		fdlOutputDirectory=new FormData();
 		fdlOutputDirectory.left = new FormAttachment(0, 0);
@@ -305,7 +306,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		wlOutputDirectory.setLayoutData(fdlOutputDirectory);
 		wOutputDirectory=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wOutputDirectory);
-		wOutputDirectory.setToolTipText(Messages.getString("JobGetPOP.OutputDirectory.Tooltip"));
+		wOutputDirectory.setToolTipText(BaseMessages.getString(PKG, "JobGetPOP.OutputDirectory.Tooltip"));
 		wOutputDirectory.addModifyListener(lsMod);
 		fdOutputDirectory=new FormData();
 		fdOutputDirectory.left = new FormAttachment(middle, 0);
@@ -315,7 +316,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
 		// Filename pattern line
 		wlFilenamePattern=new Label(shell, SWT.RIGHT);
-		wlFilenamePattern.setText(Messages.getString("JobGetPOP.FilenamePattern.Label"));
+		wlFilenamePattern.setText(BaseMessages.getString(PKG, "JobGetPOP.FilenamePattern.Label"));
 		props.setLook(wlFilenamePattern);
 		fdlFilenamePattern=new FormData();
 		fdlFilenamePattern.left = new FormAttachment(0, 0);
@@ -324,7 +325,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		wlFilenamePattern.setLayoutData(fdlFilenamePattern);
 		wFilenamePattern=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wFilenamePattern);
-		wFilenamePattern.setToolTipText(Messages.getString("JobGetPOP.FilenamePattern.Tooltip"));
+		wFilenamePattern.setToolTipText(BaseMessages.getString(PKG, "JobGetPOP.FilenamePattern.Tooltip"));
 		wFilenamePattern.addModifyListener(lsMod);
 		fdFilenamePattern=new FormData();
 		fdFilenamePattern.left = new FormAttachment(middle, 0);
@@ -344,7 +345,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
 		// List of mails of retrieve
 		wlListmails = new Label(shell, SWT.RIGHT);
-		wlListmails.setText(Messages.getString("JobGetPOP.Listmails.Label"));
+		wlListmails.setText(BaseMessages.getString(PKG, "JobGetPOP.Listmails.Label"));
 		props.setLook(wlListmails);
 		fdlListmails = new FormData();
 		fdlListmails.left = new FormAttachment(0, 0);
@@ -352,9 +353,9 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		fdlListmails.top = new FormAttachment(wFilenamePattern, margin);
 		wlListmails.setLayoutData(fdlListmails);
 		wListmails = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wListmails.add(Messages.getString("JobGetPOP.RetrieveAllMails.Label"));
-		wListmails.add(Messages.getString("JobGetPOP.RetrieveUnreadMails.Label"));
-		wListmails.add(Messages.getString("JobGetPOP.RetrieveFirstMails.Label"));
+		wListmails.add(BaseMessages.getString(PKG, "JobGetPOP.RetrieveAllMails.Label"));
+		wListmails.add(BaseMessages.getString(PKG, "JobGetPOP.RetrieveUnreadMails.Label"));
+		wListmails.add(BaseMessages.getString(PKG, "JobGetPOP.RetrieveFirstMails.Label"));
 		wListmails.select(0); // +1: starts at -1
 
 		props.setLook(wListmails);
@@ -376,7 +377,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
 		// Retieve the first ... mails
 		wlFirstmails = new Label(shell, SWT.RIGHT);
-		wlFirstmails.setText(Messages.getString("JobGetPOP.Firstmails.Label"));
+		wlFirstmails.setText(BaseMessages.getString(PKG, "JobGetPOP.Firstmails.Label"));
 		props.setLook(wlFirstmails);
 		fdlFirstmails = new FormData();
 		fdlFirstmails.left = new FormAttachment(0, 0);
@@ -395,7 +396,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
 		// Delete mails after retrieval...
 		wlDelete=new Label(shell, SWT.RIGHT);
-		wlDelete.setText(Messages.getString("JobGetPOP.DeleteMails.Label"));
+		wlDelete.setText(BaseMessages.getString(PKG, "JobGetPOP.DeleteMails.Label"));
 		props.setLook(wlDelete);
 		fdlDelete=new FormData();
 		fdlDelete.left = new FormAttachment(0, 0);
@@ -405,7 +406,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		wDelete=new Button(shell, SWT.CHECK);
 		props.setLook(wDelete);
 		fdDelete=new FormData();
-		wDelete.setToolTipText(Messages.getString("JobGetPOP.DeleteMails.Tooltip"));
+		wDelete.setToolTipText(BaseMessages.getString(PKG, "JobGetPOP.DeleteMails.Tooltip"));
 		fdDelete.left = new FormAttachment(middle, 0);
 		fdDelete.top  = new FormAttachment(wFirstmails, margin);
 		fdDelete.right= new FormAttachment(100, 0);
@@ -413,10 +414,10 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wDelete);
 
@@ -569,8 +570,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
  	   if(Const.isEmpty(wName.getText())) 
        {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
        }

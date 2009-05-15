@@ -20,10 +20,13 @@ import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileDoesNotExistValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
@@ -35,7 +38,6 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.createfile.JobEntryCreateFile;
 import org.pentaho.di.job.entry.JobEntryBase;
@@ -43,8 +45,6 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileType;
 
 
 /**
@@ -57,7 +57,7 @@ import org.apache.commons.vfs.FileType;
  */
 public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, JobEntryInterface
 {
-	private String foldername;
+    private String foldername;
 	private boolean failOfFolderExists;
 	
 	public JobEntryCreateFolder(String n)
@@ -66,17 +66,11 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 		foldername=null;
 		failOfFolderExists=true;
 		setID(-1L);
-		setJobEntryType(JobEntryType.CREATE_FOLDER);
 	}
 
 	public JobEntryCreateFolder()
 	{
 		this("");
-	}
-
-	public JobEntryCreateFolder(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()

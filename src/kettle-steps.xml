@@ -1,1471 +1,1005 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <steps>
-<!-- I commented this out because this is being loaded using the Step annotation.  Just to test it.
-	<step id="RowGenerator">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GenerateRows")
-		</description>
+
+    <!-- NOTE i18n arguments are : i18n package and key separated by colon (:)
+    --> 
+
+
+	<!--
+		I commented this out because this is being loaded using the Step
+		annotation. Just to test it. 
+	
+	  <step id="RowGenerator"> 
+	    <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GenerateRows</description>
 		<class-name>org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GenerateRows")
-		</tooltip>
-		<image-uri>ui/images/GEN.png</image-uri>
-	</step>
+		<category>i18n:org.pentaho.di.trans.step:i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GenerateRows</tooltip> 
+		<image-uri>ui/images/GEN.png</image-uri> 
+	  </step>
 	-->
 	<step id="Dummy">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Dummy")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Dummy</description>
 		<class-name>org.pentaho.di.trans.steps.dummytrans.DummyTransMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Dummy")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Dummy</tooltip>
 		<image-uri>ui/images/DUM.png</image-uri>
 	</step>
-	
+
 	<step id="Append">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Append")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Append</description>
 		<class-name>org.pentaho.di.trans.steps.append.AppendMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Append")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Append</tooltip>
 		<image-uri>ui/images/APP.png</image-uri>
-	</step>	
-	
+	</step>
+
 	<step id="TableInput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.TableInput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TableInput</description>
 		<class-name>org.pentaho.di.trans.steps.tableinput.TableInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.TableInput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TableInput</tooltip>
 		<image-uri>ui/images/TIP.png</image-uri>
 	</step>
-	
+
 	<step id="SocketReader">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SocketReader")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SocketReader</description>
 		<class-name>org.pentaho.di.trans.steps.socketreader.SocketReaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INLINE.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SocketReader")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Inline</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SocketReader</tooltip>
 		<image-uri>ui/images/SKR.png</image-uri>
 	</step>
-	
+
 	<step id="SocketWriter">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SocketWriter")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SocketWriter</description>
 		<class-name>org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INLINE.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SocketWriter")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Inline</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SocketWriter</tooltip>
 		<image-uri>ui/images/SKW.png</image-uri>
 	</step>
-	
+
 	<step id="SelectValues">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SelectValues")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SelectValues</description>
 		<class-name>org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SelectValues")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SelectValues</tooltip>
 		<image-uri>ui/images/SEL.png</image-uri>
 	</step>
-	
+
 	<step id="TextFileInput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.TextFileInput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TextFileInput</description>
 		<class-name>org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.TextInputFile")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TextInputFile</tooltip>
 		<image-uri>ui/images/TFI.png</image-uri>
 	</step>
-	
+
 	<step id="Calculator">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Caculator")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Caculator</description>
 		<class-name>org.pentaho.di.trans.steps.calculator.CalculatorMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Calculator")
-		</tooltip>Database join
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Calculator</tooltip>
+		Database join
 		<image-uri>ui/images/CLC.png</image-uri>
 	</step>
-	
+
 	<step id="Constant">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AddConstants")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AddConstants</description>
 		<class-name>org.pentaho.di.trans.steps.constant.ConstantMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Addconstants")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Addconstants</tooltip>
 		<image-uri>ui/images/CST.png</image-uri>
 	</step>
-	
+
 	<step id="Abort">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Abort")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Abort</description>
 		<class-name>org.pentaho.di.trans.steps.abort.AbortMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Abort")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Abort</tooltip>
 		<image-uri>ui/images/ABR.png</image-uri>
 	</step>
-	
+
 	<step id="Sequence">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AddSequence")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AddSequence</description>
 		<class-name>org.pentaho.di.trans.steps.addsequence.AddSequenceMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Addsequence")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Addsequence</tooltip>
 		<image-uri>ui/images/SEQ.png</image-uri>
 	</step>
-	
+
 	<step id="TableOutput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Output")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Output</description>
 		<class-name>org.pentaho.di.trans.steps.tableoutput.TableOutputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.TableOutput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TableOutput</tooltip>
 		<image-uri>ui/images/TOP.png</image-uri>
 	</step>
-	
+
 	<step id="InfobrightOutput">
-    <description>
-      ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.InfobrightOutput")
-    </description>
-    <class-name>org.pentaho.di.trans.steps.infobrightoutput.InfobrightLoaderMeta</class-name>
-    <category>ognl:@org.pentaho.di.trans.step.StepCategory@BULK.getName()</category>
-    <tooltip>
-      ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.InfobrightOutput")
-    </tooltip>
-    <image-uri>ui/images/IBL.png</image-uri>
-  </step>
-  
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.InfobrightOutput</description>
+		<class-name>org.pentaho.di.trans.steps.infobrightoutput.InfobrightLoaderMeta</class-name>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.InfobrightOutput</tooltip>
+		<image-uri>ui/images/IBL.png</image-uri>
+	</step>
+
 	<step id="SortRows">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SortRows")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SortRows</description>
 		<class-name>org.pentaho.di.trans.steps.sort.SortRowsMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Sortrows")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Sortrows</tooltip>
 		<image-uri>ui/images/SRT.png</image-uri>
 	</step>
-	
+
 	<step id="OraBulkLoader">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.OraBulkLoader")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.OraBulkLoader</description>
 		<class-name>org.pentaho.di.trans.steps.orabulkloader.OraBulkLoaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@BULK.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.OraBulkLoader")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.OraBulkLoader</tooltip>
 		<image-uri>ui/images/OBL.png</image-uri>
 	</step>
-	
+
 	<step id="Injector">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Injector")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Injector</description>
 		<class-name>org.pentaho.di.trans.steps.injector.InjectorMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INLINE.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Injector")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Inline</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Injector</tooltip>
 		<image-uri>ui/images/INJ.png</image-uri>
 	</step>
-	
+
 	<step id="FilterRows">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.FilterRows")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FilterRows</description>
 		<class-name>org.pentaho.di.trans.steps.filterrows.FilterRowsMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.FilterRows")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FilterRows</tooltip>
 		<image-uri>ui/images/FLT.png</image-uri>
 	</step>
-	
+
 	<step id="TextFileOutput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.TextFileOutput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TextFileOutput</description>
 		<class-name>org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.TextOutputFile")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TextOutputFile</tooltip>
 		<image-uri>ui/images/TFO.png</image-uri>
 	</step>
-	
+
 	<step id="SystemInfo">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetSystemInfo")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetSystemInfo</description>
 		<class-name>org.pentaho.di.trans.steps.systemdata.SystemDataMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GetSystemInfo")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetSystemInfo</tooltip>
 		<image-uri>ui/images/SYS.png</image-uri>
 	</step>
-	
+
 	<step id="StreamLookup">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.StreamLookup")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.StreamLookup</description>
 		<class-name>org.pentaho.di.trans.steps.streamlookup.StreamLookupMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Streamlookup")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Streamlookup</tooltip>
 		<image-uri>ui/images/SLU.png</image-uri>
 	</step>
-	
+
 	<step id="Unique">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.UniqueRows")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.UniqueRows</description>
 		<class-name>org.pentaho.di.trans.steps.uniquerows.UniqueRowsMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Uniquerows")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Uniquerows</tooltip>
 		<image-uri>ui/images/UNQ.png</image-uri>
 	</step>
-	
+
 	<step id="DBLookup">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DatabaseLookup")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.DatabaseLookup</description>
 		<class-name>org.pentaho.di.trans.steps.databaselookup.DatabaseLookupMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Databaselookup")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Databaselookup</tooltip>
 		<image-uri>ui/images/DLU.png</image-uri>
 	</step>
-	
+
 	<step id="DBJoin">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DatabaseJoin")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.DatabaseJoin</description>
 		<class-name>org.pentaho.di.trans.steps.databasejoin.DatabaseJoinMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Databasejoin")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Databasejoin</tooltip>
 		<image-uri>ui/images/DBJ.png</image-uri>
 	</step>
-	
+
 	<step id="DimensionLookup">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DimensionUpdate")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.DimensionUpdate</description>
 		<class-name>org.pentaho.di.trans.steps.dimensionlookup.DimensionLookupMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@DATA_WAREHOUSE.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Dimensionupdate")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.DataWarehouse</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Dimensionupdate</tooltip>
 		<image-uri>ui/images/DIM.png</image-uri>
 	</step>
-	
+
 	<step id="ExcelInput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ExcelInput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ExcelInput</description>
 		<class-name>org.pentaho.di.trans.steps.excelinput.ExcelInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ExcelInput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ExcelInput</tooltip>
 		<image-uri>ui/images/XLI.png</image-uri>
 	</step>
 
 	<step id="CombinationLookup">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CombinationUpdate")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CombinationUpdate</description>
 		<class-name>org.pentaho.di.trans.steps.combinationlookup.CombinationLookupMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@DATA_WAREHOUSE.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CombinationUpdate")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.DataWarehouse</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.CombinationUpdate</tooltip>
 		<image-uri>ui/images/CMB.png</image-uri>
 	</step>
-	
+
 	<step id="ScriptValueMod,ScriptValue">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.JavaScriptMod")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.JavaScriptMod</description>
 		<class-name>org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesMetaMod</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@SCRIPTING.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.JavaScriptValueMod")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.JavaScriptValueMod</tooltip>
 		<image-uri>ui/images/SCR_mod.png</image-uri>
 	</step>
-	
+
 	<step id="JoinRows">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.JoinRows")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.JoinRows</description>
 		<class-name>org.pentaho.di.trans.steps.joinrows.JoinRowsMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@JOINS.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.JoinRows")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Joins</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.JoinRows</tooltip>
 		<image-uri>ui/images/JRW.png</image-uri>
 	</step>
-	
+
 	<step id="Update">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Update")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Update</description>
 		<class-name>org.pentaho.di.trans.steps.update.UpdateMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Update")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Update</tooltip>
 		<image-uri>ui/images/UPD.png</image-uri>
 	</step>
-	
+
 	<step id="InsertUpdate">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.InsertOrUpdate")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.InsertOrUpdate</description>
 		<class-name>org.pentaho.di.trans.steps.insertupdate.InsertUpdateMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.InsertOrUpdate")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.InsertOrUpdate</tooltip>
 		<image-uri>ui/images/INU.png</image-uri>
 	</step>
-	
+
 	<step id="Delete">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Delete")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Delete</description>
 		<class-name>org.pentaho.di.trans.steps.delete.DeleteMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Delete")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Delete</tooltip>
 		<image-uri>ui/images/Delete.png</image-uri>
 	</step>
-	
+
 	<step id="MappingInput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MappingInput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MappingInput</description>
 		<class-name>org.pentaho.di.trans.steps.mappinginput.MappingInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@MAPPING.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.MappingInputSpecification")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Mapping</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MappingInputSpecification</tooltip>
 		<image-uri>ui/images/MPI.png</image-uri>
 	</step>
-	
+
 	<step id="Mapping">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MappingSubTransformation")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MappingSubTransformation</description>
 		<class-name>org.pentaho.di.trans.steps.mapping.MappingMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@MAPPING.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.MappingSubTransformation")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Mapping</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MappingSubTransformation</tooltip>
 		<image-uri>ui/images/MAP.png</image-uri>
 	</step>
-	
+
 	<step id="MappingOutput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MappingOutput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MappingOutput</description>
 		<class-name>org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@MAPPING.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.MappingOutputSpecification")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Mapping</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MappingOutputSpecification</tooltip>
 		<image-uri>ui/images/MPO.png</image-uri>
 	</step>
-	
+
 	<step id="SetVariable">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SetVariable")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SetVariable</description>
 		<class-name>org.pentaho.di.trans.steps.setvariable.SetVariableMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@JOB.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SetVariable")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Job</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SetVariable</tooltip>
 		<image-uri>ui/images/SVA.png</image-uri>
 	</step>
-	
+
 	<step id="GetVariable">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetVariable")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetVariable</description>
 		<class-name>org.pentaho.di.trans.steps.getvariable.GetVariableMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@JOB.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GetVariable")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Job</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetVariable</tooltip>
 		<image-uri>ui/images/GVA.png</image-uri>
 	</step>
-	
+
 	<step id="NullIf">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.NullIf")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.NullIf</description>
 		<class-name>org.pentaho.di.trans.steps.nullif.NullIfMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Nullif")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Nullif</tooltip>
 		<image-uri>ui/images/NUI.png</image-uri>
 	</step>
-	
+
 	<step id="ExecSQL">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ExcuteSQL")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ExcuteSQL</description>
 		<class-name>org.pentaho.di.trans.steps.sql.ExecSQLMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@SCRIPTING.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ExecuteSQL")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ExecuteSQL</tooltip>
 		<image-uri>ui/images/SQL.png</image-uri>
 	</step>
-	
+
 	<step id="RowsFromResult">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetRows")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetRows</description>
 		<class-name>org.pentaho.di.trans.steps.rowsfromresult.RowsFromResultMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@JOB.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GetRowsFromResult")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Job</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetRowsFromResult</tooltip>
 		<image-uri>ui/images/FCH.png</image-uri>
 	</step>
-	
+
 	<step id="RowsToResult">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CopyRows")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CopyRows</description>
 		<class-name>org.pentaho.di.trans.steps.rowstoresult.RowsToResultMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@JOB.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CopyRowsToResult")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Job</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.CopyRowsToResult</tooltip>
 		<image-uri>ui/images/TCH.png</image-uri>
 	</step>
-	
+
 	<step id="BlockingStep">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.BlockingStep")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.BlockingStep</description>
 		<class-name>org.pentaho.di.trans.steps.blockingstep.BlockingStepMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.BlockingStep")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.BlockingStep</tooltip>
 		<image-uri>ui/images/BLK.png</image-uri>
 	</step>
-	
+
 	<step id="HTTP">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.HTTP")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.HTTP</description>
 		<class-name>org.pentaho.di.trans.steps.http.HTTPMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.HTTP")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.HTTP</tooltip>
 		<image-uri>ui/images/WEB.png</image-uri>
 	</step>
-	
+
 	<step id="MergeRows">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MergeRows")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MergeRows</description>
 		<class-name>org.pentaho.di.trans.steps.mergerows.MergeRowsMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@JOINS.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.MergeRows")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Joins</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MergeRows</tooltip>
 		<image-uri>ui/images/MRG.png</image-uri>
 	</step>
-	
+
 	<step id="GetFileNames">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetFileNames")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetFileNames</description>
 		<class-name>org.pentaho.di.trans.steps.getfilenames.GetFileNamesMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GetFileNames")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetFileNames</tooltip>
 		<image-uri>ui/images/GFN.png</image-uri>
 	</step>
-	
+
 	<step id="FilesFromResult">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.FilesFromResult")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FilesFromResult</description>
 		<class-name>org.pentaho.di.trans.steps.filesfromresult.FilesFromResultMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@JOB.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.FilesFromResult")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Job</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FilesFromResult</tooltip>
 		<image-uri>ui/images/FFR.png</image-uri>
 	</step>
-	
+
 	<step id="FilesToResult">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.FilesToResult")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FilesToResult</description>
 		<class-name>org.pentaho.di.trans.steps.filestoresult.FilesToResultMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@JOB.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.FilesToResult")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Job</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FilesToResult</tooltip>
 		<image-uri>ui/images/FTR.png</image-uri>
 	</step>
-	
+
 	<step id="GroupBy">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GroupBy")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GroupBy</description>
 		<class-name>org.pentaho.di.trans.steps.groupby.GroupByMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@STATISTICS.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Groupby")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Groupby</tooltip>
 		<image-uri>ui/images/GRP.png</image-uri>
 	</step>
-	
+
 	<step id="AnalyticQuery">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AnalyticQuery")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AnalyticQuery</description>
 		<class-name>org.pentaho.di.trans.steps.analyticquery.AnalyticQueryMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@STATISTICS.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.AnalyticQuery")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.AnalyticQuery</tooltip>
 		<image-uri>ui/images/AQI.png</image-uri>
 	</step>
-	
+
 	<step id="MergeJoin">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MergeJoin")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MergeJoin</description>
 		<class-name>org.pentaho.di.trans.steps.mergejoin.MergeJoinMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@JOINS.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.MergeJoin")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Joins</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MergeJoin</tooltip>
 		<image-uri>ui/images/MJOIN.png</image-uri>
 	</step>
-	
+
 	<step id="SortedMerge">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SortedMerge")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SortedMerge</description>
 		<class-name>org.pentaho.di.trans.steps.sortedmerge.SortedMergeMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@JOINS.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SortedMerge")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Joins</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SortedMerge</tooltip>
 		<image-uri>ui/images/SMG.png</image-uri>
 	</step>
-	
+
 	<step id="XMLInput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XMLInput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.XMLInput</description>
 		<class-name>org.pentaho.di.trans.steps.xmlinput.XMLInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@DEPRECATED.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.XMLInput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.XMLInput</tooltip>
 		<image-uri>ui/images/XIN.png</image-uri>
 	</step>
-	
+
 	<step id="XMLInputSax">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XMLInputSax")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.XMLInputSax</description>
 		<class-name>org.pentaho.di.trans.steps.xmlinputsax.XMLInputSaxMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@DEPRECATED.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.XMLInputSax")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.XMLInputSax</tooltip>
 		<image-uri>ui/images/XIS.png</image-uri>
 	</step>
-	
+
 	<step id="XMLOutput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XMLOutput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.XMLOutput</description>
 		<class-name>org.pentaho.di.trans.steps.xmloutput.XMLOutputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.XMLOutput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.XMLOutput</tooltip>
 		<image-uri>ui/images/XOU.png</image-uri>
 	</step>
-	
+
 	<step id="ExcelOutput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ExcelOutput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ExcelOutput</description>
 		<class-name>org.pentaho.di.trans.steps.exceloutput.ExcelOutputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ExcelOutput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ExcelOutput</tooltip>
 		<image-uri>ui/images/XLO.png</image-uri>
 	</step>
-	
+
 	<step id="DBProc">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CallDBProcedure")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CallDBProcedure</description>
 		<class-name>org.pentaho.di.trans.steps.dbproc.DBProcMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CallDBProcedure")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.CallDBProcedure</tooltip>
 		<image-uri>ui/images/PRC.png</image-uri>
-	</step>  
-	
-    <step id="Denormaliser">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RowDenormaliser")
-		</description>
+	</step>
+
+	<step id="Denormaliser">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RowDenormaliser</description>
 		<class-name>org.pentaho.di.trans.steps.denormaliser.DenormaliserMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.RowsDenormalises")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RowsDenormalises</tooltip>
 		<image-uri>ui/images/UNP.png</image-uri>
 	</step>
-	   
+
 	<step id="Normaliser">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RowNormaliser")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RowNormaliser</description>
 		<class-name>org.pentaho.di.trans.steps.normaliser.NormaliserMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.RowNormaliser")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RowNormaliser</tooltip>
 		<image-uri>ui/images/NRM.png</image-uri>
-	</step> 
-	
+	</step>
+
 	<step id="Flattener,Flatterner">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RowFalttener")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RowFalttener</description>
 		<class-name>org.pentaho.di.trans.steps.flattener.FlattenerMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Rowflattener")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Rowflattener</tooltip>
 		<image-uri>ui/images/FLA.png</image-uri>
-	</step> 
-	
+	</step>
+
 	<step id="XBaseInput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XBaseInput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.XBaseInput</description>
 		<class-name>org.pentaho.di.trans.steps.xbaseinput.XBaseInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.XBaseinput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.XBaseinput</tooltip>
 		<image-uri>ui/images/XBI.png</image-uri>
-	</step> 
+	</step>
 
 	<step id="AccessOutput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AccessOutput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AccessOutput</description>
 		<class-name>org.pentaho.di.trans.steps.accessoutput.AccessOutputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.AccessOutput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.AccessOutput</tooltip>
 		<image-uri>ui/images/ACO.png</image-uri>
-	</step> 
-	
+	</step>
+
 	<step id="RegexEval">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RegexEval")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RegexEval</description>
 		<class-name>org.pentaho.di.trans.steps.regexeval.RegexEvalMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@SCRIPTING.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.RegexEval")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RegexEval</tooltip>
 		<image-uri>ui/images/RGE.png</image-uri>
 	</step>
 
 	<step id="AccessInput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AccessInput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AccessInput</description>
 		<class-name>org.pentaho.di.trans.steps.accessinput.AccessInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.AccessInput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.AccessInput</tooltip>
 		<image-uri>ui/images/ACI.png</image-uri>
 	</step>
-	
+
 	<step id="AddXML">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AddXML")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AddXML</description>
 		<class-name>org.pentaho.di.trans.steps.addxml.AddXMLMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.AddXML")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.AddXML</tooltip>
 		<image-uri>ui/images/XIN.png</image-uri>
 	</step>
-	
+
 	<step id="AggregateRows">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AggregateRows")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AggregateRows</description>
 		<class-name>org.pentaho.di.trans.steps.aggregaterows.AggregateRowsMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@DEPRECATED.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.AggregateRows")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.AggregateRows</tooltip>
 		<image-uri>ui/images/AGG.png</image-uri>
 	</step>
-	
+
 	<step id="MondrianInput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MondrianInput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MondrianInput</description>
 		<class-name>org.pentaho.di.trans.steps.mondrianinput.MondrianInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.MondrianInput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MondrianInput</tooltip>
 		<image-uri>ui/images/MON.png</image-uri>
 	</step>
-	
+
 	<step id="GetFilesRowsCount">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetFilesRowsCount")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetFilesRowsCount</description>
 		<class-name>org.pentaho.di.trans.steps.getfilesrowscount.GetFilesRowsCountMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GetFilesRowsCount")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetFilesRowsCount</tooltip>
 		<image-uri>ui/images/FRC.png</image-uri>
 	</step>
-	
+
 	<step id="LDAPInput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.LDAPInput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.LDAPInput</description>
 		<class-name>org.pentaho.di.trans.steps.ldapinput.LDAPInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.LDAPInput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.LDAPInput</tooltip>
 		<image-uri>ui/images/LIP.png</image-uri>
 	</step>
-	
+
 	<step id="getXMLData">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetXMLData")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetXMLData</description>
 		<class-name>org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GetXMLData")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetXMLData</tooltip>
 		<image-uri>ui/images/GXD.png</image-uri>
 	</step>
-	
+
 	<step id="XSDValidator">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XSDValidator")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.XSDValidator</description>
 		<class-name>org.pentaho.di.trans.steps.xsdvalidator.XsdValidatorMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@VALIDATION.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.XSDValidator")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Validation</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.XSDValidator</tooltip>
 		<image-uri>ui/images/XSD.png</image-uri>
 	</step>
-	
+
 	<step id="XSLT">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XSLT")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.XSLT</description>
 		<class-name>org.pentaho.di.trans.steps.xslt.XsltMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.XSLT")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.XSLT</tooltip>
 		<image-uri>ui/images/XSLT.png</image-uri>
 	</step>
-	
+
 	<step id="Validator">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Validator")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Validator</description>
 		<class-name>org.pentaho.di.trans.steps.validator.ValidatorMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@VALIDATION.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Validator")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Validation</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Validator</tooltip>
 		<image-uri>ui/images/VLD.png</image-uri>
 	</step>
-	
+
 	<step id="SQLFileOutput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SQLFileOutput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SQLFileOutput</description>
 		<class-name>org.pentaho.di.trans.steps.sqlfileoutput.SQLFileOutputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SQLFileOutput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SQLFileOutput</tooltip>
 		<image-uri>ui/images/SFO.png</image-uri>
 	</step>
-	
+
 	<step id="SplitFieldToRows3">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SplitFieldToRows3")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SplitFieldToRows3</description>
 		<class-name>org.pentaho.di.trans.steps.splitfieldtorows.SplitFieldToRowsMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SplitFieldToRows3")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SplitFieldToRows3</tooltip>
 		<image-uri>ui/images/SFtR.png</image-uri>
-	</step>	
-	
+	</step>
+
 	<step id="PropertyInput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.PropertyInput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.PropertyInput</description>
 		<class-name>org.pentaho.di.trans.steps.propertyinput.PropertyInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.PropertyInput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.PropertyInput</tooltip>
 		<image-uri>ui/images/PFI.png</image-uri>
 	</step>
-	
+
 	<step id="GPBulkLoader">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GPBulkLoader")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GPBulkLoader</description>
 		<class-name>org.pentaho.di.trans.steps.gpbulkloader.GPBulkLoaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GPBulkLoader")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GPBulkLoader</tooltip>
 		<image-uri>ui/images/GBL.png</image-uri>
 	</step>
-	
+
 	<step id="PGBulkLoader">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.PGBulkLoader")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.PGBulkLoader</description>
 		<class-name>org.pentaho.di.trans.steps.pgbulkloader.PGBulkLoaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.PGBulkLoader")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.PGBulkLoader</tooltip>
 		<image-uri>ui/images/PGBL.png</image-uri>
 	</step>
-	
+
 	<step id="LDIFInput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.LDIFInput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.LDIFInput</description>
 		<class-name>org.pentaho.di.trans.steps.ldifinput.LDIFInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.LDIFInput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.LDIFInput</tooltip>
 		<image-uri>ui/images/LDI.png</image-uri>
 	</step>
-	
+
 	<step id="PropertyOutput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.PropertyOutput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.PropertyOutput</description>
 		<class-name>org.pentaho.di.trans.steps.propertyoutput.PropertyOutputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.PropertyOutput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.PropertyOutput</tooltip>
 		<image-uri>ui/images/PFO.png</image-uri>
 	</step>
-	
+
 	<step id="SwitchCase">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SwitchCase")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SwitchCase</description>
 		<class-name>org.pentaho.di.trans.steps.switchcase.SwitchCaseMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SwitchCase")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SwitchCase</tooltip>
 		<image-uri>ui/images/SWC.png</image-uri>
 	</step>
-	
+
 	<step id="XMLJoin">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XMLJoin")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.XMLJoin</description>
 		<class-name>org.pentaho.di.trans.steps.xmljoin.XMLJoinMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@JOINS.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.XMLJoin")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Joins</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.XMLJoin</tooltip>
 		<image-uri>ui/images/XJN.png</image-uri>
 	</step>
 
 	<step id="StepMetastructure">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.StepMetastructure")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.StepMetastructure</description>
 		<class-name>org.pentaho.di.trans.steps.stepmeta.StepMetastructureMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.StepMetastructure")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.StepMetastructure</tooltip>
 		<image-uri>ui/images/STMD.png</image-uri>
 	</step>
-	
+
 	<step id="TableExists">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.TableExists")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TableExists</description>
 		<class-name>org.pentaho.di.trans.steps.tableexists.TableExistsMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.TableExists")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TableExists</tooltip>
 		<image-uri>ui/images/TEX.png</image-uri>
 	</step>
-		
+
 	<step id="ColumnExists">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ColumnExists")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ColumnExists</description>
 		<class-name>org.pentaho.di.trans.steps.columnexists.ColumnExistsMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ColumnExists")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ColumnExists</tooltip>
 		<image-uri>ui/images/CEX.png</image-uri>
 	</step>
-	
+
 	<step id="FileExists">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.FileExists")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FileExists</description>
 		<class-name>org.pentaho.di.trans.steps.fileexists.FileExistsMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.FileExists")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FileExists</tooltip>
 		<image-uri>ui/images/FEX.png</image-uri>
 	</step>
-	
+
 	<step id="CloneRow">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CloneRow")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CloneRow</description>
 		<class-name>org.pentaho.di.trans.steps.clonerow.CloneRowMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CloneRow")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.CloneRow</tooltip>
 		<image-uri>ui/images/CLR.png</image-uri>
 	</step>
-	
+
 	<step id="Delay">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Delay")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Delay</description>
 		<class-name>org.pentaho.di.trans.steps.delay.DelayMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Delay")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Delay</tooltip>
 		<image-uri>ui/images/DLT.png</image-uri>
 	</step>
-	
+
 	<step id="CheckSum">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CheckSum")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CheckSum</description>
 		<class-name>org.pentaho.di.trans.steps.checksum.CheckSumMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CheckSum")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.CheckSum</tooltip>
 		<image-uri>ui/images/CSM.png</image-uri>
 	</step>
-	
+
 	<step id="RandomValue">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RandomValue")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RandomValue</description>
 		<class-name>org.pentaho.di.trans.steps.randomvalue.RandomValueMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.RandomValue")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RandomValue</tooltip>
 		<image-uri>ui/images/RVA.png</image-uri>
 	</step>
-	
+
 	<step id="GetSubFolders">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetSubFolders")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetSubFolders</description>
 		<class-name>org.pentaho.di.trans.steps.getsubfolders.GetSubFoldersMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GetSubFolders")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetSubFolders</tooltip>
 		<image-uri>ui/images/LSF.png</image-uri>
 	</step>
-	
+
 	<step id="MonetDBBulkLoader">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MonetDBBulkLoader")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MonetDBBulkLoader</description>
 		<class-name>org.pentaho.di.trans.steps.monetdbbulkloader.MonetDBBulkLoaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@BULK.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.MonetDBBulkLoader")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MonetDBBulkLoader</tooltip>
 		<image-uri>ui/images/OBL.png</image-uri>
 	</step>
-	
+
 	<step id="MailValidator">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MailValidator")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MailValidator</description>
 		<class-name>org.pentaho.di.trans.steps.mailvalidator.MailValidatorMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@VALIDATION.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.MailValidator")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Validation</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MailValidator</tooltip>
 		<image-uri>ui/images/MAV.png</image-uri>
 	</step>
-	
+
 	<step id="Mail">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Mail")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Mail</description>
 		<class-name>org.pentaho.di.trans.steps.mail.MailMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Mail")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Mail</tooltip>
 		<image-uri>ui/images/MAIL.png</image-uri>
 	</step>
-	
+
 	<step id="CreditCardValidator">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CreditCardValidator")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CreditCardValidator</description>
 		<class-name>org.pentaho.di.trans.steps.creditcardvalidator.CreditCardValidatorMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@VALIDATION.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CreditCardValidator")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Validation</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.CreditCardValidator</tooltip>
 		<image-uri>ui/images/CCV.png</image-uri>
 	</step>
-	
+
 	<step id="ProcessFiles">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ProcessFiles")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ProcessFiles</description>
 		<class-name>org.pentaho.di.trans.steps.processfiles.ProcessFilesMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ProcessFiles")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ProcessFiles</tooltip>
 		<image-uri>ui/images/PPF.png</image-uri>
 	</step>
-	
+
 	<step id="DetectLastRow">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DetectLastRow")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.DetectLastRow</description>
 		<class-name>org.pentaho.di.trans.steps.detectlastrow.DetectLastRowMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.DetectLastRow")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.DetectLastRow</tooltip>
 		<image-uri>ui/images/DLR.png</image-uri>
 	</step>
-	
+
 	<step id="DetectEmptyStream">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DetectEmptyStream")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.DetectEmptyStream</description>
 		<class-name>org.pentaho.di.trans.steps.detectemptystream.DetectEmptyStreamMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@FLOW.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.DetectEmptyStream")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.DetectEmptyStream</tooltip>
 		<image-uri>ui/images/EMS.png</image-uri>
 	</step>
-	
+
 	<step id="WriteToLog">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.WriteToLog")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.WriteToLog</description>
 		<class-name>org.pentaho.di.trans.steps.writetolog.WriteToLogMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.WriteToLog")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.WriteToLog</tooltip>
 		<image-uri>ui/images/WTL.png</image-uri>
 	</step>
-	
+
 	<step id="SampleRows">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SampleRows")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SampleRows</description>
 		<class-name>org.pentaho.di.trans.steps.samplerows.SampleRowsMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@STATISTICS.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SampleRows")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SampleRows</tooltip>
 		<image-uri>ui/images/SR.png</image-uri>
 	</step>
-	
+
 	<step id="GetPreviousRowField">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetPreviousRowField")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetPreviousRowField</description>
 		<class-name>org.pentaho.di.trans.steps.getpreviousrowfield.GetPreviousRowFieldMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@DEPRECATED.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GetPreviousRowField")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetPreviousRowField</tooltip>
 		<image-uri>ui/images/PRV.png</image-uri>
 	</step>
-	
+
 	<step id="ExecSQLRow">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ExecSQLRow")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ExecSQLRow</description>
 		<class-name>org.pentaho.di.trans.steps.execsqlrow.ExecSQLRowMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@SCRIPTING.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ExecSQLRow")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ExecSQLRow</tooltip>
 		<image-uri>ui/images/SQLR.png</image-uri>
 	</step>
-	
+
 	<step id="DynamicSQLRow">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DynamicSQLRow")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.DynamicSQLRow</description>
 		<class-name>org.pentaho.di.trans.steps.dynamicsqlrow.DynamicSQLRowMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.DynamicSQLRow")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.DynamicSQLRow</tooltip>
 		<image-uri>ui/images/DSR.png</image-uri>
 	</step>
-	
+
 	<step id="NumberRange">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.NumberRange")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.NumberRange</description>
 		<class-name>org.pentaho.di.trans.steps.numberrange.NumberRangeMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.NumberRange")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.NumberRange</tooltip>
 		<image-uri>ui/images/NRI.png</image-uri>
 	</step>
-	
+
 	<step id="SynchronizeAfterMerge">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SynchronizeAfterMerge")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SynchronizeAfterMerge</description>
 		<class-name>org.pentaho.di.trans.steps.synchronizeaftermerge.SynchronizeAfterMergeMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SynchronizeAfterMerge")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SynchronizeAfterMerge</tooltip>
 		<image-uri>ui/images/SAM.png</image-uri>
 	</step>
-	
+
 	<step id="LucidDBBulkLoader">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.LucidDBBulkLoader")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.LucidDBBulkLoader</description>
 		<class-name>org.pentaho.di.trans.steps.luciddbbulkloader.LucidDBBulkLoaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@BULK.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.LucidDBBulkLoader")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.LucidDBBulkLoader</tooltip>
 		<image-uri>ui/images/OBL.png</image-uri>
 	</step>
-	
+
 	<step id="MySQLBulkLoader">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MySQLBulkLoader")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MySQLBulkLoader</description>
 		<class-name>org.pentaho.di.trans.steps.mysqlbulkloader.MySQLBulkLoaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.MySQLBulkLoader")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MySQLBulkLoader</tooltip>
 		<image-uri>ui/images/OBL.png</image-uri>
 	</step>
-	
+
 	<step id="ReplaceString">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ReplaceString")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ReplaceString</description>
 		<class-name>org.pentaho.di.trans.steps.replacestring.ReplaceStringMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ReplaceString")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ReplaceString</tooltip>
 		<image-uri>ui/images/RST.png</image-uri>
 	</step>
-	
+
 	<step id="StringCut">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.StringCut")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.StringCut</description>
 		<class-name>org.pentaho.di.trans.steps.stringcut.StringCutMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.StringCut")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.StringCut</tooltip>
 		<image-uri>ui/images/SRC.png</image-uri>
 	</step>
-	
+
 	<step id="IfNull">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.IfNull")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.IfNull</description>
 		<class-name>org.pentaho.di.trans.steps.ifnull.IfNullMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.IfNull")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.IfNull</tooltip>
 		<image-uri>ui/images/IFN.png</image-uri>
 	</step>
-	
+
 	<step id="RssOutput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RssOutput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RssOutput</description>
 		<class-name>org.pentaho.di.trans.steps.rssoutput.RssOutputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.RssOutput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RssOutput</tooltip>
 		<image-uri>ui/images/RRO.png</image-uri>
 	</step>
-	
+
 	<step id="RssInput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RssInput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RssInput</description>
 		<class-name>org.pentaho.di.trans.steps.rssinput.RssInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.RssInput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RssInput</tooltip>
 		<image-uri>ui/images/RIN.png</image-uri>
 	</step>
-	
+
 	<step id="SalesforceInput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SalesforceInput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SalesforceInput</description>
 		<class-name>org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SalesforceInput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceInput</tooltip>
 		<image-uri>ui/images/SFI.png</image-uri>
 	</step>
-	
+
 	<step id="Formula">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Formula")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Formula</description>
 		<class-name>org.pentaho.di.trans.steps.formula.FormulaMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@SCRIPTING.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Formula")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Formula</tooltip>
 		<image-uri>ui/images/FRM.png</image-uri>
 	</step>
 
 	<step id="Janino">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Janino")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Janino</description>
 		<class-name>org.pentaho.di.trans.steps.janino.JaninoMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@SCRIPTING.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Janino")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Janino</tooltip>
 		<image-uri>ui/images/janino.png</image-uri>
 	</step>
-	
+
 	<step id="ReservoirSampling">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ReservoirSampling")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ReservoirSampling</description>
 		<class-name>org.pentaho.di.trans.steps.reservoirsampling.ReservoirSamplingMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@STATISTICS.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ReservoirSampling")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ReservoirSampling</tooltip>
 		<image-uri>ui/images/RS.png</image-uri>
 	</step>
-	
+
 	<step id="UnivariateStats">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.UnivariateStats")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.UnivariateStats</description>
 		<class-name>org.pentaho.di.trans.steps.univariatestats.UnivariateStatsMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@STATISTICS.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.UnivariateStats")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.UnivariateStats</tooltip>
 		<image-uri>ui/images/US.png</image-uri>
 	</step>
-	
+
 	<step id="UniqueRowsByHashSet">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.UniqueRowsByHashSet")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.UniqueRowsByHashSet</description>
 		<class-name>org.pentaho.di.trans.steps.uniquerowsbyhashset.UniqueRowsByHashSetMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.UniqueRowsByHashSet")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.UniqueRowsByHashSet</tooltip>
 		<image-uri>ui/images/URH.png</image-uri>
 	</step>
-	
+
 	<step id="HTTPPOST">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.HTTPPOST")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.HTTPPOST</description>
 		<class-name>org.pentaho.di.trans.steps.httppost.HTTPPOSTMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.HTTPPOST")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.HTTPPOST</tooltip>
 		<image-uri>ui/images/HTP.png</image-uri>
 	</step>
-	
+
 	<step id="SetValueConstant">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SetValueConstant")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SetValueConstant</description>
 		<class-name>org.pentaho.di.trans.steps.setvalueconstant.SetValueConstantMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SetValueConstant")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SetValueConstant</tooltip>
 		<image-uri>ui/images/SVC.png</image-uri>
 	</step>
-	
+
 	<step id="SetValueField">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SetValueField")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SetValueField</description>
 		<class-name>org.pentaho.di.trans.steps.setvaluefield.SetValueFieldMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SetValueField")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SetValueField</tooltip>
 		<image-uri>ui/images/SVF.png</image-uri>
 	</step>
-	
+
 	<step id="ExecProcess">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ExecProcess")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ExecProcess</description>
 		<class-name>org.pentaho.di.trans.steps.execprocess.ExecProcessMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@UTILITY.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ExecProcess")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ExecProcess</tooltip>
 		<image-uri>ui/images/RPL.png</image-uri>
 	</step>
-	
+
 	<step id="WebServiceLookup">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.WebServiceLookup")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.WebServiceLookup</description>
 		<class-name>org.pentaho.di.trans.steps.webservices.WebServiceMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.WebServiceLookup")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.WebServiceLookup</tooltip>
 		<image-uri>ui/images/WSL.png</image-uri>
 	</step>
 
 	<step id="CsvInput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CsvInput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CsvInput</description>
 		<class-name>org.pentaho.di.trans.steps.csvinput.CsvInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CsvInput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.CsvInput</tooltip>
 		<image-uri>ui/images/TFI.png</image-uri>
 	</step>
 
 	<step id="ParallelGzipCsvInput">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ParallelGzipCsvInput")
-		</description>
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ParallelGzipCsvInput</description>
 		<class-name>org.pentaho.di.trans.steps.parallelgzipcsv.ParGzipCsvInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ParallelGzipCsvInput")
-		</tooltip>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ParallelGzipCsvInput</tooltip>
 		<image-uri>ui/images/TFI.png</image-uri>
 	</step>
-	
+
 </steps>
