@@ -40,7 +40,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
-import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 
 /**
  * This class is used to define a number of default values for various settings throughout Kettle.
@@ -2116,14 +2115,4 @@ public class Const
 		return counter;
 	}
 
-	/**
-	 * Determines the package name of a class, specifically for i18n purposes.
-	 * This method is scanned for by Translator2 : DO NOT RENAME OR REFACTOR.
-	 *  
-	 * @param class1
-	 * @return
-	 */
-	public static String getPackageName(Class<CsvInputMeta> clazz) {
-		return clazz.getPackage().getName();
-	}
 }
