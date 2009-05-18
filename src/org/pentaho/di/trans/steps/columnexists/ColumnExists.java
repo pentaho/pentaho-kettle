@@ -194,6 +194,7 @@ public class ColumnExists extends BaseStep implements StepInterface
         		return false;
         	}
             data.db=new Database(meta.getDatabase());
+            data.db.shareVariablesWith(this);
             try
             {
                 if (getTransMeta().isUsingUniqueConnections())
