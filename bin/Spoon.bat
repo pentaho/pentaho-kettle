@@ -58,7 +58,7 @@ FOR %%F IN (libext\spring\*.jar) DO call :addcp %%F
 FOR %%F IN (libext\jfree\*.jar) DO call :addcp %%F
 FOR %%F IN (libext\mondrian\*.jar) DO call :addcp %%F
 FOR %%F IN (libext\salesforce\*.jar) DO call :addcp %%F
-
+FOR %%F IN (libext\feeds\*.jar) DO call :addcp %%F
 
 goto extlibe
 
