@@ -142,6 +142,7 @@ public class TableExists extends BaseStep implements StepInterface
         	}
         	
             data.db=new Database(meta.getDatabase());
+            data.db.shareVariablesWith(this);
             if(!Const.isEmpty(meta.getSchemaname())) 
             	data.realSchemaname= environmentSubstitute(meta.getSchemaname());
         	

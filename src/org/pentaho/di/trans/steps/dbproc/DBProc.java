@@ -194,6 +194,8 @@ public class DBProc extends BaseStep implements StepInterface
 			}
 
 			data.db=new Database(meta.getDatabase());
+			data.db.shareVariablesWith(this);
+			
 			try
 			{
                 if (getTransMeta().isUsingUniqueConnections())
