@@ -41,7 +41,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesMetaMod;
 import org.w3c.dom.Node;
 
 
@@ -52,7 +51,7 @@ import org.w3c.dom.Node;
  */
 public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 {
-	private static Class<?> PKG = ScriptValuesMetaMod.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = SelectValuesMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	// SELECT mode
     /** Select: Name of the selected field */

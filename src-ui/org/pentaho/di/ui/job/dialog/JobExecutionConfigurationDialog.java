@@ -46,7 +46,6 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.CheckBoxVar;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -55,7 +54,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class JobExecutionConfigurationDialog extends Dialog
 {
-	private static Class<?> PKG = CheckBoxVar.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = JobExecutionConfigurationDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     private Display display;
     private Shell parent;

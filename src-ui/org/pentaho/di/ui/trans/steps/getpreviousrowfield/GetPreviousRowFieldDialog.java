@@ -62,7 +62,7 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
  * @since 07 September 2008
  */
 public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDialogInterface {
-	private static Class<?> PKG = GetPreviousRowFieldDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = GetPreviousRowFieldMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private Label wlKey;
 

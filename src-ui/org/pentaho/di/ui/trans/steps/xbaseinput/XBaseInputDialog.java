@@ -49,7 +49,6 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.trans.steps.xbaseinput.XBaseInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -63,7 +62,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterface
 {
-	private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = XBaseInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private Label        wlFilename;
 	private Button       wbFilename;

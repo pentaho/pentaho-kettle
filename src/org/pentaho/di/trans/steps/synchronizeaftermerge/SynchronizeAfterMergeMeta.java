@@ -41,7 +41,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.switchcase.SwitchCaseMeta;
 import org.w3c.dom.Node;
 
 /*
@@ -50,7 +49,7 @@ import org.w3c.dom.Node;
  */
 public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaInterface
 {
-	private static Class<?> PKG = SwitchCaseMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = SynchronizeAfterMergeMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     /** what's the lookup schema? */
     private String schemaName;

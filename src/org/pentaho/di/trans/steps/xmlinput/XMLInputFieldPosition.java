@@ -17,13 +17,12 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.steps.xbaseinput.XBaseInputMeta;
 
 
 
 public class XMLInputFieldPosition implements Cloneable
 {
-	private static Class<?> PKG = XBaseInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = XMLInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     public static final int XML_ELEMENT   = 1;
     public static final int XML_ATTRIBUTE = 2;

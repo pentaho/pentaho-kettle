@@ -36,7 +36,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.xbaseinput.XBaseInputMeta;
 import org.w3c.dom.Node;
 
 
@@ -52,7 +51,7 @@ import org.w3c.dom.Node;
 
 public class XMLJoinMeta extends BaseStepMeta  implements StepMetaInterface
 {
-	private static Class<?> PKG = XBaseInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = XMLJoinMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     /** The base name of the output file */
 

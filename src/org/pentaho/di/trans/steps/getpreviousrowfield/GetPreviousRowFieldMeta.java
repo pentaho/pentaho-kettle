@@ -234,7 +234,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
 
 		if (prev == null) {
 
-			error_message += BaseMessages.getString(PKG, "TrimMeta.CheckResult.NoInputReceived") + Const.CR; //$NON-NLS-1$
+			error_message += BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.CheckResult.NoInputReceived") + Const.CR; //$NON-NLS-1$
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR,
 					error_message, stepinfo);
 			remarks.add(cr);

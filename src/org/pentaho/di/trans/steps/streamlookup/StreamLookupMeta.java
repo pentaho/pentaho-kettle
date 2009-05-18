@@ -41,14 +41,13 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.stepmeta.StepMetastructureMeta;
 import org.w3c.dom.Node;
 
 
 
 public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 {
-	private static Class<?> PKG = StepMetastructureMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = StreamLookupMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	/**fields in input  streams with which we look up values*/
 	private String keystream[];         
