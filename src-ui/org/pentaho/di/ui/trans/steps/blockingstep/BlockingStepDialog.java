@@ -32,16 +32,17 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.trans.steps.blockingstep.BlockingStepMeta;
-import org.pentaho.di.trans.steps.blockingstep.Messages;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 public class BlockingStepDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = BlockingStepMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private BlockingStepMeta input;
     
 	private Label        wlPassAllRows;
@@ -93,14 +94,14 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("BlockingStepDialog.Shell.Title")); //$NON-NLS-1$
+        shell.setText(BaseMessages.getString(PKG, "BlockingStepDialog.Shell.Title")); //$NON-NLS-1$
         
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
         
         // Stepname line
         wlStepname=new Label(shell, SWT.RIGHT);
-        wlStepname.setText(Messages.getString("BlockingStepDialog.Stepname.Label")); //$NON-NLS-1$
+        wlStepname.setText(BaseMessages.getString(PKG, "BlockingStepDialog.Stepname.Label")); //$NON-NLS-1$
         props.setLook(wlStepname);
         fdlStepname=new FormData();
         fdlStepname.left = new FormAttachment(0, 0);
@@ -119,7 +120,7 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
         
         // Update the dimension?
         wlPassAllRows=new Label(shell, SWT.RIGHT);
-        wlPassAllRows.setText(Messages.getString("BlockingStepDialog.PassAllRows.Label")); //$NON-NLS-1$
+        wlPassAllRows.setText(BaseMessages.getString(PKG, "BlockingStepDialog.PassAllRows.Label")); //$NON-NLS-1$
         props.setLook(wlPassAllRows);
         FormData fdlUpdate=new FormData();
         fdlUpdate.left   = new FormAttachment(0, 0);
@@ -148,7 +149,7 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
         
 		// Temp directory for sorting
 		wlSpoolDir=new Label(shell, SWT.RIGHT);
-		wlSpoolDir.setText(Messages.getString("BlockingStepDialog.SpoolDir.Label"));
+		wlSpoolDir.setText(BaseMessages.getString(PKG, "BlockingStepDialog.SpoolDir.Label"));
  		props.setLook(wlSpoolDir);
 		fdlSpoolDir=new FormData();
 		fdlSpoolDir.left = new FormAttachment(0, 0);
@@ -158,7 +159,7 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
 
 		wbSpoolDir=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbSpoolDir);
-		wbSpoolDir.setText(Messages.getString("System.Button.Browse"));
+		wbSpoolDir.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbSpoolDir=new FormData();
 		fdbSpoolDir.right= new FormAttachment(100, 0);
 		fdbSpoolDir.top  = new FormAttachment(wPassAllRows, margin);
@@ -199,7 +200,7 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
 
         // Prefix of temporary file
 		wlPrefix=new Label(shell, SWT.RIGHT);
-		wlPrefix.setText(Messages.getString("BlockingStepDialog.Prefix.Label"));
+		wlPrefix.setText(BaseMessages.getString(PKG, "BlockingStepDialog.Prefix.Label"));
  		props.setLook(wlPrefix);
 		fdlPrefix=new FormData();
 		fdlPrefix.left = new FormAttachment(0, 0);
@@ -217,7 +218,7 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
 
         // Maximum number of lines to keep in memory before using temporary files
         wlCacheSize=new Label(shell, SWT.RIGHT);
-        wlCacheSize.setText(Messages.getString("BlockingStepDialog.CacheSize.Label"));
+        wlCacheSize.setText(BaseMessages.getString(PKG, "BlockingStepDialog.CacheSize.Label"));
         props.setLook(wlCacheSize);
         fdlCacheSize=new FormData();
         fdlCacheSize.left = new FormAttachment(0, 0);
@@ -235,7 +236,7 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
 
         // Using compression for temporary files?
         wlCompress=new Label(shell, SWT.RIGHT);
-        wlCompress.setText(Messages.getString("BlockingStepDialog.Compress.Label"));
+        wlCompress.setText(BaseMessages.getString(PKG, "BlockingStepDialog.Compress.Label"));
         props.setLook(wlCompress);
         fdlCompress=new FormData();
         fdlCompress.left = new FormAttachment(0, 0);

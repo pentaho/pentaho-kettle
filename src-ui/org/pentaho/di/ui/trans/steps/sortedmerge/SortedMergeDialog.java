@@ -47,21 +47,23 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.sortedmerge.Messages;
 import org.pentaho.di.trans.steps.sortedmerge.SortedMergeMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class SortedMergeDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = SortedMergeMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final String STRING_SORT_WARNING_PARAMETER = "SortedMergeSortWarning"; //$NON-NLS-1$
 
     private Label        wlFields;
@@ -104,14 +106,14 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("SortedMergeDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SortedMergeDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("SortedMergeDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "SortedMergeDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -130,17 +132,17 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
         wGet=new Button(shell, SWT.PUSH);
-        wGet.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
+        wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel , wGet }, margin, null);
 
         
         wlFields=new Label(shell, SWT.NONE);
-        wlFields.setText(Messages.getString("SortedMergeDialog.Fields.Label"));
+        wlFields.setText(BaseMessages.getString(PKG, "SortedMergeDialog.Fields.Label"));
         props.setLook(wlFields);
         fdlFields=new FormData();
         fdlFields.left = new FormAttachment(0, 0);
@@ -151,8 +153,8 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
         final int FieldsRows=input.getFieldName().length;
         
         colinf=new ColumnInfo[FieldsCols];
-        colinf[0]=new ColumnInfo(Messages.getString("SortedMergeDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
-        colinf[1]=new ColumnInfo(Messages.getString("SortedMergeDialog.Ascending.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") } );
+        colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "SortedMergeDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
+        colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "SortedMergeDialog.Ascending.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") } );
         
         wFields=new TableView(transMeta, shell, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -192,7 +194,7 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -254,7 +256,7 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
             TableItem ti = new TableItem(table, SWT.NONE);
             ti.setText(0, ""+(i+1));
             ti.setText(1, input.getFieldName()[i]);
-            ti.setText(2, input.getAscending()[i]?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
+            ti.setText(2, input.getAscending()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
         }
 
         wFields.setRowNums();
@@ -284,7 +286,7 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
         {
             TableItem ti = wFields.getNonEmpty(i);
             input.getFieldName()[i] = ti.getText(1);
-            input.getAscending()[i] = Messages.getString("System.Combo.Yes").equalsIgnoreCase(ti.getText(2));
+            input.getAscending()[i] = BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(ti.getText(2));
         }
         
         // Show a warning (optional)
@@ -292,13 +294,13 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
         if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                 Messages.getString("SortedMergeDialog.InputNeedSort.DialogTitle"),  //$NON-NLS-1$
+                 BaseMessages.getString(PKG, "SortedMergeDialog.InputNeedSort.DialogTitle"),  //$NON-NLS-1$
                  null,
-                 Messages.getString("SortedMergeDialog.InputNeedSort.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+                 BaseMessages.getString(PKG, "SortedMergeDialog.InputNeedSort.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
                  MessageDialog.WARNING,
-                 new String[] { Messages.getString("SortedMergeDialog.InputNeedSort.Option1") }, //$NON-NLS-1$
+                 new String[] { BaseMessages.getString(PKG, "SortedMergeDialog.InputNeedSort.Option1") }, //$NON-NLS-1$
                  0,
-                 Messages.getString("SortedMergeDialog.InputNeedSort.Option2"), //$NON-NLS-1$
+                 BaseMessages.getString(PKG, "SortedMergeDialog.InputNeedSort.Option2"), //$NON-NLS-1$
                  "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
             );
             MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
@@ -330,7 +332,7 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
         }
         catch(KettleException ke)
         {
-            new ErrorDialog(shell, Messages.getString("SortedMergeDialog.UnableToGetFieldsError.DialogTitle"), Messages.getString("SortedMergeDialog.UnableToGetFieldsError.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "SortedMergeDialog.UnableToGetFieldsError.DialogTitle"), BaseMessages.getString(PKG, "SortedMergeDialog.UnableToGetFieldsError.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 }

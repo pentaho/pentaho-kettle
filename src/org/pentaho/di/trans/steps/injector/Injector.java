@@ -12,6 +12,7 @@
 package org.pentaho.di.trans.steps.injector;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -29,6 +30,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class Injector extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = InjectorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private InjectorMeta meta;
 	private InjectorData data;
 	
@@ -53,7 +56,7 @@ public class Injector extends BaseStep implements StepInterface
 		
 		putRow(getInputRowMeta(), row);  // copy row to possible alternate rowset(s).
 
-		if (checkFeedback(getLinesRead())) logBasic(Messages.getString("Injector.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+		if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "Injector.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			
 		return true;
 	}

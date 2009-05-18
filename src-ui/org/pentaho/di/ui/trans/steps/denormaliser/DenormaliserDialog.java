@@ -40,21 +40,23 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.trans.steps.denormaliser.DenormaliserMeta;
 import org.pentaho.di.trans.steps.denormaliser.DenormaliserTargetField;
-import org.pentaho.di.trans.steps.denormaliser.Messages;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class DenormaliserDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = DenormaliserMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final String STRING_SORT_WARNING_PARAMETER = "PivotSortWarning"; //$NON-NLS-1$
     
 	private Label        wlGroup;
@@ -106,14 +108,14 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("DenormaliserDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "DenormaliserDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 		
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("DenormaliserDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "DenormaliserDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -133,7 +135,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 
         // Key field...
         wlKeyField=new Label(shell, SWT.RIGHT);
-        wlKeyField.setText(Messages.getString("DenormaliserDialog.KeyField.Label")); //$NON-NLS-1$
+        wlKeyField.setText(BaseMessages.getString(PKG, "DenormaliserDialog.KeyField.Label")); //$NON-NLS-1$
         props.setLook(wlKeyField);
         fdlKeyField=new FormData();
         fdlKeyField.left = new FormAttachment(0, 0);
@@ -167,7 +169,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
     );
 
 		wlGroup=new Label(shell, SWT.NONE);
-		wlGroup.setText(Messages.getString("DenormaliserDialog.Group.Label")); //$NON-NLS-1$
+		wlGroup.setText(BaseMessages.getString(PKG, "DenormaliserDialog.Group.Label")); //$NON-NLS-1$
  		props.setLook(wlGroup);
 		fdlGroup=new FormData();
 		fdlGroup.left  = new FormAttachment(0, 0);
@@ -178,7 +180,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		int nrKeyRows=(input.getGroupField()!=null?input.getGroupField().length:1);
 		
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.GroupField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciKey[0]=new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.GroupField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		
 		wGroup=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -189,7 +191,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 						      );
 
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("DenormaliserDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "DenormaliserDialog.GetFields.Button")); //$NON-NLS-1$
 		fdGet = new FormData();
 		fdGet.top   = new FormAttachment(wlGroup, margin);
 		fdGet.right = new FormAttachment(100, 0);
@@ -204,7 +206,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 
 		// THE unpivot target field fields
 		wlTarget=new Label(shell, SWT.NONE);
-		wlTarget.setText(Messages.getString("DenormaliserDialog.Target.Label")); //$NON-NLS-1$
+		wlTarget.setText(BaseMessages.getString(PKG, "DenormaliserDialog.Target.Label")); //$NON-NLS-1$
  		props.setLook(wlTarget);
 		fdlTarget=new FormData();
 		fdlTarget.left  = new FormAttachment(0, 0);
@@ -217,21 +219,21 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
         
 		ColumnInfo[] ciTarget=new ColumnInfo[]
           {
-    		 new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.TargetFieldname"),     ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-    		 new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.ValueFieldname"),      ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-    		 new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Keyvalue"),            ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Type"),                 ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getAllTypes(), false), //$NON-NLS-1$
-             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Format"),               ColumnInfo.COLUMN_TYPE_CCOMBO,  formats), //$NON-NLS-1$
-             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Length"),               ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
-             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Precision"),            ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
-             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Currency"),             ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
-             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Decimal"),              ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
-             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Group"),                ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
-             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.NullIf"),              ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
-             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Aggregation"),          ColumnInfo.COLUMN_TYPE_CCOMBO,  DenormaliserTargetField.typeAggrLongDesc, false), //$NON-NLS-1$
+    		 new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.TargetFieldname"),     ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+    		 new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.ValueFieldname"),      ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+    		 new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Keyvalue"),            ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+             new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Type"),                 ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getAllTypes(), false), //$NON-NLS-1$
+             new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Format"),               ColumnInfo.COLUMN_TYPE_CCOMBO,  formats), //$NON-NLS-1$
+             new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Length"),               ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
+             new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Precision"),            ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
+             new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Currency"),             ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
+             new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Decimal"),              ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
+             new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Group"),                ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
+             new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.NullIf"),              ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
+             new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Aggregation"),          ColumnInfo.COLUMN_TYPE_CCOMBO,  DenormaliserTargetField.typeAggrLongDesc, false), //$NON-NLS-1$
           };
         
-        ciTarget[ciTarget.length-1].setToolTip(Messages.getString("DenormaliserDialog.CiTarget.Title")); //$NON-NLS-1$
+        ciTarget[ciTarget.length-1].setToolTip(BaseMessages.getString(PKG, "DenormaliserDialog.CiTarget.Title")); //$NON-NLS-1$
         ciTarget[2].setUsingVariables(true);
 		
 		wTarget=new TableView(transMeta, shell, 
@@ -243,7 +245,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 							  );
 
 		wGetAgg=new Button(shell, SWT.PUSH);
-		wGetAgg.setText(Messages.getString("DenormaliserDialog.GetLookupFields.Button")); //$NON-NLS-1$
+		wGetAgg.setText(BaseMessages.getString(PKG, "DenormaliserDialog.GetLookupFields.Button")); //$NON-NLS-1$
 		fdGetAgg = new FormData();
 		fdGetAgg.top   = new FormAttachment(wlTarget, margin);
 		fdGetAgg.right = new FormAttachment(100, 0);
@@ -251,9 +253,9 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -304,7 +306,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), Messages.getString("DenormaliserDialog.Log.Getting.KeyInfo")); //$NON-NLS-1$
+		log.logDebug(toString(), BaseMessages.getString(PKG, "DenormaliserDialog.Log.Getting.KeyInfo")); //$NON-NLS-1$
 		
         if (input.getKeyField()!= null) wKeyField.setText(input.getKeyField());
 
@@ -392,13 +394,13 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
         if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                 Messages.getString("DenormaliserDialog.Unpivot.DialogTitle"),  //$NON-NLS-1$
+                 BaseMessages.getString(PKG, "DenormaliserDialog.Unpivot.DialogTitle"),  //$NON-NLS-1$
                  null,
-                 Messages.getString("DenormaliserDialog.Unpivot.DialogMessage",Const.CR,Const.CR), //$NON-NLS-1$ //$NON-NLS-2$
+                 BaseMessages.getString(PKG, "DenormaliserDialog.Unpivot.DialogMessage",Const.CR,Const.CR), //$NON-NLS-1$ //$NON-NLS-2$
                  MessageDialog.WARNING,
-                 new String[] { Messages.getString("DenormaliserDialog.WarningMessage.Option.1") }, //$NON-NLS-1$
+                 new String[] { BaseMessages.getString(PKG, "DenormaliserDialog.WarningMessage.Option.1") }, //$NON-NLS-1$
                  0,
-                 Messages.getString("DenormaliserDialog.WarningMessage.Option.2"), //$NON-NLS-1$
+                 BaseMessages.getString(PKG, "DenormaliserDialog.WarningMessage.Option.2"), //$NON-NLS-1$
                  "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
             );
             MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
@@ -422,7 +424,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("DenormaliserDialog.FailedToGetFields.DialogTitle"), Messages.getString("DenormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "DenormaliserDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "DenormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -445,7 +447,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
                                 if (!wKeyField.getText().equalsIgnoreCase(v.getName())) // Not the key field
                                 {
                                     int nr = tableItem.getParent().indexOf(tableItem)+1;
-                                    tableItem.setText(1, Messages.getString("DenormaliserDialog.TargetFieldname.Label")+nr); // the target fieldname //$NON-NLS-1$
+                                    tableItem.setText(1, BaseMessages.getString(PKG, "DenormaliserDialog.TargetFieldname.Label")+nr); // the target fieldname //$NON-NLS-1$
                                     tableItem.setText(2, v.getName());
                                     tableItem.setText(4, v.getTypeDesc());
                                     if (v.getLength()>=0) tableItem.setText(6, ""+v.getLength()); //$NON-NLS-1$
@@ -460,7 +462,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("DenormaliserDialog.FailedToGetFields.DialogTitle"), Messages.getString("DenormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "DenormaliserDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "DenormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	 private void getPreviousFieldNames()
@@ -485,7 +487,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 			}
 			catch(KettleException ke)
 			{
-				new ErrorDialog(shell, Messages.getString("DenormaliserDialog.FailedToGetFields.DialogTitle"), Messages.getString("DenormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "DenormaliserDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "DenormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		 }
 		}

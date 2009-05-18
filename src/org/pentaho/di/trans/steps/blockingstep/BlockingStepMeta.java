@@ -26,6 +26,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -39,6 +40,8 @@ import org.w3c.dom.Node;
 
 public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface {
 	
+	private static Class<?> PKG = BlockingStepMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** Directory to store the temp files */
     private String  directory;
 
@@ -78,39 +81,39 @@ public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface
             {
                 if (f.isDirectory())
                 {
-                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("BlockingStepMeta.CheckResult.DirectoryExists", realDirectory),
+                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "BlockingStepMeta.CheckResult.DirectoryExists", realDirectory),
                             stepMeta);
                     remarks.add(cr);
                 }
                 else
                 {
-                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("BlockingStepMeta.CheckResult.ExistsButNoDirectory",
+                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "BlockingStepMeta.CheckResult.ExistsButNoDirectory",
                             realDirectory), stepMeta);
                     remarks.add(cr);
                 }
             }
             else
             {
-                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("BlockingStepMeta.CheckResult.DirectoryNotExists", realDirectory),
+                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "BlockingStepMeta.CheckResult.DirectoryNotExists", realDirectory),
                         stepMeta);
                 remarks.add(cr);
             }
         }
         else
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("BlockingStepMeta.CheckResult.NoFields"), stepMeta);
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "BlockingStepMeta.CheckResult.NoFields"), stepMeta);
             remarks.add(cr);
         }
 
         // See if we have input streams leading to this step!
         if (input.length>0) 
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("BlockingStepMeta.CheckResult.StepExpectingRowsFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "BlockingStepMeta.CheckResult.StepExpectingRowsFromOtherSteps"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         } 
         else 
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("BlockingStepMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "BlockingStepMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
     }

@@ -36,13 +36,12 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.dialog.EnterTextDialog;
-import org.pentaho.di.ui.core.dialog.Messages;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.core.PropsUI;
 
 
 
@@ -55,6 +54,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class ErrorDialog extends Dialog
 {
+	private static Class<?> PKG = ErrorDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlDesc;
 	private Text         wDesc;
     private FormData     fdlDesc, fdDesc;
@@ -187,9 +188,9 @@ public class ErrorDialog extends Dialog
 		wDesc.setEditable(false);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wDetails=new Button(shell, SWT.PUSH);
-        wDetails.setText(Messages.getString("System.Button.Details"));
+        wDetails.setText(BaseMessages.getString(PKG, "System.Button.Details"));
         
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wDetails }, margin, null);
 
@@ -225,8 +226,8 @@ public class ErrorDialog extends Dialog
 
 	protected void showDetails(String details)
     {
-        EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("ErrorDialog.ShowDetails.Title"),
-            Messages.getString("ErrorDialog.ShowDetails.Message"), details);
+        EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "ErrorDialog.ShowDetails.Title"),
+            BaseMessages.getString(PKG, "ErrorDialog.ShowDetails.Message"), details);
         dialog.setReadOnly();
         dialog.open();
     }

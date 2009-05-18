@@ -19,8 +19,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -36,6 +37,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @since 28 September 2008
  */
 public class ReplaceString extends BaseStep implements StepInterface {
+	
+	private static Class<?> PKG = ReplaceStringMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private ReplaceStringMeta meta;
 
     private ReplaceStringData data;
@@ -132,11 +136,11 @@ public class ReplaceString extends BaseStep implements StepInterface {
             for (int i = 0; i < numFields; i++) {
                 data.inStreamNrs[i] = getInputRowMeta().indexOfValue(meta.getFieldInStream()[i]);
                 if (data.inStreamNrs[i] < 0) // couldn't find field!
-                    throw new KettleStepException(Messages.getString("ReplaceString.Exception.FieldRequired", meta.getFieldInStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new KettleStepException(BaseMessages.getString(PKG, "ReplaceString.Exception.FieldRequired", meta.getFieldInStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 
                 // check field type
                 if(getInputRowMeta().getValueMeta(data.inStreamNrs[i]).getType()!=ValueMeta.TYPE_STRING)
-                    throw new KettleStepException(Messages.getString("ReplaceString.Exception.FieldTypeNotString", meta.getFieldInStream()[i]));
+                    throw new KettleStepException(BaseMessages.getString(PKG, "ReplaceString.Exception.FieldTypeNotString", meta.getFieldInStream()[i]));
 
                 data.outStreamNrs[i] = environmentSubstitute(meta.getFieldOutStream()[i]);
 
@@ -159,7 +163,7 @@ public class ReplaceString extends BaseStep implements StepInterface {
             if (checkFeedback(getLinesRead()))
             {
                 if(log.isDetailed())
-                    logDetailed(Messages.getString("ReplaceString.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+                    logDetailed(BaseMessages.getString(PKG, "ReplaceString.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
             }
         } catch (KettleException e) 
         {
@@ -173,7 +177,7 @@ public class ReplaceString extends BaseStep implements StepInterface {
             }
             else
             {
-                logError(Messages.getString("ReplaceString.Log.ErrorInStep",e.getMessage())); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "ReplaceString.Log.ErrorInStep",e.getMessage())); //$NON-NLS-1$
                 setErrors(1);
                 stopAll();
                 setOutputDone();  // signal end to receiver(s)

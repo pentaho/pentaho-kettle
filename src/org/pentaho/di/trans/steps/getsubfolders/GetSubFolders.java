@@ -23,6 +23,7 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -39,6 +40,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class GetSubFolders extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = GetSubFoldersMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private GetSubFoldersMeta meta;
 
     private GetSubFoldersData data;
@@ -85,8 +88,8 @@ public class GetSubFolders extends BaseStep implements StepInterface
         	// Check is filename field is provided
 			if (Const.isEmpty(meta.getDynamicFoldernameField()))
 			{
-				logError(Messages.getString("GetSubFolders.Log.NoField"));
-				throw new KettleException(Messages.getString("GetSubFolders.Log.NoField"));
+				logError(BaseMessages.getString(PKG, "GetSubFolders.Log.NoField"));
+				throw new KettleException(BaseMessages.getString(PKG, "GetSubFolders.Log.NoField"));
 			}
 			
 			// cache the position of the field			
@@ -97,8 +100,8 @@ public class GetSubFolders extends BaseStep implements StepInterface
 				if (data.indexOfFoldernameField<0)
 				{
 					// The field is unreachable !
-					logError(Messages.getString("GetSubFolders.Log.ErrorFindingField")+ "[" + realDynamicFoldername+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleException(Messages.getString("GetSubFolders.Exception.CouldnotFindField",realDynamicFoldername)); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "GetSubFolders.Log.ErrorFindingField")+ "[" + realDynamicFoldername+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "GetSubFolders.Exception.CouldnotFindField",realDynamicFoldername)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}  
         }else
@@ -223,7 +226,7 @@ public class GetSubFolders extends BaseStep implements StepInterface
 
         if (checkFeedback(getLinesInput())) 	
         {
-        	if(log.isBasic()) logBasic(Messages.getString("GetSubFolders.Log.NrLine",""+getLinesInput()));
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "GetSubFolders.Log.NrLine",""+getLinesInput()));
         }
 
         return true;
@@ -236,16 +239,16 @@ public class GetSubFolders extends BaseStep implements StepInterface
         if (nonExistantFiles.size() != 0)
         {
             String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
-            logError(Messages.getString("GetSubFolders.Error.MissingFiles",message));
-            throw new KettleException(Messages.getString("GetSubFolders.Exception.MissingFiles",message));
+            logError(BaseMessages.getString(PKG, "GetSubFolders.Error.MissingFiles",message));
+            throw new KettleException(BaseMessages.getString(PKG, "GetSubFolders.Exception.MissingFiles",message));
         }
 
         List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
         if (nonAccessibleFiles.size() != 0)
         {
             String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
-            logError(Messages.getString("GetSubFolders.Error.NoAccessibleFiles",message));
-            throw new KettleException(Messages.getString("GetSubFolders.Exception.NoAccessibleFiles",message));
+            logError(BaseMessages.getString(PKG, "GetSubFolders.Error.NoAccessibleFiles",message));
+            throw new KettleException(BaseMessages.getString(PKG, "GetSubFolders.Exception.NoAccessibleFiles",message));
         }
     }
 

@@ -28,11 +28,11 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.uniquerowsbyhashset.Messages;
 import org.pentaho.di.trans.steps.uniquerowsbyhashset.UniqueRowsByHashSetMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -42,6 +42,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = UniqueRowsByHashSetMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private UniqueRowsByHashSetMeta input;
 
 	private Label        wlFields;
@@ -86,14 +88,14 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("UniqueRowsByHashSetDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("UniqueRowsByHashSetDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -111,7 +113,7 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 		wStepname.setLayoutData(fdStepname);
 		
         wlStoreValues=new Label(shell, SWT.RIGHT);
-        wlStoreValues.setText(Messages.getString("UniqueRowsByHashSetDialog.StoreValues.Label")); //$NON-NLS-1$
+        wlStoreValues.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.StoreValues.Label")); //$NON-NLS-1$
         props.setLook(wlStoreValues);
         fdlStoreValues=new FormData();
         fdlStoreValues.left = new FormAttachment(0, 0);
@@ -121,7 +123,7 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
         
         wStoreValues=new Button(shell, SWT.CHECK );
         props.setLook(wStoreValues);
-        wStoreValues.setToolTipText(Messages.getString("UniqueRowsByHashSetDialog.StoreValues.ToolTip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+        wStoreValues.setToolTipText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.StoreValues.ToolTip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
         fdStoreValues=new FormData();
         fdStoreValues.left = new FormAttachment(middle, 0);
         fdStoreValues.top  = new FormAttachment(wStepname, margin);
@@ -137,17 +139,17 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("UniqueRowsByHashSetDialog.Get.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.Get.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 		fdOK=new FormData();
 		
 		setButtonPositions(new Button[] { wOK, wCancel , wGet} , margin, null);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("UniqueRowsByHashSetDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -158,7 +160,7 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 		
 		colinf=new ColumnInfo[]
         {
-		  new ColumnInfo(Messages.getString("UniqueRowsByHashSetDialog.ColumnInfo.Fieldname"),ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), //$NON-NLS-1$
+		  new ColumnInfo(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.ColumnInfo.Fieldname"),ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), //$NON-NLS-1$
         };
 		
 		wFields=new TableView(transMeta, shell, 
@@ -200,7 +202,7 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
                   }
                   catch(KettleException e)
                   {
-                  	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                  	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                   }
               }
           }
@@ -311,7 +313,7 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("UniqueRowsByHashSetDialog.FailedToGetFields.DialogTitle"), Messages.getString("UniqueRowsByHashSetDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 

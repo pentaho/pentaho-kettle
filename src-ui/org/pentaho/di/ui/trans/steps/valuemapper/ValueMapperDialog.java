@@ -38,23 +38,24 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.valuemapper.Messages;
 import org.pentaho.di.trans.steps.valuemapper.ValueMapperMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 public class ValueMapperDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = ValueMapperMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlStepname;
 	private Text         wStepname;
     private FormData     fdlStepname, fdStepname;
@@ -108,14 +109,14 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("ValueMapperDialog.DialogTitle")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "ValueMapperDialog.DialogTitle")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("ValueMapperDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "ValueMapperDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -133,7 +134,7 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
 
         // Fieldname line
         wlFieldname=new Label(shell, SWT.RIGHT);
-        wlFieldname.setText(Messages.getString("ValueMapperDialog.FieldnameToUser.Label")); //$NON-NLS-1$
+        wlFieldname.setText(BaseMessages.getString(PKG, "ValueMapperDialog.FieldnameToUser.Label")); //$NON-NLS-1$
         props.setLook(wlFieldname);
         fdlFieldname=new FormData();
         fdlFieldname.left = new FormAttachment(0, 0);
@@ -167,7 +168,7 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
     );
         // TargetFieldname line
         wlTargetFieldname=new Label(shell, SWT.RIGHT);
-        wlTargetFieldname.setText(Messages.getString("ValueMapperDialog.TargetFieldname.Label")); //$NON-NLS-1$
+        wlTargetFieldname.setText(BaseMessages.getString(PKG, "ValueMapperDialog.TargetFieldname.Label")); //$NON-NLS-1$
         props.setLook(wlTargetFieldname);
         fdlTargetFieldname=new FormData();
         fdlTargetFieldname.left = new FormAttachment(0, 0);
@@ -185,7 +186,7 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
         
         // Non match default line
         wlNonMatchDefault=new Label(shell, SWT.RIGHT);
-        wlNonMatchDefault.setText(Messages.getString("ValueMapperDialog.NonMatchDefault.Label")); //$NON-NLS-1$
+        wlNonMatchDefault.setText(BaseMessages.getString(PKG, "ValueMapperDialog.NonMatchDefault.Label")); //$NON-NLS-1$
         props.setLook(wlNonMatchDefault);
         fdlNonMatchDefault=new FormData();
         fdlNonMatchDefault.left = new FormAttachment(0, 0);
@@ -202,7 +203,7 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
         wNonMatchDefault.setLayoutData(fdNonMatchDefault);        
         
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("ValueMapperDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "ValueMapperDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -213,8 +214,8 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
 		final int FieldsRows=input.getSourceValue().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("ValueMapperDialog.Fields.Column.SourceValue"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		colinf[1]=new ColumnInfo(Messages.getString("ValueMapperDialog.Fields.Column.TargetValue"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "ValueMapperDialog.Fields.Column.SourceValue"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "ValueMapperDialog.Fields.Column.TargetValue"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 
 		wFields=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -234,9 +235,9 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
 				
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
 
@@ -287,7 +288,7 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
 			}
 			catch(KettleException ke)
 			{
-				new ErrorDialog(shell, Messages.getString("ValueMapperDialog.FailedToGetFields.DialogTitle"), Messages.getString("ValueMapperDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "ValueMapperDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ValueMapperDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		 }
 		}

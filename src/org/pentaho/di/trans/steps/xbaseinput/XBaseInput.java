@@ -19,6 +19,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -35,6 +36,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class XBaseInput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = XBaseInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private XBaseInputMeta meta;
 	private XBaseInputData data;
 		
@@ -74,7 +77,7 @@ public class XBaseInput extends BaseStep implements StepInterface
                         idx = fileRowMeta.indexOfValue(meta.getAcceptingField());
                         if (idx<0)
                         {
-                            logError(Messages.getString("XBaseInput.Log.Error.UnableToFindFilenameField", meta.getAcceptingField()));
+                            logError(BaseMessages.getString(PKG, "XBaseInput.Log.Error.UnableToFindFilenameField", meta.getAcceptingField()));
                             setErrors(1);
                             stopAll();
                             return false;
@@ -97,7 +100,7 @@ public class XBaseInput extends BaseStep implements StepInterface
                 
                 if (data.files.nrOfFiles()==0)
                 {
-                    logBasic(Messages.getString("XBaseInput.Log.Error.NoFilesSpecified"));
+                    logBasic(BaseMessages.getString(PKG, "XBaseInput.Log.Error.NoFilesSpecified"));
                     return false;
                 }
             }
@@ -144,7 +147,7 @@ public class XBaseInput extends BaseStep implements StepInterface
 
 		putRow(data.outputRowMeta, row);        // fill the rowset(s). (wait for empty)
 
-        if (checkFeedback(getLinesInput())) logBasic(Messages.getString("XBaseInput.Log.LineNr")+getLinesInput()); //$NON-NLS-1$
+        if (checkFeedback(getLinesInput())) logBasic(BaseMessages.getString(PKG, "XBaseInput.Log.LineNr")+getLinesInput()); //$NON-NLS-1$
 
         if (meta.getRowLimit()>0 && getLinesInput()>=meta.getRowLimit())  // limit has been reached: stop now.
         {
@@ -167,7 +170,7 @@ public class XBaseInput extends BaseStep implements StepInterface
             
             if (data.files.nrOfFiles()==0 && !meta.isAcceptingFilenames())
             {
-                logError(Messages.getString("XBaseInput.Log.Error.NoFilesSpecified"));
+                logError(BaseMessages.getString(PKG, "XBaseInput.Log.Error.NoFilesSpecified"));
                 return false;
             }
             if ( meta.isAcceptingFilenames() ) 
@@ -176,13 +179,13 @@ public class XBaseInput extends BaseStep implements StepInterface
 	            	if ( Const.isEmpty(meta.getAcceptingStepName()) ||
 	            		 findInputRowSet(meta.getAcceptingStepName()) == null )
 	            	{
-	            		logError(Messages.getString("XBaseInput.Log.Error.InvalidAcceptingStepName"));
+	            		logError(BaseMessages.getString(PKG, "XBaseInput.Log.Error.InvalidAcceptingStepName"));
 	                    return false;
 	            	}
 	            	
 	            	if ( Const.isEmpty(meta.getAcceptingField()) )
 	            	{
-	            		logError(Messages.getString("XBaseInput.Log.Error.InvalidAcceptingFieldName"));
+	            		logError(BaseMessages.getString(PKG, "XBaseInput.Log.Error.InvalidAcceptingFieldName"));
 	                    return false;            		
 	            	}
             	}
@@ -201,7 +204,7 @@ public class XBaseInput extends BaseStep implements StepInterface
         // Close the last file before opening the next...
         if (data.xbi!=null)
         {
-            logBasic(Messages.getString("XBaseInput.Log.FinishedReadingRecords")); //$NON-NLS-1$
+            logBasic(BaseMessages.getString(PKG, "XBaseInput.Log.FinishedReadingRecords")); //$NON-NLS-1$
             data.xbi.close();
         }
         
@@ -218,17 +221,17 @@ public class XBaseInput extends BaseStep implements StepInterface
             }
             data.xbi.open();
             
-            logBasic(Messages.getString("XBaseInput.Log.OpenedXBaseFile")+" : ["+data.xbi+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            logBasic(BaseMessages.getString(PKG, "XBaseInput.Log.OpenedXBaseFile")+" : ["+data.xbi+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             data.fields = data.xbi.getFields();
             
             // Add this to the result file names...
             ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file_dbf, getTransMeta().getName(), getStepname());
-            resultFile.setComment(Messages.getString("XBaseInput.ResultFile.Comment"));
+            resultFile.setComment(BaseMessages.getString(PKG, "XBaseInput.ResultFile.Comment"));
             addResultFile(resultFile);
         }
         catch(Exception e)
         {
-            logError(Messages.getString("XBaseInput.Log.Error.CouldNotOpenXBaseFile1")+data.file_dbf+Messages.getString("XBaseInput.Log.Error.CouldNotOpenXBaseFile2")+e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(BaseMessages.getString(PKG, "XBaseInput.Log.Error.CouldNotOpenXBaseFile1")+data.file_dbf+BaseMessages.getString(PKG, "XBaseInput.Log.Error.CouldNotOpenXBaseFile2")+e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
             throw new KettleException(e);
         }
     }
@@ -242,7 +245,7 @@ public class XBaseInput extends BaseStep implements StepInterface
 
 	private void closeLastFile()
     {
-        logBasic(Messages.getString("XBaseInput.Log.FinishedReadingRecords")); //$NON-NLS-1$
+        logBasic(BaseMessages.getString(PKG, "XBaseInput.Log.FinishedReadingRecords")); //$NON-NLS-1$
         if ( data.xbi != null )
         {
             data.xbi.close();

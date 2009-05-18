@@ -58,12 +58,12 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.parallelgzipcsv.Messages;
 import org.pentaho.di.trans.steps.parallelgzipcsv.ParGzipCsvInputMeta;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
@@ -83,6 +83,8 @@ import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDial
 
 public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = ParGzipCsvInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private ParGzipCsvInputMeta inputMeta;
 	
 	private TextVar      wFilename;
@@ -136,7 +138,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("ParGzipCsvInputDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -144,7 +146,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		// Step name line
 		//
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("ParGzipCsvInputDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -172,14 +174,14 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 				previousFields = transMeta.getPrevStepFields(stepMeta);
 			}
 			catch(KettleStepException e) {
-				new ErrorDialog(shell, Messages.getString("ParGzipCsvInputDialog.ErrorDialog.UnableToGetInputFields.Title"), Messages.getString("ParGzipCsvInputDialog.ErrorDialog.UnableToGetInputFields.Message"), e);
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "ParGzipCsvInputDialog.ErrorDialog.UnableToGetInputFields.Title"), BaseMessages.getString(PKG, "ParGzipCsvInputDialog.ErrorDialog.UnableToGetInputFields.Message"), e);
 				previousFields = new RowMeta();
 			}
 			
 			// The filename field ...
 			//
 			Label wlFilename = new Label(shell, SWT.RIGHT);
-			wlFilename.setText(Messages.getString("ParGzipCsvInputDialog.FilenameField.Label")); //$NON-NLS-1$
+			wlFilename.setText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.FilenameField.Label")); //$NON-NLS-1$
 	 		props.setLook(wlFilename);
 			FormData fdlFilename = new FormData();
 			fdlFilename.top  = new FormAttachment(lastControl, margin);
@@ -200,7 +202,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 			// Checkbox to include the filename in the output...
 			//
 			Label wlIncludeFilename = new Label(shell, SWT.RIGHT);
-			wlIncludeFilename.setText(Messages.getString("ParGzipCsvInputDialog.IncludeFilenameField.Label")); //$NON-NLS-1$
+			wlIncludeFilename.setText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.IncludeFilenameField.Label")); //$NON-NLS-1$
 	 		props.setLook(wlIncludeFilename);
 			FormData fdlIncludeFilename = new FormData();
 			fdlIncludeFilename.top  = new FormAttachment(lastControl, margin);
@@ -225,8 +227,8 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 			//
 	        wbbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
 	        props.setLook(wbbFilename);
-	        wbbFilename.setText(Messages.getString("System.Button.Browse"));
-	        wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+	        wbbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+	        wbbFilename.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 	        FormData fdbFilename = new FormData();
 	        fdbFilename.top  = new FormAttachment(lastControl, margin);
 	        fdbFilename.right= new FormAttachment(100, 0);
@@ -235,7 +237,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 	        // The field itself...
 	        //
 			Label wlFilename = new Label(shell, SWT.RIGHT);
-			wlFilename.setText(Messages.getString("ParGzipCsvInputDialog.Filename.Label")); //$NON-NLS-1$
+			wlFilename.setText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.Filename.Label")); //$NON-NLS-1$
 	 		props.setLook(wlFilename);
 			FormData fdlFilename = new FormData();
 			fdlFilename.top  = new FormAttachment(lastControl, margin);
@@ -255,7 +257,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		
 		// delimiter
 		Label wlDelimiter = new Label(shell, SWT.RIGHT);
-		wlDelimiter.setText(Messages.getString("ParGzipCsvInputDialog.Delimiter.Label")); //$NON-NLS-1$
+		wlDelimiter.setText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.Delimiter.Label")); //$NON-NLS-1$
  		props.setLook(wlDelimiter);
 		FormData fdlDelimiter = new FormData();
 		fdlDelimiter.top  = new FormAttachment(lastControl, margin);
@@ -264,7 +266,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		wlDelimiter.setLayoutData(fdlDelimiter);
 		wbDelimiter=new Button(shell, SWT.PUSH| SWT.CENTER);
         props.setLook(wbDelimiter);
-        wbDelimiter.setText(Messages.getString("ParGzipCsvInputDialog.Delimiter.Button"));
+        wbDelimiter.setText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.Delimiter.Button"));
         FormData fdbDelimiter=new FormData();
         fdbDelimiter.top  = new FormAttachment(lastControl, margin);
         fdbDelimiter.right= new FormAttachment(100, 0);        
@@ -281,7 +283,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		
 		// enclosure
 		Label wlEnclosure = new Label(shell, SWT.RIGHT);
-		wlEnclosure.setText(Messages.getString("ParGzipCsvInputDialog.Enclosure.Label")); //$NON-NLS-1$
+		wlEnclosure.setText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.Enclosure.Label")); //$NON-NLS-1$
  		props.setLook(wlEnclosure);
 		FormData fdlEnclosure = new FormData();
 		fdlEnclosure.top  = new FormAttachment(lastControl, margin);
@@ -301,7 +303,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		// bufferSize
 		//
 		Label wlBufferSize = new Label(shell, SWT.RIGHT);
-		wlBufferSize.setText(Messages.getString("ParGzipCsvInputDialog.BufferSize.Label")); //$NON-NLS-1$
+		wlBufferSize.setText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.BufferSize.Label")); //$NON-NLS-1$
  		props.setLook(wlBufferSize);
 		FormData fdlBufferSize = new FormData();
 		fdlBufferSize.top  = new FormAttachment(lastControl, margin);
@@ -321,7 +323,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		// performingLazyConversion?
 		//
 		Label wlLazyConversion = new Label(shell, SWT.RIGHT);
-		wlLazyConversion.setText(Messages.getString("ParGzipCsvInputDialog.LazyConversion.Label")); //$NON-NLS-1$
+		wlLazyConversion.setText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.LazyConversion.Label")); //$NON-NLS-1$
  		props.setLook(wlLazyConversion);
 		FormData fdlLazyConversion = new FormData();
 		fdlLazyConversion.top  = new FormAttachment(lastControl, margin);
@@ -340,7 +342,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		// header row?
 		//
 		Label wlHeaderPresent = new Label(shell, SWT.RIGHT);
-		wlHeaderPresent.setText(Messages.getString("ParGzipCsvInputDialog.HeaderPresent.Label")); //$NON-NLS-1$
+		wlHeaderPresent.setText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.HeaderPresent.Label")); //$NON-NLS-1$
  		props.setLook(wlHeaderPresent);
 		FormData fdlHeaderPresent = new FormData();
 		fdlHeaderPresent.top  = new FormAttachment(lastControl, margin);
@@ -357,7 +359,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		lastControl = wHeaderPresent;
 		
 		wlAddResult=new Label(shell, SWT.RIGHT);
-		wlAddResult.setText(Messages.getString("ParGzipCsvInputDialog.AddResult.Label"));
+		wlAddResult.setText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.AddResult.Label"));
  		props.setLook(wlAddResult);
 		fdlAddResult=new FormData();
 		fdlAddResult.left = new FormAttachment(0, 0);
@@ -366,7 +368,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		wlAddResult.setLayoutData(fdlAddResult);
 		wAddResult=new Button(shell, SWT.CHECK );
  		props.setLook(wAddResult);
-		wAddResult.setToolTipText(Messages.getString("ParGzipCsvInputDialog.AddResult.Tooltip"));
+		wAddResult.setToolTipText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.AddResult.Tooltip"));
 		fdAddResult=new FormData();
 		fdAddResult.left = new FormAttachment(middle, 0);
 		fdAddResult.top  = new FormAttachment(wHeaderPresent, margin);
@@ -376,7 +378,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
         // The field itself...
         //
 		Label wlRowNumField = new Label(shell, SWT.RIGHT);
-		wlRowNumField.setText(Messages.getString("ParGzipCsvInputDialog.RowNumField.Label")); //$NON-NLS-1$
+		wlRowNumField.setText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.RowNumField.Label")); //$NON-NLS-1$
  		props.setLook(wlRowNumField);
 		FormData fdlRowNumField = new FormData();
 		fdlRowNumField.top  = new FormAttachment(lastControl, margin);
@@ -396,7 +398,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		// running in parallel?
 		//
 		Label wlRunningInParallel = new Label(shell, SWT.RIGHT);
-		wlRunningInParallel.setText(Messages.getString("ParGzipCsvInputDialog.RunningInParallel.Label")); //$NON-NLS-1$
+		wlRunningInParallel.setText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.RunningInParallel.Label")); //$NON-NLS-1$
  		props.setLook(wlRunningInParallel);
 		FormData fdlRunningInParallel = new FormData();
 		fdlRunningInParallel.top  = new FormAttachment(lastControl, margin);
@@ -413,7 +415,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		
 		// Encoding
 		Label wlEncoding = new Label(shell, SWT.RIGHT);
-		wlEncoding.setText(Messages.getString("ParGzipCsvInputDialog.Encoding.Label")); //$NON-NLS-1$
+		wlEncoding.setText(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.Encoding.Label")); //$NON-NLS-1$
  		props.setLook(wlEncoding);
 		FormData fdlEncoding = new FormData();
 		fdlEncoding.top  = new FormAttachment(lastControl, margin);
@@ -451,14 +453,14 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		// Some buttons first, so that the dialog scales nicely...
 		//
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 		wPreview=new Button(shell, SWT.PUSH);
-		wPreview.setText(Messages.getString("System.Button.Preview")); //$NON-NLS-1$
+		wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); //$NON-NLS-1$
 		wPreview.setEnabled(!isReceivingInput);
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); //$NON-NLS-1$
 		wGet.setEnabled(!isReceivingInput);
 
 		setButtonPositions(new Button[] { wOK, wCancel, wPreview, wGet, }, margin, null);
@@ -467,15 +469,15 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		// Fields
         ColumnInfo[] colinf=new ColumnInfo[]
             {
-             new ColumnInfo(Messages.getString("ParGzipCsvInputDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("ParGzipCsvInputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.getTypes(), true ),
-             new ColumnInfo(Messages.getString("ParGzipCsvInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  Const.getConversionFormats()),
-             new ColumnInfo(Messages.getString("ParGzipCsvInputDialog.LengthColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("ParGzipCsvInputDialog.PrecisionColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("ParGzipCsvInputDialog.CurrencyColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("ParGzipCsvInputDialog.DecimalColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("ParGzipCsvInputDialog.GroupColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("ParGzipCsvInputDialog.TrimTypeColumn.Column"),   ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.trimTypeDesc),
+             new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.getTypes(), true ),
+             new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  Const.getConversionFormats()),
+             new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.LengthColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.PrecisionColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.CurrencyColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.DecimalColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.GroupColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.TrimTypeColumn.Column"),   ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.trimTypeDesc),
             };
         
         colinf[2].setComboValuesSelectionListener(new ComboValuesSelectionListener() {
@@ -559,7 +561,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 								dialog.setFileName( fname );
 							}
 							
-							dialog.setFilterNames(new String[] {Messages.getString("System.FileType.CSVFiles")+", "+Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.AllFiles")});
+							dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "System.FileType.CSVFiles")+", "+BaseMessages.getString(PKG, "System.FileType.TextFiles"), BaseMessages.getString(PKG, "System.FileType.CSVFiles"), BaseMessages.getString(PKG, "System.FileType.TextFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
 							
 							if (dialog.open()!=null)
 							{
@@ -735,7 +737,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 			if (!(fileObject instanceof LocalFile)) {
 				// We can only use NIO on local files at the moment, so that's what we limit ourselves to.
 				//
-				throw new KettleException(Messages.getString("ParGzipCsvInput.Log.OnlyLocalFilesAreSupported"));
+				throw new KettleException(BaseMessages.getString(PKG, "ParGzipCsvInput.Log.OnlyLocalFilesAreSupported"));
 			}
 			
 			wFields.table.removeAll();
@@ -790,8 +792,8 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
             // Now we can continue reading the rows of data and we can guess the 
             // Sample a few lines to determine the correct type of the fields...
             // 
-            String shellText = Messages.getString("ParGzipCsvInputDialog.LinesToSample.DialogTitle");
-            String lineText = Messages.getString("ParGzipCsvInputDialog.LinesToSample.DialogMessage");
+            String shellText = BaseMessages.getString(PKG, "ParGzipCsvInputDialog.LinesToSample.DialogTitle");
+            String lineText = BaseMessages.getString(PKG, "ParGzipCsvInputDialog.LinesToSample.DialogMessage");
             EnterNumberDialog end = new EnterNumberDialog(shell, 100, shellText, lineText);
             int samples = end.open();
             if (samples >= 0)
@@ -810,7 +812,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
                     wFields.setRowNums();
                     wFields.optWidth(true);
 
-					EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("ParGzipCsvInputDialog.ScanResults.DialogTitle"), Messages.getString("ParGzipCsvInputDialog.ScanResults.DialogMessage"), message, true);
+					EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "ParGzipCsvInputDialog.ScanResults.DialogTitle"), BaseMessages.getString(PKG, "ParGzipCsvInputDialog.ScanResults.DialogMessage"), message, true);
 					etd.setReadOnly();
 					etd.open();
                 }
@@ -818,11 +820,11 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		}
 		catch(IOException e)
 		{
-            new ErrorDialog(shell, Messages.getString("ParGzipCsvInputDialog.IOError.DialogTitle"), Messages.getString("ParGzipCsvInputDialog.IOError.DialogMessage"), e);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "ParGzipCsvInputDialog.IOError.DialogTitle"), BaseMessages.getString(PKG, "ParGzipCsvInputDialog.IOError.DialogMessage"), e);
 		}
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("ParGzipCsvInputDialog.ErrorGettingFileDesc.DialogMessage"), e);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "ParGzipCsvInputDialog.ErrorGettingFileDesc.DialogMessage"), e);
         }
 		finally
 		{
@@ -845,7 +847,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
         
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("ParGzipCsvInputDialog.PreviewSize.DialogTitle"), Messages.getString("ParGzipCsvInputDialog.PreviewSize.DialogMessage"));
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "ParGzipCsvInputDialog.PreviewSize.DialogTitle"), BaseMessages.getString(PKG, "ParGzipCsvInputDialog.PreviewSize.DialogMessage"));
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {
@@ -859,8 +861,8 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
             {
                 if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                 {
-                	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
-                			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+                	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
+                			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true );
                 	etd.setReadOnly();
                 	etd.open();
                 }

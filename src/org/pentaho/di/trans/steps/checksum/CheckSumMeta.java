@@ -15,8 +15,6 @@ package org.pentaho.di.trans.steps.checksum;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -30,6 +28,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -38,6 +37,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 /*
  * Created on 30-06-2008
@@ -45,6 +45,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Samatar Hassan
  */
 public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
+	private static Class<?> PKG = CheckSumMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	/** by which fields to display? */
 	private String fieldName[];
 
@@ -253,13 +255,11 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 		String error_message = "";
 
 		if (Const.isEmpty(resultfieldName)) {
-			error_message = Messages
-					.getString("CheckSumMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
+			error_message = BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message,
 					stepMeta);
 		} else {
-			error_message = Messages
-					.getString("CheckSumMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
+			error_message = BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
 			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message,
 					stepMeta);
 		}
@@ -268,15 +268,12 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 		if (prev == null || prev.size() == 0) {
 			cr = new CheckResult(
 					CheckResult.TYPE_RESULT_WARNING,
-					Messages
-							.getString("CheckSumMeta.CheckResult.NotReceivingFields"), stepMeta); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.NotReceivingFields"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		} else {
 			cr = new CheckResult(
 					CheckResult.TYPE_RESULT_OK,
-					Messages
-							.getString(
-									"CheckSumMeta.CheckResult.StepRecevingData", prev.size() + ""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.StepRecevingData", prev.size() + ""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 
 			boolean error_found = false;
@@ -291,7 +288,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 				}
 			}
 			if (error_found) {
-				error_message = Messages.getString("CheckSumMeta.CheckResult.FieldsFound", error_message);
+				error_message = BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.FieldsFound", error_message);
 
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR,
 						error_message, stepMeta);
@@ -300,15 +297,13 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 				if (fieldName.length > 0) {
 					cr = new CheckResult(
 							CheckResult.TYPE_RESULT_OK,
-							Messages
-									.getString("CheckSumMeta.CheckResult.AllFieldsFound"),
+							BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.AllFieldsFound"),
 							stepMeta);
 					remarks.add(cr);
 				} else {
 					cr = new CheckResult(
 							CheckResult.TYPE_RESULT_WARNING,
-							Messages
-									.getString("CheckSumMeta.CheckResult.NoFieldsEntered"),
+							BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.NoFieldsEntered"),
 							stepMeta);
 					remarks.add(cr);
 				}
@@ -320,14 +315,12 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 		if (input.length > 0) {
 			cr = new CheckResult(
 					CheckResult.TYPE_RESULT_OK,
-					Messages
-							.getString("CheckSumMeta.CheckResult.StepRecevingData2"), stepMeta); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.StepRecevingData2"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		} else {
 			cr = new CheckResult(
 					CheckResult.TYPE_RESULT_ERROR,
-					Messages
-							.getString("CheckSumMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

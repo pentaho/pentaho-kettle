@@ -16,6 +16,7 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -32,6 +33,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class SwitchCase extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = SwitchCaseMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private SwitchCaseMeta meta;
 	private SwitchCaseData data;
 	
@@ -61,7 +64,7 @@ public class SwitchCase extends BaseStep implements StepInterface
 
             data.fieldIndex = getInputRowMeta().indexOfValue(meta.getFieldname());
             if (data.fieldIndex<0) {
-            	throw new KettleException(Messages.getString("SwitchCase.Exception.UnableToFindFieldName", meta.getFieldname())); //$NON-NLS-1$
+            	throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Exception.UnableToFindFieldName", meta.getFieldname())); //$NON-NLS-1$
             }
 
             data.inputValueMeta = getInputRowMeta().getValueMeta(data.fieldIndex); 
@@ -69,7 +72,7 @@ public class SwitchCase extends BaseStep implements StepInterface
         	try {
 	        	for (int i=0;i<meta.getCaseTargetSteps().length;i++) {
 	        		if (meta.getCaseTargetSteps()[i]==null) {
-	        			throw new KettleException(Messages.getString("SwitchCase.Log.NoTargetStepSpecifiedForValue", meta.getCaseValues()[i])); //$NON-NLS-1$
+	        			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.NoTargetStepSpecifiedForValue", meta.getCaseValues()[i])); //$NON-NLS-1$
 	        		} else {
 	        			RowSet rowSet = findOutputRowSet(meta.getCaseTargetSteps()[i].getName());
 	        			if (rowSet!=null) {
@@ -86,10 +89,10 @@ public class SwitchCase extends BaseStep implements StepInterface
 		            			
 		            		}
 		            		catch(Exception e) {
-		            			throw new KettleException(Messages.getString("SwitchCase.Log.UnableToConvertValue", meta.getCaseValues()[i]), e); //$NON-NLS-1$
+		            			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.UnableToConvertValue", meta.getCaseValues()[i]), e); //$NON-NLS-1$
 		            		}
 	        			} else {
-	            			throw new KettleException(Messages.getString("SwitchCase.Log.UnableToFindTargetRowSetForStep", meta.getCaseTargetSteps()[i].getName())); //$NON-NLS-1$
+	            			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.UnableToFindTargetRowSetForStep", meta.getCaseTargetSteps()[i].getName())); //$NON-NLS-1$
 	        			}
 	        		}
 	        	}
@@ -133,7 +136,7 @@ public class SwitchCase extends BaseStep implements StepInterface
         
         if (checkFeedback(getLinesRead())) 
         {
-        	if (log.isBasic()) logBasic(Messages.getString("SwitchCase.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if (log.isBasic()) logBasic(BaseMessages.getString(PKG, "SwitchCase.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
         }
 			
 		return true;
@@ -152,7 +155,7 @@ public class SwitchCase extends BaseStep implements StepInterface
             data.outputMap = meta.isContains() ? new ContainsKeyToRowSetMap() : new KeyToRowSetMap();
         	
         	if (Const.isEmpty(meta.getFieldname())) {
-        		logError(Messages.getString("SwitchCase.Log.NoFieldSpecifiedToSwitchWith")); //$NON-NLS-1$
+        		logError(BaseMessages.getString(PKG, "SwitchCase.Log.NoFieldSpecifiedToSwitchWith")); //$NON-NLS-1$
         		return false;
         	}
         	

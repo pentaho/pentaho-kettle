@@ -48,15 +48,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.fixedinput.FixedFileInputField;
@@ -65,17 +64,20 @@ import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
-import org.pentaho.di.trans.steps.fixedinput.Messages;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 public class FixedInputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private FixedInputMeta inputMeta;
 	
 	private TextVar      wFilename;
@@ -130,7 +132,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("FixedInputDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "FixedInputDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -138,7 +140,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		// Step name line
 		//
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("FixedInputDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "FixedInputDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -161,8 +163,8 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		//
         wbbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
         props.setLook(wbbFilename);
-        wbbFilename.setText(Messages.getString("System.Button.Browse"));
-        wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+        wbbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+        wbbFilename.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
         FormData fdbFilename = new FormData();
         fdbFilename.top  = new FormAttachment(lastControl, margin);
         fdbFilename.right= new FormAttachment(100, 0);
@@ -171,7 +173,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
         // The field itself...
         //
 		Label wlFilename = new Label(shell, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("FixedInputDialog.Filename.Label")); //$NON-NLS-1$
+		wlFilename.setText(BaseMessages.getString(PKG, "FixedInputDialog.Filename.Label")); //$NON-NLS-1$
  		props.setLook(wlFilename);
 		FormData fdlFilename = new FormData();
 		fdlFilename.top  = new FormAttachment(lastControl, margin);
@@ -190,7 +192,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// delimiter
 		Label wlLineWidth = new Label(shell, SWT.RIGHT);
-		wlLineWidth.setText(Messages.getString("FixedInputDialog.LineWidth.Label")); //$NON-NLS-1$
+		wlLineWidth.setText(BaseMessages.getString(PKG, "FixedInputDialog.LineWidth.Label")); //$NON-NLS-1$
  		props.setLook(wlLineWidth);
 		FormData fdlLineWidth = new FormData();
 		fdlLineWidth.top  = new FormAttachment(lastControl, margin);
@@ -209,7 +211,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		// delimiter
 		Label wlLineFeedPresent = new Label(shell, SWT.RIGHT);
-		wlLineFeedPresent.setText(Messages.getString("FixedInputDialog.LineFeedPresent.Label")); //$NON-NLS-1$
+		wlLineFeedPresent.setText(BaseMessages.getString(PKG, "FixedInputDialog.LineFeedPresent.Label")); //$NON-NLS-1$
  		props.setLook(wlLineFeedPresent);
 		FormData fdlLineFeedPresent = new FormData();
 		fdlLineFeedPresent.top  = new FormAttachment(lastControl, margin);
@@ -228,7 +230,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		// bufferSize
 		//
 		Label wlBufferSize = new Label(shell, SWT.RIGHT);
-		wlBufferSize.setText(Messages.getString("FixedInputDialog.BufferSize.Label")); //$NON-NLS-1$
+		wlBufferSize.setText(BaseMessages.getString(PKG, "FixedInputDialog.BufferSize.Label")); //$NON-NLS-1$
  		props.setLook(wlBufferSize);
 		FormData fdlBufferSize = new FormData();
 		fdlBufferSize.top  = new FormAttachment(lastControl, margin);
@@ -248,7 +250,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		// performingLazyConversion?
 		//
 		Label wlLazyConversion = new Label(shell, SWT.RIGHT);
-		wlLazyConversion.setText(Messages.getString("FixedInputDialog.LazyConversion.Label")); //$NON-NLS-1$
+		wlLazyConversion.setText(BaseMessages.getString(PKG, "FixedInputDialog.LazyConversion.Label")); //$NON-NLS-1$
  		props.setLook(wlLazyConversion);
 		FormData fdlLazyConversion = new FormData();
 		fdlLazyConversion.top  = new FormAttachment(lastControl, margin);
@@ -267,7 +269,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		// header row?
 		//
 		Label wlHeaderPresent = new Label(shell, SWT.RIGHT);
-		wlHeaderPresent.setText(Messages.getString("FixedInputDialog.HeaderPresent.Label")); //$NON-NLS-1$
+		wlHeaderPresent.setText(BaseMessages.getString(PKG, "FixedInputDialog.HeaderPresent.Label")); //$NON-NLS-1$
  		props.setLook(wlHeaderPresent);
 		FormData fdlHeaderPresent = new FormData();
 		fdlHeaderPresent.top  = new FormAttachment(lastControl, margin);
@@ -286,7 +288,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		// running in parallel?
 		//
 		Label wlRunningInParallel = new Label(shell, SWT.RIGHT);
-		wlRunningInParallel.setText(Messages.getString("FixedInputDialog.RunningInParallel.Label")); //$NON-NLS-1$
+		wlRunningInParallel.setText(BaseMessages.getString(PKG, "FixedInputDialog.RunningInParallel.Label")); //$NON-NLS-1$
  		props.setLook(wlRunningInParallel);
 		FormData fdlRunningInParallel = new FormData();
 		fdlRunningInParallel.top  = new FormAttachment(lastControl, margin);
@@ -303,15 +305,15 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		// The file type...
 		//
 		wlFileType = new Label(shell, SWT.RIGHT);
-		wlFileType.setText(Messages.getString("FixedInputDialog.FileType.Label")); //$NON-NLS-1$
-		wlFileType.setToolTipText(Messages.getString("FixedInputDialog.FileType.ToolTip")); //$NON-NLS-1$
+		wlFileType.setText(BaseMessages.getString(PKG, "FixedInputDialog.FileType.Label")); //$NON-NLS-1$
+		wlFileType.setToolTipText(BaseMessages.getString(PKG, "FixedInputDialog.FileType.ToolTip")); //$NON-NLS-1$
  		props.setLook(wlFileType);
 		FormData fdlFileType = new FormData();
 		fdlFileType.top  = new FormAttachment(lastControl, margin);
 		fdlFileType.left = new FormAttachment(wRunningInParallel, margin*2);
 		wlFileType.setLayoutData(fdlFileType);
 		wFileType = new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
-		wFileType.setToolTipText(Messages.getString("FixedInputDialog.FileType.ToolTip")); //$NON-NLS-1$
+		wFileType.setToolTipText(BaseMessages.getString(PKG, "FixedInputDialog.FileType.ToolTip")); //$NON-NLS-1$
  		props.setLook(wFileType);
  		wFileType.setItems(FixedInputMeta.fileTypeDesc);
 		FormData fdFileType = new FormData();
@@ -328,7 +330,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		});
 		
         Label wlEncoding = new Label(shell, SWT.RIGHT);
-        wlEncoding.setText(Messages.getString("FixedInputDialog.Encoding.Label"));
+        wlEncoding.setText(BaseMessages.getString(PKG, "FixedInputDialog.Encoding.Label"));
         props.setLook(wlEncoding);
         FormData fdlEncoding = new FormData();
         fdlEncoding.left = new FormAttachment(0, 0);
@@ -365,7 +367,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 
 
     	wlAddResult=new Label(shell, SWT.RIGHT);
-		wlAddResult.setText(Messages.getString("FixedInputDialog.AddResult.Label"));
+		wlAddResult.setText(BaseMessages.getString(PKG, "FixedInputDialog.AddResult.Label"));
  		props.setLook(wlAddResult);
 		fdlAddResult=new FormData();
 		fdlAddResult.left = new FormAttachment(0, 0);
@@ -374,7 +376,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		wlAddResult.setLayoutData(fdlAddResult);
 		wAddResult=new Button(shell, SWT.CHECK );
  		props.setLook(wAddResult);
-		wAddResult.setToolTipText(Messages.getString("FixedInputDialog.AddResult.Tooltip"));
+		wAddResult.setToolTipText(BaseMessages.getString(PKG, "FixedInputDialog.AddResult.Tooltip"));
 		fdAddResult=new FormData();
 		fdAddResult.left = new FormAttachment(middle, 0);
 		fdAddResult.top  = new FormAttachment(lastControl, margin);
@@ -384,13 +386,13 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		// Some buttons first, so that the dialog scales nicely...
 		//
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wPreview=new Button(shell, SWT.PUSH);
-		wPreview.setText(Messages.getString("System.Button.Preview")); //$NON-NLS-1$
+		wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel , wPreview, wGet }, margin, null);
 
@@ -398,16 +400,16 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		// Fields
         ColumnInfo[] colinf=new ColumnInfo[]
             {
-             new ColumnInfo(Messages.getString("FixedInputDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("FixedInputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.getTypes(), true ),
-             new ColumnInfo(Messages.getString("FixedInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  Const.getConversionFormats()),
-             new ColumnInfo(Messages.getString("FixedInputDialog.WidthColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("FixedInputDialog.LengthColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("FixedInputDialog.PrecisionColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("FixedInputDialog.CurrencyColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("FixedInputDialog.DecimalColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("FixedInputDialog.GroupColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("FixedInputDialog.TrimColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.trimTypeDesc),
+             new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.getTypes(), true ),
+             new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  Const.getConversionFormats()),
+             new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.WidthColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.LengthColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.PrecisionColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.CurrencyColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.DecimalColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.GroupColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.TrimColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.trimTypeDesc),
             };
         
         colinf[2].setComboValuesSelectionListener(new ComboValuesSelectionListener() {
@@ -475,7 +477,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 							dialog.setFileName( fname );
 						}
 						
-						dialog.setFilterNames(new String[] {Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.AllFiles")});
+						dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "System.FileType.TextFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
 						
 						if (dialog.open()!=null)
 						{
@@ -648,7 +650,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
         
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("FixedInputDialog.PreviewSize.DialogTitle"), Messages.getString("FixedInputDialog.PreviewSize.DialogMessage"));
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "FixedInputDialog.PreviewSize.DialogTitle"), BaseMessages.getString(PKG, "FixedInputDialog.PreviewSize.DialogMessage"));
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {
@@ -662,8 +664,8 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
             {
                 if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                 {
-                	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
-                			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+                	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
+                			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true );
                 	etd.setReadOnly();
                 	etd.open();
                 }
@@ -753,7 +755,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
         }
         catch(Exception e)
         {
-            new ErrorDialog(shell, Messages.getString("FixedInputDialog.ErrorShowingFixedWizard.DialogTitle"), Messages.getString("FixedInputDialog.ErrorShowingFixedWizard.DialogMessage"), e);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "FixedInputDialog.ErrorShowingFixedWizard.DialogTitle"), BaseMessages.getString(PKG, "FixedInputDialog.ErrorShowingFixedWizard.DialogMessage"), e);
         }
 	}
 
@@ -793,8 +795,8 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
         {
             if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
             {
-            	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
-            			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+            	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
+            			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true );
             	etd.setReadOnly();
             	etd.open();
             }

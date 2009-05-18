@@ -13,12 +13,13 @@
 package org.pentaho.di.trans.steps.checksum;
 
 import java.security.MessageDigest;
-import java.util.zip.CRC32;
 import java.util.zip.Adler32;
+import java.util.zip.CRC32;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -34,6 +35,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @since 30-06-2008
  */
 public class CheckSum extends BaseStep implements StepInterface {
+
+	private static Class<?> PKG = CheckSumMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CheckSumMeta meta;
 
 	private CheckSumData data;
@@ -68,8 +72,8 @@ public class CheckSum extends BaseStep implements StepInterface {
 					data.fieldnrs[i] = getInputRowMeta().indexOfValue(
 							meta.getFieldName()[i]);
 					if (data.fieldnrs[i] < 0) {
-						logError(Messages.getString("CheckSum.Log.CanNotFindField", meta.getFieldName()[i]));
-						throw new KettleException(Messages.getString("CheckSum.Log.CanNotFindField", meta.getFieldName()[i]));
+						logError(BaseMessages.getString(PKG, "CheckSum.Log.CanNotFindField", meta.getFieldName()[i]));
+						throw new KettleException(BaseMessages.getString(PKG, "CheckSum.Log.CanNotFindField", meta.getFieldName()[i]));
 					}
 				}
 			} else {
@@ -102,7 +106,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 
 			if (checkFeedback(getLinesRead())) {
 				if (log.isDetailed())
-					logDetailed(Messages.getString("CheckSum.Log.LineNumber", "" + getLinesRead())); //$NON-NLS-1$
+					logDetailed(BaseMessages.getString(PKG, "CheckSum.Log.LineNumber", "" + getLinesRead())); //$NON-NLS-1$
 			}
 
 			// add new values to the row.
@@ -113,7 +117,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 				sendToErrorRow = true;
 				errorMessage = e.toString();
 			} else {
-				logError(Messages.getString("CheckSum.ErrorInStepRunning") + e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "CheckSum.ErrorInStepRunning") + e.getMessage()); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone(); // signal end to receiver(s)
@@ -194,8 +198,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 
 		if (super.init(smi, sdi)) {
 			if (Const.isEmpty(meta.getResultFieldName())) {
-				log.logError(toString(), Messages
-						.getString("CheckSum.Error.ResultFieldMissing"));
+				log.logError(toString(), BaseMessages.getString(PKG, "CheckSum.Error.ResultFieldMissing"));
 				return false;
 			}
 			return true;

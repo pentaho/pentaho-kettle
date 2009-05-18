@@ -27,6 +27,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -47,6 +48,8 @@ import org.w3c.dom.Node;
 		categoryDescription="BaseStep.Category.Transform", i18nPackageName="org.pentaho.di.trans.step")
 public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = ValueMapperMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private String fieldToUse;
     private String targetField;
     private String nonMatchDefault;
@@ -144,7 +147,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("ValueMapperMeta.RuntimeError.UnableToReadXML.VALUEMAPPER0004"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "ValueMapperMeta.RuntimeError.UnableToReadXML.VALUEMAPPER0004"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -244,7 +247,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("ValueMapperMeta.RuntimeError.UnableToReadRepository.VALUEMAPPER0005"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "ValueMapperMeta.RuntimeError.UnableToReadRepository.VALUEMAPPER0005"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -265,7 +268,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("ValueMapperMeta.RuntimeError.UnableToSaveRepository.VALUEMAPPER0006", ""+id_step), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "ValueMapperMeta.RuntimeError.UnableToSaveRepository.VALUEMAPPER0006", ""+id_step), e); //$NON-NLS-1$
 		}
 
 	}
@@ -274,24 +277,24 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("ValueMapperMeta.CheckResult.NotReceivingFieldsFromPreviousSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "ValueMapperMeta.CheckResult.NotReceivingFieldsFromPreviousSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ValueMapperMeta.CheckResult.ReceivingFieldsFromPreviousSteps", ""+prev.size()), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ValueMapperMeta.CheckResult.ReceivingFieldsFromPreviousSteps", ""+prev.size()), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ValueMapperMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ValueMapperMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ValueMapperMeta.CheckResult.NotReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ValueMapperMeta.CheckResult.NotReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

@@ -25,6 +25,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StreamLogger;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -44,6 +45,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class MySQLBulkLoader extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = MySQLBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private MySQLBulkLoaderMeta meta;
 	private MySQLBulkLoaderData data;
     
@@ -223,7 +226,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("MySQLBulkLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "MySQLBulkLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)

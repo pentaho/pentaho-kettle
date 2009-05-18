@@ -18,8 +18,12 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
 
+import org.pentaho.di.i18n.BaseMessages;
+
 public class KettleURLClassLoader extends URLClassLoader
 {
+	private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private String name;
     
     public KettleURLClassLoader(URL[] url, ClassLoader classLoader)
@@ -103,7 +107,7 @@ public class KettleURLClassLoader extends URLClassLoader
         }
         catch(Exception e)
         {
-            System.out.println(Messages.getString("KettleURLClassLoader.Exception.UnableToReadClass")+e.toString()); //$NON-NLS-1$
+            System.out.println(BaseMessages.getString(PKG, "KettleURLClassLoader.Exception.UnableToReadClass")+e.toString()); //$NON-NLS-1$
             return null;
         }
     }

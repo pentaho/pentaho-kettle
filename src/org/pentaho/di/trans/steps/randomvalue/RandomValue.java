@@ -15,10 +15,11 @@ package org.pentaho.di.trans.steps.randomvalue;
 import java.util.List;
 import java.util.Random;
 
-import org.pentaho.di.core.util.UUIDUtil;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.UUIDUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -34,6 +35,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @since 8-8-2008
  */
 public class RandomValue extends BaseStep implements StepInterface {
+	
+	private static Class<?> PKG = RandomValueMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private RandomValueMeta meta;
 
 	private RandomValueData data;
@@ -114,7 +118,7 @@ public class RandomValue extends BaseStep implements StepInterface {
 		row = getRandomValue(imeta, row);
 
 		if (log.isRowLevel())
-			logRowlevel(Messages.getString("RandomValue.Log.ValueReturned",data.outputRowMeta.getString(row)));
+			logRowlevel(BaseMessages.getString(PKG, "RandomValue.Log.ValueReturned",data.outputRowMeta.getString(row)));
 
 		putRow(data.outputRowMeta, row);
 

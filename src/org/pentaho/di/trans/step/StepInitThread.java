@@ -14,10 +14,13 @@ package org.pentaho.di.trans.step;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.trans.Messages;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.Trans;
 
 public class StepInitThread implements Runnable
 {
+	private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public boolean ok;
     public boolean finished;
     
@@ -53,12 +56,12 @@ public class StepInitThread implements Runnable
             else
             {
                 combi.step.setErrors(1);
-                log.logError(toString(), Messages.getString("Trans.Log.ErrorInitializingStep", combi.step.getStepname())); //$NON-NLS-1$ //$NON-NLS-2$
+                log.logError(toString(), BaseMessages.getString(PKG, "Trans.Log.ErrorInitializingStep", combi.step.getStepname())); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
         catch (Throwable e)
         {
-            log.logError(toString(), Messages.getString("Trans.Log.ErrorInitializingStep", combi.step.getStepname())); //$NON-NLS-1$ //$NON-NLS-2$
+            log.logError(toString(), BaseMessages.getString(PKG, "Trans.Log.ErrorInitializingStep", combi.step.getStepname())); //$NON-NLS-1$ //$NON-NLS-2$
             log.logError(toString(), Const.getStackTracker(e));
         }
         

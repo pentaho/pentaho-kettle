@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 
 
@@ -34,6 +35,8 @@ import org.pentaho.di.ui.core.dialog.EnterTextDialog;
  */
 public class DatabaseDialog extends XulDatabaseDialog
 {
+	private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public DatabaseDialog(Shell parent, DatabaseMeta databaseMeta)
     {
         super(parent, databaseMeta);
@@ -101,7 +104,7 @@ public class DatabaseDialog extends XulDatabaseDialog
         	//
         	String reportMessage = dbinfo.testConnection();
 
-        	EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("DatabaseDialog.ConnectionReport.title"), Messages.getString("DatabaseDialog.ConnectionReport.description"), reportMessage.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+        	EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "DatabaseDialog.ConnectionReport.title"), BaseMessages.getString(PKG, "DatabaseDialog.ConnectionReport.description"), reportMessage.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             dialog.setReadOnly();
             dialog.setFixed(true);
             dialog.setModal();
@@ -114,8 +117,8 @@ public class DatabaseDialog extends XulDatabaseDialog
                 message += "    * " + remarks[i] + Const.CR; //$NON-NLS-1$
 
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-            mb.setText(Messages.getString("DatabaseDialog.ErrorParameters2.title")); //$NON-NLS-1$
-            mb.setMessage(Messages.getString("DatabaseDialog.ErrorParameters2.description", message)); //$NON-NLS-1$
+            mb.setText(BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters2.title")); //$NON-NLS-1$
+            mb.setMessage(BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters2.description", message)); //$NON-NLS-1$
             mb.open();
         }
     }

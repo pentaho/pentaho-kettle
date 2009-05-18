@@ -36,20 +36,22 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.randomvalue.Messages;
 import org.pentaho.di.trans.steps.randomvalue.RandomValueMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
 public class RandomValueDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = RandomValueMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlStepname;
 	private Text         wStepname;
     private FormData     fdlStepname, fdStepname;
@@ -89,14 +91,14 @@ public class RandomValueDialog extends BaseStepDialog implements StepDialogInter
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("RandomValueDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "RandomValueDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -114,7 +116,7 @@ public class RandomValueDialog extends BaseStepDialog implements StepDialogInter
 		wStepname.setLayoutData(fdStepname);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("RandomValueDialog.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "RandomValueDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -128,14 +130,14 @@ public class RandomValueDialog extends BaseStepDialog implements StepDialogInter
         for (int i=1;i<RandomValueMeta.functions.length;i++) functionDesc[i-1]=RandomValueMeta.functions[i].getDescription();
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("RandomValueDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT, false);
-		colinf[1]=new ColumnInfo(Messages.getString("RandomValueDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "RandomValueDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "RandomValueDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT, false);
 		colinf[1].setSelectionAdapter(
 		    new SelectionAdapter()
 	        {
 	            public void widgetSelected(SelectionEvent e)
 	            {
-	                EnterSelectionDialog esd = new EnterSelectionDialog(shell, functionDesc, Messages.getString("RandomValueDialog.SelectInfoType.DialogTitle"), Messages.getString("RandomValueDialog.SelectInfoType.DialogMessage"));
+	                EnterSelectionDialog esd = new EnterSelectionDialog(shell, functionDesc, BaseMessages.getString(PKG, "RandomValueDialog.SelectInfoType.DialogTitle"), BaseMessages.getString(PKG, "RandomValueDialog.SelectInfoType.DialogMessage"));
 	                String string = esd.open();
 	                if (string!=null)
 	                {
@@ -164,9 +166,9 @@ public class RandomValueDialog extends BaseStepDialog implements StepDialogInter
 				
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
 

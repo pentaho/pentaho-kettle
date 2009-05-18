@@ -15,9 +15,6 @@ package org.pentaho.di.trans.steps.setvalueconstant;
 import java.util.List;
 import java.util.Map;
 
-
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -27,6 +24,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
@@ -36,11 +34,14 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 
 
 public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = SetValueConstantMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** which fields to display? */
     private String  fieldName[];
     
@@ -235,12 +236,12 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
 	 {	CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("SetValueConstantMeta.CheckResult.NotReceivingFields"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "SetValueConstantMeta.CheckResult.NotReceivingFields"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SetValueConstantMeta.CheckResult.StepRecevingData",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SetValueConstantMeta.CheckResult.StepRecevingData",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 			
 			String error_message = "";
@@ -258,7 +259,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
             }
             if (error_found)
             {
-                error_message = Messages.getString("SetValueConstantMeta.CheckResult.FieldsFound", error_message);
+                error_message = BaseMessages.getString(PKG, "SetValueConstantMeta.CheckResult.FieldsFound", error_message);
 
                 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
                 remarks.add(cr);
@@ -266,9 +267,9 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
             else
             {
                 if (fieldName.length > 0)
-                    cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SetValueConstantMeta.CheckResult.AllFieldsFound"), stepinfo);
+                    cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SetValueConstantMeta.CheckResult.AllFieldsFound"), stepinfo);
                 else
-                    cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("SetValueConstantMeta.CheckResult.NoFieldsEntered"), stepinfo);
+                    cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "SetValueConstantMeta.CheckResult.NoFieldsEntered"), stepinfo);
                  remarks.add(cr);
             }
 
@@ -276,9 +277,9 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SetValueConstantMeta.CheckResult.StepRecevingData2"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SetValueConstantMeta.CheckResult.StepRecevingData2"), stepinfo); //$NON-NLS-1$
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SetValueConstantMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SetValueConstantMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
 		remarks.add(cr);
 	}
 

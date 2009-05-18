@@ -30,13 +30,16 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.TextFileInputFieldInterface;
-import org.pentaho.di.trans.steps.textfileinput.Messages;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.TableDraw;
 
 
 public class TextFileImportWizardPage1 extends WizardPage // implements Listener 
 {
+	private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private TableDraw wTable;
 	private FormData fdTable;
 
@@ -51,8 +54,8 @@ public class TextFileImportWizardPage1 extends WizardPage // implements Listener
 		this.rows=rows;
 		this.fields=fields;
 		
-		setTitle(Messages.getString("TextFileImportWizardPage1.DialogTitle"));
-		setDescription(Messages.getString("TextFileImportWizardPage1.DialogMessage"));
+		setTitle(BaseMessages.getString(PKG, "TextFileImportWizardPage1.DialogTitle"));
+		setDescription(BaseMessages.getString(PKG, "TextFileImportWizardPage1.DialogMessage"));
 	}
 	
 	public void createControl(Composite parent)
@@ -112,7 +115,7 @@ public class TextFileImportWizardPage1 extends WizardPage // implements Listener
 		} 
 		else
 		{
-			setErrorMessage(Messages.getString("TextFileImportWizardPage1.ErrorMarkerNeeded"));
+			setErrorMessage(BaseMessages.getString(PKG, "TextFileImportWizardPage1.ErrorMarkerNeeded"));
 			return false;
 		}
 	}	

@@ -14,11 +14,11 @@
  
 package org.pentaho.di.trans.steps.salesforceinput;
 
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.exception.KettleStepException;
-
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Node;
 
 /**
@@ -29,6 +29,8 @@ import org.w3c.dom.Node;
  */
 public class SalesforceInputField implements Cloneable
 {
+	private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public final static int TYPE_TRIM_NONE  = 0;
     public final static int TYPE_TRIM_LEFT  = 1;
     public final static int TYPE_TRIM_RIGHT = 2;
@@ -37,10 +39,10 @@ public class SalesforceInputField implements Cloneable
     public final static String trimTypeCode[] = { "none", "left", "right", "both" };
     
     public final static String trimTypeDesc[] = {
-      Messages.getString("SalesforceInputField.TrimType.None"),
-      Messages.getString("SalesforceInputField.TrimType.Left"),
-      Messages.getString("SalesforceInputField.TrimType.Right"),
-      Messages.getString("SalesforceInputField.TrimType.Both")
+      BaseMessages.getString(PKG, "SalesforceInputField.TrimType.None"),
+      BaseMessages.getString(PKG, "SalesforceInputField.TrimType.Left"),
+      BaseMessages.getString(PKG, "SalesforceInputField.TrimType.Right"),
+      BaseMessages.getString(PKG, "SalesforceInputField.TrimType.Both")
     };
     
 	private String 	  name;

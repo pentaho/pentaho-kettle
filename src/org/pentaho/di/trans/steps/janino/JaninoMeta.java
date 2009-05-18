@@ -31,6 +31,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -53,6 +54,8 @@ import org.w3c.dom.Node;
 
 public class JaninoMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = JaninoMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** The formula calculations to be performed */
     private JaninoMetaFunction[] formula;
     
@@ -192,24 +195,24 @@ public class JaninoMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("JaninoMeta.CheckResult.ExpectedInputError"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "JaninoMeta.CheckResult.ExpectedInputError"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JaninoMeta.CheckResult.FieldsReceived", ""+prev.size()), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JaninoMeta.CheckResult.FieldsReceived", ""+prev.size()), stepinfo);
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JaninoMeta.CheckResult.ExpectedInputOk"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JaninoMeta.CheckResult.ExpectedInputOk"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JaninoMeta.CheckResult.ExpectedInputError"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JaninoMeta.CheckResult.ExpectedInputError"), stepinfo);
 			remarks.add(cr);
 		}
 	}

@@ -16,8 +16,6 @@ package org.pentaho.di.trans.steps.columnexists;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -31,6 +29,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
@@ -40,6 +39,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 /*
  * Created on 03-Juin-2008
@@ -48,6 +48,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = ColumnExistsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** database connection */
     private DatabaseMeta database;
     
@@ -239,7 +241,7 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(Messages.getString("ColumnExistsMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "ColumnExistsMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -259,7 +261,7 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("ColumnExistsMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "ColumnExistsMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -280,7 +282,7 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("ColumnExistsMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "ColumnExistsMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -291,18 +293,18 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
 
         if (database == null)
         {
-            error_message = Messages.getString("ColumnExistsMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ColumnExistsMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         if (Const.isEmpty(resultfieldname))
         {
-            error_message = Messages.getString("ColumnExistsMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ColumnExistsMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
         }
         else
         {
-            error_message = Messages.getString("ColumnExistsMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ColumnExistsMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
         }
         remarks.add(cr);
@@ -310,12 +312,12 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
         {
 	        if (Const.isEmpty(tablenamefield))
 	        {
-	            error_message = Messages.getString("ColumnExistsMeta.CheckResult.TableFieldMissing"); //$NON-NLS-1$
+	            error_message = BaseMessages.getString(PKG, "ColumnExistsMeta.CheckResult.TableFieldMissing"); //$NON-NLS-1$
 	            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 	        }
 	        else
 	        {
-	            error_message = Messages.getString("ColumnExistsMeta.CheckResult.TableFieldOK"); //$NON-NLS-1$
+	            error_message = BaseMessages.getString(PKG, "ColumnExistsMeta.CheckResult.TableFieldOK"); //$NON-NLS-1$
 	            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
 	        }
             remarks.add(cr);
@@ -323,12 +325,12 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
         {
 	        if (Const.isEmpty(tablename))
 	        {
-	            error_message = Messages.getString("ColumnExistsMeta.CheckResult.TablenameMissing"); //$NON-NLS-1$
+	            error_message = BaseMessages.getString(PKG, "ColumnExistsMeta.CheckResult.TablenameMissing"); //$NON-NLS-1$
 	            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 	        }
 	        else
 	        {
-	            error_message = Messages.getString("ColumnExistsMeta.CheckResult.TablenameOK"); //$NON-NLS-1$
+	            error_message = BaseMessages.getString(PKG, "ColumnExistsMeta.CheckResult.TablenameOK"); //$NON-NLS-1$
 	            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
 	        }
             remarks.add(cr);
@@ -336,12 +338,12 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
         
         if (Const.isEmpty(columnnamefield))
         {
-            error_message = Messages.getString("ColumnExistsMeta.CheckResult.ColumnNameFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ColumnExistsMeta.CheckResult.ColumnNameFieldMissing"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
         }
         else
         {
-            error_message = Messages.getString("ColumnExistsMeta.CheckResult.ColumnNameFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ColumnExistsMeta.CheckResult.ColumnNameFieldOK"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
         }
         remarks.add(cr);
@@ -349,11 +351,11 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ColumnExistsMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ColumnExistsMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ColumnExistsMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ColumnExistsMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
         }
         remarks.add(cr);
     }

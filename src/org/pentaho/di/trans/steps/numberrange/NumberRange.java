@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.numberrange;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -31,7 +32,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class NumberRange extends BaseStep implements StepInterface
  {
-	 
+	private static Class<?> PKG = NumberRangeMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	 	private NumberRangeData data;
 	 	private NumberRangeMeta meta;
 	 
@@ -79,7 +81,7 @@ public class NumberRange extends BaseStep implements StepInterface
 				putRow(data.outputRowMeta, row);
 		        if (checkFeedback(getLinesRead())) 
 	            {
-	            	if(log.isDetailed()) logDetailed(Messages.getString("NumberRange.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "NumberRange.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 	            }
 	 		}
 			catch(KettleException e)
@@ -94,7 +96,7 @@ public class NumberRange extends BaseStep implements StepInterface
 				}
 				else
 				{
-					logError(Messages.getString("NumberRange.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "NumberRange.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
 					setErrors(1);
 					stopAll();
 					setOutputDone();  // signal end to receiver(s)

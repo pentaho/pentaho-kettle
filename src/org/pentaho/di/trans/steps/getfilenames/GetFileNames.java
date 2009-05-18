@@ -25,6 +25,7 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -41,6 +42,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class GetFileNames extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = GetFileNamesMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private GetFileNamesMeta meta;
 
     private GetFileNamesData data;
@@ -100,8 +103,8 @@ public class GetFileNames extends BaseStep implements StepInterface
 	        	// Check is filename field is provided
 				if (Const.isEmpty(meta.getDynamicFilenameField()))
 				{
-					logError(Messages.getString("GetFileNames.Log.NoField"));
-					throw new KettleException(Messages.getString("GetFileNames.Log.NoField"));
+					logError(BaseMessages.getString(PKG, "GetFileNames.Log.NoField"));
+					throw new KettleException(BaseMessages.getString(PKG, "GetFileNames.Log.NoField"));
 				}
 				
 	            
@@ -112,8 +115,8 @@ public class GetFileNames extends BaseStep implements StepInterface
 					if (data.indexOfFilenameField<0)
 					{
 						// The field is unreachable !
-						logError(Messages.getString("GetFileNames.Log.ErrorFindingField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleException(Messages.getString("GetFileNames.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "GetFileNames.Log.ErrorFindingField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "GetFileNames.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}  
 				
@@ -126,8 +129,8 @@ public class GetFileNames extends BaseStep implements StepInterface
 						if (data.indexOfWildcardField<0)
 						{
 							// The field is unreachable !
-							logError(Messages.getString("GetFileNames.Log.ErrorFindingField")+ "[" + meta.getDynamicWildcardField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(Messages.getString("GetFileNames.Exception.CouldnotFindField",meta.getDynamicWildcardField())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(BaseMessages.getString(PKG, "GetFileNames.Log.ErrorFindingField")+ "[" + meta.getDynamicWildcardField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(BaseMessages.getString(PKG, "GetFileNames.Exception.CouldnotFindField",meta.getDynamicWildcardField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 				}
@@ -170,7 +173,7 @@ public class GetFileNames extends BaseStep implements StepInterface
                 {
          			// Add this to the result file names...
          			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
-         			resultFile.setComment(Messages.getString("GetFileNames.Log.FileReadByStep"));
+         			resultFile.setComment(BaseMessages.getString(PKG, "GetFileNames.Log.FileReadByStep"));
          			addResultFile(resultFile);
                 }
             	
@@ -256,7 +259,7 @@ public class GetFileNames extends BaseStep implements StepInterface
 
         if (checkFeedback(getLinesInput())) 	
         {
-        	if(log.isBasic()) logBasic(Messages.getString("GetFileNames.Log.NrLine",""+getLinesInput()));
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "GetFileNames.Log.NrLine",""+getLinesInput()));
         }
 
         return true;

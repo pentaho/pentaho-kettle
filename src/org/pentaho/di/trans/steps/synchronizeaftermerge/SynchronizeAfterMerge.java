@@ -11,22 +11,23 @@
 */
 package org.pentaho.di.trans.steps.synchronizeaftermerge;
 
+import java.sql.BatchUpdateException;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import java.sql.PreparedStatement;
-import java.sql.BatchUpdateException;
-import java.sql.SQLException;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -34,7 +35,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 
 /**
  * Performs an insert/update/delete depending on the value of a field.
@@ -44,6 +44,8 @@ import org.pentaho.di.core.exception.KettleDatabaseBatchException;
  */
 public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = SynchronizeAfterMergeMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private SynchronizeAfterMergeMeta meta;
 	private SynchronizeAfterMergeData data;
 	
@@ -72,7 +74,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		boolean performDelete=false;
         
 		try{
-			if(operation==null) throw new KettleException(Messages.getString("SynchronizeAfterMerge.Log.OperationFieldEmpty",meta.getOperationOrderField()));
+			if(operation==null) throw new KettleException(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.OperationFieldEmpty",meta.getOperationOrderField()));
 			
 			if(meta.istablenameInField())	
 			{
@@ -93,7 +95,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 				 *
 				 */
 				
-				if(log.isRowLevel()) logRowlevel(Messages.getString("SynchronizeAfterMerge.InsertRow",row.toString())); //$NON-NLS-1$
+				if(log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SynchronizeAfterMerge.InsertRow",row.toString())); //$NON-NLS-1$
 	
 				// The values to insert are those in the update section
 	            //
@@ -172,7 +174,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 	
 	
 		    		data.db.setValues(data.lookupParameterRowMeta, lookupRow, data.lookupStatement);
-		    		if (log.isRowLevel()) logRowlevel(Messages.getString("SynchronizeAfterMerge.Log.ValuesSetForLookup",data.lookupParameterRowMeta.getString(lookupRow))); //$NON-NLS-1$
+		    		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.ValuesSetForLookup",data.lookupParameterRowMeta.getString(lookupRow))); //$NON-NLS-1$
 		    		Object[] add = data.db.getLookup(data.lookupStatement);
 		    		
 		    		
@@ -182,7 +184,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 	
 	                    if (data.stringErrorKeyNotFound==null)
 	                    {
-	                        data.stringErrorKeyNotFound=Messages.getString("SynchronizeAfterMerge.Exception.KeyCouldNotFound")+data.lookupParameterRowMeta.getString(lookupRow);
+	                        data.stringErrorKeyNotFound=BaseMessages.getString(PKG, "SynchronizeAfterMerge.Exception.KeyCouldNotFound")+data.lookupParameterRowMeta.getString(lookupRow);
 	                        data.stringFieldnames="";
 	                        for (int i=0;i<data.lookupParameterRowMeta.size();i++) 
 	                        {
@@ -191,10 +193,10 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 	                        }
 	                    }
 	                    data.lookupFailure=true;
-	                    throw new KettleDatabaseException(Messages.getString("SynchronizeAfterMerge.Exception.KeyCouldNotFound",data.lookupParameterRowMeta.getString(lookupRow)));
+	                    throw new KettleDatabaseException(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Exception.KeyCouldNotFound",data.lookupParameterRowMeta.getString(lookupRow)));
 					}else
 					{
-						if (log.isRowLevel()) logRowlevel(Messages.getString("SynchronizeAfterMerge.Log.FoundRowForUpdate",data.insertRowMeta.getString(row))); //$NON-NLS-1$
+						if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.FoundRowForUpdate",data.insertRowMeta.getString(row))); //$NON-NLS-1$
 						
 		                
 						for (int i=0;i<data.valuenrs.length;i++)
@@ -260,7 +262,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		    				data.savepoint = data.db.setSavepoint();
 		    			}
 		                data.db.setValues(data.updateParameterRowMeta, updateRow, data.updateStatement);
-		                if (log.isRowLevel()) logRowlevel(Messages.getString("SynchronizeAfterMerge.Log.SetValuesForUpdate",data.updateParameterRowMeta.getString(updateRow),data.inputRowMeta.getString(row)));
+		                if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.SetValuesForUpdate",data.updateParameterRowMeta.getString(updateRow),data.inputRowMeta.getString(row)));
 		                data.db.insertRow(data.updateStatement,data.batchMode);
 		                performUpdate=true;
 		                incrementLinesUpdated();
@@ -312,7 +314,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 						data.savepoint = data.db.setSavepoint();
 					}
 			        data.db.setValues(data.deleteParameterRowMeta, deleteRow, data.deleteStatement);
-			        if (log.isRowLevel()) logRowlevel(Messages.getString("SynchronizeAfterMerge.Log.SetValuesForDelete",data.deleteParameterRowMeta.getString(deleteRow),data.inputRowMeta.getString(row))); //$NON-NLS-1$
+			        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.SetValuesForDelete",data.deleteParameterRowMeta.getString(deleteRow),data.inputRowMeta.getString(row))); //$NON-NLS-1$
 					data.db.insertRow(data.deleteStatement,data.batchMode);
 					performDelete=true;
 					incrementLinesUpdated();
@@ -369,7 +371,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 			                }  
 						}
 						catch(BatchUpdateException ex) {
-							KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException(Messages.getString("SynchronizeAfterMerge.Error.UpdatingBatch"), ex);
+							KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Error.UpdatingBatch"), ex);
 						    kdbe.setUpdateCounts(ex.getUpdateCounts());
 				            List<Exception> exceptions = new ArrayList<Exception>();
 				            
@@ -386,7 +388,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 						}
 						catch(SQLException ex) 
 						{
-							throw new KettleDatabaseException(Messages.getString("SynchronizeAfterMerge.Error.InsertingRow"), ex);
+							throw new KettleDatabaseException(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Error.InsertingRow"), ex);
 						}
 						catch(Exception ex)
 						{
@@ -735,7 +737,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
         
 
 			// lookup the values!
-			if (log.isDebug()) logDebug(Messages.getString("SynchronizeAfterMerge.Log.CheckingRow")+r.toString()); //$NON-NLS-1$
+			if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.CheckingRow")+r.toString()); //$NON-NLS-1$
 			
 			data.keynrs  = new int[meta.getKeyStream().length];
 			data.keynrs2 = new int[meta.getKeyStream().length];
@@ -747,17 +749,17 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 				    !"IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i])  // No field needed! //$NON-NLS-1$
                    )
 				{
-					throw new KettleStepException(Messages.getString("SynchronizeAfterMerge.Exception.FieldRequired",meta.getKeyStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Exception.FieldRequired",meta.getKeyStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				data.keynrs2[i]=data.inputRowMeta.indexOfValue(meta.getKeyStream2()[i]);
 				if (data.keynrs2[i]<0 &&  // couldn't find field!
 				    "BETWEEN".equalsIgnoreCase(meta.getKeyCondition()[i])   // 2 fields needed! //$NON-NLS-1$
 				   )
 				{
-					throw new KettleStepException(Messages.getString("SynchronizeAfterMerge.Exception.FieldRequired",meta.getKeyStream2()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Exception.FieldRequired",meta.getKeyStream2()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				
-				if (log.isDebug()) logDebug(Messages.getString("SynchronizeAfterMerge.Log.FieldHasDataNumbers",meta.getKeyStream()[i])+data.keynrs[i]); //$NON-NLS-1$ //$NON-NLS-2$
+				if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.FieldHasDataNumbers",meta.getKeyStream()[i])+data.keynrs[i]); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			
             // Insert the update fields: just names.  Type doesn't matter!
@@ -773,7 +775,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
                 }
                 else
                 {
-                    throw new KettleStepException(Messages.getString("SynchronizeAfterMerge.Error.SameColumnInsertedTwice",insValue.getName())); 
+                    throw new KettleStepException(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Error.SameColumnInsertedTwice",insValue.getName())); 
                  }
             }
             
@@ -785,9 +787,9 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 				data.valuenrs[i]=data.inputRowMeta.indexOfValue(meta.getUpdateStream()[i]);
 				if (data.valuenrs[i]<0)  // couldn't find field!
 				{
-					throw new KettleStepException(Messages.getString("SynchronizeAfterMerge.Exception.FieldRequired",meta.getUpdateStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Exception.FieldRequired",meta.getUpdateStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-				if (log.isDebug()) logDebug(Messages.getString("SynchronizeAfterMerge.Log.FieldHasDataNumbers",meta.getUpdateStream()[i])+data.valuenrs[i]); //$NON-NLS-1$ //$NON-NLS-2$
+				if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.FieldHasDataNumbers",meta.getUpdateStream()[i])+data.valuenrs[i]); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			
 			if(!meta.istablenameInField())
@@ -852,7 +854,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 			
 			if (checkFeedback(getLinesRead())) 
 			{
-				if(log.isDetailed()) logDetailed(Messages.getString("SynchronizeAfterMerge.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			}
 		}
 		catch(KettleException e)
@@ -880,7 +882,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		    	{
 		    		if(Const.isEmpty(meta.gettablenameField()))
 		    		{
-		    			log.logError(toString(), Messages.getString("SynchronizeAfterMerge.Log.Error.TableFieldnameEmpty"));
+		    			log.logError(toString(), BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.Error.TableFieldnameEmpty"));
 		    			return false;
 		    		}		    		
 		    	}
@@ -898,7 +900,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
                 if (data.batchMode && data.specialErrorHandling )
                 {
                 	data.batchMode = false;
-                	if(log.isBasic()) log.logBasic(toString(), Messages.getString("SynchronizeAfterMerge.Log.BatchModeDisabled"));
+                	if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.BatchModeDisabled"));
                 }
                
 		    	
@@ -918,7 +920,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 			}
 			catch(KettleException ke)
 			{
-				logError(Messages.getString("SynchronizeAfterMerge.Log.ErrorOccurredDuringStepInitialize")+ke.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.ErrorOccurredDuringStepInitialize")+ke.getMessage()); //$NON-NLS-1$
 			}
 		}
 		return false;

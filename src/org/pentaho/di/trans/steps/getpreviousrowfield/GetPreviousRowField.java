@@ -16,6 +16,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -31,6 +32,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @since 07 September 2008
  */
 public class GetPreviousRowField extends BaseStep implements StepInterface {
+	
+	private static Class<?> PKG = GetPreviousRowFieldMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private GetPreviousRowFieldMeta meta;
 
 	private GetPreviousRowFieldData data;
@@ -82,7 +86,7 @@ public class GetPreviousRowField extends BaseStep implements StepInterface {
 				data.inStreamNrs[i] = data.inputRowMeta.indexOfValue(meta.getFieldInStream()[i]);
 				if (data.inStreamNrs[i] < 0) // couldn't find field!
 				{
-					throw new KettleException(Messages.getString("GetPreviousRowField.Exception.FieldRequired", meta.getFieldInStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "GetPreviousRowField.Exception.FieldRequired", meta.getFieldInStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 			
@@ -91,7 +95,7 @@ public class GetPreviousRowField extends BaseStep implements StepInterface {
 				data.outStreamNrs[i] = meta.getFieldOutStream()[i];
 				if (Const.isEmpty(data.outStreamNrs[i]))
 				{
-					throw new KettleStepException(Messages.getString("GetPreviousRowField.Exception.OutputFieldEmpty", ""+i)); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "GetPreviousRowField.Exception.OutputFieldEmpty", ""+i)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		} // end if first
@@ -104,7 +108,7 @@ public class GetPreviousRowField extends BaseStep implements StepInterface {
 			if (checkFeedback(getLinesRead()))
 			{
 				if(log.isDetailed())
-					logDetailed(Messages.getString("GetPreviousRowField.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+					logDetailed(BaseMessages.getString(PKG, "GetPreviousRowField.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
 			}
 		} catch (KettleException e) {
 	        boolean sendToErrorRow=false;
@@ -114,7 +118,7 @@ public class GetPreviousRowField extends BaseStep implements StepInterface {
                   errorMessage = e.toString();
         	}
         	else{
-        		logError(Messages.getString("GetPreviousRowField.Log.ErrorInStep",e.getMessage())); //$NON-NLS-1$
+        		logError(BaseMessages.getString(PKG, "GetPreviousRowField.Log.ErrorInStep",e.getMessage())); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -156,11 +160,11 @@ public class GetPreviousRowField extends BaseStep implements StepInterface {
 	// Run is were the action happens!
 	public void run() {
 		try {
-			logBasic(Messages.getString("GetPreviousRowField.Log.StartingToRun")); //$NON-NLS-1$
+			logBasic(BaseMessages.getString(PKG, "GetPreviousRowField.Log.StartingToRun")); //$NON-NLS-1$
 
 			while (processRow(meta, data) && !isStopped());
 		} catch (Throwable t) {
-			logError(Messages.getString("GetPreviousRowField.Log.UnexpectedError") + " : "); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(BaseMessages.getString(PKG, "GetPreviousRowField.Log.UnexpectedError") + " : "); //$NON-NLS-1$ //$NON-NLS-2$
 			logError(Const.getStackTracker(t));
 			setErrors(1);
 			stopAll();

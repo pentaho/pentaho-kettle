@@ -28,6 +28,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -45,6 +46,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class Denormaliser extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = DenormaliserMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private DenormaliserMeta meta;
 	private DenormaliserData data;
 	
@@ -83,7 +86,7 @@ public class Denormaliser extends BaseStep implements StepInterface
             data.keyFieldNr = data.inputRowMeta.indexOfValue( meta.getKeyField() );
             if (data.keyFieldNr<0)
             {
-                logError(Messages.getString("Denormaliser.Log.KeyFieldNotFound",meta.getKeyField())); //$NON-NLS-1$ //$NON-NLS-2$
+                logError(BaseMessages.getString(PKG, "Denormaliser.Log.KeyFieldNotFound",meta.getKeyField())); //$NON-NLS-1$ //$NON-NLS-2$
                 setErrors(1);
                 stopAll();
                 return false;
@@ -97,7 +100,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 				int idx = data.inputRowMeta.indexOfValue( field.getFieldName() );
 				if (idx<0)
 				{
-					logError(Messages.getString("Denormaliser.Log.UnpivotFieldNotFound",field.getFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "Denormaliser.Log.UnpivotFieldNotFound",field.getFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -109,7 +112,7 @@ public class Denormaliser extends BaseStep implements StepInterface
                 // This is not supported of-course and given the complexity of the step, you can miss:
                 if (data.fieldNameIndex[i]==data.keyFieldNr)
                 {
-                    logError(Messages.getString("Denormaliser.Log.ValueFieldSameAsKeyField", field.getFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+                    logError(BaseMessages.getString(PKG, "Denormaliser.Log.ValueFieldSameAsKeyField", field.getFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
                     setErrors(1);
                     stopAll();
                     return false;
@@ -137,7 +140,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 				data.groupnrs[i] = data.inputRowMeta.indexOfValue( meta.getGroupField()[i] );
 				if (data.groupnrs[i]<0)
 				{
-					logError(Messages.getString("Denormaliser.Log.GroupingFieldNotFound",meta.getGroupField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "Denormaliser.Log.GroupingFieldNotFound",meta.getGroupField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -183,7 +186,7 @@ public class Denormaliser extends BaseStep implements StepInterface
         
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(Messages.getString("Denormaliser.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "Denormaliser.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
         }
 			
 		return true;

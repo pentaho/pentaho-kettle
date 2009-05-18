@@ -19,17 +19,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -38,6 +38,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 /**
  * Output rows to RSS feed and create a file.
@@ -48,7 +49,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  
 public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 {
-		
+	private static Class<?> PKG = RssOutput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	
     private String       channeltitle;
     private String       channeldescription;
     private String       channellink;
@@ -1038,7 +1040,7 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 		// Now see what we can find as previous step...
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RssOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "RssOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
 			remarks.add(cr);
 
 			// Starting from prev...
@@ -1054,14 +1056,14 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			if (error_found) 
 			{
-				error_message=Messages.getString("RssOutputMeta.CheckResult.FieldsNotFoundInOutput", error_message);
+				error_message=BaseMessages.getString(PKG, "RssOutputMeta.CheckResult.FieldsNotFoundInOutput", error_message);
 
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RssOutputMeta.CheckResult.AllFieldsFoundInOutput"), stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "RssOutputMeta.CheckResult.AllFieldsFoundInOutput"), stepMeta);
 				remarks.add(cr);
 			}*/
 
@@ -1078,20 +1080,20 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			if (error_found) 
 			{
-				error_message=Messages.getString("RssOutputMeta.CheckResult.FieldsNotFound", error_message);
+				error_message=BaseMessages.getString(PKG, "RssOutputMeta.CheckResult.FieldsNotFound", error_message);
 
 				cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RssOutputMeta.CheckResult.AllFieldsFound"), stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "RssOutputMeta.CheckResult.AllFieldsFound"), stepMeta);
 				remarks.add(cr);
 			}*/
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("RssOutputMeta.CheckResult.NoFields"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "RssOutputMeta.CheckResult.NoFields"), stepMeta);
 			remarks.add(cr);
 		}
 				
@@ -1100,12 +1102,12 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RssOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "RssOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("RssOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "RssOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
 			remarks.add(cr);
 		}
 	}

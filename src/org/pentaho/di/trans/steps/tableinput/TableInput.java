@@ -24,6 +24,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -40,6 +41,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class TableInput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = TableInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private TableInputMeta meta;
 	private TableInputData data;
 	
@@ -293,12 +296,12 @@ public class TableInput extends BaseStep implements StepInterface
 			//
 			boolean passed=true;
 			if (Const.isEmpty(meta.getSQL())) {
-				logError(Messages.getString("TableInput.Exception.SQLIsNeeded"));
+				logError(BaseMessages.getString(PKG, "TableInput.Exception.SQLIsNeeded"));
 				passed=false;
 			}
 
 			if (meta.getDatabaseMeta()==null) {
-				logError(Messages.getString("TableInput.Exception.DatabaseConnectionsIsNeeded"));
+				logError(BaseMessages.getString(PKG, "TableInput.Exception.DatabaseConnectionsIsNeeded"));
 				passed=false;
 			}
 			if (!passed) return false;

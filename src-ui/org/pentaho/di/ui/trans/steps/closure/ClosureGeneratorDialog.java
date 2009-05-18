@@ -37,16 +37,18 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.closure.ClosureGeneratorMeta;
-import org.pentaho.di.trans.steps.closure.Messages;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = ClosureGeneratorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlRootZero;
 	private Button       wRootZero;
 	private FormData     fdlRootZero, fdRootZero;
@@ -96,7 +98,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("ClosureGeneratorDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -104,7 +106,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
         // Stepname line
 		//
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("ClosureGeneratorDialog.StepName")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.StepName")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -124,7 +126,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
 		// Parent ...
 		//
 		wlParent=new Label(shell, SWT.RIGHT);
-		wlParent.setText(Messages.getString("ClosureGeneratorDialog.ParentField.Label")); //$NON-NLS-1$
+		wlParent.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.ParentField.Label")); //$NON-NLS-1$
  		props.setLook(wlParent);
 		fdlParent=new FormData();
 		fdlParent.left = new FormAttachment(0, 0);
@@ -144,7 +146,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
 		// Child ...
 		//
 		wlChild=new Label(shell, SWT.RIGHT);
-		wlChild.setText(Messages.getString("ClosureGeneratorDialog.ChildField.Label")); //$NON-NLS-1$
+		wlChild.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.ChildField.Label")); //$NON-NLS-1$
  		props.setLook(wlChild);
 		fdlChild=new FormData();
 		fdlChild.left = new FormAttachment(0, 0);
@@ -164,7 +166,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
 		// Distance ...
 		//
 		wlDistance=new Label(shell, SWT.RIGHT);
-		wlDistance.setText(Messages.getString("ClosureGeneratorDialog.DistanceField.Label")); //$NON-NLS-1$
+		wlDistance.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.DistanceField.Label")); //$NON-NLS-1$
  		props.setLook(wlDistance);
 		fdlDistance=new FormData();
 		fdlDistance.left = new FormAttachment(0, 0);
@@ -184,7 +186,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
 		// Root is zero(Integer)?
 		//
 		wlRootZero=new Label(shell, SWT.RIGHT);
-		wlRootZero.setText(Messages.getString("ClosureGeneratorDialog.RootZero.Label")); //$NON-NLS-1$
+		wlRootZero.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.RootZero.Label")); //$NON-NLS-1$
  		props.setLook(wlRootZero);
 		fdlRootZero=new FormData();
 		fdlRootZero.left = new FormAttachment(0, 0);
@@ -217,7 +219,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(), Messages.getString("ClosureGeneratorDialog.Log.UnableToFindInput"));
+                        log.logError(toString(), BaseMessages.getString(PKG, "ClosureGeneratorDialog.Log.UnableToFindInput"));
                     }
                 }
             }
@@ -226,9 +228,9 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel, }, margin, null);
 

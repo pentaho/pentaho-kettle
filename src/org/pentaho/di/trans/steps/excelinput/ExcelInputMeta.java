@@ -38,6 +38,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -55,6 +56,8 @@ import org.w3c.dom.Node;
  */
 public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final String NO = "N";
 
 	private static final String YES = "Y";
@@ -66,10 +69,10 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     public final static String type_trim_code[] = { "none", "left", "right", "both" };
   
 	public final static String type_trim_desc[] = {
-      Messages.getString("ExcelInputMeta.TrimType.None"),
-      Messages.getString("ExcelInputMeta.TrimType.Left"),
-      Messages.getString("ExcelInputMeta.TrimType.Right"),
-      Messages.getString("ExcelInputMeta.TrimType.Both")
+      BaseMessages.getString(PKG, "ExcelInputMeta.TrimType.None"),
+      BaseMessages.getString(PKG, "ExcelInputMeta.TrimType.Left"),
+      BaseMessages.getString(PKG, "ExcelInputMeta.TrimType.Right"),
+      BaseMessages.getString(PKG, "ExcelInputMeta.TrimType.Both")
     };
 
 	public  static final String STRING_SEPARATOR = " \t --> ";
@@ -974,18 +977,18 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		{		
 			if ( !isAcceptingFilenames() )
 			{
-			    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("ExcelInputMeta.CheckResult.NoInputError"), stepMeta);
+			    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExcelInputMeta.CheckResult.NoInputError"), stepMeta);
 	  		    remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ExcelInputMeta.CheckResult.AcceptFilenamesOk"), stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExcelInputMeta.CheckResult.AcceptFilenamesOk"), stepMeta);
 			    remarks.add(cr);
 			}
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ExcelInputMeta.CheckResult.NoInputOk"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExcelInputMeta.CheckResult.NoInputOk"), stepMeta);
 			remarks.add(cr);
 		}
 		
@@ -994,13 +997,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if ( ! isAcceptingFilenames() )
 			{
-			    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("ExcelInputMeta.CheckResult.ExpectedFilesError"), stepMeta);
+			    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExcelInputMeta.CheckResult.ExpectedFilesError"), stepMeta);
    			    remarks.add(cr);
 			}
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ExcelInputMeta.CheckResult.ExpectedFilesOk", ""+fileList.nrOfFiles()), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExcelInputMeta.CheckResult.ExpectedFilesOk", ""+fileList.nrOfFiles()), stepMeta);
 			remarks.add(cr);
 		}
 	}

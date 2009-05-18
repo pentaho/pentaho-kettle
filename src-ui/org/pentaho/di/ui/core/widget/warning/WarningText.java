@@ -29,8 +29,9 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.widget.Messages;
+import org.pentaho.di.ui.core.widget.CheckBoxVar;
 
 /**
  * A Widget that combines a Text widget with a "Warning" image to the left.
@@ -40,6 +41,8 @@ import org.pentaho.di.ui.core.widget.Messages;
  * @since 25-FEB-2009
  */
 public class WarningText extends Composite {
+  private static Class<?> PKG = CheckBoxVar.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   private ControlDecoration warningControlDecoration;
 
   private Text wText;
@@ -65,7 +68,7 @@ public class WarningText extends Composite {
     warningControlDecoration = new ControlDecoration(wText, SWT.CENTER | SWT.RIGHT);
     Image warningImage = GUIResource.getInstance().getImageWarning();
     warningControlDecoration.setImage(warningImage);
-    warningControlDecoration.setDescriptionText(Messages.getString("TextVar.tooltip.FieldIsInUse"));
+    warningControlDecoration.setDescriptionText(BaseMessages.getString(PKG, "TextVar.tooltip.FieldIsInUse"));
     warningControlDecoration.hide();
     
     // If something has changed, check the warning interfaces

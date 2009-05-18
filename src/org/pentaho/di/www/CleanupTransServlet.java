@@ -25,11 +25,14 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 
 
 public class CleanupTransServlet extends HttpServlet
 {
+	private static Class<?> PKG = CleanupTransServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static final long serialVersionUID = -5879200987669847357L;
     
     public static final String CONTEXT_PATH = "/kettle/cleanupTrans";
@@ -50,7 +53,7 @@ public class CleanupTransServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), Messages.getString("TransStatusServlet.Log.TransCleanupRequested"));
+        if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransStatusServlet.Log.TransCleanupRequested"));
         
 
         String transName = request.getParameter("name");
@@ -84,7 +87,7 @@ public class CleanupTransServlet extends HttpServlet
         	
         	if ("Y".equalsIgnoreCase(sockets)) {
         		transformationMap.deallocateServerSocketPorts(transName);
-                message =  Messages.getString("TransStatusServlet.Log.TransServerSocketPortsReleased",transName);
+                message =  BaseMessages.getString(PKG, "TransStatusServlet.Log.TransServerSocketPortsReleased",transName);
         	} else {
 	            Trans trans = transformationMap.getTransformation(transName);
 	            if (trans!=null)
@@ -93,7 +96,7 @@ public class CleanupTransServlet extends HttpServlet
 	                trans.endProcessing(Database.LOG_STATUS_END);
 	                
 	                // Also release the server sockets
-	                message =  Messages.getString("TransStatusServlet.Log.TransCleanednup",transName);
+	                message =  BaseMessages.getString(PKG, "TransStatusServlet.Log.TransCleanednup",transName);
 	            }
 	            else
 	            {
@@ -105,7 +108,7 @@ public class CleanupTransServlet extends HttpServlet
 	                else
 	                {
 	                    out.println("<H1>"+message+"</H1>");
-	                    out.println("<a href=\"/kettle/status\">" + Messages.getString("TransStatusServlet.BackToStatusPage") +"</a><p>");
+	                    out.println("<a href=\"/kettle/status\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") +"</a><p>");
 	                }
 	            }
         	}
@@ -118,7 +121,7 @@ public class CleanupTransServlet extends HttpServlet
             {
                 
                 out.println("<H1>"+message+"</H1>");
-                out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("TransStatusServlet.BackToStatusPage")  + "</a><p>");
+                out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage")  + "</a><p>");
         	}
         }
         catch (Exception ex)

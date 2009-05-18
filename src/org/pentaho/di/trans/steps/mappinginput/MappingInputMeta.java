@@ -30,6 +30,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -50,6 +51,8 @@ import org.w3c.dom.Node;
 
 public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = MappingInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private String fieldName[];
 
     private int    fieldType[];
@@ -194,7 +197,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(Messages.getString("MappingInputMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "MappingInputMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
         }
     }
 
@@ -258,7 +261,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
                     for (MappingValueRename valueRename : valueRenames) {
                     	ValueMetaInterface valueMeta = inputRowMeta.searchValueMeta(valueRename.getSourceValueName());
                     	if (valueMeta==null) {
-                    		throw new KettleStepException(Messages.getString("MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName()));
+                    		throw new KettleStepException(BaseMessages.getString(PKG, "MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName()));
                     	}
                     	valueMeta.setName(valueRename.getTargetValueName());
                     }
@@ -271,7 +274,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
     	    	for (int i=0;i<fieldName.length;i++) {
     	    		int index = inputRowMeta.indexOfValue(fieldName[i]);
     	    		if (index<0) {
-    	    			throw new KettleStepException(Messages.getString("MappingInputMeta.Exception.UnknownField", fieldName[i]));
+    	    			throw new KettleStepException(BaseMessages.getString(PKG, "MappingInputMeta.Exception.UnknownField", fieldName[i]));
     	    		}
     	    		
     	    		newRow.addValueMeta(inputRowMeta.getValueMeta(index));
@@ -306,7 +309,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
         		//
     	    	for (int i=0;i<fieldName.length;i++) {
     	    		if (row.indexOfValue(fieldName[i])<0) {
-    	    			throw new KettleStepException(Messages.getString("MappingInputMeta.Exception.UnknownField", fieldName[i]));
+    	    			throw new KettleStepException(BaseMessages.getString(PKG, "MappingInputMeta.Exception.UnknownField", fieldName[i]));
     	    		}
     	        }
     		}
@@ -349,7 +352,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("MappingInputMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "MappingInputMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -372,7 +375,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("MappingInputMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "MappingInputMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -381,24 +384,24 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
         CheckResult cr;
         if (prev == null || prev.size() == 0)
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("MappingInputMeta.CheckResult.NotReceivingFieldsError"), stepinfo); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MappingInputMeta.CheckResult.NotReceivingFieldsError"), stepinfo); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("MappingInputMeta.CheckResult.StepReceivingDatasFromPreviousOne", prev.size() + ""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MappingInputMeta.CheckResult.StepReceivingDatasFromPreviousOne", prev.size() + ""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
             remarks.add(cr);
         }
 
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("MappingInputMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MappingInputMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK , Messages.getString("MappingInputMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK , BaseMessages.getString(PKG, "MappingInputMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
             remarks.add(cr);
         }
     }

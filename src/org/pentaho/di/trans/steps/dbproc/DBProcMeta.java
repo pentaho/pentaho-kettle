@@ -28,6 +28,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
@@ -46,6 +47,8 @@ import org.w3c.dom.Node;
 
 public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = DBProcMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** database connection */
     private DatabaseMeta database;
 
@@ -339,7 +342,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(Messages.getString("DBProcMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "DBProcMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -367,7 +370,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("DBProcMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "DBProcMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -394,7 +397,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("DBProcMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "DBProcMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -425,7 +428,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
                             if (first)
                             {
                                 first = false;
-                                error_message += Messages.getString("DBProcMeta.CheckResult.MissingArguments") + Const.CR; //$NON-NLS-1$
+                                error_message += BaseMessages.getString(PKG, "DBProcMeta.CheckResult.MissingArguments") + Const.CR; //$NON-NLS-1$
                             }
                             error_found = true;
                             error_message += "\t\t" + argument[i] + Const.CR; //$NON-NLS-1$
@@ -436,7 +439,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
                             if (v.getType() != argumentType[i] && !(v.isNumeric() && ValueMeta.isNumeric(argumentType[i])))
                             {
                                 error_found = true;
-                                error_message += "\t\t" + argument[i] + Messages.getString("DBProcMeta.CheckResult.WrongTypeArguments", v.getTypeDesc(), ValueMeta.getTypeDesc(argumentType[i])) + Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                                error_message += "\t\t" + argument[i] + BaseMessages.getString(PKG, "DBProcMeta.CheckResult.WrongTypeArguments", v.getTypeDesc(), ValueMeta.getTypeDesc(argumentType[i])) + Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                             }
                         }
                     }
@@ -446,27 +449,27 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
                     }
                     else
                     {
-                        cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("DBProcMeta.CheckResult.AllArgumentsOK"), stepMeta); //$NON-NLS-1$
+                        cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DBProcMeta.CheckResult.AllArgumentsOK"), stepMeta); //$NON-NLS-1$
                     }
                     remarks.add(cr);
                 }
                 else
                 {
-                    error_message = Messages.getString("DBProcMeta.CheckResult.CouldNotReadFields") + Const.CR; //$NON-NLS-1$
+                    error_message = BaseMessages.getString(PKG, "DBProcMeta.CheckResult.CouldNotReadFields") + Const.CR; //$NON-NLS-1$
                     cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
                     remarks.add(cr);
                 }
             }
             catch (KettleException e)
             {
-                error_message = Messages.getString("DBProcMeta.CheckResult.ErrorOccurred") + e.getMessage(); //$NON-NLS-1$
+                error_message = BaseMessages.getString(PKG, "DBProcMeta.CheckResult.ErrorOccurred") + e.getMessage(); //$NON-NLS-1$
                 cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
                 remarks.add(cr);
             }
         }
         else
         {
-            error_message = Messages.getString("DBProcMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "DBProcMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
             cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
@@ -474,12 +477,12 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("DBProcMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DBProcMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("DBProcMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "DBProcMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
 

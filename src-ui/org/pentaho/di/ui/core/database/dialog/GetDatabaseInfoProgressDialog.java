@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.DatabaseMetaInformation;
-import org.pentaho.di.ui.core.database.dialog.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 
@@ -39,6 +39,8 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
  */
 public class GetDatabaseInfoProgressDialog
 {
+	private static Class<?> PKG = GetDatabaseInfoProgressDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Shell shell;
 	private DatabaseMeta dbInfo;
 
@@ -65,7 +67,7 @@ public class GetDatabaseInfoProgressDialog
 				}
 				catch(Exception e)
 				{
-					throw new InvocationTargetException(e, Messages.getString("GetDatabaseInfoProgressDialog.Error.GettingInfoTable",e.toString()));
+					throw new InvocationTargetException(e, BaseMessages.getString(PKG, "GetDatabaseInfoProgressDialog.Error.GettingInfoTable",e.toString()));
 				}
 			}
 		};
@@ -97,7 +99,7 @@ public class GetDatabaseInfoProgressDialog
     */
     private void showErrorDialog(Exception e)
     {
-        new ErrorDialog(shell, Messages.getString("GetDatabaseInfoProgressDialog.Error.Title"),
-            Messages.getString("GetDatabaseInfoProgressDialog.Error.Message"), e);
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "GetDatabaseInfoProgressDialog.Error.Title"),
+            BaseMessages.getString(PKG, "GetDatabaseInfoProgressDialog.Error.Message"), e);
     }
 }

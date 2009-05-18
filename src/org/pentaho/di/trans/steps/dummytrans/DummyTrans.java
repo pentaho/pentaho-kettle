@@ -12,6 +12,7 @@
 package org.pentaho.di.trans.steps.dummytrans;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -28,6 +29,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class DummyTrans extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = DummyTransMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private DummyTransMeta meta;
 	private DummyTransData data;
 	
@@ -52,7 +55,7 @@ public class DummyTrans extends BaseStep implements StepInterface
 
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(Messages.getString("DummyTrans.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "DummyTrans.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
         }
 			
 		return true;

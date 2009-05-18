@@ -12,8 +12,11 @@
 */
 package org.pentaho.di.trans.steps.setvaluefield;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -21,8 +24,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleStepException;
 
 
 
@@ -34,6 +35,8 @@ import org.pentaho.di.core.exception.KettleStepException;
  */
 public class SetValueField extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = SetValueFieldMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private SetValueFieldMeta meta;
 	private SetValueFieldData data;
 	
@@ -73,24 +76,24 @@ public class SetValueField extends BaseStep implements StepInterface
 				{
 					if(meta.getFieldName()[j].equals(meta.getFieldName()[i]))
 					{
-						if(j!=i) throw new KettleException(Messages.getString("SetValueField.Log.FieldSpecifiedMoreThatOne",meta.getFieldName()[i],""+i,""+j));
+						if(j!=i) throw new KettleException(BaseMessages.getString(PKG, "SetValueField.Log.FieldSpecifiedMoreThatOne",meta.getFieldName()[i],""+i,""+j));
 					}
 				}
 				
 		        data.indexOfField [i] = data.outputRowMeta.indexOfValue(environmentSubstitute(meta.getFieldName()[i]));
 				if (data.indexOfField [i]<0)
 				{
-					throw new KettleStepException(Messages.getString("SetValueField.Log.CouldNotFindFieldInRow",meta.getFieldName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "SetValueField.Log.CouldNotFindFieldInRow",meta.getFieldName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				String sourceField=environmentSubstitute(meta.getReplaceByFieldValue()[i]);
 				if(Const.isEmpty(sourceField))
 				{
-					throw new KettleStepException(Messages.getString("SetValueField.Log.ReplaceByValueFieldMissing",""+i));
+					throw new KettleStepException(BaseMessages.getString(PKG, "SetValueField.Log.ReplaceByValueFieldMissing",""+i));
 				}
 			    data.indexOfReplaceByValue[i] = data.outputRowMeta.indexOfValue(sourceField);
 			    if (data.indexOfReplaceByValue[i]<0)
 				{
-				   throw new KettleStepException(Messages.getString("SetValueField.Log.CouldNotFindFieldInRow",sourceField)); 
+				   throw new KettleStepException(BaseMessages.getString(PKG, "SetValueField.Log.CouldNotFindFieldInRow",sourceField)); 
 				}
 			   // Compare fields type
 			   ValueMetaInterface SourceValue=getInputRowMeta().getValueMeta(data.indexOfField[i]);
@@ -98,7 +101,7 @@ public class SetValueField extends BaseStep implements StepInterface
 			   
 			   if(SourceValue.getType()!=ReplaceByValue.getType())
 			   {
-				   String err=Messages.getString("SetValueField.Log.FieldsTypeDifferent",
+				   String err=BaseMessages.getString(PKG, "SetValueField.Log.FieldsTypeDifferent",
 						   SourceValue.getName()+" ("+SourceValue.getTypeDesc()+")", 
 						  ReplaceByValue.getName()+" ("+ReplaceByValue.getTypeDesc()+")");
 				   throw new KettleStepException(err);
@@ -124,7 +127,7 @@ public class SetValueField extends BaseStep implements StepInterface
         	}
         	else
         	{
-        		logError(Messages.getString("SetValueField.Log.ErrorInStep",e.getMessage())); //$NON-NLS-1$
+        		logError(BaseMessages.getString(PKG, "SetValueField.Log.ErrorInStep",e.getMessage())); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)

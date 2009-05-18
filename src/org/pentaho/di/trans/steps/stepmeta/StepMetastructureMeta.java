@@ -15,6 +15,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -26,6 +27,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
 public class StepMetastructureMeta extends BaseStepMeta implements StepMetaInterface {
+
+	private static Class<?> PKG = StepMetastructureMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private String fieldName;
 	private String comments;
@@ -169,13 +172,13 @@ public class StepMetastructureMeta extends BaseStepMeta implements StepMetaInter
 	
 	public void setDefault()
 	{
-		positionName = Messages.getString("StepMetastructureMeta.PositionName");
-    	fieldName = Messages.getString("StepMetastructureMeta.FieldName");
-    	comments = Messages.getString("StepMetastructureMeta.Comments");
-        typeName = Messages.getString("StepMetastructureMeta.TypeName");
-    	lengthName = Messages.getString("StepMetastructureMeta.LengthName");
-    	precisionName = Messages.getString("StepMetastructureMeta.PrecisionName");
-    	originName = Messages.getString("StepMetastructureMeta.OriginName");
+		positionName = BaseMessages.getString(PKG, "StepMetastructureMeta.PositionName");
+    	fieldName = BaseMessages.getString(PKG, "StepMetastructureMeta.FieldName");
+    	comments = BaseMessages.getString(PKG, "StepMetastructureMeta.Comments");
+        typeName = BaseMessages.getString(PKG, "StepMetastructureMeta.TypeName");
+    	lengthName = BaseMessages.getString(PKG, "StepMetastructureMeta.LengthName");
+    	precisionName = BaseMessages.getString(PKG, "StepMetastructureMeta.PrecisionName");
+    	originName = BaseMessages.getString(PKG, "StepMetastructureMeta.OriginName");
     	
 	}
 	

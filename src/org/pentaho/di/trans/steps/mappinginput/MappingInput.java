@@ -18,6 +18,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -36,6 +37,8 @@ import org.pentaho.di.trans.steps.mapping.MappingValueRename;
  */
 public class MappingInput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = MappingInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private MappingInputMeta meta;
 	private MappingInputData data;
 	
@@ -65,7 +68,7 @@ public class MappingInput extends BaseStep implements StepInterface
                 try { totalsleep+=10; Thread.sleep(10); } catch(InterruptedException e) { stopAll(); }
                 if (totalsleep>60000)
                 {
-                    throw new KettleException(Messages.getString("MappingInput.Exception.UnableToConnectWithParentMapping", ""+(totalsleep/1000)));
+                    throw new KettleException(BaseMessages.getString(PKG, "MappingInput.Exception.UnableToConnectWithParentMapping", ""+(totalsleep/1000)));
                 }
             }
             
@@ -110,7 +113,7 @@ public class MappingInput extends BaseStep implements StepInterface
             for (MappingValueRename valueRename : data.valueRenames) {
             	ValueMetaInterface valueMeta = data.outputRowMeta.searchValueMeta(valueRename.getSourceValueName());
             	if (valueMeta==null) {
-            		throw new KettleStepException(Messages.getString("MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName()));
+            		throw new KettleStepException(BaseMessages.getString(PKG, "MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName()));
             	}
             	valueMeta.setName(valueRename.getTargetValueName());
             }

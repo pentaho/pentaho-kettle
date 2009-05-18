@@ -44,26 +44,25 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.xslt.XsltMeta;
-import org.pentaho.di.trans.steps.xslt.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
-import org.pentaho.di.core.Props;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
 public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 {
-	
+	private static Class<?> PKG = XsltMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private FormData    fdResultField,fdlField, fdField,fdTabFolder
 						,fdlXSLFilename, fdbXSLFilename,fdXSLFilename,fdXSLField,fdlXSLField;	
@@ -122,14 +121,14 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("XsltDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "XsltDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("XsltDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "XsltDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -156,7 +155,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		
 		
 		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
-		wGeneralTab.setText(Messages.getString("XsltDialog.GeneralTab.TabTitle"));
+		wGeneralTab.setText(BaseMessages.getString(PKG, "XsltDialog.GeneralTab.TabTitle"));
 		
 		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wGeneralComp);
@@ -171,7 +170,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// FieldName to evaluate
 		wlField=new Label(wGeneralComp, SWT.RIGHT);
-        wlField.setText(Messages.getString("XsltDialog.Field.Label"));
+        wlField.setText(BaseMessages.getString(PKG, "XsltDialog.Field.Label"));
         props.setLook(wlField);
         fdlField=new FormData();
         fdlField.left = new FormAttachment(0, 0);
@@ -212,7 +211,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 
 		wOutputField = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wOutputField);
-		wOutputField.setText(Messages.getString("XsltDialog.ResultField.Group.Label"));
+		wOutputField.setText(BaseMessages.getString(PKG, "XsltDialog.ResultField.Group.Label"));
 		
 		FormLayout outputfieldgroupLayout = new FormLayout();
 		outputfieldgroupLayout.marginWidth = 10;
@@ -220,8 +219,8 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		wOutputField.setLayout(outputfieldgroupLayout);
         
 	      // Output Fieldame
-        wResultField = new LabelTextVar(transMeta,wOutputField, Messages.getString("XsltDialog.ResultField.Label"), Messages
-            .getString("XsltDialog.ResultField.Tooltip"));
+        wResultField = new LabelTextVar(transMeta,wOutputField, BaseMessages.getString(PKG, "XsltDialog.ResultField.Label"), 
+        		BaseMessages.getString(PKG, "XsltDialog.ResultField.Tooltip"));
         props.setLook(wResultField);
         wResultField .addModifyListener(lsMod);
         fdResultField  = new FormData();
@@ -249,7 +248,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 
 		wXSLFileGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wXSLFileGroup);
-		wXSLFileGroup.setText(Messages.getString("XsltDialog.XSL.Group.Label"));
+		wXSLFileGroup.setText(BaseMessages.getString(PKG, "XsltDialog.XSL.Group.Label"));
 		
 		FormLayout XSLFileGroupLayout = new FormLayout();
 		XSLFileGroupLayout.marginWidth = 10;
@@ -259,7 +258,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Is XSL filename defined in a Field?
 		wlXSLFileField = new Label(wXSLFileGroup, SWT.RIGHT);
-		wlXSLFileField.setText(Messages.getString("XsltDialog.XSLFilenameFileField.Label"));
+		wlXSLFileField.setText(BaseMessages.getString(PKG, "XsltDialog.XSLFilenameFileField.Label"));
 		props.setLook(wlXSLFileField);
 		fdlXSLFileField = new FormData();
 		fdlXSLFileField.left = new FormAttachment(0, 0);
@@ -268,7 +267,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		wlXSLFileField.setLayoutData(fdlXSLFileField);
 		wXSLFileField = new Button(wXSLFileGroup, SWT.CHECK);
 		props.setLook(wXSLFileField);
-		wXSLFileField.setToolTipText(Messages.getString("XsltDialog.XSLFilenameFileField.Tooltip"));
+		wXSLFileField.setToolTipText(BaseMessages.getString(PKG, "XsltDialog.XSLFilenameFileField.Tooltip"));
 		fdXSLFileField = new FormData();
 		fdXSLFileField.left = new FormAttachment(middle, margin);
 		fdXSLFileField.top = new FormAttachment(wResultField, margin);
@@ -288,7 +287,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// If XSL File name defined in a Field
 		wlXSLField=new Label(wXSLFileGroup, SWT.RIGHT);
-        wlXSLField.setText(Messages.getString("XsltDialog.XSLFilenameField.Label"));
+        wlXSLField.setText(BaseMessages.getString(PKG, "XsltDialog.XSLFilenameField.Label"));
         props.setLook(wlXSLField);
         fdlXSLField=new FormData();
         fdlXSLField.left = new FormAttachment(0, 0);
@@ -324,7 +323,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
         
 		// XSL Filename
 		wlFilename = new Label(wXSLFileGroup, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("XsltDialog.XSLFilename.Label"));
+		wlFilename.setText(BaseMessages.getString(PKG, "XsltDialog.XSLFilename.Label"));
 		props.setLook(wlFilename);
 		fdlXSLFilename = new FormData();
 		fdlXSLFilename.left = new FormAttachment(0, 0);
@@ -334,10 +333,8 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 
 		wbbFilename = new Button(wXSLFileGroup, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbbFilename);
-		wbbFilename.setText(Messages
-				.getString("XsltDialog.FilenameBrowse.Button"));
-		wbbFilename.setToolTipText(Messages
-				.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+		wbbFilename.setText(BaseMessages.getString(PKG, "XsltDialog.FilenameBrowse.Button"));
+		wbbFilename.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbXSLFilename = new FormData();
 		fdbXSLFilename.right = new FormAttachment(100, 0);
 		fdbXSLFilename.top = new FormAttachment(wXSLField, 2*margin);
@@ -354,7 +351,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 				
 		 // XSLTFactory
         wlXSLTFactory=new Label(wXSLFileGroup, SWT.RIGHT);
-        wlXSLTFactory.setText(Messages.getString("XsltDialog.XSLTFactory.Label"));
+        wlXSLTFactory.setText(BaseMessages.getString(PKG, "XsltDialog.XSLTFactory.Label"));
         props.setLook(wlXSLTFactory);
         fdlXSLTFactory=new FormData();
         fdlXSLTFactory.left = new FormAttachment(0, 0);
@@ -411,10 +408,10 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		wTabFolder.setLayoutData(fdTabFolder);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTabFolder);
 
@@ -455,8 +452,8 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 					}
 
 					dialog.setFilterNames(new String[] {
-							Messages.getString("XsltDialog.FileType"),
-							Messages.getString("System.FileType.AllFiles") });
+							BaseMessages.getString(PKG, "XsltDialog.FileType"),
+							BaseMessages.getString(PKG, "System.FileType.AllFiles") });
 
 					if (dialog.open() != null) {
 						String str = dialog.getFilterPath()
@@ -522,7 +519,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 				}
 
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, Messages.getString("XsltDialog.FailedToGetFields.DialogTitle"), Messages.getString("XsltDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "XsltDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "XsltDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 
 	 }

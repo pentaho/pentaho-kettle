@@ -46,21 +46,23 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.uniquerows.Messages;
 import org.pentaho.di.trans.steps.uniquerows.UniqueRowsMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = UniqueRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final String STRING_SORT_WARNING_PARAMETER = "UniqueSortWarning"; //$NON-NLS-1$
     
 	private UniqueRowsMeta input;
@@ -111,14 +113,14 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("UniqueRowsDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "UniqueRowsDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("UniqueRowsDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "UniqueRowsDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -136,7 +138,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		wStepname.setLayoutData(fdStepname);
 
 		wlCount=new Label(shell, SWT.RIGHT);
-		wlCount.setText(Messages.getString("UniqueRowsDialog.Count.Label")); //$NON-NLS-1$
+		wlCount.setText(BaseMessages.getString(PKG, "UniqueRowsDialog.Count.Label")); //$NON-NLS-1$
  		props.setLook(wlCount);
 		fdlCount=new FormData();
 		fdlCount.left = new FormAttachment(0, 0);
@@ -146,7 +148,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		
 		wCount=new Button(shell, SWT.CHECK );
  		props.setLook(wCount);
-		wCount.setToolTipText(Messages.getString("UniqueRowsDialog.Count.ToolTip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		wCount.setToolTipText(BaseMessages.getString(PKG, "UniqueRowsDialog.Count.ToolTip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
 		fdCount=new FormData();
 		fdCount.left = new FormAttachment(middle, 0);
 		fdCount.top  = new FormAttachment(wStepname, margin);
@@ -162,7 +164,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		);
 
 		wlCountField=new Label(shell, SWT.LEFT);
-		wlCountField.setText(Messages.getString("UniqueRowsDialog.CounterField.Label")); //$NON-NLS-1$
+		wlCountField.setText(BaseMessages.getString(PKG, "UniqueRowsDialog.CounterField.Label")); //$NON-NLS-1$
  		props.setLook(wlCountField);
 		fdlCountField=new FormData();
 		fdlCountField.left = new FormAttachment(wCount, margin);
@@ -179,17 +181,17 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("UniqueRowsDialog.Get.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "UniqueRowsDialog.Get.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 		fdOK=new FormData();
 		
 		setButtonPositions(new Button[] { wOK, wCancel , wGet} , margin, null);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("UniqueRowsDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "UniqueRowsDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -200,8 +202,8 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		
 		colinf=new ColumnInfo[]
         {
-		  new ColumnInfo(Messages.getString("UniqueRowsDialog.ColumnInfo.Fieldname"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-          new ColumnInfo(Messages.getString("UniqueRowsDialog.ColumnInfo.IgnoreCase"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] {"Y", "N"}, true ) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		  new ColumnInfo(BaseMessages.getString(PKG, "UniqueRowsDialog.ColumnInfo.Fieldname"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+          new ColumnInfo(BaseMessages.getString(PKG, "UniqueRowsDialog.ColumnInfo.IgnoreCase"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] {"Y", "N"}, true ) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         };
 		
 		wFields=new TableView(transMeta, shell, 
@@ -242,7 +244,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -351,13 +353,13 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
         if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                 Messages.getString("UniqueRowsDialog.InputNeedSort.DialogTitle"),  //$NON-NLS-1$
+                 BaseMessages.getString(PKG, "UniqueRowsDialog.InputNeedSort.DialogTitle"),  //$NON-NLS-1$
                  null,
-                 Messages.getString("UniqueRowsDialog.InputNeedSort.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+                 BaseMessages.getString(PKG, "UniqueRowsDialog.InputNeedSort.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
                  MessageDialog.WARNING,
-                 new String[] { Messages.getString("UniqueRowsDialog.InputNeedSort.Option1") }, //$NON-NLS-1$
+                 new String[] { BaseMessages.getString(PKG, "UniqueRowsDialog.InputNeedSort.Option1") }, //$NON-NLS-1$
                  0,
-                 Messages.getString("UniqueRowsDialog.InputNeedSort.Option2"), //$NON-NLS-1$
+                 BaseMessages.getString(PKG, "UniqueRowsDialog.InputNeedSort.Option2"), //$NON-NLS-1$
                  "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
             );
             MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
@@ -383,7 +385,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("UniqueRowsDialog.FailedToGetFields.DialogTitle"), Messages.getString("UniqueRowsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "UniqueRowsDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "UniqueRowsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 

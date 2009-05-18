@@ -44,24 +44,26 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.http.HTTPMeta;
-import org.pentaho.di.trans.steps.http.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = HTTPMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlUrl;
 	private TextVar      wUrl;
 	private FormData     fdlUrl, fdUrl;
@@ -122,14 +124,14 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("HTTPDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "HTTPDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("HTTPDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "HTTPDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -147,7 +149,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		wStepname.setLayoutData(fdStepname);
 		
 		wlUrl=new Label(shell, SWT.RIGHT);
-		wlUrl.setText(Messages.getString("HTTPDialog.URL.Label")); //$NON-NLS-1$
+		wlUrl.setText(BaseMessages.getString(PKG, "HTTPDialog.URL.Label")); //$NON-NLS-1$
  		props.setLook(wlUrl);
 		fdlUrl=new FormData();
 		fdlUrl.left = new FormAttachment(0, 0);
@@ -166,7 +168,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// UrlInField line
         wlUrlInField=new Label(shell, SWT.RIGHT);
-        wlUrlInField.setText(Messages.getString("HTTPDialog.UrlInField.Label"));
+        wlUrlInField.setText(BaseMessages.getString(PKG, "HTTPDialog.UrlInField.Label"));
         props.setLook(wlUrlInField);
         fdlUrlInField=new FormData();
         fdlUrlInField.left = new FormAttachment(0, 0);
@@ -192,7 +194,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 
 		// UrlField Line
 		wlUrlField=new Label(shell, SWT.RIGHT);
-		wlUrlField.setText(Messages.getString("HTTPDialog.UrlField.Label")); //$NON-NLS-1$
+		wlUrlField.setText(BaseMessages.getString(PKG, "HTTPDialog.UrlField.Label")); //$NON-NLS-1$
  		props.setLook(wlUrlField);
 		fdlUrlField=new FormData();
 		fdlUrlField.left = new FormAttachment(0, 0);
@@ -201,7 +203,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		wlUrlField.setLayoutData(fdlUrlField);
 
     	wUrlField=new ComboVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    	wUrlField.setToolTipText(Messages.getString("HTTPDialog.UrlField.Tooltip"));
+    	wUrlField.setToolTipText(BaseMessages.getString(PKG, "HTTPDialog.UrlField.Tooltip"));
 		props.setLook(wUrlField);
 		wUrlField.addModifyListener(lsMod);
 		fdUrlField=new FormData();
@@ -229,7 +231,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// Result line...
 		wlResult=new Label(shell, SWT.RIGHT);
-		wlResult.setText(Messages.getString("HTTPDialog.Result.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "HTTPDialog.Result.Label")); //$NON-NLS-1$
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
@@ -246,7 +248,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		wResult.setLayoutData(fdResult);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("HTTPDialog.Parameters.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "HTTPDialog.Parameters.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -256,8 +258,8 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		final int FieldsRows=input.getArgumentField().length;
 		
 		 colinf=new ColumnInfo[] { 
-		  new ColumnInfo(Messages.getString("HTTPDialog.ColumnInfo.Name"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-		  new ColumnInfo(Messages.getString("HTTPDialog.ColumnInfo.Parameter"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+		  new ColumnInfo(BaseMessages.getString(PKG, "HTTPDialog.ColumnInfo.Name"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+		  new ColumnInfo(BaseMessages.getString(PKG, "HTTPDialog.ColumnInfo.Parameter"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
         };
 		
 		wFields=new TableView(transMeta, shell, 
@@ -298,7 +300,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -307,11 +309,11 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("HTTPDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "HTTPDialog.GetFields.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel , wGet }, margin, wFields);
 
@@ -389,7 +391,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), Messages.getString("HTTPDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		if (input.getArgumentField()!=null)
 		for (i=0;i<input.getArgumentField().length;i++)
@@ -425,7 +427,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 
 		input.allocate(nrargs);
 
-		log.logDebug(toString(), Messages.getString("HTTPDialog.Log.FoundArguments",String.valueOf(nrargs))); //$NON-NLS-1$ //$NON-NLS-2$
+		log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPDialog.Log.FoundArguments",String.valueOf(nrargs))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrargs;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
@@ -455,7 +457,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("HTTPDialog.FailedToGetFields.DialogTitle"), Messages.getString("HTTPDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "HTTPDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "HTTPDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 

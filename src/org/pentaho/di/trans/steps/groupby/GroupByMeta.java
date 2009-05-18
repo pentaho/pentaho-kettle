@@ -27,6 +27,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -45,6 +46,8 @@ import org.w3c.dom.Node;
 
 public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = GroupByMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final int TYPE_GROUP_NONE               =  0;
 	public static final int TYPE_GROUP_SUM                =  1;
 	public static final int TYPE_GROUP_AVERAGE            =  2;
@@ -72,20 +75,20 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 	public static final String typeGroupLongDesc[] = 
 		{
 			"-",                                                                     //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.SUM"),                 //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.AVERAGE"),             //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.MIN"),                 //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.MAX"),                 //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.CONCAT_ALL"),          //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.CONCAT_COMMA"),        //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.FIRST"),               //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.LAST"), 	             //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.FIRST_INCL_NULL"),     //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.LAST_INCL_NULL"),      //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.CUMUMALTIVE_SUM"),     //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.CUMUMALTIVE_AVERAGE"), //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.STANDARD_DEVIATION"),  //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.CONCAT_STRING"),  		//$NON-NLS-1$ 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.SUM"),                 //$NON-NLS-1$ 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.AVERAGE"),             //$NON-NLS-1$ 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.MIN"),                 //$NON-NLS-1$ 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.MAX"),                 //$NON-NLS-1$ 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.CONCAT_ALL"),          //$NON-NLS-1$ 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.CONCAT_COMMA"),        //$NON-NLS-1$ 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.FIRST"),               //$NON-NLS-1$ 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.LAST"), 	             //$NON-NLS-1$ 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.FIRST_INCL_NULL"),     //$NON-NLS-1$ 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.LAST_INCL_NULL"),      //$NON-NLS-1$ 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.CUMUMALTIVE_SUM"),     //$NON-NLS-1$ 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.CUMUMALTIVE_AVERAGE"), //$NON-NLS-1$ 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.STANDARD_DEVIATION"),  //$NON-NLS-1$ 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.CONCAT_STRING"),  		//$NON-NLS-1$ 
 		};
 
 	
@@ -332,7 +335,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("GroupByMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "GroupByMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -560,7 +563,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("GroupByMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "GroupByMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -593,7 +596,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("GroupByMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "GroupByMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
@@ -604,12 +607,12 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("GroupByMeta.CheckResult.ReceivingInfoOK"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GroupByMeta.CheckResult.ReceivingInfoOK"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("GroupByMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GroupByMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

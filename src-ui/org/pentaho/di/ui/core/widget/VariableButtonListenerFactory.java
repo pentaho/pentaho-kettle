@@ -20,13 +20,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
-import org.pentaho.di.ui.core.widget.GetCaretPositionInterface;
-import org.pentaho.di.ui.core.widget.InsertTextInterface;
 
 
 public class VariableButtonListenerFactory
 {
+	private static Class<?> PKG = VariableButtonListenerFactory.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     // Listen to the Variable... button
     public static final SelectionAdapter getSelectionAdapter(final Composite composite, final Text destination, final VariableSpace space)
     {
@@ -83,7 +84,7 @@ public class VariableButtonListenerFactory
             str[i] = key[i]+"  ["+val[i]+"]";
         }
                 
-        EnterSelectionDialog esd = new EnterSelectionDialog(shell, str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar.Message"));
+        EnterSelectionDialog esd = new EnterSelectionDialog(shell, str, BaseMessages.getString(PKG, "System.Dialog.SelectEnvironmentVar.Title"), BaseMessages.getString(PKG, "System.Dialog.SelectEnvironmentVar.Message"));
         esd.clearModal();
         if (esd.open()!=null)
         {

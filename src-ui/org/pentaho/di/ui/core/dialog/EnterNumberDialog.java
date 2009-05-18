@@ -18,7 +18,6 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -29,10 +28,11 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.dialog.Messages;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.core.PropsUI;
 
 /**
  * This dialog allows you to enter a number.
@@ -42,6 +42,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class EnterNumberDialog extends Dialog
 {
+	private static Class<?> PKG = EnterNumberDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label wlNumber;
     private Text wNumber;
     private FormData fdlNumber, fdNumber;
@@ -119,11 +121,11 @@ public class EnterNumberDialog extends Dialog
         Button[] buttons=null;
         
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         if (!hideCancelButton)
         {
             wCancel = new Button(shell, SWT.PUSH);
-            wCancel.setText(Messages.getString("System.Button.Cancel"));
+            wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
             buttons = new Button[] { wOK, wCancel };
         }
         else
@@ -190,8 +192,8 @@ public class EnterNumberDialog extends Dialog
         catch (Exception e)
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-            mb.setMessage(Messages.getString("Dialog.Error.EnterInteger"));
-            mb.setText(Messages.getString("Dialog.Error.Header"));
+            mb.setMessage(BaseMessages.getString(PKG, "Dialog.Error.EnterInteger"));
+            mb.setText(BaseMessages.getString(PKG, "Dialog.Error.Header"));
             mb.open();
             wNumber.selectAll();
         }

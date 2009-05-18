@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.detectlastrow;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -31,6 +32,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class DetectLastRow extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = DetectLastRowMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private DetectLastRowMeta meta;
     private DetectLastRowData data;
     private Object[] previousRow;
@@ -72,11 +75,11 @@ public class DetectLastRow extends BaseStep implements StepInterface
 				putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
 
 				if (log.isRowLevel()) {
-					logRowlevel(Messages.getString("DetectLastRow.Log.WroteRowToNextStep")+data.outputRowMeta.getString(outputRow)); //$NON-NLS-1$
+					logRowlevel(BaseMessages.getString(PKG, "DetectLastRow.Log.WroteRowToNextStep")+data.outputRowMeta.getString(outputRow)); //$NON-NLS-1$
 				}
 
 		        if (checkFeedback(getLinesRead())) {
-		        	logBasic(Messages.getString("DetectLastRow.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+		        	logBasic(BaseMessages.getString(PKG, "DetectLastRow.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 		        }				
 			}
 			setOutputDone();
@@ -89,11 +92,11 @@ public class DetectLastRow extends BaseStep implements StepInterface
 			putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
 
 			if (log.isRowLevel()) {
-				logRowlevel(Messages.getString("DetectLastRow.Log.WroteRowToNextStep")+data.outputRowMeta.getString(outputRow)); //$NON-NLS-1$
+				logRowlevel(BaseMessages.getString(PKG, "DetectLastRow.Log.WroteRowToNextStep")+data.outputRowMeta.getString(outputRow)); //$NON-NLS-1$
 			}
 
 	        if (checkFeedback(getLinesRead())) {
-	        	logBasic(Messages.getString("DetectLastRow.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+	        	logBasic(BaseMessages.getString(PKG, "DetectLastRow.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 	        }		
 		}
 		// keep track of the current row
@@ -112,7 +115,7 @@ public class DetectLastRow extends BaseStep implements StepInterface
         {
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), Messages.getString("DetectLastRow.Error.ResultFieldMissing"));
+        		log.logError(toString(), BaseMessages.getString(PKG, "DetectLastRow.Error.ResultFieldMissing"));
         		return false;
         	}
 

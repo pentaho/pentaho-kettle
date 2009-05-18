@@ -48,13 +48,13 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.getfilesrowscount.GetFilesRowsCountMeta;
-import org.pentaho.di.trans.steps.getfilesrowscount.Messages;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -68,6 +68,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = GetFilesRowsCountMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
@@ -160,14 +162,14 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("GetFilesRowsCountDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -191,7 +193,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		// START OF FILE TAB   ///
 		//////////////////////////
 		wFileTab=new CTabItem(wTabFolder, SWT.NONE);
-		wFileTab.setText(Messages.getString("GetFilesRowsCountDialog.File.Tab"));
+		wFileTab.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.File.Tab"));
 		
 		wFileComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wFileComp);
@@ -207,7 +209,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		wOriginFiles = new Group(wFileComp, SWT.SHADOW_NONE);
 		props.setLook(wOriginFiles);
-		wOriginFiles.setText(Messages.getString("GetFilesRowsCountDialog.wOriginFiles.Label"));
+		wOriginFiles.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.wOriginFiles.Label"));
 		
 		FormLayout OriginFilesgroupLayout = new FormLayout();
 		OriginFilesgroupLayout.marginWidth = 10;
@@ -216,7 +218,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		
 		//Is Filename defined in a Field		
 		wlFileField = new Label(wOriginFiles, SWT.RIGHT);
-		wlFileField.setText(Messages.getString("GetFilesRowsCountDialog.FileField.Label"));
+		wlFileField.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FileField.Label"));
 		props.setLook(wlFileField);
 		fdlFileField = new FormData();
 		fdlFileField.left = new FormAttachment(0, -margin);
@@ -227,7 +229,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		
 		wFileField = new Button(wOriginFiles, SWT.CHECK);
 		props.setLook(wFileField);
-		wFileField.setToolTipText(Messages.getString("GetFilesRowsCountDialog.FileField.Tooltip"));
+		wFileField.setToolTipText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FileField.Tooltip"));
 		fdFileField = new FormData();
 		fdFileField.left = new FormAttachment(middle, -margin);
 		fdFileField.top = new FormAttachment(0, margin);
@@ -244,7 +246,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
         
 		// Filename field
 		wlFilenameField=new Label(wOriginFiles, SWT.RIGHT);
-        wlFilenameField.setText(Messages.getString("GetFilesRowsCountDialog.FilenameField.Label"));
+        wlFilenameField.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FilenameField.Label"));
         props.setLook(wlFilenameField);
         fdlFilenameField=new FormData();
         fdlFilenameField.left = new FormAttachment(0, -margin);
@@ -293,7 +295,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		// Filename line
 		wlFilename=new Label(wFileComp, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("GetFilesRowsCountDialog.Filename.Label"));
+		wlFilename.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Filename.Label"));
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -303,8 +305,8 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		wbbFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbbFilename);
-		wbbFilename.setText(Messages.getString("GetFilesRowsCountDialog.FilenameBrowse.Button"));
-		wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+		wbbFilename.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FilenameBrowse.Button"));
+		wbbFilename.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(wOriginFiles, margin);
@@ -312,8 +314,8 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		wbaFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbaFilename);
-		wbaFilename.setText(Messages.getString("GetFilesRowsCountDialog.FilenameAdd.Button"));
-		wbaFilename.setToolTipText(Messages.getString("GetFilesRowsCountDialog.FilenameAdd.Tooltip"));
+		wbaFilename.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FilenameAdd.Button"));
+		wbaFilename.setToolTipText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FilenameAdd.Tooltip"));
 		fdbaFilename=new FormData();
 		fdbaFilename.right= new FormAttachment(wbbFilename, -margin);
 		fdbaFilename.top  = new FormAttachment(wOriginFiles, margin);
@@ -331,7 +333,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		wFilename.setLayoutData(fdFilename);
 
 		wlFilemask=new Label(wFileComp, SWT.RIGHT);
-		wlFilemask.setText(Messages.getString("GetFilesRowsCountDialog.RegExp.Label"));
+		wlFilemask.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.RegExp.Label"));
  		props.setLook(wlFilemask);
 		fdlFilemask=new FormData();
 		fdlFilemask.left = new FormAttachment(0, 0);
@@ -349,7 +351,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		// Filename list line
 		wlFilenameList=new Label(wFileComp, SWT.RIGHT);
-		wlFilenameList.setText(Messages.getString("GetFilesRowsCountDialog.FilenameList.Label"));
+		wlFilenameList.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FilenameList.Label"));
  		props.setLook(wlFilenameList);
 		fdlFilenameList=new FormData();
 		fdlFilenameList.left = new FormAttachment(0, 0);
@@ -360,8 +362,8 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		// Buttons to the right of the screen...
 		wbdFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbdFilename);
-		wbdFilename.setText(Messages.getString("GetFilesRowsCountDialog.FilenameRemove.Button"));
-		wbdFilename.setToolTipText(Messages.getString("GetFilesRowsCountDialog.FilenameRemove.Tooltip"));
+		wbdFilename.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FilenameRemove.Button"));
+		wbdFilename.setToolTipText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FilenameRemove.Tooltip"));
 		fdbdFilename=new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
 		fdbdFilename.top  = new FormAttachment (wFilemask, 40);
@@ -369,8 +371,8 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		wbeFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbeFilename);
-		wbeFilename.setText(Messages.getString("GetFilesRowsCountDialog.FilenameEdit.Button"));
-		wbeFilename.setToolTipText(Messages.getString("GetFilesRowsCountDialog.FilenameEdit.Tooltip"));
+		wbeFilename.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FilenameEdit.Button"));
+		wbeFilename.setToolTipText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FilenameEdit.Tooltip"));
 		fdbeFilename=new FormData();
 		fdbeFilename.right = new FormAttachment(100, 0);
 		fdbeFilename.top  = new FormAttachment (wbdFilename, margin);
@@ -379,7 +381,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		wbShowFiles=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbShowFiles);
-		wbShowFiles.setText(Messages.getString("GetFilesRowsCountDialog.ShowFiles.Button"));
+		wbShowFiles.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.ShowFiles.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left   = new FormAttachment(middle, 0);
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
@@ -387,17 +389,17 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		ColumnInfo[] colinfo=new ColumnInfo[2];
 		colinfo[ 0]=new ColumnInfo(
-          Messages.getString("GetFilesRowsCountDialog.Files.Filename.Column"),
+          BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Files.Filename.Column"),
           ColumnInfo.COLUMN_TYPE_TEXT,
           false);
 		colinfo[ 1]=new ColumnInfo(
-          Messages.getString("GetFilesRowsCountDialog.Files.Wildcard.Column"),
+          BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Files.Wildcard.Column"),
           ColumnInfo.COLUMN_TYPE_TEXT,
           false);
 		
 		colinfo[0].setUsingVariables(true);
 		colinfo[1].setUsingVariables(true);
-		colinfo[1].setToolTip(Messages.getString("GetFilesRowsCountDialog.Files.Wildcard.Tooltip"));
+		colinfo[1].setToolTip(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Files.Wildcard.Tooltip"));
 				
 		wFilenameList = new TableView(transMeta,wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
@@ -436,7 +438,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		// START OF CONTENT TAB///
 		///
 		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-		wContentTab.setText(Messages.getString("GetFilesRowsCountDialog.Content.Tab"));
+		wContentTab.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Content.Tab"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;
@@ -454,7 +456,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		wFilesCountFieldGroup = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wFilesCountFieldGroup);
-		wFilesCountFieldGroup.setText(Messages.getString("GetFilesRowsCountDialog.Group.CountFilesFieldGroup.Label"));
+		wFilesCountFieldGroup.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Group.CountFilesFieldGroup.Label"));
 		
 		FormLayout countfilesfieldgroupLayout = new FormLayout();
 		countfilesfieldgroupLayout.marginWidth = 10;
@@ -463,7 +465,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		
 		
 		wlRowsCountField=new Label(wFilesCountFieldGroup, SWT.RIGHT);
-		wlRowsCountField.setText(Messages.getString("GetFilesRowsCountDialog.RowsCountField.Label"));
+		wlRowsCountField.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.RowsCountField.Label"));
  		props.setLook(wlRowsCountField);
 		fdlRowsCountField=new FormData();
 		fdlRowsCountField.left = new FormAttachment(wInclFilesCount, margin);
@@ -471,7 +473,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		wlRowsCountField.setLayoutData(fdlRowsCountField);
 		wRowsCountField=new TextVar(transMeta,wFilesCountFieldGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wRowsCountField);
- 		wRowsCountField.setToolTipText(Messages.getString("GetFilesRowsCountDialog.RowsCountField.Tooltip"));
+ 		wRowsCountField.setToolTipText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.RowsCountField.Tooltip"));
  		wRowsCountField.addModifyListener(lsMod);
 		fdRowsCountField=new FormData();
 		fdRowsCountField.left = new FormAttachment(wlRowsCountField, margin);
@@ -495,7 +497,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		wRowSeparatorGroup = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wRowSeparatorGroup);
-		wRowSeparatorGroup.setText(Messages.getString("GetFilesRowsCountDialog.Group.RowSeparator.Label"));
+		wRowSeparatorGroup.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Group.RowSeparator.Label"));
 		
 		FormLayout rowseparatorgroupLayout = new FormLayout();
 		rowseparatorgroupLayout.marginWidth = 10;
@@ -506,7 +508,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		
 		wlRowSeparatorFormat=new Label(wRowSeparatorGroup, SWT.RIGHT);
-        wlRowSeparatorFormat.setText(Messages.getString("GetFilesRowsCountDialog.RowSeparatorFormat.Label"));
+        wlRowSeparatorFormat.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.Label"));
         props.setLook(wlRowSeparatorFormat);
         fdlRowSeparatorFormat=new FormData();
         fdlRowSeparatorFormat.left = new FormAttachment(0, 0);
@@ -515,10 +517,10 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
         wlRowSeparatorFormat.setLayoutData(fdlRowSeparatorFormat);
         wRowSeparatorFormat=new CCombo(wRowSeparatorGroup, SWT.BORDER | SWT.READ_ONLY);
         props.setLook(wRowSeparatorFormat);
-        wRowSeparatorFormat.add(Messages.getString("GetFilesRowsCountDialog.RowSeparatorFormat.CR.Label"));
-        wRowSeparatorFormat.add(Messages.getString("GetFilesRowsCountDialog.RowSeparatorFormat.LF.Label"));
-        wRowSeparatorFormat.add(Messages.getString("GetFilesRowsCountDialog.RowSeparatorFormat.TAB.Label"));
-        wRowSeparatorFormat.add(Messages.getString("GetFilesRowsCountDialog.RowSeparatorFormat.CUSTOM.Label"));
+        wRowSeparatorFormat.add(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.CR.Label"));
+        wRowSeparatorFormat.add(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.LF.Label"));
+        wRowSeparatorFormat.add(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.TAB.Label"));
+        wRowSeparatorFormat.add(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.CUSTOM.Label"));
         wRowSeparatorFormat.select(0);
         wRowSeparatorFormat.addModifyListener(lsMod);
         fdRowSeparatorFormat=new FormData();
@@ -539,7 +541,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		
 		
 		wlRowSeparator=new Label(wRowSeparatorGroup, SWT.RIGHT);
-		wlRowSeparator.setText(Messages.getString("GetFilesRowsCountDialog.RowSeparator.Label"));
+		wlRowSeparator.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.RowSeparator.Label"));
  		props.setLook(wlRowSeparator);
 		fdlRowSeparator=new FormData();
 		fdlRowSeparator.left = new FormAttachment(wInclFilesCount, margin);
@@ -547,7 +549,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		wlRowSeparator.setLayoutData(fdlRowSeparator);
 		wRowSeparator=new TextVar(transMeta,wRowSeparatorGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wRowSeparator);
- 		wRowSeparator.setToolTipText(Messages.getString("GetFilesRowsCountDialog.RowSeparator.Tooltip"));
+ 		wRowSeparator.setToolTipText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.RowSeparator.Tooltip"));
  		wRowSeparator.addModifyListener(lsMod);
 		fdRowSeparator=new FormData();
 		fdRowSeparator.left = new FormAttachment(wlRowSeparator, margin);
@@ -574,7 +576,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		wAdditionalGroup = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wAdditionalGroup);
-		wAdditionalGroup.setText(Messages.getString("GetFilesRowsCountDialog.Group.AdditionalGroup.Label"));
+		wAdditionalGroup.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Group.AdditionalGroup.Label"));
 		
 		FormLayout additionalgroupLayout = new FormLayout();
 		additionalgroupLayout.marginWidth = 10;
@@ -584,7 +586,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		
 		wlInclFilesCount=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlInclFilesCount.setText(Messages.getString("GetFilesRowsCountDialog.InclCountFiles.Label"));
+		wlInclFilesCount.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.InclCountFiles.Label"));
  		props.setLook(wlInclFilesCount);
 		fdlInclFilesCount=new FormData();
 		fdlInclFilesCount.left = new FormAttachment(0, 0);
@@ -593,14 +595,14 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		wlInclFilesCount.setLayoutData(fdlInclFilesCount);
 		wInclFilesCount=new Button(wAdditionalGroup, SWT.CHECK );
  		props.setLook(wInclFilesCount);
- 		wInclFilesCount.setToolTipText(Messages.getString("GetFilesRowsCountDialog.InclCountFiles.Tooltip"));
+ 		wInclFilesCount.setToolTipText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.InclCountFiles.Tooltip"));
 		fdFilesCount=new FormData();
 		fdFilesCount.left = new FormAttachment(middle, 0);
 		fdFilesCount.top  = new FormAttachment(wRowSeparatorGroup, margin);
 		wInclFilesCount.setLayoutData(fdFilesCount);
 
 		wlInclFilesCountField=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlInclFilesCountField.setText(Messages.getString("GetFilesRowsCountDialog.InclCountFilesField.Label"));
+		wlInclFilesCountField.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.InclCountFilesField.Label"));
  		props.setLook(wlInclFilesCountField);
 		fdlInclFilesCountField=new FormData();
 		fdlInclFilesCountField.left = new FormAttachment(wInclFilesCount, margin);
@@ -632,7 +634,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		wAddFileResult = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wAddFileResult);
-		wAddFileResult.setText(Messages.getString("GetFilesRowsCountDialog.wAddFileResult.Label"));
+		wAddFileResult.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.wAddFileResult.Label"));
 		
 		FormLayout AddFileResultgroupLayout = new FormLayout();
 		AddFileResultgroupLayout.marginWidth = 10;
@@ -640,7 +642,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		wAddFileResult.setLayout(AddFileResultgroupLayout);
 
 		wlAddResult=new Label(wAddFileResult, SWT.RIGHT);
-		wlAddResult.setText(Messages.getString("GetFilesRowsCountDialog.AddResult.Label"));
+		wlAddResult.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.AddResult.Label"));
  		props.setLook(wlAddResult);
 		fdlAddResult=new FormData();
 		fdlAddResult.left = new FormAttachment(0, 0);
@@ -649,7 +651,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		wlAddResult.setLayoutData(fdlAddResult);
 		wAddResult=new Button(wAddFileResult, SWT.CHECK );
  		props.setLook(wAddResult);
-		wAddResult.setToolTipText(Messages.getString("GetFilesRowsCountDialog.AddResult.Tooltip"));
+		wAddResult.setToolTipText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.AddResult.Tooltip"));
 		fdAddResult=new FormData();
 		fdAddResult.left = new FormAttachment(middle, 0);
 		fdAddResult.top  = new FormAttachment(wAdditionalGroup, margin);
@@ -689,13 +691,13 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		wTabFolder.setLayoutData(fdTabFolder);
 		
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 
 		wPreview=new Button(shell, SWT.PUSH);
-		wPreview.setText(Messages.getString("GetFilesRowsCountDialog.Button.PreviewRows"));
+		wPreview.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Button.PreviewRows"));
 		
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
 
@@ -774,7 +776,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
     					
     					if (files.length > 0)
     			        {
-    			            EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("GetFilesRowsCountDialog.FilesReadSelection.DialogTitle"), Messages.getString("GetFilesRowsCountDialog.FilesReadSelection.DialogMessage"));
+    			            EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FilesReadSelection.DialogTitle"), BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FilesReadSelection.DialogMessage"));
     			            esd.setViewOnly();
     			            esd.open();
     			        }
@@ -782,14 +784,14 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
     					else
     					{
     			            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-    			            mb.setMessage(Messages.getString("GetFilesRowsCountDialog.NoFileFound.DialogMessage"));
-    			            mb.setText(Messages.getString("System.Dialog.Error.Title"));
+    			            mb.setMessage(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.NoFileFound.DialogMessage"));
+    			            mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
     			            mb.open(); 
     					}
                     }
                     catch(KettleException ex)
                     {
-                        new ErrorDialog(shell, Messages.getString("GetFilesRowsCountDialog.ErrorParsingData.DialogTitle"), Messages.getString("GetFilesRowsCountDialog.ErrorParsingData.DialogMessage"), ex);
+                        new ErrorDialog(shell, BaseMessages.getString(PKG, "GetFilesRowsCountDialog.ErrorParsingData.DialogTitle"), BaseMessages.getString(PKG, "GetFilesRowsCountDialog.ErrorParsingData.DialogMessage"), ex);
                     }
 				}
 			}
@@ -850,7 +852,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 							dialog.setFileName( fname );
 						}
 						
-						dialog.setFilterNames(new String[] {Messages.getString("System.FileType.AllFiles")});
+						dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "System.FileType.AllFiles")});
 						
 						if (dialog.open()!=null)
 						{
@@ -933,7 +935,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 			 
 			
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, Messages.getString("GetFilesRowsCountDialog.FailedToGetFields.DialogTitle"), Messages.getString("GetFilesRowsCountDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 	 }
 	/**
@@ -997,7 +999,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		wFileField.setSelection(in.isFileField());
 		if (in.setOutputFilenameField()!=null) wFilenameField.setText(in.setOutputFilenameField());
 		
-		log.logDebug(toString(), Messages.getString("GetFilesRowsCountDialog.Log.GettingFieldsInfo"));
+		log.logDebug(toString(), BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Log.GettingFieldsInfo"));
 		
 		setIncludeRownum();
 
@@ -1021,7 +1023,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("GetFilesRowsCountDialog.ErrorParsingData.DialogTitle"), Messages.getString("GetFilesRowsCountDialog.ErrorParsingData.DialogMessage"), e);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "GetFilesRowsCountDialog.ErrorParsingData.DialogTitle"), BaseMessages.getString(PKG, "GetFilesRowsCountDialog.ErrorParsingData.DialogMessage"), e);
         }
 		dispose();
 	}
@@ -1095,7 +1097,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
             
             TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
             
-            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("GetFilesRowsCountDialog.NumberRows.DialogTitle"), Messages.getString("GetFilesRowsCountDialog.NumberRows.DialogMessage"));
+            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "GetFilesRowsCountDialog.NumberRows.DialogTitle"), BaseMessages.getString(PKG, "GetFilesRowsCountDialog.NumberRows.DialogMessage"));
             int previewSize = numberDialog.open();
             if (previewSize>0)
             {
@@ -1109,8 +1111,8 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
                     
                     if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                     {
-                    	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
-                    			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+                    	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
+                    			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true );
                     	etd.setReadOnly();
                     	etd.open();
                     }
@@ -1125,7 +1127,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("GetFilesRowsCountDialog.ErrorPreviewingData.DialogTitle"), Messages.getString("GetFilesRowsCountDialog.ErrorPreviewingData.DialogMessage"), e);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "GetFilesRowsCountDialog.ErrorPreviewingData.DialogTitle"), BaseMessages.getString(PKG, "GetFilesRowsCountDialog.ErrorPreviewingData.DialogMessage"), e);
        }
 	}
 	

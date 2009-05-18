@@ -18,6 +18,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -35,6 +36,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class AnalyticQuery extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = AnalyticQuery.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private AnalyticQueryMeta meta;
 	private AnalyticQueryData data;
 	
@@ -79,7 +82,7 @@ public class AnalyticQuery extends BaseStep implements StepInterface
 				data.groupnrs[i] = data.inputRowMeta.indexOfValue(meta.getGroupField()[i]);
 				if (data.groupnrs[i]<0)
 				{
-					logError(Messages.getString("AnalyticQuery.Log.GroupFieldCouldNotFound",meta.getGroupField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "AnalyticQuery.Log.GroupFieldCouldNotFound",meta.getGroupField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;

@@ -31,6 +31,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
@@ -58,15 +59,17 @@ import org.w3c.dom.Node;
 		categoryDescription="BaseStep.Category.Input", i18nPackageName="org.pentaho.di.trans.step")
 public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final int FILE_TYPE_NONE = 0;
 	public static final int FILE_TYPE_UNIX = 1;
 	public static final int FILE_TYPE_DOS  = 2;
 	
 	public static final String[] fileTypeCode = new String[] { "NONE", "UNIX", "DOS", };
 	public static final String[] fileTypeDesc = new String[] { 
-			Messages.getString("FixedFileInputMeta.FileType.None.Desc"),
-			Messages.getString("FixedFileInputMeta.FileType.Unix.Desc"),
-			Messages.getString("FixedFileInputMeta.FileType.Dos.Desc"),
+			BaseMessages.getString(PKG, "FixedFileInputMeta.FileType.None.Desc"),
+			BaseMessages.getString(PKG, "FixedFileInputMeta.FileType.Unix.Desc"),
+			BaseMessages.getString(PKG, "FixedFileInputMeta.FileType.Dos.Desc"),
 		};
 
 	private String filename;
@@ -302,24 +305,24 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("FixedInputMeta.CheckResult.NotReceivingFields"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FixedInputMeta.CheckResult.NotReceivingFields"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("FixedInputMeta.CheckResult.StepRecevingData",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FixedInputMeta.CheckResult.StepRecevingData",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (Const.isEmpty(filename))
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("FixedInputMeta.CheckResult.NoFilenameSpecified"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FixedInputMeta.CheckResult.NoFilenameSpecified"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("FixedInputMeta.CheckResult.FilenameSpecified"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FixedInputMeta.CheckResult.FilenameSpecified"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

@@ -36,20 +36,22 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.ui.repository.dialog.Messages;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
 public class UserDialog extends Dialog 
 {
+	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Shell     shell;
 	private Label     wlLogin, wlPassword, wlUsername, wlDescription;
 	private Text      wLogin, wPassword, wUsername, wDescription;
@@ -101,12 +103,12 @@ public class UserDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
-		shell.setText(Messages.getString("UserDialog.Dialog.Main.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.Main.Title")); //$NON-NLS-1$
 		shell.setLayout (formLayout);
  		
 		// Username
 		wlLogin = new Label(shell, SWT.RIGHT ); 
-		wlLogin.setText(Messages.getString("UserDialog.Label.Login"));  //$NON-NLS-1$
+		wlLogin.setText(BaseMessages.getString(PKG, "UserDialog.Label.Login"));  //$NON-NLS-1$
  		props.setLook(wlLogin);
 		FormData fdlLogin = new FormData();
 		fdlLogin.left = new FormAttachment(0,0); 
@@ -123,7 +125,7 @@ public class UserDialog extends Dialog
 		
 		// Password
 		wlPassword = new Label(shell, SWT.RIGHT ); 
-		wlPassword.setText(Messages.getString("UserDialog.Label.Password"));  //$NON-NLS-1$
+		wlPassword.setText(BaseMessages.getString(PKG, "UserDialog.Label.Password"));  //$NON-NLS-1$
  		props.setLook(wlPassword);
 		FormData fdlPassword = new FormData();
 		fdlPassword.left = new FormAttachment(0,0);
@@ -141,7 +143,7 @@ public class UserDialog extends Dialog
 
 		// Username
 		wlUsername = new Label(shell, SWT.RIGHT ); 
-		wlUsername.setText(Messages.getString("UserDialog.Label.FullName"));  //$NON-NLS-1$
+		wlUsername.setText(BaseMessages.getString(PKG, "UserDialog.Label.FullName"));  //$NON-NLS-1$
  		props.setLook(wlUsername);
 		FormData fdlUsername = new FormData();
 		fdlUsername.left = new FormAttachment(0,0);
@@ -158,7 +160,7 @@ public class UserDialog extends Dialog
 
 		// Description
 		wlDescription = new Label(shell, SWT.RIGHT ); 
-		wlDescription.setText(Messages.getString("UserDialog.Label.Description"));  //$NON-NLS-1$
+		wlDescription.setText(BaseMessages.getString(PKG, "UserDialog.Label.Description"));  //$NON-NLS-1$
  		props.setLook(wlDescription);
 		FormData fdlDescription = new FormData();
 		fdlDescription.left = new FormAttachment(0,0);
@@ -175,7 +177,7 @@ public class UserDialog extends Dialog
 
 		// Profile selector
 		wlProfile=new Label(shell, SWT.RIGHT);
-		wlProfile.setText(Messages.getString("UserDialog.Label.Profile")); //$NON-NLS-1$
+		wlProfile.setText(BaseMessages.getString(PKG, "UserDialog.Label.Profile")); //$NON-NLS-1$
  		props.setLook(wlProfile);
 		fdlProfile=new FormData();
 		fdlProfile.left = new FormAttachment(0, 0);
@@ -184,9 +186,9 @@ public class UserDialog extends Dialog
 		wlProfile.setLayoutData(fdlProfile);
 	
 		// Add the Profile buttons :
-		wnProfile = new Button(shell, SWT.PUSH);  wnProfile.setText(Messages.getString("System.Button.New")); //$NON-NLS-1$
-		weProfile = new Button(shell, SWT.PUSH);  weProfile.setText(Messages.getString("System.Button.Edit")); //$NON-NLS-1$
-		wdProfile = new Button(shell, SWT.PUSH);  wdProfile.setText(Messages.getString("System.Button.Delete")); //$NON-NLS-1$
+		wnProfile = new Button(shell, SWT.PUSH);  wnProfile.setText(BaseMessages.getString(PKG, "System.Button.New")); //$NON-NLS-1$
+		weProfile = new Button(shell, SWT.PUSH);  weProfile.setText(BaseMessages.getString(PKG, "System.Button.Edit")); //$NON-NLS-1$
+		wdProfile = new Button(shell, SWT.PUSH);  wdProfile.setText(BaseMessages.getString(PKG, "System.Button.Delete")); //$NON-NLS-1$
 
 		// Button positions...
 		fddProfile = new FormData();		
@@ -225,9 +227,9 @@ public class UserDialog extends Dialog
 
 		// Buttons
 		wOK     = new Button(shell, SWT.PUSH); 
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH); 
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 		
 		FormData fdOK        = new FormData();
 		FormData fdCancel    = new FormData();
@@ -322,8 +324,8 @@ public class UserDialog extends Dialog
 			if ( login == null || login.length() == 0 )
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage(Messages.getString("UserDialog.Dialog.User.New.EmptyLogin.Message")); //$NON-NLS-1$
-				mb.setText(Messages.getString("UserDialog.Dialog.User.New.EmptyLogin.Title")); //$NON-NLS-1$
+				mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.EmptyLogin.Message")); //$NON-NLS-1$
+				mb.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.EmptyLogin.Title")); //$NON-NLS-1$
 				mb.open();
 				
 				// don't dispose
@@ -336,8 +338,8 @@ public class UserDialog extends Dialog
 		    	if ( uid > 0 )
 		    	{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(Messages.getString("UserDialog.Dialog.User.New.AlreadyExists.Message")); //$NON-NLS-1$
-					mb.setText(Messages.getString("UserDialog.Dialog.User.New.AlreadyExists.Title")); //$NON-NLS-1$
+					mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.AlreadyExists.Message")); //$NON-NLS-1$
+					mb.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.AlreadyExists.Title")); //$NON-NLS-1$
 					mb.open();
 					
 					// don't dispose
@@ -367,8 +369,8 @@ public class UserDialog extends Dialog
 		catch(KettleException e)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("UserDialog.Dialog.UnexpectedError.Message")+e.getMessage()); //$NON-NLS-1$
-			mb.setText(Messages.getString("UserDialog.Dialog.UnexpectedError.Title")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.UnexpectedError.Message")+e.getMessage()); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.UnexpectedError.Title")); //$NON-NLS-1$
 			mb.open(); 
 		}
 	}
@@ -387,8 +389,8 @@ public class UserDialog extends Dialog
 		catch(KettleException e)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("UserDialog.Dialog.ErrorRetrievingProfiles.Message")+Const.CR+e.getMessage()); //$NON-NLS-1$
-			mb.setText(Messages.getString("UserDialog.Dialog.ErrorRetrievingProfiles.Title")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.ErrorRetrievingProfiles.Message")+Const.CR+e.getMessage()); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.ErrorRetrievingProfiles.Title")); //$NON-NLS-1$
 			mb.open();
 		}
 	}

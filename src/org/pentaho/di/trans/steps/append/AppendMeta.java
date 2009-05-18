@@ -24,6 +24,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -40,6 +41,8 @@ import org.w3c.dom.Node;
  */
 public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = Append.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String   headStepName;
 	private StepMeta headStepMeta;
 
@@ -157,7 +160,7 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("AppendMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "AppendMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -191,7 +194,7 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("AppendMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "AppendMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -205,7 +208,7 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("AppendMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "AppendMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
 	
@@ -243,17 +246,17 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (getHeadStepName()!=null && getTailStepName()!=null)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("AppendMeta.CheckResult.SourceStepsOK"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AppendMeta.CheckResult.SourceStepsOK"), stepMeta);
 			remarks.add(cr);
 		}
 		else if (getHeadStepName()==null && getTailStepName()==null)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("AppendMeta.CheckResult.SourceStepsMissing"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AppendMeta.CheckResult.SourceStepsMissing"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("AppendMeta.CheckResult.OneSourceStepMissing"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AppendMeta.CheckResult.OneSourceStepMissing"), stepMeta);
 			remarks.add(cr);
 		}
 	}

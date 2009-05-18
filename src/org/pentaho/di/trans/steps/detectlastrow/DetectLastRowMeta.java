@@ -28,6 +28,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -43,7 +44,9 @@ import org.w3c.dom.Node;
  * @since 03June2008 
  */
 public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
-{    
+{
+	private static Class<?> PKG = DetectLastRowMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** function result: new value name */
     private String       resultfieldname;
         
@@ -105,7 +108,7 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(Messages.getString("DetectLastRowMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "DetectLastRowMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -117,7 +120,7 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("DetectLastRowMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "DetectLastRowMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -129,7 +132,7 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("DetectLastRowMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "DetectLastRowMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -139,13 +142,13 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
       
         if (Const.isEmpty(resultfieldname))
         {
-            error_message = Messages.getString("DetectLastRowMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "DetectLastRowMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = Messages.getString("DetectLastRowMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "DetectLastRowMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
@@ -153,12 +156,12 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DetectLastRowMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DetectLastRowMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("DetectLastRowMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "DetectLastRowMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
     }

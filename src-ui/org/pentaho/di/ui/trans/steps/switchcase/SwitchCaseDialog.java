@@ -40,18 +40,21 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.switchcase.Messages;
 import org.pentaho.di.trans.steps.switchcase.SwitchCaseMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.widget.*;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = SwitchCaseMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label wlFieldName;
 	private CCombo wFieldName;
 
@@ -109,14 +112,14 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("SwitchCaseDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SwitchCaseDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("SwitchCaseDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "SwitchCaseDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -136,7 +139,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		// The name of the field to validate
 		//
 		wlFieldName=new Label(shell, SWT.RIGHT);
-		wlFieldName.setText(Messages.getString("SwitchCaseDialog.FieldName.Label")); //$NON-NLS-1$
+		wlFieldName.setText(BaseMessages.getString(PKG, "SwitchCaseDialog.FieldName.Label")); //$NON-NLS-1$
  		props.setLook(wlFieldName);
 		FormData fdlFieldName = new FormData();
 		fdlFieldName.left = new FormAttachment(0, 0);
@@ -157,11 +160,11 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 			inputFields = transMeta.getPrevStepFields(stepMeta);
 			wFieldName.setItems(inputFields.getFieldNames());
 		} catch (KettleStepException ex) {
-			new ErrorDialog(shell, Messages.getString("SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Title"), Messages.getString("SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Message"), ex);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Title"), BaseMessages.getString(PKG, "SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Message"), ex);
 		}
 		
         wlContains=new Label(shell, SWT.RIGHT);
-        wlContains.setText(Messages.getString("SwitchCaseDialog.Contains.Label"));
+        wlContains.setText(BaseMessages.getString(PKG, "SwitchCaseDialog.Contains.Label"));
         props.setLook(wlContains);
         fdlContains=new FormData();
         fdlContains.left = new FormAttachment(0, 0);
@@ -169,7 +172,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
         fdlContains.top  = new FormAttachment(wFieldName, margin*2);
         wlContains.setLayoutData(fdlContains);
         wContains=new Button(shell, SWT.CHECK);
-        wContains.setToolTipText(Messages.getString("SwitchCaseDialog.Contains.Tooltip"));
+        wContains.setToolTipText(BaseMessages.getString(PKG, "SwitchCaseDialog.Contains.Tooltip"));
         props.setLook(wContains);
         fdContains=new FormData();
         fdContains.left  = new FormAttachment(middle, 0);
@@ -180,7 +183,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		// Data type
 		//
 		wlDataType=new Label(shell, SWT.RIGHT);
-		wlDataType.setText(Messages.getString("SwitchCaseDialog.DataType.Label")); //$NON-NLS-1$
+		wlDataType.setText(BaseMessages.getString(PKG, "SwitchCaseDialog.DataType.Label")); //$NON-NLS-1$
  		props.setLook(wlDataType);
 		FormData fdlDataType = new FormData();
 		fdlDataType.left = new FormAttachment(0, 0);
@@ -199,7 +202,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		// Conversion mask
 		//
 		wlConversionMask=new Label(shell, SWT.RIGHT);
-		wlConversionMask.setText(Messages.getString("SwitchCaseDialog.ConversionMask.Label")); //$NON-NLS-1$
+		wlConversionMask.setText(BaseMessages.getString(PKG, "SwitchCaseDialog.ConversionMask.Label")); //$NON-NLS-1$
  		props.setLook(wlConversionMask);
 		FormData fdlConversionMask = new FormData();
 		fdlConversionMask.left = new FormAttachment(0, 0);
@@ -218,7 +221,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		// Decimal Symbol
 		//
 		wlDecimalSymbol=new Label(shell, SWT.RIGHT);
-		wlDecimalSymbol.setText(Messages.getString("SwitchCaseDialog.DecimalSymbol.Label")); //$NON-NLS-1$
+		wlDecimalSymbol.setText(BaseMessages.getString(PKG, "SwitchCaseDialog.DecimalSymbol.Label")); //$NON-NLS-1$
  		props.setLook(wlDecimalSymbol);
 		FormData fdlDecimalSymbol = new FormData();
 		fdlDecimalSymbol.left = new FormAttachment(0, 0);
@@ -236,7 +239,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		// Grouping Symbol
 		//
 		wlGroupingSymbol=new Label(shell, SWT.RIGHT);
-		wlGroupingSymbol.setText(Messages.getString("SwitchCaseDialog.GroupingSymbol.Label")); //$NON-NLS-1$
+		wlGroupingSymbol.setText(BaseMessages.getString(PKG, "SwitchCaseDialog.GroupingSymbol.Label")); //$NON-NLS-1$
  		props.setLook(wlGroupingSymbol);
 		FormData fdlGroupingSymbol = new FormData();
 		fdlGroupingSymbol.left = new FormAttachment(0, 0);
@@ -256,7 +259,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		// The values to switch on...
 		//
 		wlValues=new Label(shell, SWT.RIGHT);
-		wlValues.setText(Messages.getString("SwitchCaseDialog.ValueCases.Label")); //$NON-NLS-1$
+		wlValues.setText(BaseMessages.getString(PKG, "SwitchCaseDialog.ValueCases.Label")); //$NON-NLS-1$
  		props.setLook(wlValues);
 		FormData fdlValues = new FormData();
 		fdlValues.left = new FormAttachment(0, 0);
@@ -265,8 +268,8 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		wlValues.setLayoutData(fdlValues);
 		
 		ColumnInfo[] colinf=new ColumnInfo[] {
-				new ColumnInfo(Messages.getString("SwitchCaseDialog.ColumnInfo.Value"), ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SwitchCaseDialog.ColumnInfo.TargetStep"), ColumnInfo.COLUMN_TYPE_CCOMBO, nextStepNames, false ), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "SwitchCaseDialog.ColumnInfo.Value"), ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "SwitchCaseDialog.ColumnInfo.TargetStep"), ColumnInfo.COLUMN_TYPE_CCOMBO, nextStepNames, false ), //$NON-NLS-1$
 		};
 
 		wValues=new TableView(transMeta, shell, 
@@ -279,16 +282,16 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
 		// The name of the field to validate
 		//
 		wlDefaultTarget=new Label(shell, SWT.RIGHT);
-		wlDefaultTarget.setText(Messages.getString("SwitchCaseDialog.DefaultTarget.Label")); //$NON-NLS-1$
+		wlDefaultTarget.setText(BaseMessages.getString(PKG, "SwitchCaseDialog.DefaultTarget.Label")); //$NON-NLS-1$
  		props.setLook(wlDefaultTarget);
 		FormData fdlDefaultTarget = new FormData();
 		fdlDefaultTarget.left   = new FormAttachment(0, 0);

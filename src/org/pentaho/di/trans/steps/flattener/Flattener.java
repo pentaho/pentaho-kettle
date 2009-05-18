@@ -14,6 +14,7 @@
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -30,6 +31,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class Flattener extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = FlattenerMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	
 	private FlattenerMeta meta;
 	private FlattenerData data;
 	
@@ -69,7 +72,7 @@ public class Flattener extends BaseStep implements StepInterface
             data.fieldNr = data.inputRowMeta.indexOfValue( meta.getFieldName() );
             if (data.fieldNr<0)
             {
-                logError(Messages.getString("Flattener.Log.FieldCouldNotFound",meta.getFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+                logError(BaseMessages.getString(PKG, "Flattener.Log.FieldCouldNotFound",meta.getFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
                 setErrors(1);
                 stopAll();
                 return false;
@@ -102,7 +105,7 @@ public class Flattener extends BaseStep implements StepInterface
         // Keep track in case we want to send out the last couple of flattened values.
         data.previousRow = r;
 
-        if (checkFeedback(getLinesRead())) logBasic(Messages.getString("Flattener.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "Flattener.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			
 		return true;
 	}

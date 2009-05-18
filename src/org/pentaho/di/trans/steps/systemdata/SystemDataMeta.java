@@ -29,6 +29,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -48,6 +49,8 @@ import org.w3c.dom.Node;
 
 public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = SystemDataMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public final static int TYPE_SYSTEM_INFO_NONE             =  0;
     public final static int TYPE_SYSTEM_INFO_SYSTEM_DATE      =  1;
     public final static int TYPE_SYSTEM_INFO_SYSTEM_START     =  2;
@@ -94,48 +97,48 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 
     public static final SystemDataMetaFunction functions[] = new SystemDataMetaFunction[] {
             null,
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_SYSTEM_DATE      , "system date (variable)", Messages.getString("SystemDataMeta.TypeDesc.SystemDateVariable")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_SYSTEM_START     , "system date (fixed)", Messages.getString("SystemDataMeta.TypeDesc.SystemDateFixed")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_TRANS_DATE_FROM  , "start date range", Messages.getString("SystemDataMeta.TypeDesc.StartDateRange")),
-        	new SystemDataMetaFunction(TYPE_SYSTEM_INFO_TRANS_DATE_TO    , "end date range", Messages.getString("SystemDataMeta.TypeDesc.EndDateRange")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_JOB_DATE_FROM    , "job start date range",    Messages.getString("SystemDataMeta.TypeDesc.JobStartDateRange")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_JOB_DATE_TO      , "job end date range",    Messages.getString("SystemDataMeta.TypeDesc.JobEndDateRange")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_DAY_START   , "yesterday start",    Messages.getString("SystemDataMeta.TypeDesc.YesterdayStart")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_DAY_END     , "yesterday end",    Messages.getString("SystemDataMeta.TypeDesc.YesterdayEnd")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_DAY_START   , "today start",    Messages.getString("SystemDataMeta.TypeDesc.TodayStart")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_DAY_END     , "today end",    Messages.getString("SystemDataMeta.TypeDesc.TodayEnd")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_DAY_START   , "tomorrow start",    Messages.getString("SystemDataMeta.TypeDesc.TomorrowStart")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_DAY_END     , "tomorrow end",    Messages.getString("SystemDataMeta.TypeDesc.TomorrowEnd")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_MONTH_START , "last month start",    Messages.getString("SystemDataMeta.TypeDesc.LastMonthStart")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_MONTH_END   , "last month end",    Messages.getString("SystemDataMeta.TypeDesc.LastMonthEnd")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_MONTH_START , "this month start",    Messages.getString("SystemDataMeta.TypeDesc.ThisMonthStart")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_MONTH_END   , "this month end",    Messages.getString("SystemDataMeta.TypeDesc.ThisMonthEnd")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_MONTH_START , "next month start",    Messages.getString("SystemDataMeta.TypeDesc.NextMonthStart")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_MONTH_END   , "next month end",    Messages.getString("SystemDataMeta.TypeDesc.NextMonthEnd")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_COPYNR           , "copy of step",    Messages.getString("SystemDataMeta.TypeDesc.CopyOfStep")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_TRANS_NAME       , "transformation name",    Messages.getString("SystemDataMeta.TypeDesc.TransformationName")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_FILENAME         , "transformation file name",    Messages.getString("SystemDataMeta.TypeDesc.TransformationFileName")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_MODIFIED_USER    , "User modified",    Messages.getString("SystemDataMeta.TypeDesc.UserModified")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_MODIFIED_DATE    , "Date modified",    Messages.getString("SystemDataMeta.TypeDesc.DateModified")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_TRANS_BATCH_ID   , "batch ID",    Messages.getString("SystemDataMeta.TypeDesc.BatchID")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_JOB_BATCH_ID     , "job batch ID",    Messages.getString("SystemDataMeta.TypeDesc.JobBatchID")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_HOSTNAME         , "Hostname",    Messages.getString("SystemDataMeta.TypeDesc.Hostname")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_IP_ADDRESS       , "IP address",    Messages.getString("SystemDataMeta.TypeDesc.IPAddress")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_01      , "command line argument 1",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument1")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_02      , "command line argument 2",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument2")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_03      , "command line argument 3",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument3")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_04      , "command line argument 4",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument4")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_05      , "command line argument 5",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument5")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_06      , "command line argument 6",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument6")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_07      , "command line argument 7",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument7")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_08      , "command line argument 8",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument8")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_09      , "command line argument 9",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument9")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_10      , "command line argument 10",   Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument10")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_SYSTEM_DATE      , "system date (variable)", BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.SystemDateVariable")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_SYSTEM_START     , "system date (fixed)", BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.SystemDateFixed")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_TRANS_DATE_FROM  , "start date range", BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.StartDateRange")),
+        	new SystemDataMetaFunction(TYPE_SYSTEM_INFO_TRANS_DATE_TO    , "end date range", BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.EndDateRange")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_JOB_DATE_FROM    , "job start date range",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.JobStartDateRange")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_JOB_DATE_TO      , "job end date range",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.JobEndDateRange")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_DAY_START   , "yesterday start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.YesterdayStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_DAY_END     , "yesterday end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.YesterdayEnd")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_DAY_START   , "today start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.TodayStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_DAY_END     , "today end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.TodayEnd")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_DAY_START   , "tomorrow start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.TomorrowStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_DAY_END     , "tomorrow end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.TomorrowEnd")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_MONTH_START , "last month start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.LastMonthStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_MONTH_END   , "last month end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.LastMonthEnd")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_MONTH_START , "this month start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.ThisMonthStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_MONTH_END   , "this month end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.ThisMonthEnd")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_MONTH_START , "next month start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.NextMonthStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_MONTH_END   , "next month end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.NextMonthEnd")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_COPYNR           , "copy of step",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.CopyOfStep")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_TRANS_NAME       , "transformation name",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.TransformationName")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_FILENAME         , "transformation file name",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.TransformationFileName")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_MODIFIED_USER    , "User modified",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.UserModified")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_MODIFIED_DATE    , "Date modified",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.DateModified")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_TRANS_BATCH_ID   , "batch ID",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.BatchID")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_JOB_BATCH_ID     , "job batch ID",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.JobBatchID")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_HOSTNAME         , "Hostname",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.Hostname")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_IP_ADDRESS       , "IP address",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.IPAddress")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_01      , "command line argument 1",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.CommandLineArgument1")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_02      , "command line argument 2",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.CommandLineArgument2")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_03      , "command line argument 3",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.CommandLineArgument3")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_04      , "command line argument 4",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.CommandLineArgument4")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_05      , "command line argument 5",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.CommandLineArgument5")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_06      , "command line argument 6",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.CommandLineArgument6")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_07      , "command line argument 7",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.CommandLineArgument7")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_08      , "command line argument 8",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.CommandLineArgument8")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_09      , "command line argument 9",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.CommandLineArgument9")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_10      , "command line argument 10",   BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.CommandLineArgument10")),
 
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_KETTLE_VERSION       , "kettle version",       Messages.getString("SystemDataMeta.TypeDesc.KettleVersion")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION , "kettle build version", Messages.getString("SystemDataMeta.TypeDesc.KettleBuildVersion")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE    , "kettle build date",    Messages.getString("SystemDataMeta.TypeDesc.KettleBuildDate")),
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_CURRENT_PID    , "Current PID",    Messages.getString("SystemDataMeta.TypeDesc.CurrentPID")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_KETTLE_VERSION       , "kettle version",       BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.KettleVersion")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION , "kettle build version", BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.KettleBuildVersion")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE    , "kettle build date",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.KettleBuildDate")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_CURRENT_PID    , "Current PID",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.CurrentPID")),
 };
     
 	private String fieldName[];
@@ -397,13 +400,13 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (fieldType[i]<=TYPE_SYSTEM_INFO_NONE)
 			{
-				CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SystemDataMeta.CheckResult.FieldHasNoType", fieldName[i]), stepMeta);
+				CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SystemDataMeta.CheckResult.FieldHasNoType", fieldName[i]), stepMeta);
 				remarks.add(cr);
 			}
 		}
 		if (remarks.size()==nrRemarks)
 		{
-			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("SystemDataMeta.CheckResult.AllTypesSpecified"), stepMeta);
+			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SystemDataMeta.CheckResult.AllTypesSpecified"), stepMeta);
 			remarks.add(cr);
 		}
 	}

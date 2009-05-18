@@ -19,18 +19,19 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.stepmeta.Messages;
 import org.pentaho.di.trans.steps.stepmeta.StepMetastructureMeta;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class StepMetastructureDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = StepMetastructureMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private StepMetastructureMeta input;
-	
 	
 	private Label        wlOutputRowcount;
     private Button       wOutputRowcount;
@@ -70,14 +71,14 @@ public class StepMetastructureDialog extends BaseStepDialog implements StepDialo
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("StepMetastructureDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "StepMetastructureDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("StepMetastructureDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "StepMetastructureDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -96,7 +97,7 @@ public class StepMetastructureDialog extends BaseStepDialog implements StepDialo
 		
 		// Rowcout Output
         wlOutputRowcount=new Label(shell, SWT.RIGHT);
-        wlOutputRowcount.setText(Messages.getString("StepMetastructureDialog.outputRowcount.Label"));
+        wlOutputRowcount.setText(BaseMessages.getString(PKG, "StepMetastructureDialog.outputRowcount.Label"));
         props.setLook(wlOutputRowcount);
         fdlOutputRowcount=new FormData();
         fdlOutputRowcount.left = new FormAttachment(0, 0);
@@ -128,7 +129,7 @@ public class StepMetastructureDialog extends BaseStepDialog implements StepDialo
 
 		// Rowcout Field
 		wlRowcountField=new Label(shell, SWT.RIGHT);
-		wlRowcountField.setText(Messages.getString("StepMetastructureDialog.RowcountField.Label")); //$NON-NLS-1$
+		wlRowcountField.setText(BaseMessages.getString(PKG, "StepMetastructureDialog.RowcountField.Label")); //$NON-NLS-1$
  		props.setLook(wlRowcountField);
 		fdlRowcountField=new FormData();
 		fdlRowcountField.left = new FormAttachment(0, 0);
@@ -149,9 +150,9 @@ public class StepMetastructureDialog extends BaseStepDialog implements StepDialo
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wRowcountField);
 

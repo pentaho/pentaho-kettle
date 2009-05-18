@@ -24,11 +24,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 
 
 public class StopTransServlet extends HttpServlet
 {
+	private static Class<?> PKG = StopTransServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static final long serialVersionUID = 3634806745372015720L;
     public static final String CONTEXT_PATH = "/kettle/stopTrans";
     private static LogWriter log = LogWriter.getInstance();
@@ -48,7 +51,7 @@ public class StopTransServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(),  Messages.getString("StopTransServlet.StopOfTransRequested"));
+        if (log.isDebug()) log.logDebug(toString(),  BaseMessages.getString(PKG, "StopTransServlet.StopOfTransRequested"));
 
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -67,7 +70,7 @@ public class StopTransServlet extends HttpServlet
                 response.setContentType("text/html");
                 out.println("<HTML>");
                 out.println("<HEAD>");
-                out.println("<TITLE>" +  Messages.getString("StopTransServlet.StopTrans") + "</TITLE>");
+                out.println("<TITLE>" +  BaseMessages.getString(PKG, "StopTransServlet.StopTrans") + "</TITLE>");
                 out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">");
                 out.println("</HEAD>");
                 out.println("<BODY>");
@@ -79,7 +82,7 @@ public class StopTransServlet extends HttpServlet
             {
                 trans.stopAll();
                 
-                String message =  Messages.getString("StopTransServlet.TransSopRequested",transName);
+                String message =  BaseMessages.getString(PKG, "StopTransServlet.TransSopRequested",transName);
                
                 if (useXML)
                 {
@@ -88,12 +91,12 @@ public class StopTransServlet extends HttpServlet
                 else
                 {
                     out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("TransStatusServlet.BackToTransStatusPage") + "</a><p>");
+                    out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
                 }
             }
             else
             {
-                String message = Messages.getString("StopTransServlet.CanNotFindTrans",transName);
+                String message = BaseMessages.getString(PKG, "StopTransServlet.CanNotFindTrans",transName);
                 
                 if (useXML)
                 {
@@ -102,7 +105,7 @@ public class StopTransServlet extends HttpServlet
                 else
                 {
                     out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/status\">" +Messages.getString("TransStatusServlet.BackToStatusPage")+"</a><p>");
+                    out.println("<a href=\"/kettle/status\">" +BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage")+"</a><p>");
                 }
             }
         }

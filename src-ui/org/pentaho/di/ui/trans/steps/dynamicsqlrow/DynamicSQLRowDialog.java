@@ -41,16 +41,15 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.dynamicsqlrow.DynamicSQLRowMeta;
-import org.pentaho.di.trans.steps.dynamicsqlrow.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -59,6 +58,8 @@ import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = DynamicSQLRowMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private boolean gotPreviousFields=false;
 	
 	private CCombo       wConnection;
@@ -124,14 +125,14 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("DynamicSQLRowDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("DynamicSQLRowDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -155,7 +156,7 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		
 		// SQLFieldName field
 		wlSQLFieldName=new Label(shell, SWT.RIGHT);
-		wlSQLFieldName.setText(Messages.getString("DynamicSQLRowDialog.SQLFieldName.Label")); //$NON-NLS-1$
+		wlSQLFieldName.setText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.SQLFieldName.Label")); //$NON-NLS-1$
  		props.setLook(wlSQLFieldName);
 		fdlSQLFieldName=new FormData();
 		fdlSQLFieldName.left = new FormAttachment(0, 0);
@@ -190,15 +191,15 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
 		// Limit the number of lines returns
 		wlLimit=new Label(shell, SWT.RIGHT);
-		wlLimit.setText(Messages.getString("DynamicSQLRowDialog.Limit.Label")); //$NON-NLS-1$
+		wlLimit.setText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.Limit.Label")); //$NON-NLS-1$
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left   = new FormAttachment(0, 0);
@@ -216,8 +217,8 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 
 		// Outer join?
 		wlOuter=new Label(shell, SWT.RIGHT);
-		wlOuter.setText(Messages.getString("DynamicSQLRowDialog.Outerjoin.Label")); //$NON-NLS-1$
-		wlOuter.setToolTipText(Messages.getString("DynamicSQLRowDialog.Outerjoin.Tooltip")); //$NON-NLS-1$
+		wlOuter.setText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.Outerjoin.Label")); //$NON-NLS-1$
+		wlOuter.setToolTipText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.Outerjoin.Tooltip")); //$NON-NLS-1$
  		props.setLook(wlOuter);
 		fdlOuter=new FormData();
 		fdlOuter.left = new FormAttachment(0, 0);
@@ -241,8 +242,8 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		);
 		// useVars ?
 		wluseVars=new Label(shell, SWT.RIGHT);
-		wluseVars.setText(Messages.getString("DynamicSQLRowDialog.useVarsjoin.Label")); //$NON-NLS-1$
-		wluseVars.setToolTipText(Messages.getString("DynamicSQLRowDialog.useVarsjoin.Tooltip")); //$NON-NLS-1$
+		wluseVars.setText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.useVarsjoin.Label")); //$NON-NLS-1$
+		wluseVars.setToolTipText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.useVarsjoin.Tooltip")); //$NON-NLS-1$
  		props.setLook(wluseVars);
 		fdluseVars=new FormData();
 		fdluseVars.left = new FormAttachment(0, 0);
@@ -267,8 +268,8 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		
 		// queryOnlyOnChange ?
 		wlqueryOnlyOnChange=new Label(shell, SWT.RIGHT);
-		wlqueryOnlyOnChange.setText(Messages.getString("DynamicSQLRowDialog.queryOnlyOnChangejoin.Label")); //$NON-NLS-1$
-		wlqueryOnlyOnChange.setToolTipText(Messages.getString("DynamicSQLRowDialog.queryOnlyOnChangejoin.Tooltip")); //$NON-NLS-1$
+		wlqueryOnlyOnChange.setText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.queryOnlyOnChangejoin.Label")); //$NON-NLS-1$
+		wlqueryOnlyOnChange.setToolTipText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.queryOnlyOnChangejoin.Tooltip")); //$NON-NLS-1$
  		props.setLook(wlqueryOnlyOnChange);
 		fdlqueryOnlyOnChange=new FormData();
 		fdlqueryOnlyOnChange.left = new FormAttachment(0, 0);
@@ -295,7 +296,7 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		
 		// SQL editor...
 		wlSQL=new Label(shell, SWT.NONE);
-		wlSQL.setText(Messages.getString("DynamicSQLRowDialog.SQL.Label")); //$NON-NLS-1$
+		wlSQL.setText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.SQL.Label")); //$NON-NLS-1$
  		props.setLook(wlSQL);
 		fdlSQL=new FormData();
 		fdlSQL.left = new FormAttachment(0, 0);
@@ -347,7 +348,7 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		wSQL.addLineStyleListener(lineStyler);
 		
 		wlPosition=new Label(shell, SWT.NONE);
-		//wlPosition.setText(Messages.getString("DynamicSQLRowDialog.Position.Label")); 
+		//wlPosition.setText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.Position.Label")); 
 		props.setLook(wlPosition);
 		fdlPosition=new FormData();
 		fdlPosition.left  = new FormAttachment(0,0);
@@ -402,7 +403,7 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 			colnr++;
 		}
 
-		wlPosition.setText(Messages.getString("DynamicSQLRowDialog.Position.Label",""+linenr, ""+colnr));
+		wlPosition.setText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.Position.Label",""+linenr, ""+colnr));
 
 	}
 	/**
@@ -410,7 +411,7 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 	 */ 
 	public void getData()
 	{
-		if(log.isDebug()) log.logDebug(toString(), Messages.getString("DynamicSQLRowDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "DynamicSQLRowDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		wSQL.setText( Const.NVL(input.getSql(), ""));
 		wLimit.setText(""+input.getRowLimit()); //$NON-NLS-1$
@@ -452,8 +453,8 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		if (transMeta.findDatabase(wConnection.getText())==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("DynamicSQLRowDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(Messages.getString("DynamicSQLRowDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "DynamicSQLRowDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
 		}
 		
@@ -484,8 +485,8 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 				}
 				catch(KettleException ke)
 				{
-					new ErrorDialog(shell, Messages.getString("DynamicSQLRowDialog.FailedToGetFields.DialogTitle"), 
-							Messages.getString("DynamicSQLRowDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "DynamicSQLRowDialog.FailedToGetFields.DialogTitle"), 
+							BaseMessages.getString(PKG, "DynamicSQLRowDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 	    	}
 		}

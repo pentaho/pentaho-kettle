@@ -82,6 +82,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.EnterConditionDialog;
@@ -96,6 +97,8 @@ import org.pentaho.di.ui.core.gui.GUIResource;
  */
 public class TableView extends Composite 
 {
+	private static Class<?> PKG = TableView.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Composite     parent;
 	private ColumnInfo[]  columns;
 	private int           rows;
@@ -288,28 +291,28 @@ public class TableView extends Composite
             mRow.dispose();
         }
         mRow = new Menu(table);
-		MenuItem miRowInsBef = new MenuItem(mRow, SWT.NONE); miRowInsBef.setText(Messages.getString("TableView.menu.InsertBeforeRow"));
-		MenuItem miRowInsAft = new MenuItem(mRow, SWT.NONE); miRowInsAft.setText(Messages.getString("TableView.menu.InsertAfterRow"));
+		MenuItem miRowInsBef = new MenuItem(mRow, SWT.NONE); miRowInsBef.setText(BaseMessages.getString(PKG, "TableView.menu.InsertBeforeRow"));
+		MenuItem miRowInsAft = new MenuItem(mRow, SWT.NONE); miRowInsAft.setText(BaseMessages.getString(PKG, "TableView.menu.InsertAfterRow"));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miRowUp     = new MenuItem(mRow, SWT.NONE); miRowUp    .setText(Messages.getString("TableView.menu.MoveUp"));
-		MenuItem miRowDown   = new MenuItem(mRow, SWT.NONE); miRowDown  .setText(Messages.getString("TableView.menu.MoveDown"));
+		MenuItem miRowUp     = new MenuItem(mRow, SWT.NONE); miRowUp    .setText(BaseMessages.getString(PKG, "TableView.menu.MoveUp"));
+		MenuItem miRowDown   = new MenuItem(mRow, SWT.NONE); miRowDown  .setText(BaseMessages.getString(PKG, "TableView.menu.MoveDown"));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miCol1      = new MenuItem(mRow, SWT.NONE); miCol1     .setText(Messages.getString("TableView.menu.OptimalSizeWithHeader"));
-		MenuItem miCol2      = new MenuItem(mRow, SWT.NONE); miCol2     .setText(Messages.getString("TableView.menu.OptimalSizeWithoutHeader"));
+		MenuItem miCol1      = new MenuItem(mRow, SWT.NONE); miCol1     .setText(BaseMessages.getString(PKG, "TableView.menu.OptimalSizeWithHeader"));
+		MenuItem miCol2      = new MenuItem(mRow, SWT.NONE); miCol2     .setText(BaseMessages.getString(PKG, "TableView.menu.OptimalSizeWithoutHeader"));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miClear     = new MenuItem(mRow, SWT.NONE); miClear    .setText(Messages.getString("TableView.menu.ClearAll"));
+		MenuItem miClear     = new MenuItem(mRow, SWT.NONE); miClear    .setText(BaseMessages.getString(PKG, "TableView.menu.ClearAll"));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miSelAll    = new MenuItem(mRow, SWT.NONE); miSelAll   .setText(Messages.getString("TableView.menu.SelectAll"));
-		MenuItem miUnselAll  = new MenuItem(mRow, SWT.NONE); miUnselAll .setText(Messages.getString("TableView.menu.ClearSelection"));
-		MenuItem miFilter    = new MenuItem(mRow, SWT.NONE); miFilter   .setText(Messages.getString("TableView.menu.FilteredSelection"));
+		MenuItem miSelAll    = new MenuItem(mRow, SWT.NONE); miSelAll   .setText(BaseMessages.getString(PKG, "TableView.menu.SelectAll"));
+		MenuItem miUnselAll  = new MenuItem(mRow, SWT.NONE); miUnselAll .setText(BaseMessages.getString(PKG, "TableView.menu.ClearSelection"));
+		MenuItem miFilter    = new MenuItem(mRow, SWT.NONE); miFilter   .setText(BaseMessages.getString(PKG, "TableView.menu.FilteredSelection"));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miClipAll   = new MenuItem(mRow, SWT.NONE); miClipAll  .setText(Messages.getString("TableView.menu.CopyToClipboard"));
-		MenuItem miPasteAll  = new MenuItem(mRow, SWT.NONE); miPasteAll .setText(Messages.getString("TableView.menu.PasteFromClipboard"));
-		MenuItem miCutAll    = new MenuItem(mRow, SWT.NONE); miCutAll   .setText(Messages.getString("TableView.menu.CutSelected"));
-		MenuItem miDelAll    = new MenuItem(mRow, SWT.NONE); miDelAll   .setText(Messages.getString("TableView.menu.DeleteSelected"));
-		MenuItem miKeep      = new MenuItem(mRow, SWT.NONE); miKeep     .setText(Messages.getString("TableView.menu.KeepSelected"));
+		MenuItem miClipAll   = new MenuItem(mRow, SWT.NONE); miClipAll  .setText(BaseMessages.getString(PKG, "TableView.menu.CopyToClipboard"));
+		MenuItem miPasteAll  = new MenuItem(mRow, SWT.NONE); miPasteAll .setText(BaseMessages.getString(PKG, "TableView.menu.PasteFromClipboard"));
+		MenuItem miCutAll    = new MenuItem(mRow, SWT.NONE); miCutAll   .setText(BaseMessages.getString(PKG, "TableView.menu.CutSelected"));
+		MenuItem miDelAll    = new MenuItem(mRow, SWT.NONE); miDelAll   .setText(BaseMessages.getString(PKG, "TableView.menu.DeleteSelected"));
+		MenuItem miKeep      = new MenuItem(mRow, SWT.NONE); miKeep     .setText(BaseMessages.getString(PKG, "TableView.menu.KeepSelected"));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miCopyToAll = new MenuItem(mRow, SWT.NONE); miCopyToAll.setText(Messages.getString("TableView.menu.CopyFieldToAllRows"));
+		MenuItem miCopyToAll = new MenuItem(mRow, SWT.NONE); miCopyToAll.setText(BaseMessages.getString(PKG, "TableView.menu.CopyFieldToAllRows"));
 		new MenuItem(mRow, SWT.SEPARATOR);
 		miEditUndo           = new MenuItem(mRow, SWT.NONE);
 		miEditRedo           = new MenuItem(mRow, SWT.NONE);
@@ -1197,7 +1200,7 @@ public class TableView extends Composite
         }
         catch(Exception e)
         {
-            new ErrorDialog(this.getShell(), Messages.getString("TableView.ErrorDialog.title"), Messages.getString("TableView.ErrorDialog.description"), e);
+            new ErrorDialog(this.getShell(), BaseMessages.getString(PKG, "TableView.ErrorDialog.title"), BaseMessages.getString(PKG, "TableView.ErrorDialog.description"), e);
         }
     }
 
@@ -1355,8 +1358,8 @@ public class TableView extends Composite
 		if (ask)
 		{
 			MessageBox mb = new MessageBox(parent.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-			mb.setMessage(Messages.getString("TableView.MessageBox.ClearTable.message"));
-			mb.setText(Messages.getString("TableView.MessageBox.ClearTable.title"));
+			mb.setMessage(BaseMessages.getString(PKG, "TableView.MessageBox.ClearTable.message"));
+			mb.setText(BaseMessages.getString(PKG, "TableView.MessageBox.ClearTable.title"));
 			id = mb.open();
 		}
 		
@@ -2525,23 +2528,23 @@ public class TableView extends Composite
 		if (prev!=null) 
 		{
 			miEditUndo.setEnabled(true);
-			miEditUndo.setText(Messages.getString("TableView.menu.Undo", prev.toString()));
+			miEditUndo.setText(BaseMessages.getString(PKG, "TableView.menu.Undo", prev.toString()));
 		} 
 		else            
 		{
 			miEditUndo.setEnabled(false);
-			miEditUndo.setText(Messages.getString("TableView.menu.UndoNotAvailable"));
+			miEditUndo.setText(BaseMessages.getString(PKG, "TableView.menu.UndoNotAvailable"));
 		} 
 
 		if (next!=null) 
 		{
 			miEditRedo.setEnabled(true);
-			miEditRedo.setText(Messages.getString("TableView.menu.Redo",next.toString()));
+			miEditRedo.setText(BaseMessages.getString(PKG, "TableView.menu.Redo",next.toString()));
 		} 
 		else            
 		{
 			miEditRedo.setEnabled(false);
-			miEditRedo.setText(Messages.getString("TableView.menu.RedoNotAvailable"));
+			miEditRedo.setText(BaseMessages.getString(PKG, "TableView.menu.RedoNotAvailable"));
 		} 
 
 	}

@@ -29,6 +29,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
@@ -61,6 +62,8 @@ import org.w3c.dom.Node;
  */
 public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = MySQLBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final int FIELD_FORMAT_TYPE_OK = 0;
 	public static final int FIELD_FORMAT_TYPE_DATE = 1;
 	public static final int FIELD_FORMAT_TYPE_TIMESTAMP = 2;
@@ -69,11 +72,11 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 	
 	private static final String[] fieldFormatTypeCodes = { "OK", "DATE", "TIMESTAMP", "NUMBER", "STRING_ESC" };
 	private static final String[] fieldFormatTypeDescriptions = { 
-		Messages.getString("MySQLBulkLoaderMeta.FieldFormatType.OK.Description"), 
-		Messages.getString("MySQLBulkLoaderMeta.FieldFormatType.Date.Description"), 
-		Messages.getString("MySQLBulkLoaderMeta.FieldFormatType.Timestamp.Description"), 
-		Messages.getString("MySQLBulkLoaderMeta.FieldFormatType.Number.Description"),
-		Messages.getString("MySQLBulkLoaderMeta.FieldFormatType.StringEscape.Description"),
+		BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.FieldFormatType.OK.Description"), 
+		BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.FieldFormatType.Date.Description"), 
+		BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.FieldFormatType.Timestamp.Description"), 
+		BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.FieldFormatType.Number.Description"),
+		BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.FieldFormatType.StringEscape.Description"),
 	};
 	
     /** what's the schema for the target? */
@@ -253,7 +256,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("MySQLBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -262,7 +265,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 		fieldTable   = null;
 		databaseMeta = null;
         schemaName   = "";                //$NON-NLS-1$
-		tableName    = Messages.getString("MySQLBulkLoaderMeta.DefaultTableName"); //$NON-NLS-1$
+		tableName    = BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.DefaultTableName"); //$NON-NLS-1$
         encoding     = "";                                       //$NON-NLS-1$
         fifoFileName = "/tmp/fifo";
         delimiter    = "\t";
@@ -335,7 +338,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("MySQLBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -368,7 +371,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("MySQLBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
 		}
 	}
 	
@@ -392,7 +395,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 
 				if (!Const.isEmpty(tableName))
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("MySQLBulkLoaderMeta.CheckResult.TableNameOK"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.TableNameOK"), stepMeta); //$NON-NLS-1$
 					remarks.add(cr);
 
 					boolean first=true;
@@ -406,7 +409,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 					RowMetaInterface r = db.getTableFields(schemaTable);
 					if (r!=null)
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("MySQLBulkLoaderMeta.CheckResult.TableExists"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.TableExists"), stepMeta); //$NON-NLS-1$
 						remarks.add(cr);
 
 						// How about the fields to insert/dateMask in the table?
@@ -424,7 +427,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 								if (first)
 								{
 									first=false;
-									error_message+=Messages.getString("MySQLBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable")+Const.CR; //$NON-NLS-1$
+									error_message+=BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable")+Const.CR; //$NON-NLS-1$
 								}
 								error_found=true;
 								error_message+="\t\t"+field+Const.CR;  //$NON-NLS-1$
@@ -436,13 +439,13 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 						}
 						else
 						{
-							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("MySQLBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable"), stepMeta); //$NON-NLS-1$
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable"), stepMeta); //$NON-NLS-1$
 						}
 						remarks.add(cr);
 					}
 					else
 					{
-						error_message=Messages.getString("MySQLBulkLoaderMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
+						error_message=BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
 						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						remarks.add(cr);
 					}
@@ -451,7 +454,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 				// Look up fields in the input stream <prev>
 				if (prev!=null && prev.size()>0)
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("MySQLBulkLoaderMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 					remarks.add(cr);
 
 					boolean first=true;
@@ -466,7 +469,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 							if (first)
 							{
 								first=false;
-								error_message+=Messages.getString("MySQLBulkLoaderMeta.CheckResult.MissingFieldsInInput")+Const.CR; //$NON-NLS-1$
+								error_message+=BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.MissingFieldsInInput")+Const.CR; //$NON-NLS-1$
 							}
 							error_found=true;
 							error_message+="\t\t"+fieldStream[i]+Const.CR;  //$NON-NLS-1$
@@ -478,20 +481,20 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 					}
 					else
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("MySQLBulkLoaderMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); //$NON-NLS-1$
 					}
 					remarks.add(cr);
 				}
 				else
 				{
-					error_message=Messages.getString("MySQLBulkLoaderMeta.CheckResult.MissingFieldsInInput3")+Const.CR; //$NON-NLS-1$
+					error_message=BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.MissingFieldsInInput3")+Const.CR; //$NON-NLS-1$
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
 			}
 			catch(KettleException e)
 			{
-				error_message = Messages.getString("MySQLBulkLoaderMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); //$NON-NLS-1$
+				error_message = BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); //$NON-NLS-1$
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
@@ -502,7 +505,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 		else
 		{
-			error_message = Messages.getString("MySQLBulkLoaderMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
+			error_message = BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
@@ -510,12 +513,12 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("MySQLBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("MySQLBulkLoaderMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}
@@ -583,22 +586,22 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 					}
 					catch(KettleException e)
 					{
-						retval.setError(Messages.getString("MySQLBulkLoaderMeta.GetSQL.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
+						retval.setError(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.GetSQL.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
 					}
 				}
 				else
 				{
-					retval.setError(Messages.getString("MySQLBulkLoaderMeta.GetSQL.NoTableDefinedOnConnection")); //$NON-NLS-1$
+					retval.setError(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.GetSQL.NoTableDefinedOnConnection")); //$NON-NLS-1$
 				}
 			}
 			else
 			{
-				retval.setError(Messages.getString("MySQLBulkLoaderMeta.GetSQL.NotReceivingAnyFields")); //$NON-NLS-1$
+				retval.setError(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.GetSQL.NotReceivingAnyFields")); //$NON-NLS-1$
 			}
 		}
 		else
 		{
-			retval.setError(Messages.getString("MySQLBulkLoaderMeta.GetSQL.NoConnectionDefined")); //$NON-NLS-1$
+			retval.setError(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.GetSQL.NoConnectionDefined")); //$NON-NLS-1$
 		}
 
 		return retval;
@@ -666,17 +669,17 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
                     }
                     else
                     {
-                        throw new KettleException(Messages.getString("MySQLBulkLoaderMeta.Exception.TableNotFound"));
+                        throw new KettleException(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.Exception.TableNotFound"));
                     }
                 }
                 else
                 {
-                    throw new KettleException(Messages.getString("MySQLBulkLoaderMeta.Exception.TableNotSpecified"));
+                    throw new KettleException(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.Exception.TableNotSpecified"));
                 }
             }
             catch(Exception e)
             {
-                throw new KettleException(Messages.getString("MySQLBulkLoaderMeta.Exception.ErrorGettingFields"), e);
+                throw new KettleException(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.Exception.ErrorGettingFields"), e);
             }
             finally
             {
@@ -685,7 +688,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
         }
         else
         {
-            throw new KettleException(Messages.getString("MySQLBulkLoaderMeta.Exception.ConnectionNotDefined"));
+            throw new KettleException(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.Exception.ConnectionNotDefined"));
         }
 
     }

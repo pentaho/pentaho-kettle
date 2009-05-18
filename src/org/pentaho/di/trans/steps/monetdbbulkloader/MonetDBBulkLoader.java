@@ -24,6 +24,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -43,6 +44,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class MonetDBBulkLoader extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private MonetDBBulkLoaderMeta meta;
 	private MonetDBBulkLoaderData data;
 	
@@ -206,7 +209,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
                 // wait for the mclient process to finish and check for any error...
 				//
             	int exitVal = data.mClientlProcess.waitFor();
-				logBasic(Messages.getString("MonetDBBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
+				logBasic(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
 	            
 				return false;
 			}
@@ -235,7 +238,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("MonetDBBulkLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)

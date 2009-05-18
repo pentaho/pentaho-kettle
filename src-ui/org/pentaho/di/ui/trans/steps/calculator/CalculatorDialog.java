@@ -45,20 +45,22 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.calculator.CalculatorMeta;
+import org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.trans.steps.calculator.CalculatorMeta;
-import org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction;
-import org.pentaho.di.trans.steps.calculator.Messages;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class CalculatorDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = CalculatorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label        wlStepname;
     private Text         wStepname;
     private FormData     fdlStepname, fdStepname;
@@ -106,14 +108,14 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("CalculatorDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "CalculatorDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -131,7 +133,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
 		wStepname.setLayoutData(fdStepname);
 		
         wlFields=new Label(shell, SWT.NONE);
-        wlFields.setText(Messages.getString("CalculatorDialog.Fields.Label"));
+        wlFields.setText(BaseMessages.getString(PKG, "CalculatorDialog.Fields.Label"));
  		props.setLook(wlFields);
         fdlFields=new FormData();
         fdlFields.left = new FormAttachment(0, 0);
@@ -142,19 +144,19 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
         
         colinf=new ColumnInfo[]
                {
-                    new ColumnInfo(Messages.getString("CalculatorDialog.NewFieldColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.CalculationColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.FieldAColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.FieldBColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.FieldCColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.ValueTypeColumn.Column"),    ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.LengthColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.PrecisionColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.RemoveColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") } ),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.ConversionMask.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats()),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.DecimalSymbol.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.GroupingSymbol.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.CurrencySymbol.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.NewFieldColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.CalculationColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.FieldAColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+                    new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.FieldBColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+                    new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.FieldCColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+                    new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.ValueTypeColumn.Column"),    ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+                    new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.LengthColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.PrecisionColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.RemoveColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.No"), BaseMessages.getString(PKG, "System.Combo.Yes") } ),
+                    new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.ConversionMask.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats()),
+                    new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.DecimalSymbol.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.GroupingSymbol.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.CurrencySymbol.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
                };
         
         colinf[1].setSelectionAdapter(
@@ -162,7 +164,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    EnterSelectionDialog esd = new EnterSelectionDialog(shell, CalculatorMetaFunction.calcLongDesc, Messages.getString("CalculatorDialog.SelectCalculationType.Title"), Messages.getString("CalculatorDialog.SelectCalculationType.Message"));
+                    EnterSelectionDialog esd = new EnterSelectionDialog(shell, CalculatorMetaFunction.calcLongDesc, BaseMessages.getString(PKG, "CalculatorDialog.SelectCalculationType.Title"), BaseMessages.getString(PKG, "CalculatorDialog.SelectCalculationType.Message"));
                     String string = esd.open();
                     if (string!=null)
                     {
@@ -213,7 +215,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(), Messages.getString("CalculatorDialog.Log.UnableToFindInput"));
+                        log.logError(toString(), BaseMessages.getString(PKG, "CalculatorDialog.Log.UnableToFindInput"));
                     }
                 }
             }
@@ -240,9 +242,9 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
         
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -335,7 +337,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
             if (fn.getValuePrecision()>=0) {
             	item.setText( 8, ""+fn.getValuePrecision());
             }
-            item.setText( 9, fn.isRemovedFromResult()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
+            item.setText( 9, fn.isRemovedFromResult()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
             item.setText(10, Const.NVL(fn.getConversionMask(), ""));
             item.setText(11, Const.NVL(fn.getDecimalSymbol(), ""));
             item.setText(12, Const.NVL(fn.getGroupingSymbol(), ""));
@@ -374,7 +376,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
             int    valueType       = ValueMeta.getType( item.getText(6) );
             int    valueLength     = Const.toInt( item.getText(7), -1 );
             int    valuePrecision  = Const.toInt( item.getText(8), -1 );
-            boolean removed        = Messages.getString("System.Combo.Yes").equalsIgnoreCase( item.getText(9) );
+            boolean removed        = BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase( item.getText(9) );
             String conversionMask  = item.getText(10);
             String decimalSymbol   = item.getText(11);
             String groupingSymbol  = item.getText(12);

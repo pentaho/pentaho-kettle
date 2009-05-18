@@ -40,9 +40,9 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
@@ -52,29 +52,29 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
-import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
-
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.sqlfileoutput.Messages;
 import org.pentaho.di.trans.steps.sqlfileoutput.SQLFileOutputMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = SQLFileOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CCombo       wConnection;
 
     private Label        wlSchema;
@@ -200,11 +200,11 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("SQLFileOutputDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.DialogTitle"));
 		
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -231,7 +231,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		
 		
 		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
-		wGeneralTab.setText(Messages.getString("SQLFileOutputDialog.GeneralTab.TabTitle"));
+		wGeneralTab.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.GeneralTab.TabTitle"));
 		
 		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wGeneralComp);
@@ -249,7 +249,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 
 		wGConnection = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wGConnection);
-		wGConnection.setText(Messages.getString("SQLFileOutputDialog.Group.ConnectionInfos.Label"));
+		wGConnection.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.Group.ConnectionInfos.Label"));
 		
 		FormLayout groupLayout = new FormLayout();
 		groupLayout.marginWidth = 10;
@@ -266,7 +266,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		
         // Schema line...
         wlSchema=new Label(wGConnection, SWT.RIGHT);
-        wlSchema.setText(Messages.getString("SQLFileOutputDialog.TargetSchema.Label")); //$NON-NLS-1$
+        wlSchema.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.TargetSchema.Label")); //$NON-NLS-1$
         props.setLook(wlSchema);
         fdlSchema=new FormData();
         fdlSchema.left = new FormAttachment(0, 0);
@@ -277,7 +277,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
         wSchema=new TextVar(transMeta, wGConnection, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
-        wSchema.setToolTipText(Messages.getString("SQLFileOutputDialog.TargetSchema.Tooltip"));
+        wSchema.setToolTipText(BaseMessages.getString(PKG, "SQLFileOutputDialog.TargetSchema.Tooltip"));
         fdSchema=new FormData();
         fdSchema.left = new FormAttachment(middle, 0);
         fdSchema.top  = new FormAttachment(wConnection, margin);
@@ -286,7 +286,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 
 		// Table line...
 		wlTable=new Label(wGConnection, SWT.RIGHT);
-		wlTable.setText(Messages.getString("SQLFileOutputDialog.TargetTable.Label"));
+		wlTable.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.TargetTable.Label"));
  		props.setLook(wlTable);
 		fdlTable=new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
@@ -296,7 +296,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 
 		wbTable=new Button(wGConnection, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbTable);
-		wbTable.setText(Messages.getString("System.Button.Browse"));
+		wbTable.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbTable=new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
 		fdbTable.top  = new FormAttachment(wSchema, margin);
@@ -304,7 +304,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 
 		wTable=new TextVar(transMeta, wGConnection, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
- 		wTable.setToolTipText(Messages.getString("SQLFileOutputDialog.TargetTable.Tooltip"));
+ 		wTable.setToolTipText(BaseMessages.getString(PKG, "SQLFileOutputDialog.TargetTable.Tooltip"));
 		wTable.addModifyListener(lsMod);
 		fdTable=new FormData();
 		fdTable.top  = new FormAttachment(wSchema, margin);
@@ -330,7 +330,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 
 		wFileName = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wFileName);
-		wFileName.setText(Messages.getString("SQLFileOutputDialog.Group.File.Label"));
+		wFileName.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.Group.File.Label"));
 		
 		FormLayout groupFileLayout = new FormLayout();
 		groupFileLayout.marginWidth = 10;
@@ -340,7 +340,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 
 		// Add Create table
 		wlAddCreate=new Label(wFileName, SWT.RIGHT);
-		wlAddCreate.setText(Messages.getString("SQLFileOutputDialog.CreateTable.Label"));
+		wlAddCreate.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.CreateTable.Label"));
  		props.setLook(wlAddCreate);
 		fdlAddCreate=new FormData();
 		fdlAddCreate.left  = new FormAttachment(0, 0);
@@ -348,7 +348,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		fdlAddCreate.right = new FormAttachment(middle, -margin);
 		wlAddCreate.setLayoutData(fdlAddCreate);
 		wAddCreate=new Button(wFileName, SWT.CHECK);
-		wAddCreate.setToolTipText(Messages.getString("SQLFileOutputDialog.CreateTable.Tooltip"));
+		wAddCreate.setToolTipText(BaseMessages.getString(PKG, "SQLFileOutputDialog.CreateTable.Tooltip"));
  		props.setLook(wAddCreate);
 		fdAddCreate=new FormData();
 		fdAddCreate.left  = new FormAttachment(middle, 0);
@@ -368,7 +368,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Truncate table
 		wlTruncate=new Label(wFileName, SWT.RIGHT);
-		wlTruncate.setText(Messages.getString("SQLFileOutputDialog.TruncateTable.Label"));
+		wlTruncate.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.TruncateTable.Label"));
  		props.setLook(wlTruncate);
 		fdlTruncate=new FormData();
 		fdlTruncate.left  = new FormAttachment(0, 0);
@@ -376,7 +376,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		fdlTruncate.right = new FormAttachment(middle, -margin);
 		wlTruncate.setLayoutData(fdlTruncate);
 		wTruncate=new Button(wFileName, SWT.CHECK);
-		wTruncate.setToolTipText(Messages.getString("SQLFileOutputDialog.TruncateTable.Tooltip"));
+		wTruncate.setToolTipText(BaseMessages.getString(PKG, "SQLFileOutputDialog.TruncateTable.Tooltip"));
  		props.setLook(wTruncate);
 		fdTruncate=new FormData();
 		fdTruncate.left  = new FormAttachment(middle, 0);
@@ -395,7 +395,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 	
 		// Start New Line For each statement
 		wlStartNewLine=new Label(wFileName, SWT.RIGHT);
-		wlStartNewLine.setText(Messages.getString("SQLFileOutputDialog.StartNewLine.Label"));
+		wlStartNewLine.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.StartNewLine.Label"));
  		props.setLook(wlStartNewLine);
 		fdlStartNewLine=new FormData();
 		fdlStartNewLine.left  = new FormAttachment(0, 0);
@@ -403,7 +403,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		fdlStartNewLine.right = new FormAttachment(middle, -margin);
 		wlStartNewLine.setLayoutData(fdlStartNewLine);
 		wStartNewLine=new Button(wFileName, SWT.CHECK);
-		wStartNewLine.setToolTipText(Messages.getString("SQLFileOutputDialog.StartNewLine.Label"));
+		wStartNewLine.setToolTipText(BaseMessages.getString(PKG, "SQLFileOutputDialog.StartNewLine.Label"));
  		props.setLook(wStartNewLine);
 		fdStartNewLine=new FormData();
 		fdStartNewLine.left  = new FormAttachment(middle, 0);
@@ -424,7 +424,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Filename line
 		wlFilename=new Label(wFileName, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("SQLFileOutputDialog.Filename.Label"));
+		wlFilename.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.Filename.Label"));
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -434,7 +434,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 
 		wbFilename=new Button(wFileName, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFilename);
-		wbFilename.setText(Messages.getString("System.Button.Browse"));
+		wbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(wStartNewLine, 0);
@@ -451,7 +451,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Create Parent Folder
 		wlCreateParentFolder=new Label(wFileName, SWT.RIGHT);
-		wlCreateParentFolder.setText(Messages.getString("SQLFileOutputDialog.CreateParentFolder.Label"));
+		wlCreateParentFolder.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.CreateParentFolder.Label"));
  		props.setLook(wlCreateParentFolder);
 		fdlCreateParentFolder=new FormData();
 		fdlCreateParentFolder.left = new FormAttachment(0, 0);
@@ -459,7 +459,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		fdlCreateParentFolder.right= new FormAttachment(middle, -margin);
 		wlCreateParentFolder.setLayoutData(fdlCreateParentFolder);
 		wCreateParentFolder=new Button(wFileName, SWT.CHECK );
-		wCreateParentFolder.setToolTipText(Messages.getString("SQLFileOutputDialog.CreateParentFolder.Tooltip"));
+		wCreateParentFolder.setToolTipText(BaseMessages.getString(PKG, "SQLFileOutputDialog.CreateParentFolder.Tooltip"));
  		props.setLook(wCreateParentFolder);
 		fdCreateParentFolder=new FormData();
 		fdCreateParentFolder.left = new FormAttachment(middle, 0);
@@ -478,7 +478,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 
 		// Open new File at Init
 		wlDoNotOpenNewFileInit=new Label(wFileName, SWT.RIGHT);
-		wlDoNotOpenNewFileInit.setText(Messages.getString("SQLFileOutputDialog.DoNotOpenNewFileInit.Label"));
+		wlDoNotOpenNewFileInit.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.DoNotOpenNewFileInit.Label"));
  		props.setLook(wlDoNotOpenNewFileInit);
 		fdlDoNotOpenNewFileInit=new FormData();
 		fdlDoNotOpenNewFileInit.left = new FormAttachment(0, 0);
@@ -486,7 +486,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		fdlDoNotOpenNewFileInit.right= new FormAttachment(middle, -margin);
 		wlDoNotOpenNewFileInit.setLayoutData(fdlDoNotOpenNewFileInit);
 		wDoNotOpenNewFileInit=new Button(wFileName, SWT.CHECK );
-		wDoNotOpenNewFileInit.setToolTipText(Messages.getString("SQLFileOutputDialog.DoNotOpenNewFileInit.Tooltip"));
+		wDoNotOpenNewFileInit.setToolTipText(BaseMessages.getString(PKG, "SQLFileOutputDialog.DoNotOpenNewFileInit.Tooltip"));
  		props.setLook(wDoNotOpenNewFileInit);
 		fdDoNotOpenNewFileInit=new FormData();
 		fdDoNotOpenNewFileInit.left = new FormAttachment(middle, 0);
@@ -505,7 +505,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Extension line
 		wlExtension=new Label(wFileName, SWT.RIGHT);
-		wlExtension.setText(Messages.getString("System.Label.Extension"));
+		wlExtension.setText(BaseMessages.getString(PKG, "System.Label.Extension"));
  		props.setLook(wlExtension);
 		fdlExtension=new FormData();
 		fdlExtension.left = new FormAttachment(0, 0);
@@ -524,7 +524,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Create multi-part file?
 		wlAddStepnr=new Label(wFileName, SWT.RIGHT);
-		wlAddStepnr.setText(Messages.getString("SQLFileOutputDialog.AddStepnr.Label"));
+		wlAddStepnr.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.AddStepnr.Label"));
  		props.setLook(wlAddStepnr);
 		fdlAddStepnr=new FormData();
 		fdlAddStepnr.left = new FormAttachment(0, 0);
@@ -550,7 +550,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 	
 		// Create multi-part file?
 		wlAddDate=new Label(wFileName, SWT.RIGHT);
-		wlAddDate.setText(Messages.getString("SQLFileOutputDialog.AddDate.Label"));
+		wlAddDate.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.AddDate.Label"));
  		props.setLook(wlAddDate);
 		fdlAddDate=new FormData();
 		fdlAddDate.left = new FormAttachment(0, 0);
@@ -574,7 +574,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		);
 		// Create multi-part file?
 		wlAddTime=new Label(wFileName, SWT.RIGHT);
-		wlAddTime.setText(Messages.getString("SQLFileOutputDialog.AddTime.Label"));
+		wlAddTime.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.AddTime.Label"));
  		props.setLook(wlAddTime);
 		fdlAddTime=new FormData();
 		fdlAddTime.left = new FormAttachment(0, 0);
@@ -600,7 +600,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Append to end of file?
 		wlAppend=new Label(wFileName, SWT.RIGHT);
-		wlAppend.setText(Messages.getString("SQLFileOutputDialog.Append.Label"));
+		wlAppend.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.Append.Label"));
  		props.setLook(wlAppend);
 		fdlAppend=new FormData();
 		fdlAppend.left = new FormAttachment(0, 0);
@@ -608,7 +608,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		fdlAppend.right= new FormAttachment(middle, -margin);
 		wlAppend.setLayoutData(fdlAppend);
 		wAppend=new Button(wFileName, SWT.CHECK);
-		wAppend.setToolTipText(Messages.getString("SQLFileOutputDialog.Append.Tooltip"));
+		wAppend.setToolTipText(BaseMessages.getString(PKG, "SQLFileOutputDialog.Append.Tooltip"));
  		props.setLook(wAppend);
 		fdAppend=new FormData();
 		fdAppend.left = new FormAttachment(middle, 0);
@@ -628,7 +628,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		
 		
 		wlSplitEvery=new Label(wFileName, SWT.RIGHT);
-		wlSplitEvery.setText(Messages.getString("SQLFileOutputDialog.SplitEvery.Label"));
+		wlSplitEvery.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.SplitEvery.Label"));
  		props.setLook(wlSplitEvery);
 		fdlSplitEvery=new FormData();
 		fdlSplitEvery.left = new FormAttachment(0, 0);
@@ -647,7 +647,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 
 		wbShowFiles=new Button(wFileName, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbShowFiles);
-		wbShowFiles.setText(Messages.getString("SQLFileOutputDialog.ShowFiles.Button"));
+		wbShowFiles.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.ShowFiles.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left = new FormAttachment(middle, 0);
 		fdbShowFiles.top  = new FormAttachment(wSplitEvery, margin*2);
@@ -661,15 +661,15 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 					String files[] = tfoi.getFiles(transMeta.environmentSubstitute(wFilename.getText()));
 					if (files!=null && files.length>0)
 					{
-						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("SQLFileOutputDialog.SelectOutputFiles.DialogTitle"), Messages.getString("SQLFileOutputDialog.SelectOutputFiles.DialogMessage"));
+						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, BaseMessages.getString(PKG, "SQLFileOutputDialog.SelectOutputFiles.DialogTitle"), BaseMessages.getString(PKG, "SQLFileOutputDialog.SelectOutputFiles.DialogMessage"));
 						esd.setViewOnly();
 						esd.open();
 					}
 					else
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage(Messages.getString("SQLFileOutputDialog.NoFilesFound.DialogMessage"));
-						mb.setText(Messages.getString("System.DialogTitle.Error"));
+						mb.setMessage(BaseMessages.getString(PKG, "SQLFileOutputDialog.NoFilesFound.DialogMessage"));
+						mb.setText(BaseMessages.getString(PKG, "System.DialogTitle.Error"));
 						mb.open(); 
 					}
 				}
@@ -680,7 +680,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Add File to the result files name
 		wlAddToResult=new Label(wFileName, SWT.RIGHT);
-		wlAddToResult.setText(Messages.getString("SQLFileOutputDialog.AddFileToResult.Label"));
+		wlAddToResult.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.AddFileToResult.Label"));
 		props.setLook(wlAddToResult);
 		fdlAddToResult=new FormData();
 		fdlAddToResult.left  = new FormAttachment(0, 0);
@@ -688,7 +688,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		fdlAddToResult.right = new FormAttachment(middle, -margin);
 		wlAddToResult.setLayoutData(fdlAddToResult);
 		wAddToResult=new Button(wFileName, SWT.CHECK);
-		wAddToResult.setToolTipText(Messages.getString("SQLFileOutputDialog.AddFileToResult.Tooltip"));
+		wAddToResult.setToolTipText(BaseMessages.getString(PKG, "SQLFileOutputDialog.AddFileToResult.Tooltip"));
  		props.setLook(wAddToResult);
 		fdAddToResult=new FormData();
 		fdAddToResult.left  = new FormAttachment(middle, 0);
@@ -743,7 +743,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		// START OF CONTENT TAB///
 		///
 		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-		wContentTab.setText(Messages.getString("SQLFileOutputDialog.ContentTab.TabTitle"));
+		wContentTab.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.ContentTab.TabTitle"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;
@@ -760,7 +760,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		
  		// format
 		wlFormat=new Label(wContentComp, SWT.RIGHT);
-        wlFormat.setText(Messages.getString("SQLFileOutputDialog.DateFormat.Label"));
+        wlFormat.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.DateFormat.Label"));
         props.setLook(wlFormat);
         fdlFormat=new FormData();
         fdlFormat.left = new FormAttachment(0, 0);
@@ -786,7 +786,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
  		
  		// Encoding
 		wlEncoding=new Label(wContentComp, SWT.RIGHT);
-        wlEncoding.setText(Messages.getString("SQLFileOutputDialog.Encoding.Label"));
+        wlEncoding.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.Encoding.Label"));
         props.setLook(wlEncoding);
         fdlEncoding=new FormData();
         fdlEncoding.left = new FormAttachment(0, 0);
@@ -854,11 +854,11 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wCreate=new Button(shell, SWT.PUSH);
-		wCreate.setText(Messages.getString("System.Button.SQL"));
+		wCreate.setText(BaseMessages.getString(PKG, "System.Button.SQL"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
 		setButtonPositions(new Button[] { wOK, wCreate, wCancel }, margin, wTabFolder);
 
@@ -899,7 +899,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 					{
 						dialog.setFileName(transMeta.environmentSubstitute(wFilename.getText()));
 					}
-					dialog.setFilterNames(new String[] {Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.AllFiles")});
+					dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "System.FileType.TextFiles"), BaseMessages.getString(PKG, "System.FileType.CSVFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
 					if (dialog.open()!=null)
 					{
 						String extension = wExtension.getText();
@@ -1072,8 +1072,8 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		if (input.getDatabaseMeta()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("SQLFileOutputDialog.ConnectionError.DialogMessage"));
-			mb.setText(Messages.getString("System.Dialog.Error.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "SQLFileOutputDialog.ConnectionError.DialogMessage"));
+			mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
 			mb.open();
 		}
 		
@@ -1088,7 +1088,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		{
 			DatabaseMeta inf = transMeta.getDatabase(connr);
 						
-			log.logDebug(toString(), Messages.getString("SQLFileOutputDialog.Log.LookingAtConnection", inf.toString()));
+			log.logDebug(toString(), BaseMessages.getString(PKG, "SQLFileOutputDialog.Log.LookingAtConnection", inf.toString()));
 		
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());
@@ -1103,8 +1103,8 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("SQLFileOutputDialog.ConnectionError2.DialogMessage"));
-			mb.setText(Messages.getString("System.Dialog.Error.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "SQLFileOutputDialog.ConnectionError2.DialogMessage"));
+			mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
 			mb.open(); 
 		}
 					
@@ -1135,8 +1135,8 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-					mb.setMessage(Messages.getString("SQLFileOutputDialog.NoSQL.DialogMessage"));
-					mb.setText(Messages.getString("SQLFileOutputDialog.NoSQL.DialogTitle"));
+					mb.setMessage(BaseMessages.getString(PKG, "SQLFileOutputDialog.NoSQL.DialogMessage"));
+					mb.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.NoSQL.DialogTitle"));
 					mb.open(); 
 				}
 			}
@@ -1144,13 +1144,13 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 				mb.setMessage(sql.getError());
-				mb.setText(Messages.getString("System.Dialog.Error.Title"));
+				mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
 				mb.open(); 
 			}
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("SQLFileOutputDialog.BuildSQLError.DialogTitle"), Messages.getString("SQLFileOutputDialog.BuildSQLError.DialogMessage"), ke);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "SQLFileOutputDialog.BuildSQLError.DialogTitle"), BaseMessages.getString(PKG, "SQLFileOutputDialog.BuildSQLError.DialogMessage"), ke);
 		}
 	}
 	

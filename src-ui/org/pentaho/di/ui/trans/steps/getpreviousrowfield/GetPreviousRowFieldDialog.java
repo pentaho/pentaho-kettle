@@ -39,22 +39,21 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.getpreviousrowfield.Messages;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.getpreviousrowfield.GetPreviousRowFieldMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 /**
  * return field value from previous row.
@@ -63,7 +62,7 @@ import org.pentaho.di.trans.step.StepMeta;
  * @since 07 September 2008
  */
 public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDialogInterface {
-	
+	private static Class<?> PKG = GetPreviousRowFieldDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private Label wlKey;
 
@@ -104,14 +103,14 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("GetPreviousRowFieldDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.Shell.Title")); //$NON-NLS-1$
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("GetPreviousRowFieldDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.Stepname.Label")); //$NON-NLS-1$
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -130,7 +129,7 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 		
 
 		wlKey = new Label(shell, SWT.NONE);
-		wlKey.setText(Messages.getString("GetPreviousRowFieldDialog.Fields.Label")); //$NON-NLS-1$
+		wlKey.setText(BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.Fields.Label")); //$NON-NLS-1$
 		props.setLook(wlKey);
 		fdlKey = new FormData();
 		fdlKey.left = new FormAttachment(0, 0);
@@ -142,9 +141,9 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 
 		ciKey = new ColumnInfo[nrFieldCols];
 		ciKey[0] = new ColumnInfo(
-				Messages.getString("GetPreviousRowFieldDialog.ColumnInfo.InStreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);//$NON-NLS-1$
+				BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.ColumnInfo.InStreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);//$NON-NLS-1$
 		ciKey[1] = new ColumnInfo(
-				Messages.getString("GetPreviousRowFieldDialog.ColumnInfo.OutStreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+				BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.ColumnInfo.OutStreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 		ciKey[1].setUsingVariables(true);
 		wFields = new TableView(transMeta,shell, SWT.BORDER
 				| SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
@@ -192,12 +191,12 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 		
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		wGet = new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("GetPreviousRowFieldDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.GetFields.Button")); //$NON-NLS-1$
 		fdGet = new FormData();
 		fdGet.right = new FormAttachment(100, 0);
 		fdGet.top = new FormAttachment(wStepname, 3*middle);
@@ -309,7 +308,7 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 
 		inf.allocate(nrkeys);
 
-		if(log.isDebug()) log.logDebug(toString(), Messages.getString("GetPreviousRowFieldDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrkeys; i++) {
 			TableItem item = wFields.getNonEmpty(i);
 			inf.getFieldInStream()[i] = item.getText(1);
@@ -345,7 +344,7 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 			}
 		} catch (KettleException ke) {
 			new ErrorDialog(
-					shell,Messages.getString("GetPreviousRowFieldDialog.FailedToGetFields.DialogTitle"), Messages.getString("GetPreviousRowFieldDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					shell,BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 

@@ -36,21 +36,22 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
-import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.clonerow.CloneRowMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.trans.steps.clonerow.Messages;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class CloneRowDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CloneRowMeta input;
 
 	// nr clones
@@ -104,14 +105,14 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("CloneRowDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "CloneRowDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("CloneRowDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "CloneRowDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -130,7 +131,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		// Number of clones line
 		wlnrClone = new Label(shell, SWT.RIGHT);
-		wlnrClone.setText(Messages.getString("CloneRowDialog.nrClone.Label"));
+		wlnrClone.setText(BaseMessages.getString(PKG, "CloneRowDialog.nrClone.Label"));
 		props.setLook(wlnrClone);
 		fdlnrClone = new FormData();
 		fdlnrClone.left = new FormAttachment(0, 0);
@@ -140,7 +141,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 
 		wnrClone = new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wnrClone);
-		wnrClone.setToolTipText(Messages.getString("CloneRowDialog.nrClone.Tooltip"));
+		wnrClone.setToolTipText(BaseMessages.getString(PKG, "CloneRowDialog.nrClone.Tooltip"));
 		wnrClone.addModifyListener(lsMod);
 		fdnrClone = new FormData();
 		fdnrClone.left = new FormAttachment(middle, 0);
@@ -150,7 +151,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		//Is Nr clones defined in a Field		
 		wlisNrCloneInField = new Label(shell, SWT.RIGHT);
-		wlisNrCloneInField.setText(Messages.getString("CloneRowDialog.isNrCloneInField.Label"));
+		wlisNrCloneInField.setText(BaseMessages.getString(PKG, "CloneRowDialog.isNrCloneInField.Label"));
 		props.setLook(wlisNrCloneInField);
 		fdlisNrCloneInField = new FormData();
 		fdlisNrCloneInField.left = new FormAttachment(0, 0);
@@ -161,7 +162,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		wisNrCloneInField = new Button(shell, SWT.CHECK);
 		props.setLook(wisNrCloneInField);
-		wisNrCloneInField.setToolTipText(Messages.getString("CloneRowDialog.isNrCloneInField.Tooltip"));
+		wisNrCloneInField.setToolTipText(BaseMessages.getString(PKG, "CloneRowDialog.isNrCloneInField.Tooltip"));
 		fdisNrCloneInField = new FormData();
 		fdisNrCloneInField.left = new FormAttachment(middle, 0);
 		fdisNrCloneInField.top = new FormAttachment(wnrClone, margin);
@@ -178,7 +179,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
         
 		// Filename field
 		wlNrCloneField=new Label(shell, SWT.RIGHT);
-        wlNrCloneField.setText(Messages.getString("CloneRowDialog.wlNrCloneField.Label"));
+        wlNrCloneField.setText(BaseMessages.getString(PKG, "CloneRowDialog.wlNrCloneField.Label"));
         props.setLook(wlNrCloneField);
         fdlNrCloneField=new FormData();
         fdlNrCloneField.left = new FormAttachment(0, 0);
@@ -216,7 +217,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		// add clone flag?
 		wladdCloneFlag=new Label(shell, SWT.RIGHT);
-		wladdCloneFlag.setText(Messages.getString("CloneRowDialog.addCloneFlag.Label"));
+		wladdCloneFlag.setText(BaseMessages.getString(PKG, "CloneRowDialog.addCloneFlag.Label"));
 		props.setLook(wladdCloneFlag);
 		fdladdCloneFlag=new FormData();
 		fdladdCloneFlag.left  = new FormAttachment(0, 0);
@@ -224,7 +225,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		fdladdCloneFlag.right = new FormAttachment(middle, -margin);
 		wladdCloneFlag.setLayoutData(fdladdCloneFlag);
 		waddCloneFlag=new Button(shell, SWT.CHECK);
-		waddCloneFlag.setToolTipText(Messages.getString("CloneRowDialog.addCloneFlag.Tooltip"));
+		waddCloneFlag.setToolTipText(BaseMessages.getString(PKG, "CloneRowDialog.addCloneFlag.Tooltip"));
  		props.setLook(waddCloneFlag);
 		fdaddCloneFlag=new FormData();
 		fdaddCloneFlag.left  = new FormAttachment(middle, 0);
@@ -243,7 +244,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		// clone falg field line
 		wlcloneFlagField = new Label(shell, SWT.RIGHT);
-		wlcloneFlagField.setText(Messages.getString("CloneRowDialog.cloneFlagField.Label"));
+		wlcloneFlagField.setText(BaseMessages.getString(PKG, "CloneRowDialog.cloneFlagField.Label"));
 		props.setLook(wlcloneFlagField);
 		fdlcloneFlagField = new FormData();
 		fdlcloneFlagField.left = new FormAttachment(0, 0);
@@ -253,7 +254,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 
 		wcloneFlagField = new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wcloneFlagField);
-		wcloneFlagField.setToolTipText(Messages.getString("CloneRowDialog.cloneFlagField.Tooltip"));
+		wcloneFlagField.setToolTipText(BaseMessages.getString(PKG, "CloneRowDialog.cloneFlagField.Tooltip"));
 		wcloneFlagField.addModifyListener(lsMod);
 		fdcloneFlagField = new FormData();
 		fdcloneFlagField.left = new FormAttachment(middle, 0);
@@ -263,9 +264,9 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wcloneFlagField);
 
@@ -310,7 +311,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 			 if(r!=null) wNrCloneField.setItems(r.getFieldNames());
 			 if(field!=null) wNrCloneField.setText(field);	
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, Messages.getString("CloneRowDialog.FailedToGetFields.DialogTitle"), Messages.getString("CloneRowDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "CloneRowDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "CloneRowDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		 gotPreviousFields=true;
 		 }

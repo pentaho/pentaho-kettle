@@ -15,10 +15,12 @@ package org.pentaho.di.trans.steps.dynamicsqlrow;
 
 import java.sql.ResultSet;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -26,8 +28,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.dynamicsqlrow.Messages;
-import org.pentaho.di.core.Const;
 
 
 /**
@@ -39,6 +39,8 @@ import org.pentaho.di.core.Const;
  */
 public class DynamicSQLRow extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = DynamicSQLRowMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private DynamicSQLRowMeta meta;
 	private DynamicSQLRowData data;
 	
@@ -60,13 +62,13 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 			loadFromBuffer=false;
 		}
 		
-		if (log.isDetailed()) logDetailed(Messages.getString("DynamicSQLRow.Log.CheckingRow")+rowMeta.getString(rowData)); //$NON-NLS-1$
+		if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DynamicSQLRow.Log.CheckingRow")+rowMeta.getString(rowData)); //$NON-NLS-1$
 		
 		
 		// get dynamic SQL statement
 		String sql=getInputRowMeta().getString(rowData,data.indexOfSQLField);
 		
-		if(log.isDebug()) log.logDebug(toString(), Messages.getString("DynamicSQLRow.Log.SQLStatement",sql));
+		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "DynamicSQLRow.Log.SQLStatement",sql));
 		
 		if(meta.isQueryOnlyOnChange())
 		{
@@ -132,7 +134,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 					data.skipPreviousRow=false;
 				}
 				
-				if (log.isRowLevel()) logRowlevel(Messages.getString("DynamicSQLRow.Log.PutoutRow")+data.outputRowMeta.getString(newRow)); //$NON-NLS-1$
+				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DynamicSQLRow.Log.PutoutRow")+data.outputRowMeta.getString(newRow)); //$NON-NLS-1$
 				
 				
 				// Get a new row
@@ -195,10 +197,10 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 		if (first)
 		{
 			if(Const.isEmpty(meta.getSQLFieldName()))
-				throw new KettleException(Messages.getString("DynamicSQLRow.Exception.SQLFieldNameEmpty"));
+				throw new KettleException(BaseMessages.getString(PKG, "DynamicSQLRow.Exception.SQLFieldNameEmpty"));
 			
 			if(Const.isEmpty(meta.getSql()))
-				throw new KettleException(Messages.getString("DynamicSQLRow.Exception.SQLEmpty"));
+				throw new KettleException(BaseMessages.getString(PKG, "DynamicSQLRow.Exception.SQLEmpty"));
 
 			// cache the position of the field			
 			if (data.indexOfSQLField<0)
@@ -207,7 +209,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 				if (data.indexOfSQLField<0)
 				{
 					// The field is unreachable !
-					throw new KettleException(Messages.getString("DynamicSQLRow.Exception.FieldNotFound",meta.getSQLFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "DynamicSQLRow.Exception.FieldNotFound",meta.getSQLFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		}
@@ -217,7 +219,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
  
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isDetailed()) logDetailed(Messages.getString("DynamicSQLRow.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DynamicSQLRow.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
 		}
 		catch(KettleException e)
@@ -232,7 +234,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 			}
 			else
 			{
-				logError(Messages.getString("DynamicSQLRow.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DynamicSQLRow.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -283,7 +285,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 				
-                if(log.isDetailed()) logDetailed(Messages.getString("DynamicSQLRow.Log.ConnectedToDB")); //$NON-NLS-1$
+                if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DynamicSQLRow.Log.ConnectedToDB")); //$NON-NLS-1$
 	
 				data.db.setQueryLimit(meta.getRowLimit());
 				
@@ -291,7 +293,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 			}
 			catch(KettleException e)
 			{
-				logError(Messages.getString("DynamicSQLRow.Log.DatabaseError")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DynamicSQLRow.Log.DatabaseError")+e.getMessage()); //$NON-NLS-1$
 				if(data.db!=null) data.db.disconnect();
 			}
 		}

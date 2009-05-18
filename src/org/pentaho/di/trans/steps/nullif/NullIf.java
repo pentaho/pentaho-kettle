@@ -14,6 +14,7 @@ package org.pentaho.di.trans.steps.nullif;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -31,6 +32,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class NullIf extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = NullIfMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private NullIfMeta meta;
 	private NullIfData data;
 	
@@ -65,7 +68,7 @@ public class NullIf extends BaseStep implements StepInterface
 		        data.keynr[i] = data.outputRowMeta.indexOfValue(meta.getFieldName()[i]);
 				if (data.keynr[i]<0)
 				{
-					logError(Messages.getString("NullIf.Log.CouldNotFindFieldInRow",meta.getFieldName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "NullIf.Log.CouldNotFindFieldInRow",meta.getFieldName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -76,7 +79,7 @@ public class NullIf extends BaseStep implements StepInterface
 		    }
 		}
 
-		if (log.isRowLevel()) logRowlevel(Messages.getString("NullIf.Log.ConvertFieldValuesToNullForRow")+data.outputRowMeta.getString(r)); //$NON-NLS-1$
+		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "NullIf.Log.ConvertFieldValuesToNullForRow")+data.outputRowMeta.getString(r)); //$NON-NLS-1$
 		
 		for (int i=0;i<meta.getFieldValue().length;i++)
 		{

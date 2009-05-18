@@ -12,7 +12,6 @@
  
 package org.pentaho.di.ui.core.dialog;
 import org.eclipse.swt.SWT;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -29,10 +28,11 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.dialog.Messages;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.core.PropsUI;
 
 /**
  * This dialog allows you to enter a (single line) String.
@@ -42,6 +42,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class EnterStringDialog extends Dialog
 {
+	private static Class<?> PKG = EnterStringDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlString;
 	private Text         wString;
     private FormData     fdlString, fdString;
@@ -103,9 +105,9 @@ public class EnterStringDialog extends Dialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wString);
         

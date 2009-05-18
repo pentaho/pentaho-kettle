@@ -56,6 +56,7 @@ import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -80,6 +81,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  */
 public class ClassicDatabaseDialog extends Dialog
 {
+	private static Class<?> PKG = ClassicDatabaseDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private DatabaseMeta   databaseMeta;
 
     private CTabFolder     wTabFolder;
@@ -220,26 +223,26 @@ public class ClassicDatabaseDialog extends Dialog
         formLayout.marginWidth = Const.FORM_MARGIN;
         formLayout.marginHeight = Const.FORM_MARGIN;
 
-        shell.setText(Messages.getString("DatabaseDialog.Shell.title")); //$NON-NLS-1$
+        shell.setText(BaseMessages.getString(PKG, "DatabaseDialog.Shell.title")); //$NON-NLS-1$
         shell.setLayout(formLayout);
 
         // First, add the buttons...
 
         // Buttons
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 
         wTest = new Button(shell, SWT.PUSH);
-        wTest.setText(Messages.getString("System.Button.Test")); //$NON-NLS-1$
+        wTest.setText(BaseMessages.getString(PKG, "System.Button.Test")); //$NON-NLS-1$
 
         wExp = new Button(shell, SWT.PUSH);
-        wExp.setText(Messages.getString("DatabaseDialog.button.Explore")); //$NON-NLS-1$
+        wExp.setText(BaseMessages.getString(PKG, "DatabaseDialog.button.Explore")); //$NON-NLS-1$
 
         wList = new Button(shell, SWT.PUSH);
-        wList.setText(Messages.getString("DatabaseDialog.button.FeatureList")); //$NON-NLS-1$
+        wList.setText(BaseMessages.getString(PKG, "DatabaseDialog.button.FeatureList")); //$NON-NLS-1$
 
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
         Button[] buttons = new Button[] { wOK, wTest, wExp, wList, wCancel };
         BaseStepDialog.positionBottomButtons(shell, buttons, margin, null);
@@ -421,7 +424,7 @@ public class ClassicDatabaseDialog extends Dialog
         // START OF DB TAB ///
         // ////////////////////////
         wDbTab = new CTabItem(wTabFolder, SWT.NONE);
-        wDbTab.setText(Messages.getString("DatabaseDialog.DbTab.title")); //$NON-NLS-1$
+        wDbTab.setText(BaseMessages.getString(PKG, "DatabaseDialog.DbTab.title")); //$NON-NLS-1$
 
         wDbComp = new Composite(wTabFolder, SWT.NONE);
         props.setLook(wDbComp);
@@ -434,7 +437,7 @@ public class ClassicDatabaseDialog extends Dialog
         // What's the connection name?
         wlConn = new Label(wDbComp, SWT.RIGHT);
         props.setLook(wlConn);
-        wlConn.setText(Messages.getString("DatabaseDialog.label.ConnectionName")); //$NON-NLS-1$
+        wlConn.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.ConnectionName")); //$NON-NLS-1$
         FormData fdlConn = new FormData();
         fdlConn.top = new FormAttachment(0, 0);
         fdlConn.left = new FormAttachment(0, 0); // First one in the left top corner
@@ -452,7 +455,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // What types are there?
         wlConnType = new Label(wDbComp, SWT.RIGHT);
-        wlConnType.setText(Messages.getString("DatabaseDialog.label.ConnectionType")); //$NON-NLS-1$
+        wlConnType.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.ConnectionType")); //$NON-NLS-1$
         props.setLook(wlConnType);
         FormData fdlConnType = new FormData();
         fdlConnType.top = new FormAttachment(wConn, margin); // below the line above
@@ -479,7 +482,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // What access types are there?
         wlConnAcc = new Label(wDbComp, SWT.RIGHT);
-        wlConnAcc.setText(Messages.getString("DatabaseDialog.label.AccessMethod")); //$NON-NLS-1$
+        wlConnAcc.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.AccessMethod")); //$NON-NLS-1$
         props.setLook(wlConnAcc);
         FormData fdlConnAcc = new FormData();
         fdlConnAcc.top = new FormAttachment(wConnType, margin); // below the line above
@@ -499,7 +502,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // Hostname
         wlHostName = new Label(wDbComp, SWT.RIGHT);
-        wlHostName.setText(Messages.getString("DatabaseDialog.label.ServerHostname")); //$NON-NLS-1$
+        wlHostName.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.ServerHostname")); //$NON-NLS-1$
         props.setLook(wlHostName);
         FormData fdlHostName = new FormData();
         fdlHostName.top = new FormAttachment(wConnAcc, margin);
@@ -518,7 +521,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // DBName
         wlDBName = new Label(wDbComp, SWT.RIGHT);
-        wlDBName.setText(Messages.getString("DatabaseDialog.label.DatabaseName")); //$NON-NLS-1$
+        wlDBName.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.DatabaseName")); //$NON-NLS-1$
         props.setLook(wlDBName);
         FormData fdlDBName = new FormData();
         fdlDBName.top = new FormAttachment(wHostName, margin);
@@ -537,7 +540,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // Port
         wlPort = new Label(wDbComp, SWT.RIGHT);
-        wlPort.setText(Messages.getString("DatabaseDialog.label.PortNumber")); //$NON-NLS-1$
+        wlPort.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.PortNumber")); //$NON-NLS-1$
         props.setLook(wlPort);
         FormData fdlPort = new FormData();
         fdlPort.top = new FormAttachment(wDBName, margin);
@@ -556,7 +559,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // Username
         wlUsername = new Label(wDbComp, SWT.RIGHT);
-        wlUsername.setText(Messages.getString("DatabaseDialog.label.Username")); //$NON-NLS-1$
+        wlUsername.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.Username")); //$NON-NLS-1$
         props.setLook(wlUsername);
         FormData fdlUsername = new FormData();
         fdlUsername.top = new FormAttachment(wPort, margin);
@@ -575,7 +578,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // Password
         wlPassword = new Label(wDbComp, SWT.RIGHT);
-        wlPassword.setText(Messages.getString("DatabaseDialog.label.Password")); //$NON-NLS-1$
+        wlPassword.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.Password")); //$NON-NLS-1$
         props.setLook(wlPassword);
         FormData fdlPassword = new FormData();
         fdlPassword.top = new FormAttachment(wUsername, margin);
@@ -614,7 +617,7 @@ public class ClassicDatabaseDialog extends Dialog
         // START OF POOL TAB///
         // /
         wPoolTab = new CTabItem(wTabFolder, SWT.NONE);
-        wPoolTab.setText(Messages.getString("DatabaseDialog.PoolTab.title")); //$NON-NLS-1$
+        wPoolTab.setText(BaseMessages.getString(PKG, "DatabaseDialog.PoolTab.title")); //$NON-NLS-1$
 
         FormLayout poolLayout = new FormLayout();
         poolLayout.marginWidth = Const.FORM_MARGIN;
@@ -627,7 +630,7 @@ public class ClassicDatabaseDialog extends Dialog
         // What's the data tablespace name?
         wlUsePool = new Label(wPoolComp, SWT.RIGHT);
         props.setLook(wlUsePool);
-        wlUsePool.setText(Messages.getString("DatabaseDialog.label.UseConnectionPool")); //$NON-NLS-1$
+        wlUsePool.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.UseConnectionPool")); //$NON-NLS-1$
         FormData fdlUsePool = new FormData();
         fdlUsePool.top = new FormAttachment(0, 0);
         fdlUsePool.left = new FormAttachment(0, 0); // First one in the left top corner
@@ -653,7 +656,7 @@ public class ClassicDatabaseDialog extends Dialog
         // What's the initial pool size
         wlInitPool = new Label(wPoolComp, SWT.RIGHT);
         props.setLook(wlInitPool);
-        wlInitPool.setText(Messages.getString("DatabaseDialog.label.InitialPoolSize")); //$NON-NLS-1$
+        wlInitPool.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.InitialPoolSize")); //$NON-NLS-1$
         FormData fdlInitPool = new FormData();
         fdlInitPool.top = new FormAttachment(wUsePool, margin);
         fdlInitPool.left = new FormAttachment(0, 0); // First one in the left top corner
@@ -673,7 +676,7 @@ public class ClassicDatabaseDialog extends Dialog
         // What's the maximum pool size
         wlMaxPool = new Label(wPoolComp, SWT.RIGHT);
         props.setLook(wlMaxPool);
-        wlMaxPool.setText(Messages.getString("DatabaseDialog.label.MaximumPoolSize")); //$NON-NLS-1$
+        wlMaxPool.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.MaximumPoolSize")); //$NON-NLS-1$
         FormData fdlMaxPool = new FormData();
         fdlMaxPool.top = new FormAttachment(wInitPool, margin);
         fdlMaxPool.left = new FormAttachment(0, 0); // First one in the left top corner
@@ -693,7 +696,7 @@ public class ClassicDatabaseDialog extends Dialog
         // What's the maximum pool size
         wlPoolParameters = new Label(wPoolComp, SWT.RIGHT);
         props.setLook(wlPoolParameters);
-        wlPoolParameters.setText(Messages.getString("DatabaseDialog.label.PoolParameters")); //$NON-NLS-1$
+        wlPoolParameters.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.PoolParameters")); //$NON-NLS-1$
         FormData fdlPoolParameters = new FormData();
         fdlPoolParameters.top = new FormAttachment(wInitPool, margin);
         fdlPoolParameters.left = new FormAttachment(0, 0); // First one in the left top corner
@@ -702,16 +705,16 @@ public class ClassicDatabaseDialog extends Dialog
 
         // options list
         ColumnInfo[] colinfo = new ColumnInfo[] {
-                new ColumnInfo(Messages.getString("DatabaseDialog.column.PoolParameter"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("DatabaseDialog.column.PoolDefault"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("DatabaseDialog.column.PoolValue"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "DatabaseDialog.column.PoolParameter"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "DatabaseDialog.column.PoolDefault"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "DatabaseDialog.column.PoolValue"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
         };
         colinfo[2].setUsingVariables(true);
         final java.util.List<RowMetaAndData> parameters = DatabaseConnectionPoolParameter.getRowList(
                 BaseDatabaseMeta.poolingParameters,
-                Messages.getString("DatabaseDialog.column.PoolParameter"), 
-                Messages.getString("DatabaseDialog.column.PoolDefault"), 
-                Messages.getString("DatabaseDialog.column.PoolDescription"));
+                BaseMessages.getString(PKG, "DatabaseDialog.column.PoolParameter"), 
+                BaseMessages.getString(PKG, "DatabaseDialog.column.PoolDefault"), 
+                BaseMessages.getString(PKG, "DatabaseDialog.column.PoolDescription"));
         colinfo[0].setSelectionAdapter(new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent e)
@@ -765,7 +768,7 @@ public class ClassicDatabaseDialog extends Dialog
         // START OF ORACLE TAB///
         // /
         wOracleTab = new CTabItem(wTabFolder, SWT.NONE);
-        wOracleTab.setText(Messages.getString("DatabaseDialog.OracleTab.title")); //$NON-NLS-1$
+        wOracleTab.setText(BaseMessages.getString(PKG, "DatabaseDialog.OracleTab.title")); //$NON-NLS-1$
 
         FormLayout oracleLayout = new FormLayout();
         oracleLayout.marginWidth = Const.FORM_MARGIN;
@@ -778,7 +781,7 @@ public class ClassicDatabaseDialog extends Dialog
         // What's the data tablespace name?
         wlData = new Label(wOracleComp, SWT.RIGHT);
         props.setLook(wlData);
-        wlData.setText(Messages.getString("DatabaseDialog.label.TablespaceForData")); //$NON-NLS-1$
+        wlData.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.TablespaceForData")); //$NON-NLS-1$
         FormData fdlData = new FormData();
         fdlData.top = new FormAttachment(0, 0);
         fdlData.left = new FormAttachment(0, 0); // First one in the left top corner
@@ -798,7 +801,7 @@ public class ClassicDatabaseDialog extends Dialog
         // What's the index tablespace name?
         wlIndex = new Label(wOracleComp, SWT.RIGHT);
         props.setLook(wlIndex);
-        wlIndex.setText(Messages.getString("DatabaseDialog.label.TablespaceForIndexes")); //$NON-NLS-1$
+        wlIndex.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.TablespaceForIndexes")); //$NON-NLS-1$
         FormData fdlIndex = new FormData();
         fdlIndex.top = new FormAttachment(wData, margin);
         fdlIndex.left = new FormAttachment(0, 0); // First one in the left top corner
@@ -832,7 +835,7 @@ public class ClassicDatabaseDialog extends Dialog
         // START OF INFORMIX TAB///
         // /
         wIfxTab = new CTabItem(wTabFolder, SWT.NONE);
-        wIfxTab.setText(Messages.getString("DatabaseDialog.IfxTab.title")); //$NON-NLS-1$
+        wIfxTab.setText(BaseMessages.getString(PKG, "DatabaseDialog.IfxTab.title")); //$NON-NLS-1$
 
         FormLayout ifxLayout = new FormLayout();
         ifxLayout.marginWidth = Const.FORM_MARGIN;
@@ -844,7 +847,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // Servername
         wlServername = new Label(wIfxComp, SWT.RIGHT);
-        wlServername.setText(Messages.getString("DatabaseDialog.label.InformixServername")); //$NON-NLS-1$
+        wlServername.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.InformixServername")); //$NON-NLS-1$
         props.setLook(wlServername);
         FormData fdlServername = new FormData();
         fdlServername.top = new FormAttachment(0, margin);
@@ -878,7 +881,7 @@ public class ClassicDatabaseDialog extends Dialog
         // START OF MySQL TAB///
         // /
         wMySQLTab = new CTabItem(wTabFolder, SWT.NONE);
-        wMySQLTab.setText(Messages.getString("DatabaseDialog.MySQLTab.title")); //$NON-NLS-1$
+        wMySQLTab.setText(BaseMessages.getString(PKG, "DatabaseDialog.MySQLTab.title")); //$NON-NLS-1$
 
         FormLayout MySQLLayout = new FormLayout();
         MySQLLayout.marginWidth = Const.FORM_MARGIN;
@@ -890,7 +893,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // StreamResult
         wlStreamResult = new Label(wMySQLComp, SWT.RIGHT);
-        wlStreamResult.setText(Messages.getString("DatabaseDialog.label.MySQLStreamResults")); //$NON-NLS-1$
+        wlStreamResult.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.MySQLStreamResults")); //$NON-NLS-1$
         props.setLook(wlStreamResult);
         FormData fdlStreamResult = new FormData();
         fdlStreamResult.top = new FormAttachment(0, margin);
@@ -923,7 +926,7 @@ public class ClassicDatabaseDialog extends Dialog
         // START OF MSSQL TAB///
         // /
         wMSSQLTab = new CTabItem(wTabFolder, SWT.NONE);
-        wMSSQLTab.setText(Messages.getString("DatabaseDialog.MSSQLTab.title")); //$NON-NLS-1$
+        wMSSQLTab.setText(BaseMessages.getString(PKG, "DatabaseDialog.MSSQLTab.title")); //$NON-NLS-1$
 
         FormLayout MSSQLLayout = new FormLayout();
         MSSQLLayout.marginWidth = Const.FORM_MARGIN;
@@ -935,7 +938,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // InstanceName
         wlInstanceName = new Label(wMSSQLComp, SWT.RIGHT);
-        wlInstanceName.setText(Messages.getString("DatabaseDialog.label.SQLServerInstance")); //$NON-NLS-1$
+        wlInstanceName.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.SQLServerInstance")); //$NON-NLS-1$
         props.setLook(wlInstanceName);
         FormData fdlInstanceName = new FormData();
         fdlInstanceName.top = new FormAttachment(0, margin);
@@ -954,7 +957,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // double decimal separator between schema and table (..)
         wlDoubleDecimalSeparator = new Label(wMSSQLComp, SWT.RIGHT);
-        wlDoubleDecimalSeparator.setText(Messages.getString("DatabaseDialog.label.UseDoubleDecimalSeparator")); //$NON-NLS-1$
+        wlDoubleDecimalSeparator.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.UseDoubleDecimalSeparator")); //$NON-NLS-1$
         props.setLook(wlDoubleDecimalSeparator);
         FormData fdlDoubleDecimalSeparator = new FormData();
         fdlDoubleDecimalSeparator.top = new FormAttachment(wInstanceName, margin);
@@ -989,7 +992,7 @@ public class ClassicDatabaseDialog extends Dialog
         // START OF SAP TAB///
         // /
         wSAPTab = new CTabItem(wTabFolder, SWT.NONE);
-        wSAPTab.setText(Messages.getString("DatabaseDialog.label.Sap")); //$NON-NLS-1$
+        wSAPTab.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.Sap")); //$NON-NLS-1$
 
         FormLayout sapLayout = new FormLayout();
         sapLayout.marginWidth = Const.FORM_MARGIN;
@@ -1003,7 +1006,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // Language
         wlSAPLanguage = new Label(wSAPComp, SWT.RIGHT);
-        wlSAPLanguage.setText(Messages.getString("DatabaseDialog.label.Language")); //$NON-NLS-1$
+        wlSAPLanguage.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.Language")); //$NON-NLS-1$
         props.setLook(wlSAPLanguage);
         FormData fdlSAPLanguage = new FormData();
         fdlSAPLanguage.top = new FormAttachment(0, margin);
@@ -1022,7 +1025,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // SystemNumber
         wlSAPSystemNumber = new Label(wSAPComp, SWT.RIGHT);
-        wlSAPSystemNumber.setText(Messages.getString("DatabaseDialog.label.SystemNumber")); //$NON-NLS-1$
+        wlSAPSystemNumber.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.SystemNumber")); //$NON-NLS-1$
         props.setLook(wlSAPSystemNumber);
         FormData fdlSAPSystemNumber = new FormData();
         fdlSAPSystemNumber.top = new FormAttachment(wSAPLanguage, margin);
@@ -1041,7 +1044,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // SystemID
         wlSAPClient = new Label(wSAPComp, SWT.RIGHT);
-        wlSAPClient.setText(Messages.getString("DatabaseDialog.label.SapClient")); //$NON-NLS-1$
+        wlSAPClient.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.SapClient")); //$NON-NLS-1$
         props.setLook(wlSAPClient);
         FormData fdlSAPClient = new FormData();
         fdlSAPClient.top = new FormAttachment(wSAPSystemNumber, margin);
@@ -1075,8 +1078,8 @@ public class ClassicDatabaseDialog extends Dialog
         // START OF DB TAB///
         // /
         wGenericTab = new CTabItem(wTabFolder, SWT.NONE);
-        wGenericTab.setText(Messages.getString("DatabaseDialog.GenericTab.title")); //$NON-NLS-1$
-        wGenericTab.setToolTipText(Messages.getString("DatabaseDialog.GenericTab.tooltip")); //$NON-NLS-1$
+        wGenericTab.setText(BaseMessages.getString(PKG, "DatabaseDialog.GenericTab.title")); //$NON-NLS-1$
+        wGenericTab.setToolTipText(BaseMessages.getString(PKG, "DatabaseDialog.GenericTab.tooltip")); //$NON-NLS-1$
 
         FormLayout genericLayout = new FormLayout();
         genericLayout.marginWidth = Const.FORM_MARGIN;
@@ -1088,7 +1091,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // URL
         wlURL = new Label(wGenericComp, SWT.RIGHT);
-        wlURL.setText(Messages.getString("DatabaseDialog.label.Url")); //$NON-NLS-1$
+        wlURL.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.Url")); //$NON-NLS-1$
         props.setLook(wlURL);
         FormData fdlURL = new FormData();
         fdlURL.top = new FormAttachment(0, margin);
@@ -1107,7 +1110,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // Driver class
         wlDriverClass = new Label(wGenericComp, SWT.RIGHT);
-        wlDriverClass.setText(Messages.getString("DatabaseDialog.label.DriverClass")); //$NON-NLS-1$
+        wlDriverClass.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.DriverClass")); //$NON-NLS-1$
         props.setLook(wlDriverClass);
         FormData fdlDriverClass = new FormData();
         fdlDriverClass.top = new FormAttachment(wURL, margin);
@@ -1141,8 +1144,8 @@ public class ClassicDatabaseDialog extends Dialog
         // START OF OPTIONS TAB///
         // /
         wOptionsTab = new CTabItem(wTabFolder, SWT.NONE);
-        wOptionsTab.setText(Messages.getString("DatabaseDialog.label.Options")); //$NON-NLS-1$
-        wOptionsTab.setToolTipText(Messages.getString("DatabaseDialog.tooltip.Options")); //$NON-NLS-1$
+        wOptionsTab.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.Options")); //$NON-NLS-1$
+        wOptionsTab.setToolTipText(BaseMessages.getString(PKG, "DatabaseDialog.tooltip.Options")); //$NON-NLS-1$
 
         FormLayout optionsLayout = new FormLayout();
         optionsLayout.marginWidth = margin;
@@ -1153,7 +1156,7 @@ public class ClassicDatabaseDialog extends Dialog
         wOptionsComp.setLayout(optionsLayout);
 
         wOptionsHelp = new Button(wOptionsComp, SWT.PUSH);
-        wOptionsHelp.setText(Messages.getString("DatabaseDialog.button.ShowHelp")); //$NON-NLS-1$
+        wOptionsHelp.setText(BaseMessages.getString(PKG, "DatabaseDialog.button.ShowHelp")); //$NON-NLS-1$
         wOptionsHelp.addSelectionListener(new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent arg0)
@@ -1167,13 +1170,13 @@ public class ClassicDatabaseDialog extends Dialog
         // options list
         ColumnInfo[] colinfo = new ColumnInfo[] {
                 new ColumnInfo(
-                        Messages.getString("DatabaseDialog.column.DbType"), ColumnInfo.COLUMN_TYPE_CCOMBO, DatabaseMeta.getDBTypeDescLongList(), true), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("DatabaseDialog.column.Parameter"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("DatabaseDialog.column.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                        BaseMessages.getString(PKG, "DatabaseDialog.column.DbType"), ColumnInfo.COLUMN_TYPE_CCOMBO, DatabaseMeta.getDBTypeDescLongList(), true), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "DatabaseDialog.column.Parameter"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "DatabaseDialog.column.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
         };
 
-        colinfo[0].setToolTip(Messages.getString("DatabaseDialog.tooltip.DbType")); //$NON-NLS-1$
-        colinfo[1].setToolTip(Messages.getString("DatabaseDialog.tooltip.Parameter")); //$NON-NLS-1$
+        colinfo[0].setToolTip(BaseMessages.getString(PKG, "DatabaseDialog.tooltip.DbType")); //$NON-NLS-1$
+        colinfo[1].setToolTip(BaseMessages.getString(PKG, "DatabaseDialog.tooltip.Parameter")); //$NON-NLS-1$
         colinfo[2].setUsingVariables(true);
 
         wOptions = new TableView(databaseMeta, wOptionsComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props);
@@ -1202,8 +1205,8 @@ public class ClassicDatabaseDialog extends Dialog
         // START OF SQL TAB///
         // /
         wSQLTab = new CTabItem(wTabFolder, SWT.NONE);
-        wSQLTab.setText(Messages.getString("DatabaseDialog.SQLTab.title")); //$NON-NLS-1$
-        wSQLTab.setToolTipText(Messages.getString("DatabaseDialog.SQLTab.tooltip")); //$NON-NLS-1$
+        wSQLTab.setText(BaseMessages.getString(PKG, "DatabaseDialog.SQLTab.title")); //$NON-NLS-1$
+        wSQLTab.setToolTipText(BaseMessages.getString(PKG, "DatabaseDialog.SQLTab.tooltip")); //$NON-NLS-1$
 
         FormLayout sqlLayout = new FormLayout();
         sqlLayout.marginWidth = margin;
@@ -1215,7 +1218,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         wlSQL = new Label(wSQLComp, SWT.LEFT);
         props.setLook(wlSQL);
-        wlSQL.setText(Messages.getString("DatabaseDialog.label.Statements")); //$NON-NLS-1$
+        wlSQL.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.Statements")); //$NON-NLS-1$
 
         FormData fdlSQL = new FormData();
         fdlSQL.left = new FormAttachment(0, 0);
@@ -1251,8 +1254,8 @@ public class ClassicDatabaseDialog extends Dialog
 
         // The tab
         wClusterTab = new CTabItem(wTabFolder, SWT.NONE);
-        wClusterTab.setText(Messages.getString("DatabaseDialog.ClusterTab.title")); //$NON-NLS-1$
-        wClusterTab.setToolTipText(Messages.getString("DatabaseDialog.ClusterTab.tooltip")); //$NON-NLS-1$
+        wClusterTab.setText(BaseMessages.getString(PKG, "DatabaseDialog.ClusterTab.title")); //$NON-NLS-1$
+        wClusterTab.setToolTipText(BaseMessages.getString(PKG, "DatabaseDialog.ClusterTab.tooltip")); //$NON-NLS-1$
 
         FormLayout clusterLayout = new FormLayout();
         clusterLayout.marginWidth = margin;
@@ -1266,8 +1269,8 @@ public class ClassicDatabaseDialog extends Dialog
         // The check box
         wlUseCluster = new Label(wClusterComp, SWT.RIGHT);
         props.setLook(wlUseCluster);
-        wlUseCluster.setText(Messages.getString("DatabaseDialog.label.UseClustering")); //$NON-NLS-1$
-        wlUseCluster.setToolTipText(Messages.getString("DatabaseDialog.tooltip.UseClustering")); //$NON-NLS-1$
+        wlUseCluster.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.UseClustering")); //$NON-NLS-1$
+        wlUseCluster.setToolTipText(BaseMessages.getString(PKG, "DatabaseDialog.tooltip.UseClustering")); //$NON-NLS-1$
         FormData fdlUseCluster = new FormData();
         fdlUseCluster.left = new FormAttachment(0, 0);
         fdlUseCluster.right = new FormAttachment(middle, 0);
@@ -1291,16 +1294,16 @@ public class ClassicDatabaseDialog extends Dialog
 
         // Cluster list
         ColumnInfo[] colinfo = new ColumnInfo[] {
-                new ColumnInfo(Messages.getString("DatabaseDialog.column.PartitionId"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("DatabaseDialog.column.Hostname"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("DatabaseDialog.column.Port"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("DatabaseDialog.column.DatabaseName"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("DatabaseDialog.column.Username"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("DatabaseDialog.column.Password"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "DatabaseDialog.column.PartitionId"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "DatabaseDialog.column.Hostname"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "DatabaseDialog.column.Port"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "DatabaseDialog.column.DatabaseName"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "DatabaseDialog.column.Username"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "DatabaseDialog.column.Password"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
         };
 
-        colinfo[0].setToolTip(Messages.getString("DatabaseDialog.tooltip.PartitionId")); //$NON-NLS-1$
-        colinfo[1].setToolTip(Messages.getString("DatabaseDialog.tooltip.Hostname")); //$NON-NLS-1$
+        colinfo[0].setToolTip(BaseMessages.getString(PKG, "DatabaseDialog.tooltip.PartitionId")); //$NON-NLS-1$
+        colinfo[1].setToolTip(BaseMessages.getString(PKG, "DatabaseDialog.tooltip.Hostname")); //$NON-NLS-1$
 
         colinfo[5].setPasswordField(true);
         colinfo[5].setUsingVariables(true);
@@ -1332,7 +1335,7 @@ public class ClassicDatabaseDialog extends Dialog
         // START OF ADVANCED TAB///
         // /
         wAdvancedTab = new CTabItem(wTabFolder, SWT.NONE);
-        wAdvancedTab.setText(Messages.getString("DatabaseDialog.AdvancedTab.title")); //$NON-NLS-1$
+        wAdvancedTab.setText(BaseMessages.getString(PKG, "DatabaseDialog.AdvancedTab.title")); //$NON-NLS-1$
 
         FormLayout AdvancedLayout = new FormLayout();
         AdvancedLayout.marginWidth = Const.FORM_MARGIN;
@@ -1344,7 +1347,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // QuoteAllFields
         wlQuoteAllFields = new Label(wAdvancedComp, SWT.RIGHT);
-        wlQuoteAllFields.setText(Messages.getString("DatabaseDialog.label.AdvancedQuoteAllFields")); //$NON-NLS-1$
+        wlQuoteAllFields.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.AdvancedQuoteAllFields")); //$NON-NLS-1$
         props.setLook(wlQuoteAllFields);
         FormData fdlQuoteAllFields = new FormData();
         fdlQuoteAllFields.top = new FormAttachment(0, margin);
@@ -1362,7 +1365,7 @@ public class ClassicDatabaseDialog extends Dialog
 
         // ForceIdentifiersLowerCase
         Label wlForceIdentifiersLowerCase = new Label(wAdvancedComp, SWT.RIGHT);
-        wlForceIdentifiersLowerCase.setText(Messages.getString("DatabaseDialog.label.AdvancedForceIdentifiersLowerCase")); //$NON-NLS-1$
+        wlForceIdentifiersLowerCase.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.AdvancedForceIdentifiersLowerCase")); //$NON-NLS-1$
         props.setLook(wlForceIdentifiersLowerCase);
         FormData fdlForceIdentifiersLowerCase = new FormData();
         fdlForceIdentifiersLowerCase.top = new FormAttachment(wQuoteAllFields, margin);
@@ -1380,7 +1383,7 @@ public class ClassicDatabaseDialog extends Dialog
         
         // ForceIdentifiersUpperCase
         Label wlForceIdentifiersUpperCase = new Label(wAdvancedComp, SWT.RIGHT);
-        wlForceIdentifiersUpperCase.setText(Messages.getString("DatabaseDialog.label.AdvancedForceIdentifiersUpperCase")); //$NON-NLS-1$
+        wlForceIdentifiersUpperCase.setText(BaseMessages.getString(PKG, "DatabaseDialog.label.AdvancedForceIdentifiersUpperCase")); //$NON-NLS-1$
         props.setLook(wlForceIdentifiersUpperCase);
         FormData fdlForceIdentifiersUpperCase = new FormData();
         fdlForceIdentifiersUpperCase.top = new FormAttachment(wForceIdentifiersLowerCase, margin);
@@ -1425,7 +1428,7 @@ public class ClassicDatabaseDialog extends Dialog
             	SpoonInterface spoon = SpoonFactory.getInstance();
                 if (spoon != null)
                 {
-                    openedTab = spoon.addSpoonBrowser(Messages.getString("DatabaseDialog.JDBCOptions.Tab", meta.getDatabaseTypeDesc()), helpText);
+                    openedTab = spoon.addSpoonBrowser(BaseMessages.getString(PKG, "DatabaseDialog.JDBCOptions.Tab", meta.getDatabaseTypeDesc()), helpText);
                 }
             }
             catch (Throwable t)
@@ -1435,7 +1438,7 @@ public class ClassicDatabaseDialog extends Dialog
             {
 
                 EnterTextDialog dialog = new EnterTextDialog(shell,
-                        Messages.getString("DatabaseDialog.HelpText.title"), Messages.getString("DatabaseDialog.HelpText.description", meta.getDatabaseTypeDesc()), helpText, true); //$NON-NLS-1$ //$NON-NLS-2$
+                        BaseMessages.getString(PKG, "DatabaseDialog.HelpText.title"), BaseMessages.getString(PKG, "DatabaseDialog.HelpText.description", meta.getDatabaseTypeDesc()), helpText, true); //$NON-NLS-1$ //$NON-NLS-2$
                 dialog.setReadOnly();
                 dialog.open();
             }
@@ -1443,7 +1446,7 @@ public class ClassicDatabaseDialog extends Dialog
         catch (KettleException e)
         {
             new ErrorDialog(shell,
-                    Messages.getString("DatabaseDialog.ErrorHelpText.title"), Messages.getString("DatabaseDialog.ErrorHelpText.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                    BaseMessages.getString(PKG, "DatabaseDialog.ErrorHelpText.title"), BaseMessages.getString(PKG, "DatabaseDialog.ErrorHelpText.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -1792,7 +1795,7 @@ public class ClassicDatabaseDialog extends Dialog
             String message = ""; //$NON-NLS-1$
             for (int i = 0; i < remarks.length; i++)
                 message += "    * " + remarks[i] + Const.CR; //$NON-NLS-1$
-            throw new KettleException(Messages.getString("DatabaseDialog.Exception.IncorrectParameter") + Const.CR + message); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "DatabaseDialog.Exception.IncorrectParameter") + Const.CR + message); //$NON-NLS-1$
         }
 
         // Now put in the extra options...
@@ -1882,7 +1885,7 @@ public class ClassicDatabaseDialog extends Dialog
         catch (KettleException e)
         {
             new ErrorDialog(shell,
-                    Messages.getString("DatabaseDialog.ErrorParameters.title"), Messages.getString("DatabaseDialog.ErrorParameters.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                    BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters.title"), BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -1902,7 +1905,7 @@ public class ClassicDatabaseDialog extends Dialog
         }
         catch (KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("DatabaseDialog.ErrorParameters.title"), Messages.getString("DatabaseDialog.ErrorConnectionInfo.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters.title"), BaseMessages.getString(PKG, "DatabaseDialog.ErrorConnectionInfo.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 	
@@ -1918,7 +1921,7 @@ public class ClassicDatabaseDialog extends Dialog
         	//
         	String reportMessage = dbinfo.testConnection();
 
-        	EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("DatabaseDialog.ConnectionReport.title"), Messages.getString("DatabaseDialog.ConnectionReport.description"), reportMessage.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+        	EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "DatabaseDialog.ConnectionReport.title"), BaseMessages.getString(PKG, "DatabaseDialog.ConnectionReport.description"), reportMessage.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             dialog.setReadOnly();
             dialog.setFixed(true);
             dialog.setModal();
@@ -1931,8 +1934,8 @@ public class ClassicDatabaseDialog extends Dialog
                 message += "    * " + remarks[i] + Const.CR; //$NON-NLS-1$
 
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-            mb.setText(Messages.getString("DatabaseDialog.ErrorParameters2.title")); //$NON-NLS-1$
-            mb.setMessage(Messages.getString("DatabaseDialog.ErrorParameters2.description", message)); //$NON-NLS-1$
+            mb.setText(BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters2.title")); //$NON-NLS-1$
+            mb.setMessage(BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters2.description", message)); //$NON-NLS-1$
             mb.open();
         }
     }
@@ -1951,14 +1954,14 @@ public class ClassicDatabaseDialog extends Dialog
             else
             {
                 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-                mb.setText(Messages.getString("DatabaseDialog.ExplorerNotImplemented.Title")); //$NON-NLS-1$
-                mb.setMessage(Messages.getString("DatabaseDialog.ExplorerNotImplemented.Message")); //$NON-NLS-1$
+                mb.setText(BaseMessages.getString(PKG, "DatabaseDialog.ExplorerNotImplemented.Title")); //$NON-NLS-1$
+                mb.setMessage(BaseMessages.getString(PKG, "DatabaseDialog.ExplorerNotImplemented.Message")); //$NON-NLS-1$
                 mb.open();
             }
         }
         catch (KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("DatabaseDialog.ErrorParameters.title"), Messages.getString("DatabaseDialog.ErrorParameters.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters.title"), BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -1976,14 +1979,14 @@ public class ClassicDatabaseDialog extends Dialog
             	for (RowMetaAndData row : buffer) rowData.add(row.getData());
             	
 	            PreviewRowsDialog prd = new PreviewRowsDialog(shell, dbinfo, SWT.NONE, null, rowMeta, rowData); //$NON-NLS-1$
-	            prd.setTitleMessage(Messages.getString("DatabaseDialog.FeatureList.title"), Messages.getString("DatabaseDialog.FeatureList.title")); //$NON-NLS-1$ //$NON-NLS-2$
+	            prd.setTitleMessage(BaseMessages.getString(PKG, "DatabaseDialog.FeatureList.title"), BaseMessages.getString(PKG, "DatabaseDialog.FeatureList.title")); //$NON-NLS-1$ //$NON-NLS-2$
 	            prd.open();
             }
         }
         catch (KettleException e)
         {
             new ErrorDialog(shell,
-                    Messages.getString("DatabaseDialog.FeatureListError.title"), Messages.getString("DatabaseDialog.FeatureListError.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                    BaseMessages.getString(PKG, "DatabaseDialog.FeatureListError.title"), BaseMessages.getString(PKG, "DatabaseDialog.FeatureListError.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 

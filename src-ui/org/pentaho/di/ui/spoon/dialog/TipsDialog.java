@@ -38,13 +38,15 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.spoon.dialog.Messages;
-import org.pentaho.di.ui.core.PropsUI;
 
 public class TipsDialog extends Dialog
 {
+	private static Class<?> PKG = TipsDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private String title, message;
 
     private Label wlDesc;
@@ -69,8 +71,8 @@ public class TipsDialog extends Dialog
     {
         super(parent, SWT.NONE);
         props = PropsUI.getInstance();
-        title = Messages.getString("TipsDialog.Dialog.Tips.Title"); // Spoon tips...
-        message = Messages.getString("TipsDialog.Label.Tips"); // TIP\!
+        title = BaseMessages.getString(PKG, "TipsDialog.Dialog.Tips.Title"); // Spoon tips...
+        message = BaseMessages.getString(PKG, "TipsDialog.Label.Tips"); // TIP\!
         this.parent = parent;
 
         description = getTip();
@@ -119,7 +121,7 @@ public class TipsDialog extends Dialog
         wDesc.setLayoutData(fdDesc);
 
         wlShowTips = new Label(shell, SWT.RIGHT);
-        wlShowTips.setText(Messages.getString("TipsDialog.OptionShowTips.Label"));
+        wlShowTips.setText(BaseMessages.getString(PKG, "TipsDialog.OptionShowTips.Label"));
         props.setLook(wlShowTips);
         wlShowTips.setFont(font);
         fdlShowTips = new FormData();
@@ -230,12 +232,12 @@ public class TipsDialog extends Dialog
 
         // Some buttons
         wOK = new Button(parent, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.Close"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.Close"));
         wOK.pack(true);
         Rectangle rOK = wOK.getBounds();
 
         wNext = new Button(parent, SWT.PUSH);
-        wNext.setText(Messages.getString("TipsDialog.Button.Tips")); // &Next tip
+        wNext.setText(BaseMessages.getString(PKG, "TipsDialog.Button.Tips")); // &Next tip
         wNext.pack(true);
         Rectangle rNext = wNext.getBounds();
 

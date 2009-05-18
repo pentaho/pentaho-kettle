@@ -30,6 +30,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -37,7 +38,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.ldifinput.LDIFInputField;
 
 
 
@@ -49,6 +49,8 @@ import org.pentaho.di.trans.steps.ldifinput.LDIFInputField;
  */
 public class LDIFInput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = LDIFInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private LDIFInputMeta meta;
 	private LDIFInputData data;
 	
@@ -85,29 +87,29 @@ public class LDIFInput extends BaseStep implements StepInterface
 
 		if(contentLDIF.getType()== LDIFContent.DELETE_CONTENT)
 		{
-			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("LDIFInput.Log.ContentType","DELETE_CONTENT"));
+			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","DELETE_CONTENT"));
 			contentTYPE="DELETE_CONTENT";
 		}
 		else if(contentLDIF.getType()== LDIFContent.ADD_CONTENT)
 		{
-			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("LDIFInput.Log.ContentType","ADD_CONTENT"));
+			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","ADD_CONTENT"));
 			contentTYPE="ADD_CONTENT";
 		}
 		else if(contentLDIF.getType()== LDIFContent.MODDN_CONTENT)
 		{
-			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("LDIFInput.Log.ContentType","MODDN_CONTENT"));
+			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","MODDN_CONTENT"));
 			contentTYPE="MODDN_CONTENT";
 		}
 		else if(contentLDIF.getType()== LDIFContent.MODIFICATION_CONTENT)
 		{
 			if(log.isDetailed())
-				log.logDetailed(toString(),Messages.getString("LDIFInput.Log.ContentType","MODIFICATION_CONTENT"));
+				log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","MODIFICATION_CONTENT"));
 			contentTYPE="MODIFICATION_CONTENT";
 		}
 		else 
 		{
 			if(log.isDetailed())
-				log.logDetailed(toString(),Messages.getString("LDIFInput.Log.ContentType","ATTRIBUTE_CONTENT"));
+				log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","ATTRIBUTE_CONTENT"));
 		}
 		
 		
@@ -194,7 +196,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 		 }
 		 catch (Exception e)
 		 { 
-			throw new KettleException(Messages.getString("LDIFInput.Exception.UnableToReadFile",data.file.toString()), e);
+			throw new KettleException(BaseMessages.getString(PKG, "LDIFInput.Exception.UnableToReadFile",data.file.toString()), e);
 		 }
 		 
 		return outputRowData;
@@ -232,7 +234,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 	        }
 			else
 			{
-				logError(Messages.getString("LDIFInput.ErrorInStepRunning",e.getMessage())); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "LDIFInput.ErrorInStepRunning",e.getMessage())); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -255,7 +257,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 			{
 			    if (data.filenr>=data.files.nrOfFiles()) // finished processing!
 	            {
-	            	if (log.isDetailed()) logDetailed(Messages.getString("LDIFInput.Log.FinishedProcessing"));
+	            	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.FinishedProcessing"));
 	                return false;
 	            }
 	            
@@ -270,7 +272,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 				data.readrow=getRow();     // Get row from input rowset & set row busy!
 				if (data.readrow==null)
 			    {
-					if (log.isDetailed()) logDetailed(Messages.getString("LDIFInput.Log.FinishedProcessing"));
+					if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.FinishedProcessing"));
 			         return false;
 			    }
 				
@@ -299,8 +301,8 @@ public class LDIFInput extends BaseStep implements StepInterface
 					// Check is filename field is provided
 					if (Const.isEmpty(meta.getDynamicFilenameField()))
 					{
-						logError(Messages.getString("LDIFInput.Log.NoField"));
-						throw new KettleException(Messages.getString("LDIFInput.Log.NoField"));
+						logError(BaseMessages.getString(PKG, "LDIFInput.Log.NoField"));
+						throw new KettleException(BaseMessages.getString(PKG, "LDIFInput.Log.NoField"));
 					}
 					
 					// cache the position of the field			
@@ -310,37 +312,37 @@ public class LDIFInput extends BaseStep implements StepInterface
 						if (data.indexOfFilenameField<0)
 						{
 							// The field is unreachable !
-							logError(Messages.getString("LDIFInput.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(Messages.getString("LDIFInput.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(BaseMessages.getString(PKG, "LDIFInput.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(BaseMessages.getString(PKG, "LDIFInput.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 	            	
 		        }// End if first
 				String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
-				if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("LDIFInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
+				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
 
 				data.file= KettleVFS.getFileObject(filename);
 			}
 						
 
-			if (log.isDetailed()) logDetailed(Messages.getString("LDIFInput.Log.OpeningFile", data.file.toString()));
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.OpeningFile", data.file.toString()));
     
 			if(meta.AddToResultFilename())
 			{
 				// Add this to the result file names...
 				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
-				resultFile.setComment(Messages.getString("LDIFInput.Log.FileAddedResult"));
+				resultFile.setComment(BaseMessages.getString(PKG, "LDIFInput.Log.FileAddedResult"));
 				addResultFile(resultFile);
 			}
 
 			data.InputLDIF = new LDIF(KettleVFS.getFilename(data.file));
 	
-	        if (log.isDetailed()) logDetailed(Messages.getString("LDIFInput.Log.FileOpened", data.file.toString()));
+	        if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.FileOpened", data.file.toString()));
 
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("LDIFInput.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
+			logError(BaseMessages.getString(PKG, "LDIFInput.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
 			stopAll();
 			setErrors(1);
 			return false;
@@ -399,7 +401,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 				data.files = meta.getFiles(this);
 				if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
 				{
-					logError(Messages.getString("LDIFInput.Log.NoFiles"));
+					logError(BaseMessages.getString(PKG, "LDIFInput.Log.NoFiles"));
 					return false;
 				}
 				try

@@ -111,6 +111,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -119,7 +120,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
-import org.pentaho.di.trans.steps.scriptvalues_mod.Messages;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesAddedFunctions;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesMetaMod;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesModDummy;
@@ -138,7 +138,9 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogInterface
 {
-	private static final String[] YES_NO_COMBO = new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") };
+	private static Class<?> PKG = ScriptValuesMetaMod.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+	private static final String[] YES_NO_COMBO = new String[] { BaseMessages.getString(PKG, "System.Combo.No"), BaseMessages.getString(PKG, "System.Combo.Yes") };
 	
 	private ModifyListener lsMod;
 	private SashForm     wSash;
@@ -298,14 +300,14 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("ScriptValuesDialogMod.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 		
 		// Filename line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("ScriptValuesDialogMod.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Stepname.Label")); //$NON-NLS-1$
 		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -336,7 +338,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		// Script line
 		wlScriptFunctions=new Label(wTop, SWT.NONE);
-		wlScriptFunctions.setText(Messages.getString("ScriptValuesDialogMod.JavascriptFunctions.Label")); //$NON-NLS-1$
+		wlScriptFunctions.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.JavascriptFunctions.Label")); //$NON-NLS-1$
 		props.setLook(wlScriptFunctions);
 		fdlScriptFunctions=new FormData();
 		fdlScriptFunctions.left = new FormAttachment(0, 0);
@@ -355,7 +357,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		// Script line
 		wlScript=new Label(wTop, SWT.NONE);
-		wlScript.setText(Messages.getString("ScriptValuesDialogMod.Javascript.Label")); //$NON-NLS-1$
+		wlScript.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Javascript.Label")); //$NON-NLS-1$
 		props.setLook(wlScript);
 		fdlScript=new FormData();
 		fdlScript.left = new FormAttachment(wTree, margin);
@@ -374,7 +376,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		folder.setLayoutData(fdScript);
 		
 		wlPosition=new Label(wTop, SWT.NONE);
-		wlPosition.setText(Messages.getString("ScriptValuesDialogMod.Position.Label")); //$NON-NLS-1$
+		wlPosition.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Position.Label")); //$NON-NLS-1$
 		props.setLook(wlPosition);
 		fdlPosition=new FormData();
 		fdlPosition.left  = new FormAttachment(wTree, margin);
@@ -383,7 +385,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		wlPosition.setLayoutData(fdlPosition);
 		
 		Label wlCompatible = new Label(wTop, SWT.NONE);
-		wlCompatible.setText(Messages.getString("ScriptValuesDialogMod.Compatible.Label")); //$NON-NLS-1$
+		wlCompatible.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Compatible.Label")); //$NON-NLS-1$
 		props.setLook(wlCompatible);
 		FormData fdlCompatible = new FormData();
 		fdlCompatible.left  = new FormAttachment(wTree, margin);
@@ -391,7 +393,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		fdlCompatible.top   = new FormAttachment(wlPosition, margin);
 		wlCompatible.setLayoutData(fdlCompatible);
 		wCompatible = new Button(wTop, SWT.CHECK);
-		wCompatible.setToolTipText(Messages.getString("ScriptValuesDialogMod.Compatible.Tooltip")); 
+		wCompatible.setToolTipText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Compatible.Tooltip")); 
 		props.setLook(wCompatible);
 		FormData fdCompatible = new FormData();
 		fdCompatible.left  = new FormAttachment(wlCompatible, margin);
@@ -435,7 +437,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		wSeparator.setLayoutData(fdSeparator);
 		
 		wlFields=new Label(wBottom, SWT.NONE);
-		wlFields.setText(Messages.getString("ScriptValuesDialogMod.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Fields.Label")); //$NON-NLS-1$
 		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -446,12 +448,12 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		ColumnInfo[] colinf=new ColumnInfo[]
            {
-    		 new ColumnInfo(Messages.getString("ScriptValuesDialogMod.ColumnInfo.Filename"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-    		 new ColumnInfo(Messages.getString("ScriptValuesDialogMod.ColumnInfo.RenameTo"),  ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
-    		 new ColumnInfo(Messages.getString("ScriptValuesDialogMod.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ), //$NON-NLS-1$
-    		 new ColumnInfo(Messages.getString("ScriptValuesDialogMod.ColumnInfo.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-    		 new ColumnInfo(Messages.getString("ScriptValuesDialogMod.ColumnInfo.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-    		 new ColumnInfo(Messages.getString("ScriptValuesDialogMod.ColumnInfo.Replace"),  ColumnInfo.COLUMN_TYPE_CCOMBO,   YES_NO_COMBO ), //$NON-NLS-1$
+    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptValuesDialogMod.ColumnInfo.Filename"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptValuesDialogMod.ColumnInfo.RenameTo"),  ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
+    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptValuesDialogMod.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ), //$NON-NLS-1$
+    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptValuesDialogMod.ColumnInfo.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptValuesDialogMod.ColumnInfo.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptValuesDialogMod.ColumnInfo.Replace"),  ColumnInfo.COLUMN_TYPE_CCOMBO,   YES_NO_COMBO ), //$NON-NLS-1$
            };
 		
 		wFields=new TableView(transMeta, wBottom, 
@@ -486,13 +488,13 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		wSash.setWeights(new int[] {75,25});
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wVars=new Button(shell, SWT.PUSH);
-		wVars.setText(Messages.getString("ScriptValuesDialogMod.GetVariables.Button")); //$NON-NLS-1$
+		wVars.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.GetVariables.Button")); //$NON-NLS-1$
 		wTest=new Button(shell, SWT.PUSH);
-		wTest.setText(Messages.getString("ScriptValuesDialogMod.TestScript.Button")); //$NON-NLS-1$
+		wTest.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.TestScript.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 		
 		setButtonPositions(new Button[] { wOK, wCancel ,  wVars, wTest }, margin, null);
 
@@ -527,8 +529,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	        	event.doit=false;
 	        	if(cItem!=null && folder.getItemCount()>1){
 	        		MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES);
-	        		messageBox.setText(Messages.getString("ScriptValuesDialogMod.DeleteItem.Label"));
-	        		messageBox.setMessage(Messages.getString("ScriptValuesDialogMod.ConfirmDeleteItem.Label",cItem.getText()));
+	        		messageBox.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.DeleteItem.Label"));
+	        		messageBox.setMessage(BaseMessages.getString(PKG, "ScriptValuesDialogMod.ConfirmDeleteItem.Label",cItem.getText()));
 		            switch(messageBox.open()){
 		            	case SWT.YES:
 		            		modifyScriptTree(cItem,DELETE_ITEM);
@@ -547,7 +549,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		// Adding the Default Transform Scripts Item to the Tree
 		wTreeScriptsItem = new TreeItem(wTree, SWT.NULL);
 		wTreeScriptsItem.setImage(guiresource.getImageBol());
-		wTreeScriptsItem.setText(Messages.getString("ScriptValuesDialogMod.TransformScript.Label"));
+		wTreeScriptsItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.TransformScript.Label"));
 		
 		// Set the shell size, based upon previous time...
 		setSize();
@@ -559,21 +561,21 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		// Input Fields
 		iteminput = new TreeItem(wTree, SWT.NULL);
 		iteminput.setImage(imageInputFields);
-		iteminput.setText(Messages.getString("ScriptValuesDialogMod.InputFields.Label"));
+		iteminput.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.InputFields.Label"));
 		// Output Fields
 		itemoutput = new TreeItem(wTree, SWT.NULL);
 		itemoutput.setImage(imageOutputFields);
-		itemoutput.setText(Messages.getString("ScriptValuesDialogMod.OutputFields.Label"));
+		itemoutput.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.OutputFields.Label"));
 		
 		// Display waiting message for input
 		itemWaitFieldsIn = new TreeItem(iteminput, SWT.NULL);
-		itemWaitFieldsIn.setText(Messages.getString("ScriptValuesDialogMod.GettingFields.Label"));
+		itemWaitFieldsIn.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.GettingFields.Label"));
 		itemWaitFieldsIn.setForeground(guiresource.getColorDirectory());
         iteminput.setExpanded(true);
 		   
 		// Display waiting message for output
         itemWaitFieldsOut = new TreeItem(itemoutput, SWT.NULL);
-        itemWaitFieldsOut.setText(Messages.getString("ScriptValuesDialogMod.GettingFields.Label"));
+        itemWaitFieldsOut.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.GettingFields.Label"));
         itemWaitFieldsOut.setForeground(guiresource.getColorDirectory());
         itemoutput.setExpanded(true);
 		
@@ -595,7 +597,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -669,7 +671,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		}
 		StyledTextComp wScript=new StyledTextComp(item.getParent(), SWT.MULTI | SWT.LEFT |  SWT.H_SCROLL | SWT.V_SCROLL, item.getText());
 		if((strScript !=null) && strScript.length()>0) wScript.setText(strScript);
-		else wScript.setText(Messages.getString("ScriptValuesDialogMod.ScriptHere.Label")+Const.CR+Const.CR); 
+		else wScript.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.ScriptHere.Label")+Const.CR+Const.CR); 
 		item.setImage(imageInactiveScript);
  		props.setLook(wScript, Props.WIDGET_STYLE_FIXED);
 		
@@ -841,7 +843,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 			posnr--;
 			colnr++;
 		}
-		wlPosition.setText(Messages.getString("ScriptValuesDialogMod.Position.Label2")+linenr+", "+colnr); //$NON-NLS-1$ //$NON-NLS-2$
+		wlPosition.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Position.Label2")+linenr+", "+colnr); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	/**
@@ -964,8 +966,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		// Check if Active Script has set, otherwise Ask
 		if(getCTabItemByName(strActiveScript)==null){
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.CANCEL | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("ScriptValuesDialogMod.NoActiveScriptSet"));
-			mb.setText(Messages.getString("ScriptValuesDialogMod.ERROR.Label")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "ScriptValuesDialogMod.NoActiveScriptSet"));
+			mb.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.ERROR.Label")); //$NON-NLS-1$
 			switch(mb.open()){
 				case SWT.OK:
 					strActiveScript = folder.getItem(0).getText();
@@ -1102,8 +1104,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		            {
 		                if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
 		                {
-		                	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
-		                			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+		                	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
+		                			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true );
 		                	etd.setReadOnly();
 		                	etd.open();
 		                }
@@ -1115,11 +1117,11 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 
 			    return true;
 			} else {
-				throw new KettleException(Messages.getString("ScriptValuesDialogMod.Exception.CouldNotGetFields")); //$NON-NLS-1$
+				throw new KettleException(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Exception.CouldNotGetFields")); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e) {
-			new ErrorDialog(shell, Messages.getString("ScriptValuesDialogMod.TestFailed.DialogTitle"), Messages.getString("ScriptValuesDialogMod.TestFailed.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptValuesDialogMod.TestFailed.DialogTitle"), BaseMessages.getString(PKG, "ScriptValuesDialogMod.TestFailed.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
 		}
 		
@@ -1172,7 +1174,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
     					}
                     }
 				}catch(Exception e){
-					testException = new KettleException(Messages.getString("ScriptValuesDialogMod.CouldNotAddToContext",e.toString())); //$NON-NLS-1$
+					testException = new KettleException(BaseMessages.getString(PKG, "ScriptValuesDialogMod.CouldNotAddToContext",e.toString())); //$NON-NLS-1$
 					retval = false;
 				}
 				
@@ -1181,7 +1183,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 					Context.javaToJS(ScriptValuesAddedFunctions.class, jsscope);
 					((ScriptableObject)jsscope).defineFunctionProperties(jsFunctionList, ScriptValuesAddedFunctions.class, ScriptableObject.DONTENUM);
 				} catch (Exception ex) {
-					testException = new KettleException(Messages.getString("ScriptValuesDialogMod.CouldNotAddDefaultFunctions", ex.toString())); //$NON-NLS-1$
+					testException = new KettleException(BaseMessages.getString(PKG, "ScriptValuesDialogMod.CouldNotAddDefaultFunctions", ex.toString())); //$NON-NLS-1$
 					retval = false;
 				};
 
@@ -1192,7 +1194,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 					jsscope.put("ERROR_TRANSFORMATION", jsscope, Integer.valueOf(ERROR_TRANSFORMATION));
 					jsscope.put("CONTINUE_TRANSFORMATION", jsscope, Integer.valueOf(CONTINUE_TRANSFORMATION));
 				} catch (Exception ex) {
-					testException = new KettleException(Messages.getString("ScriptValuesDialogMod.CouldNotAddTransformationConstants",ex.toString())); //$NON-NLS-1$
+					testException = new KettleException(BaseMessages.getString(PKG, "ScriptValuesDialogMod.CouldNotAddTransformationConstants",ex.toString())); //$NON-NLS-1$
 					retval = false;
 				};
 				
@@ -1254,7 +1256,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	                }
 
 				}catch(Exception ev){
-					testException = new KettleException(Messages.getString("ScriptValuesDialogMod.CouldNotAddInputFields", ev.toString())); //$NON-NLS-1$
+					testException = new KettleException(BaseMessages.getString(PKG, "ScriptValuesDialogMod.CouldNotAddInputFields", ev.toString())); //$NON-NLS-1$
 					retval = false;
 				}
 				
@@ -1265,7 +1267,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 						/* Object startScript = */ jscx.evaluateString(jsscope, strStartScript, "trans_Start", 1, null);
 					}
 				}catch(Exception e){
-					testException = new KettleException(Messages.getString("ScriptValuesDialogMod.CouldProcessStartScript",e.toString())); //$NON-NLS-1$
+					testException = new KettleException(BaseMessages.getString(PKG, "ScriptValuesDialogMod.CouldProcessStartScript",e.toString())); //$NON-NLS-1$
 					retval = false;					
 				};
 				
@@ -1332,22 +1334,22 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				}
 				catch(EvaluatorException e){
 					String position = "("+e.lineNumber()+":"+e.columnNumber()+")"; // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$   
-					String message = Messages.getString("ScriptValuesDialogMod.Exception.CouldNotExecuteScript", position); //$NON-NLS-1$
+					String message = BaseMessages.getString(PKG, "ScriptValuesDialogMod.Exception.CouldNotExecuteScript", position); //$NON-NLS-1$
 					testException = new KettleException(message, e);
 					retval=false;
 				}
 				catch(JavaScriptException e){
 					String position = "("+e.lineNumber()+":"+e.columnNumber()+")"; // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$   
-					String message = Messages.getString("ScriptValuesDialogMod.Exception.CouldNotExecuteScript", position); //$NON-NLS-1$
+					String message = BaseMessages.getString(PKG, "ScriptValuesDialogMod.Exception.CouldNotExecuteScript", position); //$NON-NLS-1$
 					testException = new KettleException(message, e);
 					retval=false;
 				}
 				catch(Exception e){
-					testException = new KettleException(Messages.getString("ScriptValuesDialogMod.Exception.CouldNotExecuteScript2"), e); //$NON-NLS-1$
+					testException = new KettleException(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Exception.CouldNotExecuteScript2"), e); //$NON-NLS-1$
 					retval=false;
 				}
 			}else{
-				testException = new KettleException(Messages.getString("ScriptValuesDialogMod.Exception.CouldNotGetFields")); //$NON-NLS-1$
+				testException = new KettleException(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Exception.CouldNotGetFields")); //$NON-NLS-1$
 				retval=false;
 			}
 	
@@ -1355,17 +1357,17 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				if (retval){
 					if (!getvars){
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-						mb.setMessage(Messages.getString("ScriptValuesDialogMod.ScriptCompilationOK")+Const.CR); //$NON-NLS-1$
+						mb.setMessage(BaseMessages.getString(PKG, "ScriptValuesDialogMod.ScriptCompilationOK")+Const.CR); //$NON-NLS-1$
 						mb.setText("OK"); //$NON-NLS-1$
 						mb.open();
 					}
 				}else{
-					new ErrorDialog(shell, Messages.getString("ScriptValuesDialogMod.TestFailed.DialogTitle"), Messages.getString("ScriptValuesDialogMod.TestFailed.DialogMessage"), testException); //$NON-NLS-1$ //$NON-NLS-2$
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptValuesDialogMod.TestFailed.DialogTitle"), BaseMessages.getString(PKG, "ScriptValuesDialogMod.TestFailed.DialogMessage"), testException); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		}catch(KettleException ke){
 			retval=false;
-			new ErrorDialog(shell, Messages.getString("ScriptValuesDialogMod.TestFailed.DialogTitle"), Messages.getString("ScriptValuesDialogMod.TestFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptValuesDialogMod.TestFailed.DialogTitle"), BaseMessages.getString(PKG, "ScriptValuesDialogMod.TestFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}finally{
 			if (jscx!=null) Context.exit();
 		}
@@ -1380,7 +1382,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 
 		TreeItem item = new TreeItem(wTree, SWT.NULL);
 		item.setImage(guiresource.getImageBol());
-		item.setText(Messages.getString("ScriptValuesDialogMod.TansformConstant.Label"));
+		item.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.TansformConstant.Label"));
 		TreeItem itemT = new TreeItem(item, SWT.NULL);
 		itemT.setImage(imageArrowGreen);
 		itemT.setText("SKIP_TRANSFORMATION");
@@ -1400,33 +1402,33 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		item = new TreeItem(wTree, SWT.NULL);
 		item.setImage(guiresource.getImageBol());
-		item.setText(Messages.getString("ScriptValuesDialogMod.TransformFunctions.Label"));
+		item.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.TransformFunctions.Label"));
 		String strData = "";
 		
 		// Adding the Grouping Items to the Tree
 		TreeItem itemStringFunctionsGroup = new TreeItem(item, SWT.NULL);
 		itemStringFunctionsGroup.setImage(imageUnderGreen);
-		itemStringFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.StringFunctions.Label"));
+		itemStringFunctionsGroup.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.StringFunctions.Label"));
 		itemStringFunctionsGroup.setData("Function");
 		TreeItem itemNumericFunctionsGroup = new TreeItem(item, SWT.NULL);
 		itemNumericFunctionsGroup.setImage(imageUnderGreen);
-		itemNumericFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.NumericFunctions.Label"));
+		itemNumericFunctionsGroup.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.NumericFunctions.Label"));
 		itemNumericFunctionsGroup.setData("Function");
 		TreeItem itemDateFunctionsGroup = new TreeItem(item, SWT.NULL);
 		itemDateFunctionsGroup.setImage(imageUnderGreen);
-		itemDateFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.DateFunctions.Label"));
+		itemDateFunctionsGroup.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.DateFunctions.Label"));
 		itemDateFunctionsGroup.setData("Function");
 		TreeItem itemLogicFunctionsGroup = new TreeItem(item, SWT.NULL);
 		itemLogicFunctionsGroup.setImage(imageUnderGreen);
-		itemLogicFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.LogicFunctions.Label"));
+		itemLogicFunctionsGroup.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.LogicFunctions.Label"));
 		itemLogicFunctionsGroup.setData("Function");
 		TreeItem itemSpecialFunctionsGroup = new TreeItem(item, SWT.NULL);
 		itemSpecialFunctionsGroup.setImage(imageUnderGreen);
-		itemSpecialFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.SpecialFunctions.Label"));
+		itemSpecialFunctionsGroup.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.SpecialFunctions.Label"));
 		itemSpecialFunctionsGroup.setData("Function");
 		TreeItem itemFileFunctionsGroup = new TreeItem(item, SWT.NULL);
 		itemFileFunctionsGroup.setImage(imageUnderGreen);
-		itemFileFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.FileFunctions.Label"));
+		itemFileFunctionsGroup.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.FileFunctions.Label"));
 		itemFileFunctionsGroup.setData("Function");
 		
 		// Loading the Default delivered JScript Functions
@@ -1488,7 +1490,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 					//RowMetaInterface r = transMeta.getPrevStepFields(stepname);
 					if (rowPrevStepFields!=null){
 						//TreeItem item = new TreeItem(wTree, SWT.NULL);
-						//item.setText(Messages.getString("ScriptValuesDialogMod.OutputFields.Label"));
+						//item.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.OutputFields.Label"));
 						//String strItemToAdd="";
 
 						for (int i=0;i<rowPrevStepFields.size();i++){
@@ -1538,7 +1540,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 							}
 					}
 				/*}catch(KettleException ke){
-					new ErrorDialog(shell, Messages.getString("ScriptValuesDialogMod.FailedToGetFields.DialogTitle"), Messages.getString("ScriptValuesDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptValuesDialogMod.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ScriptValuesDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 				}*/
          }
        }
@@ -1548,7 +1550,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	/*
 	private void rebuildInputFieldsTree(){
 		try{
-			String itemName = Messages.getString("ScriptValuesDialogMod.InputFields.Label");
+			String itemName = BaseMessages.getString(PKG, "ScriptValuesDialogMod.InputFields.Label");
 			
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
 			if (r!=null){
@@ -1588,7 +1590,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 					}
 			}
 		}catch(KettleException ke){
-			new ErrorDialog(shell, Messages.getString("ScriptValuesDialogMod.FailedToGetFields.DialogTitle"), Messages.getString("ScriptValuesDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptValuesDialogMod.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ScriptValuesDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}*/
 
@@ -1687,7 +1689,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	private void buildingFolderMenu(){
 		//styledTextPopupmenu = new Menu(, SWT.POP_UP);
 		MenuItem addNewItem = new MenuItem(cMenu, SWT.PUSH);
-		addNewItem.setText(Messages.getString("ScriptValuesDialogMod.AddNewTab"));
+		addNewItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.AddNewTab"));
 		addNewItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				addCtab("","", ADD_BLANK);
@@ -1695,7 +1697,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		});
 		
 		MenuItem copyItem = new MenuItem(cMenu, SWT.PUSH);
-		copyItem.setText(Messages.getString("ScriptValuesDialogMod.AddCopy"));
+		copyItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.AddCopy"));
 		copyItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();
@@ -1706,7 +1708,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		new MenuItem(cMenu, SWT.SEPARATOR);
 		
 		MenuItem setActiveScriptItem = new MenuItem(cMenu, SWT.PUSH);
-		setActiveScriptItem.setText(Messages.getString("ScriptValuesDialogMod.SetTransformScript"));
+		setActiveScriptItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.SetTransformScript"));
 		setActiveScriptItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();
@@ -1727,7 +1729,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		});
 		
 		MenuItem setStartScriptItem = new MenuItem(cMenu, SWT.PUSH);
-		setStartScriptItem.setText(Messages.getString("ScriptValuesDialogMod.SetStartScript"));
+		setStartScriptItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.SetStartScript"));
 		setStartScriptItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();
@@ -1748,7 +1750,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		});
 		
 		MenuItem setEndScriptItem = new MenuItem(cMenu, SWT.PUSH);
-		setEndScriptItem.setText(Messages.getString("ScriptValuesDialogMod.SetEndScript"));
+		setEndScriptItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.SetEndScript"));
 		setEndScriptItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();
@@ -1769,7 +1771,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		});
 		new MenuItem(cMenu, SWT.SEPARATOR);
 		MenuItem setRemoveScriptItem = new MenuItem(cMenu, SWT.PUSH);
-		setRemoveScriptItem.setText(Messages.getString("ScriptValuesDialogMod.RemoveScriptType"));
+		setRemoveScriptItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.RemoveScriptType"));
 		setRemoveScriptItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();
@@ -1787,7 +1789,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	private void buildingTreeMenu(){
 		//styledTextPopupmenu = new Menu(, SWT.POP_UP);
 		MenuItem addDeleteItem = new MenuItem(tMenu, SWT.PUSH);
-		addDeleteItem.setText(Messages.getString("ScriptValuesDialogMod.Delete.Label"));
+		addDeleteItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Delete.Label"));
 		addDeleteItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				if (wTree.getSelectionCount()<=0) return;
@@ -1795,8 +1797,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				TreeItem tItem = wTree.getSelection()[0];
 		        if(tItem!=null){
 		        	MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES);
-		            messageBox.setText(Messages.getString("ScriptValuesDialogMod.DeleteItem.Label"));
-		            messageBox.setMessage(Messages.getString("ScriptValuesDialogMod.ConfirmDeleteItem.Label",tItem.getText()));
+		            messageBox.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.DeleteItem.Label"));
+		            messageBox.setMessage(BaseMessages.getString(PKG, "ScriptValuesDialogMod.ConfirmDeleteItem.Label",tItem.getText()));
 		            switch(messageBox.open()){
 		            	case SWT.YES:
 				        	modifyCTabItem(tItem,DELETE_ITEM,"");
@@ -1809,7 +1811,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		});
 		
 		MenuItem renItem = new MenuItem(tMenu, SWT.PUSH);
-		renItem.setText(Messages.getString("ScriptValuesDialogMod.Rename.Label"));
+		renItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Rename.Label"));
 		renItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				renameFunction(wTree.getSelection()[0]);
@@ -1818,7 +1820,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		new MenuItem(tMenu, SWT.SEPARATOR);
 		MenuItem helpItem = new MenuItem(tMenu, SWT.PUSH);
-		helpItem.setText(Messages.getString("ScriptValuesDialogMod.Sample.Label"));
+		helpItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Sample.Label"));
 		helpItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				String strFunctionName = wTree.getSelection()[0].getText();

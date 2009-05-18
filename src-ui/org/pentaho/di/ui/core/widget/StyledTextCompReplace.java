@@ -38,11 +38,13 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 
 public class StyledTextCompReplace extends org.eclipse.swt.widgets.Dialog {
 
+	private static Class<?> PKG = StyledTextCompReplace.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private Shell sShell = null;
 	private Text searchText;
@@ -70,7 +72,7 @@ public void open() {
 		Shell parent = getParent();
 		sShell = new Shell(parent, SWT.DIALOG_TRIM | SWT.NO_REDRAW_RESIZE | SWT.APPLICATION_MODAL  );
 		sShell.setImage(GUIResource.getInstance().getImageSpoon());
-		sShell.setText(Messages.getString("Widget.Styled.CompReplace.Replace"));
+		sShell.setText(BaseMessages.getString(PKG, "Widget.Styled.CompReplace.Replace"));
 		sShell.setSize(new Point(351, 178));
 		FormLayout formLayout = new FormLayout ();
 		sShell.setLayout(formLayout);
@@ -90,21 +92,21 @@ public void open() {
 		replaceText.setLayoutData(frmData);
 
 		Label lblFind = new Label(sShell,SWT.LEFT);
-		lblFind.setText(Messages.getString("Widget.Styled.CompReplace.Find"));
+		lblFind.setText(BaseMessages.getString(PKG, "Widget.Styled.CompReplace.Find"));
 		frmData = new FormData();
 		frmData.right = new FormAttachment(searchText,  -8);
 		frmData.top  = new FormAttachment(12, 0);
 		lblFind.setLayoutData(frmData);
 
 		Label lblReplace = new Label(sShell,SWT.LEFT);
-		lblReplace.setText(Messages.getString("Widget.Styled.CompReplace.Replace"));
+		lblReplace.setText(BaseMessages.getString(PKG, "Widget.Styled.CompReplace.Replace"));
 		frmData = new FormData();
 		frmData.right = new FormAttachment(replaceText,  -8);
 		frmData.top  = new FormAttachment(replaceText, -15);
 		lblReplace.setLayoutData(frmData);
 		
 		btnNext = new Button(sShell,SWT.PUSH);
-		btnNext.setText(Messages.getString("Widget.Styled.CompReplace.FindNext"));
+		btnNext.setText(BaseMessages.getString(PKG, "Widget.Styled.CompReplace.FindNext"));
 		btnNext.setEnabled(false);
 		frmData = new FormData();
 		frmData.left = new FormAttachment(searchText,  7);
@@ -114,7 +116,7 @@ public void open() {
 		btnNext.setLayoutData(frmData);
 		
 		btnReplace = new Button(sShell,SWT.PUSH);
-		btnReplace.setText(Messages.getString("Widget.Styled.CompReplace.Replace"));
+		btnReplace.setText(BaseMessages.getString(PKG, "Widget.Styled.CompReplace.Replace"));
 		btnReplace.setEnabled(false);
 		frmData = new FormData();
 		frmData.left = new FormAttachment(searchText,  7);
@@ -124,7 +126,7 @@ public void open() {
 		btnReplace.setLayoutData(frmData);
 		
 		btnReplaceAll = new Button(sShell,SWT.PUSH);
-		btnReplaceAll.setText(Messages.getString("Widget.Styled.CompReplace.ReplaceAll"));
+		btnReplaceAll.setText(BaseMessages.getString(PKG, "Widget.Styled.CompReplace.ReplaceAll"));
 		btnReplaceAll.setEnabled(false);
 		frmData = new FormData();
 		frmData.left = new FormAttachment(searchText,  7);
@@ -134,7 +136,7 @@ public void open() {
 		btnReplaceAll.setLayoutData(frmData);
 		
 		btnCancel = new Button(sShell,SWT.PUSH);
-		btnCancel.setText(Messages.getString("Widget.Styled.CompReplace.Close"));
+		btnCancel.setText(BaseMessages.getString(PKG, "Widget.Styled.CompReplace.Close"));
 		frmData = new FormData();
 		frmData.left = new FormAttachment(searchText,  7);
 		frmData.width = 81;
@@ -143,7 +145,7 @@ public void open() {
 		btnCancel.setLayoutData(frmData);
 		
 		btnIgnoreCase = new Button(sShell, SWT.CHECK);
-		btnIgnoreCase.setText(Messages.getString("Widget.Styled.CompReplace.CaseSensitive"));
+		btnIgnoreCase.setText(BaseMessages.getString(PKG, "Widget.Styled.CompReplace.CaseSensitive"));
 		frmData = new FormData();
 		frmData.left = new FormAttachment(5,0);
 		frmData.top  = new FormAttachment(72, 0);
@@ -154,8 +156,8 @@ public void open() {
 			public void handleEvent(Event e) {
 				if(!findText()){
 					MessageBox messageBox = new MessageBox(sShell, SWT.ICON_INFORMATION | SWT.OK);
-	        		messageBox.setText(Messages.getString("Widget.Styled.CompReplace.FindItem"));
-	        		messageBox.setMessage(Messages.getString("Widget.Styled.CompReplace.ItemNotFound",searchText.getText()));
+	        		messageBox.setText(BaseMessages.getString(PKG, "Widget.Styled.CompReplace.FindItem"));
+	        		messageBox.setMessage(BaseMessages.getString(PKG, "Widget.Styled.CompReplace.ItemNotFound",searchText.getText()));
 	        		messageBox.open();
 				}
 			}
@@ -166,8 +168,8 @@ public void open() {
 				if(text.getSelectionCount()<1){
 					if(!findText()){
 						MessageBox messageBox = new MessageBox(sShell, SWT.ICON_INFORMATION | SWT.OK);
-						messageBox.setText(Messages.getString("Widget.Styled.CompReplace.FindItem"));
-						messageBox.setMessage(Messages.getString("Widget.Styled.CompReplace.ItemNotFound",searchText.getText()));
+						messageBox.setText(BaseMessages.getString(PKG, "Widget.Styled.CompReplace.FindItem"));
+						messageBox.setMessage(BaseMessages.getString(PKG, "Widget.Styled.CompReplace.ItemNotFound",searchText.getText()));
 						messageBox.open();
 					}
 				}else{

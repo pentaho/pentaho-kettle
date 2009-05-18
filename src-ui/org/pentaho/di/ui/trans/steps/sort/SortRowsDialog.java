@@ -48,24 +48,26 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.sort.Messages;
 import org.pentaho.di.trans.steps.sort.SortRowsMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.CheckBoxVar;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 
 
 public class SortRowsDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = SortRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlSortDir;
 	private Button       wbSortDir;
 	private TextVar      wSortDir;
@@ -129,14 +131,14 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("SortRowsDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "SortRowsDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -155,7 +157,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Temp directory for sorting
 		wlSortDir=new Label(shell, SWT.RIGHT);
-		wlSortDir.setText(Messages.getString("SortRowsDialog.SortDir.Label"));
+		wlSortDir.setText(BaseMessages.getString(PKG, "SortRowsDialog.SortDir.Label"));
  		props.setLook(wlSortDir);
 		fdlSortDir=new FormData();
 		fdlSortDir.left = new FormAttachment(0, 0);
@@ -165,7 +167,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 		wbSortDir=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbSortDir);
-		wbSortDir.setText(Messages.getString("System.Button.Browse"));
+		wbSortDir.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbSortDir=new FormData();
 		fdbSortDir.right= new FormAttachment(100, 0);
 		fdbSortDir.top  = new FormAttachment(wStepname, margin);
@@ -207,7 +209,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
         // Prefix of temporary file
 		wlPrefix=new Label(shell, SWT.RIGHT);
-		wlPrefix.setText(Messages.getString("SortRowsDialog.Prefix.Label"));
+		wlPrefix.setText(BaseMessages.getString(PKG, "SortRowsDialog.Prefix.Label"));
  		props.setLook(wlPrefix);
 		fdlPrefix=new FormData();
 		fdlPrefix.left = new FormAttachment(0, 0);
@@ -226,7 +228,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
         // Maximum number of lines to keep in memory before using temporary files
         wlSortSize=new Label(shell, SWT.RIGHT);
-        wlSortSize.setText(Messages.getString("SortRowsDialog.SortSize.Label"));
+        wlSortSize.setText(BaseMessages.getString(PKG, "SortRowsDialog.SortSize.Label"));
         props.setLook(wlSortSize);
         fdlSortSize=new FormData();
         fdlSortSize.left = new FormAttachment(0, 0);
@@ -244,8 +246,8 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
         // Free Memory to keep
         wlFreeMemory=new Label(shell, SWT.RIGHT);
-        wlFreeMemory.setText(Messages.getString("SortRowsDialog.FreeMemory.Label"));
-        wlFreeMemory.setToolTipText(Messages.getString("SortRowsDialog.FreeMemory.ToolTip"));
+        wlFreeMemory.setText(BaseMessages.getString(PKG, "SortRowsDialog.FreeMemory.Label"));
+        wlFreeMemory.setToolTipText(BaseMessages.getString(PKG, "SortRowsDialog.FreeMemory.ToolTip"));
         props.setLook(wlFreeMemory);
         fdlFreeMemory=new FormData();
         fdlFreeMemory.left = new FormAttachment(0, 0);
@@ -253,7 +255,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
         fdlFreeMemory.top  = new FormAttachment(wSortSize, margin*2);
         wlFreeMemory.setLayoutData(fdlFreeMemory);
         wFreeMemory=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-        wFreeMemory.setToolTipText(Messages.getString("SortRowsDialog.FreeMemory.ToolTip"));
+        wFreeMemory.setToolTipText(BaseMessages.getString(PKG, "SortRowsDialog.FreeMemory.ToolTip"));
         props.setLook(wFreeMemory);
         wFreeMemory.addModifyListener(lsMod);
         fdFreeMemory=new FormData();
@@ -264,7 +266,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
         // Using compression for temporary files?
         wlCompress=new Label(shell, SWT.RIGHT);
-        wlCompress.setText(Messages.getString("SortRowsDialog.Compress.Label"));
+        wlCompress.setText(BaseMessages.getString(PKG, "SortRowsDialog.Compress.Label"));
         props.setLook(wlCompress);
         fdlCompress=new FormData();
         fdlCompress.left = new FormAttachment(0, 0);
@@ -290,7 +292,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
         // Using compression for temporary files?
         wlUniqueRows=new Label(shell, SWT.RIGHT);
-        wlUniqueRows.setText(Messages.getString("SortRowsDialog.UniqueRows.Label"));
+        wlUniqueRows.setText(BaseMessages.getString(PKG, "SortRowsDialog.UniqueRows.Label"));
         props.setLook(wlUniqueRows);
         fdlUniqueRows=new FormData();
         fdlUniqueRows.left = new FormAttachment(0, 0);
@@ -298,7 +300,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
         fdlUniqueRows.top  = new FormAttachment(wCompress, margin);
         wlUniqueRows.setLayoutData(fdlUniqueRows);
         wUniqueRows=new Button(shell, SWT.CHECK);
-        wUniqueRows.setToolTipText(Messages.getString("SortRowsDialog.UniqueRows.Tooltip"));
+        wUniqueRows.setToolTipText(BaseMessages.getString(PKG, "SortRowsDialog.UniqueRows.Tooltip"));
         props.setLook(wUniqueRows);
         fdUniqueRows=new FormData();
         fdUniqueRows.left  = new FormAttachment(middle, 0);
@@ -308,17 +310,17 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("System.Button.GetFields"));
+		wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wCancel , wGet }, margin, null);
 
         // Table with fields to sort and sort direction
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("SortRowsDialog.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "SortRowsDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -328,9 +330,9 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		final int FieldsRows=input.getFieldName().length;
 		
 		colinf=new ColumnInfo[] {
-				new ColumnInfo(Messages.getString("SortRowsDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-				new ColumnInfo(Messages.getString("SortRowsDialog.Ascending.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") } ),
-				new ColumnInfo(Messages.getString("SortRowsDialog.CaseInsensitive.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") } ),
+				new ColumnInfo(BaseMessages.getString(PKG, "SortRowsDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+				new ColumnInfo(BaseMessages.getString(PKG, "SortRowsDialog.Ascending.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") } ),
+				new ColumnInfo(BaseMessages.getString(PKG, "SortRowsDialog.CaseInsensitive.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") } ),
 			};
 		
 		wFields=new TableView(transMeta, shell, 
@@ -371,7 +373,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -462,8 +464,8 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 			TableItem ti = new TableItem(table, SWT.NONE);
 			ti.setText(0, ""+(i+1));
 			ti.setText(1, input.getFieldName()[i]);
-			ti.setText(2, input.getAscending()[i]?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
-			ti.setText(3, input.getCaseSensitive()[i]?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
+			ti.setText(2, input.getAscending()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
+			ti.setText(3, input.getCaseSensitive()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
 		}
 
         wFields.setRowNums();
@@ -503,8 +505,8 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		{
 			TableItem ti = wFields.getNonEmpty(i);
 			input.getFieldName()[i] = ti.getText(1);
-			input.getAscending()[i] = Messages.getString("System.Combo.Yes").equalsIgnoreCase(ti.getText(2));
-			input.getCaseSensitive()[i] = Messages.getString("System.Combo.Yes").equalsIgnoreCase(ti.getText(3));
+			input.getAscending()[i] = BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(ti.getText(2));
+			input.getCaseSensitive()[i] = BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(ti.getText(3));
 		}
 		
 		dispose();
@@ -521,7 +523,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
                     {
                         public boolean tableItemInserted(TableItem tableItem, ValueMetaInterface v)
                         {
-                            tableItem.setText(2, Messages.getString("System.Combo.Yes"));
+                            tableItem.setText(2, BaseMessages.getString(PKG, "System.Combo.Yes"));
                             return true;
                         } 
                     };
@@ -530,7 +532,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("System.Dialog.GetFieldsFailed.Title"), Messages.getString("System.Dialog.GetFieldsFailed.Message"), ke);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Title"), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"), ke);
 		}
 
 	}

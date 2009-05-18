@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GenericDatabaseMeta;
-import org.pentaho.di.ui.core.database.wizard.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
 
@@ -42,6 +42,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class CreateDatabaseWizardPageGeneric extends WizardPage
 {
+	private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label    wlURL;
 	private Text     wURL;
 	private FormData fdlURL, fdURL;
@@ -59,8 +61,8 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle(Messages.getString("CreateDatabaseWizardPageGeneric.DialogTitle")); //$NON-NLS-1$
-		setDescription(Messages.getString("CreateDatabaseWizardPageGeneric.DialogMessage")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.DialogTitle")); //$NON-NLS-1$
+		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.DialogMessage")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -81,7 +83,7 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage
 
 		// URL
 		wlURL = new Label(composite, SWT.RIGHT);
-		wlURL.setText(Messages.getString("CreateDatabaseWizardPageGeneric.URL.Label")); //$NON-NLS-1$
+		wlURL.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.URL.Label")); //$NON-NLS-1$
  		props.setLook(wlURL);
 		fdlURL = new FormData();
 		fdlURL.top    = new FormAttachment(0, 0);
@@ -105,7 +107,7 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage
 		
 		// DRIVER CLASS
 		wlDriverClass = new Label(composite, SWT.RIGHT);
-		wlDriverClass.setText(Messages.getString("CreateDatabaseWizardPageGeneric.DriverClass.Label")); //$NON-NLS-1$
+		wlDriverClass.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.DriverClass.Label")); //$NON-NLS-1$
  		props.setLook(wlDriverClass);
 		fdlDriverClass = new FormData();
 		fdlDriverClass.top    = new FormAttachment(wURL, margin);
@@ -139,14 +141,14 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage
 		
 		if (url==null || driverClass==null)
 		{
-			setErrorMessage(Messages.getString("CreateDatabaseWizardPageGeneric.ErrorMessage.URLAndDriverClassRequired")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.ErrorMessage.URLAndDriverClassRequired")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage(Messages.getString("CreateDatabaseWizardPageGeneric.Message.Next")); //$NON-NLS-1$
+			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.Message.Next")); //$NON-NLS-1$
 			return true;
 		}
 

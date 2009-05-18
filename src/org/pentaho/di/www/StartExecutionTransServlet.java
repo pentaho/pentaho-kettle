@@ -24,11 +24,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 
 
 public class StartExecutionTransServlet extends HttpServlet
 {
+	private static Class<?> PKG = StartExecutionTransServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static final long serialVersionUID = 3634806745372015720L;
     public static final String CONTEXT_PATH = "/kettle/startExec";
     private static LogWriter log = LogWriter.getInstance();
@@ -60,7 +63,7 @@ public class StartExecutionTransServlet extends HttpServlet
             response.setContentType("text/html");
             out.println("<HTML>");
             out.println("<HEAD>");
-            out.println("<TITLE>" + Messages.getString("PrepareExecutionTransServlet.TransPrepareExecution") +"</TITLE>");
+            out.println("<TITLE>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepareExecution") +"</TITLE>");
             out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">");
             out.println("</HEAD>");
             out.println("<BODY>");
@@ -95,7 +98,7 @@ public class StartExecutionTransServlet extends HttpServlet
                     else
                     {
                         out.println("<H1>"+message+"</H1>");
-                        out.println("<a href=\"/kettle/status\">"+ Messages.getString("TransStatusServlet.BackToStatusPage")+ "</a><p>");
+                        out.println("<a href=\"/kettle/status\">"+ BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage")+ "</a><p>");
                     }
                 }
             }
@@ -103,12 +106,12 @@ public class StartExecutionTransServlet extends HttpServlet
             {
                 if (useXML)
                 {
-                    out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("TransStatusServlet.Log.CoundNotFindSpecTrans",transName)));
+                    out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans",transName)));
                 }
                 else
                 {
-                    out.println("<H1>" + Messages.getString("TransStatusServlet.Log.CoundNotFindTrans",transName) + "</H1>");
-                    out.println("<a href=\"/kettle/status\">"+ Messages.getString("TransStatusServlet.BackToStatusPage")+"</a><p>");
+                    out.println("<H1>" + BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindTrans",transName) + "</H1>");
+                    out.println("<a href=\"/kettle/status\">"+ BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage")+"</a><p>");
                 }
             }
         }

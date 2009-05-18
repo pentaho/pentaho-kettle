@@ -23,6 +23,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -40,6 +41,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class ExecSQL extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = ExecSQLMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private ExecSQLMeta meta;
 
 	private ExecSQLData data;
@@ -120,8 +123,8 @@ public class ExecSQL extends BaseStep implements StepInterface
 				data.argumentIndexes[i] = this.getInputRowMeta().indexOfValue(meta.getArguments()[i]);
 				if (data.argumentIndexes[i] < 0)
 				{
-					logError(Messages.getString("ExecSQL.Log.ErrorFindingField") + meta.getArguments()[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(Messages.getString("ExecSQL.Exception.CouldNotFindField", meta.getArguments()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "ExecSQL.Log.ErrorFindingField") + meta.getArguments()[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "ExecSQL.Exception.CouldNotFindField", meta.getArguments()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 
@@ -167,7 +170,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 		else  {
 			sql = data.sql;
 		}
-		if (log.isRowLevel()) logRowlevel(Messages.getString("ExecSQL.Log.ExecutingSQLScript") + Const.CR + data.sql); //$NON-NLS-1$
+		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "ExecSQL.Log.ExecutingSQLScript") + Const.CR + data.sql); //$NON-NLS-1$
 		
 		boolean sendToErrorRow=false;
 		String errorMessage = null;
@@ -187,7 +190,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 	
 			if (checkFeedback(getLinesWritten()))
 			{
-				if(log.isBasic()) logBasic(Messages.getString("ExecSQL.Log.LineNumber") + getLinesWritten()); //$NON-NLS-1$
+				if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ExecSQL.Log.LineNumber") + getLinesWritten()); //$NON-NLS-1$
 			}
 		}catch(KettleException e)
 		{
@@ -198,7 +201,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 	        }
 	        else
 	        {
-				throw new KettleStepException(Messages.getString("ExecSQL.Log.ErrorInStep"), e); //$NON-NLS-1$
+				throw new KettleStepException(BaseMessages.getString(PKG, "ExecSQL.Log.ErrorInStep"), e); //$NON-NLS-1$
 	        }
 			 
 			 if (sendToErrorRow)
@@ -216,7 +219,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 		meta = (ExecSQLMeta) smi;
 		data = (ExecSQLData) sdi;
 
-		if(log.isBasic()) logBasic(Messages.getString("ExecSQL.Log.FinishingReadingQuery")); //$NON-NLS-1$
+		if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ExecSQL.Log.FinishingReadingQuery")); //$NON-NLS-1$
 
 		if (data.db!=null) {
         	data.db.disconnect();
@@ -263,7 +266,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 				}
 
 				if (log.isDetailed())
-					logDetailed(Messages.getString("ExecSQL.Log.ConnectedToDB")); //$NON-NLS-1$
+					logDetailed(BaseMessages.getString(PKG, "ExecSQL.Log.ConnectedToDB")); //$NON-NLS-1$
 
 		        if (meta.isReplaceVariables()) 
 		        {
@@ -283,7 +286,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 				return true;
 			} catch (KettleException e)
 			{
-				logError(Messages.getString("ExecSQL.Log.ErrorOccurred") + e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "ExecSQL.Log.ErrorOccurred") + e.getMessage()); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 			}

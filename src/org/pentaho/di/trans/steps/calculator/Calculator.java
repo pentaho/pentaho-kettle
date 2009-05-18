@@ -23,6 +23,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -40,6 +41,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class Calculator extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = CalculatorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public class FieldIndexes
     {
         public int indexName;
@@ -94,12 +97,12 @@ public class Calculator extends BaseStep implements StepInterface
                     if (data.fieldIndexes[i].indexName<0)
                     {
                         // Nope: throw an exception
-                        throw new KettleStepException(Messages.getString("Calculator.Error.UnableFindField",function.getFieldName(),""+(i+1)));
+                        throw new KettleStepException(BaseMessages.getString(PKG, "Calculator.Error.UnableFindField",function.getFieldName(),""+(i+1)));
                     }
                 }
                 else
                 {
-                    throw new KettleStepException(Messages.getString("Calculator.Error.NoNameField",""+(i+1)));
+                    throw new KettleStepException(BaseMessages.getString(PKG, "Calculator.Error.NoNameField",""+(i+1)));
                 }
 
                 if (!Const.isEmpty(function.getFieldA())) 
@@ -157,7 +160,7 @@ public class Calculator extends BaseStep implements StepInterface
             }
         }
 
-        if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("Calculator.Log.ReadRow")+getLinesRead()+" : "+getInputRowMeta().getString(r));
+        if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "Calculator.Log.ReadRow")+getLinesRead()+" : "+getInputRowMeta().getString(r));
         boolean sendToErrorRow=false;
         String errorMessage = null;
         
@@ -168,7 +171,7 @@ public class Calculator extends BaseStep implements StepInterface
 	        if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+getLinesWritten()+" : "+getInputRowMeta().getString(r));
 	        if (checkFeedback(getLinesRead())) 
 	        {
-	        	if(log.isBasic()) logBasic(Messages.getString("Calculator.Log.Linenr",""+getLinesRead()));
+	        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "Calculator.Log.Linenr",""+getLinesRead()));
 	        }
         }
         catch(KettleException e)
@@ -180,8 +183,8 @@ public class Calculator extends BaseStep implements StepInterface
         	}
         	else
         	{
-	            logError(Messages.getString("Calculator.ErrorInStepRunning" + " : "+ e.getMessage()));
-	            throw new KettleStepException(Messages.getString("Calculator.ErrorInStepRunning"), e);
+	            logError(BaseMessages.getString(PKG, "Calculator.ErrorInStepRunning" + " : "+ e.getMessage()));
+	            throw new KettleStepException(BaseMessages.getString(PKG, "Calculator.ErrorInStepRunning"), e);
         	}
         	if (sendToErrorRow)
         	{
@@ -573,7 +576,7 @@ public class Calculator extends BaseStep implements StepInterface
                 }
                 break;
                 default:
-                    throw new KettleValueException(Messages.getString("Calculator.Log.UnknownCalculationType")+fn.getCalcType());
+                    throw new KettleValueException(BaseMessages.getString(PKG, "Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }
                 
                 // If we don't have a target data type, throw an error.
@@ -581,7 +584,7 @@ public class Calculator extends BaseStep implements StepInterface
                 //
                 if (targetMeta.getType()==ValueMetaInterface.TYPE_NONE)
                 {
-                    throw new KettleValueException(Messages.getString("Calculator.Log.NoType")+(i+1)+" : "+fn.getFieldName()+" = "+fn.getCalcTypeDesc()+" / "+fn.getCalcTypeLongDesc());
+                    throw new KettleValueException(BaseMessages.getString(PKG, "Calculator.Log.NoType")+(i+1)+" : "+fn.getFieldName()+" = "+fn.getCalcTypeDesc()+" / "+fn.getCalcTypeLongDesc());
                 }
                 
                 // Convert the data to the correct target data type.

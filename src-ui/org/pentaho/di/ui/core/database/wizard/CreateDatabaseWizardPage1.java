@@ -29,8 +29,7 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPageJDBC;
-import org.pentaho.di.ui.core.database.wizard.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
 
@@ -43,6 +42,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class CreateDatabaseWizardPage1 extends WizardPage
 {
+	private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label    wlName;
 	private Text     wName;
 	private FormData fdlName, fdName;
@@ -66,8 +67,8 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		this.info = info;
 		this.databases = databases;
 		
-		setTitle(Messages.getString("CreateDatabaseWizardPage1.DialogTitle")); //$NON-NLS-1$
-		setDescription(Messages.getString("CreateDatabaseWizardPage1.DialogMessage")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DialogTitle")); //$NON-NLS-1$
+		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DialogMessage")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -87,7 +88,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		composite.setLayout(compLayout);
 
 		wlName = new Label(composite, SWT.RIGHT);
-		wlName.setText(Messages.getString("CreateDatabaseWizardPage1.DBName.Label")); //$NON-NLS-1$
+		wlName.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DBName.Label")); //$NON-NLS-1$
  		props.setLook(wlName);
 		fdlName = new FormData();
 		fdlName.left   = new FormAttachment(0,0);
@@ -110,7 +111,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		);
 		
 		wlDBType = new Label(composite, SWT.RIGHT);
-		wlDBType.setText(Messages.getString("CreateDatabaseWizardPage1.DBType.Label")); //$NON-NLS-1$
+		wlDBType.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DBType.Label")); //$NON-NLS-1$
  		props.setLook(wlDBType);
 		fdlDBType = new FormData();
 		fdlDBType.left   = new FormAttachment(0, 0);
@@ -161,7 +162,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 			);
 		
 		wlAccType = new Label(composite, SWT.RIGHT);
-		wlAccType.setText(Messages.getString("CreateDatabaseWizardPage1.DBAccessType.Label")); //$NON-NLS-1$
+		wlAccType.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DBAccessType.Label")); //$NON-NLS-1$
  		props.setLook(wlAccType);
 		fdlAccType = new FormData();
 		fdlAccType.left   = new FormAttachment(0, 0);
@@ -219,19 +220,19 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		
 		if (name==null || dbType==null || acType==null)
 		{
-			setErrorMessage(Messages.getString("CreateDatabaseWizardPage1.ErrorMessage.InvalidInput")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.ErrorMessage.InvalidInput")); //$NON-NLS-1$
 			return false;
 		}
 		if (name!=null && DatabaseMeta.findDatabase(databases, name)!=null)
 		{
-			setErrorMessage(Messages.getString("CreateDatabaseWizardPage1.ErrorMessage.DBNameExists",name)); //$NON-NLS-1$ //$NON-NLS-2$
+			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.ErrorMessage.DBNameExists",name)); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage(Messages.getString("CreateDatabaseWizardPage1.Message.Next")); //$NON-NLS-1$
+			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.Message.Next")); //$NON-NLS-1$
 			return true;
 		}
 	}	

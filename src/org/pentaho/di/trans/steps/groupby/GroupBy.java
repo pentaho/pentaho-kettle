@@ -31,6 +31,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -48,6 +49,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class GroupBy extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = GroupByMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private GroupByMeta meta;
 	private GroupByData data;
 	
@@ -102,7 +105,7 @@ public class GroupBy extends BaseStep implements StepInterface
 				data.subjectnrs[i] = data.inputRowMeta.indexOfValue(meta.getSubjectField()[i]);
 				if (data.subjectnrs[i]<0)
 				{
-					logError(Messages.getString("GroupBy.Log.AggregateSubjectFieldCouldNotFound",meta.getSubjectField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "GroupBy.Log.AggregateSubjectFieldCouldNotFound",meta.getSubjectField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -138,7 +141,7 @@ public class GroupBy extends BaseStep implements StepInterface
 				data.groupnrs[i] = data.inputRowMeta.indexOfValue(meta.getGroupField()[i]);
 				if (data.groupnrs[i]<0)
 				{
-					logError(Messages.getString("GroupBy.Log.GroupFieldCouldNotFound",meta.getGroupField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "GroupBy.Log.GroupFieldCouldNotFound",meta.getGroupField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -300,7 +303,7 @@ public class GroupBy extends BaseStep implements StepInterface
 
 		if (checkFeedback(getLinesRead())) 
 		{
-			if(log.isBasic()) logBasic(Messages.getString("GroupBy.LineNumber")+getLinesRead()); //$NON-NLS-1$
+			if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "GroupBy.LineNumber")+getLinesRead()); //$NON-NLS-1$
 		}
 			
 		return true;
@@ -663,7 +666,7 @@ public class GroupBy extends BaseStep implements StepInterface
                 }
                 catch(IOException e)
                 {
-                    throw new KettleFileException(Messages.getString("GroupBy.Exception.UnableToCreateTemporaryFile"), e); //$NON-NLS-1$
+                    throw new KettleFileException(BaseMessages.getString(PKG, "GroupBy.Exception.UnableToCreateTemporaryFile"), e); //$NON-NLS-1$
                 }
             }
             // OK, save the oldest rows to disk!
@@ -689,7 +692,7 @@ public class GroupBy extends BaseStep implements StepInterface
                 }
                 catch(IOException e)
                 {
-                    throw new KettleFileException(Messages.getString("GroupBy.Exception.UnableToReadBackRowFromTemporaryFile"), e); //$NON-NLS-1$
+                    throw new KettleFileException(BaseMessages.getString(PKG, "GroupBy.Exception.UnableToReadBackRowFromTemporaryFile"), e); //$NON-NLS-1$
                 }
             }
             
@@ -732,7 +735,7 @@ public class GroupBy extends BaseStep implements StepInterface
         }
         catch(IOException e)
         {
-            throw new KettleFileException(Messages.getString("GroupBy.Exception.UnableToCloseInputStream"), e); //$NON-NLS-1$
+            throw new KettleFileException(BaseMessages.getString(PKG, "GroupBy.Exception.UnableToCloseInputStream"), e); //$NON-NLS-1$
         }
     }
     
@@ -745,7 +748,7 @@ public class GroupBy extends BaseStep implements StepInterface
         }
         catch(IOException e)
         {
-            throw new KettleFileException(Messages.getString("GroupBy.Exception.UnableToCloseInputStream"), e); //$NON-NLS-1$
+            throw new KettleFileException(BaseMessages.getString(PKG, "GroupBy.Exception.UnableToCloseInputStream"), e); //$NON-NLS-1$
         }
     }
 

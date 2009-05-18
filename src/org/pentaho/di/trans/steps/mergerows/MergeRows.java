@@ -17,6 +17,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -34,6 +35,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class MergeRows extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = MergeRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static final String VALUE_IDENTICAL  = "identical"; //$NON-NLS-1$ 
     private static final String VALUE_CHANGED    = "changed"; //$NON-NLS-1$
     private static final String VALUE_NEW        = "new"; //$NON-NLS-1$
@@ -70,7 +73,7 @@ public class MergeRows extends BaseStep implements StepInterface
             }
             catch(KettleRowException e)
             {
-            	throw new KettleException(Messages.getString("MergeRows.Exception.InvalidLayoutDetected"), e);
+            	throw new KettleException(BaseMessages.getString(PKG, "MergeRows.Exception.InvalidLayoutDetected"), e);
             }            
 
             if (data.one!=null)
@@ -82,7 +85,7 @@ public class MergeRows extends BaseStep implements StepInterface
                     data.keyNrs[i] = data.oneRowSet.getRowMeta().indexOfValue(meta.getKeyFields()[i]);
                     if (data.keyNrs[i]<0)
                     {
-                        String message = Messages.getString("MergeRows.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
+                        String message = BaseMessages.getString(PKG, "MergeRows.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
                         logError(message);
                         throw new KettleStepException(message);
                     }
@@ -97,7 +100,7 @@ public class MergeRows extends BaseStep implements StepInterface
                     data.valueNrs[i] = data.twoRowSet.getRowMeta().indexOfValue(meta.getValueFields()[i]);
                     if (data.valueNrs[i]<0)
                     {
-                        String message = Messages.getString("MergeRows.Exception.UnableToFindFieldInReferenceStream",meta.getValueFields()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
+                        String message = BaseMessages.getString(PKG, "MergeRows.Exception.UnableToFindFieldInReferenceStream",meta.getValueFields()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
                         logError(message);
                         throw new KettleStepException(message);
                     }
@@ -105,7 +108,7 @@ public class MergeRows extends BaseStep implements StepInterface
             }
         }
 
-        if (log.isRowLevel()) logRowlevel(Messages.getString("MergeRows.Log.DataInfo",data.one+"")+data.two); //$NON-NLS-1$ //$NON-NLS-2$
+        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "MergeRows.Log.DataInfo",data.one+"")+data.two); //$NON-NLS-1$ //$NON-NLS-2$
 
         if (data.one==null && data.two==null)
         {
@@ -200,7 +203,7 @@ public class MergeRows extends BaseStep implements StepInterface
 
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(Messages.getString("MergeRows.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "MergeRows.LineNumber")+getLinesRead()); //$NON-NLS-1$
         }
 
 		return true;
@@ -218,7 +221,7 @@ public class MergeRows extends BaseStep implements StepInterface
         {
             if (meta.getReferenceStepName()!=null ^ meta.getCompareStepName()!=null)
             {
-                logError(Messages.getString("MergeRows.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "MergeRows.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
             }
             else
             {

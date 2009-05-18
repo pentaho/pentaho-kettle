@@ -17,7 +17,7 @@ import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
-import org.pentaho.di.ui.spoon.wizards.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * This wizard helps you create a transformation that copies a table from one database to another.
@@ -28,6 +28,8 @@ import org.pentaho.di.ui.spoon.wizards.Messages;
  */
 public class CopyTableWizard implements IWizard
 {
+    private static Class<?> PKG = CopyTableWizard.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public CopyTableWizard()
 	{
 		super();
@@ -117,7 +119,7 @@ public class CopyTableWizard implements IWizard
 	// Returns the window title string for this wizard. 
 	public String getWindowTitle() 
 	{
-		return Messages.getString("CopyTableWizard.DialogTitle"); //$NON-NLS-1$
+		return BaseMessages.getString(PKG, "CopyTableWizard.DialogTitle"); //$NON-NLS-1$
 	}
 	
 	// Returns whether help is available for this wizard. 

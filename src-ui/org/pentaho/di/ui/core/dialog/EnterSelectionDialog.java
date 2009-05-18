@@ -30,13 +30,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.ui.core.dialog.Messages;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.core.PropsUI;
 
 /**
  * Allows the user to make a selection from a list of values.
@@ -46,6 +46,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class EnterSelectionDialog extends Dialog
 {
+	private static Class<?> PKG = EnterSelectionDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlSelection;
 	private List         wSelection;
     private FormData     fdlSelection, fdSelection;
@@ -170,11 +172,11 @@ public class EnterSelectionDialog extends Dialog
 		wOK=new Button(shell, SWT.PUSH);
 		if (viewOnly) 
 		{
-			wOK.setText(Messages.getString("System.Button.Close"));
+			wOK.setText(BaseMessages.getString(PKG, "System.Button.Close"));
 		} 
 		else
 		{
-			wOK.setText(Messages.getString("System.Button.OK"));
+			wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		}
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		wOK.addListener    (SWT.Selection, lsOK     );
@@ -184,7 +186,7 @@ public class EnterSelectionDialog extends Dialog
 		if (!viewOnly)
 		{
 			wCancel=new Button(shell, SWT.PUSH);
-			wCancel.setText(Messages.getString("System.Button.Cancel"));
+			wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 			lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 			wCancel.addListener(SWT.Selection, lsCancel );
             

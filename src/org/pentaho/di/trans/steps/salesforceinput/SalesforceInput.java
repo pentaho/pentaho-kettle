@@ -14,20 +14,13 @@
  
 package org.pentaho.di.trans.steps.salesforceinput;
 
-import com.sforce.soap.partner.DescribeSObjectResult;
-import com.sforce.soap.partner.SoapBindingStub;
-import com.sforce.soap.partner.LoginResult;
-import com.sforce.soap.partner.GetUserInfoResult;
-import com.sforce.soap.partner.SessionHeader;
-import com.sforce.soap.partner.SforceServiceLocator;
-import com.sforce.soap.partner.sobject.SObject;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -35,6 +28,14 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import com.sforce.soap.partner.DescribeSObjectResult;
+import com.sforce.soap.partner.GetUserInfoResult;
+import com.sforce.soap.partner.LoginResult;
+import com.sforce.soap.partner.SessionHeader;
+import com.sforce.soap.partner.SforceServiceLocator;
+import com.sforce.soap.partner.SoapBindingStub;
+import com.sforce.soap.partner.sobject.SObject;
 
 
 /**
@@ -45,6 +46,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class SalesforceInput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private SalesforceInputMeta meta;
 	private SalesforceInputData data;
 	
@@ -63,7 +66,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		
 		try{
 			binding = (SoapBindingStub) new SforceServiceLocator().getSoap();
-			if (log.isDetailed()) logDetailed(Messages.getString("SalesforceInput.Log.LoginURL") + " : " + binding._getProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY));
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL") + " : " + binding._getProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY));
 		      
 	        //  Set timeout
 			int timeOut=Const.toInt(timeout, 0);
@@ -76,12 +79,12 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		      
 	        if (log.isDetailed())
 	        {
-	        	logDetailed(Messages.getString("SalesforceInput.Log.LoginNow"));
+	        	logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginNow"));
 	        	logDetailed("----------------------------------------->");
-	        	logDetailed(Messages.getString("SalesforceInput.Log.LoginURL",Url));
-	        	logDetailed(Messages.getString("SalesforceInput.Log.LoginUsername",username));
-	        	logDetailed(Messages.getString("SalesforceInput.Log.LoginModule",module));
-	        	if(!Const.isEmpty(condition)) logDetailed(Messages.getString("SalesforceInput.Log.LoginCondition",condition));
+	        	logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL",Url));
+	        	logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginUsername",username));
+	        	logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginModule",module));
+	        	if(!Const.isEmpty(condition)) logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginCondition",condition));
 	        	logDetailed("<-----------------------------------------");
 	        }
 	        
@@ -90,8 +93,8 @@ public class SalesforceInput extends BaseStep implements StepInterface
 	        
 	        if (log.isDebug())
 	        {
-	        	logDebug(Messages.getString("SalesforceInput.Log.SessionId") + " : " + loginResult.getSessionId());
-	        	logDebug(Messages.getString("SalesforceInput.Log.NewServerURL") + " : " + loginResult.getServerUrl());
+	        	logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SessionId") + " : " + loginResult.getSessionId());
+	        	logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.NewServerURL") + " : " + loginResult.getServerUrl());
 	        }
 	        
 	        // set the session header for subsequent call authentication
@@ -107,12 +110,12 @@ public class SalesforceInput extends BaseStep implements StepInterface
 	        userInfo = binding.getUserInfo();
 	        if (log.isDebug()) 
 	        {
-	        	logDebug(Messages.getString("SalesforceInput.Log.UserInfos") + " : " + userInfo.getUserFullName());
+	        	logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserInfos") + " : " + userInfo.getUserFullName());
 	        	logDebug("----------------------------------------->");
-	        	logDebug(Messages.getString("SalesforceInput.Log.UserName") + " : " + userInfo.getUserFullName());
-	        	logDebug(Messages.getString("SalesforceInput.Log.UserEmail") + " : " + userInfo.getUserEmail());
-	        	logDebug(Messages.getString("SalesforceInput.Log.UserLanguage") + " : " + userInfo.getUserLanguage());
-	        	logDebug(Messages.getString("SalesforceInput.Log.UserOrganization") + " : " + userInfo.getOrganizationName());    
+	        	logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserName") + " : " + userInfo.getUserFullName());
+	        	logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserEmail") + " : " + userInfo.getUserEmail());
+	        	logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserLanguage") + " : " + userInfo.getUserLanguage());
+	        	logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserOrganization") + " : " + userInfo.getOrganizationName());    
 			    logDebug("<-----------------------------------------");
 	        }	
 		}catch(Exception e)
@@ -133,7 +136,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		// connect and return binding
 		data.binding=getBinding(data.URL,username, password, module, condition,timeout);
 		
-		if(data.binding==null)  throw new KettleException(Messages.getString("SalesforceInput.Exception.CanNotGetBiding"));
+		if(data.binding==null)  throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Exception.CanNotGetBiding"));
 		
 
 	    try{
@@ -142,18 +145,18 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			
 		    DescribeSObjectResult describeSObjectResult = data.binding.describeSObject(module);
 		        
-		    if (describeSObjectResult == null) throw new KettleException(Messages.getString("SalesforceInput.ErrorGettingObject"));
+		    if (describeSObjectResult == null) throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.ErrorGettingObject"));
 		        
-		    if(!describeSObjectResult.isQueryable()) throw new KettleException(Messages.getString("SalesforceInputDialog.ObjectNotQueryable",module));
+		    if(!describeSObjectResult.isQueryable()) throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.ObjectNotQueryable",module));
 			
 		    // Built SQL statement
 		    String SQLString=BuiltSQl();
 		        
-		    if (log.isDetailed()) logDetailed(Messages.getString("SalesforceInput.Log.SQLString") + " : " +  SQLString);        
+		    if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.SQLString") + " : " +  SQLString);        
 		    
 		    if(meta.includeSQL()) data.SQL=SQLString;
 	    	if(meta.includeTimestamp()) data.Timestamp= data.binding.getServerTimestamp().toString();
-	 		if(log.isDebug()) Messages.getString("SalesforceInput.Log.ServerTimestamp",""+data.binding.getServerTimestamp());
+	 		if(log.isDebug()) BaseMessages.getString(PKG, "SalesforceInput.Log.ServerTimestamp",""+data.binding.getServerTimestamp());
 	 		
 	    	// return query result
 	        data.qr = data.binding.query(SQLString);
@@ -166,7 +169,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 	        	data.nrRecords=data.qr.getRecords().length;
 	        }
 	        
-	        if (log.isDetailed()) logDetailed(Messages.getString("SalesforceInput.Log.RecordCount") + " : " +  data.recordcount);      
+	        if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.RecordCount") + " : " +  data.recordcount);      
 	        
 		}catch(Exception e)
 		{
@@ -182,13 +185,13 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			// Check if module is specified 
 			 if (Const.isEmpty(meta.getModule()))
 			 {
-				 throw new KettleException(Messages.getString("SalesforceInputDialog.ModuleMissing.DialogMessage"));
+				 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.ModuleMissing.DialogMessage"));
 			 }
 			 
 			  // Check if username is specified 
 			 if (Const.isEmpty(meta.getUserName()))
 			 {
-				 throw new KettleException(Messages.getString("SalesforceInputDialog.UsernameMissing.DialogMessage"));
+				 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.UsernameMissing.DialogMessage"));
 			 }
 			 
 			data.limit=Const.toLong(environmentSubstitute(meta.getRowLimit()),0);
@@ -201,7 +204,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			 // Check if field list is filled 
 			 if (data.nrfields==0)
 			 {
-				 throw new KettleException(Messages.getString("SalesforceInputDialog.FieldsMissing.DialogMessage"));
+				 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.FieldsMissing.DialogMessage"));
 			 }
 			 
 			// Create the output row meta-data
@@ -220,7 +223,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			connectSalesforce();
 		}
 		
-		if(log.isDebug()) logDebug(Messages.getString("SalesforceInput.Log.Connected"));	
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.Connected"));	
 		
 		Object[] outputRowData=null;
         boolean sendToErrorRow=false;
@@ -240,7 +243,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		    
 		    if (checkFeedback(getLinesInput()))
 		    {
-		    	if(log.isDetailed()) logDetailed(Messages.getString("SalesforceInput.log.LineRow",""+ getLinesInput()));
+		    	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInput.log.LineRow",""+ getLinesInput()));
 		    }
 	          
             data.rownr++;
@@ -257,7 +260,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				logError(Messages.getString("SalesforceInput.log.Exception", e.getMessage()));
+				logError(BaseMessages.getString(PKG, "SalesforceInput.log.Exception", e.getMessage()));
                 logError(Const.getStackTracker(e));
 				setErrors(1);
 				stopAll();
@@ -298,7 +301,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 					// We retrieved all records available here
 					// maybe we need to query more again ...
 					if(log.isDetailed()) log.logDetailed(toString(), 
-							Messages.getString("SalesforceInput.Log.NeedQueryMore",""+data.rownr));
+							BaseMessages.getString(PKG, "SalesforceInput.Log.NeedQueryMore",""+data.rownr));
 	
 					// check the done attribute on the QueryResult and call QueryMore 
 					// with the QueryLocator if there are more records to be retrieved
@@ -308,7 +311,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 						int nr=data.qr.getRecords().length;
 						data.nrRecords+=nr;
 						if(log.isDetailed()) log.logDetailed(toString(), 
-								Messages.getString("SalesforceInput.Log.QueryMoreRetrieved",""+nr));
+								BaseMessages.getString(PKG, "SalesforceInput.Log.QueryMoreRetrieved",""+nr));
 						
 						// We need here to initialize recordIndex
 						data.recordIndex=0;
@@ -397,7 +400,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		 }
 		 catch (Exception e)
 		 {
-			throw new KettleException(Messages.getString("SalesforceInput.Exception.CanNotReadFromSalesforce"), e);
+			throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Exception.CanNotReadFromSalesforce"), e);
 		 }
 		
 		return outputRowData;

@@ -24,12 +24,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.infobrightoutput.InfobrightLoaderMeta;
-import org.pentaho.di.trans.steps.infobrightoutput.Messages;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -40,6 +40,8 @@ import com.infobright.etl.model.DataFormat;
  */
 public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialogInterface {
   
+  private static Class<?> PKG = InfobrightLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   private static final char PASSWD_ECHO_CHAR = '*';
   
   private int middle;
@@ -92,7 +94,7 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout(formLayout);
-    shell.setText(Messages.getString("InfobrightLoaderDialog.Shell.Title"));
+    shell.setText(BaseMessages.getString(PKG, "InfobrightLoaderDialog.Shell.Title"));
 
     middle = props.getMiddlePct();
      
@@ -101,7 +103,7 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
     /************************************** Step name line ***************************/
     // label
     wlStepname = new Label(shell, SWT.RIGHT);
-    wlStepname.setText(Messages.getString("InfobrightLoaderDialog.Stepname.Label"));
+    wlStepname.setText(BaseMessages.getString(PKG, "InfobrightLoaderDialog.Stepname.Label"));
     wlStepname.setLayoutData(standardLabelSpacing(null));
     props.setLook(wlStepname);
 
@@ -146,7 +148,7 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
 			ibConnections.add(dbMeta.getName());
 		}
 	}
-	serverConnection = addStandardSelect(Messages.getString("InfobrightLoaderDialog.Connection.Label"), wStepname, ibConnections.toArray(new String[ibConnections.size()]));
+	serverConnection = addStandardSelect(BaseMessages.getString(PKG, "InfobrightLoaderDialog.Connection.Label"), wStepname, ibConnections.toArray(new String[ibConnections.size()]));
 	
     return serverConnection;
   }
@@ -163,10 +165,10 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
 	  dataformats[i++] = format.getDisplayText();
 	}
 
-	dataFormatSelect = addStandardSelect(Messages.getString("InfobrightLoaderDialog.Dataformat.Label"), prevControl, dataformats);
-    targetSchemaText = addStandardTextVar(Messages.getString("InfobrightLoaderDialog.TargetSchema.Label"), dataFormatSelect);
-    targetTableText = addStandardTextVar(Messages.getString("InfobrightLoaderDialog.TargetTable.Label"), targetSchemaText);
-    //rejectInvalidRowsButton = addStandardCheckBox(Messages.getString("InfobrightLoaderDialog.RejectErrors.Label"), targetTableText);
+	dataFormatSelect = addStandardSelect(BaseMessages.getString(PKG, "InfobrightLoaderDialog.Dataformat.Label"), prevControl, dataformats);
+    targetSchemaText = addStandardTextVar(BaseMessages.getString(PKG, "InfobrightLoaderDialog.TargetSchema.Label"), dataFormatSelect);
+    targetTableText = addStandardTextVar(BaseMessages.getString(PKG, "InfobrightLoaderDialog.TargetTable.Label"), targetSchemaText);
+    //rejectInvalidRowsButton = addStandardCheckBox(BaseMessages.getString(PKG, "InfobrightLoaderDialog.RejectErrors.Label"), targetTableText);
     
     return targetTableText;
   }
@@ -257,9 +259,9 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
   private void addDefaultButtons(int margin, Control lastControl) {
     // Some buttons
     wOK = new Button(shell, SWT.PUSH);
-    wOK.setText(Messages.getString("System.Button.OK"));
+    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
     wCancel = new Button(shell, SWT.PUSH);
-    wCancel.setText(Messages.getString("System.Button.Cancel"));
+    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
     setButtonPositions(new Button[] { wOK, wCancel }, margin, lastControl);
 

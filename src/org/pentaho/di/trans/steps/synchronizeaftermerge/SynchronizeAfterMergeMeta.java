@@ -15,8 +15,6 @@ package org.pentaho.di.trans.steps.synchronizeaftermerge;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -32,6 +30,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
@@ -42,6 +41,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.switchcase.SwitchCaseMeta;
+import org.w3c.dom.Node;
 
 /*
  * Created on 13-10-2008
@@ -49,6 +50,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = SwitchCaseMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** what's the lookup schema? */
     private String schemaName;
     
@@ -448,7 +451,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("SynchronizeAfterMergeMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -461,7 +464,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 		databaseMeta = null;
 		commitSize   = 100;
         schemaName   = ""; //$NON-NLS-1$
-		tableName    = Messages.getString("SynchronizeAfterMergeMeta.DefaultTableName"); //$NON-NLS-1$
+		tableName    = BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.DefaultTableName"); //$NON-NLS-1$
 		operationOrderField=null;
 		OrderInsert=null;
 		OrderUpdate=null;
@@ -483,8 +486,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 
 		for (int i=0;i<nrvalues;i++)
 		{
-			updateLookup[i]=Messages.getString("SynchronizeAfterMergeMeta.ColumnName.ReturnField")+i; //$NON-NLS-1$
-			updateStream[i]=Messages.getString("SynchronizeAfterMergeMeta.ColumnName.NewName")+i; //$NON-NLS-1$
+			updateLookup[i]=BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.ColumnName.ReturnField")+i; //$NON-NLS-1$
+			updateStream[i]=BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.ColumnName.NewName")+i; //$NON-NLS-1$
 			update[i]=Boolean.TRUE; //$NON-NLS-1$
 		}
 	}
@@ -580,7 +583,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("SynchronizeAfterMergeMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -625,7 +628,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("SynchronizeAfterMergeMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
@@ -644,7 +647,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 				
 				if (!Const.isEmpty(tableName))
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SynchronizeAfterMergeMeta.CheckResult.TableNameOK"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.TableNameOK"), stepMeta); //$NON-NLS-1$
 					remarks.add(cr);
 			
 					boolean first=true;
@@ -656,7 +659,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
                     RowMetaInterface r = db.getTableFields(schemaTable);
 					if (r!=null)
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SynchronizeAfterMergeMeta.CheckResult.TableExists"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.TableExists"), stepMeta); //$NON-NLS-1$
 						remarks.add(cr);
 			
 						for (int i=0;i<keyLookup.length;i++)
@@ -668,7 +671,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 								if (first)
 								{
 									first=false;
-									error_message+=Messages.getString("SynchronizeAfterMergeMeta.CheckResult.MissingCompareFieldsInTargetTable")+Const.CR; //$NON-NLS-1$
+									error_message+=BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.MissingCompareFieldsInTargetTable")+Const.CR; //$NON-NLS-1$
 								}
 								error_found=true;
 								error_message+="\t\t"+lufield+Const.CR;  //$NON-NLS-1$
@@ -680,7 +683,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 						}
 						else
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SynchronizeAfterMergeMeta.CheckResult.AllLookupFieldsFound"), stepMeta); //$NON-NLS-1$
+							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.AllLookupFieldsFound"), stepMeta); //$NON-NLS-1$
 						}
 						remarks.add(cr);
 						
@@ -698,7 +701,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 								if (first)
 								{
 									first=false;
-									error_message+=Messages.getString("SynchronizeAfterMergeMeta.CheckResult.MissingFieldsToUpdateInTargetTable")+Const.CR; //$NON-NLS-1$
+									error_message+=BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.MissingFieldsToUpdateInTargetTable")+Const.CR; //$NON-NLS-1$
 								}
 								error_found=true;
 								error_message+="\t\t"+lufield+Const.CR;  //$NON-NLS-1$
@@ -710,13 +713,13 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 						}
 						else
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SynchronizeAfterMergeMeta.CheckResult.AllFieldsToUpdateFoundInTargetTable"), stepMeta); //$NON-NLS-1$
+							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.AllFieldsToUpdateFoundInTargetTable"), stepMeta); //$NON-NLS-1$
 						}
 						remarks.add(cr);
 					}
 					else
 					{
-						error_message=Messages.getString("SynchronizeAfterMergeMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
+						error_message=BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
 						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 						remarks.add(cr);
 					}
@@ -725,7 +728,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 				// Look up fields in the input stream <prev>
 				if (prev!=null && prev.size()>0)
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SynchronizeAfterMergeMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 					remarks.add(cr);
 			
 					boolean first=true;
@@ -740,7 +743,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 							if (first)
 							{
 								first=false;
-								error_message+=Messages.getString("SynchronizeAfterMergeMeta.CheckResult.MissingFieldsInInput")+Const.CR; //$NON-NLS-1$
+								error_message+=BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.MissingFieldsInInput")+Const.CR; //$NON-NLS-1$
 							}
 							error_found=true;
 							error_message+="\t\t"+keyStream[i]+Const.CR;  //$NON-NLS-1$
@@ -756,7 +759,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 								if (first)
 								{
 									first=false;
-									error_message+=Messages.getString("SynchronizeAfterMergeMeta.CheckResult.MissingFieldsInInput")+Const.CR; //$NON-NLS-1$
+									error_message+=BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.MissingFieldsInInput")+Const.CR; //$NON-NLS-1$
 								}
 								error_found=true;
 								error_message+="\t\t"+keyStream[i]+Const.CR;  //$NON-NLS-1$
@@ -769,7 +772,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 					}
 					else
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SynchronizeAfterMergeMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); //$NON-NLS-1$
 					}
 					remarks.add(cr);
 
@@ -789,7 +792,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 							if (first)
 							{
 								first=false;
-								error_message+=Messages.getString("SynchronizeAfterMergeMeta.CheckResult.MissingInputStreamFields")+Const.CR; //$NON-NLS-1$
+								error_message+=BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.MissingInputStreamFields")+Const.CR; //$NON-NLS-1$
 							}
 							error_found=true;
 							error_message+="\t\t"+lufield+Const.CR;  //$NON-NLS-1$
@@ -801,7 +804,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 					}
 					else
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SynchronizeAfterMergeMeta.CheckResult.AllFieldsFoundInInput2"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.AllFieldsFoundInInput2"), stepMeta); //$NON-NLS-1$
 						remarks.add(cr);
 					}
 				
@@ -849,12 +852,12 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 						// add error/Warning
 						if (errorDiffField) 
 						{
-							errorMsgDiffField=Messages.getString("SynchronizeAfterMergeMeta.CheckResult.FieldsTypeDifferent")+Const.CR+errorMsgDiffField;
+							errorMsgDiffField=BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.FieldsTypeDifferent")+Const.CR+errorMsgDiffField;
 							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, errorMsgDiffField, stepMeta);
 						}
 						if (errorDiffLenField) 
 						{
-							errorMsgDiffLenField=Messages.getString("SynchronizeAfterMergeMeta.CheckResult.FieldsLenDifferent")+Const.CR+errorMsgDiffLenField;
+							errorMsgDiffLenField=BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.FieldsLenDifferent")+Const.CR+errorMsgDiffLenField;
 							cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, errorMsgDiffLenField, stepMeta);
 						}
 						remarks.add(cr);
@@ -863,14 +866,14 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 				}
 				else
 				{
-					error_message=Messages.getString("SynchronizeAfterMergeMeta.CheckResult.MissingFieldsInInput3")+Const.CR; //$NON-NLS-1$
+					error_message=BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.MissingFieldsInInput3")+Const.CR; //$NON-NLS-1$
 					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
 			}
 			catch(KettleException e)
 			{
-				error_message = Messages.getString("SynchronizeAfterMergeMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); //$NON-NLS-1$
+				error_message = BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); //$NON-NLS-1$
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
@@ -881,7 +884,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 		}
 		else
 		{
-			error_message = Messages.getString("SynchronizeAfterMergeMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
+			error_message = BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
@@ -889,12 +892,12 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SynchronizeAfterMergeMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SynchronizeAfterMergeMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}
@@ -969,7 +972,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 						}
 						else
 						{
-							retval.setError(Messages.getString("SynchronizeAfterMergeMeta.CheckResult.MissingKeyFields")); //$NON-NLS-1$
+							retval.setError(BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.CheckResult.MissingKeyFields")); //$NON-NLS-1$
 						}
 
 						// Key lookup dimensions...
@@ -985,22 +988,22 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 					}
 					catch(KettleException e)
 					{
-						retval.setError(Messages.getString("SynchronizeAfterMergeMeta.ReturnValue.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
+						retval.setError(BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.ReturnValue.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
 					}
 				}
 				else
 				{
-					retval.setError(Messages.getString("SynchronizeAfterMergeMeta.ReturnValue.NoTableDefinedOnConnection")); //$NON-NLS-1$
+					retval.setError(BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.ReturnValue.NoTableDefinedOnConnection")); //$NON-NLS-1$
 				}
 			}
 			else
 			{
-				retval.setError(Messages.getString("SynchronizeAfterMergeMeta.ReturnValue.NotReceivingAnyFields")); //$NON-NLS-1$
+				retval.setError(BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.ReturnValue.NotReceivingAnyFields")); //$NON-NLS-1$
 			}
 		}
 		else
 		{
-			retval.setError(Messages.getString("SynchronizeAfterMergeMeta.ReturnValue.NoConnectionDefined")); //$NON-NLS-1$
+			retval.setError(BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.ReturnValue.NoConnectionDefined")); //$NON-NLS-1$
 		}
 
 		return retval;
@@ -1077,17 +1080,17 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
                     }
                     else
                     {
-                        throw new KettleException(Messages.getString("SynchronizeAfterMergeMeta.Exception.TableNotFound"));
+                        throw new KettleException(BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.Exception.TableNotFound"));
                     }
                 }
                 else
                 {
-                    throw new KettleException(Messages.getString("SynchronizeAfterMergeMeta.Exception.TableNotSpecified"));
+                    throw new KettleException(BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.Exception.TableNotSpecified"));
                 }
             }
             catch(Exception e)
             {
-                throw new KettleException(Messages.getString("SynchronizeAfterMergeMeta.Exception.ErrorGettingFields"), e);
+                throw new KettleException(BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.Exception.ErrorGettingFields"), e);
             }
             finally
             {
@@ -1096,7 +1099,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
         }
         else
         {
-            throw new KettleException(Messages.getString("SynchronizeAfterMergeMeta.Exception.ConnectionNotDefined"));
+            throw new KettleException(BaseMessages.getString(PKG, "SynchronizeAfterMergeMeta.Exception.ConnectionNotDefined"));
         }
 
     }

@@ -37,20 +37,22 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.dialog.Messages;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
 
 public class TransHopDialog extends Dialog
 {
+    private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlFrom;
 	private CCombo       wFrom;
     private FormData     fdlFrom, fdFrom;
@@ -108,7 +110,7 @@ public class TransHopDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("TransHopDialog.Shell.Label")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "TransHopDialog.Shell.Label")); //$NON-NLS-1$
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -116,7 +118,7 @@ public class TransHopDialog extends Dialog
 
 		// From step line
 		wlFrom=new Label(shell, SWT.RIGHT);
-		wlFrom.setText(Messages.getString("TransHopDialog.FromStep.Label")); //$NON-NLS-1$
+		wlFrom.setText(BaseMessages.getString(PKG, "TransHopDialog.FromStep.Label")); //$NON-NLS-1$
  		props.setLook(wlFrom);
 		fdlFrom=new FormData();
 		fdlFrom.left = new FormAttachment(0, 0);
@@ -124,7 +126,7 @@ public class TransHopDialog extends Dialog
 		fdlFrom.top  = new FormAttachment(0, margin);
 		wlFrom.setLayoutData(fdlFrom);
 		wFrom=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wFrom.setText(Messages.getString("TransHopDialog.FromStepDropdownList.Label")); //$NON-NLS-1$
+		wFrom.setText(BaseMessages.getString(PKG, "TransHopDialog.FromStepDropdownList.Label")); //$NON-NLS-1$
  		props.setLook(wFrom);
 
 		for (int i=0;i<transMeta.nrSteps();i++)
@@ -142,7 +144,7 @@ public class TransHopDialog extends Dialog
 
 		// To line
 		wlTo=new Label(shell, SWT.RIGHT);
-		wlTo.setText(Messages.getString("TransHopDialog.TargetStep.Label")); //$NON-NLS-1$
+		wlTo.setText(BaseMessages.getString(PKG, "TransHopDialog.TargetStep.Label")); //$NON-NLS-1$
  		props.setLook(wlTo);
 		fdlTo=new FormData();
 		fdlTo.left = new FormAttachment(0, 0);
@@ -150,7 +152,7 @@ public class TransHopDialog extends Dialog
 		fdlTo.top  = new FormAttachment(wFrom, margin);
 		wlTo.setLayoutData(fdlTo);
 		wTo=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
-		wTo.setText(Messages.getString("TransHopDialog.TargetStepDropdownList.Label")); //$NON-NLS-1$
+		wTo.setText(BaseMessages.getString(PKG, "TransHopDialog.TargetStepDropdownList.Label")); //$NON-NLS-1$
  		props.setLook(wTo);
 
 		for (int i=0;i<transMeta.nrSteps();i++)
@@ -168,7 +170,7 @@ public class TransHopDialog extends Dialog
 
 		// Enabled?
 		wlEnabled=new Label(shell, SWT.RIGHT);
-		wlEnabled.setText(Messages.getString("TransHopDialog.EnableHop.Label")); //$NON-NLS-1$
+		wlEnabled.setText(BaseMessages.getString(PKG, "TransHopDialog.EnableHop.Label")); //$NON-NLS-1$
  		props.setLook(wlEnabled);
 		fdlEnabled=new FormData();
 		fdlEnabled.left = new FormAttachment(0, 0);
@@ -192,7 +194,7 @@ public class TransHopDialog extends Dialog
 		);
 
 		wFlip = new Button(shell, SWT.PUSH);
-		wFlip.setText(Messages.getString("TransHopDialog.FromTo.Button")); //$NON-NLS-1$
+		wFlip.setText(BaseMessages.getString(PKG, "TransHopDialog.FromTo.Button")); //$NON-NLS-1$
 		fdFlip = new FormData();
 		fdFlip.right = new FormAttachment(100, 0);
 		fdFlip.top  = new FormAttachment(wlTo, 20);
@@ -200,12 +202,12 @@ public class TransHopDialog extends Dialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wOK.pack(true);
 		Rectangle rOK = wOK.getBounds();
 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 		wCancel.pack(true);
 		Rectangle rCancel = wCancel.getBounds();
 
@@ -287,8 +289,8 @@ public class TransHopDialog extends Dialog
 			input.setFromStep(fromBackup);
 			input.setToStep(toBackup);
 			MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
-			mb.setMessage(Messages.getString("TransHopDialog.LoopsNotAllowed.DialogMessage")); //$NON-NLS-1$
-			mb.setText(Messages.getString("TransHopDialog.LoopsNotAllowed.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "TransHopDialog.LoopsNotAllowed.DialogMessage")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "TransHopDialog.LoopsNotAllowed.DialogTitle")); //$NON-NLS-1$
 			mb.open();
 		}
 		else
@@ -296,8 +298,8 @@ public class TransHopDialog extends Dialog
 			if (input.getFromStep()==null)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
-				mb.setMessage(Messages.getString("TransHopDialog.StepDoesNotExist.DialogMessage",wFrom.getText())); //$NON-NLS-1$ //$NON-NLS-2$
-				mb.setText(Messages.getString("TransHopDialog.StepDoesNotExist.DialogTitle")); //$NON-NLS-1$
+				mb.setMessage(BaseMessages.getString(PKG, "TransHopDialog.StepDoesNotExist.DialogMessage",wFrom.getText())); //$NON-NLS-1$ //$NON-NLS-2$
+				mb.setText(BaseMessages.getString(PKG, "TransHopDialog.StepDoesNotExist.DialogTitle")); //$NON-NLS-1$
 				mb.open();
 			}
 			else
@@ -305,8 +307,8 @@ public class TransHopDialog extends Dialog
 				if (input.getToStep()==null)
 				{
 					MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
-					mb.setMessage(Messages.getString("TransHopDialog.StepDoesNotExist.DialogMessage",wTo.getText())); //$NON-NLS-1$ //$NON-NLS-2$
-					mb.setText(Messages.getString("TransHopDialog.StepDoesNotExist.DialogTitle")); //$NON-NLS-1$
+					mb.setMessage(BaseMessages.getString(PKG, "TransHopDialog.StepDoesNotExist.DialogMessage",wTo.getText())); //$NON-NLS-1$ //$NON-NLS-2$
+					mb.setText(BaseMessages.getString(PKG, "TransHopDialog.StepDoesNotExist.DialogTitle")); //$NON-NLS-1$
 					mb.open();
 				}
 				else
@@ -314,8 +316,8 @@ public class TransHopDialog extends Dialog
 					if (input.getFromStep().equals(input.getToStep()))
 					{
 						MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
-						mb.setMessage(Messages.getString("TransHopDialog.CannotGoToSameStep.DialogMessage")); //$NON-NLS-1$
-						mb.setText(Messages.getString("TransHopDialog.CannotGoToSameStep.DialogTitle")); //$NON-NLS-1$
+						mb.setMessage(BaseMessages.getString(PKG, "TransHopDialog.CannotGoToSameStep.DialogMessage")); //$NON-NLS-1$
+						mb.setText(BaseMessages.getString(PKG, "TransHopDialog.CannotGoToSameStep.DialogTitle")); //$NON-NLS-1$
 						mb.open();
 					}
 					else

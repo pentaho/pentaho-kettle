@@ -29,6 +29,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
@@ -82,6 +83,8 @@ import org.w3c.dom.Node;
  */
 public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = LucidDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** what's the schema for the target? */
     private String schemaName;
 
@@ -252,7 +255,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("LucidDBBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -263,7 +266,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		maxErrors    = 0;
 		bufferSize   = "100000";
         schemaName   = "";                //$NON-NLS-1$
-		tableName    = Messages.getString("LucidDBBulkLoaderMeta.DefaultTableName"); //$NON-NLS-1$
+		tableName    = BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.DefaultTableName"); //$NON-NLS-1$
         encoding     = "";                                       //$NON-NLS-1$
         fifoDirectory = "/tmp/fifo/";
         
@@ -325,7 +328,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("LucidDBBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -357,7 +360,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("LucidDBBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
 		}
 	}
 	
@@ -381,7 +384,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 
 				if (!Const.isEmpty(tableName))
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("LucidDBBulkLoaderMeta.CheckResult.TableNameOK"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.TableNameOK"), stepMeta); //$NON-NLS-1$
 					remarks.add(cr);
 
 					boolean first=true;
@@ -395,7 +398,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 					RowMetaInterface r = db.getTableFields(schemaTable);
 					if (r!=null)
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("LucidDBBulkLoaderMeta.CheckResult.TableExists"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.TableExists"), stepMeta); //$NON-NLS-1$
 						remarks.add(cr);
 
 						// How about the fields to insert/dateMask in the table?
@@ -413,7 +416,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 								if (first)
 								{
 									first=false;
-									error_message+=Messages.getString("LucidDBBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable")+Const.CR; //$NON-NLS-1$
+									error_message+=BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable")+Const.CR; //$NON-NLS-1$
 								}
 								error_found=true;
 								error_message+="\t\t"+field+Const.CR;  //$NON-NLS-1$
@@ -425,13 +428,13 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 						}
 						else
 						{
-							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("LucidDBBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable"), stepMeta); //$NON-NLS-1$
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable"), stepMeta); //$NON-NLS-1$
 						}
 						remarks.add(cr);
 					}
 					else
 					{
-						error_message=Messages.getString("LucidDBBulkLoaderMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
+						error_message=BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
 						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						remarks.add(cr);
 					}
@@ -440,7 +443,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 				// Look up fields in the input stream <prev>
 				if (prev!=null && prev.size()>0)
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("LucidDBBulkLoaderMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 					remarks.add(cr);
 
 					boolean first=true;
@@ -455,7 +458,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 							if (first)
 							{
 								first=false;
-								error_message+=Messages.getString("LucidDBBulkLoaderMeta.CheckResult.MissingFieldsInInput")+Const.CR; //$NON-NLS-1$
+								error_message+=BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.MissingFieldsInInput")+Const.CR; //$NON-NLS-1$
 							}
 							error_found=true;
 							error_message+="\t\t"+fieldStream[i]+Const.CR;  //$NON-NLS-1$
@@ -467,20 +470,20 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 					}
 					else
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("LucidDBBulkLoaderMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); //$NON-NLS-1$
 					}
 					remarks.add(cr);
 				}
 				else
 				{
-					error_message=Messages.getString("LucidDBBulkLoaderMeta.CheckResult.MissingFieldsInInput3")+Const.CR; //$NON-NLS-1$
+					error_message=BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.MissingFieldsInInput3")+Const.CR; //$NON-NLS-1$
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
 			}
 			catch(KettleException e)
 			{
-				error_message = Messages.getString("LucidDBBulkLoaderMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); //$NON-NLS-1$
+				error_message = BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); //$NON-NLS-1$
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
@@ -491,7 +494,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		}
 		else
 		{
-			error_message = Messages.getString("LucidDBBulkLoaderMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
+			error_message = BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
@@ -499,12 +502,12 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("LucidDBBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("LucidDBBulkLoaderMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}
@@ -572,22 +575,22 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 					}
 					catch(KettleException e)
 					{
-						retval.setError(Messages.getString("LucidDBBulkLoaderMeta.GetSQL.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
+						retval.setError(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.GetSQL.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
 					}
 				}
 				else
 				{
-					retval.setError(Messages.getString("LucidDBBulkLoaderMeta.GetSQL.NoTableDefinedOnConnection")); //$NON-NLS-1$
+					retval.setError(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.GetSQL.NoTableDefinedOnConnection")); //$NON-NLS-1$
 				}
 			}
 			else
 			{
-				retval.setError(Messages.getString("LucidDBBulkLoaderMeta.GetSQL.NotReceivingAnyFields")); //$NON-NLS-1$
+				retval.setError(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.GetSQL.NotReceivingAnyFields")); //$NON-NLS-1$
 			}
 		}
 		else
 		{
-			retval.setError(Messages.getString("LucidDBBulkLoaderMeta.GetSQL.NoConnectionDefined")); //$NON-NLS-1$
+			retval.setError(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.GetSQL.NoConnectionDefined")); //$NON-NLS-1$
 		}
 
 		return retval;
@@ -655,17 +658,17 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
                     }
                     else
                     {
-                        throw new KettleException(Messages.getString("LucidDBBulkLoaderMeta.Exception.TableNotFound"));
+                        throw new KettleException(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.Exception.TableNotFound"));
                     }
                 }
                 else
                 {
-                    throw new KettleException(Messages.getString("LucidDBBulkLoaderMeta.Exception.TableNotSpecified"));
+                    throw new KettleException(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.Exception.TableNotSpecified"));
                 }
             }
             catch(Exception e)
             {
-                throw new KettleException(Messages.getString("LucidDBBulkLoaderMeta.Exception.ErrorGettingFields"), e);
+                throw new KettleException(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.Exception.ErrorGettingFields"), e);
             }
             finally
             {
@@ -674,7 +677,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
         }
         else
         {
-            throw new KettleException(Messages.getString("LucidDBBulkLoaderMeta.Exception.ConnectionNotDefined"));
+            throw new KettleException(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.Exception.ConnectionNotDefined"));
         }
 
     }

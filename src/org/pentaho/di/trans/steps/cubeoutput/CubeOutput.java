@@ -18,6 +18,7 @@ import java.util.zip.GZIPOutputStream;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -36,6 +37,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class CubeOutput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = CubeOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CubeOutputMeta meta;
 	private CubeOutputData data;
 	
@@ -70,7 +73,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 				}
 				catch(IOException ioe)
 				{
-					logError(Messages.getString("CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); //$NON-NLS-1$
 					setErrors(1);
 					return false;
 				}
@@ -88,7 +91,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 		
         if (checkFeedback(getLinesOutput())) 
         {
-        	if(log.isBasic()) logBasic(Messages.getString("CubeOutput.Log.LineNumber")+getLinesOutput()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "CubeOutput.Log.LineNumber")+getLinesOutput()); //$NON-NLS-1$
         }
 		
 		return result;
@@ -110,7 +113,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("CubeOutput.Log.ErrorWritingLine")+e.toString()); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorWritingLine")+e.toString()); //$NON-NLS-1$
 			return false;
 		}
 
@@ -136,7 +139,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 				}
 				catch(IOException ioe)
 				{
-					logError(Messages.getString("CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); //$NON-NLS-1$
 				}
 			}else return true;
 				
@@ -183,7 +186,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 	        }
 	        catch(IOException e)
 	        {
-	            logError(Messages.getString("CubeOutput.Log.ErrorClosingFile")+meta.getFilename()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorClosingFile")+meta.getFilename()); //$NON-NLS-1$
 	            setErrors(1);
 	            stopAll();
 	        }

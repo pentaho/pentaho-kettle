@@ -47,22 +47,24 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.setvariable.Messages;
 import org.pentaho.di.trans.steps.setvariable.SetVariableMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 
 public class SetVariableDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = SetVariableMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final String STRING_USAGE_WARNING_PARAMETER = "SetVariableUsageWarning"; //$NON-NLS-1$
     
 	private Label        wlStepname;
@@ -113,14 +115,14 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("SetVariableDialog.DialogTitle")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SetVariableDialog.DialogTitle")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("SetVariableDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "SetVariableDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -137,8 +139,8 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		wStepname.setLayoutData(fdStepname);
 
 		wlFormat=new Label(shell, SWT.RIGHT);
-		wlFormat.setText(Messages.getString("SetVariableDialog.Format.Label")); //$NON-NLS-1$
-		wlFormat.setToolTipText(Messages.getString("SetVariableDialog.Format.Tooltip")); //$NON-NLS-1$
+		wlFormat.setText(BaseMessages.getString(PKG, "SetVariableDialog.Format.Label")); //$NON-NLS-1$
+		wlFormat.setToolTipText(BaseMessages.getString(PKG, "SetVariableDialog.Format.Tooltip")); //$NON-NLS-1$
  		props.setLook(wlFormat);
 		fdlFormat=new FormData();
 		fdlFormat.left = new FormAttachment(0, 0);
@@ -146,7 +148,7 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		fdlFormat.top  = new FormAttachment(wStepname, margin);
 		wlFormat.setLayoutData(fdlFormat);
 		wFormat=new Button(shell, SWT.CHECK);
-		wFormat.setToolTipText(Messages.getString("SetVariableDialog.Format.Tooltip")); //$NON-NLS-1$
+		wFormat.setToolTipText(BaseMessages.getString(PKG, "SetVariableDialog.Format.Tooltip")); //$NON-NLS-1$
  		props.setLook(wFormat);
 		fdFormat=new FormData();
 		fdFormat.left = new FormAttachment(middle, 0);
@@ -154,7 +156,7 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		wFormat.setLayoutData(fdFormat);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("SetVariableDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "SetVariableDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -163,12 +165,12 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		
 		final int FieldsRows=input.getFieldName().length;
 		colinf=new ColumnInfo[4];
-		colinf[0]=  new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.FieldName"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);//$NON-NLS-1$
-		colinf[1]=  new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableName"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		colinf[2]=  new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableType"), ColumnInfo.COLUMN_TYPE_CCOMBO, SetVariableMeta.getVariableTypeDescriptions(), false); //$NON-NLS-1$
-		colinf[3]=  new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.DefaultValue"), ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinf[0]=  new ColumnInfo(BaseMessages.getString(PKG, "SetVariableDialog.Fields.Column.FieldName"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);//$NON-NLS-1$
+		colinf[1]=  new ColumnInfo(BaseMessages.getString(PKG, "SetVariableDialog.Fields.Column.VariableName"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		colinf[2]=  new ColumnInfo(BaseMessages.getString(PKG, "SetVariableDialog.Fields.Column.VariableType"), ColumnInfo.COLUMN_TYPE_CCOMBO, SetVariableMeta.getVariableTypeDescriptions(), false); //$NON-NLS-1$
+		colinf[3]=  new ColumnInfo(BaseMessages.getString(PKG, "SetVariableDialog.Fields.Column.DefaultValue"), ColumnInfo.COLUMN_TYPE_TEXT, false);
 		colinf[3].setUsingVariables(true);
-		colinf[3].setToolTip(Messages.getString("SetVariableDialog.Fields.Column.DefaultValue.Tooltip"));
+		colinf[3].setToolTip(BaseMessages.getString(PKG, "SetVariableDialog.Fields.Column.DefaultValue.Tooltip"));
 		
 		wFields=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -209,7 +211,7 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -218,11 +220,11 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 				
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
         wGet=new Button(shell, SWT.PUSH);
-        wGet.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
+        wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel , wGet }, margin, wFields);
 
@@ -333,13 +335,13 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
         if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_USAGE_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                 Messages.getString("SetVariableDialog.UsageWarning.DialogTitle"),  //$NON-NLS-1$
+                 BaseMessages.getString(PKG, "SetVariableDialog.UsageWarning.DialogTitle"),  //$NON-NLS-1$
                  null,
-                 Messages.getString("SetVariableDialog.UsageWarning.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+                 BaseMessages.getString(PKG, "SetVariableDialog.UsageWarning.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
                  MessageDialog.WARNING,
-                 new String[] { Messages.getString("SetVariableDialog.UsageWarning.Option1") }, //$NON-NLS-1$
+                 new String[] { BaseMessages.getString(PKG, "SetVariableDialog.UsageWarning.Option1") }, //$NON-NLS-1$
                  0,
-                 Messages.getString("SetVariableDialog.UsageWarning.Option2"), //$NON-NLS-1$
+                 BaseMessages.getString(PKG, "SetVariableDialog.UsageWarning.Option2"), //$NON-NLS-1$
                  "N".equalsIgnoreCase( props.getCustomParameter(STRING_USAGE_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
             );
             MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
@@ -372,7 +374,7 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
         }
         catch(KettleException ke)
         {
-            new ErrorDialog(shell, Messages.getString("SetVariableDialog.FailedToGetFields.DialogTitle"), Messages.getString("Set.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "SetVariableDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "Set.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 }

@@ -39,17 +39,19 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.trans.steps.filestoresult.FilesToResultMeta;
-import org.pentaho.di.trans.steps.filestoresult.Messages;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 public class FilesToResultDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = FilesToResultMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlFilenameField;
 	private CCombo       wFilenameField;
 	private FormData     fdlFilenameField, fdFilenameField;
@@ -89,14 +91,14 @@ public class FilesToResultDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("FilesToResultDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "FilesToResultDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("FilesToResultDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "FilesToResultDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -118,7 +120,7 @@ public class FilesToResultDialog extends BaseStepDialog implements StepDialogInt
 		
 		// FilenameField line
 		wlFilenameField=new Label(shell, SWT.RIGHT);
-		wlFilenameField.setText(Messages.getString("FilesToResultDialog.FilenameField.Label")); //$NON-NLS-1$
+		wlFilenameField.setText(BaseMessages.getString(PKG, "FilesToResultDialog.FilenameField.Label")); //$NON-NLS-1$
  		props.setLook(wlFilenameField);
 		fdlFilenameField=new FormData();
 		fdlFilenameField.left = new FormAttachment(0, 0);
@@ -127,7 +129,7 @@ public class FilesToResultDialog extends BaseStepDialog implements StepDialogInt
 		wlFilenameField.setLayoutData(fdlFilenameField);
 
 		wFilenameField=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wFilenameField.setToolTipText(Messages.getString("FilesToResultDialog.FilenameField.Tooltip")); //$NON-NLS-1$
+		wFilenameField.setToolTipText(BaseMessages.getString(PKG, "FilesToResultDialog.FilenameField.Tooltip")); //$NON-NLS-1$
  		props.setLook(wFilenameField);
 		wFilenameField.addModifyListener(lsMod);
 		fdFilenameField=new FormData();
@@ -156,7 +158,7 @@ public class FilesToResultDialog extends BaseStepDialog implements StepDialogInt
 				}
 				catch(Exception ke)
 				{
-					new ErrorDialog(shell, Messages.getString("FilesToResultDialog.FailedToGetFields.DialogTitle"), Messages.getString("FilesToResultDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "FilesToResultDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "FilesToResultDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		};
@@ -164,15 +166,15 @@ public class FilesToResultDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 		
 		// Include Files?
 		wlTypes=new Label(shell, SWT.RIGHT);
-		wlTypes.setText(Messages.getString("FilesToResultDialog.TypeOfFile.Label"));
+		wlTypes.setText(BaseMessages.getString(PKG, "FilesToResultDialog.TypeOfFile.Label"));
  		props.setLook(wlTypes);
 		fdlTypes=new FormData();
 		fdlTypes.left = new FormAttachment(0, 0);
@@ -180,7 +182,7 @@ public class FilesToResultDialog extends BaseStepDialog implements StepDialogInt
 		fdlTypes.right= new FormAttachment(middle, -margin);
 		wlTypes.setLayoutData(fdlTypes);
 		wTypes=new List(shell, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		wTypes.setToolTipText(Messages.getString("FilesToResultDialog.TypeOfFile.Tooltip"));
+		wTypes.setToolTipText(BaseMessages.getString(PKG, "FilesToResultDialog.TypeOfFile.Tooltip"));
  		props.setLook(wTypes);
 		fdTypes=new FormData();
 		fdTypes.left   = new FormAttachment(middle, 0);

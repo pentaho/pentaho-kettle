@@ -34,15 +34,17 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta;
-import org.pentaho.di.trans.steps.mappingoutput.Messages;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class MappingOutputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = MappingOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	/*
     private Label             wlFields;
 
@@ -82,14 +84,14 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("MappingOutputDialog.Shell.Title")); //$NON-NLS-1$
+        shell.setText(BaseMessages.getString(PKG, "MappingOutputDialog.Shell.Title")); //$NON-NLS-1$
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         // Stepname line
         wlStepname = new Label(shell, SWT.RIGHT);
-        wlStepname.setText(Messages.getString("MappingOutputDialog.Stepname.Label")); //$NON-NLS-1$
+        wlStepname.setText(BaseMessages.getString(PKG, "MappingOutputDialog.Stepname.Label")); //$NON-NLS-1$
         props.setLook(wlStepname);
         fdlStepname = new FormData();
         fdlStepname.left = new FormAttachment(0, 0);
@@ -109,7 +111,7 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
         /* NO LONGER NEEDED IN VERSION 3.x
         
         wlFields = new Label(shell, SWT.NONE);
-        wlFields.setText(Messages.getString("MappingOutputDialog.Fields.Label")); //$NON-NLS-1$
+        wlFields.setText(BaseMessages.getString(PKG, "MappingOutputDialog.Fields.Label")); //$NON-NLS-1$
         props.setLook(wlFields);
         fdlFields = new FormData();
         fdlFields.left = new FormAttachment(0, 0);
@@ -120,11 +122,11 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
 
         ColumnInfo[] colinf = new ColumnInfo[] 
         { 
-            new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Name"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT, false),  //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Added"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y", "N"}, true)  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            new ColumnInfo(BaseMessages.getString(PKG, "MappingOutputDialog.ColumnInfo.Name"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "MappingOutputDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "MappingOutputDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT, false),  //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "MappingOutputDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "MappingOutputDialog.ColumnInfo.Added"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y", "N"}, true)  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         };
 
         wFields = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props);
@@ -139,13 +141,13 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
         
         // Some buttons
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
         
         //wGet = new Button(shell, SWT.PUSH);
-        //wGet.setText(Messages.getString("MappingOutputDialog.GetFields.Button")); //$NON-NLS-1$
+        //wGet.setText(BaseMessages.getString(PKG, "MappingOutputDialog.GetFields.Button")); //$NON-NLS-1$
         
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
         setButtonPositions(new Button[] { wOK, wCancel, }, margin, wStepname);
 
@@ -297,7 +299,7 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
         }
         catch(KettleException ke)
         {
-            new ErrorDialog(shell, Messages.getString("MappingOutputDialog.FailedToGetFields.DiaogTitle"), Messages.getString("MappingOutputDialog.FailedToGetFields.DiaogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "MappingOutputDialog.FailedToGetFields.DiaogTitle"), BaseMessages.getString(PKG, "MappingOutputDialog.FailedToGetFields.DiaogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
     */

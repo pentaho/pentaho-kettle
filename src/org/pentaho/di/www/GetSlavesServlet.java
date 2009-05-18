@@ -24,9 +24,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 
 public class GetSlavesServlet extends HttpServlet
 {
+	private static Class<?> PKG = GetSlavesServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public  static final String XML_TAG_SLAVESERVER_DETECTIONS = "SlaveServerDetections";
 
 	private static final long serialVersionUID = -5472184538138241050L;
@@ -50,7 +53,7 @@ public class GetSlavesServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), Messages.getString("GetStatusServlet.StatusRequested"));
+        if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "GetStatusServlet.StatusRequested"));
         response.setStatus(HttpServletResponse.SC_OK);
         
         // We always reply in XML...

@@ -12,7 +12,6 @@
 */
 package org.pentaho.di.trans.steps.execprocess;
 
-import org.w3c.dom.Node;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +28,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
@@ -38,6 +38,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 
 
@@ -48,7 +49,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
 {
-	
+	private static Class<?> PKG = ExecProcessMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** dynamic process field name */
     private String       processfield;
     
@@ -141,7 +143,7 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(Messages.getString("ExecProcessMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "ExecProcessMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -155,7 +157,7 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("ExecProcessMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "ExecProcessMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -168,7 +170,7 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("ExecProcessMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "ExecProcessMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -180,33 +182,33 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
       
         if (Const.isEmpty(resultfieldname))
         {
-            error_message = Messages.getString("ExecProcessMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
         }
         else
         {
-            error_message = Messages.getString("ExecProcessMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
         }
         remarks.add(cr);
         
         if (Const.isEmpty(processfield))
         {
-            error_message = Messages.getString("ExecProcessMeta.CheckResult.ProcessFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.ProcessFieldMissing"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
         }
         else
         {
-            error_message = Messages.getString("ExecProcessMeta.CheckResult.ProcessFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.ProcessFieldOK"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
         }
         remarks.add(cr);
         
         // See if we have input streams leading to this step!
         if (input.length > 0)
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExecProcessMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
         else
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExecProcessMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
          remarks.add(cr);
 
     }

@@ -16,11 +16,15 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.steps.xbaseinput.XBaseInputMeta;
 
 
 
 public class XMLInputFieldPosition implements Cloneable
 {
+	private static Class<?> PKG = XBaseInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final int XML_ELEMENT   = 1;
     public static final int XML_ATTRIBUTE = 2;
     public static final int XML_ROOT      = 3;
@@ -85,7 +89,7 @@ public class XMLInputFieldPosition implements Cloneable
         int equalIndex = encoded.indexOf('=');
         if (equalIndex<0)
         {
-            throw new KettleValueException(Messages.getString("XMLInputFieldPosition.Exception.InvalidXMLFieldPosition", encoded));
+            throw new KettleValueException(BaseMessages.getString(PKG, "XMLInputFieldPosition.Exception.InvalidXMLFieldPosition", encoded));
         }
         
         String positionType  = Const.trim( encoded.substring(0, equalIndex) );
@@ -124,7 +128,7 @@ public class XMLInputFieldPosition implements Cloneable
         }
         else
         {
-            throw new KettleValueException(Messages.getString("XMLInputFieldPosition.Exception.WrongPositionType", positionType));
+            throw new KettleValueException(BaseMessages.getString(PKG, "XMLInputFieldPosition.Exception.WrongPositionType", positionType));
         }
         
         // Get the element nr

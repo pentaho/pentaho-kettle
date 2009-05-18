@@ -13,7 +13,6 @@
  ***************************************************************************************/
 package org.pentaho.di.trans.steps.creditcardvalidator;
 
-import org.w3c.dom.Node;
 import java.util.List;
 import java.util.Map;
 
@@ -21,15 +20,16 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -38,6 +38,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 /*
  * Created on 03-Juin-2008
@@ -46,7 +47,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class CreditCardValidatorMeta extends BaseStepMeta implements StepMetaInterface
 {
-	
+	private static Class<?> PKG = CreditCardValidatorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** dynamic field */
     private String    fieldname;
     
@@ -212,7 +214,7 @@ public class CreditCardValidatorMeta extends BaseStepMeta implements StepMetaInt
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(Messages.getString("CreditCardValidatorMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "CreditCardValidatorMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -230,7 +232,7 @@ public class CreditCardValidatorMeta extends BaseStepMeta implements StepMetaInt
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("CreditCardValidatorMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "CreditCardValidatorMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -247,7 +249,7 @@ public class CreditCardValidatorMeta extends BaseStepMeta implements StepMetaInt
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("CreditCardValidatorMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "CreditCardValidatorMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -259,37 +261,37 @@ public class CreditCardValidatorMeta extends BaseStepMeta implements StepMetaInt
         String realresultfieldname=transMeta.environmentSubstitute(resultfieldname);
         if (Const.isEmpty(realresultfieldname))
         {
-            error_message = Messages.getString("CreditCardValidatorMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "CreditCardValidatorMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = Messages.getString("CreditCardValidatorMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "CreditCardValidatorMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
         if (Const.isEmpty(fieldname))
         {
-            error_message = Messages.getString("CreditCardValidatorMeta.CheckResult.CardFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "CreditCardValidatorMeta.CheckResult.CardFieldMissing"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = Messages.getString("CreditCardValidatorMeta.CheckResult.CardFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "CreditCardValidatorMeta.CheckResult.CardFieldOK"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("CreditCardValidatorMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "CreditCardValidatorMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("CreditCardValidatorMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "CreditCardValidatorMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
 

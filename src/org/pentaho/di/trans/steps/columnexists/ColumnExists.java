@@ -17,6 +17,7 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -36,6 +37,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class ColumnExists extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = ColumnExistsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private ColumnExistsMeta meta;
     private ColumnExistsData data;
     
@@ -73,16 +76,16 @@ public class ColumnExists extends BaseStep implements StepInterface
     		// Check is columnname field is provided
 			if (Const.isEmpty(meta.getDynamicColumnnameField()))
 			{
-				logError(Messages.getString("ColumnExists.Error.ColumnnameFieldMissing"));
-				throw new KettleException(Messages.getString("ColumnExists.Error.ColumnnameFieldMissing"));
+				logError(BaseMessages.getString(PKG, "ColumnExists.Error.ColumnnameFieldMissing"));
+				throw new KettleException(BaseMessages.getString(PKG, "ColumnExists.Error.ColumnnameFieldMissing"));
 			}
 			if(meta.isTablenameInField())
 			{
         		// Check is tablename field is provided
 				if (Const.isEmpty(meta.getDynamicTablenameField()))
 				{
-					logError(Messages.getString("ColumnExists.Error.TablenameFieldMissing"));
-					throw new KettleException(Messages.getString("ColumnExists.Error.TablenameFieldMissing"));
+					logError(BaseMessages.getString(PKG, "ColumnExists.Error.TablenameFieldMissing"));
+					throw new KettleException(BaseMessages.getString(PKG, "ColumnExists.Error.TablenameFieldMissing"));
 				}
 				
 				// cache the position of the field			
@@ -92,8 +95,8 @@ public class ColumnExists extends BaseStep implements StepInterface
 					if (data.indexOfTablename<0)
 					{
 						// The field is unreachable !
-						logError(Messages.getString("ColumnExists.Exception.CouldnotFindField")+ "[" + meta.getDynamicTablenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleException(Messages.getString("ColumnExists.Exception.CouldnotFindField",meta.getDynamicTablenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "ColumnExists.Exception.CouldnotFindField")+ "[" + meta.getDynamicTablenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "ColumnExists.Exception.CouldnotFindField",meta.getDynamicTablenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 			}else
@@ -112,8 +115,8 @@ public class ColumnExists extends BaseStep implements StepInterface
 				if (data.indexOfColumnname<0)
 				{
 					// The field is unreachable !
-					logError(Messages.getString("ColumnExists.Exception.CouldnotFindField")+ "[" + meta.getDynamicColumnnameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleException(Messages.getString("ColumnExists.Exception.CouldnotFindField",meta.getDynamicColumnnameField())); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "ColumnExists.Exception.CouldnotFindField")+ "[" + meta.getDynamicColumnnameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "ColumnExists.Exception.CouldnotFindField",meta.getDynamicColumnnameField())); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 			
@@ -144,7 +147,7 @@ public class ColumnExists extends BaseStep implements StepInterface
 			 //	add new values to the row.
 	        putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 
-	        if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("ColumnExists.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+	        if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "ColumnExists.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
         }
         catch(KettleException e)
         {
@@ -155,8 +158,8 @@ public class ColumnExists extends BaseStep implements StepInterface
         	}
         	else
         	{
-	            logError(Messages.getString("ColumnExists.ErrorInStepRunning" + " : "+ e.getMessage()));
-	            throw new KettleStepException(Messages.getString("ColumnExists.Log.ErrorInStep"), e);
+	            logError(BaseMessages.getString(PKG, "ColumnExists.ErrorInStepRunning" + " : "+ e.getMessage()));
+	            throw new KettleStepException(BaseMessages.getString(PKG, "ColumnExists.Log.ErrorInStep"), e);
         	}
         	if (sendToErrorRow)
         	{
@@ -179,7 +182,7 @@ public class ColumnExists extends BaseStep implements StepInterface
         	{
         		if(Const.isEmpty(meta.getTablename()))
         		{
-            		log.logError(toString(), Messages.getString("ColumnExists.Error.TablenameMissing"));
+            		log.logError(toString(), BaseMessages.getString(PKG, "ColumnExists.Error.TablenameMissing"));
             		return false;
         		}
         		data.tablename=environmentSubstitute(meta.getTablename());
@@ -190,7 +193,7 @@ public class ColumnExists extends BaseStep implements StepInterface
         	
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), Messages.getString("ColumnExists.Error.ResultFieldMissing"));
+        		log.logError(toString(), BaseMessages.getString(PKG, "ColumnExists.Error.ResultFieldMissing"));
         		return false;
         	}
             data.db=new Database(meta.getDatabase());
@@ -206,13 +209,13 @@ public class ColumnExists extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 
-                if(log.isDetailed()) logDetailed(Messages.getString("ColumnExists.Log.ConnectedToDB")); //$NON-NLS-1$
+                if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "ColumnExists.Log.ConnectedToDB")); //$NON-NLS-1$
                 
                 return true;
             }
             catch(KettleException e)
             {
-                logError(Messages.getString("ColumnExists.Log.DBException")+e.getMessage()); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "ColumnExists.Log.DBException")+e.getMessage()); //$NON-NLS-1$
                 if (data.db!=null) {
                 	data.db.disconnect();
                 }

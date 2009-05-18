@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
@@ -18,6 +19,8 @@ import org.pentaho.ui.xul.containers.XulTree;
 
 public class DataOverrideHandler extends DataHandler {
   
+  private static Class<?> PKG = DataOverrideHandler.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   private java.util.List<DatabaseMeta> databases;
   
   public DataOverrideHandler(){
@@ -36,12 +39,12 @@ public class DataOverrideHandler extends DataHandler {
         ded.open();
       } else {
         MessageBox mb = new MessageBox(parent, SWT.OK | SWT.ICON_INFORMATION);
-        mb.setText(Messages.getString("DatabaseDialog.ExplorerNotImplemented.Title")); //$NON-NLS-1$
-        mb.setMessage(Messages.getString("DatabaseDialog.ExplorerNotImplemented.Message")); //$NON-NLS-1$
+        mb.setText(BaseMessages.getString(PKG, "DatabaseDialog.ExplorerNotImplemented.Title")); //$NON-NLS-1$
+        mb.setMessage(BaseMessages.getString(PKG, "DatabaseDialog.ExplorerNotImplemented.Message")); //$NON-NLS-1$
         mb.open();
       }
     } catch (Exception e) {
-      new ErrorDialog( parent, Messages.getString("DatabaseDialog.ErrorParameters.title"), Messages.getString("DatabaseDialog.ErrorParameters.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
+      new ErrorDialog( parent, BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters.title"), BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
     }
   }
 
@@ -76,11 +79,11 @@ public class DataOverrideHandler extends DataHandler {
           rowData.add(row.getData());
 
         PreviewRowsDialog prd = new PreviewRowsDialog(parent, dbinfo, SWT.NONE, null, rowMeta, rowData); 
-        prd.setTitleMessage(Messages.getString("DatabaseDialog.FeatureList.title"), Messages.getString("DatabaseDialog.FeatureList.title")); //$NON-NLS-1$ //$NON-NLS-2$
+        prd.setTitleMessage(BaseMessages.getString(PKG, "DatabaseDialog.FeatureList.title"), BaseMessages.getString(PKG, "DatabaseDialog.FeatureList.title")); //$NON-NLS-1$ //$NON-NLS-2$
         prd.open();
       }
     } catch (Exception e) {
-      new ErrorDialog( parent, Messages.getString("DatabaseDialog.FeatureListError.title"), Messages.getString("DatabaseDialog.FeatureListError.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
+      new ErrorDialog( parent, BaseMessages.getString(PKG, "DatabaseDialog.FeatureListError.title"), BaseMessages.getString(PKG, "DatabaseDialog.FeatureListError.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
     }
   }
   

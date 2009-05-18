@@ -20,6 +20,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -39,6 +40,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class RegexEval extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = RegexEvalMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private RegexEvalMeta meta;
 	private RegexEvalData data;
 	
@@ -88,8 +91,8 @@ public class RegexEval extends BaseStep implements StepInterface
 					if (data.indexOfFieldToEvaluate<0)
 		            {                    
 		                // The field is unreachable !
-						logError(Messages.getString("RegexEval.Log.ErrorFindingField")+ "[" + meta.getMatcher()+"]"); 
-						throw new KettleStepException(Messages.getString("RegexEval.Exception.CouldnotFindField",meta.getMatcher())); 
+						logError(BaseMessages.getString(PKG, "RegexEval.Log.ErrorFindingField")+ "[" + meta.getMatcher()+"]"); 
+						throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Exception.CouldnotFindField",meta.getMatcher())); 
 					}		                
 		                
 					
@@ -97,8 +100,8 @@ public class RegexEval extends BaseStep implements StepInterface
 					if (environmentSubstitute(meta.getResultFieldName()) == null )
 					{
 						//	Result field is missing !
-						logError(Messages.getString("RegexEval.Log.ErrorResultFieldMissing")); 
-						throw new KettleStepException(Messages.getString("RegexEval.Exception.ErrorResultFieldMissing"));
+						logError(BaseMessages.getString(PKG, "RegexEval.Log.ErrorResultFieldMissing")); 
+						throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Exception.ErrorResultFieldMissing"));
 					}
 		                
 				}
@@ -106,8 +109,8 @@ public class RegexEval extends BaseStep implements StepInterface
 			else
 			{
 				// Matcher is missing !
-				log.logError("Error",Messages.getString("RegexEval.Log.ErrorMatcherMissing"));
-				throw new KettleStepException(Messages.getString("RegexEval.Exception.ErrorMatcherMissing")); 
+				log.logError("Error",BaseMessages.getString(PKG, "RegexEval.Log.ErrorMatcherMissing"));
+				throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Exception.ErrorMatcherMissing")); 
 			}
 			
 			// Now create objects to do string to data type conversion...
@@ -168,8 +171,8 @@ public class RegexEval extends BaseStep implements StepInterface
 						if (data.nrExtraFields != m.groupCount())
 						{
 							// Runtime exception case. The number of capture groups in the regex doesn't match the number of fields.
-							log.logError("Error",Messages.getString("RegexEval.Log.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields)));
-							throw new KettleStepException(Messages.getString("RegexEval.Exception.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields))); 
+							log.logError("Error",BaseMessages.getString(PKG, "RegexEval.Log.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields)));
+							throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Exception.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields))); 
 						}
 						values[i] = m.group(i+1);
 					}
@@ -188,7 +191,7 @@ public class RegexEval extends BaseStep implements StepInterface
 					outputRow[data.indexOfFirstCaptureGroupField+i] = convertedValue;
 				}
 			}
-			if (log.isRowLevel()) logRowlevel(Messages.getString("RegexEval.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
+			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "RegexEval.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
 			
 			putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
 		}catch(KettleException e)
@@ -199,7 +202,7 @@ public class RegexEval extends BaseStep implements StepInterface
                 errorMessage = e.toString();
 	        }else
 	        {
-				throw new KettleStepException(Messages.getString("RegexEval.Log.ErrorInStep"), e); //$NON-NLS-1$
+				throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Log.ErrorInStep"), e); //$NON-NLS-1$
 	        }
 			 
 			 if (sendToErrorRow)
@@ -252,7 +255,7 @@ public class RegexEval extends BaseStep implements StepInterface
 			{
 				regularexpression = environmentSubstitute(meta.getScript());
 			}
-			if (log.isDetailed()) logDetailed(Messages.getString("RegexEval.Log.Regexp") + " " + options+regularexpression); 
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RegexEval.Log.Regexp") + " " + options+regularexpression); 
 			
 			if (meta.isCanonicalEqualityFlagSet())
 			{

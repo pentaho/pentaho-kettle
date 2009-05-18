@@ -23,6 +23,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -39,6 +40,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class GetFilesRowsCount extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = GetFilesRowsCountMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private GetFilesRowsCountMeta meta;
 	private GetFilesRowsCountData data;
 	
@@ -98,13 +101,13 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 			 if((!meta.isFileField() && data.last_file)||meta.isFileField())
 			 {
 				 putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
-				 if (log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetFilesRowsCount.Log.TotalRowsFiles"), data.rownr,data.filenr);
+				 if (log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "GetFilesRowsCount.Log.TotalRowsFiles"), data.rownr,data.filenr);
 			 }	
 
 		}catch(KettleException e)
 		{
 			
-			logError(Messages.getString("GetFilesRowsCount.ErrorInStepRunning",e.getMessage())); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "GetFilesRowsCount.ErrorInStepRunning",e.getMessage())); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
@@ -136,7 +139,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 					 }	                        
 		         }
 			}
-			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetFilesRowsCount.Log.RowsInFile", data.file.toString(), ""+data.rownr));
+			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "GetFilesRowsCount.Log.RowsInFile", data.file.toString(), ""+data.rownr));
 		}
 		catch (Exception e)
 		{
@@ -155,7 +158,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 			{
 	            if (data.filenr>=data.files.nrOfFiles()) // finished processing!
 	            {
-	            	if (log.isDetailed()) logDetailed(Messages.getString("GetFilesRowsCount.Log.FinishedProcessing"));
+	            	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.FinishedProcessing"));
 	                return false;
 	            }
 	            
@@ -169,7 +172,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 				data.readrow=getRow();     // Get row from input rowset & set row busy!
 				if (data.readrow==null)
 			    {
-					if (log.isDetailed()) logDetailed(Messages.getString("GetFilesRowsCount.Log.FinishedProcessing"));
+					if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.FinishedProcessing"));
 			         return false;
 			    }
 				
@@ -187,8 +190,8 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 					// Check is filename field is provided
 					if (Const.isEmpty(meta.setOutputFilenameField()))
 					{
-						logError(Messages.getString("GetFilesRowsCount.Log.NoField"));
-						throw new KettleException(Messages.getString("GetFilesRowsCount.Log.NoField"));
+						logError(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.NoField"));
+						throw new KettleException(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.NoField"));
 					}
 					
 					// cache the position of the field			
@@ -198,8 +201,8 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 						if (data.indexOfFilenameField<0)
 						{
 							// The field is unreachable !
-							logError(Messages.getString("GetFilesRowsCount.Log.ErrorFindingField", meta.setOutputFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(Messages.getString("GetFilesRowsCount.Exception.CouldnotFindField",meta.setOutputFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.ErrorFindingField", meta.setOutputFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(BaseMessages.getString(PKG, "GetFilesRowsCount.Exception.CouldnotFindField",meta.setOutputFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 	            	
@@ -208,7 +211,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 				
 				
 				String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
-				if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetFilesRowsCount.Log.FilenameInStream", meta.setOutputFilenameField(),filename));
+				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "GetFilesRowsCount.Log.FilenameInStream", meta.setOutputFilenameField(),filename));
 
 				data.file= KettleVFS.getFileObject(filename);
                
@@ -223,19 +226,19 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 			{
 				// Add this to the result file names...
 				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
-				resultFile.setComment(Messages.getString("GetFilesRowsCount.Log.FileAddedResult"));
+				resultFile.setComment(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.FileAddedResult"));
 				addResultFile(resultFile);
 			}
 			
-			if (log.isDetailed()) logDetailed(Messages.getString("GetFilesRowsCount.Log.OpeningFile", data.file.toString()));
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.OpeningFile", data.file.toString()));
 			getRowNumber();	
-			if (log.isDetailed()) logDetailed(Messages.getString("GetFilesRowsCount.Log.FileOpened", data.file.toString()));
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.FileOpened", data.file.toString()));
 						
 			
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("GetFilesRowsCount.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
+			logError(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
 			stopAll();
 			setErrors(1);
 			return false;
@@ -252,7 +255,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 		{
 			  if((meta.getRowSeparatorFormat().equals("CUSTOM")) && (Const.isEmpty(meta.getRowSeparator())))
 	            {
-	            	log.logError(Messages.getString("GetFilesRowsCount.Error.NoSeparator.Title"), Messages.getString("GetFilesRowsCount.Error.NoSeparator.Msg"));
+	            	log.logError(BaseMessages.getString(PKG, "GetFilesRowsCount.Error.NoSeparator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Error.NoSeparator.Msg"));
 	            	setErrors(1);
 	                stopAll(); 
 	            }
@@ -261,24 +264,24 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 		            if (meta.getRowSeparatorFormat().equals("CR"))
 		    		{
 		    			data.separator='\n';
-		    			if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " \\n");
+		    			if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\n");
 		    		}
 		            else if (meta.getRowSeparatorFormat().equals("LF"))
 		    		{
 		            	data.separator='\r';
-		    			if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " \\r");
+		    			if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\r");
 		    		}
 		            else if (meta.getRowSeparatorFormat().equals("TAB"))
 		    		{
 		            	data.separator='\t';
-		            	if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " \\t");
+		            	if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\t");
 		    		}
 		            else
 		    		{
 		            	
 		            	data.separator=environmentSubstitute(meta.getRowSeparator()).charAt(0);
 		            	 
-		            	if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " " +data.separator);
+		            	if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " " +data.separator);
 		    		}
 	            }
 			  
@@ -287,7 +290,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 				data.files = meta.getFiles(this);
 				if (data.files==null || data.files.nrOfFiles()==0)
 				{
-					logError(Messages.getString("GetFilesRowsCount.Log.NoFiles"));
+					logError(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.NoFiles"));
 					return false;
 				}
 				try{

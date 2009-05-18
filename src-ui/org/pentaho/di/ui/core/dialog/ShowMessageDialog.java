@@ -23,7 +23,6 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Dialog;
@@ -31,9 +30,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.dialog.Messages;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Dialog to enter a text. (descriptions etc.)
@@ -43,6 +43,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class ShowMessageDialog extends Dialog
 {
+	private static Class<?> PKG = ShowMessageDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private String title, message;
 
     private Shell shell;
@@ -150,7 +152,7 @@ public class ShowMessageDialog extends Dialog
         if ( (flags & SWT.OK) !=0)
         {
             Button button = new Button(shell, SWT.PUSH);
-            final String ok = Messages.getString("System.Button.OK"); 
+            final String ok = BaseMessages.getString(PKG, "System.Button.OK"); 
             button.setText(ok);
             SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.OK); } }; 
             button.addSelectionListener(selectionAdapter);
@@ -160,7 +162,7 @@ public class ShowMessageDialog extends Dialog
         if ( (flags & SWT.CANCEL) !=0) 
         {
             Button button = new Button(shell, SWT.PUSH);
-            button.setText(Messages.getString("System.Button.Cancel"));
+            button.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
             SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.CANCEL); } };
             button.addSelectionListener(selectionAdapter);
             adapters.add(selectionAdapter);
@@ -169,7 +171,7 @@ public class ShowMessageDialog extends Dialog
         if ( (flags & SWT.YES) !=0)
         {
             Button button = new Button(shell, SWT.PUSH);
-            button.setText(Messages.getString("System.Button.Yes"));
+            button.setText(BaseMessages.getString(PKG, "System.Button.Yes"));
             SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.YES); } };
             button.addSelectionListener(selectionAdapter);
             adapters.add(selectionAdapter);
@@ -178,7 +180,7 @@ public class ShowMessageDialog extends Dialog
         if ( (flags & SWT.NO) !=0) 
         {
             Button button = new Button(shell, SWT.PUSH);
-            button.setText(Messages.getString("System.Button.No"));
+            button.setText(BaseMessages.getString(PKG, "System.Button.No"));
             SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.NO); } };
             button.addSelectionListener(selectionAdapter);
             adapters.add(selectionAdapter);

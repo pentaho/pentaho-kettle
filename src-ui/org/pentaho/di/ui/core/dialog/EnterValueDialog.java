@@ -36,6 +36,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -49,6 +50,9 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * 
  */
 public class EnterValueDialog extends Dialog {
+	
+  private static Class<?> PKG = EnterValueDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   private Display display;
 
   /*
@@ -122,14 +126,14 @@ public class EnterValueDialog extends Dialog {
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout(formLayout);
-    shell.setText(Messages.getString("EnterValueDialog.Title"));
+    shell.setText(BaseMessages.getString(PKG, "EnterValueDialog.Title"));
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
 
     // Type of value
     wlValueType = new Label(shell, SWT.RIGHT);
-    wlValueType.setText(Messages.getString("EnterValueDialog.Type.Label"));
+    wlValueType.setText(BaseMessages.getString(PKG, "EnterValueDialog.Type.Label"));
     props.setLook(wlValueType);
     fdlValueType = new FormData();
     fdlValueType.left = new FormAttachment(0, 0);
@@ -152,7 +156,7 @@ public class EnterValueDialog extends Dialog {
 
     // Iconsize line
     wlInputString = new Label(shell, SWT.RIGHT);
-    wlInputString.setText(Messages.getString("EnterValueDialog.Value.Label"));
+    wlInputString.setText(BaseMessages.getString(PKG, "EnterValueDialog.Value.Label"));
     props.setLook(wlInputString);
     fdlInputString = new FormData();
     fdlInputString.left = new FormAttachment(0, 0);
@@ -169,7 +173,7 @@ public class EnterValueDialog extends Dialog {
 
     // Format mask
     wlFormat = new Label(shell, SWT.RIGHT);
-    wlFormat.setText(Messages.getString("EnterValueDialog.ConversionFormat.Label"));
+    wlFormat.setText(BaseMessages.getString(PKG, "EnterValueDialog.ConversionFormat.Label"));
     props.setLook(wlFormat);
     fdlFormat = new FormData();
     fdlFormat.left = new FormAttachment(0, 0);
@@ -186,7 +190,7 @@ public class EnterValueDialog extends Dialog {
 
     // Length line
     wlLength = new Label(shell, SWT.RIGHT);
-    wlLength.setText(Messages.getString("EnterValueDialog.Length.Label"));
+    wlLength.setText(BaseMessages.getString(PKG, "EnterValueDialog.Length.Label"));
     props.setLook(wlLength);
     fdlLength = new FormData();
     fdlLength.left = new FormAttachment(0, 0);
@@ -203,7 +207,7 @@ public class EnterValueDialog extends Dialog {
 
     // Precision line
     wlPrecision = new Label(shell, SWT.RIGHT);
-    wlPrecision.setText(Messages.getString("EnterValueDialog.Precision.Label"));
+    wlPrecision.setText(BaseMessages.getString(PKG, "EnterValueDialog.Precision.Label"));
     props.setLook(wlPrecision);
     fdlPrecision = new FormData();
     fdlPrecision.left = new FormAttachment(0, 0);
@@ -220,11 +224,11 @@ public class EnterValueDialog extends Dialog {
 
     // Some buttons
     wOK = new Button(shell, SWT.PUSH);
-    wOK.setText(Messages.getString("System.Button.OK"));
+    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
     wTest = new Button(shell, SWT.PUSH);
-    wTest.setText(Messages.getString("System.Button.Test"));
+    wTest.setText(BaseMessages.getString(PKG, "System.Button.Test"));
     wCancel = new Button(shell, SWT.PUSH);
-    wCancel.setText(Messages.getString("System.Button.Cancel"));
+    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
     BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wTest, wCancel }, margin, wPrecision);
 
@@ -438,8 +442,8 @@ public class EnterValueDialog extends Dialog {
       result.append(Const.CR).append(Const.CR).append("    ").append(v.toString());
       result.append(Const.CR).append("    ").append(v.toStringMeta());
 
-      mb.setMessage(Messages.getString("EnterValueDialog.TestResult.Message", result.toString()));
-      mb.setText(Messages.getString("EnterValueDialog.TestResult.Title"));
+      mb.setMessage(BaseMessages.getString(PKG, "EnterValueDialog.TestResult.Message", result.toString()));
+      mb.setText(BaseMessages.getString(PKG, "EnterValueDialog.TestResult.Title"));
       mb.open();
     } catch (KettleValueException e) {
       new ErrorDialog(shell, "Error", "There was an error during data type conversion: ", e);

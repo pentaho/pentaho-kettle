@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -32,6 +33,8 @@ import org.pentaho.di.trans.steps.mapping.MappingValueRename;
  */
 public class MappingOutput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = MappingOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private MappingOutputMeta meta;
 	private MappingOutputData data;
 
@@ -74,7 +77,7 @@ public class MappingOutput extends BaseStep implements StepInterface
                 try { totalsleep+=10; Thread.sleep(10); } catch(InterruptedException e) { stopAll(); }
                 if (totalsleep>60000)
                 {
-                	throw new KettleException(Messages.getString("MappingOutput.Exception.UnableToConnectWithParentMapping", ""+(totalsleep/1000)));
+                	throw new KettleException(BaseMessages.getString(PKG, "MappingOutput.Exception.UnableToConnectWithParentMapping", ""+(totalsleep/1000)));
                 }
             }
 
@@ -82,7 +85,7 @@ public class MappingOutput extends BaseStep implements StepInterface
             // If not, simply eat the data...
             //
             if (data.targetSteps==null) {
-            	log.logDetailed(toString(), Messages.getString("MappingOutput.NoTargetStepSpecified", getStepname()));
+            	log.logDetailed(toString(), BaseMessages.getString(PKG, "MappingOutput.NoTargetStepSpecified", getStepname()));
             }
         }
         
@@ -91,7 +94,7 @@ public class MappingOutput extends BaseStep implements StepInterface
         // 
 		putRow(data.outputRowMeta, r);     
 
-        if (checkFeedback(getLinesRead())) logBasic(Messages.getString("MappingOutput.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "MappingOutput.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			
 		return true;
 	}

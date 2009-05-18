@@ -28,6 +28,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -42,6 +43,9 @@ import org.w3c.dom.Node;
  * Created on 08-07-2008
  */
 public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
+	
+	private static Class<?> PKG = RandomValueMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public final static int TYPE_RANDOM_NONE = 0;
 
 	public final static int TYPE_RANDOM_NUMBER = 1;
@@ -57,15 +61,15 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 	public static final RandomValueMetaFunction functions[] = new RandomValueMetaFunction[] {
 			null,
 			new RandomValueMetaFunction(TYPE_RANDOM_NUMBER, "random number",
-					Messages.getString("RandomValueMeta.TypeDesc.RandomNumber")),
+					BaseMessages.getString(PKG, "RandomValueMeta.TypeDesc.RandomNumber")),
 			new RandomValueMetaFunction(TYPE_RANDOM_INTEGER,"random integer",
-					Messages.getString("RandomValueMeta.TypeDesc.RandomInteger")),
+					BaseMessages.getString(PKG, "RandomValueMeta.TypeDesc.RandomInteger")),
 			new RandomValueMetaFunction(TYPE_RANDOM_STRING, "random string",
-					Messages.getString("RandomValueMeta.TypeDesc.RandomString")),
+					BaseMessages.getString(PKG, "RandomValueMeta.TypeDesc.RandomString")),
 			new RandomValueMetaFunction(TYPE_RANDOM_UUID, "random uuid",
-					Messages.getString("RandomValueMeta.TypeDesc.RandomUUID")),
+					BaseMessages.getString(PKG, "RandomValueMeta.TypeDesc.RandomUUID")),
 			new RandomValueMetaFunction(TYPE_RANDOM_UUID4, "random uuid4",
-					Messages.getString("RandomValueMeta.TypeDesc.RandomUUID4"))};
+					BaseMessages.getString(PKG, "RandomValueMeta.TypeDesc.RandomUUID4"))};
 
 	private String fieldName[];
 
@@ -290,14 +294,14 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 			if (fieldType[i] <= TYPE_RANDOM_NONE) {
 				CheckResult cr = new CheckResult(
 						CheckResultInterface.TYPE_RESULT_ERROR,
-						Messages.getString("RandomValueMeta.CheckResult.FieldHasNoType",fieldName[i]), stepMeta);
+						BaseMessages.getString(PKG, "RandomValueMeta.CheckResult.FieldHasNoType",fieldName[i]), stepMeta);
 				remarks.add(cr);
 			}
 		}
 		if (remarks.size() == nrRemarks) {
 			CheckResult cr = new CheckResult(
 					CheckResultInterface.TYPE_RESULT_OK,
-					Messages.getString("RandomValueMeta.CheckResult.AllTypesSpecified"),
+					BaseMessages.getString(PKG, "RandomValueMeta.CheckResult.AllTypesSpecified"),
 					stepMeta);
 			remarks.add(cr);
 		}

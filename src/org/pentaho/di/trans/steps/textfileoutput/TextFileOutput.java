@@ -34,6 +34,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -51,6 +52,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class TextFileOutput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static final String FILE_COMPRESSION_TYPE_NONE = TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_NONE];
     private static final String FILE_COMPRESSION_TYPE_ZIP  = TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_ZIP];
     private static final String FILE_COMPRESSION_TYPE_GZIP = TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_GZIP];
@@ -87,7 +90,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				// set the file name for this row
 				//
 				if (data.fileNameFieldIndex < 0) {
-					throw new KettleStepException(Messages.getString("TextFileOutput.Exception.FileNameFieldNotFound", meta.getFileNameField())); // $NON-NLS-1$
+					throw new KettleStepException(BaseMessages.getString(PKG, "TextFileOutput.Exception.FileNameFieldNotFound", meta.getFileNameField())); // $NON-NLS-1$
 				}
 				
 				data.fileNameMeta = getInputRowMeta().getValueMeta(data.fileNameFieldIndex);

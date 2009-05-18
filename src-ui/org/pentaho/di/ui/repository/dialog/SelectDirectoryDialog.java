@@ -33,18 +33,18 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
-import org.pentaho.di.ui.repository.dialog.Messages;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 /**
@@ -58,6 +58,8 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
  */
 public class SelectDirectoryDialog extends Dialog
 {
+	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private PropsUI props;
     private Repository rep;
     private Shell shell;
@@ -96,7 +98,7 @@ public class SelectDirectoryDialog extends Dialog
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
         props.setLook(shell);
 		shell.setImage(GUIResource.getInstance().getImageConnection());
-        shell.setText(Messages.getString("SelectDirectoryDialog.Dialog.Main.Title"));
+        shell.setText(BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.Main.Title"));
 
         FormLayout formLayout = new FormLayout();
         formLayout.marginWidth = Const.FORM_MARGIN;
@@ -115,8 +117,8 @@ public class SelectDirectoryDialog extends Dialog
         catch (KettleException e)
         {
             new ErrorDialog(shell,
-                Messages.getString("SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Title"),
-                Messages.getString("SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Message"), e);
+                BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Title"),
+                BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Message"), e);
             return null;
         }
 
@@ -125,13 +127,13 @@ public class SelectDirectoryDialog extends Dialog
 
         // Buttons
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 
         wRefresh = new Button(shell, SWT.PUSH);
-        wRefresh.setText(Messages.getString("System.Button.Refresh"));
+        wRefresh.setText(BaseMessages.getString(PKG, "System.Button.Refresh"));
 
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
         FormData fdTree = new FormData();
         FormData fdOK = new FormData();
@@ -242,7 +244,7 @@ public class SelectDirectoryDialog extends Dialog
              * NEW Sub-directory
              */
             MenuItem miNew = new MenuItem(mTree, SWT.CASCADE);
-            miNew.setText(Messages.getString("SelectDirectoryDialog.PopupMenu.Directory.New"));
+            miNew.setText(BaseMessages.getString(PKG, "SelectDirectoryDialog.PopupMenu.Directory.New"));
             miNew.addSelectionListener(new SelectionAdapter()
             {
                 public void widgetSelected(SelectionEvent e)
@@ -261,9 +263,9 @@ public class SelectDirectoryDialog extends Dialog
                             // What's the name of the new directory?
                             //
                             EnterStringDialog etd = new EnterStringDialog(shell,
-                                Messages.getString("SelectDirectoryDialog.Dialog.EnterDirectoryName.Title"),
-                                Messages.getString("SelectDirectoryDialog.Dialog.EnterDirectoryName.Message"),
-                                Messages.getString("SelectDirectoryDialog.Dialog.EnterDirectoryName.Default"));
+                                BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Title"),
+                                BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Message"),
+                                BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Default"));
                             String newdir = etd.open();
                             if (newdir != null)
                             {
@@ -279,8 +281,8 @@ public class SelectDirectoryDialog extends Dialog
                                 else
                                 {
                                     MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-                                    mb.setMessage(Messages.getString("SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Message"));
-                                    mb.setText(Messages.getString("SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Title"));
+                                    mb.setMessage(BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Message"));
+                                    mb.setText(BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Title"));
                                     mb.open();
                                 }
                             }
@@ -288,16 +290,16 @@ public class SelectDirectoryDialog extends Dialog
                         else
                         {
                             MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-                            mb.setMessage(Messages.getString("SelectDirectoryDialog.Dialog.UnableToLocateDirectory.Message"));
-                            mb.setText(Messages.getString("SelectDirectoryDialog.Dialog.UnableToLocateDirectory.Title"));
+                            mb.setMessage(BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.UnableToLocateDirectory.Message"));
+                            mb.setText(BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.UnableToLocateDirectory.Title"));
                             mb.open();
                         }
                     }
                     else
                     {
                         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-                        mb.setMessage(Messages.getString("SelectDirectoryDialog.Dialog.PermissionDenied.Message1") + rep.getUserInfo().getLogin() + Messages.getString("SelectDirectoryDialog.Dialog.PermissionDenied.Message2"));
-                        mb.setText(Messages.getString("SelectDirectoryDialog.Dialog.PermissionDenied.Title"));
+                        mb.setMessage(BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Message1") + rep.getUserInfo().getLogin() + BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Message2"));
+                        mb.setText(BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Title"));
                         mb.open();
                     }
                 }
@@ -307,9 +309,9 @@ public class SelectDirectoryDialog extends Dialog
              * RENAME directory
              */
             MenuItem miRen = new MenuItem(mTree, SWT.CASCADE);
-            miRen.setText(Messages.getString("SelectDirectoryDialog.PopupMenu.Directory.Rename"));
+            miRen.setText(BaseMessages.getString(PKG, "SelectDirectoryDialog.PopupMenu.Directory.Rename"));
             MenuItem miDel = new MenuItem(mTree, SWT.CASCADE);
-            miDel.setText(Messages.getString("SelectDirectoryDialog.PopupMenu.Directory.Delete"));
+            miDel.setText(BaseMessages.getString(PKG, "SelectDirectoryDialog.PopupMenu.Directory.Delete"));
         }
         wTree.setMenu(mTree);
     }

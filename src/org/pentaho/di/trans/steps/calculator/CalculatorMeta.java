@@ -27,6 +27,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -44,6 +45,8 @@ import org.w3c.dom.Node;
  */
 public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = CalculatorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** The calculations to be performed */
     private CalculatorMetaFunction[] calculation;
     
@@ -374,26 +377,26 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
 		if (input.length>0)
 		{
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, 
-					             Messages.getString("CalculatorMeta.CheckResult.ExpectedInputOk"), stepMeta);
+					             BaseMessages.getString(PKG, "CalculatorMeta.CheckResult.ExpectedInputOk"), stepMeta);
 			remarks.add(cr);
 			
 			if (prev==null || prev.size()==0)
 			{
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, 
-						             Messages.getString("CalculatorMeta.CheckResult.ExpectedInputError"), stepMeta);
+						             BaseMessages.getString(PKG, "CalculatorMeta.CheckResult.ExpectedInputError"), stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, 
-						             Messages.getString("CalculatorMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
+						             BaseMessages.getString(PKG, "CalculatorMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
 				remarks.add(cr);
 			}
 		}
 		else
 		{
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
-					             Messages.getString("CalculatorMeta.CheckResult.ExpectedInputError"), stepMeta);
+					             BaseMessages.getString(PKG, "CalculatorMeta.CheckResult.ExpectedInputError"), stepMeta);
 			remarks.add(cr);
 		}
 	}

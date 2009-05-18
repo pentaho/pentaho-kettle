@@ -15,8 +15,6 @@ package org.pentaho.di.trans.steps.stringcut;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -30,6 +28,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -38,6 +37,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 
 /**
@@ -46,6 +46,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 	
+	private static Class<?> PKG = StringCutMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String fieldInStream[];
 	
 	private String fieldOutStream[];
@@ -150,7 +152,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 			}
 		} catch (Exception e) {
 			throw new KettleXMLException(
-					Messages.getString("StringCutMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "StringCutMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -198,7 +200,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 			}
 		} catch (Exception e) {
 			throw new KettleException(
-					Messages.getString("StringCutMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "StringCutMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -214,7 +216,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 			}
 		} catch (Exception e) {
 			throw new KettleException(
-					Messages.getString("StringCutMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "StringCutMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
 		}
 	}
 	 public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep,
@@ -239,7 +241,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 		boolean error_found = false;
 
 		if (prev == null) {
-			error_message += Messages.getString("StringCutMeta.CheckResult.NoInputReceived") + Const.CR; //$NON-NLS-1$
+			error_message += BaseMessages.getString(PKG, "StringCutMeta.CheckResult.NoInputReceived") + Const.CR; //$NON-NLS-1$
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR,	error_message, stepinfo);
 			remarks.add(cr);
 		} else {
@@ -251,7 +253,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 				if (v == null) {
 					if (first) {
 						first = false;
-						error_message += Messages.getString("StringCutMeta.CheckResult.MissingInStreamFields") + Const.CR; //$NON-NLS-1$
+						error_message += BaseMessages.getString(PKG, "StringCutMeta.CheckResult.MissingInStreamFields") + Const.CR; //$NON-NLS-1$
 					}
 					error_found = true;
 					error_message += "\t\t" + field + Const.CR; //$NON-NLS-1$
@@ -262,7 +264,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 			} else {
 				cr = new CheckResult(
 						CheckResult.TYPE_RESULT_OK,
-						Messages.getString("StringCutMeta.CheckResult.FoundInStreamFields"), stepinfo); //$NON-NLS-1$
+						BaseMessages.getString(PKG, "StringCutMeta.CheckResult.FoundInStreamFields"), stepinfo); //$NON-NLS-1$
 			}
 			remarks.add(cr);
 
@@ -277,7 +279,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 					if (v.getType() != ValueMeta.TYPE_STRING) {
 						if (first) {
 							first = false;
-							error_message += Messages.getString("StringCutMeta.CheckResult.OperationOnNonStringFields") + Const.CR; //$NON-NLS-1$
+							error_message += BaseMessages.getString(PKG, "StringCutMeta.CheckResult.OperationOnNonStringFields") + Const.CR; //$NON-NLS-1$
 						}
 						error_found = true;
 						error_message += "\t\t" + field + Const.CR; //$NON-NLS-1$
@@ -290,7 +292,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 			} else {
 				cr = new CheckResult(
 						CheckResult.TYPE_RESULT_OK,
-						Messages.getString("StringCutMeta.CheckResult.AllOperationsOnStringFields"), stepinfo); //$NON-NLS-1$
+						BaseMessages.getString(PKG, "StringCutMeta.CheckResult.AllOperationsOnStringFields"), stepinfo); //$NON-NLS-1$
 			}
 			remarks.add(cr);
 
@@ -299,7 +301,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 					if (Const.isEmpty(fieldInStream[idx])) {
 						cr = new CheckResult(
 								CheckResult.TYPE_RESULT_ERROR,
-								Messages.getString("StringCutMeta.CheckResult.InStreamFieldMissing", new Integer(idx + 1).toString()), stepinfo); //$NON-NLS-1$
+								BaseMessages.getString(PKG, "StringCutMeta.CheckResult.InStreamFieldMissing", new Integer(idx + 1).toString()), stepinfo); //$NON-NLS-1$
 						remarks.add(cr);
 					
 					}
@@ -311,7 +313,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 				for (int jdx = 0; jdx < fieldInStream.length; jdx++) {
 					if (fieldInStream[idx].equals(fieldInStream[jdx])
 							&& idx != jdx && idx < jdx) {
-						error_message = Messages.getString("StringCutMeta.CheckResult.FieldInputError", fieldInStream[idx]); //$NON-NLS-1$
+						error_message = BaseMessages.getString(PKG, "StringCutMeta.CheckResult.FieldInputError", fieldInStream[idx]); //$NON-NLS-1$
 						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR,error_message, stepinfo);
 						remarks.add(cr);
 					}

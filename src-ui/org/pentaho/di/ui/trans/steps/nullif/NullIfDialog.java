@@ -44,20 +44,22 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.nullif.Messages;
 import org.pentaho.di.trans.steps.nullif.NullIfMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = NullIfMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlStepname;
 	private Text         wStepname;
     private FormData     fdlStepname, fdStepname;
@@ -102,14 +104,14 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("NullIfDialog.Shell.Label")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "NullIfDialog.Shell.Label")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("NullIfDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "NullIfDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -127,7 +129,7 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 		wStepname.setLayoutData(fdStepname);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("NullIfDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "NullIfDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -138,8 +140,8 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 		final int FieldsRows=input.getFieldName().length;
 		
 		colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("NullIfDialog.ColumnInfo.Name"),       	   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
-		colinf[1]=new ColumnInfo(Messages.getString("NullIfDialog.ColumnInfo.ValueToNull"),    ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "NullIfDialog.ColumnInfo.Name"),       	   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
+		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "NullIfDialog.ColumnInfo.ValueToNull"),    ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 
 		wFields=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -179,7 +181,7 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -190,11 +192,11 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 				
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel, wGet }, margin, wFields);
 
@@ -306,7 +308,7 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("System.Dialog.GetFieldsFailed.Title"), Messages.getString("System.Dialog.GetFieldsFailed.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Title"), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}	
 }

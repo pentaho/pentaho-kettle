@@ -23,21 +23,20 @@ package org.pentaho.di.trans.steps.rssinput;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -46,10 +45,12 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 public class RssInputMeta extends BaseStepMeta implements StepMetaInterface
 {	
-	
+	private static Class<?> PKG = RssInput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	/** Flag indicating that a row number field should be included in the output */
 	private  boolean includeRowNumber;
 	
@@ -469,7 +470,7 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface
         }
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("RssInputMeta.Exception.ErrorReadingRepository"), e);
+			throw new KettleException(BaseMessages.getString(PKG, "RssInputMeta.Exception.ErrorReadingRepository"), e);
 		}
 	}
 	
@@ -508,7 +509,7 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("RssInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
+			throw new KettleException(BaseMessages.getString(PKG, "RssInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
 		}
 	}
 	
@@ -530,12 +531,12 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			 if (Const.isEmpty(getUrlFieldname()))
 			 {
-				 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("RssInputMeta.CheckResult.NoField"), stepMeta);
+				 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "RssInputMeta.CheckResult.NoField"), stepMeta);
 				 remarks.add(cr); 
 			 }
 			 else
 			 {
-				 cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RssInputMeta.CheckResult.FieldOk"), stepMeta);
+				 cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "RssInputMeta.CheckResult.FieldOk"), stepMeta);
 				 remarks.add(cr); 
 			 }		 
 		}
@@ -543,12 +544,12 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (getUrl()==null || getUrl().length==0)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("RssInputMeta.CheckResult.NoUrl"), stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "RssInputMeta.CheckResult.NoUrl"), stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RssInputMeta.CheckResult.UrlOk", ""+ getUrl().length), stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "RssInputMeta.CheckResult.UrlOk", ""+ getUrl().length), stepMeta);
 				remarks.add(cr);
 			}	
 		}	

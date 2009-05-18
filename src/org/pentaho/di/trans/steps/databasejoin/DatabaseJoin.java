@@ -19,6 +19,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -36,6 +37,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class DatabaseJoin extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = DatabaseJoinMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private DatabaseJoinMeta meta;
 	private DatabaseJoinData data;
 	
@@ -55,7 +58,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			
 			data.lookupRowMeta = new RowMeta();
 			
-			if (log.isDetailed()) logDetailed(Messages.getString("DatabaseJoin.Log.CheckingRow")+rowMeta.getString(rowData)); //$NON-NLS-1$
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DatabaseJoin.Log.CheckingRow")+rowMeta.getString(rowData)); //$NON-NLS-1$
 			
 			data.keynrs = new int[meta.getParameterField().length];
 			
@@ -64,7 +67,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 				data.keynrs[i]=rowMeta.indexOfValue(meta.getParameterField()[i]);
 				if (data.keynrs[i]<0)
 				{
-					throw new KettleStepException(Messages.getString("DatabaseJoin.Exception.FieldNotFound",meta.getParameterField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "DatabaseJoin.Exception.FieldNotFound",meta.getParameterField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				
 				data.lookupRowMeta.addValueMeta( rowMeta.getValueMeta(data.keynrs[i]).clone() );
@@ -101,7 +104,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			// we have to clone, otherwise we only get the last new value
 			putRow(data.outputRowMeta, data.outputRowMeta.cloneRow(newRow));
 			
-			if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseJoin.Log.PutoutRow")+data.outputRowMeta.getString(newRow)); //$NON-NLS-1$
+			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DatabaseJoin.Log.PutoutRow")+data.outputRowMeta.getString(newRow)); //$NON-NLS-1$
 			
 			// Get a new row
 			if (meta.getRowLimit()==0 || counter<meta.getRowLimit()) 
@@ -152,7 +155,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(Messages.getString("DatabaseJoin.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "DatabaseJoin.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
 		}
 		catch(KettleException e)
@@ -166,7 +169,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			else
 			{
 
-				logError(Messages.getString("DatabaseJoin.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DatabaseJoin.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -218,20 +221,20 @@ public class DatabaseJoin extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 				
-                if (log.isDetailed()) logDetailed(Messages.getString("DatabaseJoin.Log.ConnectedToDB")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DatabaseJoin.Log.ConnectedToDB")); //$NON-NLS-1$
 	
                 String sql=meta.getSql();
                 if(meta.isVariableReplace()) sql=environmentSubstitute(sql);
 				// Prepare the SQL statement
 				data.pstmt = data.db.prepareSQL(sql);
-				if(log.isDebug()) log.logDebug(toString(), Messages.getString("DatabaseJoin.Log.SQLStatement",sql));
+				if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "DatabaseJoin.Log.SQLStatement",sql));
 				data.db.setQueryLimit(meta.getRowLimit());
 				
 				return true;
 			}
 			catch(KettleException e)
 			{
-				logError(Messages.getString("DatabaseJoin.Log.DatabaseError")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DatabaseJoin.Log.DatabaseError")+e.getMessage()); //$NON-NLS-1$
 				if (data.db!=null) {
                 	data.db.disconnect();
 				}

@@ -13,6 +13,7 @@ package org.pentaho.di.trans.steps.rowstoresult;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -29,6 +30,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class RowsToResult extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = RowsToResult.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private RowsToResultMeta meta;
 
 	private RowsToResultData data;
@@ -61,7 +64,7 @@ public class RowsToResult extends BaseStep implements StepInterface
 										// rowset(s).
 
 		if (checkFeedback(getLinesRead()))
-			logBasic(Messages.getString("RowsToResult.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+			logBasic(BaseMessages.getString(PKG, "RowsToResult.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
 
 		return true;
 	}

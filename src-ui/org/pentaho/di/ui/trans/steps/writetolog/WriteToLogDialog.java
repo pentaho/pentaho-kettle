@@ -47,29 +47,28 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.TableView;
-
 import org.pentaho.di.core.Const;
-
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.writetolog.Messages;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.writetolog.WriteToLogMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
-import org.pentaho.di.trans.step.StepMeta;
 
 
 public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = WriteToLogMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private WriteToLogMeta input;
     private Label wlLoglevel;
 
@@ -119,14 +118,14 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("WriteToLogDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "WriteToLogDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("WriteToLogDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "WriteToLogDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -145,7 +144,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 		
 		 // Log Level
         wlLoglevel = new Label(shell, SWT.RIGHT);
-        wlLoglevel.setText(Messages.getString("WriteToLogDialog.Loglevel.Label"));
+        wlLoglevel.setText(BaseMessages.getString(PKG, "WriteToLogDialog.Loglevel.Label"));
         props.setLook(wlLoglevel);
         fdlLoglevel = new FormData();
         fdlLoglevel.left = new FormAttachment(0, 0);
@@ -166,7 +165,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// print header?
 		wlPrintHeader=new Label(shell, SWT.RIGHT);
-		wlPrintHeader.setText(Messages.getString("WriteToLogDialog.PrintHeader.Label"));
+		wlPrintHeader.setText(BaseMessages.getString(PKG, "WriteToLogDialog.PrintHeader.Label"));
 		props.setLook(wlPrintHeader);
 		fdlPrintHeader=new FormData();
 		fdlPrintHeader.left  = new FormAttachment(0, 0);
@@ -174,7 +173,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 		fdlPrintHeader.right = new FormAttachment(middle, -margin);
 		wlPrintHeader.setLayoutData(fdlPrintHeader);
 		wPrintHeader=new Button(shell, SWT.CHECK);
-		wPrintHeader.setToolTipText(Messages.getString("WriteToLogDialog.PrintHeader.Tooltip"));
+		wPrintHeader.setToolTipText(BaseMessages.getString(PKG, "WriteToLogDialog.PrintHeader.Tooltip"));
  		props.setLook(wPrintHeader);
 		fdPrintHeader=new FormData();
 		fdPrintHeader.left  = new FormAttachment(middle, 0);
@@ -184,17 +183,17 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 		
         
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("System.Button.GetFields"));
+		wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
         
         // Table with fields
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("WriteToLogDialog.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "WriteToLogDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -205,7 +204,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 		final int FieldsRows=input.getFieldName().length;
 		
 		colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("WriteToLogDialog.Fieldname.Column"),  
+		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "WriteToLogDialog.Fieldname.Column"),  
 				ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
 		wFields=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -245,7 +244,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -319,7 +318,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("System.Dialog.GetFieldsFailed.Title"), Messages.getString("System.Dialog.GetFieldsFailed.Message"), ke);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Title"), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"), ke);
 		}
 
 	}

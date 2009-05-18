@@ -56,6 +56,7 @@ import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -65,7 +66,6 @@ import org.pentaho.di.trans.steps.mapping.MappingIODefinition;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.mapping.MappingParameters;
 import org.pentaho.di.trans.steps.mapping.MappingValueRename;
-import org.pentaho.di.trans.steps.mapping.Messages;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -78,6 +78,8 @@ import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = MappingMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private MappingMeta mappingMeta;
 
 	private Group gTransGroup;
@@ -258,14 +260,14 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("MappingDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "MappingDialog.Shell.Title")); //$NON-NLS-1$
 
 		middle = props.getMiddlePct();
 		margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("MappingDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "MappingDialog.Stepname.Label")); //$NON-NLS-1$
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -291,7 +293,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		// //////////////////////////////////////////////////
 		//
 		gTransGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
-		gTransGroup.setText(Messages.getString("MappingDialog.TransGroup.Label")); //$NON-NLS-1$;
+		gTransGroup.setText(BaseMessages.getString(PKG, "MappingDialog.TransGroup.Label")); //$NON-NLS-1$;
 		gTransGroup.setBackground(shell.getBackground()); // the default looks
 		// ugly
 		FormLayout transGroupLayout = new FormLayout();
@@ -306,8 +308,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		wFileRadio = new Button(gTransGroup, SWT.RADIO);
 		props.setLook(wFileRadio);
 		wFileRadio.setSelection(false);
-		wFileRadio.setText(Messages.getString("MappingDialog.RadioFile.Label")); //$NON-NLS-1$
-		wFileRadio.setToolTipText(Messages.getString("MappingDialog.RadioFile.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		wFileRadio.setText(BaseMessages.getString(PKG, "MappingDialog.RadioFile.Label")); //$NON-NLS-1$
+		wFileRadio.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.RadioFile.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
 		FormData fdFileRadio = new FormData();
 		fdFileRadio.left = new FormAttachment(0, 0);
 		fdFileRadio.right = new FormAttachment(100, 0);
@@ -316,8 +318,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		wbbFilename = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
 		props.setLook(wbbFilename);
-		wbbFilename.setText(Messages.getString("System.Button.Browse"));
-		wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+		wbbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+		wbbFilename.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 		FormData fdbFilename = new FormData();
 		fdbFilename.right = new FormAttachment(100, 0);
 		fdbFilename.top = new FormAttachment(wFileRadio, margin);
@@ -352,8 +354,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		wRepRadio = new Button(gTransGroup, SWT.RADIO);
 		props.setLook(wRepRadio);
 		wRepRadio.setSelection(false);
-		wRepRadio.setText(Messages.getString("MappingDialog.RadioRep.Label")); //$NON-NLS-1$
-		wRepRadio.setToolTipText(Messages.getString("MappingDialog.RadioRep.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		wRepRadio.setText(BaseMessages.getString(PKG, "MappingDialog.RadioRep.Label")); //$NON-NLS-1$
+		wRepRadio.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.RadioRep.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
 		FormData fdRepRadio = new FormData();
 		fdRepRadio.left = new FormAttachment(0, 0);
 		fdRepRadio.right = new FormAttachment(100, 0);
@@ -362,8 +364,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		wbTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
 		props.setLook(wbTrans);
-		wbTrans.setText(Messages.getString("MappingDialog.Select.Button"));
-		wbTrans.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+		wbTrans.setText(BaseMessages.getString(PKG, "MappingDialog.Select.Button"));
+		wbTrans.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 		FormData fdbTrans = new FormData();
 		fdbTrans.right = new FormAttachment(100, 0);
 		fdbTrans.top = new FormAttachment(wRepRadio, 2 * margin);
@@ -396,8 +398,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		wEditTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
 		props.setLook(wEditTrans);
-		wEditTrans.setText(Messages.getString("MappingDialog.Edit.Button"));
-		wEditTrans.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+		wEditTrans.setText(BaseMessages.getString(PKG, "MappingDialog.Edit.Button"));
+		wEditTrans.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 		FormData fdEditTrans = new FormData();
 		fdEditTrans.left = new FormAttachment(0, 0);
 		fdEditTrans.right = new FormAttachment(100, 0);
@@ -438,7 +440,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		// tabs...
 		wAddInput = new Button(shell, SWT.PUSH);
 		props.setLook(wAddInput);
-		wAddInput.setText(Messages.getString("MappingDialog.button.AddInput"));
+		wAddInput.setText(BaseMessages.getString(PKG, "MappingDialog.button.AddInput"));
 		wAddInput.addSelectionListener(new SelectionAdapter()
 		{
 
@@ -458,7 +460,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		wAddOutput = new Button(shell, SWT.PUSH);
 		props.setLook(wAddOutput);
-		wAddOutput.setText(Messages.getString("MappingDialog.button.AddOutput"));
+		wAddOutput.setText(BaseMessages.getString(PKG, "MappingDialog.button.AddOutput"));
 
 		wAddOutput.addSelectionListener(new SelectionAdapter()
 		{
@@ -481,9 +483,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Some buttons
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -563,7 +565,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		{
 			new ErrorDialog(
 					shell,
-					Messages.getString("MappingDialog.ErrorSelectingObject.DialogTitle"), Messages.getString("MappingDialog.ErrorSelectingObject.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "MappingDialog.ErrorSelectingObject.DialogTitle"), BaseMessages.getString(PKG, "MappingDialog.ErrorSelectingObject.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -609,13 +611,13 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		{
 			new ErrorDialog(
 					shell,
-					Messages.getString("MappingDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("MappingDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (KettleException e)
 
 		{
 			new ErrorDialog(
 					shell,
-					Messages.getString("MappingDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("MappingDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}
@@ -645,8 +647,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		} catch (KettleException e)
 		{
-			new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorShowingTransformation.Title"),
-					Messages.getString("MappingDialog.ErrorShowingTransformation.Message"), e);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "MappingDialog.ErrorShowingTransformation.Title"),
+					BaseMessages.getString(PKG, "MappingDialog.ErrorShowingTransformation.Message"), e);
 		}
 	}
 
@@ -665,12 +667,12 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				RepositoryDirectory repdir = repository.getDirectoryTree().findDirectory(wTransDir.getText());
 				if (repdir == null)
 				{
-					throw new KettleException(Messages.getString("MappingDialog.Exception.UnableToFindRepositoryDirectory)"));
+					throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.UnableToFindRepositoryDirectory)"));
 				}
 				loadRepositoryTrans(wTransName.getText(), repdir);
 			} else
 			{
-				throw new KettleException(Messages.getString("MappingDialog.Exception.NoValidMappingDetailsFound"));
+				throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.NoValidMappingDetailsFound"));
 			}
 		}
 	}
@@ -733,25 +735,25 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	private void addOutputMappingDefinitionTab(MappingIODefinition definition, int index)
 	{
 		addMappingDefinitionTab(outputMappings.get(index), index + 1 + inputMappings.size(), 
-				Messages.getString("MappingDialog.OutputTab.Title"), 
-				Messages.getString("MappingDialog.InputTab.Tooltip"), 
-				Messages.getString("MappingDialog.OutputTab.label.InputSourceStepName"), 
-				Messages.getString("MappingDialog.OutputTab.label.OutputTargetStepName"), 
-				Messages.getString("MappingDialog.OutputTab.label.Description"), 
-				Messages.getString("MappingDialog.OutputTab.column.SourceField"), 
-				Messages.getString("MappingDialog.OutputTab.column.TargetField"), false);
+				BaseMessages.getString(PKG, "MappingDialog.OutputTab.Title"), 
+				BaseMessages.getString(PKG, "MappingDialog.InputTab.Tooltip"), 
+				BaseMessages.getString(PKG, "MappingDialog.OutputTab.label.InputSourceStepName"), 
+				BaseMessages.getString(PKG, "MappingDialog.OutputTab.label.OutputTargetStepName"), 
+				BaseMessages.getString(PKG, "MappingDialog.OutputTab.label.Description"), 
+				BaseMessages.getString(PKG, "MappingDialog.OutputTab.column.SourceField"), 
+				BaseMessages.getString(PKG, "MappingDialog.OutputTab.column.TargetField"), false);
 
 	}
 
 	private void addInputMappingDefinitionTab(MappingIODefinition definition, int index)
 	{
-		addMappingDefinitionTab(definition, index + 1, Messages.getString("MappingDialog.InputTab.Title"),
-				Messages.getString("MappingDialog.InputTab.Tooltip"), 
-				Messages.getString("MappingDialog.InputTab.label.InputSourceStepName"), 
-				Messages.getString("MappingDialog.InputTab.label.OutputTargetStepName"), 
-				Messages.getString("MappingDialog.InputTab.label.Description"), 
-				Messages.getString("MappingDialog.InputTab.column.SourceField"), 
-				Messages.getString("MappingDialog.InputTab.column.TargetField"), true);
+		addMappingDefinitionTab(definition, index + 1, BaseMessages.getString(PKG, "MappingDialog.InputTab.Title"),
+				BaseMessages.getString(PKG, "MappingDialog.InputTab.Tooltip"), 
+				BaseMessages.getString(PKG, "MappingDialog.InputTab.label.InputSourceStepName"), 
+				BaseMessages.getString(PKG, "MappingDialog.InputTab.label.OutputTargetStepName"), 
+				BaseMessages.getString(PKG, "MappingDialog.InputTab.label.Description"), 
+				BaseMessages.getString(PKG, "MappingDialog.InputTab.column.SourceField"), 
+				BaseMessages.getString(PKG, "MappingDialog.InputTab.column.TargetField"), true);
 
 	}
 
@@ -759,8 +761,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	{
 
 		CTabItem wParametersTab = new CTabItem(wTabFolder, SWT.NONE);
-		wParametersTab.setText(Messages.getString("MappingDialog.Parameters.Title")); //$NON-NLS-1$
-		wParametersTab.setToolTipText(Messages.getString("MappingDialog.Parameters.Tooltip")); //$NON-NLS-1$
+		wParametersTab.setText(BaseMessages.getString(PKG, "MappingDialog.Parameters.Title")); //$NON-NLS-1$
+		wParametersTab.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.Parameters.Tooltip")); //$NON-NLS-1$
 
 		Composite wParametersComposite = new Composite(wTabFolder, SWT.NONE);
 		props.setLook(wParametersComposite);
@@ -773,7 +775,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		// Add a checkbox: inherit all variables...
 		//
 		Button wInheritAll = new Button(wParametersComposite, SWT.CHECK);
-		wInheritAll.setText(Messages.getString("MappingDialog.Parameters.InheritAll"));
+		wInheritAll.setText(BaseMessages.getString(PKG, "MappingDialog.Parameters.InheritAll"));
 		props.setLook(wInheritAll);
 		FormData fdInheritAll = new FormData();
 		fdInheritAll.bottom = new FormAttachment(100,0);
@@ -787,9 +789,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		//
 		ColumnInfo[] colinfo = new ColumnInfo[] {
 				new ColumnInfo(
-						Messages.getString("MappingDialog.Parameters.column.Variable"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "MappingDialog.Parameters.column.Variable"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
 				new ColumnInfo(
-						Messages.getString("MappingDialog.Parameters.column.ValueOrField"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "MappingDialog.Parameters.column.ValueOrField"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
 		};
 		colinfo[1].setUsingVariables(true);
 
@@ -828,12 +830,12 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 	protected String selectTransformationStepname(boolean getTransformationStep, boolean mappingInput)
 	{
-		String dialogTitle = Messages.getString("MappingDialog.SelectTransStep.Title");
-		String dialogMessage = Messages.getString("MappingDialog.SelectTransStep.Message");
+		String dialogTitle = BaseMessages.getString(PKG, "MappingDialog.SelectTransStep.Title");
+		String dialogMessage = BaseMessages.getString(PKG, "MappingDialog.SelectTransStep.Message");
 		if (getTransformationStep)
 		{
-			dialogTitle = Messages.getString("MappingDialog.SelectTransStep.Title");
-			dialogMessage = Messages.getString("MappingDialog.SelectTransStep.Message");
+			dialogTitle = BaseMessages.getString(PKG, "MappingDialog.SelectTransStep.Title");
+			dialogMessage = BaseMessages.getString(PKG, "MappingDialog.SelectTransStep.Message");
 			String[] stepnames;
 			if (mappingInput)
 			{
@@ -847,8 +849,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			return dialog.open();
 		} else
 		{
-			dialogTitle = Messages.getString("MappingDialog.SelectMappingStep.Title");
-			dialogMessage = Messages.getString("MappingDialog.SelectMappingStep.Message");
+			dialogTitle = BaseMessages.getString(PKG, "MappingDialog.SelectMappingStep.Title");
+			dialogMessage = BaseMessages.getString(PKG, "MappingDialog.SelectMappingStep.Message");
 
 			String[] stepnames = getMappingSteps(mappingTransMeta, mappingInput);
 			EnterSelectionDialog dialog = new EnterSelectionDialog(shell, stepnames, dialogTitle,
@@ -897,7 +899,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				StepMeta stepMeta = transMeta.findStep(stepname);
 				if (stepMeta == null)
 				{
-					throw new KettleException(Messages.getString("MappingDialog.Exception.SpecifiedStepWasNotFound", stepname));
+					throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.SpecifiedStepWasNotFound", stepname));
 				}
 				return transMeta.getStepFields(stepMeta);
 			}
@@ -906,7 +908,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		else
 		{
 			if (mappingTransMeta==null) {
-				throw new KettleException(Messages.getString("MappingDialog.Exception.NoMappingSpecified"));
+				throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.NoMappingSpecified"));
 			}
 
 			if (Const.isEmpty(stepname))
@@ -917,11 +919,11 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				String[] stepnames = getMappingSteps(mappingTransMeta, mappingInput);
 				if (stepnames.length > 1)
 				{
-					throw new KettleException(Messages.getString("MappingDialog.Exception.OnlyOneMappingInputStepAllowed", "" + stepnames.length));
+					throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.OnlyOneMappingInputStepAllowed", "" + stepnames.length));
 				}
 				if (stepnames.length == 0)
 				{
-					throw new KettleException(Messages.getString("MappingDialog.Exception.OneMappingInputStepRequired", "" + stepnames.length));
+					throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.OneMappingInputStepRequired", "" + stepnames.length));
 				}
 				return mappingTransMeta.getStepFields(stepnames[0]);
 			} 
@@ -932,7 +934,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				StepMeta stepMeta = mappingTransMeta.findStep(stepname);
 				if (stepMeta == null)
 				{
-					throw new KettleException(Messages.getString("MappingDialog.Exception.SpecifiedStepWasNotFound", stepname));
+					throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.SpecifiedStepWasNotFound", stepname));
 				}
 				return mappingTransMeta.getStepFields(stepMeta);
 			}
@@ -966,7 +968,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		//
 		Button wbInputStep = new Button(wInputComposite, SWT.PUSH);
 		props.setLook(wbInputStep);
-		wbInputStep.setText(Messages.getString("MappingDialog.button.SourceStepName"));
+		wbInputStep.setText(BaseMessages.getString(PKG, "MappingDialog.button.SourceStepName"));
 		FormData fdbInputStep = new FormData();
 		fdbInputStep.top = new FormAttachment(0, 0);
 		fdbInputStep.right = new FormAttachment(100, 0); // First one in the
@@ -1021,7 +1023,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		//
 		Button wbOutputStep = new Button(wInputComposite, SWT.PUSH);
 		props.setLook(wbOutputStep);
-		wbOutputStep.setText(Messages.getString("MappingDialog.button.SourceStepName"));
+		wbOutputStep.setText(BaseMessages.getString(PKG, "MappingDialog.button.SourceStepName"));
 		FormData fdbOutputStep = new FormData();
 		fdbOutputStep.top = new FormAttachment(wbInputStep, margin);
 		fdbOutputStep.right = new FormAttachment(100, 0);
@@ -1052,7 +1054,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		//
 		Label wlMainPath = new Label(wInputComposite, SWT.RIGHT);
 		props.setLook(wlMainPath);
-		wlMainPath.setText(Messages.getString("MappingDialog.input.MainDataPath")); //$NON-NLS-1$
+		wlMainPath.setText(BaseMessages.getString(PKG, "MappingDialog.input.MainDataPath")); //$NON-NLS-1$
 		FormData fdlMainPath = new FormData();
 		fdlMainPath.top = new FormAttachment(wbOutputStep, margin);
 		fdlMainPath.left = new FormAttachment(0, 0);
@@ -1087,7 +1089,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		//
 		Label wlRenameOutput = new Label(wInputComposite, SWT.RIGHT);
 		props.setLook(wlRenameOutput);
-		wlRenameOutput.setText(Messages.getString("MappingDialog.input.RenamingOnOutput")); //$NON-NLS-1$
+		wlRenameOutput.setText(BaseMessages.getString(PKG, "MappingDialog.input.RenamingOnOutput")); //$NON-NLS-1$
 		FormData fdlRenameOutput = new FormData();
 		fdlRenameOutput.top = new FormAttachment(wMainPath, margin);
 		fdlRenameOutput.left = new FormAttachment(0, 0);
@@ -1155,7 +1157,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		//
 		final Button wbEnterMapping = new Button(wInputComposite, SWT.PUSH);
 		props.setLook(wbEnterMapping);
-		wbEnterMapping.setText(Messages.getString("MappingDialog.button.EnterMapping"));
+		wbEnterMapping.setText(BaseMessages.getString(PKG, "MappingDialog.button.EnterMapping"));
 		FormData fdbEnterMapping = new FormData();
 		fdbEnterMapping.top = new FormAttachment(wDescription, margin * 2);
 		fdbEnterMapping.right = new FormAttachment(100, 0); // First one in the
@@ -1227,7 +1229,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 					}
 				} catch (KettleException e)
 				{
-					new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("MappingDialog.Exception.ErrorGettingMappingSourceAndTargetFields", e.toString()), e);
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "MappingDialog.Exception.ErrorGettingMappingSourceAndTargetFields", e.toString()), e);
 				}
 			}
 
@@ -1301,8 +1303,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 					// definition tab.
 					// We really should warn him that this is a bad idea...
 					MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO);
-					box.setText(Messages.getString("MappingDialog.CloseDefinitionTabAreYouSure.Title"));
-					box.setMessage(Messages.getString("MappingDialog.CloseDefinitionTabAreYouSure.Message"));
+					box.setText(BaseMessages.getString(PKG, "MappingDialog.CloseDefinitionTabAreYouSure.Title"));
+					box.setMessage(BaseMessages.getString(PKG, "MappingDialog.CloseDefinitionTabAreYouSure.Message"));
 					int answer = box.open();
 					if (answer != SWT.YES)
 					{
@@ -1431,7 +1433,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			loadTransformation();
 		} catch (KettleException e)
 		{
-			new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Title"), Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Message"), e);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingSpecifiedTransformation.Title"), BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingSpecifiedTransformation.Message"), e);
 		}
 		
 		mappingMeta.setFileName(wFilename.getText());

@@ -23,8 +23,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage2;
-import org.pentaho.di.ui.spoon.wizards.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
 
@@ -37,6 +36,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class CopyTableWizardPage1 extends WizardPage
 {
+    private static Class<?> PKG = CopyTableWizard.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private List     wSourceDB, wTargetDB;
 	private FormData fdSourceDB, fdTargetDB;
 
@@ -55,8 +56,8 @@ public class CopyTableWizardPage1 extends WizardPage
 		this.props=PropsUI.getInstance();
 		this.databases=databases;
 		
-		setTitle(Messages.getString("CopyTableWizardPage1.Dialog.Title")); //$NON-NLS-1$
-		setDescription(Messages.getString("CopyTableWizardPage1.Dialog.Description")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CopyTableWizardPage1.Dialog.Title")); //$NON-NLS-1$
+		setDescription(BaseMessages.getString(PKG, "CopyTableWizardPage1.Dialog.Description")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -133,31 +134,31 @@ public class CopyTableWizardPage1 extends WizardPage
 		
 		if (source==null && target==null)
 		{
-			setErrorMessage(Messages.getString("CopyTableWizardPage1.SourceAndTargetIsNull.DialogMessage")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CopyTableWizardPage1.SourceAndTargetIsNull.DialogMessage")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		if (source==null && target!=null)
 		{
-			setErrorMessage(Messages.getString("CopyTableWizardPage1.SourceIsNull.DialogMessage")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CopyTableWizardPage1.SourceIsNull.DialogMessage")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		if (source!=null && target==null)
 		{
-			setErrorMessage(Messages.getString("CopyTableWizardPage1.TargetIsNull.DialogMessage")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CopyTableWizardPage1.TargetIsNull.DialogMessage")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		if (source!=null && target!=null && source.equals(target))
 		{
-			setErrorMessage(Messages.getString("CopyTableWizardPage1.SourceAndTargetIsSame.DialogMessage")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CopyTableWizardPage1.SourceAndTargetIsSame.DialogMessage")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		{
 			setErrorMessage(null);
-			setMessage(Messages.getString("CopyTableWizardPage1.GoOnNext.DialogMessage")); //$NON-NLS-1$
+			setMessage(BaseMessages.getString(PKG, "CopyTableWizardPage1.GoOnNext.DialogMessage")); //$NON-NLS-1$
 			return true;
 		}
 	}	

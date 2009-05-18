@@ -13,11 +13,12 @@
 package org.pentaho.di.trans.steps.fileexists;
 
 import org.apache.commons.vfs.FileType;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -36,6 +37,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class FileExists extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = FileExistsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private FileExistsMeta meta;
     private FileExistsData data;
     
@@ -77,8 +80,8 @@ public class FileExists extends BaseStep implements StepInterface
         		// Check is tablename field is provided
 				if (Const.isEmpty(meta.getDynamicFilenameField()))
 				{
-					logError(Messages.getString("FileExists.Error.FilenameFieldMissing"));
-					throw new KettleException(Messages.getString("FileExists.Error.FilenameFieldMissing"));
+					logError(BaseMessages.getString(PKG, "FileExists.Error.FilenameFieldMissing"));
+					throw new KettleException(BaseMessages.getString(PKG, "FileExists.Error.FilenameFieldMissing"));
 				}
 				
 				// cache the position of the field			
@@ -88,8 +91,8 @@ public class FileExists extends BaseStep implements StepInterface
 					if (data.indexOfFileename<0)
 					{
 						// The field is unreachable !
-						logError(Messages.getString("FileExists.Exception.CouldnotFindField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleException(Messages.getString("FileExists.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "FileExists.Exception.CouldnotFindField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "FileExists.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
         	}// End If first 
@@ -117,10 +120,10 @@ public class FileExists extends BaseStep implements StepInterface
         		{
         			// Add this to the result file names...
         			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
-        			resultFile.setComment(Messages.getString("FileExists.Log.FileAddedResult"));
+        			resultFile.setComment(BaseMessages.getString(PKG, "FileExists.Log.FileAddedResult"));
         			addResultFile(resultFile);
         			
-        			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("FileExists.Log.FilenameAddResult",data.file.toString()));
+        			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "FileExists.Log.FilenameAddResult",data.file.toString()));
         		}
         	}
         	
@@ -135,7 +138,7 @@ public class FileExists extends BaseStep implements StepInterface
 			 //	add new values to the row.
 	        putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
 
-	        if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("FileExists.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+	        if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "FileExists.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
         }
         catch(Exception e)
         {
@@ -146,7 +149,7 @@ public class FileExists extends BaseStep implements StepInterface
         	}
         	else
         	{
-	            logError(Messages.getString("FileExists.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "FileExists.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
 	            setErrors(1);
 	            stopAll();
 	            setOutputDone();  // signal end to receiver(s)
@@ -171,7 +174,7 @@ public class FileExists extends BaseStep implements StepInterface
         {
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), Messages.getString("FileExists.Error.ResultFieldMissing"));
+        		log.logError(toString(), BaseMessages.getString(PKG, "FileExists.Error.ResultFieldMissing"));
         		return false;
         	}
             return true;

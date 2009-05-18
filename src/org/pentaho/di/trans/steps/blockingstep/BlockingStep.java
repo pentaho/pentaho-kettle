@@ -28,6 +28,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -42,6 +43,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  *  the last row or the complete input. 
  */
 public class BlockingStep extends BaseStep implements StepInterface {
+
+	private static Class<?> PKG = BlockingStepMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     private BlockingStepMeta meta;
     private BlockingStepData data;
@@ -121,13 +124,13 @@ public class BlockingStep extends BaseStep implements StepInterface {
 		// Open all files at once and read one row from each file...
 		if (data.files.size()>0 && ( data.dis.size()==0 || data.fis.size()==0 ))
 		{
-			if(log.isBasic()) logBasic(Messages.getString("BlockingStep.Log.Openfiles"));	
+			if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "BlockingStep.Log.Openfiles"));	
 	
 			try
 			{
 				FileObject fileObject = (FileObject)data.files.get(0);
 				String filename = KettleVFS.getFilename(fileObject);
-				if (log.isDetailed()) logDetailed(Messages.getString("BlockingStep.Log.Openfilename1")+filename+Messages.getString("BlockingStep.Log.Openfilename2"));
+				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BlockingStep.Log.Openfilename1")+filename+BaseMessages.getString(PKG, "BlockingStep.Log.Openfilename2"));
 				InputStream fi=KettleVFS.getInputStream(fileObject);
 				DataInputStream di;
 				data.fis.add(fi);
@@ -146,8 +149,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
 				// How long is the buffer?
 				int buffersize=di.readInt();
 
-				if (log.isDetailed()) logDetailed(Messages.getString("BlockingStep.Log.BufferSize1")+filename+
-										  Messages.getString("BlockingStep.Log.BufferSize2")+ buffersize+ " " + Messages.getString("BlockingStep.Log.BufferSize3"));
+				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BlockingStep.Log.BufferSize1")+filename+
+										  BaseMessages.getString(PKG, "BlockingStep.Log.BufferSize2")+ buffersize+ " " + BaseMessages.getString(PKG, "BlockingStep.Log.BufferSize3"));
 
 				if (buffersize>0)
 				{
@@ -157,7 +160,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 			}
 			catch(Exception e)
 			{
-				logError(Messages.getString("BlockingStepMeta.ErrorReadingFile")+e.toString());
+				logError(BaseMessages.getString(PKG, "BlockingStepMeta.ErrorReadingFile")+e.toString());
                 logError(Const.getStackTracker(e));
 			}
 		}
@@ -198,7 +201,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 				}
 				catch(SocketTimeoutException e)
 				{
-		            logError(Messages.getString("System.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+		            logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 		            logError(Const.getStackTracker(e));
 		            setErrors(1);
 		            stopAll();
@@ -214,7 +217,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 					}
 					catch(IOException e)
 					{
-						logError(Messages.getString("BlockingStepMeta.UnableDeleteFile")+file.toString());
+						logError(BaseMessages.getString(PKG, "BlockingStepMeta.UnableDeleteFile")+file.toString());
 						setErrors(1);
 						stopAll();
 						return null;

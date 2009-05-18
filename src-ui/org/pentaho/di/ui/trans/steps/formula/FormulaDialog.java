@@ -49,13 +49,13 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.formula.FormulaMeta;
 import org.pentaho.di.trans.steps.formula.FormulaMetaFunction;
-import org.pentaho.di.trans.steps.formula.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -64,6 +64,8 @@ import org.pentaho.libformula.ui.editor.LibFormulaEditor;
 
 public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = FormulaMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label        wlStepname;
     private Text         wStepname;
     private FormData     fdlStepname, fdStepname;
@@ -113,14 +115,14 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("FormulaDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "FormulaDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -138,7 +140,7 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
 		wStepname.setLayoutData(fdStepname);
 		
         wlFields=new Label(shell, SWT.NONE);
-        wlFields.setText(Messages.getString("FormulaDialog.Fields.Label"));
+        wlFields.setText(BaseMessages.getString(PKG, "FormulaDialog.Fields.Label"));
  		props.setLook(wlFields);
         fdlFields=new FormData();
         fdlFields.left = new FormAttachment(0, 0);
@@ -149,12 +151,12 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
         
         colinf=new ColumnInfo[]
                {
-                    new ColumnInfo(Messages.getString("FormulaDialog.NewField.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo(Messages.getString("FormulaDialog.Formula.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo(Messages.getString("FormulaDialog.ValueType.Column"),    ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-                    new ColumnInfo(Messages.getString("FormulaDialog.Length.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo(Messages.getString("FormulaDialog.Precision.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo(Messages.getString("FormulaDialog.Replace.Column"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {  } ),
+                    new ColumnInfo(BaseMessages.getString(PKG, "FormulaDialog.NewField.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(BaseMessages.getString(PKG, "FormulaDialog.Formula.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(BaseMessages.getString(PKG, "FormulaDialog.ValueType.Column"),    ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+                    new ColumnInfo(BaseMessages.getString(PKG, "FormulaDialog.Length.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(BaseMessages.getString(PKG, "FormulaDialog.Precision.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(BaseMessages.getString(PKG, "FormulaDialog.Replace.Column"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {  } ),
                };   
 
         wFields=new TableView(transMeta, shell, 
@@ -196,7 +198,7 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(), Messages.getString("FormulaDialog.Log.UnableToFindInput"));
+                        log.logError(toString(), BaseMessages.getString(PKG, "FormulaDialog.Log.UnableToFindInput"));
                     }
                 }
             }
@@ -246,9 +248,9 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
         
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 

@@ -48,25 +48,27 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
-import org.pentaho.di.ui.spoon.job.JobGraph;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.tableinput.Messages;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
+import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class TableInputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = TableInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CCombo       wConnection;
 
 	private Label        wlSQL;
@@ -136,14 +138,14 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("TableInputDialog.TableInput")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "TableInputDialog.TableInput")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
         // Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("TableInputDialog.StepName")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "TableInputDialog.StepName")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -167,17 +169,17 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
         wPreview=new Button(shell, SWT.PUSH);
-        wPreview.setText(Messages.getString("System.Button.Preview")); //$NON-NLS-1$
+        wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel , wPreview }, margin, null);
 
 		// Limit input ...
 		wlLimit=new Label(shell, SWT.RIGHT);
-		wlLimit.setText(Messages.getString("TableInputDialog.LimitSize")); //$NON-NLS-1$
+		wlLimit.setText(BaseMessages.getString(PKG, "TableInputDialog.LimitSize")); //$NON-NLS-1$
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -195,7 +197,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
         // Execute for each row?
         wlEachRow = new Label(shell, SWT.RIGHT);
-        wlEachRow.setText(Messages.getString("TableInputDialog.ExecuteForEachRow")); //$NON-NLS-1$
+        wlEachRow.setText(BaseMessages.getString(PKG, "TableInputDialog.ExecuteForEachRow")); //$NON-NLS-1$
         props.setLook(wlEachRow);
         fdlEachRow = new FormData();
         fdlEachRow.left = new FormAttachment(0, 0);
@@ -213,7 +215,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Read date from...
 		wlDatefrom=new Label(shell, SWT.RIGHT);
-		wlDatefrom.setText(Messages.getString("TableInputDialog.InsertDataFromStep")); //$NON-NLS-1$
+		wlDatefrom.setText(BaseMessages.getString(PKG, "TableInputDialog.InsertDataFromStep")); //$NON-NLS-1$
  		props.setLook(wlDatefrom);
 		fdlDatefrom=new FormData();
 		fdlDatefrom.left = new FormAttachment(0, 0);
@@ -239,7 +241,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         // Replace variables in SQL?
 		//
         wlVariables = new Label(shell, SWT.RIGHT);
-        wlVariables.setText(Messages.getString("TableInputDialog.ReplaceVariables")); //$NON-NLS-1$
+        wlVariables.setText(BaseMessages.getString(PKG, "TableInputDialog.ReplaceVariables")); //$NON-NLS-1$
         props.setLook(wlVariables);
         fdlVariables = new FormData();
         fdlVariables.left = new FormAttachment(0, 0);
@@ -258,7 +260,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         // Lazy conversion?
 		//
         wlLazyConversion = new Label(shell, SWT.RIGHT);
-        wlLazyConversion.setText(Messages.getString("TableInputDialog.LazyConversion")); //$NON-NLS-1$
+        wlLazyConversion.setText(BaseMessages.getString(PKG, "TableInputDialog.LazyConversion")); //$NON-NLS-1$
         props.setLook(wlLazyConversion);
         fdlLazyConversion = new FormData();
         fdlLazyConversion.left = new FormAttachment(0, 0);
@@ -285,7 +287,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Table line...
 		wlSQL=new Label(shell, SWT.NONE);
-		wlSQL.setText(Messages.getString("TableInputDialog.SQL")); //$NON-NLS-1$
+		wlSQL.setText(BaseMessages.getString(PKG, "TableInputDialog.SQL")); //$NON-NLS-1$
  		props.setLook(wlSQL);
 		fdlSQL=new FormData();
 		fdlSQL.left = new FormAttachment(0, 0);
@@ -294,7 +296,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbTable);
-		wbTable.setText(Messages.getString("TableInputDialog.GetSQLAndSelectStatement")); //$NON-NLS-1$
+		wbTable.setText(BaseMessages.getString(PKG, "TableInputDialog.GetSQLAndSelectStatement")); //$NON-NLS-1$
 		fdbTable=new FormData();
 		fdbTable.right = new FormAttachment(100, 0);
 		fdbTable.top   = new FormAttachment(wConnection, margin*2);
@@ -392,7 +394,7 @@ public void setPosition(){
 			posnr--;
 			colnr++;
 		}
-		wlPosition.setText(Messages.getString("TableInputDialog.Position.Label",""+linenr,""+colnr));
+		wlPosition.setText(BaseMessages.getString(PKG, "TableInputDialog.Position.Label",""+linenr,""+colnr));
 
 	}
 	protected void setSQLToolTip()
@@ -484,8 +486,8 @@ public void setPosition(){
 		if (input.getDatabaseMeta()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("TableInputDialog.SelectValidConnection")); //$NON-NLS-1$
-			mb.setText(Messages.getString("TableInputDialog.DialogCaptionError")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "TableInputDialog.SelectValidConnection")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionError")); //$NON-NLS-1$
 			mb.open();
 		}
 		
@@ -505,8 +507,8 @@ public void setPosition(){
 				wSQL.setText(sql);
 
 				MessageBox yn = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION);
-				yn.setMessage(Messages.getString("TableInputDialog.IncludeFieldNamesInSQL")); //$NON-NLS-1$
-				yn.setText(Messages.getString("TableInputDialog.DialogCaptionQuestion")); //$NON-NLS-1$
+				yn.setMessage(BaseMessages.getString(PKG, "TableInputDialog.IncludeFieldNamesInSQL")); //$NON-NLS-1$
+				yn.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionQuestion")); //$NON-NLS-1$
 				int id = yn.open();
 				switch(id)
 				{
@@ -534,16 +536,16 @@ public void setPosition(){
 						else
 						{
 							MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-							mb.setMessage(Messages.getString("TableInputDialog.ERROR_CouldNotRetrieveFields")+Const.CR+Messages.getString("TableInputDialog.PerhapsNoPermissions")); //$NON-NLS-1$ //$NON-NLS-2$
-							mb.setText(Messages.getString("TableInputDialog.DialogCaptionError2")); //$NON-NLS-1$
+							mb.setMessage(BaseMessages.getString(PKG, "TableInputDialog.ERROR_CouldNotRetrieveFields")+Const.CR+BaseMessages.getString(PKG, "TableInputDialog.PerhapsNoPermissions")); //$NON-NLS-1$ //$NON-NLS-2$
+							mb.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionError2")); //$NON-NLS-1$
 							mb.open();
 						}
 					}
 					catch(KettleException e)
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setText(Messages.getString("TableInputDialog.DialogCaptionError3")); //$NON-NLS-1$
-						mb.setMessage(Messages.getString("TableInputDialog.AnErrorOccurred")+Const.CR+e.getMessage()); //$NON-NLS-1$
+						mb.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionError3")); //$NON-NLS-1$
+						mb.setMessage(BaseMessages.getString(PKG, "TableInputDialog.AnErrorOccurred")+Const.CR+e.getMessage()); //$NON-NLS-1$
 						mb.open(); 
 					}
 					finally
@@ -557,8 +559,8 @@ public void setPosition(){
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("TableInputDialog.ConnectionNoLongerAvailable")); //$NON-NLS-1$
-			mb.setText(Messages.getString("TableInputDialog.DialogCaptionError4")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "TableInputDialog.ConnectionNoLongerAvailable")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionError4")); //$NON-NLS-1$
 			mb.open();
 		}
 					
@@ -601,7 +603,7 @@ public void setPosition(){
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
         
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("TableInputDialog.EnterPreviewSize"), Messages.getString("TableInputDialog.NumberOfRowsToPreview")); //$NON-NLS-1$ //$NON-NLS-2$
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "TableInputDialog.EnterPreviewSize"), BaseMessages.getString(PKG, "TableInputDialog.NumberOfRowsToPreview")); //$NON-NLS-1$ //$NON-NLS-2$
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {
@@ -615,8 +617,8 @@ public void setPosition(){
             {
                 if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                 {
-                	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
-                			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+                	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
+                			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true );
                 	etd.setReadOnly();
                 	etd.open();
                 }

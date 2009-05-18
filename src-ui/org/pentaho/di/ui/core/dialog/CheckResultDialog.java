@@ -31,15 +31,15 @@ import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.dialog.EnterTextDialog;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.database.dialog.Messages;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
@@ -54,11 +54,13 @@ import org.pentaho.di.ui.core.widget.TableView;
 
 public class CheckResultDialog extends Dialog
 {
-	private static final String STRING_HIDE_SUCESSFUL = Messages.getString("CheckResultDialog.HideSuccessful.Label");
-	private static final String STRING_SHOW_SUCESSFUL = Messages.getString("CheckResultDialog.ShowSuccessful.Label");
+	private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private static final String STRING_HIDE_REMARKS = Messages.getString("CheckResultDialog.Remarks.Label");
-	private static final String STRING_SHOW_REMARKS = Messages.getString("CheckResultDialog.WarningsErrors.Label");
+	private static final String STRING_HIDE_SUCESSFUL = BaseMessages.getString(PKG, "CheckResultDialog.HideSuccessful.Label");
+	private static final String STRING_SHOW_SUCESSFUL = BaseMessages.getString(PKG, "CheckResultDialog.ShowSuccessful.Label");
+
+	private static final String STRING_HIDE_REMARKS = BaseMessages.getString(PKG, "CheckResultDialog.Remarks.Label");
+	private static final String STRING_SHOW_REMARKS = BaseMessages.getString(PKG, "CheckResultDialog.WarningsErrors.Label");
 
 	private List<CheckResultInterface> remarks;
 		
@@ -108,13 +110,13 @@ public class CheckResultDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("CheckResultDialog.Title"));
+		shell.setText(BaseMessages.getString(PKG, "CheckResultDialog.Title"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		wlFields=new Label(shell, SWT.LEFT);
-		wlFields.setText(Messages.getString("CheckResultDialog.Remarks.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "CheckResultDialog.Remarks.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -126,9 +128,9 @@ public class CheckResultDialog extends Dialog
 		int FieldsRows=1;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("CheckResultDialog.Stepname.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
-		colinf[1]=new ColumnInfo(Messages.getString("CheckResultDialog.Result.Label"),   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
-		colinf[2]=new ColumnInfo(Messages.getString("CheckResultDialog.Remark.Label"),   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "CheckResultDialog.Stepname.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "CheckResultDialog.Result.Label"),   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "CheckResultDialog.Remark.Label"),   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
 		
 		wFields=new TableView(transMeta,
 				              shell, 
@@ -155,13 +157,13 @@ public class CheckResultDialog extends Dialog
 		wNoOK.setLayoutData(fd);
         
 		wClose=new Button(shell, SWT.PUSH);
-		wClose.setText(Messages.getString("System.Button.Close"));
+		wClose.setText(BaseMessages.getString(PKG, "System.Button.Close"));
 
 		wView=new Button(shell, SWT.PUSH);
-		wView.setText(Messages.getString("CheckResultDialog.Button.ViewMessage"));
+		wView.setText(BaseMessages.getString(PKG, "CheckResultDialog.Button.ViewMessage"));
 
 		wEdit=new Button(shell, SWT.PUSH);
-		wEdit.setText(Messages.getString("CheckResultDialog.Button.EditOriginStep"));
+		wEdit.setText(BaseMessages.getString(PKG, "CheckResultDialog.Button.EditOriginStep"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wClose, wView, wEdit }, margin, null);
 
@@ -280,9 +282,9 @@ public class CheckResultDialog extends Dialog
 		}
 		
 		String subtitle = (item.length != 1 ?
-		    Messages.getString("CheckResultDialog.TextDialog.SubtitlePlural") :
-		    Messages.getString("CheckResultDialog.TextDialog.Subtitle"));
-		EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("CheckResultDialog.TextDialog.Title"),
+		    BaseMessages.getString(PKG, "CheckResultDialog.TextDialog.SubtitlePlural") :
+		    BaseMessages.getString(PKG, "CheckResultDialog.TextDialog.Subtitle"));
+		EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "CheckResultDialog.TextDialog.Title"),
 		    subtitle, message.toString());
 		etd.setReadOnly();
 		etd.open();

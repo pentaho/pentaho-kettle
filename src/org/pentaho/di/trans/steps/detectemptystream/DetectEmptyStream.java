@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.detectemptystream;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -31,6 +32,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class DetectEmptyStream extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = DetectEmptyStreamMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private DetectEmptyStreamMeta meta;
 	private DetectEmptyStreamData data;
 	
@@ -68,7 +71,7 @@ public class DetectEmptyStream extends BaseStep implements StepInterface
 		        if (checkFeedback(getLinesRead())) 
 		        {
 		        	if (log.isBasic()) {
-		        		logBasic(Messages.getString("DetectEmptyStream.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+		        		logBasic(BaseMessages.getString(PKG, "DetectEmptyStream.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 		        	}
 		        }   
 			}

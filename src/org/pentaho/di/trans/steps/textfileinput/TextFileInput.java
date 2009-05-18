@@ -35,6 +35,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -58,6 +59,8 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
  */
 public class TextFileInput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final int BUFFER_SIZE_INPUT_STREAM = 500;
     
     private static LogWriter log = LogWriter.getInstance();
@@ -99,7 +102,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                                 // make sure its really a linefeed or cariage return
                                 // raise an error this is not a DOS file
                                 // so we have pulled a character from the next line
-                                throw new KettleFileException(Messages.getString("TextFileInput.Log.SingleLineFound"));                                 
+                                throw new KettleFileException(BaseMessages.getString(PKG, "TextFileInput.Log.SingleLineFound"));                                 
                             }
                             return line.toString();
                         }
@@ -150,7 +153,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		{
 			if (line.length() == 0)
 			{
-				throw new KettleFileException(Messages.getString("TextFileInput.Log.Error.ExceptionReadingLine",e.toString()), e);
+				throw new KettleFileException(BaseMessages.getString(PKG, "TextFileInput.Log.Error.ExceptionReadingLine",e.toString()), e);
 			}
 			return line.toString();
 		}
@@ -195,7 +198,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					// "aa;aa";123;"aaa-aaa";000;...
 					if (len_encl > 0 && line.substring(from, from + len_encl).equalsIgnoreCase(inf.getEnclosure()))
 					{
-                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.ConvertLineToRow",line.substring(from, from + len_encl)));
+                        if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "TextFileInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "TextFileInput.Log.ConvertLineToRow",line.substring(from, from + len_encl)));
 						encl_found = true;
 						int p = from + len_encl;
 
@@ -248,7 +251,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 						if (p >= length) next = p;
 						else next = p + len_encl;
 
-                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.EndOfEnclosure", ""+ p));
+                        if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "TextFileInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "TextFileInput.Log.EndOfEnclosure", ""+ p));
 					}
 					else
 					{
@@ -289,12 +292,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 					if (encl_found)
 					{
 						pol = line.substring(from + len_encl, next - len_encl);
-                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.EnclosureFieldFound", ""+ pol));
+                        if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "TextFileInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "TextFileInput.Log.EnclosureFieldFound", ""+ pol));
 					}
 					else
 					{
 						pol = line.substring(from, next);
-                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.NormalFieldFound",""+ pol));
+                        if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "TextFileInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "TextFileInput.Log.NormalFieldFound",""+ pol));
 					}
 
 					if (dencl)
@@ -335,7 +338,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				}
 				if ( pos == length )
 				{
-					if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.EndOfEmptyLineFound"));
+					if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "TextFileInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "TextFileInput.Log.EndOfEmptyLineFound"));
 					strings.add("");
                     fieldnr++;
 				}
@@ -369,7 +372,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-			throw new KettleException(Messages.getString("TextFileInput.Log.Error.ErrorConvertingLine",e.toString()), e);
+			throw new KettleException(BaseMessages.getString(PKG, "TextFileInput.Log.Error.ErrorConvertingLine",e.toString()), e);
 		}
 
 		return strings.toArray(new String[strings.size()]);
@@ -412,7 +415,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					// "aa;aa";123;"aaa-aaa";000;...
 					if (len_encl > 0 && line.substring(from, from + len_encl).equalsIgnoreCase(inf.getEnclosure()))
 					{
-                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.Encloruse", line.substring(from, from + len_encl)));
+                        if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "TextFileInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "TextFileInput.Log.Encloruse", line.substring(from, from + len_encl)));
 						encl_found = true;
 						int p = from + len_encl;
 
@@ -465,7 +468,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 						if (p >= length) next = p;
 						else next = p + len_encl;
 
-                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.EndOfEnclosure",""+ p));
+                        if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "TextFileInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "TextFileInput.Log.EndOfEnclosure",""+ p));
 					}
 					else
 					{
@@ -506,12 +509,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 					if (encl_found && ((from + len_encl) <= (next - len_encl)))
 					{
 						pol = line.substring(from + len_encl, next - len_encl);
-                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.EnclosureFieldFound",""+ pol ));
+                        if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "TextFileInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "TextFileInput.Log.EnclosureFieldFound",""+ pol ));
 					}
 					else
 					{
 						pol = line.substring(from, next);
-                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.NormalFieldFound",""+ pol));
+                        if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "TextFileInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "TextFileInput.Log.NormalFieldFound",""+ pol));
 					}
 
 					if (dencl && Const.isEmpty(inf.getEscapeCharacter()))
@@ -563,7 +566,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				}
 				if ( pos == length)
 				{
-					if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.EndOfEmptyLineFound"));
+					if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "TextFileInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "TextFileInput.Log.EndOfEmptyLineFound"));
 					if (fieldnr<strings.length) strings[fieldnr]= Const.EMPTY_STRING;
                     fieldnr++;
 				}
@@ -597,7 +600,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-			throw new KettleException(Messages.getString("TextFileInput.Log.Error.ErrorConvertingLine",e.toString()), e);
+			throw new KettleException(BaseMessages.getString(PKG, "TextFileInput.Log.Error.ErrorConvertingLine",e.toString()), e);
 		}
 
 		return strings;
@@ -664,11 +667,11 @@ public class TextFileInput extends BaseStep implements StepInterface
                     catch (Exception e)
                     {                               	
                         // OK, give some feedback!
-                        String message = Messages.getString("TextFileInput.Log.CoundNotParseField",valueMeta.toStringMeta(),"" + pol,valueMeta.getConversionMask(),""+ rowNr );
+                        String message = BaseMessages.getString(PKG, "TextFileInput.Log.CoundNotParseField",valueMeta.toStringMeta(),"" + pol,valueMeta.getConversionMask(),""+ rowNr );
                         
                         if (info.isErrorIgnored())
                         {
-                            log.logDetailed(fname, Messages.getString("TextFileInput.Log.Warning")+": "  + message+" : " + e.getMessage());
+                            log.logDetailed(fname, BaseMessages.getString(PKG, "TextFileInput.Log.Warning")+": "  + message+" : " + e.getMessage());
 
                             value = null;
 
@@ -760,7 +763,7 @@ public class TextFileInput extends BaseStep implements StepInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("TextFileInput.Log.Error.ErrorConvertingLineText"), e);
+            throw new KettleException(BaseMessages.getString(PKG, "TextFileInput.Log.Error.ErrorConvertingLineText"), e);
         }
 
         if (passThruFields != null)
@@ -807,7 +810,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                         idx = prevInfoFields.indexOfValue(meta.getAcceptingField());
                         if (idx<0)
                         {
-                            logError(Messages.getString("TextFileInput.Log.Error.UnableToFindFilenameField", meta.getAcceptingField()));
+                            logError(BaseMessages.getString(PKG, "TextFileInput.Log.Error.UnableToFindFilenameField", meta.getAcceptingField()));
                             setErrors(1);
                             stopAll();
                             return false;
@@ -823,7 +826,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                     }
                     catch(IOException e)
                     {
-                        logError(Messages.getString("TextFileInput.Log.Error.UnableToCreateFileObject", fileValue));
+                        logError(BaseMessages.getString(PKG, "TextFileInput.Log.Error.UnableToCreateFileObject", fileValue));
                     }
                     
                     // Grab another row
@@ -832,7 +835,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                 
                 if (data.files.nrOfFiles()==0)
                 {
-                    if (log.isDetailed()) logDetailed(Messages.getString("TextFileInput.Log.Error.NoFilesSpecified"));
+                    if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "TextFileInput.Log.Error.NoFilesSpecified"));
                     setOutputDone();
                     return false;
                 }
@@ -1391,7 +1394,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                   data.files.nrOfMissingFiles() > 0 && !meta.isAcceptingFilenames() && !meta.isErrorIgnored()
                )
 			{
-				logError(Messages.getString("TextFileInput.Log.Error.NoFilesSpecified"));
+				logError(BaseMessages.getString(PKG, "TextFileInput.Log.Error.NoFilesSpecified"));
 				return false;
 			}
             

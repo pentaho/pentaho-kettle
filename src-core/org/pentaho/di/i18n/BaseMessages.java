@@ -12,8 +12,8 @@
 */
 package org.pentaho.di.i18n;
 
-import org.pentaho.di.laf.LAFFactory;
 import org.pentaho.di.laf.LAFChangeListener;
+import org.pentaho.di.laf.LAFFactory;
 
 /**
  * BaseMessage is called by all Message classes to enable the delegation of
@@ -59,6 +59,11 @@ public class BaseMessages implements LAFChangeListener<MessageHandler> {
 	
 	public static String getString(String key) {
 		return getInstanceHandler().getString(key);
+	}
+	
+	public static String getString(String packageName, String key)
+	{
+		return getInstanceHandler().getString(packageName, key, new String[] {});
 	}
 		
 	public static String getString(String packageName, String key, String...parameters)

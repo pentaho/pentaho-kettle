@@ -47,6 +47,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterValueDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -65,9 +66,11 @@ import org.w3c.dom.Node;
 
 public class ConditionEditor extends Composite 
 {
+	private static Class<?> PKG = ConditionEditor.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final int X_PADDING = 18;
-	private static final String STRING_NOT = Messages.getString("ConditionEditor.StringNot");
-	private static final String STRING_UP  = Messages.getString("ConditionEditor.StringUp");
+	private static final String STRING_NOT = BaseMessages.getString(PKG, "ConditionEditor.StringNot");
+	private static final String STRING_UP  = BaseMessages.getString(PKG, "ConditionEditor.StringUp");
 	
 	private static final int AREA_NONE         =  0;
 	private static final int AREA_BACKGROUND   =  1;
@@ -211,7 +214,7 @@ public class ConditionEditor extends Composite
 				hover_rightex   = false;
 				
 				if (area!=AREA_ICON_ADD) setToolTipText(null);
-				else setToolTipText(Messages.getString("ConditionEditor.AddCondition.Label"));
+				else setToolTipText(BaseMessages.getString(PKG, "ConditionEditor.AddCondition.Label"));
 				
 				
 				switch(area)
@@ -290,7 +293,7 @@ public class ConditionEditor extends Composite
 					case AREA_OPERATOR:
 						{
 							int operator = getNrOperator(screen);
-							EnterSelectionDialog esd = new EnterSelectionDialog(shell, Condition.getRealOperators(),Messages.getString("ConditionEditor.Operator.Label"), Messages.getString("ConditionEditor.SelectOperator.Label"));
+							EnterSelectionDialog esd = new EnterSelectionDialog(shell, Condition.getRealOperators(),BaseMessages.getString(PKG, "ConditionEditor.Operator.Label"), BaseMessages.getString(PKG, "ConditionEditor.SelectOperator.Label"));
 							Condition selcond = active_condition.getCondition(operator);
 							String def = selcond.getOperatorDesc();
 							int defnr = esd.getSelectionNr(Const.trim(def));
@@ -307,7 +310,7 @@ public class ConditionEditor extends Composite
 					case AREA_SUBCONDITION:
 						int nr = getNrSubcondition(screen);
 						editCondition(nr);
-						setMessageString(Messages.getString("ConditionEditor.GoUpOneLevel.Label",""+getLevel()));
+						setMessageString(BaseMessages.getString(PKG, "ConditionEditor.GoUpOneLevel.Label",""+getLevel()));
 						redraw();
 						break;
 					case AREA_UP:
@@ -317,7 +320,7 @@ public class ConditionEditor extends Composite
 					case AREA_FUNCTION:
 						if (active_condition.isAtomic())
 						{
-							EnterSelectionDialog esd = new EnterSelectionDialog(shell, Condition.functions, Messages.getString("ConditionEditor.Functions.Label"), Messages.getString("ConditionEditor.SelectFunction.Label"));
+							EnterSelectionDialog esd = new EnterSelectionDialog(shell, Condition.functions, BaseMessages.getString(PKG, "ConditionEditor.Functions.Label"), BaseMessages.getString(PKG, "ConditionEditor.SelectFunction.Label"));
 							String def = active_condition.getFunctionDesc();
 							int defnr = esd.getSelectionNr(def);
 							String selection = esd.open(defnr);
@@ -333,7 +336,7 @@ public class ConditionEditor extends Composite
 					case AREA_LEFT:
 						if (active_condition.isAtomic() && fields!=null)
 						{
-							EnterSelectionDialog esd = new EnterSelectionDialog(shell, fields.getFieldNamesAndTypes(max_field_length), Messages.getString("ConditionEditor.Fields"), Messages.getString("ConditionEditor.SelectAField"));
+							EnterSelectionDialog esd = new EnterSelectionDialog(shell, fields.getFieldNamesAndTypes(max_field_length), BaseMessages.getString(PKG, "ConditionEditor.Fields"), BaseMessages.getString(PKG, "ConditionEditor.SelectAField"));
 							String def = active_condition.getLeftValuename();
 							int defnr = esd.getSelectionNr(def);
 							String selection = esd.open(defnr);
@@ -349,7 +352,7 @@ public class ConditionEditor extends Composite
 					case AREA_RIGHT_VALUE:
 						if (active_condition.isAtomic() && fields!=null)
 						{
-							EnterSelectionDialog esd = new EnterSelectionDialog(shell, fields.getFieldNamesAndTypes(max_field_length), Messages.getString("ConditionEditor.Fields"), Messages.getString("ConditionEditor.SelectAField"));
+							EnterSelectionDialog esd = new EnterSelectionDialog(shell, fields.getFieldNamesAndTypes(max_field_length), BaseMessages.getString(PKG, "ConditionEditor.Fields"), BaseMessages.getString(PKG, "ConditionEditor.SelectAField"));
 							String def = active_condition.getLeftValuename();
 							int defnr = esd.getSelectionNr(def);
 							String selection = esd.open(defnr);
@@ -471,8 +474,8 @@ public class ConditionEditor extends Composite
 
 			redraw();
 		}
-	    if (getLevel()>0) setMessageString(Messages.getString("ConditionEditor.GoUpOneLevel.Label",""+getLevel()));
-	    else setMessageString(Messages.getString("ConditionEditor.EditSubCondition"));
+	    if (getLevel()>0) setMessageString(BaseMessages.getString(PKG, "ConditionEditor.GoUpOneLevel.Label",""+getLevel()));
+	    else setMessageString(BaseMessages.getString(PKG, "ConditionEditor.EditSubCondition"));
 
 	}
 	
@@ -490,7 +493,7 @@ public class ConditionEditor extends Composite
 			{
                 mPop = new Menu(widget);
 				MenuItem miNegate = new MenuItem(mPop, SWT.CASCADE);
-				miNegate.setText(Messages.getString("ConditionEditor.NegateCondition"));
+				miNegate.setText(BaseMessages.getString(PKG, "ConditionEditor.NegateCondition"));
 				miNegate.addSelectionListener(new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
@@ -508,7 +511,7 @@ public class ConditionEditor extends Composite
 			{
 				mPop = new Menu(widget);
 				MenuItem miAdd = new MenuItem(mPop, SWT.CASCADE);
-				miAdd.setText(Messages.getString("ConditionEditor.AddCondition.Label"));
+				miAdd.setText(BaseMessages.getString(PKG, "ConditionEditor.AddCondition.Label"));
 				miAdd.addSelectionListener(new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
@@ -534,7 +537,7 @@ public class ConditionEditor extends Composite
 					}
 				});
 				MenuItem miDel = new MenuItem(mPop, SWT.CASCADE);
-				miDel.setText(Messages.getString("ConditionEditor.DeleteCondition.Label"));
+				miDel.setText(BaseMessages.getString(PKG, "ConditionEditor.DeleteCondition.Label"));
 				miDel.addSelectionListener(new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
@@ -549,7 +552,7 @@ public class ConditionEditor extends Composite
 				if (sub.getLeftValuename()!=null)
 				{
 					MenuItem miAdd = new MenuItem(mPop, SWT.CASCADE);
-					miAdd.setText(Messages.getString("ConditionEditor.AddSubCondition.Label"));
+					miAdd.setText(BaseMessages.getString(PKG, "ConditionEditor.AddSubCondition.Label"));
 					miAdd.addSelectionListener(new SelectionAdapter()
 					{
 						public void widgetSelected(SelectionEvent e)
@@ -566,7 +569,7 @@ public class ConditionEditor extends Composite
 				new MenuItem(mPop, SWT.SEPARATOR);
 				
 				MenuItem miCopy = new MenuItem(mPop, SWT.CASCADE);
-				miCopy.setText(Messages.getString("ConditionEditor.CopyToClipboard"));
+				miCopy.setText(BaseMessages.getString(PKG, "ConditionEditor.CopyToClipboard"));
 				miCopy.addSelectionListener(new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
@@ -584,7 +587,7 @@ public class ConditionEditor extends Composite
 					}
 				});
 				MenuItem miPasteBef = new MenuItem(mPop, SWT.CASCADE);
-				miPasteBef.setText(Messages.getString("ConditionEditor.PasteFromClipboardBeforeCondition"));
+				miPasteBef.setText(BaseMessages.getString(PKG, "ConditionEditor.PasteFromClipboardBeforeCondition"));
 				miPasteBef.addSelectionListener(new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
@@ -602,14 +605,14 @@ public class ConditionEditor extends Composite
 						    }
 						    else
 						    {
-					            new ErrorDialog(shell, Messages.getString("ConditionEditor.Error"), Messages.getString("ConditionEditor.NoConditionFoundXML"), 
-					                    new KettleXMLException(Messages.getString("ConditionEditor.NoConditionFoundXML.Exception",Const.CR+Const.CR+xml))
+					            new ErrorDialog(shell, BaseMessages.getString(PKG, "ConditionEditor.Error"), BaseMessages.getString(PKG, "ConditionEditor.NoConditionFoundXML"), 
+					                    new KettleXMLException(BaseMessages.getString(PKG, "ConditionEditor.NoConditionFoundXML.Exception",Const.CR+Const.CR+xml))
 					                    );
 						    }
 				        }
 				        catch(KettleXMLException ex)
 				        {
-				            new ErrorDialog(shell, Messages.getString("ConditionEditor.Error"), Messages.getString("ConditionEditor.ErrorParsingCondition"), ex);
+				            new ErrorDialog(shell, BaseMessages.getString(PKG, "ConditionEditor.Error"), BaseMessages.getString(PKG, "ConditionEditor.ErrorParsingCondition"), ex);
 				        }
 					}
 				});
@@ -617,7 +620,7 @@ public class ConditionEditor extends Composite
 				new MenuItem(mPop, SWT.SEPARATOR);
 
 				MenuItem miPasteAft = new MenuItem(mPop, SWT.CASCADE);
-				miPasteAft.setText(Messages.getString("ConditionEditor.PasteFromClipboardAfterCondition"));
+				miPasteAft.setText(BaseMessages.getString(PKG, "ConditionEditor.PasteFromClipboardAfterCondition"));
 				miPasteAft.addSelectionListener(new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
@@ -635,21 +638,21 @@ public class ConditionEditor extends Composite
 						    }
 						    else
 						    {
-					            new ErrorDialog(shell, Messages.getString("ConditionEditor.Error"), Messages.getString("ConditionEditor.NoConditionFoundXML"), 
-					                    new KettleXMLException(Messages.getString("ConditionEditor.NoConditionFoundXML.Exception",Const.CR+Const.CR+xml))
+					            new ErrorDialog(shell, BaseMessages.getString(PKG, "ConditionEditor.Error"), BaseMessages.getString(PKG, "ConditionEditor.NoConditionFoundXML"), 
+					                    new KettleXMLException(BaseMessages.getString(PKG, "ConditionEditor.NoConditionFoundXML.Exception",Const.CR+Const.CR+xml))
 					                    );
 						    }
 				        }
 				        catch(KettleXMLException ex)
 				        {
-				            new ErrorDialog(shell, Messages.getString("ConditionEditor.Error"),Messages.getString("ConditionEditor.ErrorParsingCondition"), ex);
+				            new ErrorDialog(shell, BaseMessages.getString(PKG, "ConditionEditor.Error"),BaseMessages.getString(PKG, "ConditionEditor.ErrorParsingCondition"), ex);
 				        }
 					}
 				});
 				//--------------------------------------------------
 				new MenuItem(mPop, SWT.SEPARATOR);
 				MenuItem miMoveSub = new MenuItem(mPop, SWT.CASCADE);
-				miMoveSub.setText(Messages.getString("ConditionEditor.MoveConditionToSubCondition"));
+				miMoveSub.setText(BaseMessages.getString(PKG, "ConditionEditor.MoveConditionToSubCondition"));
 				miMoveSub.addSelectionListener(new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
@@ -667,7 +670,7 @@ public class ConditionEditor extends Composite
 					}
 				});
 				MenuItem miMoveParent = new MenuItem(mPop, SWT.CASCADE);
-				miMoveParent.setText(Messages.getString("ConditionEditor.MoveConditionToParentCondition"));
+				miMoveParent.setText(BaseMessages.getString(PKG, "ConditionEditor.MoveConditionToParentCondition"));
 				if (getLevel()==0) miMoveParent.setEnabled(false);
 				miMoveParent.addSelectionListener(new SelectionAdapter()
 				{
@@ -690,7 +693,7 @@ public class ConditionEditor extends Composite
 				//--------------------------------------------------
 				new MenuItem(mPop, SWT.SEPARATOR);
 				MenuItem miMoveDown = new MenuItem(mPop, SWT.CASCADE);
-				miMoveDown.setText(Messages.getString("ConditionEditor.MoveConditionDown"));
+				miMoveDown.setText(BaseMessages.getString(PKG, "ConditionEditor.MoveConditionDown"));
 				if (cond_nr>=active_condition.nrConditions()-1) miMoveDown.setEnabled(false);
 				miMoveDown.addSelectionListener(new SelectionAdapter()
 				{
@@ -704,7 +707,7 @@ public class ConditionEditor extends Composite
 					}
 				});
 				MenuItem miMoveUp = new MenuItem(mPop, SWT.CASCADE);
-				miMoveUp.setText(Messages.getString("ConditionEditor.MoveConditionUp"));
+				miMoveUp.setText(BaseMessages.getString(PKG, "ConditionEditor.MoveConditionUp"));
 				if (cond_nr==0) miMoveUp.setEnabled(false);
 				miMoveUp.addSelectionListener(new SelectionAdapter()
 				{
@@ -727,7 +730,7 @@ public class ConditionEditor extends Composite
 			{
 				Menu mPop = new Menu(widget);
 				MenuItem miDown = new MenuItem(mPop, SWT.CASCADE);
-				miDown.setText(Messages.getString("ConditionEditor.MoveDown"));
+				miDown.setText(BaseMessages.getString(PKG, "ConditionEditor.MoveDown"));
 				miDown.addSelectionListener(new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)

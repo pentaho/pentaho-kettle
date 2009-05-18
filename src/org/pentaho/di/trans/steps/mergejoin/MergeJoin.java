@@ -19,6 +19,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -49,6 +50,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class MergeJoin extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = MergeJoinMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private MergeJoinMeta meta;
 	private MergeJoinData data;
 	
@@ -71,12 +74,12 @@ public class MergeJoin extends BaseStep implements StepInterface
             //
             data.oneRowSet = findInputRowSet(meta.getStepName1());
             if (data.oneRowSet==null) {
-            	throw new KettleException( Messages.getString("MergeJoin.Exception.UnableToFindSpecifiedStep", meta.getStepName1()) );
+            	throw new KettleException( BaseMessages.getString(PKG, "MergeJoin.Exception.UnableToFindSpecifiedStep", meta.getStepName1()) );
             }
 
             data.twoRowSet = findInputRowSet(meta.getStepName2());
             if (data.twoRowSet==null) {
-            	throw new KettleException( Messages.getString("MergeJoin.Exception.UnableToFindSpecifiedStep", meta.getStepName2()) );
+            	throw new KettleException( BaseMessages.getString(PKG, "MergeJoin.Exception.UnableToFindSpecifiedStep", meta.getStepName2()) );
             }
             
             data.one=getRowFrom(data.oneRowSet);
@@ -116,7 +119,7 @@ public class MergeJoin extends BaseStep implements StepInterface
                     data.keyNrs1[i] = data.oneMeta.indexOfValue(meta.getKeyFields1()[i]);
                     if (data.keyNrs1[i]<0)
                     {
-                        String message = Messages.getString("MergeJoin.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields1()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
+                        String message = BaseMessages.getString(PKG, "MergeJoin.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields1()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
                         logError(message);
                         throw new KettleStepException(message);
                     }
@@ -132,7 +135,7 @@ public class MergeJoin extends BaseStep implements StepInterface
                     data.keyNrs2[i] = data.twoMeta.indexOfValue(meta.getKeyFields2()[i]);
                     if (data.keyNrs2[i]<0)
                     {
-                        String message = Messages.getString("MergeJoin.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields2()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
+                        String message = BaseMessages.getString(PKG, "MergeJoin.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields2()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
                         logError(message);
                         throw new KettleStepException(message);
                     }
@@ -147,7 +150,7 @@ public class MergeJoin extends BaseStep implements StepInterface
             data.two_dummy=new Object[data.twoMeta.size()];
         }
 
-        if (log.isRowLevel()) logRowlevel(Messages.getString("MergeJoin.Log.DataInfo",data.oneMeta.getString(data.one)+"")+data.twoMeta.getString(data.two)); //$NON-NLS-1$ //$NON-NLS-2$
+        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "MergeJoin.Log.DataInfo",data.oneMeta.getString(data.one)+"")+data.twoMeta.getString(data.two)); //$NON-NLS-1$ //$NON-NLS-2$
 
         /*
          * We can stop processing if any of the following is true:
@@ -406,7 +409,7 @@ public class MergeJoin extends BaseStep implements StepInterface
     	    data.two = getRowFrom(data.twoRowSet);
     	    break;
         }
-        if (checkFeedback(getLinesRead())) logBasic(Messages.getString("MergeJoin.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "MergeJoin.LineNumber")+getLinesRead()); //$NON-NLS-1$
 		return true;
 	}
 		
@@ -422,7 +425,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         {
             if (meta.getStepName1()==null || meta.getStepName2()==null)
             {
-                logError(Messages.getString("MergeJoin.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "MergeJoin.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
                 return false;
             }
             String joinType = meta.getJoinType();
@@ -435,7 +438,7 @@ public class MergeJoin extends BaseStep implements StepInterface
             		return true;
             	}
             }
-           	logError(Messages.getString("MergeJoin.Log.InvalidJoinType", meta.getJoinType())); //$NON-NLS-1$
+           	logError(BaseMessages.getString(PKG, "MergeJoin.Log.InvalidJoinType", meta.getJoinType())); //$NON-NLS-1$
                return false;
         }
         return true;

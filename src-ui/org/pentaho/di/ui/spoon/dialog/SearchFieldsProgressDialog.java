@@ -25,7 +25,7 @@ import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.ui.spoon.dialog.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 
@@ -37,6 +37,8 @@ import org.pentaho.di.trans.step.StepMeta;
  */
 public class SearchFieldsProgressDialog implements IRunnableWithProgress
 {
+	private static Class<?> PKG = SearchFieldsProgressDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private StepMeta  stepInfo;
 	private boolean   before;
 	private TransMeta transMeta;
@@ -58,19 +60,19 @@ public class SearchFieldsProgressDialog implements IRunnableWithProgress
 		{
 			if (before)
 			{
-				monitor.beginTask(Messages.getString("SearchFieldsProgressDialog.Dialog.SearchInputFields.Message"), size); //Searching for input fields...
+				monitor.beginTask(BaseMessages.getString(PKG, "SearchFieldsProgressDialog.Dialog.SearchInputFields.Message"), size); //Searching for input fields...
 				fields = transMeta.getPrevStepFields(stepInfo, new ProgressMonitorAdapter(monitor));
 			}
 			else
 			{
-				monitor.beginTask(Messages.getString("SearchFieldsProgressDialog.Dialog.SearchOutputFields.Message"), size); //Searching for output fields...
+				monitor.beginTask(BaseMessages.getString(PKG, "SearchFieldsProgressDialog.Dialog.SearchOutputFields.Message"), size); //Searching for output fields...
 				fields = transMeta.getStepFields(stepInfo, new ProgressMonitorAdapter(monitor));
 			}
 		}
 		catch(KettleStepException kse)
 		{
-			LogWriter.getInstance().logError(toString(), Messages.getString("SearchFieldsProgressDialog.Log.UnableToGetFields", stepInfo.toString(), kse.getMessage())); //"Search fields progress dialog","Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage()
-			throw new InvocationTargetException(kse, Messages.getString("SearchFieldsProgressDialog.Log.UnableToGetFields", stepInfo.toString(), kse.getMessage())); //"Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage()
+			LogWriter.getInstance().logError(toString(), BaseMessages.getString(PKG, "SearchFieldsProgressDialog.Log.UnableToGetFields", stepInfo.toString(), kse.getMessage())); //"Search fields progress dialog","Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage()
+			throw new InvocationTargetException(kse, BaseMessages.getString(PKG, "SearchFieldsProgressDialog.Log.UnableToGetFields", stepInfo.toString(), kse.getMessage())); //"Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage()
 		}
 
 		monitor.done();

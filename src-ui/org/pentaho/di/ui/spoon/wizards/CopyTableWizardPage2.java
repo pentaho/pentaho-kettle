@@ -27,8 +27,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage1;
-import org.pentaho.di.ui.spoon.wizards.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
@@ -43,6 +42,8 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
  */
 public class CopyTableWizardPage2 extends WizardPage
 {
+    private static Class<?> PKG = CopyTableWizard.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private PropsUI props;
 	
 	private Shell     shell;
@@ -58,8 +59,8 @@ public class CopyTableWizardPage2 extends WizardPage
         super(arg);
         this.props=props;
 
-        setTitle(Messages.getString("CopyTableWizardPage2.Dialog.Title")); //$NON-NLS-1$
-        setDescription(Messages.getString("CopyTableWizardPage2.Dialog.Description")); //$NON-NLS-1$
+        setTitle(BaseMessages.getString(PKG, "CopyTableWizardPage2.Dialog.Title")); //$NON-NLS-1$
+        setDescription(BaseMessages.getString(PKG, "CopyTableWizardPage2.Dialog.Description")); //$NON-NLS-1$
     }
     
 	public CopyTableWizardPage2(String arg)
@@ -67,8 +68,8 @@ public class CopyTableWizardPage2 extends WizardPage
 		super(arg);
 		this.props=PropsUI.getInstance();
 
-		setTitle(Messages.getString("CopyTableWizardPage2.Dialog.Title")); //$NON-NLS-1$
-		setDescription(Messages.getString("CopyTableWizardPage2.Dialog.Description")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CopyTableWizardPage2.Dialog.Title")); //$NON-NLS-1$
+		setDescription(BaseMessages.getString(PKG, "CopyTableWizardPage2.Dialog.Description")); //$NON-NLS-1$
 	}
 	
 	public void createControl(Composite parent)
@@ -86,7 +87,7 @@ public class CopyTableWizardPage2 extends WizardPage
 
  		// Source list to the left...
 		wlListSource  = new Label(composite, SWT.NONE);
-		wlListSource.setText(Messages.getString("CopyTableWizardPage2.Dialog.TableList.Label")); //$NON-NLS-1$
+		wlListSource.setText(BaseMessages.getString(PKG, "CopyTableWizardPage2.Dialog.TableList.Label")); //$NON-NLS-1$
         props.setLook(wlListSource);
  		FormData fdlListSource = new FormData();
 		fdlListSource.left   = new FormAttachment(0, 0); 
@@ -141,7 +142,7 @@ public class CopyTableWizardPage2 extends WizardPage
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			new ErrorDialog(shell, Messages.getString("CopyTableWizardPage2.ErrorGettingTables.DialogTitle"), Messages.getString("CopyTableWizardPage2.ErrorGettingTables.DialogMessage"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "CopyTableWizardPage2.ErrorGettingTables.DialogTitle"), BaseMessages.getString(PKG, "CopyTableWizardPage2.ErrorGettingTables.DialogMessage"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 			input = null;
 			return false;
 		}

@@ -18,6 +18,7 @@ package org.pentaho.di.trans.steps.mailvalidator;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -36,6 +37,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class MailValidator extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = MailValidatorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private MailValidatorMeta meta;
     private MailValidatorData data;
     
@@ -70,16 +73,16 @@ public class MailValidator extends BaseStep implements StepInterface
     		// check result fieldname
     		data.realResultFieldName=environmentSubstitute(meta.getResultFieldName());
     		if(Const.isEmpty(data.realResultFieldName))
-    			throw new KettleException(Messages.getString("MailValidator.Error.ResultFieldNameMissing"));
+    			throw new KettleException(BaseMessages.getString(PKG, "MailValidator.Error.ResultFieldNameMissing"));
     		
 	    		
     		if(meta.isResultAsString()) 
     		{
     			if(Const.isEmpty(meta.getEMailValideMsg()))
-    				throw new KettleException(Messages.getString("MailValidator.Error.EMailValidMsgMissing"));
+    				throw new KettleException(BaseMessages.getString(PKG, "MailValidator.Error.EMailValidMsgMissing"));
     			
     			if(Const.isEmpty(meta.getEMailNotValideMsg()))
-    				throw new KettleException(Messages.getString("MailValidator.Error.EMailNotValidMsgMissing"));
+    				throw new KettleException(BaseMessages.getString(PKG, "MailValidator.Error.EMailNotValidMsgMissing"));
     			
     			data.msgValidMail=environmentSubstitute(meta.getEMailValideMsg());
     			data.msgNotValidMail=environmentSubstitute(meta.getEMailNotValideMsg());
@@ -88,7 +91,7 @@ public class MailValidator extends BaseStep implements StepInterface
 	    		
     		// Check is email address field is provided
 			if (Const.isEmpty(meta.getEmailField()))
-				throw new KettleException(Messages.getString("MailValidator.Error.FilenameFieldMissing"));
+				throw new KettleException(BaseMessages.getString(PKG, "MailValidator.Error.FilenameFieldMissing"));
 			
     		data.realResultErrorsFieldName=environmentSubstitute(meta.getErrorsField());
     		
@@ -98,7 +101,7 @@ public class MailValidator extends BaseStep implements StepInterface
 				if (data.indexOfeMailField<0) 
 				{
 					// The field is unreachable !
-					throw new KettleException(Messages.getString("MailValidator.Exception.CouldnotFindField",meta.getEmailField())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "MailValidator.Exception.CouldnotFindField",meta.getEmailField())); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 				
@@ -106,14 +109,14 @@ public class MailValidator extends BaseStep implements StepInterface
 			if(meta.isSMTPCheck()){
 				if(meta.isdynamicDefaultSMTP()){
 					if (Const.isEmpty(meta.getDefaultSMTP()))
-						throw new KettleException(Messages.getString("MailValidator.Error.DefaultSMTPFieldMissing"));
+						throw new KettleException(BaseMessages.getString(PKG, "MailValidator.Error.DefaultSMTPFieldMissing"));
 					
 					if (data.indexOfdefaultSMTPField<0)
 					{	
 						data.indexOfdefaultSMTPField =data.previousRowMeta.indexOfValue(meta.getDefaultSMTP());
 						if (data.indexOfdefaultSMTPField<0){
 							// The field is unreachable !
-							throw new KettleException(Messages.getString("MailValidator.Exception.CouldnotFindField",meta.getDefaultSMTP())); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(BaseMessages.getString(PKG, "MailValidator.Exception.CouldnotFindField",meta.getDefaultSMTP())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 				}
@@ -158,7 +161,7 @@ public class MailValidator extends BaseStep implements StepInterface
 	    		mailerror=result.getErrorMessage();
 	    		
 	    	}else 
-	    		mailerror=Messages.getString("MailValidator.Error.MailEmpty");
+	    		mailerror=BaseMessages.getString(PKG, "MailValidator.Error.MailEmpty");
 	    	if(meta.isResultAsString())
 	    	{
 	    		if(mailvalid) 
@@ -178,7 +181,7 @@ public class MailValidator extends BaseStep implements StepInterface
 			
 			putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
 
-			if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("MailValidator.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+			if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "MailValidator.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
     	}
 	    catch(Exception e)
 	    {
@@ -189,7 +192,7 @@ public class MailValidator extends BaseStep implements StepInterface
 	    	}
 	    	else
 	    	{
-	            logError(Messages.getString("MailValidator.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "MailValidator.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
 	            setErrors(1);
 	            stopAll();
 	            setOutputDone();  // signal end to receiver(s)
@@ -215,7 +218,7 @@ public class MailValidator extends BaseStep implements StepInterface
         {
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), Messages.getString("MailValidator.Error.ResultFieldMissing"));
+        		log.logError(toString(), BaseMessages.getString(PKG, "MailValidator.Error.ResultFieldMissing"));
         		return false;
         	}
             return true;

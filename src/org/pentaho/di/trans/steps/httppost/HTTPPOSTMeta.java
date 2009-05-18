@@ -14,8 +14,6 @@ package org.pentaho.di.trans.steps.httppost;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -29,6 +27,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
@@ -38,6 +37,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 /*
  * Created on 15-jan-2009
@@ -46,6 +46,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = HTTPPOSTMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** URL / service to be called */
     private String  url;
 
@@ -377,7 +379,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(Messages.getString("HTTPPOSTMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "HTTPPOSTMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -415,7 +417,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("HTTPPOSTMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "HTTPPOSTMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -445,7 +447,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("HTTPPOSTMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "HTTPPOSTMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -456,12 +458,12 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("HTTPPOSTMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "HTTPPOSTMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("HTTPPOSTMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "HTTPPOSTMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
         
@@ -469,16 +471,16 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         if(urlInField)
         {
         	if(Const.isEmpty(urlField))
-        		cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("HTTPPOSTMeta.CheckResult.UrlfieldMissing"), stepMeta);	
+        		cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "HTTPPOSTMeta.CheckResult.UrlfieldMissing"), stepMeta);	
         	else
-        		cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("HTTPPOSTMeta.CheckResult.UrlfieldOk"), stepMeta);	
+        		cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "HTTPPOSTMeta.CheckResult.UrlfieldOk"), stepMeta);	
         	
         }else
         {
         	if(Const.isEmpty(url))
-        		cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("HTTPPOSTMeta.CheckResult.UrlMissing"), stepMeta);
+        		cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "HTTPPOSTMeta.CheckResult.UrlMissing"), stepMeta);
         	else
-        		cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("HTTPPOSTMeta.CheckResult.UrlOk"), stepMeta);
+        		cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "HTTPPOSTMeta.CheckResult.UrlOk"), stepMeta);
         }
         remarks.add(cr);
 

@@ -43,26 +43,27 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.checksum.Messages;
 import org.pentaho.di.trans.steps.checksum.CheckSumMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 
 public class CheckSumDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = CheckSumMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CheckSumMeta input;
     private Label wlType;
 
@@ -111,14 +112,14 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("CheckSumDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "CheckSumDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("CheckSumDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "CheckSumDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -137,7 +138,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		 // Type
         wlType = new Label(shell, SWT.RIGHT);
-        wlType.setText(Messages.getString("CheckSumDialog.Type.Label"));
+        wlType.setText(BaseMessages.getString(PKG, "CheckSumDialog.Type.Label"));
         props.setLook(wlType);
         fdlType = new FormData();
         fdlType.left = new FormAttachment(0, 0);
@@ -145,10 +146,10 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
         fdlType.top = new FormAttachment(wStepname, margin);
         wlType.setLayoutData(fdlType);
         wType = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-        wType.add(Messages.getString("CheckSumDialog.Type.CRC32"));
-        wType.add(Messages.getString("CheckSumDialog.Type.ADLER32"));
-        wType.add(Messages.getString("CheckSumDialog.Type.MD5"));
-        wType.add(Messages.getString("CheckSumDialog.Type.SHA1"));
+        wType.add(BaseMessages.getString(PKG, "CheckSumDialog.Type.CRC32"));
+        wType.add(BaseMessages.getString(PKG, "CheckSumDialog.Type.ADLER32"));
+        wType.add(BaseMessages.getString(PKG, "CheckSumDialog.Type.MD5"));
+        wType.add(BaseMessages.getString(PKG, "CheckSumDialog.Type.SHA1"));
         wType.select(0); 
         props.setLook(wType);
         fdType = new FormData();
@@ -159,7 +160,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
         
         // Result line...
 		wlResult=new Label(shell, SWT.RIGHT);
-		wlResult.setText(Messages.getString("CheckSumDialog.Result.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "CheckSumDialog.Result.Label")); //$NON-NLS-1$
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
@@ -176,18 +177,18 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 		wResult.setLayoutData(fdResult);
         
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("System.Button.GetFields"));
+		wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
         
 	
         // Table with fields
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("CheckSumDialog.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "CheckSumDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -198,7 +199,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 		final int FieldsRows=input.getFieldName().length;
 		
 		colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("CheckSumDialog.Fieldname.Column"),  
+		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "CheckSumDialog.Fieldname.Column"),  
 				ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
 		wFields=new TableView(transMeta,shell,
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -239,7 +240,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -305,7 +306,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
                     {
                         public boolean tableItemInserted(TableItem tableItem, ValueMetaInterface v)
                         {
-                            tableItem.setText(2, Messages.getString("System.Combo.Yes"));
+                            tableItem.setText(2, BaseMessages.getString(PKG, "System.Combo.Yes"));
                             return true;
                         } 
                     };
@@ -314,7 +315,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("System.Dialog.GetFieldsFailed.Title"), Messages.getString("System.Dialog.GetFieldsFailed.Message"), ke);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Title"), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"), ke);
 		}
 	}
 	

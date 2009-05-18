@@ -39,18 +39,18 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.ui.partition.dialog.Messages;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
@@ -67,6 +67,8 @@ import org.pentaho.di.ui.core.widget.TextVar;
 
 public class PartitionSchemaDialog extends Dialog 
 {
+	private static Class<?> PKG = PartitionSchemaDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private PartitionSchema partitionSchema;
 	
 	private Shell     shell;
@@ -131,7 +133,7 @@ public class PartitionSchemaDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
-		shell.setText(Messages.getString("PartitionSchemaDialog.Shell.Title"));
+		shell.setText(BaseMessages.getString(PKG, "PartitionSchemaDialog.Shell.Title"));
 		shell.setLayout (formLayout);
  		
 		// First, add the buttons...
@@ -141,7 +143,7 @@ public class PartitionSchemaDialog extends Dialog
 		wOK.setText(" &OK ");
 
         wGet    = new Button(shell, SWT.PUSH); 
-        wGet.setText(Messages.getString("PartitionSchema.ImportPartitions"));
+        wGet.setText(BaseMessages.getString(PKG, "PartitionSchema.ImportPartitions"));
 
 		wCancel = new Button(shell, SWT.PUSH); 
 		wCancel.setText(" &Cancel ");
@@ -155,7 +157,7 @@ public class PartitionSchemaDialog extends Dialog
 		//
         Label wlName = new Label(shell, SWT.RIGHT); 
         props.setLook(wlName);
-        wlName.setText(Messages.getString("PartitionSchemaDialog.PartitionName.Label"));
+        wlName.setText(BaseMessages.getString(PKG, "PartitionSchemaDialog.PartitionName.Label"));
         FormData fdlName = new FormData();
         fdlName.top   = new FormAttachment(0, 0);
         fdlName.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -175,7 +177,7 @@ public class PartitionSchemaDialog extends Dialog
         //
         Label wlDynamic = new Label(shell, SWT.RIGHT); 
         props.setLook(wlDynamic);
-        wlDynamic.setText(Messages.getString("PartitionSchemaDialog.Dynamic.Label"));
+        wlDynamic.setText(BaseMessages.getString(PKG, "PartitionSchemaDialog.Dynamic.Label"));
         FormData fdlDynamic = new FormData();
         fdlDynamic.top   = new FormAttachment(wName, margin);
         fdlDynamic.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -184,7 +186,7 @@ public class PartitionSchemaDialog extends Dialog
 
         wDynamic = new Button(shell, SWT.CHECK );
         props.setLook(wDynamic);
-        wDynamic.setToolTipText(Messages.getString("PartitionSchemaDialog.Dynamic.Tooltip"));
+        wDynamic.setToolTipText(BaseMessages.getString(PKG, "PartitionSchemaDialog.Dynamic.Tooltip"));
         FormData fdDynamic = new FormData();
         fdDynamic.top  = new FormAttachment(wName, margin);
         fdDynamic.left = new FormAttachment(middle, margin); // To the right of the label
@@ -195,14 +197,14 @@ public class PartitionSchemaDialog extends Dialog
         //
         Label wlNumber = new Label(shell, SWT.RIGHT); 
         props.setLook(wlNumber);
-        wlNumber.setText(Messages.getString("PartitionSchemaDialog.Number.Label"));
+        wlNumber.setText(BaseMessages.getString(PKG, "PartitionSchemaDialog.Number.Label"));
         FormData fdlNumber = new FormData();
         fdlNumber.top   = new FormAttachment(wDynamic, margin);
         fdlNumber.left  = new FormAttachment(0, 0);  // First one in the left top corner
         fdlNumber.right = new FormAttachment(middle, 0);
         wlNumber.setLayoutData(fdlNumber);
 
-        wNumber = new TextVar(variableSpace, shell, SWT.LEFT | SWT.BORDER | SWT.SINGLE, Messages.getString("PartitionSchemaDialog.Number.Tooltip") );
+        wNumber = new TextVar(variableSpace, shell, SWT.LEFT | SWT.BORDER | SWT.SINGLE, BaseMessages.getString(PKG, "PartitionSchemaDialog.Number.Tooltip") );
         props.setLook(wNumber);
         FormData fdNumber = new FormData();
         fdNumber.top  = new FormAttachment(wDynamic, margin);
@@ -212,7 +214,7 @@ public class PartitionSchemaDialog extends Dialog
         
         // Schema list:
         Label wlPartitions = new Label(shell, SWT.RIGHT);
-        wlPartitions.setText(Messages.getString("PartitionSchemaDialog.Partitions.Label"));
+        wlPartitions.setText(BaseMessages.getString(PKG, "PartitionSchemaDialog.Partitions.Label"));
         props.setLook(wlPartitions);
         FormData fdlPartitions=new FormData();
         fdlPartitions.left  = new FormAttachment(0, 0);
@@ -222,7 +224,7 @@ public class PartitionSchemaDialog extends Dialog
         
         ColumnInfo[] partitionColumns=new ColumnInfo[] 
             {
-                new ColumnInfo(Messages.getString("PartitionSchemaDialog.PartitionID.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, false),
+                new ColumnInfo(BaseMessages.getString(PKG, "PartitionSchemaDialog.PartitionID.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, false),
             };
         wPartitions=new TableView(
         					  Variables.getADefaultVariableSpace(),  // probably better push this up. TODO
@@ -349,8 +351,8 @@ public class PartitionSchemaDialog extends Dialog
         
         if (dbNames.length>0)
         {
-            EnterSelectionDialog dialog = new EnterSelectionDialog(shell, dbNames, Messages.getString("PartitionSchema.SelectDatabase"), 
-						Messages.getString("PartitionSchema.SelectPartitionnedDatabase"));
+            EnterSelectionDialog dialog = new EnterSelectionDialog(shell, dbNames, BaseMessages.getString(PKG, "PartitionSchema.SelectDatabase"), 
+						BaseMessages.getString(PKG, "PartitionSchema.SelectPartitionnedDatabase"));
             String dbName = dialog.open();
             if (dbName!=null)
             {

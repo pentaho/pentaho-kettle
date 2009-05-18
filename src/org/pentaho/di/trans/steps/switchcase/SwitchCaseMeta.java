@@ -27,6 +27,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -44,6 +45,8 @@ import org.w3c.dom.Node;
  */
 public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = SwitchCaseMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final String XML_TAG_CASE_VALUES = "cases";
 	private static final String XML_TAG_CASE_VALUE = "case";
 	
@@ -149,7 +152,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("SwitchCaseMeta.Exception..UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "SwitchCaseMeta.Exception..UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -181,7 +184,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("SwitchCaseMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SwitchCaseMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -205,7 +208,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("SwitchCaseMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SwitchCaseMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
 		}
 	}
 	
@@ -264,7 +267,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 				if ( index < 0 )
 				{
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
-							             Messages.getString("SwitchCaseMeta.CheckResult.TargetStepInvalid", "false", stepname), 
+							             BaseMessages.getString(PKG, "SwitchCaseMeta.CheckResult.TargetStepInvalid", "false", stepname), 
 							             stepinfo);
 					remarks.add(cr);
 				}
@@ -273,23 +276,23 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 
 		if (Const.isEmpty(fieldname))
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SwitchCaseMeta.CheckResult.NoFieldSpecified"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SwitchCaseMeta.CheckResult.NoFieldSpecified"), stepinfo);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("SwitchCaseMeta.CheckResult.FieldSpecified"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SwitchCaseMeta.CheckResult.FieldSpecified"), stepinfo); //$NON-NLS-1$
 		}
 		remarks.add(cr);		
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("SwitchCaseMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SwitchCaseMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SwitchCaseMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SwitchCaseMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

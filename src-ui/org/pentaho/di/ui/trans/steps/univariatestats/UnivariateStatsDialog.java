@@ -22,6 +22,13 @@
 
 package org.pentaho.di.ui.trans.steps.univariatestats;
 
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -40,30 +47,20 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.univariatestats.Messages;
 import org.pentaho.di.trans.steps.univariatestats.UnivariateStatsMeta;
 import org.pentaho.di.trans.steps.univariatestats.UnivariateStatsMetaFunction;
-
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.text.NumberFormat;
 
 
 /**
@@ -74,6 +71,8 @@ import java.text.NumberFormat;
  */
 public class UnivariateStatsDialog extends BaseStepDialog
   implements StepDialogInterface {
+
+  private static Class<?> PKG = UnivariateStatsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   /** various UI bits and pieces for the dialog */
   private Label m_wlStepname;
@@ -140,7 +139,7 @@ public class UnivariateStatsDialog extends BaseStepDialog
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout(formLayout);
-    shell.setText(Messages.getString("UnivariateStatsDialog.Shell.Title"));
+    shell.setText(BaseMessages.getString(PKG, "UnivariateStatsDialog.Shell.Title"));
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
@@ -148,7 +147,7 @@ public class UnivariateStatsDialog extends BaseStepDialog
     // Stepname line
     m_wlStepname = new Label(shell, SWT.RIGHT);
     m_wlStepname.
-      setText(Messages.getString("UnivariateStatsDialog.StepName.Label"));
+      setText(BaseMessages.getString(PKG, "UnivariateStatsDialog.StepName.Label"));
     props.setLook(m_wlStepname);
 
     m_fdlStepname = new FormData();
@@ -169,7 +168,7 @@ public class UnivariateStatsDialog extends BaseStepDialog
     m_wStepname.setLayoutData(m_fdStepname);
 
     m_wlFields = new Label(shell, SWT.NONE);
-    m_wlFields.setText(Messages.getString("UnivariateStatsDialog.Fields.Label"));
+    m_wlFields.setText(BaseMessages.getString(PKG, "UnivariateStatsDialog.Fields.Label"));
     props.setLook(m_wlFields);
     m_fdlFields = new FormData();
     m_fdlFields.left = new FormAttachment(0, 0);
@@ -182,29 +181,29 @@ public class UnivariateStatsDialog extends BaseStepDialog
       : 1;
 
     m_colinf = new ColumnInfo[] {
-        new ColumnInfo(Messages.getString("UnivariateStatsDialog.InputFieldColumn.Column"),
+        new ColumnInfo(BaseMessages.getString(PKG, "UnivariateStatsDialog.InputFieldColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, new String [] { "" }, true),
-        new ColumnInfo(Messages.getString("UnivariateStatsDialog.NColumn.Column"),
+        new ColumnInfo(BaseMessages.getString(PKG, "UnivariateStatsDialog.NColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, 
              new String [] { "True", "False" }, true),
-        new ColumnInfo(Messages.getString("UnivariateStatsDialog.MeanColumn.Column"),
+        new ColumnInfo(BaseMessages.getString(PKG, "UnivariateStatsDialog.MeanColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, 
              new String [] { "True", "False" }, true),
-        new ColumnInfo(Messages.getString("UnivariateStatsDialog.StdDevColumn.Column"),
+        new ColumnInfo(BaseMessages.getString(PKG, "UnivariateStatsDialog.StdDevColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, 
              new String [] { "True", "False" }, true),
-        new ColumnInfo(Messages.getString(      "UnivariateStatsDialog.MinColumn.Column"),
+        new ColumnInfo(BaseMessages.getString(PKG, "UnivariateStatsDialog.MinColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, 
              new String [] { "True", "False" }, true),
-        new ColumnInfo(Messages.getString("UnivariateStatsDialog.MaxColumn.Column"),
+        new ColumnInfo(BaseMessages.getString(PKG, "UnivariateStatsDialog.MaxColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, 
              new String [] { "True", "False" }, true),
-        new ColumnInfo(Messages.getString("UnivariateStatsDialog.MedianColumn.Column"),
+        new ColumnInfo(BaseMessages.getString(PKG, "UnivariateStatsDialog.MedianColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, 
              new String [] { "True", "False" }, true),
-        new ColumnInfo(Messages.getString("UnivariateStatsDialog.PercentileColumn.Column"),
+        new ColumnInfo(BaseMessages.getString(PKG, "UnivariateStatsDialog.PercentileColumn.Column"),
             ColumnInfo.COLUMN_TYPE_TEXT, false),
-        new ColumnInfo(Messages.getString("UnivariateStatsDialog.InterpolateColumn.Column"),
+        new ColumnInfo(BaseMessages.getString(PKG, "UnivariateStatsDialog.InterpolateColumn.Column"),
              ColumnInfo.COLUMN_TYPE_CCOMBO, 
              new String [] { "True", "False" }, true)
     };
@@ -244,8 +243,7 @@ public class UnivariateStatsDialog extends BaseStepDialog
               setComboBoxes();
             } catch (KettleException e) {
               log.logError(toString(),
-                Messages.
-                getString("UnivariateStatsDialog.Log.UnableToFindInput"));
+                BaseMessages.getString(PKG, "UnivariateStatsDialog.Log.UnableToFindInput"));
             }
           }
         }
@@ -266,9 +264,9 @@ public class UnivariateStatsDialog extends BaseStepDialog
     
     // Some buttons
     wOK = new Button(shell, SWT.PUSH);
-    wOK.setText(Messages.getString("System.Button.OK"));
+    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
     wCancel = new Button(shell, SWT.PUSH);
-    wCancel.setText(Messages.getString("System.Button.Cancel"));
+    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
     setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 

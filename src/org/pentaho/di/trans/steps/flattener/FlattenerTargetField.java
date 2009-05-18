@@ -13,9 +13,12 @@
 package org.pentaho.di.trans.steps.flattener;
 
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.i18n.BaseMessages;
 
 public class FlattenerTargetField
 {
+	private static Class<?> PKG = FlattenerMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private String  fieldName;
     private String  keyValue;
     private String  targetName;
@@ -44,7 +47,7 @@ public class FlattenerTargetField
 
     public static final String typeAggrLongDesc[] = 
         {
-            "-", Messages.getString("FlattenerTargetField.TypeAggrLongDesc.SUM"), Messages.getString("FlattenerTargetField.TypeAggrLongDesc.AVERAGE"), Messages.getString("FlattenerTargetField.TypeAggrLongDesc.MIN"), Messages.getString("FlattenerTargetField.TypeAggrLongDesc.MAX"), Messages.getString("FlattenerTargetField.TypeAggrLongDesc.COUNT_ALL"), Messages.getString("FlattenerTargetField.TypeAggrLongDesc.CONCAT_COMMA")    //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+            "-", BaseMessages.getString(PKG, "FlattenerTargetField.TypeAggrLongDesc.SUM"), BaseMessages.getString(PKG, "FlattenerTargetField.TypeAggrLongDesc.AVERAGE"), BaseMessages.getString(PKG, "FlattenerTargetField.TypeAggrLongDesc.MIN"), BaseMessages.getString(PKG, "FlattenerTargetField.TypeAggrLongDesc.MAX"), BaseMessages.getString(PKG, "FlattenerTargetField.TypeAggrLongDesc.COUNT_ALL"), BaseMessages.getString(PKG, "FlattenerTargetField.TypeAggrLongDesc.CONCAT_COMMA")    //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
         };
 
 

@@ -18,6 +18,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
@@ -29,6 +30,8 @@ import org.w3c.dom.Node;
 
 public class TransDependency implements XMLInterface, Cloneable
 {
+	private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final String XML_TAG = "dependency";
     
     private DatabaseMeta db;
@@ -73,7 +76,7 @@ public class TransDependency implements XMLInterface, Cloneable
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("TransDependency.Exception.UnableToLoadTransformation"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "TransDependency.Exception.UnableToLoadTransformation"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -140,7 +143,7 @@ public class TransDependency implements XMLInterface, Cloneable
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException(Messages.getString("TransDependency.Exception.UnableToLoadTransformationDependency")+id_dependency, dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "TransDependency.Exception.UnableToLoadTransformationDependency")+id_dependency, dbe); //$NON-NLS-1$
 		}
 	}
 
@@ -154,7 +157,7 @@ public class TransDependency implements XMLInterface, Cloneable
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException(Messages.getString("TransDependency.Exception.UnableToSaveTransformationDepency")+id_transformation, dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "TransDependency.Exception.UnableToSaveTransformationDepency")+id_transformation, dbe); //$NON-NLS-1$
 		}
 	}
 }

@@ -33,16 +33,16 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.ui.core.dialog.Messages;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 /**
@@ -53,6 +53,8 @@ import org.pentaho.di.ui.core.widget.TableView;
  */
 public class EnterStringsDialog extends Dialog
 {
+	private static Class<?> PKG = EnterStringsDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label        wlFields;
     private TableView    wFields;
     private FormData     fdlFields, fdFields;
@@ -82,8 +84,8 @@ public class EnterStringsDialog extends Dialog
 		props=PropsUI.getInstance();
         readOnly=false;
         
-        title = Messages.getString("EnterStringsDialog.Title");
-        message = Messages.getString("EnterStringsDialog.Message");
+        title = BaseMessages.getString(PKG, "EnterStringsDialog.Title");
+        message = BaseMessages.getString(PKG, "EnterStringsDialog.Message");
 	}
 
 	public RowMetaAndData open()
@@ -118,8 +120,8 @@ public class EnterStringsDialog extends Dialog
         
         ColumnInfo[] colinf=new ColumnInfo[]
             {
-                new ColumnInfo(Messages.getString("EnterStringsDialog.StringName.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, readOnly),
-                new ColumnInfo(Messages.getString("EnterStringsDialog.StringValue.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, readOnly)                
+                new ColumnInfo(BaseMessages.getString(PKG, "EnterStringsDialog.StringName.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, readOnly),
+                new ColumnInfo(BaseMessages.getString(PKG, "EnterStringsDialog.StringValue.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, readOnly)                
             };
         
         wFields=new TableView(Variables.getADefaultVariableSpace(),
@@ -141,10 +143,10 @@ public class EnterStringsDialog extends Dialog
         
         
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFields);
 

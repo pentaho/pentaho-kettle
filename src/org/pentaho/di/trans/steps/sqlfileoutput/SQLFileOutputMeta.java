@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -37,6 +36,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -50,6 +50,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 /*
  * Created on 26-may-2007
@@ -58,7 +59,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  
 public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 {
-		
+	private static Class<?> PKG = SQLFileOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private DatabaseMeta databaseMeta;
     private String       schemaName;
 	private String       tablename;
@@ -651,7 +653,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		if (databaseMeta!=null)
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.ConnectionExists"), stepMeta);
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.ConnectionExists"), stepMeta);
 			remarks.add(cr);
 
 			Database db = new Database(databaseMeta);
@@ -659,7 +661,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				db.connect();
 				
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.ConnectionOk"), stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.ConnectionOk"), stepMeta);
 				remarks.add(cr);
 
 				if (!Const.isEmpty(tablename))
@@ -668,13 +670,13 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 					// Check if this table exists...
 					if (db.checkTableExists(schemaTable))
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.TableAccessible", schemaTable), stepMeta);
+						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.TableAccessible", schemaTable), stepMeta);
 						remarks.add(cr);
 
 						RowMetaInterface r = db.getTableFields(schemaTable);
 						if (r!=null)
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.TableOk", schemaTable), stepMeta);
+							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.TableOk", schemaTable), stepMeta);
 							remarks.add(cr);
 
 							String error_message = "";
@@ -683,7 +685,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 							// Now see what we can find as previous step...
 							if (prev!=null && prev.size()>0)
 							{
-								cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
+								cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
 								remarks.add(cr);
 	
 								// Starting from prev...
@@ -699,14 +701,14 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 								}
 								if (error_found) 
 								{
-									error_message=Messages.getString("SQLFileOutputMeta.CheckResult.FieldsNotFoundInOutput", error_message);
+									error_message=BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.FieldsNotFoundInOutput", error_message);
 	
 									cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 									remarks.add(cr);
 								}
 								else
 								{
-									cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.AllFieldsFoundInOutput"), stepMeta);
+									cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.AllFieldsFoundInOutput"), stepMeta);
 									remarks.add(cr);
 								}
 	
@@ -723,44 +725,44 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 								}
 								if (error_found) 
 								{
-									error_message=Messages.getString("SQLFileOutputMeta.CheckResult.FieldsNotFound", error_message);
+									error_message=BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.FieldsNotFound", error_message);
 	
 									cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, error_message, stepMeta);
 									remarks.add(cr);
 								}
 								else
 								{
-									cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.AllFieldsFound"), stepMeta);
+									cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.AllFieldsFound"), stepMeta);
 									remarks.add(cr);
 								}
 							}
 							else
 							{
-								cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SQLFileOutputMeta.CheckResult.NoFields"), stepMeta);
+								cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.NoFields"), stepMeta);
 								remarks.add(cr);
 							}
 						}
 						else
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SQLFileOutputMeta.CheckResult.TableNotAccessible"), stepMeta);
+							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.TableNotAccessible"), stepMeta);
 							remarks.add(cr);
 						}
 					}
 					else
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SQLFileOutputMeta.CheckResult.TableError", schemaTable), stepMeta);
+						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.TableError", schemaTable), stepMeta);
 						remarks.add(cr);
 					}
 				}
 				else
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SQLFileOutputMeta.CheckResult.NoTableName"), stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.NoTableName"), stepMeta);
 					remarks.add(cr);
 				}
 			}
 			catch(KettleException e)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SQLFileOutputMeta.CheckResult.UndefinedError", e.getMessage()), stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.UndefinedError", e.getMessage()), stepMeta);
 				remarks.add(cr);
 			}
 			finally
@@ -770,19 +772,19 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		else
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SQLFileOutputMeta.CheckResult.NoConnection"), stepMeta);
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.NoConnection"), stepMeta);
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SQLFileOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
 			remarks.add(cr);
 		}
 	}
@@ -864,7 +866,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 					}
 					catch(KettleDatabaseException dbe)
 					{
-						retval.setError(Messages.getString("SQLFileOutputMeta.Error.ErrorConnecting", dbe.getMessage()));
+						retval.setError(BaseMessages.getString(PKG, "SQLFileOutputMeta.Error.ErrorConnecting", dbe.getMessage()));
 					}
 					finally
 					{
@@ -873,17 +875,17 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 				}
 				else
 				{
-					retval.setError(Messages.getString("SQLFileOutputMeta.Exception.TableNotSpecified"));
+					retval.setError(BaseMessages.getString(PKG, "SQLFileOutputMeta.Exception.TableNotSpecified"));
 				}
 			}
 			else
 			{
-				retval.setError(Messages.getString("SQLFileOutputMeta.Error.NoInput"));
+				retval.setError(BaseMessages.getString(PKG, "SQLFileOutputMeta.Error.NoInput"));
 			}
 		}
 		else
 		{
-			retval.setError(Messages.getString("SQLFileOutputMeta.Error.NoConnection"));
+			retval.setError(BaseMessages.getString(PKG, "SQLFileOutputMeta.Error.NoConnection"));
 		}
 
 		return retval;
@@ -905,18 +907,18 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 					if (db.checkTableExists(schemaTable)) {
 						return db.getTableFields(schemaTable);
 					} else {
-						throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.TableNotFound"));
+						throw new KettleException(BaseMessages.getString(PKG, "SQLFileOutputMeta.Exception.TableNotFound"));
 					}
 				} else {
-					throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.TableNotSpecified"));
+					throw new KettleException(BaseMessages.getString(PKG, "SQLFileOutputMeta.Exception.TableNotSpecified"));
 				}
 			} catch (Exception e) {
-				throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.ErrorGettingFields"), e);
+				throw new KettleException(BaseMessages.getString(PKG, "SQLFileOutputMeta.Exception.ErrorGettingFields"), e);
 			} finally {
 				db.disconnect();
 			}
 		} else {
-			throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.ConnectionNotDefined"));
+			throw new KettleException(BaseMessages.getString(PKG, "SQLFileOutputMeta.Exception.ConnectionNotDefined"));
 		}
 	}
 

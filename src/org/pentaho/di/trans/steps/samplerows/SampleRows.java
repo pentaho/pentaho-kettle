@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.samplerows;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -32,6 +33,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class SampleRows extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = SampleRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private SampleRowsMeta meta;
 	private SampleRowsData data;
 	
@@ -71,7 +74,7 @@ public class SampleRows extends BaseStep implements StepInterface
 				if (rangePart[i].matches("\\d+")) 
 				{
 					String part=rangePart[i];
-					if(log.isDebug()) log.logDebug(toString(), Messages.getString("SampleRows.Log.RangeValue",part));
+					if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SampleRows.Log.RangeValue",part));
 					int vpart=Integer.valueOf(part);
 					if(vpart>data.maxLine) data.maxLine=vpart;
 					data.range.add(vpart);
@@ -81,7 +84,7 @@ public class SampleRows extends BaseStep implements StepInterface
 					String[] rangeMultiPart = rangePart[i].split("\\.\\.");
 					for (int j = Integer.valueOf(rangeMultiPart[0]).intValue(); j < Integer.valueOf(rangeMultiPart[1]).intValue() + 1; j++) 
 					{
-						if(log.isDebug()) log.logDebug(toString(), Messages.getString("SampleRows.Log.RangeValue",""+j));
+						if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SampleRows.Log.RangeValue",""+j));
 						int vpart=Integer.valueOf(j);
 						if(vpart>data.maxLine) data.maxLine=vpart;
 						data.range.add(vpart);
@@ -104,7 +107,7 @@ public class SampleRows extends BaseStep implements StepInterface
 			if(data.addlineField)	data.outputRow[data.NrPrevFields]=getLinesRead();
 			putRow(data.outputRowMeta, data.outputRow);      // copy row to possible alternate rowset(s).
 
-			if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("SampleRows.Log.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+			if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "SampleRows.Log.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
 		}
 			
 		if(data.maxLine>0 && getLinesRead()>=data.maxLine)
@@ -136,12 +139,12 @@ public class SampleRows extends BaseStep implements StepInterface
 	{
 		try
 		{
-			if(log.isBasic()) logBasic(Messages.getString("SampleRows.Log.StartingToRun")); //$NON-NLS-1$
+			if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "SampleRows.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("SampleRows.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(BaseMessages.getString(PKG, "SampleRows.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

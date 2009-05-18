@@ -38,23 +38,24 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.di.ui.core.widget.TextVar;
-
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.columnexists.Messages;
 import org.pentaho.di.trans.steps.columnexists.ColumnExistsMeta;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
-import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = ColumnExistsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CCombo       wConnection;
 
 	private Label        wlTableName;
@@ -117,14 +118,14 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("ColumnExistsDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "ColumnExistsDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("ColumnExistsDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "ColumnExistsDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -148,7 +149,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 		
 		// Schema name line
 		wlSchemaname = new Label(shell, SWT.RIGHT);
-		wlSchemaname.setText(Messages.getString("ColumnExistsDialog.Schemaname.Label"));
+		wlSchemaname.setText(BaseMessages.getString(PKG, "ColumnExistsDialog.Schemaname.Label"));
 		props.setLook(wlSchemaname);
 		fdlSchemaname = new FormData();
 		fdlSchemaname.left = new FormAttachment(0, 0);
@@ -158,7 +159,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 
 		wSchemaname = new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSchemaname);
-		wSchemaname.setToolTipText(Messages.getString("ColumnExistsDialog.Schemaname.Tooltip"));
+		wSchemaname.setToolTipText(BaseMessages.getString(PKG, "ColumnExistsDialog.Schemaname.Tooltip"));
 		wSchemaname.addModifyListener(lsMod);
 		fdSchemaname = new FormData();
 		fdSchemaname.left = new FormAttachment(middle, 0);
@@ -168,7 +169,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 		
 		// TablenameText fieldname ...
 		wlTablenameText=new Label(shell, SWT.RIGHT);
-		wlTablenameText.setText(Messages.getString("ColumnExistsDialog.TablenameTextField.Label")); //$NON-NLS-1$
+		wlTablenameText.setText(BaseMessages.getString(PKG, "ColumnExistsDialog.TablenameTextField.Label")); //$NON-NLS-1$
  		props.setLook(wlTablenameText);
 		fdlTablenameText=new FormData();
 		fdlTablenameText.left = new FormAttachment(0, 0);
@@ -178,7 +179,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 		
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbTable);
-		wbTable.setText(Messages.getString("System.Button.Browse"));
+		wbTable.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		FormData fdbTable = new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
 		fdbTable.top  = new FormAttachment(wSchemaname, margin);
@@ -186,7 +187,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 		wbTable.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getTableName(); } } );
 
 		wTablenameText=new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wTablenameText.setToolTipText(Messages.getString("ColumnExistsDialog.TablenameTextField.Tooltip"));
+		wTablenameText.setToolTipText(BaseMessages.getString(PKG, "ColumnExistsDialog.TablenameTextField.Tooltip"));
  		props.setLook(wTablenameText);
 		wTablenameText.addModifyListener(lsMod);
 		fdTablenameText=new FormData();
@@ -197,7 +198,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 		
 		// Is tablename is field?
 		wlTablenameInField=new Label(shell, SWT.RIGHT);
-		wlTablenameInField.setText(Messages.getString("ColumnExistsDialog.TablenameInfield.Label"));
+		wlTablenameInField.setText(BaseMessages.getString(PKG, "ColumnExistsDialog.TablenameInfield.Label"));
 		props.setLook(wlTablenameInField);
 		fdlTablenameInField=new FormData();
 		fdlTablenameInField.left  = new FormAttachment(0, 0);
@@ -205,7 +206,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 		fdlTablenameInField.right = new FormAttachment(middle, -margin);
 		wlTablenameInField.setLayoutData(fdlTablenameInField);
 		wTablenameInField=new Button(shell, SWT.CHECK);
-		wTablenameInField.setToolTipText(Messages.getString("ColumnExistsDialog.TablenameInfield.Tooltip"));
+		wTablenameInField.setToolTipText(BaseMessages.getString(PKG, "ColumnExistsDialog.TablenameInfield.Tooltip"));
  		props.setLook(wTablenameInField);
 		fdTablenameInField=new FormData();
 		fdTablenameInField.left  = new FormAttachment(middle, 0);
@@ -225,7 +226,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 
 		// Dynamic tablename
 		wlTableName=new Label(shell, SWT.RIGHT);
-		wlTableName.setText(Messages.getString("ColumnExistsDialog.TableName.Label")); //$NON-NLS-1$
+		wlTableName.setText(BaseMessages.getString(PKG, "ColumnExistsDialog.TableName.Label")); //$NON-NLS-1$
  		props.setLook(wlTableName);
 		fdlTableName=new FormData();
 		fdlTableName.left = new FormAttachment(0, 0);
@@ -260,7 +261,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 		
 		// Dynamic column name field
 		wlColumnName=new Label(shell, SWT.RIGHT);
-		wlColumnName.setText(Messages.getString("ColumnExistsDialog.ColumnName.Label")); //$NON-NLS-1$
+		wlColumnName.setText(BaseMessages.getString(PKG, "ColumnExistsDialog.ColumnName.Label")); //$NON-NLS-1$
  		props.setLook(wlColumnName);
 		fdlColumnName=new FormData();
 		fdlColumnName.left = new FormAttachment(0, 0);
@@ -295,7 +296,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 
 		// Result fieldname ...
 		wlResult=new Label(shell, SWT.RIGHT);
-		wlResult.setText(Messages.getString("ColumnExistsDialog.ResultField.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "ColumnExistsDialog.ResultField.Label")); //$NON-NLS-1$
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
@@ -303,7 +304,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 		fdlResult.top  = new FormAttachment(wColumnName, margin*2);
 		wlResult.setLayoutData(fdlResult);
 		wResult=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wResult.setToolTipText(Messages.getString("ColumnExistsDialog.ResultField.Tooltip"));
+		wResult.setToolTipText(BaseMessages.getString(PKG, "ColumnExistsDialog.ResultField.Tooltip"));
  		props.setLook(wResult);
 		wResult.addModifyListener(lsMod);
 		fdResult=new FormData();
@@ -316,9 +317,9 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wResult);
 
@@ -363,7 +364,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 	 */ 
 	public void getData()
 	{
-		if(log.isDebug()) log.logDebug(toString(), Messages.getString("ColumnExistsDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "ColumnExistsDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		
 		if (input.getDatabase()!=null)   wConnection.setText(input.getDatabase().getName());
@@ -405,8 +406,8 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 		if (input.getDatabase()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("ColumnExistsDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(Messages.getString("ColumnExistsDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "ColumnExistsDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "ColumnExistsDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
 		}
 		
@@ -432,7 +433,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 			wColumnName.setText(columnName);
 			wTableName.setText(tableName);
 		} catch (KettleException ke) {
-			new ErrorDialog(shell, Messages.getString("ColumnExistsDialog.FailedToGetFields.DialogTitle"), Messages.getString("ColumnExistsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "ColumnExistsDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ColumnExistsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}
@@ -456,8 +457,8 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(Messages.getString("ColumnExistsDialog.ConnectionError2.DialogMessage"));
-				mb.setText(Messages.getString("System.Dialog.Error.Title"));
+				mb.setMessage(BaseMessages.getString(PKG, "ColumnExistsDialog.ConnectionError2.DialogMessage"));
+				mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
 				mb.open(); 
 			}
 	                    

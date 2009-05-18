@@ -39,19 +39,21 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mergerows.MergeRowsMeta;
-import org.pentaho.di.trans.steps.mergerows.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = MergeRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlReference;
 	private CCombo       wReference;
 	private FormData     fdlReference, fdReference;
@@ -105,14 +107,14 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("MergeRowsDialog.Shell.Label")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Shell.Label")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("MergeRowsDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -134,7 +136,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         
 		// Send 'True' data to...
 		wlReference=new Label(shell, SWT.RIGHT);
-		wlReference.setText(Messages.getString("MergeRowsDialog.Reference.Label")); //$NON-NLS-1$
+		wlReference.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Reference.Label")); //$NON-NLS-1$
  		props.setLook(wlReference);
 		fdlReference=new FormData();
 		fdlReference.left = new FormAttachment(0, 0);
@@ -158,7 +160,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Send 'False' data to...
 		wlCompare=new Label(shell, SWT.RIGHT);
-		wlCompare.setText(Messages.getString("MergeRowsDialog.Compare.Label")); //$NON-NLS-1$
+		wlCompare.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Compare.Label")); //$NON-NLS-1$
  		props.setLook(wlCompare);
 		fdlCompare=new FormData();
 		fdlCompare.left = new FormAttachment(0, 0);
@@ -183,7 +185,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         
         // Stepname line
         wlFlagfield=new Label(shell, SWT.RIGHT);
-        wlFlagfield.setText(Messages.getString("MergeRowsDialog.FlagField.Label")); //$NON-NLS-1$
+        wlFlagfield.setText(BaseMessages.getString(PKG, "MergeRowsDialog.FlagField.Label")); //$NON-NLS-1$
         props.setLook(wlFlagfield);
         fdlFlagfield=new FormData();
         fdlFlagfield.left = new FormAttachment(0, 0);
@@ -202,7 +204,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         
         // THE KEYS TO MATCH...
         wlKeys=new Label(shell, SWT.NONE);
-        wlKeys.setText(Messages.getString("MergeRowsDialog.Keys.Label")); //$NON-NLS-1$
+        wlKeys.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Keys.Label")); //$NON-NLS-1$
         props.setLook(wlKeys);
         fdlKeys=new FormData();
         fdlKeys.left  = new FormAttachment(0, 0);
@@ -212,7 +214,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         int nrKeyRows= (input.getKeyFields()!=null?input.getKeyFields().length:1);
         
         ColumnInfo[] ciKeys=new ColumnInfo[] {
-            new ColumnInfo(Messages.getString("MergeRowsDialog.ColumnInfo.KeyField"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "MergeRowsDialog.ColumnInfo.KeyField"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
         };
             
         wKeys=new TableView(transMeta, shell, 
@@ -231,7 +233,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         wKeys.setLayoutData(fdKeys);
 
         wbKeys=new Button(shell, SWT.PUSH);
-        wbKeys.setText(Messages.getString("MergeRowsDialog.KeyFields.Button")); //$NON-NLS-1$
+        wbKeys.setText(BaseMessages.getString(PKG, "MergeRowsDialog.KeyFields.Button")); //$NON-NLS-1$
         fdbKeys = new FormData();
         fdbKeys.top   = new FormAttachment(wKeys, margin);
         fdbKeys.left  = new FormAttachment(0, 0);
@@ -250,7 +252,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 
         // VALUES TO COMPARE
         wlValues=new Label(shell, SWT.NONE);
-        wlValues.setText(Messages.getString("MergeRowsDialog.Values.Label")); //$NON-NLS-1$
+        wlValues.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Values.Label")); //$NON-NLS-1$
         props.setLook(wlValues);
         fdlValues=new FormData();
         fdlValues.left  = new FormAttachment(50, 0);
@@ -260,7 +262,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         int nrValueRows= (input.getValueFields()!=null?input.getValueFields().length:1);
         
         ColumnInfo[] ciValues=new ColumnInfo[] {
-            new ColumnInfo(Messages.getString("MergeRowsDialog.ColumnInfo.ValueField"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "MergeRowsDialog.ColumnInfo.ValueField"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
         };
             
         wValues=new TableView(transMeta, shell, 
@@ -280,7 +282,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 
         
         wbValues=new Button(shell, SWT.PUSH);
-        wbValues.setText(Messages.getString("MergeRowsDialog.ValueFields.Button")); //$NON-NLS-1$
+        wbValues.setText(BaseMessages.getString(PKG, "MergeRowsDialog.ValueFields.Button")); //$NON-NLS-1$
         fdbValues = new FormData();
         fdbValues.top   = new FormAttachment(wValues, margin);
         fdbValues.left  = new FormAttachment(50,  0);
@@ -298,9 +300,9 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wbKeys);
 
@@ -409,7 +411,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogTitle"), Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "MergeRowsDialog.ErrorGettingFields.DialogTitle"), BaseMessages.getString(PKG, "MergeRowsDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
     
@@ -429,7 +431,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogTitle"), Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "MergeRowsDialog.ErrorGettingFields.DialogTitle"), BaseMessages.getString(PKG, "MergeRowsDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 }

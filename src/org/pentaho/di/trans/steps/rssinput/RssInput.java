@@ -15,11 +15,12 @@
 
 package org.pentaho.di.trans.steps.rssinput;
 
+import it.sauronsoftware.feed4j.FeedParser;
+import it.sauronsoftware.feed4j.bean.FeedItem;
+
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import it.sauronsoftware.feed4j.FeedParser;
-import it.sauronsoftware.feed4j.bean.FeedItem;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -27,6 +28,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -44,6 +46,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class RssInput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = RssInput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private RssInputMeta meta;
 	private RssInputData data;
 	
@@ -61,7 +65,7 @@ public class RssInput extends BaseStep implements StepInterface
 				 data.readrow= getRow();  // Grab another row ...
 				 if(data.readrow==null)
 				 {
-		            if (log.isDetailed()) logDetailed(Messages.getString("RssInput.Log.FinishedProcessing"));
+		            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.FinishedProcessing"));
 		            return false; 
 				 }
 				 if(first)
@@ -88,8 +92,8 @@ public class RssInput extends BaseStep implements StepInterface
 					// Check is URL field is provided
 					if (Const.isEmpty(meta.getUrlFieldname()))
 					{
-						logError(Messages.getString("RssInput.Log.UrlFieldNameMissing"));
-						throw new KettleException(Messages.getString("RssInput.Log.UrlFieldNameMissing"));
+						logError(BaseMessages.getString(PKG, "RssInput.Log.UrlFieldNameMissing"));
+						throw new KettleException(BaseMessages.getString(PKG, "RssInput.Log.UrlFieldNameMissing"));
 					}
 					
 					// cache the position of the field			
@@ -99,8 +103,8 @@ public class RssInput extends BaseStep implements StepInterface
 						if (data.indexOfUrlField<0)
 						{
 							// The field is unreachable !
-							logError(Messages.getString("RssInput.Log.ErrorFindingField")+ "[" + meta.getUrlFieldname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(Messages.getString("RssInput.Exception.ErrorFindingField",meta.getUrlFieldname())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(BaseMessages.getString(PKG, "RssInput.Log.ErrorFindingField")+ "[" + meta.getUrlFieldname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(BaseMessages.getString(PKG, "RssInput.Exception.ErrorFindingField",meta.getUrlFieldname())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}		
 						
@@ -112,7 +116,7 @@ public class RssInput extends BaseStep implements StepInterface
 				if(data.last_url) return false;
 	            if (data.urlnr>=data.urlsize) // finished processing!
 	            {
-	            	if (log.isDetailed()) logDetailed(Messages.getString("RssInput.Log.FinishedProcessing"));
+	            	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.FinishedProcessing"));
 	                return false;
 	            }
 				// Is this the last url?
@@ -121,7 +125,7 @@ public class RssInput extends BaseStep implements StepInterface
 			}
             
 
-			if (log.isDetailed()) log.logDetailed(toString(),Messages.getString("RssInput.Log.ReadingUrl", data.currenturl));
+			if (log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "RssInput.Log.ReadingUrl", data.currenturl));
 			
 			URL rss = new URL(data.currenturl);
 			data.feed = FeedParser.parse(rss);
@@ -131,13 +135,13 @@ public class RssInput extends BaseStep implements StepInterface
 			data.urlnr++;
 			data.itemsnr=0;
 
-			if (log.isDetailed()) logDetailed(Messages.getString("RssInput.Log.UrlReaded", data.currenturl,""+data.itemssize));
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.UrlReaded", data.currenturl,""+data.itemssize));
 
 
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("RssInput.Log.UnableToReadUrl", ""+data.urlnr, data.currenturl, e.toString()));
+			logError(BaseMessages.getString(PKG, "RssInput.Log.UnableToReadUrl", ""+data.urlnr, data.currenturl, e.toString()));
 			stopAll();
 			setErrors(1);
 			return false;
@@ -298,7 +302,7 @@ public class RssInput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				logError(Messages.getString("RssInput.Exception.Run",e.toString()));
+				logError(BaseMessages.getString(PKG, "RssInput.Exception.Run",e.toString()));
 				logError(Const.getStackTracker(e));
 				setErrors(1);
 				throw new KettleException(e);
@@ -353,7 +357,7 @@ public class RssInput extends BaseStep implements StepInterface
 			{
 				if (meta.getUrl()==null && meta.getUrl().length==0)
 			    {
-					logError(Messages.getString("RssInput.Log.UrlMissing"));
+					logError(BaseMessages.getString(PKG, "RssInput.Log.UrlMissing"));
 					return false;
 				}
 				

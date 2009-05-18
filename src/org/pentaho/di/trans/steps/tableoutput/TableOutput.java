@@ -31,6 +31,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -47,6 +48,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class TableOutput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = TableOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private TableOutputMeta meta;
 	private TableOutputData data;
 		
@@ -89,7 +92,7 @@ public class TableOutput extends BaseStep implements StepInterface
             		data.valuenrs[i]=getInputRowMeta().indexOfValue(meta.getFieldStream()[i]);
             		if (data.valuenrs[i]<0)
             		{
-            			throw new KettleStepException(Messages.getString("TableOutput.Exception.FieldRequired",meta.getFieldStream()[i])); //$NON-NLS-1$
+            			throw new KettleStepException(BaseMessages.getString(PKG, "TableOutput.Exception.FieldRequired",meta.getFieldStream()[i])); //$NON-NLS-1$
             		}
             	}
 
@@ -103,7 +106,7 @@ public class TableOutput extends BaseStep implements StepInterface
         			    data.insertRowMeta.addValueMeta( insertValue );
         		    }
         		    else  {
-        			    throw new KettleStepException(Messages.getString("TableOutput.Exception.FailedToFindField", meta.getFieldStream()[i])); //$NON-NLS-1$ 
+        			    throw new KettleStepException(BaseMessages.getString(PKG, "TableOutput.Exception.FailedToFindField", meta.getFieldStream()[i])); //$NON-NLS-1$ 
         			}
         	    }            	
             }
@@ -548,7 +551,7 @@ public class TableOutput extends BaseStep implements StepInterface
                 if (data.batchMode && data.specialErrorHandling )
                 {
                 	data.batchMode = false;
-                	if(log.isBasic()) log.logBasic(toString(), Messages.getString("TableOutput.Log.BatchModeDisabled"));
+                	if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "TableOutput.Log.BatchModeDisabled"));
                 }
 
                 data.db=new Database(meta.getDatabaseMeta());

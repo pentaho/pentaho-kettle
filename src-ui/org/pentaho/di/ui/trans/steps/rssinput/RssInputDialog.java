@@ -19,12 +19,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -32,44 +34,41 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.graphics.Cursor;
-
-
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
-import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.trans.steps.rssinput.RssInputMeta;
 import org.pentaho.di.trans.steps.rssinput.RssInputField;
-import org.pentaho.di.trans.steps.rssinput.Messages;
-import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.trans.steps.rssinput.RssInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
-
-import org.eclipse.swt.widgets.Group;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 public class RssInputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = RssInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
@@ -160,14 +159,14 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("RssInputDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "RssInputDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -191,7 +190,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		// START OF GENERAL TAB   ///
 		//////////////////////////
 		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
-		wGeneralTab.setText(Messages.getString("RssInputDialog.General.Tab"));
+		wGeneralTab.setText(BaseMessages.getString(PKG, "RssInputDialog.General.Tab"));
 		
 		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wGeneralComp);
@@ -210,7 +209,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		GroupUrlField = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(GroupUrlField);
-		GroupUrlField.setText(Messages.getString("RssInputDialog.GroupUrlField.Label"));
+		GroupUrlField.setText(BaseMessages.getString(PKG, "RssInputDialog.GroupUrlField.Label"));
 		
 		FormLayout UrlFieldgroupLayout = new FormLayout();
 		UrlFieldgroupLayout.marginWidth = 10;
@@ -219,7 +218,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		//Is URL defined in a Field		
 		wlUrlInField = new Label(GroupUrlField, SWT.RIGHT);
-		wlUrlInField.setText(Messages.getString("RssInputDialog.UrlInField.Label"));
+		wlUrlInField.setText(BaseMessages.getString(PKG, "RssInputDialog.UrlInField.Label"));
 		props.setLook(wlUrlInField);
 		fdlUrlInField = new FormData();
 		fdlUrlInField.left = new FormAttachment(0, 0);
@@ -230,7 +229,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		wUrlInField = new Button(GroupUrlField, SWT.CHECK);
 		props.setLook(wUrlInField);
-		wUrlInField.setToolTipText(Messages.getString("RssInputDialog.UrlInField.Tooltip"));
+		wUrlInField.setToolTipText(BaseMessages.getString(PKG, "RssInputDialog.UrlInField.Tooltip"));
 		fdUrlInField = new FormData();
 		fdUrlInField.left = new FormAttachment(middle, margin);
 		fdUrlInField.top = new FormAttachment(0, margin);
@@ -249,7 +248,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
              
 		// If URL defined in a Field
 		wlUrlField=new Label(GroupUrlField, SWT.RIGHT);
-        wlUrlField.setText(Messages.getString("RssInputDialog.UrlField.Label"));
+        wlUrlField.setText(BaseMessages.getString(PKG, "RssInputDialog.UrlField.Label"));
         props.setLook(wlUrlField);
         fdlUrlField=new FormData();
         fdlUrlField.left = new FormAttachment(0, 0);
@@ -297,7 +296,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
  		
  		// URL List line
 		wlUrlList=new Label(wGeneralComp, SWT.RIGHT);
-		wlUrlList.setText(Messages.getString("RssInputDialog.UrlList.Label"));
+		wlUrlList.setText(BaseMessages.getString(PKG, "RssInputDialog.UrlList.Label"));
  		props.setLook(wlUrlList);
 		fdlUrlList=new FormData();
 		fdlUrlList.left = new FormAttachment(0, 0);
@@ -306,9 +305,9 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wlUrlList.setLayoutData(fdlUrlList);
  			
  		ColumnInfo[] colinfo=new ColumnInfo[1];
-		colinfo[0]=new ColumnInfo( Messages.getString("RssInputDialog.Url"),ColumnInfo.COLUMN_TYPE_TEXT,false);
+		colinfo[0]=new ColumnInfo( BaseMessages.getString(PKG, "RssInputDialog.Url"),ColumnInfo.COLUMN_TYPE_TEXT,false);
 		colinfo[0].setUsingVariables(true);
-		colinfo[0].setToolTip(Messages.getString("RssInputDialog.Url.Tooltip"));
+		colinfo[0].setToolTip(BaseMessages.getString(PKG, "RssInputDialog.Url.Tooltip"));
 		
 		wUrlList = new TableView(transMeta,wGeneralComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 2,  lsMod, props);
  		props.setLook(wUrlList);
@@ -338,7 +337,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		// START OF CONTENT TAB///
 		///
 		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-		wContentTab.setText(Messages.getString("RssInputDialog.Content.Tab"));
+		wContentTab.setText(BaseMessages.getString(PKG, "RssInputDialog.Content.Tab"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;
@@ -349,7 +348,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wContentComp.setLayout(contentLayout);
 		
 		wlReadFrom=new Label(wContentComp, SWT.RIGHT);
-		wlReadFrom.setText(Messages.getString("RssInputDialog.ReadFrom.Label"));
+		wlReadFrom.setText(BaseMessages.getString(PKG, "RssInputDialog.ReadFrom.Label"));
  		props.setLook(wlReadFrom);
 		fdlReadFrom=new FormData();
 		fdlReadFrom.left = new FormAttachment(0, 0);
@@ -357,7 +356,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		fdlReadFrom.right= new FormAttachment(middle, -margin);
 		wlReadFrom.setLayoutData(fdlReadFrom);
 		wReadFrom=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wReadFrom.setToolTipText(Messages.getString("RssInputDialog.ReadFrom.Tooltip"));
+		wReadFrom.setToolTipText(BaseMessages.getString(PKG, "RssInputDialog.ReadFrom.Tooltip"));
  		props.setLook(wReadFrom);
 		wReadFrom.addModifyListener(lsMod);
 		fdReadFrom=new FormData();
@@ -368,7 +367,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		
  		wlLimit=new Label(wContentComp, SWT.RIGHT);
-		wlLimit.setText(Messages.getString("RssInputDialog.Limit.Label"));
+		wlLimit.setText(BaseMessages.getString(PKG, "RssInputDialog.Limit.Label"));
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -391,7 +390,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		wAdditional = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wAdditional);
-		wAdditional.setText(Messages.getString("RssInputDialog.Group.AdditionalGroup.Label"));
+		wAdditional.setText(BaseMessages.getString(PKG, "RssInputDialog.Group.AdditionalGroup.Label"));
 		
 		FormLayout AdditionalgroupLayout = new FormLayout();
 		AdditionalgroupLayout.marginWidth = 10;
@@ -400,7 +399,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		// Include Url in output ?
 		wlInclUrl=new Label(wAdditional, SWT.RIGHT);
-		wlInclUrl.setText(Messages.getString("RssInputDialog.InclUrl.Label"));
+		wlInclUrl.setText(BaseMessages.getString(PKG, "RssInputDialog.InclUrl.Label"));
  		props.setLook(wlInclUrl);
 		fdlInclUrl=new FormData();
 		fdlInclUrl.left = new FormAttachment(0, 0);
@@ -409,7 +408,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wlInclUrl.setLayoutData(fdlInclUrl);
 		wInclUrl=new Button(wAdditional, SWT.CHECK );
  		props.setLook(wInclUrl);
-		wInclUrl.setToolTipText(Messages.getString("RssInputDialog.InclUrl.Tooltip"));
+		wInclUrl.setToolTipText(BaseMessages.getString(PKG, "RssInputDialog.InclUrl.Tooltip"));
 		fdUrl=new FormData();
 		fdUrl.left = new FormAttachment(middle, 0);
 		fdUrl.top  = new FormAttachment(wLimit, margin);
@@ -417,7 +416,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		// Url fieldname
 		wlInclUrlField=new Label(wAdditional, SWT.RIGHT);
-		wlInclUrlField.setText(Messages.getString("RssInputDialog.InclUrlField.Label"));
+		wlInclUrlField.setText(BaseMessages.getString(PKG, "RssInputDialog.InclUrlField.Label"));
  		props.setLook(wlInclUrlField);
 		fdlInclUrlField=new FormData();
 		fdlInclUrlField.left = new FormAttachment(wInclUrl, margin);
@@ -434,7 +433,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		// Include rownumber in ouput?
 		wlInclRownum=new Label(wAdditional, SWT.RIGHT);
-		wlInclRownum.setText(Messages.getString("RssInputDialog.InclRownum.Label"));
+		wlInclRownum.setText(BaseMessages.getString(PKG, "RssInputDialog.InclRownum.Label"));
  		props.setLook(wlInclRownum);
 		fdlInclRownum=new FormData();
 		fdlInclRownum.left = new FormAttachment(0, 0);
@@ -443,7 +442,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wlInclRownum.setLayoutData(fdlInclRownum);
 		wInclRownum=new Button(wAdditional, SWT.CHECK );
  		props.setLook(wInclRownum);
-		wInclRownum.setToolTipText(Messages.getString("RssInputDialog.InclRownum.Tooltip"));
+		wInclRownum.setToolTipText(BaseMessages.getString(PKG, "RssInputDialog.InclRownum.Tooltip"));
 		fdRownum=new FormData();
 		fdRownum.left = new FormAttachment(middle, 0);
 		fdRownum.top  = new FormAttachment(wInclUrl, margin);
@@ -451,7 +450,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Rownum fieldname
 		wlInclRownumField=new Label(wAdditional, SWT.RIGHT);
-		wlInclRownumField.setText(Messages.getString("RssInputDialog.InclRownumField.Label"));
+		wlInclRownumField.setText(BaseMessages.getString(PKG, "RssInputDialog.InclRownumField.Label"));
  		props.setLook(wlInclRownumField);
 		fdlInclRownumField=new FormData();
 		fdlInclRownumField.left = new FormAttachment(wInclRownum, margin);
@@ -495,7 +494,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		// Fields tab...
 		//
 		wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
-		wFieldsTab.setText(Messages.getString("RssInputDialog.Fields.Tab"));
+		wFieldsTab.setText(BaseMessages.getString(PKG, "RssInputDialog.Fields.Tab"));
 		
 		FormLayout fieldsLayout = new FormLayout ();
 		fieldsLayout.marginWidth  = Const.FORM_MARGIN;
@@ -506,7 +505,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
  		props.setLook(wFieldsComp);
 		
  		wGet=new Button(wFieldsComp, SWT.PUSH);
-		wGet.setText(Messages.getString("RssInputDialog.GetFields.Button"));
+		wGet.setText(BaseMessages.getString(PKG, "RssInputDialog.GetFields.Button"));
 		fdGet=new FormData();
 		fdGet.left=new FormAttachment(50, 0);
 		fdGet.bottom =new FormAttachment(100, 0);
@@ -526,59 +525,59 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		ColumnInfo[] colinf=new ColumnInfo[]
             {
 			 new ColumnInfo(
-         Messages.getString("RssInputDialog.Field.Name"),
+         BaseMessages.getString(PKG, "RssInputDialog.Field.Name"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
          new ColumnInfo(
-                 Messages.getString("RssInputDialog.Field.Column"),
+                 BaseMessages.getString(PKG, "RssInputDialog.Field.Column"),
                  ColumnInfo.COLUMN_TYPE_CCOMBO,RssInputField.ColumnDesc,
                  false),
 			 new ColumnInfo(
-         Messages.getString("RssInputDialog.Field.Type"),
+         BaseMessages.getString(PKG, "RssInputDialog.Field.Type"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
          ValueMeta.getTypes(),
          true ),
 			 new ColumnInfo(
-         Messages.getString("RssInputDialog.Field.Format"),
+         BaseMessages.getString(PKG, "RssInputDialog.Field.Format"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
          formats),
 			 new ColumnInfo(
-         Messages.getString("RssInputDialog.Field.Length"),
+         BaseMessages.getString(PKG, "RssInputDialog.Field.Length"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("RssInputDialog.Field.Precision"),
+         BaseMessages.getString(PKG, "RssInputDialog.Field.Precision"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("RssInputDialog.Field.Currency"),
+         BaseMessages.getString(PKG, "RssInputDialog.Field.Currency"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("RssInputDialog.Field.Decimal"),
+         BaseMessages.getString(PKG, "RssInputDialog.Field.Decimal"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("RssInputDialog.Field.Group"),
+         BaseMessages.getString(PKG, "RssInputDialog.Field.Group"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("RssInputDialog.Field.TrimType"),
+         BaseMessages.getString(PKG, "RssInputDialog.Field.TrimType"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
          RssInputField.trimTypeDesc,
          true ),
 			 new ColumnInfo(
-         Messages.getString("RssInputDialog.Field.Repeat"),
+         BaseMessages.getString(PKG, "RssInputDialog.Field.Repeat"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
-         new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") },
+         new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") },
          true ),
      
     };
 		
 		colinf[0].setUsingVariables(true);
-		colinf[0].setToolTip(Messages.getString("RssInputDialog.Field.Name.Tooltip"));
+		colinf[0].setToolTip(BaseMessages.getString(PKG, "RssInputDialog.Field.Name.Tooltip"));
 		colinf[1].setUsingVariables(true);
-		colinf[1].setToolTip(Messages.getString("RssInputDialog.Field.Column.Tooltip"));
+		colinf[1].setToolTip(BaseMessages.getString(PKG, "RssInputDialog.Field.Column.Tooltip"));
 		
 		wFields=new TableView(transMeta,wFieldsComp, 
 						      SWT.FULL_SELECTION | SWT.MULTI, 
@@ -613,13 +612,13 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wTabFolder.setLayoutData(fdTabFolder);
 		
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 
 		wPreview=new Button(shell, SWT.PUSH);
-		wPreview.setText(Messages.getString("RssInputDialog.Button.PreviewRows"));
+		wPreview.setText(BaseMessages.getString(PKG, "RssInputDialog.Button.PreviewRows"));
 		
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
 
@@ -726,7 +725,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 			 
 			
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, Messages.getString("RssInputDialog.FailedToGetFields.DialogTitle"), Messages.getString("RssInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "RssInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "RssInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 	 }
 	 
@@ -758,7 +757,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		}
 		 catch(Exception e)
 	     {
-	            new ErrorDialog(shell, Messages.getString("RssInputDialog.ErrorGettingFields.DialogTitle"), Messages.getString("getXMLDataDialog.ErrorGettingFields.DialogMessage"), e);
+	            new ErrorDialog(shell, BaseMessages.getString(PKG, "RssInputDialog.ErrorGettingFields.DialogTitle"), BaseMessages.getString(PKG, "getXMLDataDialog.ErrorGettingFields.DialogMessage"), e);
 	     }
 	}
 
@@ -811,7 +810,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		wLimit.setText(""+in.getRowLimit());
 
-		log.logDebug(toString(), Messages.getString("RssInputDialog.Log.GettingFieldsInfo"));
+		log.logDebug(toString(), BaseMessages.getString(PKG, "RssInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
 		    RssInputField field = in.getInputFields()[i];
@@ -829,7 +828,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
     			String group    = field.getGroupSymbol();
     			String decim    = field.getDecimalSymbol();
     			String trim     = field.getTrimTypeDesc();
-    			String rep      = field.isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No");
+    			String rep      = field.isRepeated()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No");
     			
                 if (name    !=null) item.setText( 1, name);
                 if (column  !=null) item.setText( 2, column);
@@ -872,7 +871,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("RssInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("RssInputDialog.ErrorParsingData.DialogMessage"), e);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "RssInputDialog.ErrorParsingData.DialogTitle"), BaseMessages.getString(PKG, "RssInputDialog.ErrorParsingData.DialogMessage"), e);
         }
 		dispose();
 	}
@@ -920,7 +919,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 			field.setDecimalSymbol( item.getText(8) );
 			field.setGroupSymbol( item.getText(9) );
 			field.setTrimType( RssInputField.getTrimTypeByDesc(item.getText(10)) );
-			field.setRepeated( Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(11)) );		
+			field.setRepeated( BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(11)) );		
             
 			in.getInputFields()[i] = field;
 		}		 
@@ -932,8 +931,8 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
         if (wUrlList.nrNonEmpty()<1)
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage(Messages.getString("RssInput.Log.UrlMissing"));
-            mb.setText(Messages.getString("System.Dialog.Error.Title"));
+            mb.setMessage(BaseMessages.getString(PKG, "RssInput.Log.UrlMissing"));
+            mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
             mb.open(); 
 
             return false;
@@ -958,7 +957,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
     		//if (!checkLoopXPath(oneMeta)) return;
     		 TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
             
-            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("getXMLDataDialog.NumberRows.DialogTitle"), Messages.getString("getXMLDataDialog.NumberRows.DialogMessage"));
+            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "getXMLDataDialog.NumberRows.DialogTitle"), BaseMessages.getString(PKG, "getXMLDataDialog.NumberRows.DialogMessage"));
             
             int previewSize = numberDialog.open();
             if (previewSize>0)
@@ -973,8 +972,8 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
                     
                     if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                     {
-                    	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
-                    			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+                    	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
+                    			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true );
                     	etd.setReadOnly();
                     	etd.open();
                     }
@@ -989,7 +988,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("RssInputDialog.ErrorPreviewingData.DialogTitle"), Messages.getString("RssInputDialog.ErrorPreviewingData.DialogMessage"), e);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "RssInputDialog.ErrorPreviewingData.DialogTitle"), BaseMessages.getString(PKG, "RssInputDialog.ErrorPreviewingData.DialogMessage"), e);
         }
 	}
 

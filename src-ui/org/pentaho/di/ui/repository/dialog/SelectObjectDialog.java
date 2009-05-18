@@ -13,7 +13,6 @@
 
 package org.pentaho.di.ui.repository.dialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -31,6 +30,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -38,16 +38,16 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
-import org.pentaho.di.ui.repository.dialog.Messages;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
@@ -59,6 +59,8 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
  */
 public class SelectObjectDialog extends Dialog
 {
+	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlTree;
 	private Tree         wTree;
     private FormData     fdlTree, fdTree,fdexpandAll;
@@ -105,8 +107,8 @@ public class SelectObjectDialog extends Dialog
         this.showTrans = showTransformations;
         this.showJobs  = showJobs;
 		
-		shellText = Messages.getString("SelectObjectDialog.Dialog.Main.Title"); //$NON-NLS-1$
-		lineText = Messages.getString("SelectObjectDialog.Dialog.Object.Title"); //$NON-NLS-1$
+		shellText = BaseMessages.getString(PKG, "SelectObjectDialog.Dialog.Main.Title"); //$NON-NLS-1$
+		lineText = BaseMessages.getString(PKG, "SelectObjectDialog.Dialog.Object.Title"); //$NON-NLS-1$
 		objectName = null;
 		objectDirectory = null;
         
@@ -158,28 +160,28 @@ public class SelectObjectDialog extends Dialog
 
         // Add some columns to it as well...
         nameColumn = new TreeColumn(wTree, SWT.LEFT);
-        nameColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Name")); //$NON-NLS-1$
+        nameColumn.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Column.Name")); //$NON-NLS-1$
         nameColumn.setWidth(350);
         nameColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(0); } });
 
         // No sorting on the type column just yet.
         typeColumn = new TreeColumn(wTree, SWT.LEFT);
-        typeColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Type")); //$NON-NLS-1$
+        typeColumn.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Column.Type")); //$NON-NLS-1$
         typeColumn.setWidth(100);
         typeColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(1); } });
 
         userColumn = new TreeColumn(wTree, SWT.LEFT);
-        userColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.User")); //$NON-NLS-1$
+        userColumn.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Column.User")); //$NON-NLS-1$
         userColumn.setWidth(100);
         userColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(2); } });
 
         changedColumn = new TreeColumn(wTree, SWT.LEFT);
-        changedColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Changed")); //$NON-NLS-1$
+        changedColumn.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Column.Changed")); //$NON-NLS-1$
         changedColumn.setWidth(120);
         changedColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(3); } });
 
         descriptionColumn = new TreeColumn(wTree, SWT.LEFT);
-        descriptionColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Description")); //$NON-NLS-1$
+        descriptionColumn.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Column.Description")); //$NON-NLS-1$
         descriptionColumn.setWidth(120);
         descriptionColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(4); } });
         
@@ -193,12 +195,12 @@ public class SelectObjectDialog extends Dialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		wOK.addListener    (SWT.Selection, lsOK     );
 		
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		wCancel.addListener(SWT.Selection, lsCancel );
 
@@ -236,8 +238,8 @@ public class SelectObjectDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Title"), 
-                    Messages.getString("SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Title"), 
+                    BaseMessages.getString(PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
         getData();
@@ -295,7 +297,7 @@ public class SelectObjectDialog extends Dialog
         }
         catch(KettleDatabaseException e)
         {
-            new ErrorDialog(shell, Messages.getString("SelectObjectDialog.Dialog.UnexpectedError.Title"), Messages.getString("SelectObjectDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "SelectObjectDialog.Dialog.UnexpectedError.Title"), BaseMessages.getString(PKG, "SelectObjectDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -341,8 +343,8 @@ public class SelectObjectDialog extends Dialog
 					else
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage(Messages.getString("SelectObjectDialog.Dialog.DirectoryNotFound.Message")); //$NON-NLS-1$
-						mb.setText(Messages.getString("SelectObjectDialog.Dialog.DirectoryNotFound.Title")); //$NON-NLS-1$
+						mb.setMessage(BaseMessages.getString(PKG, "SelectObjectDialog.Dialog.DirectoryNotFound.Message")); //$NON-NLS-1$
+						mb.setText(BaseMessages.getString(PKG, "SelectObjectDialog.Dialog.DirectoryNotFound.Title")); //$NON-NLS-1$
 						mb.open();
 					}
 				}

@@ -17,18 +17,21 @@
 package org.pentaho.di.trans.steps.xslt;
 
 import java.io.FileInputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.StringReader; 
-import java.io.StringWriter;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -36,8 +39,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.xslt.XsltMeta;
-import org.pentaho.di.trans.steps.xslt.XsltData;
 
 /**
  * Executes a XSL Transform on the values in the input stream. 
@@ -48,6 +49,8 @@ import org.pentaho.di.trans.steps.xslt.XsltData;
  */
 public class Xslt extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = XsltMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private XsltMeta meta;
 	private XsltData data;
 	
@@ -81,16 +84,16 @@ public class Xslt extends BaseStep implements StepInterface
 			if (Const.isEmpty(meta.getResultfieldname()))
 			{
 				// Result Field is missing !
-				logError(Messages.getString("Xslt.Log.ErrorResultFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-				throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorResultFieldMissing")); 
+				logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorResultFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorResultFieldMissing")); 
 			}
 		
 			// Check if The XML field is given
 			if (Const.isEmpty(meta.getFieldname()))
 			{
 				// Result Field is missing !
-				logError(Messages.getString("Xslt.Exception.ErrorXMLFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-				throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXMLFieldMissing")); 
+				logError(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXMLFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXMLFieldMissing")); 
 			}
 			
 			// Try to get XML Field index
@@ -99,8 +102,8 @@ public class Xslt extends BaseStep implements StepInterface
 			if (data.fieldposition<0)
 			{
 				// The field is unreachable !
-				logError(Messages.getString("Xslt.Log.ErrorFindingField")+ "[" + meta.getFieldname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-				throw new KettleStepException(Messages.getString("Xslt.Exception.CouldnotFindField",meta.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$
+				logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorFindingField")+ "[" + meta.getFieldname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.CouldnotFindField",meta.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 				
 			// Check if the XSL Filename is contained in a column
@@ -110,8 +113,8 @@ public class Xslt extends BaseStep implements StepInterface
 				{
 					// The field is missing
 					//	Result field is missing !
-					logError(Messages.getString("Xslt.Log.ErrorXSLFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			
 				// Try to get Field index
@@ -121,16 +124,16 @@ public class Xslt extends BaseStep implements StepInterface
 				if (data.fielxslfiledposition<0)
 				{
 					//	 The field is unreachable !
-					logError(Messages.getString("Xslt.Log.ErrorXSLFileFieldFinding")+ "[" + meta.getXSLFileField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFileFieldFinding",meta.getXSLFileField())); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLFileFieldFinding")+ "[" + meta.getXSLFileField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLFileFieldFinding",meta.getXSLFileField())); //$NON-NLS-1$ //$NON-NLS-2$
 				}	
 				
 			}else
 			{
 				if(Const.isEmpty(meta.getXslFilename()))
 				{
-					logError(Messages.getString("Xslt.Log.ErrorXSLFile")); 
-					throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFile"));
+					logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLFile")); 
+					throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLFile"));
 				}
 				
 				// Check if XSL File exists!
@@ -138,13 +141,13 @@ public class Xslt extends BaseStep implements StepInterface
 				java.io.File file=new java.io.File(data.xslfilename);
 				if(!file.exists())
 				{
-					logError(Messages.getString("Xslt.Log.ErrorXSLFileNotExists",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFileNotExists",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLFileNotExists",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLFileNotExists",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				if(!file.isFile())
 				{
-					logError(Messages.getString("Xslt.Log.ErrorXSLNotAFile",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLNotAFile",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLNotAFile",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLNotAFile",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		}	
@@ -158,13 +161,13 @@ public class Xslt extends BaseStep implements StepInterface
 		{
 			// Get the value	
 			data.xslfilename= getInputRowMeta().getString(row,data.fielxslfiledposition);	
-			if (log.isDetailed()) logDetailed(Messages.getString("Xslt.Log.XslfileNameFromFied",data.xslfilename,meta.getXSLFileField()));			
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Xslt.Log.XslfileNameFromFied",data.xslfilename,meta.getXSLFileField()));			
 		}
 
 		boolean sendToErrorRow=false;
 	    String errorMessage = null;
 		try {			
-			if(log.isDetailed()) logDetailed(Messages.getString("Xslt.Log.Filexsl") + data.xslfilename);
+			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Xslt.Log.Filexsl") + data.xslfilename);
 			TransformerFactory factory = TransformerFactory.newInstance();
 			
 			if (meta.getXSLFactory().equals("SAXON"))
@@ -184,12 +187,12 @@ public class Xslt extends BaseStep implements StepInterface
 			xmlString = resultat.getWriter().toString();	
 			if(log.isDetailed()) 
 			{
-				logDetailed(Messages.getString("Xslt.Log.FileResult"));
+				logDetailed(BaseMessages.getString(PKG, "Xslt.Log.FileResult"));
 				logDetailed(xmlString);		
 			}
 			Object[] outputRowData =RowDataUtil.addValueData(row, getInputRowMeta().size(),xmlString);
 			
-			if (log.isRowLevel()) logRowlevel(Messages.getString("Xslt.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
+			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "Xslt.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
 			 //	add new values to the row.
 	        putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 		} 
@@ -208,8 +211,8 @@ public class Xslt extends BaseStep implements StepInterface
             }
 			else
 			{
-	            logError(Messages.getString("Xslt.ErrorProcesing" + " : "+ e.getMessage()));
-	            throw new KettleStepException(Messages.getString("Xslt.ErrorProcesing"), e);
+	            logError(BaseMessages.getString(PKG, "Xslt.ErrorProcesing" + " : "+ e.getMessage()));
+	            throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.ErrorProcesing"), e);
 			}
 		}
    

@@ -17,6 +17,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -37,6 +38,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class SocketWriter extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = SocketWriterMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private SocketWriterMeta meta;
 	private SocketWriterData data;
 	
@@ -116,7 +119,7 @@ public class SocketWriter extends BaseStep implements StepInterface
             return false;
         }
 
-        if (checkFeedback(getLinesRead())) logBasic(Messages.getString("SocketWriter.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "SocketWriter.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			
 		return true;
 	}

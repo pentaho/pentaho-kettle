@@ -39,12 +39,12 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.rowgenerator.Messages;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -60,6 +60,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = RowGeneratorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlLimit;
 	private TextVar      wLimit;
 	private FormData     fdlLimit, fdLimit;
@@ -99,14 +101,14 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("RowGeneratorDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "RowGeneratorDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -124,7 +126,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		wStepname.setLayoutData(fdStepname);
 
 		wlLimit=new Label(shell, SWT.RIGHT);
-		wlLimit.setText(Messages.getString("RowGeneratorDialog.Limit.Label"));
+		wlLimit.setText(BaseMessages.getString(PKG, "RowGeneratorDialog.Limit.Label"));
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -141,7 +143,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		wLimit.setLayoutData(fdLimit);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("RowGeneratorDialog.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "RowGeneratorDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -151,15 +153,15 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[] { 
-		 new ColumnInfo(Messages.getString("System.Column.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
-		 new ColumnInfo(Messages.getString("System.Column.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-		 new ColumnInfo(Messages.getString("System.Column.Format"),     ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats()),
-		 new ColumnInfo(Messages.getString("System.Column.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
-		 new ColumnInfo(Messages.getString("System.Column.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false),
-		 new ColumnInfo(Messages.getString("System.Column.Currency"),   ColumnInfo.COLUMN_TYPE_TEXT,   false),
-		 new ColumnInfo(Messages.getString("System.Column.Decimal"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
-		 new ColumnInfo(Messages.getString("System.Column.Group"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
-		 new ColumnInfo(Messages.getString("System.Column.Value"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Format"),     ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats()),
+		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Currency"),   ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Decimal"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Group"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Value"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
 		};
 		
 		wFields=new TableView(transMeta, shell, 
@@ -178,11 +180,11 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		wFields.setLayoutData(fdFields);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wPreview=new Button(shell, SWT.PUSH);
-        wPreview.setText(Messages.getString("System.Button.Preview"));
+        wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview"));
         wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
         setButtonPositions(new Button[] { wOK, wCancel , wPreview }, margin, null);
         
@@ -290,7 +292,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Title"), Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Message"), e);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "RowGeneratorDialog.Illegal.Dialog.Settings.Title"), BaseMessages.getString(PKG, "RowGeneratorDialog.Illegal.Dialog.Settings.Message"), e);
         }
 	}
 	
@@ -327,7 +329,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         long longLimit = Const.toLong(transMeta.environmentSubstitute( wLimit.getText()), -1L );
         if (longLimit<0)
         {
-            throw new KettleException( Messages.getString("RowGeneratorDialog.Wrong.RowLimit.Number") );
+            throw new KettleException( BaseMessages.getString(PKG, "RowGeneratorDialog.Wrong.RowLimit.Number") );
         }
         */
     }
@@ -351,13 +353,13 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Title"), Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Message"), e);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "RowGeneratorDialog.Illegal.Dialog.Settings.Title"), BaseMessages.getString(PKG, "RowGeneratorDialog.Illegal.Dialog.Settings.Message"), e);
             return;
         }
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
         
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("System.Dialog.EnterPreviewSize.Title"), Messages.getString("System.Dialog.EnterPreviewSize.Message"));
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "System.Dialog.EnterPreviewSize.Title"), BaseMessages.getString(PKG, "System.Dialog.EnterPreviewSize.Message"));
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {
@@ -371,8 +373,8 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
             {
                 if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                 {
-                	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
-                			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+                	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
+                			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true );
                 	etd.setReadOnly();
                 	etd.open();
                 }

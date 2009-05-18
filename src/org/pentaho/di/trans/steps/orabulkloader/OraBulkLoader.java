@@ -39,6 +39,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -56,6 +57,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class OraBulkLoader extends BaseStep implements StepInterface
 {	
+	private static Class<?> PKG = OraBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public final static int EX_SUCC = 0;
 	
 	public final static int EX_WARN = 2;
@@ -523,7 +526,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
                 // any error???
             	int exitVal = sqlldrProcess.waitFor();            
             	sqlldrProcess = null;            	
-				logBasic(Messages.getString("OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
+				logBasic(BaseMessages.getString(PKG, "OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
 				checkExitVal(exitVal);
             }
         }
@@ -582,7 +585,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 							{
 								int exitVal = sqlldrProcess.waitFor();								
 								sqlldrProcess = null;																
-								logBasic(Messages.getString("OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
+								logBasic(BaseMessages.getString(PKG, "OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
 								checkExitVal(exitVal);
 							}
 							else if ( ! first )
@@ -627,7 +630,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
-			logError(Messages.getString("OraBulkLoader.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "OraBulkLoader.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
@@ -678,7 +681,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	    	try {
 	    		int exitVal = sqlldrProcess.waitFor();								
 	    		sqlldrProcess = null;																
-	    		logBasic(Messages.getString("OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
+	    		logBasic(BaseMessages.getString(PKG, "OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
 	    	} catch(InterruptedException e) {
 	    		/* process should be destroyed */
 	    		e.printStackTrace();
@@ -750,13 +753,13 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			logBasic(BaseMessages.getString(PKG, "System.Log.StartingToRun")); //$NON-NLS-1$
 			
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Throwable t)
 		{
-			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();

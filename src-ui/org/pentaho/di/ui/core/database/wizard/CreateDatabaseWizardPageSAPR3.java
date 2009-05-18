@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.SAPR3DatabaseMeta;
-import org.pentaho.di.ui.core.database.wizard.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
 
@@ -43,6 +43,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 {
+	private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label    wlHostname;
 	private Text     wHostname;
 	private FormData fdlHostname, fdHostname;
@@ -62,8 +64,8 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle(Messages.getString("CreateDatabaseWizardPageSAPR3.DialogTitle")); //$NON-NLS-1$
-		setDescription(Messages.getString("CreateDatabaseWizardPageSAPR3.DialogMessage")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.DialogTitle")); //$NON-NLS-1$
+		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.DialogMessage")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -84,7 +86,7 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 
 		// HOSTNAME
 		wlHostname = new Label(composite, SWT.RIGHT);
-		wlHostname.setText(Messages.getString("CreateDatabaseWizardPageSAPR3.Hostname.Label")); //$NON-NLS-1$
+		wlHostname.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.Hostname.Label")); //$NON-NLS-1$
  		props.setLook(wlHostname);
 		fdlHostname = new FormData();
 		fdlHostname.top    = new FormAttachment(0, 0);
@@ -107,7 +109,7 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 		});
 		
 		wlSAPLanguage = new Label(composite, SWT.RIGHT);
-		wlSAPLanguage.setText(Messages.getString("CreateDatabaseWizardPageSAPR3.Language.Label")); //$NON-NLS-1$
+		wlSAPLanguage.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.Language.Label")); //$NON-NLS-1$
  		props.setLook(wlSAPLanguage);
 		fdlSAPLanguage = new FormData();
 		fdlSAPLanguage.top    = new FormAttachment(wHostname, margin);
@@ -130,7 +132,7 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 		});
 		
 		wlSAPSystemNumber = new Label(composite, SWT.RIGHT);
-		wlSAPSystemNumber.setText(Messages.getString("CreateDatabaseWizardPageSAPR3.SystemNumber.Label")); //$NON-NLS-1$
+		wlSAPSystemNumber.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.SystemNumber.Label")); //$NON-NLS-1$
  		props.setLook(wlSAPSystemNumber);
 		fdlSAPSystemNumber = new FormData();
 		fdlSAPSystemNumber.top    = new FormAttachment(wSAPLanguage, margin);
@@ -153,7 +155,7 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 		});
 
 		wlSAPClient = new Label(composite, SWT.RIGHT);
-		wlSAPClient.setText(Messages.getString("CreateDatabaseWizardPageSAPR3.SAPClient.Label")); //$NON-NLS-1$
+		wlSAPClient.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.SAPClient.Label")); //$NON-NLS-1$
  		props.setLook(wlSAPClient);
 		fdlSAPClient = new FormData();
 		fdlSAPClient.top    = new FormAttachment(wSAPSystemNumber, margin);
@@ -198,14 +200,14 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 		
 		if (server==null || language==null || systemNumber==null || client==null)
 		{
-			setErrorMessage(Messages.getString("CreateDatabaseWizardPageSAPR3.ErrorMessage.InvalidInput")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.ErrorMessage.InvalidInput")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage(Messages.getString("CreateDatabaseWizardPageSAPR3.Message.Next")); //$NON-NLS-1$
+			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.Message.Next")); //$NON-NLS-1$
 			return true;
 		}
 

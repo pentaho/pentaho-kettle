@@ -36,6 +36,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -56,7 +57,9 @@ import org.w3c.dom.Node;
 
 public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
 {
-	public static final String[] RequiredFoldersDesc = new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") };
+	private static Class<?> PKG = GetSubFoldersMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+	public static final String[] RequiredFoldersDesc = new String[] { BaseMessages.getString(PKG, "System.Combo.No"), BaseMessages.getString(PKG, "System.Combo.Yes") };
 	public static final String[] RequiredFoldersCode = new String[] {"N", "Y"};
 	
 	public static final String NO = "N";
@@ -455,34 +458,34 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
 		if(isFoldernameDynamic)
 		{
 			if (input.length > 0)
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("GetSubFoldersMeta.CheckResult.InputOk"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetSubFoldersMeta.CheckResult.InputOk"), stepinfo);
 			else
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("GetSubFoldersMeta.CheckResult.InputErrorKo"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetSubFoldersMeta.CheckResult.InputErrorKo"), stepinfo);
 			remarks.add(cr);
 			
 			if(Const.isEmpty(dynamicFoldernameField))
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("GetSubFoldersMeta.CheckResult.FolderFieldnameMissing"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetSubFoldersMeta.CheckResult.FolderFieldnameMissing"), stepinfo);
 			else
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("GetSubFoldersMeta.CheckResult.FolderFieldnameOk"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetSubFoldersMeta.CheckResult.FolderFieldnameOk"), stepinfo);
 			
 			remarks.add(cr);
 		}else
 		{
 			if (input.length > 0)
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("GetSubFoldersMeta.CheckResult.NoInputError"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetSubFoldersMeta.CheckResult.NoInputError"), stepinfo);
 			else
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("GetSubFoldersMeta.CheckResult.NoInputOk"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetSubFoldersMeta.CheckResult.NoInputOk"), stepinfo);
 			remarks.add(cr);
 			// check specified folder names
 			FileInputList fileList = getFolderList(transMeta);
 			if (fileList.nrOfFiles() == 0)
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("GetSubFoldersMeta.CheckResult.ExpectedFoldersError"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetSubFoldersMeta.CheckResult.ExpectedFoldersError"), stepinfo);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("GetSubFoldersMeta.CheckResult.ExpectedFilesOk", ""+fileList.nrOfFiles()), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetSubFoldersMeta.CheckResult.ExpectedFilesOk", ""+fileList.nrOfFiles()), stepinfo);
 				remarks.add(cr);
 			}
 		}

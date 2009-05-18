@@ -22,6 +22,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -40,6 +41,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class DBProc extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = DBProcMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private DBProcMeta meta;
 	private DBProcData data;
 	
@@ -67,8 +70,8 @@ public class DBProc extends BaseStep implements StepInterface
 					data.argnrs[i]=rowMeta.indexOfValue(meta.getArgument()[i]);
 					if (data.argnrs[i]<0)
 					{
-						logError(Messages.getString("DBProc.Log.ErrorFindingField")+meta.getArgument()[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleStepException(Messages.getString("DBProc.Exception.CouldnotFindField",meta.getArgument()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "DBProc.Log.ErrorFindingField")+meta.getArgument()[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleStepException(BaseMessages.getString(PKG, "DBProc.Exception.CouldnotFindField",meta.getArgument()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 				else
@@ -150,7 +153,7 @@ public class DBProc extends BaseStep implements StepInterface
 				
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(Messages.getString("DBProc.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "DBProc.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
 		}
 		catch(KettleException e)
@@ -164,7 +167,7 @@ public class DBProc extends BaseStep implements StepInterface
 	        else
 	        {
 			
-				logError(Messages.getString("DBProc.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DBProc.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -210,16 +213,16 @@ public class DBProc extends BaseStep implements StepInterface
 
                 if (!meta.isAutoCommit())
                 {
-                    if (log.isDetailed()) logDetailed(Messages.getString("DBProc.Log.AutoCommit")); //$NON-NLS-1$
+                    if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DBProc.Log.AutoCommit")); //$NON-NLS-1$
                     data.db.setCommit(9999);
                 }
-                if (log.isDetailed()) logDetailed(Messages.getString("DBProc.Log.ConnectedToDB")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DBProc.Log.ConnectedToDB")); //$NON-NLS-1$
 				
 				return true;
 			}
 			catch(KettleException e)
 			{
-				logError(Messages.getString("DBProc.Log.DBException")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DBProc.Log.DBException")+e.getMessage()); //$NON-NLS-1$
 				if (data.db!=null) {
                 	data.db.disconnect();
 				}
@@ -242,7 +245,7 @@ public class DBProc extends BaseStep implements StepInterface
         }
         catch(KettleDatabaseException e)
         {
-            logError(Messages.getString("DBProc.Log.CommitError")+e.getMessage());
+            logError(BaseMessages.getString(PKG, "DBProc.Log.CommitError")+e.getMessage());
         }
         finally
         {

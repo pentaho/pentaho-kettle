@@ -30,6 +30,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -41,6 +42,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class CubeInput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = CubeInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CubeInputMeta meta;
 	private CubeInputData data;
 	
@@ -78,7 +81,7 @@ public class CubeInput extends BaseStep implements StepInterface
 
         if (checkFeedback(getLinesInput())) 
         {
-        	if(log.isBasic()) logBasic(Messages.getString("CubeInput.Log.LineNumber")+getLinesInput()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "CubeInput.Log.LineNumber")+getLinesInput()); //$NON-NLS-1$
         }
 
 		return true;
@@ -114,13 +117,13 @@ public class CubeInput extends BaseStep implements StepInterface
 				}
 				catch(KettleFileException kfe)
 				{
-					logError(Messages.getString("CubeInput.Log.UnableToReadMetadata")+kfe.getMessage()); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "CubeInput.Log.UnableToReadMetadata")+kfe.getMessage()); //$NON-NLS-1$
 					return false;
 				}
 			}
 			catch(IOException e)
 			{
-				logError(Messages.getString("CubeInput.Log.ErrorReadingFromDataCube")+e.toString()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "CubeInput.Log.ErrorReadingFromDataCube")+e.toString()); //$NON-NLS-1$
 			}
 		}
 		return false;
@@ -151,7 +154,7 @@ public class CubeInput extends BaseStep implements StepInterface
 		}
 		catch(IOException e)
 		{
-			logError(Messages.getString("CubeInput.Log.ErrorClosingCube")+e.toString()); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "CubeInput.Log.ErrorClosingCube")+e.toString()); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 		}

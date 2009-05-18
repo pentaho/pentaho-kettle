@@ -32,6 +32,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -49,6 +50,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class ExcelOutput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = ExcelOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private ExcelOutputMeta meta;
 	private ExcelOutputData data;
 
@@ -432,7 +435,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             }
             String buildFilename=buildFilename();
             data.file = KettleVFS.getFileObject(buildFilename);
-            if(log.isDebug()) log.logDebug(toString(),Messages.getString("ExcelOutput.Log.OpeningFile",buildFilename));
+            if(log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "ExcelOutput.Log.OpeningFile",buildFilename));
             
             if(meta.isAddToResultFiles())
             {
@@ -535,7 +538,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             }*/
             data.headerWrote=false;
             
-            if(log.isDebug()) log.logDebug(toString(),Messages.getString("ExcelOutput.Log.FileOpened",buildFilename));
+            if(log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "ExcelOutput.Log.FileOpened",buildFilename));
 			retval=true;
 		}
 		catch(Exception e)
@@ -594,7 +597,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
                
 			}
             //data.formats.clear();
-			if(log.isDebug()) log.logDebug(toString(),Messages.getString("ExcelOutput.Log.FileClosed",filename));
+			if(log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "ExcelOutput.Log.FileClosed",filename));
             // Explicitly call garbage collect to have file handle
             // released. Bug tracker: PDI-48
 			System.gc();

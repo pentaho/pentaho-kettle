@@ -40,7 +40,6 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
@@ -48,6 +47,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -60,23 +60,25 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.exceloutput.ExcelField;
+import org.pentaho.di.trans.steps.exceloutput.ExcelOutputMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.trans.steps.exceloutput.ExcelField;
-import org.pentaho.di.trans.steps.exceloutput.ExcelOutputMeta;
-import org.pentaho.di.trans.steps.exceloutput.Messages;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = ExcelOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
@@ -221,14 +223,14 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("ExcelOutputDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left  = new FormAttachment(0, 0);
@@ -252,7 +254,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		// START OF FILE TAB///
 		///
 		wFileTab=new CTabItem(wTabFolder, SWT.NONE);
-		wFileTab.setText(Messages.getString("ExcelOutputDialog.FileTab.TabTitle"));
+		wFileTab.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.FileTab.TabTitle"));
 		
 		Composite wFileComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wFileComp);
@@ -264,7 +266,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		// Filename line
 		wlFilename=new Label(wFileComp, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("ExcelOutputDialog.Filename.Label"));
+		wlFilename.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.Filename.Label"));
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -274,7 +276,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		wbFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFilename);
-		wbFilename.setText(Messages.getString("System.Button.Browse"));
+		wbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(0, 0);
@@ -292,7 +294,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		
 		// Open new File at Init
 		wlDoNotOpenNewFileInit=new Label(wFileComp, SWT.RIGHT);
-		wlDoNotOpenNewFileInit.setText(Messages.getString("ExcelOutputDialog.DoNotOpenNewFileInit.Label"));
+		wlDoNotOpenNewFileInit.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.DoNotOpenNewFileInit.Label"));
  		props.setLook(wlDoNotOpenNewFileInit);
 		fdlDoNotOpenNewFileInit=new FormData();
 		fdlDoNotOpenNewFileInit.left = new FormAttachment(0, 0);
@@ -300,7 +302,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdlDoNotOpenNewFileInit.right= new FormAttachment(middle, -margin);
 		wlDoNotOpenNewFileInit.setLayoutData(fdlDoNotOpenNewFileInit);
 		wDoNotOpenNewFileInit=new Button(wFileComp, SWT.CHECK );
-		wDoNotOpenNewFileInit.setToolTipText(Messages.getString("ExcelOutputDialog.DoNotOpenNewFileInit.Tooltip"));
+		wDoNotOpenNewFileInit.setToolTipText(BaseMessages.getString(PKG, "ExcelOutputDialog.DoNotOpenNewFileInit.Tooltip"));
  		props.setLook(wDoNotOpenNewFileInit);
 		fdDoNotOpenNewFileInit=new FormData();
 		fdDoNotOpenNewFileInit.left = new FormAttachment(middle, 0);
@@ -319,7 +321,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		
 		// Extension line
 		wlExtension=new Label(wFileComp, SWT.RIGHT);
-		wlExtension.setText(Messages.getString("System.Label.Extension"));
+		wlExtension.setText(BaseMessages.getString(PKG, "System.Label.Extension"));
  		props.setLook(wlExtension);
 		fdlExtension=new FormData();
 		fdlExtension.left = new FormAttachment(0, 0);
@@ -338,7 +340,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		// Create multi-part file?
 		wlAddStepnr=new Label(wFileComp, SWT.RIGHT);
-		wlAddStepnr.setText(Messages.getString("ExcelOutputDialog.AddStepnr.Label"));
+		wlAddStepnr.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.AddStepnr.Label"));
  		props.setLook(wlAddStepnr);
 		fdlAddStepnr=new FormData();
 		fdlAddStepnr.left = new FormAttachment(0, 0);
@@ -363,7 +365,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		// Create multi-part file?
 		wlAddDate=new Label(wFileComp, SWT.RIGHT);
-		wlAddDate.setText(Messages.getString("ExcelOutputDialog.AddDate.Label"));
+		wlAddDate.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.AddDate.Label"));
  		props.setLook(wlAddDate);
 		fdlAddDate=new FormData();
 		fdlAddDate.left = new FormAttachment(0, 0);
@@ -388,7 +390,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		);
 		// Create multi-part file?
 		wlAddTime=new Label(wFileComp, SWT.RIGHT);
-		wlAddTime.setText(Messages.getString("ExcelOutputDialog.AddTime.Label"));
+		wlAddTime.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.AddTime.Label"));
  		props.setLook(wlAddTime);
 		fdlAddTime=new FormData();
 		fdlAddTime.left = new FormAttachment(0, 0);
@@ -412,7 +414,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		);
 		// Specify date time format?
 		wlSpecifyFormat=new Label(wFileComp, SWT.RIGHT);
-		wlSpecifyFormat.setText(Messages.getString("ExcelOutputDialog.SpecifyFormat.Label"));
+		wlSpecifyFormat.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.SpecifyFormat.Label"));
 		props.setLook(wlSpecifyFormat);
 		fdlSpecifyFormat=new FormData();
 		fdlSpecifyFormat.left = new FormAttachment(0, 0);
@@ -421,7 +423,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		wlSpecifyFormat.setLayoutData(fdlSpecifyFormat);
 		wSpecifyFormat=new Button(wFileComp, SWT.CHECK);
 		props.setLook(wSpecifyFormat);
-		wSpecifyFormat.setToolTipText(Messages.getString("ExcelOutputDialog.SpecifyFormat.Tooltip"));
+		wSpecifyFormat.setToolTipText(BaseMessages.getString(PKG, "ExcelOutputDialog.SpecifyFormat.Tooltip"));
 	    fdSpecifyFormat=new FormData();
 		fdSpecifyFormat.left = new FormAttachment(middle, 0);
 		fdSpecifyFormat.top  = new FormAttachment(wAddTime, margin);
@@ -443,7 +445,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		
  		// DateTimeFormat
 		wlDateTimeFormat=new Label(wFileComp, SWT.RIGHT);
-        wlDateTimeFormat.setText(Messages.getString("ExcelOutputDialog.DateTimeFormat.Label"));
+        wlDateTimeFormat.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.DateTimeFormat.Label"));
         props.setLook(wlDateTimeFormat);
         fdlDateTimeFormat=new FormData();
         fdlDateTimeFormat.left = new FormAttachment(0, 0);
@@ -465,7 +467,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		wbShowFiles=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbShowFiles);
-		wbShowFiles.setText(Messages.getString("ExcelOutputDialog.ShowFiles.Button"));
+		wbShowFiles.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.ShowFiles.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left = new FormAttachment(middle, 0);
 		fdbShowFiles.top  = new FormAttachment(wDateTimeFormat, margin*3);
@@ -479,15 +481,15 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 				String files[] = tfoi.getFiles(transMeta);
 				if (files!=null && files.length>0)
 				{
-					EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("ExcelOutputDialog.SelectOutputFiles.DialogTitle"), Messages.getString("ExcelOutputDialog.SelectOutputFiles.DialogMessage"));
+					EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, BaseMessages.getString(PKG, "ExcelOutputDialog.SelectOutputFiles.DialogTitle"), BaseMessages.getString(PKG, "ExcelOutputDialog.SelectOutputFiles.DialogMessage"));
 					esd.setViewOnly();
 					esd.open();
 				}
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage(Messages.getString("ExcelOutputDialog.NoFilesFound.DialogMessage"));
-					mb.setText(Messages.getString("System.Dialog.Error.Title"));
+					mb.setMessage(BaseMessages.getString(PKG, "ExcelOutputDialog.NoFilesFound.DialogMessage"));
+					mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
 					mb.open(); 
 				}
 			}
@@ -497,7 +499,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		
 		// Add File to the result files name
 		wlAddToResult=new Label(wFileComp, SWT.RIGHT);
-		wlAddToResult.setText(Messages.getString("ExcelOutputDialog.AddFileToResult.Label"));
+		wlAddToResult.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.AddFileToResult.Label"));
 		props.setLook(wlAddToResult);
 		fdlAddToResult=new FormData();
 		fdlAddToResult.left  = new FormAttachment(0, 0);
@@ -505,7 +507,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdlAddToResult.right = new FormAttachment(middle, -margin);
 		wlAddToResult.setLayoutData(fdlAddToResult);
 		wAddToResult=new Button(wFileComp, SWT.CHECK);
-		wAddToResult.setToolTipText(Messages.getString("ExcelOutputDialog.AddFileToResult.Tooltip"));
+		wAddToResult.setToolTipText(BaseMessages.getString(PKG, "ExcelOutputDialog.AddFileToResult.Tooltip"));
  		props.setLook(wAddToResult);
 		fdAddToResult=new FormData();
 		fdAddToResult.left  = new FormAttachment(middle, 0);
@@ -540,7 +542,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		// START OF CONTENT TAB///
 		///
 		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-		wContentTab.setText(Messages.getString("ExcelOutputDialog.ContentTab.TabTitle"));
+		wContentTab.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.ContentTab.TabTitle"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;
@@ -552,7 +554,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		
 		// Append checkbox
 		wlAppend=new Label(wContentComp, SWT.RIGHT);
-		wlAppend.setText(Messages.getString("ExcelOutputDialog.Append.Label"));
+		wlAppend.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.Append.Label"));
  		props.setLook(wlAppend);
 		fdlAppend=new FormData();
 		fdlAppend.left = new FormAttachment(0, 0);
@@ -561,7 +563,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		wlAppend.setLayoutData(fdlAppend);
 		wAppend=new Button(wContentComp, SWT.CHECK);
  		props.setLook(wAppend);
- 		wAppend.setToolTipText(Messages.getString("ExcelOutputDialog.Append.Tooltip"));
+ 		wAppend.setToolTipText(BaseMessages.getString(PKG, "ExcelOutputDialog.Append.Tooltip"));
 		fdAppend=new FormData();
 		fdAppend.left = new FormAttachment(middle, 0);
 		fdAppend.top  = new FormAttachment(0, 0);
@@ -579,7 +581,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 
 		wlHeader=new Label(wContentComp, SWT.RIGHT);
-		wlHeader.setText(Messages.getString("ExcelOutputDialog.Header.Label"));
+		wlHeader.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.Header.Label"));
  		props.setLook(wlHeader);
 		fdlHeader=new FormData();
 		fdlHeader.left = new FormAttachment(0, 0);
@@ -603,7 +605,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		);
 
 		wlFooter=new Label(wContentComp, SWT.RIGHT);
-		wlFooter.setText(Messages.getString("ExcelOutputDialog.Footer.Label"));
+		wlFooter.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.Footer.Label"));
  		props.setLook(wlFooter);
 		fdlFooter=new FormData();
 		fdlFooter.left = new FormAttachment(0, 0);
@@ -627,7 +629,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		);
 
         wlEncoding=new Label(wContentComp, SWT.RIGHT);
-        wlEncoding.setText(Messages.getString("ExcelOutputDialog.Encoding.Label"));
+        wlEncoding.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.Encoding.Label"));
         props.setLook(wlEncoding);
         fdlEncoding=new FormData();
         fdlEncoding.left = new FormAttachment(0, 0);
@@ -661,7 +663,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
         );
 
 		wlSplitEvery=new Label(wContentComp, SWT.RIGHT);
-		wlSplitEvery.setText(Messages.getString("ExcelOutputDialog.SplitEvery.Label"));
+		wlSplitEvery.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.SplitEvery.Label"));
  		props.setLook(wlSplitEvery);
 		fdlSplitEvery=new FormData();
 		fdlSplitEvery.left = new FormAttachment(0, 0);
@@ -682,7 +684,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		// Sheet name line
 		wlSheetname=new Label(wContentComp, SWT.RIGHT);
-		wlSheetname.setText(Messages.getString("ExcelOutputDialog.Sheetname.Label"));
+		wlSheetname.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.Sheetname.Label"));
 		props.setLook(wlSheetname);
 		fdlSheetname=new FormData();
 		fdlSheetname.left = new FormAttachment(0, 0);
@@ -690,7 +692,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdlSheetname.right= new FormAttachment(middle, -margin);
 		wlSheetname.setLayoutData(fdlSheetname);
 		wSheetname=new TextVar(transMeta, wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wSheetname.setToolTipText(Messages.getString("ExcelOutputDialog.Sheetname.Tooltip"));
+		wSheetname.setToolTipText(BaseMessages.getString(PKG, "ExcelOutputDialog.Sheetname.Tooltip"));
 		props.setLook(wSheetname);
 		wSheetname.addModifyListener(lsMod);
 		fdSheetname=new FormData();
@@ -702,7 +704,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		// Protect Sheet?
 		wlProtectSheet=new Label(wContentComp, SWT.RIGHT);
-		wlProtectSheet.setText(Messages.getString("ExcelOutputDialog.ProtectSheet.Label"));
+		wlProtectSheet.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.ProtectSheet.Label"));
 		props.setLook(wlProtectSheet);
 		fdlProtectSheet=new FormData();
 		fdlProtectSheet.left = new FormAttachment(0, 0);
@@ -729,7 +731,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		// Password line
 		wlPassword=new Label(wContentComp, SWT.RIGHT);
-		wlPassword.setText(Messages.getString("ExcelOutputDialog.Password.Label"));
+		wlPassword.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.Password.Label"));
 		props.setLook(wlPassword);
 		fdlPassword=new FormData();
 		fdlPassword.left = new FormAttachment(0, 0);
@@ -737,7 +739,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdlPassword.right= new FormAttachment(middle, -margin);
 		wlPassword.setLayoutData(fdlPassword);
 		wPassword=new TextVar(transMeta, wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.PASSWORD);
-		wPassword.setToolTipText(Messages.getString("ExcelOutputDialog.Password.Tooltip"));
+		wPassword.setToolTipText(BaseMessages.getString(PKG, "ExcelOutputDialog.Password.Tooltip"));
 		props.setLook(wPassword);
 		wPassword.setEchoChar('*');
 		wPassword.addModifyListener(lsMod);
@@ -749,7 +751,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		// auto size columns?
 		wlAutoSize=new Label(wContentComp, SWT.RIGHT);
-		wlAutoSize.setText(Messages.getString("ExcelOutputDialog.AutoSize.Label"));
+		wlAutoSize.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.AutoSize.Label"));
 		props.setLook(wlAutoSize);
 		fdlAutoSize=new FormData();
 		fdlAutoSize.left = new FormAttachment(0, 0);
@@ -758,7 +760,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		wlAutoSize.setLayoutData(fdlAutoSize);
 		wAutoSize=new Button(wContentComp, SWT.CHECK);
 		props.setLook(wAutoSize);
-		wAutoSize.setToolTipText(Messages.getString("ExcelOutputDialog.AutoSize.Tooltip"));
+		wAutoSize.setToolTipText(BaseMessages.getString(PKG, "ExcelOutputDialog.AutoSize.Tooltip"));
 	    fdAutoSize=new FormData();
 		fdAutoSize.left = new FormAttachment(middle, 0);
 		fdAutoSize.top  = new FormAttachment(wPassword, margin);
@@ -780,7 +782,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		wTemplateGroup= new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wTemplateGroup);
-		wTemplateGroup.setText(Messages.getString("ExcelOutputDialog.TemplateGroup.Label"));
+		wTemplateGroup.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.TemplateGroup.Label"));
 		
 		FormLayout TemplateGroupgroupLayout = new FormLayout();
 		TemplateGroupgroupLayout.marginWidth = 10;
@@ -789,7 +791,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		
 		// Use template
 		wlTemplate=new Label(wTemplateGroup, SWT.RIGHT);
-		wlTemplate.setText(Messages.getString("ExcelOutputDialog.Template.Label"));
+		wlTemplate.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.Template.Label"));
  		props.setLook(wlTemplate);
 		fdlTemplate=new FormData();
 		fdlTemplate.left = new FormAttachment(0, 0);
@@ -814,7 +816,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		// TemplateFilename line
 		wlTemplateFilename=new Label(wTemplateGroup, SWT.RIGHT);
-		wlTemplateFilename.setText(Messages.getString("ExcelOutputDialog.TemplateFilename.Label"));
+		wlTemplateFilename.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.TemplateFilename.Label"));
  		props.setLook(wlTemplateFilename);
 		fdlTemplateFilename=new FormData();
 		fdlTemplateFilename.left = new FormAttachment(0, 0);
@@ -824,7 +826,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		wbTemplateFilename=new Button(wTemplateGroup, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbTemplateFilename);
-		wbTemplateFilename.setText(Messages.getString("System.Button.Browse"));
+		wbTemplateFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbTemplateFilename=new FormData();
 		fdbTemplateFilename.right= new FormAttachment(100, 0);
 		fdbTemplateFilename.top  = new FormAttachment(wTemplate, 0);
@@ -841,7 +843,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		// Template Append
 		wlTemplateAppend=new Label(wTemplateGroup, SWT.RIGHT);
-		wlTemplateAppend.setText(Messages.getString("ExcelOutputDialog.TemplateAppend.Label"));
+		wlTemplateAppend.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.TemplateAppend.Label"));
  		props.setLook(wlTemplateAppend);
 		fdlTemplateAppend=new FormData();
 		fdlTemplateAppend.left = new FormAttachment(0, 0);
@@ -892,7 +894,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		// Fields tab...
 		//
 		wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
-		wFieldsTab.setText(Messages.getString("ExcelOutputDialog.FieldsTab.TabTitle"));
+		wFieldsTab.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.FieldsTab.TabTitle"));
 		
 		FormLayout fieldsLayout = new FormLayout ();
 		fieldsLayout.marginWidth  = Const.FORM_MARGIN;
@@ -903,12 +905,12 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
  		props.setLook(wFieldsComp);
 
 		wGet=new Button(wFieldsComp, SWT.PUSH);
-		wGet.setText(Messages.getString("System.Button.GetFields"));
-		wGet.setToolTipText(Messages.getString("System.Tooltip.GetFields"));
+		wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields"));
+		wGet.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.GetFields"));
 
 		wMinWidth =new Button(wFieldsComp, SWT.PUSH);
-		wMinWidth.setText(Messages.getString("ExcelOutputDialog.MinWidth.Button"));
-		wMinWidth.setToolTipText(Messages.getString("ExcelOutputDialog.MinWidth.Tooltip"));
+		wMinWidth.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.MinWidth.Button"));
+		wMinWidth.setToolTipText(BaseMessages.getString(PKG, "ExcelOutputDialog.MinWidth.Tooltip"));
 
 		setButtonPositions(new Button[] { wGet, wMinWidth}, margin, null);
 
@@ -961,9 +963,9 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
         
         colinf=new ColumnInfo[] 
 		    {
-		        new ColumnInfo(Messages.getString("ExcelOutputDialog.NameColumn.Column"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-		        new ColumnInfo(Messages.getString("ExcelOutputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-		        new ColumnInfo(Messages.getString("ExcelOutputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO, formats),
+		        new ColumnInfo(BaseMessages.getString(PKG, "ExcelOutputDialog.NameColumn.Column"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+		        new ColumnInfo(BaseMessages.getString(PKG, "ExcelOutputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+		        new ColumnInfo(BaseMessages.getString(PKG, "ExcelOutputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO, formats),
             };
 		
 		wFields=new TableView(transMeta, wFieldsComp, 
@@ -1004,7 +1006,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -1029,10 +1031,10 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		wTabFolder.setLayoutData(fdTabFolder);
 		
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTabFolder);
 
@@ -1084,7 +1086,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 					{
 						dialog.setFileName(transMeta.environmentSubstitute(wFilename.getText()));
 					}
-					dialog.setFilterNames(new String[] {Messages.getString("System.FileType.ExcelFiles"), Messages.getString("System.FileType.AllFiles")});
+					dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "System.FileType.ExcelFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
 					if (dialog.open()!=null)
 					{
 						wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName());
@@ -1105,7 +1107,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 					{
 						dialog.setFileName(transMeta.environmentSubstitute(wTemplateFilename.getText()));
 					}
-					dialog.setFilterNames(new String[] {Messages.getString("System.FileType.ExcelFiles"), Messages.getString("System.FileType.AllFiles")});
+					dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "System.FileType.ExcelFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
 					if (dialog.open()!=null)
 					{
 						wTemplateFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName());
@@ -1399,7 +1401,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		}
 		catch(KettleException ke)
 		{
-		new ErrorDialog(shell, Messages.getString("System.Dialog.GetFieldsFailed.Title"), Messages.getString("System.Dialog.GetFieldsFailed.Message"), ke);
+		new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Title"), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"), ke);
 		}
 
 	}

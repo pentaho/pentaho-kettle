@@ -37,17 +37,19 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.getvariable.GetVariableMeta;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.trans.steps.getvariable.GetVariableMeta;
-import org.pentaho.di.trans.steps.getvariable.Messages;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class GetVariableDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = GetVariableMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlStepname;
 	private Text         wStepname;
     private FormData     fdlStepname, fdStepname;
@@ -87,14 +89,14 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("GetVariableDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "GetVariableDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -112,7 +114,7 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
 		wStepname.setLayoutData(fdStepname);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("GetVariableDialog.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "GetVariableDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -123,19 +125,19 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
 		
 		ColumnInfo[] colinf=new ColumnInfo[]
            {
-    		 new ColumnInfo(Messages.getString("GetVariableDialog.NameColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT, false),
-    	   	 new ColumnInfo(Messages.getString("GetVariableDialog.VariableColumn.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
-    		 new ColumnInfo(Messages.getString("System.Column.Type"),                      ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-    		 new ColumnInfo(Messages.getString("System.Column.Format"),                    ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats()),
-    		 new ColumnInfo(Messages.getString("System.Column.Length"),                    ColumnInfo.COLUMN_TYPE_TEXT,   false),
-    		 new ColumnInfo(Messages.getString("System.Column.Precision"),                 ColumnInfo.COLUMN_TYPE_TEXT,   false),
-    		 new ColumnInfo(Messages.getString("System.Column.Currency"),                  ColumnInfo.COLUMN_TYPE_TEXT,   false),
-    	     new ColumnInfo(Messages.getString("System.Column.Decimal"),                   ColumnInfo.COLUMN_TYPE_TEXT,   false),
-    		 new ColumnInfo(Messages.getString("System.Column.Group"),                     ColumnInfo.COLUMN_TYPE_TEXT,   false),
-    		 new ColumnInfo(Messages.getString("GetVariableDialog.TrimType.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTrimTypeDescriptions()),
+    		 new ColumnInfo(BaseMessages.getString(PKG, "GetVariableDialog.NameColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT, false),
+    	   	 new ColumnInfo(BaseMessages.getString(PKG, "GetVariableDialog.VariableColumn.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
+    		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Type"),                      ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+    		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Format"),                    ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats()),
+    		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Length"),                    ColumnInfo.COLUMN_TYPE_TEXT,   false),
+    		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Precision"),                 ColumnInfo.COLUMN_TYPE_TEXT,   false),
+    		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Currency"),                  ColumnInfo.COLUMN_TYPE_TEXT,   false),
+    	     new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Decimal"),                   ColumnInfo.COLUMN_TYPE_TEXT,   false),
+    		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Group"),                     ColumnInfo.COLUMN_TYPE_TEXT,   false),
+    		 new ColumnInfo(BaseMessages.getString(PKG, "GetVariableDialog.TrimType.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTrimTypeDescriptions()),
            };
         
-        colinf[1].setToolTip(Messages.getString("GetVariableDialog.VariableColumn.Tooltip"));
+        colinf[1].setToolTip(BaseMessages.getString(PKG, "GetVariableDialog.VariableColumn.Tooltip"));
         colinf[1].setUsingVariables(true);
         
 		wFields=new TableView(transMeta, shell, 
@@ -156,9 +158,9 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
 				
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
 

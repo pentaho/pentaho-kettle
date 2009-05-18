@@ -30,20 +30,18 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.dialog.EnterTextDialog;
-import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.dialog.Messages;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 /**
@@ -54,6 +52,8 @@ import org.pentaho.di.ui.core.widget.TableView;
  */
 public class PreviewRowsDialog extends Dialog
 {
+	private static Class<?> PKG = PreviewRowsDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final int MAX_BINARY_STRING_PREVIEW_SIZE = 1000000;
 
 	private String stepname;
@@ -130,11 +130,11 @@ public class PreviewRowsDialog extends Dialog
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         if (title == null)
-            title = Messages.getString("PreviewRowsDialog.Title");
+            title = BaseMessages.getString(PKG, "PreviewRowsDialog.Title");
         if (message == null)
-            message = Messages.getString("PreviewRowsDialog.Header", stepname);
+            message = BaseMessages.getString(PKG, "PreviewRowsDialog.Header", stepname);
 
-        if(buffer!=null)   	message+=" "+Messages.getString("PreviewRowsDialog.NrRows",""+buffer.size());
+        if(buffer!=null)   	message+=" "+BaseMessages.getString(PKG, "PreviewRowsDialog.NrRows",""+buffer.size());
         
         shell.setLayout(formLayout);
         shell.setText(title);
@@ -154,7 +154,7 @@ public class PreviewRowsDialog extends Dialog
         // Mmm, if we don't get any rows in the buffer: show a dialog box.
         if (buffer == null || buffer.size() == 0)
         {
-            ShowMessageDialog dialog = new ShowMessageDialog(shell, SWT.OK | SWT.ICON_WARNING, Messages.getString("PreviewRowsDialog.NoRows.Text"), Messages.getString("PreviewRowsDialog.NoRows.Message"));
+            ShowMessageDialog dialog = new ShowMessageDialog(shell, SWT.OK | SWT.ICON_WARNING, BaseMessages.getString(PKG, "PreviewRowsDialog.NoRows.Text"), BaseMessages.getString(PKG, "PreviewRowsDialog.NoRows.Message"));
             dialog.open();
             shell.dispose();
             return;
@@ -181,36 +181,36 @@ public class PreviewRowsDialog extends Dialog
         List<Button> buttons = new ArrayList<Button>();
         
         wClose = new Button(shell, SWT.PUSH);
-        wClose.setText(Messages.getString("System.Button.Close"));
+        wClose.setText(BaseMessages.getString(PKG, "System.Button.Close"));
         wClose.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { close(); } });
         buttons.add(wClose);
         
         if (!Const.isEmpty(loggingText)) {
 	        wLog = new Button(shell, SWT.PUSH);
-	        wLog.setText(Messages.getString("PreviewRowsDialog.Button.ShowLog"));
+	        wLog.setText(BaseMessages.getString(PKG, "PreviewRowsDialog.Button.ShowLog"));
 	        wLog.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { log(); } });
 	        buttons.add(wLog);
         }
 
         if (proposingToStop) {
 	        wStop = new Button(shell, SWT.PUSH);
-	        wStop.setText(Messages.getString("PreviewRowsDialog.Button.Stop.Label"));
-	        wStop.setToolTipText(Messages.getString("PreviewRowsDialog.Button.Stop.ToolTip"));
+	        wStop.setText(BaseMessages.getString(PKG, "PreviewRowsDialog.Button.Stop.Label"));
+	        wStop.setToolTipText(BaseMessages.getString(PKG, "PreviewRowsDialog.Button.Stop.ToolTip"));
 	        wStop.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { askingToStop=true; close(); } });
 	        buttons.add(wStop);
         }
 
         if (proposingToGetMoreRows) {
 	        wNext = new Button(shell, SWT.PUSH);
-	        wNext.setText(Messages.getString("PreviewRowsDialog.Button.Next.Label"));
-	        wNext.setToolTipText(Messages.getString("PreviewRowsDialog.Button.Next.ToolTip"));
+	        wNext.setText(BaseMessages.getString(PKG, "PreviewRowsDialog.Button.Next.Label"));
+	        wNext.setToolTipText(BaseMessages.getString(PKG, "PreviewRowsDialog.Button.Next.ToolTip"));
 	        wNext.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { askingForMoreRows=true; close(); } });
 	        buttons.add(wNext);
         }
         
         if (proposingToGetMoreRows || proposingToStop) {
-	        wClose.setText(Messages.getString("PreviewRowsDialog.Button.Close.Label"));
-	        wClose.setToolTipText(Messages.getString("PreviewRowsDialog.Button.Close.ToolTip"));
+	        wClose.setText(BaseMessages.getString(PKG, "PreviewRowsDialog.Button.Close.Label"));
+	        wClose.setToolTipText(BaseMessages.getString(PKG, "PreviewRowsDialog.Button.Close.ToolTip"));
         }
 
         // Position the buttons...
@@ -326,7 +326,7 @@ public class PreviewRowsDialog extends Dialog
     {
         if (loggingText != null)
         {
-            EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("PreviewRowsDialog.ShowLogging.Title"), Messages.getString("PreviewRowsDialog.ShowLogging.Message"), loggingText);
+            EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "PreviewRowsDialog.ShowLogging.Title"), BaseMessages.getString(PKG, "PreviewRowsDialog.ShowLogging.Message"), loggingText);
             etd.open();
         }
     };

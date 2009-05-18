@@ -13,10 +13,11 @@
  ***************************************************************************************/
 package org.pentaho.di.trans.steps.creditcardvalidator;
 
-import org.pentaho.di.core.Const;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 /**
  * @author Samatar
  * @since 03-Juin-2008
@@ -24,6 +25,8 @@ import java.util.regex.Pattern;
  */
 public class CreditCardVerifier
 {
+	private static Class<?> PKG = CreditCardValidatorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final int INVALID          = -1;  
 	public static final int VISA             = 0;
 	public static final int MASTERCARD       = 1;
@@ -39,11 +42,11 @@ public class CreditCardVerifier
           "Diner's CLub/Carte Blanche",
       };
 	  private static final String[] NotValidCardNames = {
-	        Messages.getString("CreditCardValidator.Log.NotValidVisa"),
-	        Messages.getString("CreditCardValidator.Log.NotValidMastercard"),
-	        Messages.getString("CreditCardValidator.Log.NotValidAmericanExpress"),
-	        Messages.getString("CreditCardValidator.Log.NotValidEnRoute"),
-	        Messages.getString("CreditCardValidator.Log.NotValidDiners"),
+	        BaseMessages.getString(PKG, "CreditCardValidator.Log.NotValidVisa"),
+	        BaseMessages.getString(PKG, "CreditCardValidator.Log.NotValidMastercard"),
+	        BaseMessages.getString(PKG, "CreditCardValidator.Log.NotValidAmericanExpress"),
+	        BaseMessages.getString(PKG, "CreditCardValidator.Log.NotValidEnRoute"),
+	        BaseMessages.getString(PKG, "CreditCardValidator.Log.NotValidDiners"),
 	    };
 	  public static String getCardName(int id) {
 		    return (id > -1 && id < cardNames.length ? cardNames[id] : null);
@@ -57,7 +60,7 @@ public class CreditCardVerifier
 		ReturnIndicator ri = new ReturnIndicator();
  
 		if(Const.isEmpty(CardNumber)) {
-			ri.UnValidMsg=Messages.getString("CreditCardValidator.Log.EmptyNumber");
+			ri.UnValidMsg=BaseMessages.getString(PKG, "CreditCardValidator.Log.EmptyNumber");
 			return ri;
 		}
 		
@@ -82,7 +85,7 @@ public class CreditCardVerifier
 	    	if(luhnValidate(CardNumber)) {
 	    		ri.CardValid=true;
 	    	}else {
-	    		ri.UnValidMsg=Messages.getString("CreditCardValidator.Log.CardNotValid");
+	    		ri.UnValidMsg=BaseMessages.getString(PKG, "CreditCardValidator.Log.CardNotValid");
 	    	}
 	    }
 		 

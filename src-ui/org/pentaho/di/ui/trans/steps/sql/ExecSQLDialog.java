@@ -49,12 +49,12 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.sql.ExecSQLMeta;
-import org.pentaho.di.trans.steps.sql.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
@@ -65,6 +65,8 @@ import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = ExecSQLMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CCombo wConnection;
 
 	private Label wlSQL;
@@ -156,14 +158,14 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("ExecSQLDialog.Shell.Label")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "ExecSQLDialog.Shell.Label")); //$NON-NLS-1$
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("ExecSQLDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "ExecSQLDialog.Stepname.Label")); //$NON-NLS-1$
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -188,7 +190,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Table line...
 		wlSQL = new Label(shell, SWT.LEFT);
-		wlSQL.setText(Messages.getString("ExecSQLDialog.SQL.Label")); //$NON-NLS-1$
+		wlSQL.setText(BaseMessages.getString(PKG, "ExecSQLDialog.SQL.Label")); //$NON-NLS-1$
 		props.setLook(wlSQL);
 		fdlSQL = new FormData();
 		fdlSQL.left = new FormAttachment(0, 0);
@@ -248,10 +250,10 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
     // For the "execute for each row" and "variable substitution" labels, find their maximum width
     // and use that in the alignment
 		wlEachRow = new Label(shell, SWT.RIGHT);
-		wlEachRow.setText(Messages.getString("ExecSQLDialog.EachRow.Label")); //$NON-NLS-1$
+		wlEachRow.setText(BaseMessages.getString(PKG, "ExecSQLDialog.EachRow.Label")); //$NON-NLS-1$
     wlEachRow.pack();
     wlVariables = new Label(shell, SWT.RIGHT);
-    wlVariables.setText(Messages.getString("ExecSQLDialog.ReplaceVariables")); //$NON-NLS-1$
+    wlVariables.setText(BaseMessages.getString(PKG, "ExecSQLDialog.ReplaceVariables")); //$NON-NLS-1$
     wlVariables.pack();
     Rectangle rEachRow = wlEachRow.getBounds();
     Rectangle rVariables = wlVariables.getBounds();
@@ -294,7 +296,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 
     // Setup the "Parameters" label
 		wlFields = new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("ExecSQLDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "ExecSQLDialog.Fields.Label")); //$NON-NLS-1$
 		props.setLook(wlFields);
 		fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -304,7 +306,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 
 		final int FieldsRows = input.getArguments().length;
 
-		 colinf = new ColumnInfo[] { new ColumnInfo(Messages.getString("ExecSQLDialog.ColumnInfo.ArgumentFieldname"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false)
+		 colinf = new ColumnInfo[] { new ColumnInfo(BaseMessages.getString(PKG, "ExecSQLDialog.ColumnInfo.ArgumentFieldname"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false)
 		};
 
 		wFields = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,
@@ -319,7 +321,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 
 		// insert field
 		wlInsertField = new Label(shell, SWT.RIGHT);
-		wlInsertField.setText(Messages.getString("ExecSQLDialog.InsertField.Label")); //$NON-NLS-1$
+		wlInsertField.setText(BaseMessages.getString(PKG, "ExecSQLDialog.InsertField.Label")); //$NON-NLS-1$
 		props.setLook(wlInsertField);
 		fdlInsertField = new FormData();
 		fdlInsertField.left = new FormAttachment(wFields, margin);
@@ -337,7 +339,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Update field
 		wlUpdateField = new Label(shell, SWT.RIGHT);
-		wlUpdateField.setText(Messages.getString("ExecSQLDialog.UpdateField.Label")); //$NON-NLS-1$
+		wlUpdateField.setText(BaseMessages.getString(PKG, "ExecSQLDialog.UpdateField.Label")); //$NON-NLS-1$
 		props.setLook(wlUpdateField);
 		fdlUpdateField = new FormData();
 		fdlUpdateField.left = new FormAttachment(wFields, margin);
@@ -355,7 +357,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Delete field
 		wlDeleteField = new Label(shell, SWT.RIGHT);
-		wlDeleteField.setText(Messages.getString("ExecSQLDialog.DeleteField.Label")); //$NON-NLS-1$
+		wlDeleteField.setText(BaseMessages.getString(PKG, "ExecSQLDialog.DeleteField.Label")); //$NON-NLS-1$
 		props.setLook(wlDeleteField);
 		fdlDeleteField = new FormData();
 		fdlDeleteField.left = new FormAttachment(wFields, margin);
@@ -373,7 +375,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Read field
 		wlReadField = new Label(shell, SWT.RIGHT);
-		wlReadField.setText(Messages.getString("ExecSQLDialog.ReadField.Label")); //$NON-NLS-1$
+		wlReadField.setText(BaseMessages.getString(PKG, "ExecSQLDialog.ReadField.Label")); //$NON-NLS-1$
 		props.setLook(wlReadField);
 		fdlReadField = new FormData();
 		fdlReadField.left = new FormAttachment(wFields, 0);
@@ -412,7 +414,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -421,11 +423,11 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Some buttons
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wGet = new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("ExecSQLDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "ExecSQLDialog.GetFields.Button")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel , wGet }, margin, null);
 
@@ -504,7 +506,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 			posnr--;
 			colnr++;
 		}
-		wlPosition.setText(Messages.getString("ExecSQLDialog.Position.Label",""+linenr,""+colnr));
+		wlPosition.setText(BaseMessages.getString(PKG, "ExecSQLDialog.Position.Label",""+linenr,""+colnr));
 
 	}
 	protected void setComboBoxes()
@@ -605,7 +607,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		int nrargs = wFields.nrNonEmpty();
 		input.allocate(nrargs);
 		if (log.isDebug())
-			log.logDebug(toString(), Messages.getString("ExecSQLDialog.Log.FoundArguments", +nrargs + "")); //$NON-NLS-1$ //$NON-NLS-2$
+			log.logDebug(toString(), BaseMessages.getString(PKG, "ExecSQLDialog.Log.FoundArguments", +nrargs + "")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrargs; i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
@@ -615,8 +617,8 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		if (input.getDatabaseMeta() == null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-			mb.setMessage(Messages.getString("ExecSQLDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(Messages.getString("ExecSQLDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "ExecSQLDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "ExecSQLDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
 		}
 
@@ -637,7 +639,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		{
 			new ErrorDialog(
 					shell,
-					Messages.getString("ExecSQLDialog.FailedToGetFields.DialogTitle"), Messages.getString("ExecSQLDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "ExecSQLDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ExecSQLDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}

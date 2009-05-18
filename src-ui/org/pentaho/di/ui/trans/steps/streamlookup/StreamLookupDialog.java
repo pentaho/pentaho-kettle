@@ -50,21 +50,23 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.streamlookup.Messages;
 import org.pentaho.di.trans.steps.streamlookup.StreamLookupMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
 public class StreamLookupDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = StreamLookupMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlStep;
 	private CCombo       wStep;
 	private FormData     fdlStep, fdStep;
@@ -139,14 +141,14 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("StreamLookupDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "StreamLookupDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("StreamLookupDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "StreamLookupDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -165,7 +167,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 
 		// Lookup step line...
 		wlStep=new Label(shell, SWT.RIGHT);
-		wlStep.setText(Messages.getString("StreamLookupDialog.LookupStep.Label")); //$NON-NLS-1$
+		wlStep.setText(BaseMessages.getString(PKG, "StreamLookupDialog.LookupStep.Label")); //$NON-NLS-1$
  		props.setLook(wlStep);
 		fdlStep=new FormData();
 		fdlStep.left = new FormAttachment(0, 0);
@@ -192,7 +194,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		wStep.setLayoutData(fdStep);
 
 		wlKey=new Label(shell, SWT.NONE);
-		wlKey.setText(Messages.getString("StreamLookupDialog.Key.Label")); //$NON-NLS-1$
+		wlKey.setText(BaseMessages.getString(PKG, "StreamLookupDialog.Key.Label")); //$NON-NLS-1$
  		props.setLook(wlKey);
 		fdlKey=new FormData();
 		fdlKey.left  = new FormAttachment(0, 0);
@@ -203,8 +205,8 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		int nrKeyRows=(input.getKeystream()!=null?input.getKeystream().length:1);
 		
 		ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.Field"),        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciKey[1]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.LookupField"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciKey[0]=new ColumnInfo(BaseMessages.getString(PKG, "StreamLookupDialog.ColumnInfo.Field"),        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciKey[1]=new ColumnInfo(BaseMessages.getString(PKG, "StreamLookupDialog.ColumnInfo.LookupField"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
 		
 		wKey=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -223,7 +225,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 
 		// THE UPDATE/INSERT TABLE
 		wlReturn=new Label(shell, SWT.NONE);
-		wlReturn.setText(Messages.getString("StreamLookupDialog.ReturnFields.Label")); //$NON-NLS-1$
+		wlReturn.setText(BaseMessages.getString(PKG, "StreamLookupDialog.ReturnFields.Label")); //$NON-NLS-1$
  		props.setLook(wlReturn);
 		fdlReturn=new FormData();
 		fdlReturn.left  = new FormAttachment(0, 0);
@@ -234,10 +236,10 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		int UpInsRows= (input.getValue()!=null?input.getValue().length:1);
 		
 		ciReturn=new ColumnInfo[UpInsCols];
-		ciReturn[0]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.FieldReturn"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciReturn[1]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.NewName"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		ciReturn[2]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.Default"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		ciReturn[3]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ); //$NON-NLS-1$
+		ciReturn[0]=new ColumnInfo(BaseMessages.getString(PKG, "StreamLookupDialog.ColumnInfo.FieldReturn"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciReturn[1]=new ColumnInfo(BaseMessages.getString(PKG, "StreamLookupDialog.ColumnInfo.NewName"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciReturn[2]=new ColumnInfo(BaseMessages.getString(PKG, "StreamLookupDialog.ColumnInfo.Default"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciReturn[3]=new ColumnInfo(BaseMessages.getString(PKG, "StreamLookupDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ); //$NON-NLS-1$
 		
 		wReturn=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -255,7 +257,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		wReturn.setLayoutData(fdReturn);
         
         wlPreserveMemory=new Label(shell, SWT.RIGHT);
-        wlPreserveMemory.setText(Messages.getString("StreamLookupDialog.PreserveMemory.Label")); //$NON-NLS-1$
+        wlPreserveMemory.setText(BaseMessages.getString(PKG, "StreamLookupDialog.PreserveMemory.Label")); //$NON-NLS-1$
         props.setLook(wlPreserveMemory);
         fdlPreserveMemory=new FormData();
         fdlPreserveMemory.left = new FormAttachment(0, 0);
@@ -279,7 +281,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
         );
 
         wlIntegerPair=new Label(shell, SWT.RIGHT);
-        wlIntegerPair.setText(Messages.getString("StreamLookupDialog.IntegerPair.Label")); //$NON-NLS-1$
+        wlIntegerPair.setText(BaseMessages.getString(PKG, "StreamLookupDialog.IntegerPair.Label")); //$NON-NLS-1$
         props.setLook(wlIntegerPair);
         fdlIntegerPair=new FormData();
         fdlIntegerPair.left = new FormAttachment(0, 0);
@@ -303,7 +305,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
         );
         
         wlSortedList=new Label(shell, SWT.RIGHT);
-        wlSortedList.setText(Messages.getString("StreamLookupDialog.SortedList.Label")); //$NON-NLS-1$
+        wlSortedList.setText(BaseMessages.getString(PKG, "StreamLookupDialog.SortedList.Label")); //$NON-NLS-1$
         props.setLook(wlSortedList);
         fdlSortedList=new FormData();
         fdlSortedList.left = new FormAttachment(0, 0);
@@ -329,13 +331,13 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
         
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("StreamLookupDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "StreamLookupDialog.GetFields.Button")); //$NON-NLS-1$
 		wGetLU=new Button(shell, SWT.PUSH);
-		wGetLU.setText(Messages.getString("StreamLookupDialog.GetLookupFields.Button")); //$NON-NLS-1$
+		wGetLU.setText(BaseMessages.getString(PKG, "StreamLookupDialog.GetLookupFields.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel , wGet, wGetLU }, margin, null);
 
@@ -408,7 +410,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(),Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    	log.logError(toString(),BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -471,7 +473,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), Messages.getString("StreamLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "StreamLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		if (input.getKeystream()!=null)
 		for (i=0;i<input.getKeystream().length;i++)
@@ -522,7 +524,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		input.setUsingSortedList(wSortedList.getSelection());
         input.setUsingIntegerPair(wIntegerPair.getSelection());
         
-        if(log.isDebug()) log.logDebug(toString(), Messages.getString("StreamLookupDialog.Log.FoundKeys",nrkeys+"")); //$NON-NLS-1$ //$NON-NLS-2$
+        if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "StreamLookupDialog.Log.FoundKeys",nrkeys+"")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrkeys;i++)
 		{
 			TableItem item     = wKey.getNonEmpty(i);
@@ -530,7 +532,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 			input.getKeylookup()[i] = item.getText(2);
 		}
 		
-		if(log.isDebug()) log.logDebug(toString(), Messages.getString("StreamLookupDialog.Log.FoundFields",nrvalues+"")); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "StreamLookupDialog.Log.FoundFields",nrvalues+"")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrvalues;i++)
 		{
 			TableItem item        = wReturn.getNonEmpty(i);
@@ -547,11 +549,11 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 			if(Const.isEmpty(wStep.getText()))
-				mb.setMessage(Messages.getString("StreamLookupDialog.NotStepSpecified.DialogMessage",wStep.getText())); 
+				mb.setMessage(BaseMessages.getString(PKG, "StreamLookupDialog.NotStepSpecified.DialogMessage",wStep.getText())); 
 			else
-				mb.setMessage(Messages.getString("StreamLookupDialog.StepCanNotFound.DialogMessage",wStep.getText())); //$NON-NLS-1$ //$NON-NLS-2$
+				mb.setMessage(BaseMessages.getString(PKG, "StreamLookupDialog.StepCanNotFound.DialogMessage",wStep.getText())); //$NON-NLS-1$ //$NON-NLS-2$
 				
-			mb.setText(Messages.getString("StreamLookupDialog.StepCanNotFound.DialogTitle")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "StreamLookupDialog.StepCanNotFound.DialogTitle")); //$NON-NLS-1$
 			mb.open(); 
 		}
 
@@ -564,8 +566,8 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 	{
 		if (transMeta.findStep(wStep.getText())==null) {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("StreamLookupDialog.PleaseSelectAStepToReadFrom.DialogMessage")); //$NON-NLS-1$
-			mb.setText(Messages.getString("StreamLookupDialog.PleaseSelectAStepToReadFrom.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "StreamLookupDialog.PleaseSelectAStepToReadFrom.DialogMessage")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "StreamLookupDialog.PleaseSelectAStepToReadFrom.DialogTitle")); //$NON-NLS-1$
 			mb.open(); 
 			return;
 		}
@@ -590,23 +592,23 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 					else
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage(Messages.getString("StreamLookupDialog.CouldNotFindFields.DialogMessage")); //$NON-NLS-1$
-						mb.setText(Messages.getString("StreamLookupDialog.CouldNotFindFields.DialogTitle")); //$NON-NLS-1$
+						mb.setMessage(BaseMessages.getString(PKG, "StreamLookupDialog.CouldNotFindFields.DialogMessage")); //$NON-NLS-1$
+						mb.setText(BaseMessages.getString(PKG, "StreamLookupDialog.CouldNotFindFields.DialogTitle")); //$NON-NLS-1$
 						mb.open(); 
 					}
 				}
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage(Messages.getString("StreamLookupDialog.StepNameRequired.DialogMessage")); //$NON-NLS-1$
-					mb.setText(Messages.getString("StreamLookupDialog.StepNameRequired.DialogTitle")); //$NON-NLS-1$
+					mb.setMessage(BaseMessages.getString(PKG, "StreamLookupDialog.StepNameRequired.DialogMessage")); //$NON-NLS-1$
+					mb.setText(BaseMessages.getString(PKG, "StreamLookupDialog.StepNameRequired.DialogTitle")); //$NON-NLS-1$
 					mb.open(); 
 				}
 			}
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("StreamLookupDialog.FailedToGetFields.DialogTitle"), Messages.getString("StreamLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "StreamLookupDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "StreamLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -625,22 +627,22 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage(Messages.getString("StreamLookupDialog.CouldNotFindFields.DialogMessage")); //$NON-NLS-1$
-					mb.setText(Messages.getString("StreamLookupDialog.CouldNotFindFields.DialogTitle")); //$NON-NLS-1$
+					mb.setMessage(BaseMessages.getString(PKG, "StreamLookupDialog.CouldNotFindFields.DialogMessage")); //$NON-NLS-1$
+					mb.setText(BaseMessages.getString(PKG, "StreamLookupDialog.CouldNotFindFields.DialogTitle")); //$NON-NLS-1$
 					mb.open(); 
 				}
 			}
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(Messages.getString("StreamLookupDialog.StepNameRequired.DialogMessage")); //$NON-NLS-1$
-				mb.setText(Messages.getString("StreamLookupDialog.StepNameRequired.DialogTitle")); //$NON-NLS-1$
+				mb.setMessage(BaseMessages.getString(PKG, "StreamLookupDialog.StepNameRequired.DialogMessage")); //$NON-NLS-1$
+				mb.setText(BaseMessages.getString(PKG, "StreamLookupDialog.StepNameRequired.DialogTitle")); //$NON-NLS-1$
 				mb.open(); 
 			}
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("StreamLookupDialog.FailedToGetFields.DialogTitle"), Messages.getString("StreamLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "StreamLookupDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "StreamLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}

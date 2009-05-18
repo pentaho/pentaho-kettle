@@ -13,6 +13,8 @@ package org.pentaho.di.trans.steps.writetolog;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -20,7 +22,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.core.logging.LogWriter;
 
 /**
  * Write data to log.
@@ -31,6 +32,8 @@ import org.pentaho.di.core.logging.LogWriter;
 
 public class WriteToLog extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = WriteToLogMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private WriteToLogMeta meta;
 	private WriteToLogData data;
 	
@@ -64,8 +67,8 @@ public class WriteToLog extends BaseStep implements StepInterface
 					data.fieldnrs[i]=getInputRowMeta().indexOfValue(meta.getFieldName()[i] );
 					if (data.fieldnrs[i]<0)
 					{
-						logError(Messages.getString("WriteToLog.Log.CanNotFindField",meta.getFieldName()[i]));
-						throw new KettleException(Messages.getString("WriteToLog.Log.CanNotFindField",meta.getFieldName()[i]));
+						logError(BaseMessages.getString(PKG, "WriteToLog.Log.CanNotFindField",meta.getFieldName()[i]));
+						throw new KettleException(BaseMessages.getString(PKG, "WriteToLog.Log.CanNotFindField",meta.getFieldName()[i]));
 					}
 	 			}
 			}else
@@ -83,7 +86,7 @@ public class WriteToLog extends BaseStep implements StepInterface
 		StringBuffer out=new StringBuffer();
 		out.append(Const.CR  
 				+ "------------> " 
-				+ Messages.getString("WriteToLog.Log.NLigne",""+getLinesRead()) 
+				+ BaseMessages.getString(PKG, "WriteToLog.Log.NLigne",""+getLinesRead()) 
 				+ "------------------------------"
 				+ Const.CR);
 

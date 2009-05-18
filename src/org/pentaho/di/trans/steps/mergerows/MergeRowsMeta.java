@@ -27,6 +27,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -44,6 +45,8 @@ import org.w3c.dom.Node;
 
 public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = MergeRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String referenceStepName;
 	private StepMeta referenceStepMeta;
 
@@ -264,7 +267,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("MergeRowsMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "MergeRowsMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -324,7 +327,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("MergeRowsMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "MergeRowsMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -350,7 +353,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("MergeRowsMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "MergeRowsMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
 	
@@ -391,7 +394,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
             }
         }
         
-        if (Const.isEmpty(flagField)) throw new KettleStepException(Messages.getString("MergeRowsMeta.Exception.FlagFieldNotSpecified"));
+        if (Const.isEmpty(flagField)) throw new KettleStepException(BaseMessages.getString(PKG, "MergeRowsMeta.Exception.FlagFieldNotSpecified"));
         ValueMetaInterface flagFieldValue = new ValueMeta(flagField, ValueMetaInterface.TYPE_STRING);
         flagFieldValue.setOrigin(name);
         r.addValueMeta(flagFieldValue);
@@ -404,18 +407,18 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (getReferenceStepName()!=null && getCompareStepName()!=null)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("MergeRowsMeta.CheckResult.SourceStepsOK"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MergeRowsMeta.CheckResult.SourceStepsOK"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		if (getReferenceStepName()==null && getCompareStepName()==null)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("MergeRowsMeta.CheckResult.SourceStepsMissing"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MergeRowsMeta.CheckResult.SourceStepsMissing"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("MergeRowsMeta.CheckResult.OneSourceStepMissing"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MergeRowsMeta.CheckResult.OneSourceStepMissing"), stepinfo);
 			remarks.add(cr);
 		}
 	}

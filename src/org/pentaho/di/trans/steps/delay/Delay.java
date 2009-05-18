@@ -11,7 +11,9 @@
  
 package org.pentaho.di.trans.steps.delay;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -19,7 +21,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.core.Const;
 
 /**
  * Delay input row.
@@ -29,6 +30,8 @@ import org.pentaho.di.core.Const;
  */
 public class Delay extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = DelayMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private DelayMeta meta;
 	private DelayData data;
 	
@@ -58,19 +61,19 @@ public class Delay extends BaseStep implements StepInterface
 			switch (meta.getScaleTimeCode())
 			{
 			    case 0:
-			        msgScale = Messages.getString("DelayDialog.MSScaleTime.Label");
+			        msgScale = BaseMessages.getString(PKG, "DelayDialog.MSScaleTime.Label");
 			        data.Multiple = 1;
 			        break;			
 			    case 1:
-			        msgScale = Messages.getString("DelayDialog.SScaleTime.Label");
+			        msgScale = BaseMessages.getString(PKG, "DelayDialog.SScaleTime.Label");
 			        data.Multiple = 1000;
 			        break;
                 case 2:
-                    msgScale = Messages.getString("DelayDialog.MnScaleTime.Label");
+                    msgScale = BaseMessages.getString(PKG, "DelayDialog.MnScaleTime.Label");
                     data.Multiple = 60000;
                     break;
                 case 3:
-                    msgScale = Messages.getString("DelayDialog.HrScaleTime.Label");
+                    msgScale = BaseMessages.getString(PKG, "DelayDialog.HrScaleTime.Label");
                     data.Multiple = 3600000;
                     break;
                 default:
@@ -81,7 +84,7 @@ public class Delay extends BaseStep implements StepInterface
 			String timeOut=environmentSubstitute(meta.getTimeOut());
 			data.timeout =Const.toInt(timeOut, 0);  
 			
-			if(log.isDebug()) log.logDebug(toString(), Messages.getString("Delay.Log.TimeOut",""+data.timeout,msgScale));
+			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "Delay.Log.TimeOut",""+data.timeout,msgScale));
 		}
 
 		if ((data.Multiple<1000) && (data.timeout>0)) {
@@ -114,13 +117,13 @@ public class Delay extends BaseStep implements StepInterface
 				}
 			}
 		}
-		if (log.isDebug()) log.logDebug(toString(), Messages.getString("Delay.WaitTimeIsElapsed.Label"));
+		if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "Delay.WaitTimeIsElapsed.Label"));
 	     
 		putRow(getInputRowMeta(), r);     // copy row to possible alternate rowset(s).
 		  
 		if (checkFeedback(getLinesRead())) 
 		{
-			if(log.isDetailed()) logDetailed(Messages.getString("Delay.Log.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Delay.Log.LineNumber",""+getLinesRead())); //$NON-NLS-1$
 		}
 		
 		return true;

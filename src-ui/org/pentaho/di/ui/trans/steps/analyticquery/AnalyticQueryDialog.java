@@ -49,22 +49,25 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.analyticquery.AnalyticQuery;
+import org.pentaho.di.trans.steps.analyticquery.AnalyticQueryMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.trans.steps.analyticquery.AnalyticQueryMeta;
-import org.pentaho.di.trans.steps.analyticquery.Messages;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInterface
 
 	//Add a comment
 {
+	private static Class<?> PKG = AnalyticQuery.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final String STRING_SORT_WARNING_PARAMETER = "AnalyticQuerySortWarning"; //$NON-NLS-1$
 	private Label        wlGroup;
 	private TableView    wGroup;
@@ -114,14 +117,14 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("AnalyticQueryDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "AnalyticQueryDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 		
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("AnalyticQueryDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "AnalyticQueryDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -139,7 +142,7 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 		wStepname.setLayoutData(fdStepname);
 
 		wlGroup=new Label(shell, SWT.NONE);
-		wlGroup.setText(Messages.getString("AnalyticQueryDialog.Group.Label")); //$NON-NLS-1$
+		wlGroup.setText(BaseMessages.getString(PKG, "AnalyticQueryDialog.Group.Label")); //$NON-NLS-1$
  		props.setLook(wlGroup);
 		fdlGroup=new FormData();
 		fdlGroup.left  = new FormAttachment(0, 0);
@@ -150,7 +153,7 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 		int nrKeyRows=(input.getGroupField()!=null?input.getGroupField().length:1);
 		
 		ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo(Messages.getString("AnalyticQueryDialog.ColumnInfo.GroupField"),  
+		ciKey[0]=new ColumnInfo(BaseMessages.getString(PKG, "AnalyticQueryDialog.ColumnInfo.GroupField"),  
 		ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
 		
 		wGroup=new TableView(transMeta, shell, 
@@ -162,7 +165,7 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 						      );
 
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("AnalyticQueryDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "AnalyticQueryDialog.GetFields.Button")); //$NON-NLS-1$
 		fdGet = new FormData();
 		fdGet.top   = new FormAttachment(wlGroup, margin);
 		fdGet.right = new FormAttachment(100, 0);
@@ -177,7 +180,7 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 
 		// THE Aggregate fields
 		wlAgg=new Label(shell, SWT.NONE);
-		wlAgg.setText(Messages.getString("AnalyticQueryDialog.Aggregates.Label")); //$NON-NLS-1$
+		wlAgg.setText(BaseMessages.getString(PKG, "AnalyticQueryDialog.Aggregates.Label")); //$NON-NLS-1$
  		props.setLook(wlAgg);
 		fdlAgg=new FormData();
 		fdlAgg.left  = new FormAttachment(0, 0);
@@ -188,11 +191,11 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 		int UpInsRows= (input.getAggregateField()!=null?input.getAggregateField().length:1);
 		
 		ciReturn=new ColumnInfo[UpInsCols];
-		ciReturn[0]=new ColumnInfo(Messages.getString("AnalyticQueryDialog.ColumnInfo.Name"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		ciReturn[1]=new ColumnInfo(Messages.getString("AnalyticQueryDialog.ColumnInfo.Subject"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
-		ciReturn[2]=new ColumnInfo(Messages.getString("AnalyticQueryDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, AnalyticQueryMeta.typeGroupLongDesc); //$NON-NLS-1$
-		ciReturn[3]=new ColumnInfo(Messages.getString("AnalyticQueryDialog.ColumnInfo.Value"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		ciReturn[3].setToolTip(Messages.getString("AnalyticQueryDialog.ColumnInfo.Value.Tooltip"));
+		ciReturn[0]=new ColumnInfo(BaseMessages.getString(PKG, "AnalyticQueryDialog.ColumnInfo.Name"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciReturn[1]=new ColumnInfo(BaseMessages.getString(PKG, "AnalyticQueryDialog.ColumnInfo.Subject"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
+		ciReturn[2]=new ColumnInfo(BaseMessages.getString(PKG, "AnalyticQueryDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, AnalyticQueryMeta.typeGroupLongDesc); //$NON-NLS-1$
+		ciReturn[3]=new ColumnInfo(BaseMessages.getString(PKG, "AnalyticQueryDialog.ColumnInfo.Value"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciReturn[3].setToolTip(BaseMessages.getString(PKG, "AnalyticQueryDialog.ColumnInfo.Value.Tooltip"));
 		ciReturn[3].setUsingVariables(true);
 		
 		wAgg=new TableView(transMeta, shell, 
@@ -204,7 +207,7 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 							  );
 
 		wGetAgg=new Button(shell, SWT.PUSH);
-		wGetAgg.setText(Messages.getString("AnalyticQueryDialog.GetLookupFields.Button")); //$NON-NLS-1$
+		wGetAgg.setText(BaseMessages.getString(PKG, "AnalyticQueryDialog.GetLookupFields.Button")); //$NON-NLS-1$
 		fdGetAgg = new FormData();
 		fdGetAgg.top   = new FormAttachment(wlAgg, margin);
 		fdGetAgg.right = new FormAttachment(100, 0);
@@ -233,7 +236,7 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -242,9 +245,9 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -313,7 +316,7 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), Messages.getString("AnalyticQueryDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "AnalyticQueryDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
         
         
 		if (input.getGroupField()!=null)
@@ -380,13 +383,13 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
         if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                 Messages.getString("AnalyticQueryDialog.GroupByWarningDialog.DialogTitle"),  //$NON-NLS-1$
+                 BaseMessages.getString(PKG, "AnalyticQueryDialog.GroupByWarningDialog.DialogTitle"),  //$NON-NLS-1$
                  null,
-                 Messages.getString("AnalyticQueryDialog.GroupByWarningDialog.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+                 BaseMessages.getString(PKG, "AnalyticQueryDialog.GroupByWarningDialog.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
                  MessageDialog.WARNING,
-                 new String[] { Messages.getString("AnalyticQueryDialog.GroupByWarningDialog.Option1") }, //$NON-NLS-1$
+                 new String[] { BaseMessages.getString(PKG, "AnalyticQueryDialog.GroupByWarningDialog.Option1") }, //$NON-NLS-1$
                  0,
-                 Messages.getString("AnalyticQueryDialog.GroupByWarningDialog.Option2"), //$NON-NLS-1$
+                 BaseMessages.getString(PKG, "AnalyticQueryDialog.GroupByWarningDialog.Option2"), //$NON-NLS-1$
                  "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
             );
             MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
@@ -410,7 +413,7 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("AnalyticQueryDialog.FailedToGetFields.DialogTitle"), Messages.getString("AnalyticQueryDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "AnalyticQueryDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "AnalyticQueryDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -426,7 +429,7 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("AnalyticQueryDialog.FailedToGetFields.DialogTitle"), Messages.getString("AnalyticQueryDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "AnalyticQueryDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "AnalyticQueryDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	

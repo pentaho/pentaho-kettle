@@ -24,6 +24,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -44,6 +45,8 @@ import org.w3c.dom.Node;
 
 public class RowsToResultMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = RowsToResult.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public RowsToResultMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -89,12 +92,12 @@ public class RowsToResultMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("RowsToResultMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "RowsToResultMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("RowsToResultMeta.CheckResult.NoInputReceivedError"), stepinfo); //$NON-NLS-1$
+			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "RowsToResultMeta.CheckResult.NoInputReceivedError"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

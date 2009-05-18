@@ -23,6 +23,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -41,6 +42,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class SocketReader extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = SocketReaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final String STRING_FINISHED = "Finished";
     private static final int TIMEOUT_IN_SECONDS = 30;
     private SocketReaderMeta meta;
@@ -123,7 +126,7 @@ public class SocketReader extends BaseStep implements StepInterface
             
             incrementLinesInput();
             
-            if (checkFeedback(getLinesInput())) logBasic(Messages.getString("SocketReader.Log.LineNumber")+getLinesInput()); //$NON-NLS-1$
+            if (checkFeedback(getLinesInput())) logBasic(BaseMessages.getString(PKG, "SocketReader.Log.LineNumber")+getLinesInput()); //$NON-NLS-1$
             
             putRow(data.rowMeta, r);
         }

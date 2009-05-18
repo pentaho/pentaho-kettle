@@ -25,6 +25,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -32,6 +33,8 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 
 public class PrepareExecutionTransServlet extends HttpServlet
 {
+	private static Class<?> PKG = PrepareExecutionTransServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static final long serialVersionUID = 3634806745372015720L;
     public static final String CONTEXT_PATH = "/kettle/prepareExec";
     private static LogWriter log = LogWriter.getInstance();
@@ -51,7 +54,7 @@ public class PrepareExecutionTransServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), Messages.getString("PrepareExecutionTransServlet.TransPrepareExecutionRequested"));
+        if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepareExecutionRequested"));
         
 
         String transName = request.getParameter("name");
@@ -71,7 +74,7 @@ public class PrepareExecutionTransServlet extends HttpServlet
             response.setContentType("text/html");
             out.println("<HTML>");
             out.println("<HEAD>");
-            out.println("<TITLE>"+ Messages.getString("PrepareExecutionTransServlet.TransPrepareExecution") + "</TITLE>");
+            out.println("<TITLE>"+ BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepareExecution") + "</TITLE>");
             out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">");
             out.println("</HEAD>");
             out.println("<BODY>");
@@ -107,26 +110,26 @@ public class PrepareExecutionTransServlet extends HttpServlet
                     else
                     {
                     	
-                        out.println("<H1>" + Messages.getString("PrepareExecutionTransServlet.TransPrepared",transName) + "</H1>");
-                        out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">"+ Messages.getString("TransStatusServlet.BackToTransStatusPage") +"</a><p>");
+                        out.println("<H1>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepared",transName) + "</H1>");
+                        out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">"+ BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") +"</a><p>");
                     }
                 }
                 catch (Exception e) {
                 	
                     if (useXML)
                     {
-                        out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("PrepareExecutionTransServlet.Error.TransInitFailed",Const.CR+appender.getBuffer().toString()+Const.CR+e.getLocalizedMessage())));
+                        out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.TransInitFailed",Const.CR+appender.getBuffer().toString()+Const.CR+e.getLocalizedMessage())));
                         
                     }
                     else
                     {
-                        out.println("<H1>" + Messages.getString("PrepareExecutionTransServlet.Log.TransNotInit",transName) + "</H1>");
+                        out.println("<H1>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Log.TransNotInit",transName) + "</H1>");
                         
                         out.println("<pre>");
                         out.println(appender.getBuffer().toString());
                         out.println(e.getLocalizedMessage());
                         out.println("</pre>");
-                        out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("TransStatusServlet.BackToTransStatusPage") + "</a><p>");
+                        out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
                     }
                 }
             }
@@ -134,12 +137,12 @@ public class PrepareExecutionTransServlet extends HttpServlet
             {
                 if (useXML)
                 {
-                    out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("TransStatusServlet.Log.CoundNotFindSpecTrans",transName)));
+                    out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans",transName)));
                 }
                 else
                 {
-                    out.println("<H1>" + Messages.getString("TransStatusServlet.Log.CoundNotFindTrans",transName) + "</H1>");
-                    out.println("<a href=\"/kettle/status\">" + Messages.getString("TransStatusServlet.BackToStatusPage")+"</a><p>");
+                    out.println("<H1>" + BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindTrans",transName) + "</H1>");
+                    out.println("<a href=\"/kettle/status\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage")+"</a><p>");
                 }
             }
         }
@@ -147,7 +150,7 @@ public class PrepareExecutionTransServlet extends HttpServlet
         {
             if (useXML)
             {
-                out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("PrepareExecutionTransServlet.Error.UnexpectedError",Const.CR+Const.getStackTracker(ex))));
+                out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.UnexpectedError",Const.CR+Const.getStackTracker(ex))));
                 
             }
             else

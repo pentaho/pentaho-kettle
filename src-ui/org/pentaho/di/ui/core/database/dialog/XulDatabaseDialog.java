@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -32,6 +33,8 @@ import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.containers.XulDialog;
 
 public class XulDatabaseDialog {
+
+  private static Class<?> PKG = XulDatabaseDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private DatabaseMeta databaseMeta;
 
@@ -97,8 +100,8 @@ public class XulDatabaseDialog {
       dataHandler.getControls();
 
     } catch (XulException e) {
-      new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages //$NON-NLS-1$
-          .getString("XulDatabaseDialog.Error.HandleXul"), e); //$NON-NLS-1$
+      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Titel"), //$NON-NLS-1$ 
+    		 BaseMessages.getString(PKG, "XulDatabaseDialog.Error.HandleXul"), e); //$NON-NLS-1$
       return null;
     }
 
@@ -118,8 +121,8 @@ public class XulDatabaseDialog {
           res = GlobalMessages.getBundle(failOverLocale, MESSAGES);
         }catch(MissingResourceException e2){
           res = null;
-          log.logError(Messages.getString("XulDatabaseDialog.Error.ResourcesNotFound.Title"),  //$NON-NLS-1$
-              Messages.getString("XulDatabaseDialog.Error.ResourcesNotFound",   //$NON-NLS-1$
+          log.logError(BaseMessages.getString(PKG, "XulDatabaseDialog.Error.ResourcesNotFound.Title"),  //$NON-NLS-1$
+              BaseMessages.getString(PKG, "XulDatabaseDialog.Error.ResourcesNotFound",   //$NON-NLS-1$
                   primaryLocale == null ? "" : primaryLocale.toString(),  //$NON-NLS-1$
                   failOverLocale == null ? "" : failOverLocale.toString()),   //$NON-NLS-1$
               e2);
@@ -141,8 +144,8 @@ public class XulDatabaseDialog {
       parentElement.replaceChild(boxElement, newBox);
 
     } catch (Exception e) {
-      new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages //$NON-NLS-1$
-          .getString("XulDatabaseDialog.Error.HandleXul"), e); //$NON-NLS-1$
+      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Titel"), //$NON-NLS-1$ 
+    		  BaseMessages.getString(PKG, "XulDatabaseDialog.Error.HandleXul"), e); //$NON-NLS-1$
       return null;
     }
 
@@ -165,8 +168,8 @@ public class XulDatabaseDialog {
       databaseName = Const.isEmpty(databaseMeta.getName()) ? null : databaseMeta.getName();
       
     } catch (Exception e) {
-      new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages  //$NON-NLS-1$
-          .getString("XulDatabaseDialog.Error.Dialog"), e); //$NON-NLS-1$
+      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Titel"), //$NON-NLS-1$ 
+    		 BaseMessages.getString("XulDatabaseDialog.Error.Dialog"), e); //$NON-NLS-1$
       return null;
     }
     return databaseName;

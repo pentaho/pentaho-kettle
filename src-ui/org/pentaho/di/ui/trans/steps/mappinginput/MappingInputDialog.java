@@ -36,18 +36,20 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.mappinginput.MappingInputMeta;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.trans.steps.mappinginput.Messages;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 public class MappingInputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = MappingInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label        wlFields;
     private TableView    wFields;
     private FormData     fdlFields, fdFields;
@@ -86,14 +88,14 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("MappingInputDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "MappingInputDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("MappingInputDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "MappingInputDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -113,15 +115,15 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 		// Some buttons
 		//
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
 		// The check box to pass through and sort unspecified fields...
 		//
 		wUnspecified=new Button(shell, SWT.CHECK);
-		wUnspecified.setText(Messages.getString("MappingInputDialog.Unspecified.Label"));
+		wUnspecified.setText(BaseMessages.getString(PKG, "MappingInputDialog.Unspecified.Label"));
 		props.setLook(wUnspecified);
 		fdUnspecified=new FormData();
 		fdUnspecified.left = new FormAttachment(0, 0);
@@ -132,7 +134,7 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 		// The grid goes in between the step name and the check box...
 		//
         wlFields=new Label(shell, SWT.NONE);
-        wlFields.setText(Messages.getString("MappingInputDialog.Fields.Label")); //$NON-NLS-1$
+        wlFields.setText(BaseMessages.getString(PKG, "MappingInputDialog.Fields.Label")); //$NON-NLS-1$
         props.setLook(wlFields);
         fdlFields=new FormData();
         fdlFields.left = new FormAttachment(0, 0);
@@ -143,10 +145,10 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
         
         ColumnInfo[] colinf=new ColumnInfo[]
             {
-                new ColumnInfo(Messages.getString("MappingInputDialog.ColumnInfo.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("MappingInputDialog.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("MappingInputDialog.ColumnInfo.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("MappingInputDialog.ColumnInfo.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false) //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "MappingInputDialog.ColumnInfo.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "MappingInputDialog.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "MappingInputDialog.ColumnInfo.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "MappingInputDialog.ColumnInfo.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false) //$NON-NLS-1$
             };
         
         wFields=new TableView(transMeta, shell, 

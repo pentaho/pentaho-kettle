@@ -19,8 +19,8 @@
 
 package org.pentaho.di.trans.steps.propertyinput;
 
-import java.io.*;
 import java.io.File;
+import java.io.FileInputStream;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -31,6 +31,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -47,6 +48,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class PropertyInput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = PropertyInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private PropertyInputMeta meta;
 	private PropertyInputData data;
 	
@@ -61,7 +64,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 		{
 			data.files = meta.getFiles(this);
 			if (data.files==null || data.files.nrOfFiles()==0)
-					throw new KettleException(Messages.getString("PropertyInput.Log.NoFiles"));
+					throw new KettleException(BaseMessages.getString(PKG, "PropertyInput.Log.NoFiles"));
 	
 			  // Create the output row meta-data
             data.outputRowMeta = new RowMeta();
@@ -110,7 +113,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 	        }
 			else
 			{
-				logError(Messages.getString("PropertyInput.ErrorInStepRunning",e.getMessage())); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "PropertyInput.ErrorInStepRunning",e.getMessage())); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -229,7 +232,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 		 }
 		 catch (Exception e)
 		 {
-			throw new KettleException(Messages.getString("PropertyInput.Error.CanNotReadFromFile",data.file.toString()), e);
+			throw new KettleException(BaseMessages.getString(PKG, "PropertyInput.Error.CanNotReadFromFile",data.file.toString()), e);
 		 }
 		 
 		return r;
@@ -242,7 +245,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 			{
 	            if (data.filenr>=data.files.nrOfFiles()) // finished processing!
 	            {
-	            	if (log.isDetailed()) logDetailed(Messages.getString("PropertyInput.Log.FinishedProcessing"));
+	            	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "PropertyInput.Log.FinishedProcessing"));
 	                return false;
 	            }
 	            
@@ -256,7 +259,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 			{
 				data.readrow=getRow();     // Get row from input rowset & set row busy!
 				if (data.readrow==null) {
-					if (log.isDetailed()) logDetailed(Messages.getString("PropertyInput.Log.FinishedProcessing"));
+					if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "PropertyInput.Log.FinishedProcessing"));
 			         return false;
 			    }
 				
@@ -285,8 +288,8 @@ public class PropertyInput extends BaseStep implements StepInterface
 					// Check is filename field is provided
 					if (Const.isEmpty(meta.getDynamicFilenameField()))
 					{
-						logError(Messages.getString("PropertyInput.Log.NoField"));
-						throw new KettleException(Messages.getString("PropertyInput.Log.NoField"));
+						logError(BaseMessages.getString(PKG, "PropertyInput.Log.NoField"));
+						throw new KettleException(BaseMessages.getString(PKG, "PropertyInput.Log.NoField"));
 					}
 					
 					// cache the position of the field			
@@ -296,15 +299,15 @@ public class PropertyInput extends BaseStep implements StepInterface
 						if (data.indexOfFilenameField<0)
 						{
 							// The field is unreachable !
-							logError(Messages.getString("PropertyInput.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(Messages.getString("PropertyInput.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(BaseMessages.getString(PKG, "PropertyInput.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(BaseMessages.getString(PKG, "PropertyInput.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					} 
 		        }  // End if first
 				
 				
 				String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
-				if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("PropertyInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
+				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "PropertyInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
 
 				data.file= KettleVFS.getFileObject(filename);
 				// Check if file exists!
@@ -315,13 +318,13 @@ public class PropertyInput extends BaseStep implements StepInterface
 			
 			if(meta.resetRowNumber()) data.rownr=0;
             
-			if (log.isDetailed()) logDetailed(Messages.getString("PropertyInput.Log.OpeningFile", data.file.toString()));
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "PropertyInput.Log.OpeningFile", data.file.toString()));
     
 			if(meta.isAddResultFile())
 			{
 				// Add this to the result file names...
 				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
-				resultFile.setComment(Messages.getString("PropertyInput.Log.FileAddedResult"));
+				resultFile.setComment(BaseMessages.getString(PKG, "PropertyInput.Log.FileAddedResult"));
 				addResultFile(resultFile);
 			}
 
@@ -331,15 +334,15 @@ public class PropertyInput extends BaseStep implements StepInterface
 	         
 	         if (log.isDetailed()) 
 	         {
-	        	 logDetailed(Messages.getString("PropertyInput.Log.FileOpened", data.file.toString()));
-	        	 logDetailed(Messages.getString("PropertyInput.log.TotalKey", ""+data.pro.keySet().size(),KettleVFS.getFilename(data.file)));
+	        	 logDetailed(BaseMessages.getString(PKG, "PropertyInput.Log.FileOpened", data.file.toString()));
+	        	 logDetailed(BaseMessages.getString(PKG, "PropertyInput.log.TotalKey", ""+data.pro.keySet().size(),KettleVFS.getFilename(data.file)));
 	         } 
 
 	         data.it = data.pro.keySet().iterator();
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("PropertyInput.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
+			logError(BaseMessages.getString(PKG, "PropertyInput.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
 			stopAll();
 			setErrors(1);
 			return false;

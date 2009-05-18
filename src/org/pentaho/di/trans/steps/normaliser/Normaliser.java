@@ -17,6 +17,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -33,6 +34,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class Normaliser extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = NormaliserMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private NormaliserMeta meta;
 	private NormaliserData data;
 
@@ -95,7 +98,7 @@ public class Normaliser extends BaseStep implements StepInterface
 				data.fieldnrs[i] = data.inputRowMeta.indexOfValue(meta.getFieldName()[i]);
 				if (data.fieldnrs[i]<0)
 				{
-					logError(Messages.getString("Normaliser.Log.CouldNotFindFieldInRow",meta.getFieldName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "Normaliser.Log.CouldNotFindFieldInRow",meta.getFieldName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -145,7 +148,7 @@ public class Normaliser extends BaseStep implements StepInterface
 
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(Messages.getString("Normaliser.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "Normaliser.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
         }
 			
 		return true;

@@ -21,10 +21,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class ControlSpaceKeyAdapter extends KeyAdapter {
+
+  private static Class<?> PKG = ControlSpaceKeyAdapter.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private static final PropsUI props = PropsUI.getInstance();
 
@@ -126,9 +129,9 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
           String name = list.getSelection()[0];
           String value = variables.getVariable(name);
           Rectangle shellBounds = shell.getBounds();
-          String message = Messages.getString("TextVar.VariableValue.Message", name, value);
+          String message = BaseMessages.getString(PKG, "TextVar.VariableValue.Message", name, value);
           if (name.startsWith(Const.INTERNAL_VARIABLE_PREFIX))
-            message += Messages.getString("TextVar.InternalVariable.Message");
+            message += BaseMessages.getString(PKG, "TextVar.InternalVariable.Message");
           toolTip.setText(message);
           toolTip.hide();
           toolTip.show(new Point(shellBounds.width, 0));

@@ -27,9 +27,12 @@ import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStep;
 
 public abstract class AbstractFileErrorHandler implements FileErrorHandler {
+	private static Class<?> PKG = AbstractFileErrorHandler.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final String DD_MMYYYY_HHMMSS = "ddMMyyyy-HHmmss"; //$NON-NLS-1$
 
 	public static final String NO_PARTS = "NO_PARTS"; //$NON-NLS-1$
@@ -117,7 +120,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
     		} 
             catch (Exception e) 
             {
-    			throw new KettleException(Messages.getString("AbstractFileErrorHandler.Exception.CouldNotCreateFileErrorHandlerForFile") //$NON-NLS-1$
+    			throw new KettleException(BaseMessages.getString(PKG, "AbstractFileErrorHandler.Exception.CouldNotCreateFileErrorHandlerForFile") //$NON-NLS-1$
     							+ file.getName().getURI(), e);
     		}
     		writers.put(source, outputStreamWriter);
@@ -125,7 +128,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
         }
         catch(IOException e)
         {
-            throw new KettleException(Messages.getString("AbstractFileErrorHandler.Exception.CouldNotCreateFileErrorHandlerForFile"), e);
+            throw new KettleException(BaseMessages.getString(PKG, "AbstractFileErrorHandler.Exception.CouldNotCreateFileErrorHandlerForFile"), e);
         }
 	}
 
@@ -142,13 +145,13 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 			try {
 				outputStreamWriter.flush();
 			} catch (IOException exception) {
-				log.logError(Messages.getString("AbstractFileErrorHandler.Log.CouldNotFlushContentToFile"), exception //$NON-NLS-1$
+				log.logError(BaseMessages.getString(PKG, "AbstractFileErrorHandler.Log.CouldNotFlushContentToFile"), exception //$NON-NLS-1$
 						.getLocalizedMessage());
 			}
 			try {
 				outputStreamWriter.close();
 			} catch (IOException exception) {
-				throw new KettleException(Messages.getString("AbstractFileErrorHandler.Exception.CouldNotCloseFile"), exception); //$NON-NLS-1$
+				throw new KettleException(BaseMessages.getString(PKG, "AbstractFileErrorHandler.Exception.CouldNotCloseFile"), exception); //$NON-NLS-1$
 			} finally {
 				outputStreamWriter = null;
 			}

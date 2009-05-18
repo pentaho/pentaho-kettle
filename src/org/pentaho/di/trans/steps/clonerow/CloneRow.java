@@ -11,8 +11,10 @@
  
 package org.pentaho.di.trans.steps.clonerow;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -20,7 +22,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.core.Const;
 
 /**
  * Clone input row.
@@ -30,6 +31,8 @@ import org.pentaho.di.core.Const;
  */
 public class CloneRow extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CloneRowMeta meta;
 	private CloneRowData data;
 	
@@ -61,8 +64,8 @@ public class CloneRow extends BaseStep implements StepInterface
 				String realflagfield=environmentSubstitute(meta.getCloneFlagField());
 				if(Const.isEmpty(realflagfield))
 				{
-					logError(Messages.getString("CloneRow.Error.CloneFlagFieldMissing"));
-					throw new KettleException(Messages.getString("CloneRow.Error.CloneFlagFieldMissing"));
+					logError(BaseMessages.getString(PKG, "CloneRow.Error.CloneFlagFieldMissing"));
+					throw new KettleException(BaseMessages.getString(PKG, "CloneRow.Error.CloneFlagFieldMissing"));
 				}
 				
 				meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
@@ -73,8 +76,8 @@ public class CloneRow extends BaseStep implements StepInterface
 				String cloneinfieldname=meta.getNrCloneField();
 				if(Const.isEmpty(cloneinfieldname))
 				{
-					logError(Messages.getString("CloneRow.Error.NrCloneInFieldMissing"));
-					throw new KettleException(Messages.getString("CloneRow.Error.NrCloneInFieldMissing"));
+					logError(BaseMessages.getString(PKG, "CloneRow.Error.NrCloneInFieldMissing"));
+					throw new KettleException(BaseMessages.getString(PKG, "CloneRow.Error.NrCloneInFieldMissing"));
 				}
 				// cache the position of the field			
 				if (data.indexOfNrCloneField<0)
@@ -83,15 +86,15 @@ public class CloneRow extends BaseStep implements StepInterface
 					if (data.indexOfNrCloneField<0)
 					{
 						// The field is unreachable !
-						logError(Messages.getString("CloneRow.Log.ErrorFindingField")+ "[" + cloneinfieldname+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleException(Messages.getString("CloneRow.Exception.CouldnotFindField",cloneinfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "CloneRow.Log.ErrorFindingField")+ "[" + cloneinfieldname+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "CloneRow.Exception.CouldnotFindField",cloneinfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 			}else
 			{
 				String nrclonesString=environmentSubstitute(meta.getNrClones());
 				data.nrclones=Const.toInt(nrclonesString, 0);
-				if(log.isDebug()) log.logDebug(toString(), Messages.getString("CloneRow.Log.NrClones",""+data.nrclones));
+				if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "CloneRow.Log.NrClones",""+data.nrclones));
 			}
 		}
 		
@@ -108,7 +111,7 @@ public class CloneRow extends BaseStep implements StepInterface
 		if(meta.isNrCloneInField())
 		{
 			data.nrclones=getInputRowMeta().getInteger(r,data.indexOfNrCloneField);
-			if(log.isDebug()) log.logDebug(toString(), Messages.getString("CloneRow.Log.NrClones",""+data.nrclones));
+			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "CloneRow.Log.NrClones",""+data.nrclones));
 		}
 		for (int i = 0; i < data.nrclones; i++)
 		{
@@ -123,7 +126,7 @@ public class CloneRow extends BaseStep implements StepInterface
 
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isDetailed()) logDetailed(Messages.getString("CloneRow.Log.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+        	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "CloneRow.Log.LineNumber",""+getLinesRead())); //$NON-NLS-1$
         }
 			
 		return true;

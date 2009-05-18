@@ -28,6 +28,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -37,6 +38,8 @@ import org.pentaho.di.trans.step.StepStatus;
 
 public class GetTransStatusServlet extends HttpServlet
 {
+	private static Class<?> PKG = GetTransStatusServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static final long serialVersionUID = 3634806745372015720L;
     public static final String CONTEXT_PATH = "/kettle/transStatus";
     
@@ -57,7 +60,7 @@ public class GetTransStatusServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(),  Messages.getString("TransStatusServlet.Log.TransStatusRequested"));
+        if (log.isDebug()) log.logDebug(toString(),  BaseMessages.getString(PKG, "TransStatusServlet.Log.TransStatusRequested"));
 
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -133,18 +136,18 @@ public class GetTransStatusServlet extends HttpServlet
 
                 out.println("<HTML>");
                 out.println("<HEAD>");
-                out.println("<TITLE>" + Messages.getString("TransStatusServlet.KettleTransStatus")  + "</TITLE>");
+                out.println("<TITLE>" + BaseMessages.getString(PKG, "TransStatusServlet.KettleTransStatus")  + "</TITLE>");
                 out.println("<META http-equiv=\"Refresh\" content=\"10;url=/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">");
                 out.println("</HEAD>");
                 out.println("<BODY>");
-                out.println("<H1>" + Messages.getString("TransStatusServlet.TopTransStatus", transName) +"</H1>");
+                out.println("<H1>" + BaseMessages.getString(PKG, "TransStatusServlet.TopTransStatus", transName) +"</H1>");
                 
                 
         
                 try
                 {
                     out.println("<table border=\"1\">");
-                    out.print("<tr> <th>" + Messages.getString("TransStatusServlet.TransName") + "</th> <th>" + Messages.getString("TransStatusServlet.TransStatus") +  "</th> </tr>");
+                    out.print("<tr> <th>" + BaseMessages.getString(PKG, "TransStatusServlet.TransName") + "</th> <th>" + BaseMessages.getString(PKG, "TransStatusServlet.TransStatus") +  "</th> </tr>");
         
                     out.print("<tr>");
                     out.print("<td>"+transName+"</td>");
@@ -156,25 +159,25 @@ public class GetTransStatusServlet extends HttpServlet
                     
                     if ( (trans.isFinished() && trans.isRunning()) || ( !trans.isRunning() && !trans.isPreparing() && !trans.isInitializing() ))
                     {
-                        out.print("<a href=\"/kettle/startTrans?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("TransStatusServlet.StartTrans") +"</a>");
+                        out.print("<a href=\"/kettle/startTrans?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.StartTrans") +"</a>");
                         out.print("<p>");
-                        out.print("<a href=\"/kettle/prepareExec?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("TransStatusServlet.PrepareTrans") +"</a><br>");
-                        //out.print("<a href=\"/kettle/startExec?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("TransStatusServlet.StartTrans") + "</a><p>");
+                        out.print("<a href=\"/kettle/prepareExec?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.PrepareTrans") +"</a><br>");
+                        //out.print("<a href=\"/kettle/startExec?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.StartTrans") + "</a><p>");
                     }
                     else
                     if (trans.isRunning())
                     {
-                        out.print("<a href=\"/kettle/pauseTrans?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("PauseStatusServlet.PauseResumeTrans")  + "</a><br>");
-                        out.print("<a href=\"/kettle/stopTrans?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("TransStatusServlet.StopTrans")  + "</a>");
+                        out.print("<a href=\"/kettle/pauseTrans?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + BaseMessages.getString(PKG, "PauseStatusServlet.PauseResumeTrans")  + "</a><br>");
+                        out.print("<a href=\"/kettle/stopTrans?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.StopTrans")  + "</a>");
                         out.print("<p>");
                     }
-                    out.print("<a href=\"/kettle/cleanupTrans?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("TransStatusServlet.CleanupTrans") + "</a>");
+                    out.print("<a href=\"/kettle/cleanupTrans?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.CleanupTrans") + "</a>");
                     out.print("<p>");
                     
                     out.println("<table border=\"1\">");
-                    out.print("<tr> <th>" +Messages.getString("TransStatusServlet.Stepname") + "</th> <th>"  + Messages.getString("TransStatusServlet.CopyNr") + "</th> <th>" + Messages.getString("TransStatusServlet.Read") + "</th> <th>"+ Messages.getString("TransStatusServlet.Written") + "</th> <th>" +Messages.getString("TransStatusServlet.Input") + "</th> <th>" +Messages.getString("TransStatusServlet.Output") + "</th> " +
-                            "<th>" + Messages.getString("TransStatusServlet.Updated") + "</th> <th>" +  Messages.getString("TransStatusServlet.Rejected") + "</th> <th>" +Messages.getString("TransStatusServlet.Errors")  + "</th> <th>" + Messages.getString("TransStatusServlet.Active")  + "</th> <th>" + Messages.getString("TransStatusServlet.Time") + "</th> " +
-                            "<th>" + Messages.getString("TransStatusServlet.Speed")+"</th> <th>" + Messages.getString("TransStatusServlet.prinout") + "</th> </tr>");
+                    out.print("<tr> <th>" +BaseMessages.getString(PKG, "TransStatusServlet.Stepname") + "</th> <th>"  + BaseMessages.getString(PKG, "TransStatusServlet.CopyNr") + "</th> <th>" + BaseMessages.getString(PKG, "TransStatusServlet.Read") + "</th> <th>"+ BaseMessages.getString(PKG, "TransStatusServlet.Written") + "</th> <th>" +BaseMessages.getString(PKG, "TransStatusServlet.Input") + "</th> <th>" +BaseMessages.getString(PKG, "TransStatusServlet.Output") + "</th> " +
+                            "<th>" + BaseMessages.getString(PKG, "TransStatusServlet.Updated") + "</th> <th>" +  BaseMessages.getString(PKG, "TransStatusServlet.Rejected") + "</th> <th>" +BaseMessages.getString(PKG, "TransStatusServlet.Errors")  + "</th> <th>" + BaseMessages.getString(PKG, "TransStatusServlet.Active")  + "</th> <th>" + BaseMessages.getString(PKG, "TransStatusServlet.Time") + "</th> " +
+                            "<th>" + BaseMessages.getString(PKG, "TransStatusServlet.Speed")+"</th> <th>" + BaseMessages.getString(PKG, "TransStatusServlet.prinout") + "</th> </tr>");
                    
         
                     for (int i = 0; i < trans.nrSteps(); i++)
@@ -189,9 +192,9 @@ public class GetTransStatusServlet extends HttpServlet
                     out.println("</table>");
                     out.println("<p>");
                     
-                    out.print("<a href=\"/kettle/transStatus/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=y\">" +  Messages.getString("TransStatusServlet.ShowAsXml")  +"</a><br>");
-                    out.print("<a href=\"/kettle/status\">" + Messages.getString("TransStatusServlet.BackToStatusPage")  +"</a><br>");
-                    out.print("<p><a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" +  Messages.getString("TransStatusServlet.Refresh")  + "</a>");
+                    out.print("<a href=\"/kettle/transStatus/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=y\">" +  BaseMessages.getString(PKG, "TransStatusServlet.ShowAsXml")  +"</a><br>");
+                    out.print("<a href=\"/kettle/status\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage")  +"</a><br>");
+                    out.print("<p><a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" +  BaseMessages.getString(PKG, "TransStatusServlet.Refresh")  + "</a>");
                     
                     // Put the logging below that.
                     Log4jStringAppender appender = (Log4jStringAppender) transformationMap.getAppender(transName);
@@ -228,12 +231,12 @@ public class GetTransStatusServlet extends HttpServlet
         {
             if (useXML)
             {
-                out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("TransStatusServlet.Log.CoundNotFindSpecTrans",transName)));
+                out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans",transName)));
             }
             else
             {
-                out.println("<H1>" + Messages.getString("TransStatusServlet.Log.CoundNotFindTrans",transName)  + "</H1>");
-                out.println("<a href=\"/kettle/status\">" + Messages.getString("TransStatusServlet.BackToStatusPage")+ "</a><p>");
+                out.println("<H1>" + BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindTrans",transName)  + "</H1>");
+                out.println("<a href=\"/kettle/status\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage")+ "</a><p>");
                 
             }
         }

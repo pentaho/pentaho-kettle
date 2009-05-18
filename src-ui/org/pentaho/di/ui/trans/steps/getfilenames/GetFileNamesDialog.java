@@ -47,12 +47,13 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.getfilenames.GetFileNamesMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -62,11 +63,12 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
-import org.pentaho.di.trans.steps.getfilenames.GetFileNamesMeta;
-import org.pentaho.di.trans.steps.getfilenames.Messages;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = GetFileNamesMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CTabFolder wTabFolder;
 
 	private FormData fdTabFolder;
@@ -184,14 +186,14 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("GetFileNamesDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.DialogTitle"));
 
 		middle = props.getMiddlePct();
 		margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -215,7 +217,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		// START OF FILE TAB ///
 		// ////////////////////////
 		wFileTab = new CTabItem(wTabFolder, SWT.NONE);
-		wFileTab.setText(Messages.getString("GetFileNamesDialog.FileTab.TabTitle"));
+		wFileTab.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.FileTab.TabTitle"));
 
 		wFileComp = new Composite(wTabFolder, SWT.NONE);
 		props.setLook(wFileComp);
@@ -231,7 +233,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 		wOriginFiles = new Group(wFileComp, SWT.SHADOW_NONE);
 		props.setLook(wOriginFiles);
-		wOriginFiles.setText(Messages.getString("GetFileNamesDialog.wOriginFiles.Label"));
+		wOriginFiles.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.wOriginFiles.Label"));
 		
 		FormLayout OriginFilesgroupLayout = new FormLayout();
 		OriginFilesgroupLayout.marginWidth = 10;
@@ -240,7 +242,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		
 		//Is Filename defined in a Field		
 		wlFileField = new Label(wOriginFiles, SWT.RIGHT);
-		wlFileField.setText(Messages.getString("GetFileNamesDialog.FileField.Label"));
+		wlFileField.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.FileField.Label"));
 		props.setLook(wlFileField);
 		fdlFileField = new FormData();
 		fdlFileField.left = new FormAttachment(0, -margin);
@@ -251,7 +253,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		
 		wFileField = new Button(wOriginFiles, SWT.CHECK);
 		props.setLook(wFileField);
-		wFileField.setToolTipText(Messages.getString("GetFileNamesDialog.FileField.Tooltip"));
+		wFileField.setToolTipText(BaseMessages.getString(PKG, "GetFileNamesDialog.FileField.Tooltip"));
 		fdFileField = new FormData();
 		fdFileField.left = new FormAttachment(middle, -margin);
 		fdFileField.top = new FormAttachment(0, margin);
@@ -270,7 +272,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
         
 		// Filename field
 		wlFilenameField=new Label(wOriginFiles, SWT.RIGHT);
-        wlFilenameField.setText(Messages.getString("GetFileNamesDialog.wlFilenameField.Label"));
+        wlFilenameField.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.wlFilenameField.Label"));
         props.setLook(wlFilenameField);
         fdlFilenameField=new FormData();
         fdlFilenameField.left = new FormAttachment(0, -margin);
@@ -292,7 +294,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
         // Wildcard field
  		 wlWildcardField=new Label(wOriginFiles, SWT.RIGHT);
-         wlWildcardField.setText(Messages.getString("GetFileNamesDialog.wlWildcardField.Label"));
+         wlWildcardField.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.wlWildcardField.Label"));
          props.setLook(wlWildcardField);
          fdlWildcardField=new FormData();
          fdlWildcardField.left = new FormAttachment(0, -margin);
@@ -324,7 +326,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 		// Filename line
 		wlFilename = new Label(wFileComp, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("GetFileNamesDialog.Filename.Label"));
+		wlFilename.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.Filename.Label"));
 		props.setLook(wlFilename);
 		fdlFilename = new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -334,8 +336,8 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 		wbbFilename = new Button(wFileComp, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbbFilename);
-		wbbFilename.setText(Messages.getString("System.Button.Browse"));
-		wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+		wbbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+		wbbFilename.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbFilename = new FormData();
 		fdbFilename.right = new FormAttachment(100, 0);
 		fdbFilename.top = new FormAttachment(wOriginFiles, margin);
@@ -343,8 +345,8 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 		wbaFilename = new Button(wFileComp, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbaFilename);
-		wbaFilename.setText(Messages.getString("GetFileNamesDialog.FilenameAdd.Button"));
-		wbaFilename.setToolTipText(Messages.getString("GetFileNamesDialog.FilenameAdd.Tooltip"));
+		wbaFilename.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.FilenameAdd.Button"));
+		wbaFilename.setToolTipText(BaseMessages.getString(PKG, "GetFileNamesDialog.FilenameAdd.Tooltip"));
 		fdbaFilename = new FormData();
 		fdbaFilename.right = new FormAttachment(wbbFilename, -margin);
 		fdbaFilename.top = new FormAttachment(wOriginFiles, margin);
@@ -360,7 +362,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		wFilename.setLayoutData(fdFilename);
 
 		wlFilemask = new Label(wFileComp, SWT.RIGHT);
-		wlFilemask.setText(Messages.getString("GetFileNamesDialog.Filemask.Label"));
+		wlFilemask.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.Filemask.Label"));
 		props.setLook(wlFilemask);
 		fdlFilemask = new FormData();
 		fdlFilemask.left = new FormAttachment(0, 0);
@@ -378,7 +380,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 		// Filename list line
 		wlFilenameList = new Label(wFileComp, SWT.RIGHT);
-		wlFilenameList.setText(Messages.getString("GetFileNamesDialog.FilenameList.Label"));
+		wlFilenameList.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.FilenameList.Label"));
 		props.setLook(wlFilenameList);
 		fdlFilenameList = new FormData();
 		fdlFilenameList.left = new FormAttachment(0, 0);
@@ -389,8 +391,8 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		// Buttons to the right of the screen...
 		wbdFilename = new Button(wFileComp, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbdFilename);
-		wbdFilename.setText(Messages.getString("GetFileNamesDialog.FilenameDelete.Button"));
-		wbdFilename.setToolTipText(Messages.getString("GetFileNamesDialog.FilenameDelete.Tooltip"));
+		wbdFilename.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.FilenameDelete.Button"));
+		wbdFilename.setToolTipText(BaseMessages.getString(PKG, "GetFileNamesDialog.FilenameDelete.Tooltip"));
 		fdbdFilename = new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
 		fdbdFilename.top = new FormAttachment(wFilemask, 40);
@@ -398,8 +400,8 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 		wbeFilename = new Button(wFileComp, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbeFilename);
-		wbeFilename.setText(Messages.getString("GetFileNamesDialog.FilenameEdit.Button"));
-		wbeFilename.setToolTipText(Messages.getString("GetFileNamesDialog.FilenameEdit.Tooltip"));
+		wbeFilename.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.FilenameEdit.Button"));
+		wbeFilename.setToolTipText(BaseMessages.getString(PKG, "GetFileNamesDialog.FilenameEdit.Tooltip"));
 		fdbeFilename = new FormData();
 		fdbeFilename.right = new FormAttachment(100, 0);
 		fdbeFilename.left = new FormAttachment(wbdFilename, 0, SWT.LEFT);
@@ -408,21 +410,21 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 		wbShowFiles = new Button(wFileComp, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbShowFiles);
-		wbShowFiles.setText(Messages.getString("GetFileNamesDialog.ShowFiles.Button"));
+		wbShowFiles.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.ShowFiles.Button"));
 		fdbShowFiles = new FormData();
 		fdbShowFiles.left = new FormAttachment(middle, 0);
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
 		ColumnInfo[] colinfo = new ColumnInfo[] {
-				new ColumnInfo(Messages.getString("GetFileNamesDialog.FileDirColumn.Column"),
+				new ColumnInfo(BaseMessages.getString(PKG, "GetFileNamesDialog.FileDirColumn.Column"),
 						ColumnInfo.COLUMN_TYPE_TEXT, false),
-				new ColumnInfo(Messages.getString("GetFileNamesDialog.WildcardColumn.Column"),
+				new ColumnInfo(BaseMessages.getString(PKG, "GetFileNamesDialog.WildcardColumn.Column"),
 						ColumnInfo.COLUMN_TYPE_TEXT, false), };
 
         colinfo[0].setUsingVariables(true);
         colinfo[1].setUsingVariables(true);
-		colinfo[1].setToolTip(Messages.getString("GetFileNamesDialog.RegExpColumn.Column"));
+		colinfo[1].setToolTip(BaseMessages.getString(PKG, "GetFileNamesDialog.RegExpColumn.Column"));
 
 		wFilenameList = new TableView(transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo,
 				colinfo.length, lsMod, props);
@@ -459,7 +461,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		// START OF Filter TAB ///
 		// ////////////////////////
 		wFilterTab = new CTabItem(wTabFolder, SWT.NONE);
-		wFilterTab.setText(Messages.getString("GetFileNamesDialog.FilterTab.TabTitle"));
+		wFilterTab.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.FilterTab.TabTitle"));
 
 		wFilterComp = new Composite(wTabFolder, SWT.NONE);
 		props.setLook(wFilterComp);
@@ -471,7 +473,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 		// Filter File Type
 		wlFilterFileType = new Label(wFilterComp, SWT.RIGHT);
-		wlFilterFileType.setText(Messages.getString("GetFileNamesDialog.FilterTab.FileType.Label"));
+		wlFilterFileType.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.FilterTab.FileType.Label"));
 		props.setLook(wlFilterFileType);
 		fdlFilterFileType = new FormData();
 		fdlFilterFileType.left = new FormAttachment(0, 0);
@@ -479,9 +481,9 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		fdlFilterFileType.top = new FormAttachment(0, 3*margin);
 		wlFilterFileType.setLayoutData(fdlFilterFileType);
 		wFilterFileType = new CCombo(wFilterComp, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wFilterFileType.add(Messages.getString("GetFileNamesDialog.FilterTab.FileType.All.Label"));
-		wFilterFileType.add(Messages.getString("GetFileNamesDialog.FilterTab.FileType.OnlyFile.Label"));
-		wFilterFileType.add(Messages.getString("GetFileNamesDialog.FilterTab.FileType.OnlyFolder.Label"));
+		wFilterFileType.add(BaseMessages.getString(PKG, "GetFileNamesDialog.FilterTab.FileType.All.Label"));
+		wFilterFileType.add(BaseMessages.getString(PKG, "GetFileNamesDialog.FilterTab.FileType.OnlyFile.Label"));
+		wFilterFileType.add(BaseMessages.getString(PKG, "GetFileNamesDialog.FilterTab.FileType.OnlyFolder.Label"));
 		// wFilterFileType.select(0); // +1: starts at -1
 		props.setLook(wFilterFileType);
 		fdFilterFileType = new FormData();
@@ -496,7 +498,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 		wAdditionalGroup = new Group(wFilterComp, SWT.SHADOW_NONE);
 		props.setLook(wAdditionalGroup);
-		wAdditionalGroup.setText(Messages.getString("GetFileNamesDialog.Group.AdditionalGroup.Label"));
+		wAdditionalGroup.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.Group.AdditionalGroup.Label"));
 		
 		FormLayout additionalgroupLayout = new FormLayout();
 		additionalgroupLayout.marginWidth = 10;
@@ -504,7 +506,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		wAdditionalGroup.setLayout(additionalgroupLayout);
 	
 		wlInclRownum=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlInclRownum.setText(Messages.getString("GetFileNamesDialog.InclRownum.Label"));
+		wlInclRownum.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.InclRownum.Label"));
  		props.setLook(wlInclRownum);
 		fdlInclRownum=new FormData();
 		fdlInclRownum.left = new FormAttachment(0, 0);
@@ -513,14 +515,14 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		wlInclRownum.setLayoutData(fdlInclRownum);
 		wInclRownum=new Button(wAdditionalGroup, SWT.CHECK );
  		props.setLook(wInclRownum);
-		wInclRownum.setToolTipText(Messages.getString("GetFileNamesDialog.InclRownum.Tooltip"));
+		wInclRownum.setToolTipText(BaseMessages.getString(PKG, "GetFileNamesDialog.InclRownum.Tooltip"));
 		fdRownum=new FormData();
 		fdRownum.left = new FormAttachment(middle, 0);
 		fdRownum.top  = new FormAttachment(wFilterFileType, 2*margin);
 		wInclRownum.setLayoutData(fdRownum);
 
 		wlInclRownumField=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlInclRownumField.setText(Messages.getString("GetFileNamesDialog.InclRownumField.Label"));
+		wlInclRownumField.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.InclRownumField.Label"));
  		props.setLook(wlInclRownumField);
 		fdlInclRownumField=new FormData();
 		fdlInclRownumField.left = new FormAttachment(wInclRownum, margin);
@@ -549,7 +551,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		
 		
 		wlLimit=new Label(wFilterComp, SWT.RIGHT);
-		wlLimit.setText(Messages.getString("GetFileNamesDialog.Limit.Label"));
+		wlLimit.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.Limit.Label"));
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -572,7 +574,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 		wAddFileResult = new Group(wFilterComp, SWT.SHADOW_NONE);
 		props.setLook(wAddFileResult);
-		wAddFileResult.setText(Messages.getString("GetFileNamesDialog.wAddFileResult.Label"));
+		wAddFileResult.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.wAddFileResult.Label"));
 		
 		FormLayout AddFileResultgroupLayout = new FormLayout();
 		AddFileResultgroupLayout.marginWidth = 10;
@@ -580,7 +582,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		wAddFileResult.setLayout(AddFileResultgroupLayout);
 
 		wlAddResult=new Label(wAddFileResult, SWT.RIGHT);
-		wlAddResult.setText(Messages.getString("GetFileNamesDialog.AddResult.Label"));
+		wlAddResult.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.AddResult.Label"));
  		props.setLook(wlAddResult);
 		fdlAddResult=new FormData();
 		fdlAddResult.left = new FormAttachment(0, 0);
@@ -589,7 +591,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		wlAddResult.setLayoutData(fdlAddResult);
 		wAddResult=new Button(wAddFileResult, SWT.CHECK );
  		props.setLook(wAddResult);
-		wAddResult.setToolTipText(Messages.getString("GetFileNamesDialog.AddResult.Tooltip"));
+		wAddResult.setToolTipText(BaseMessages.getString(PKG, "GetFileNamesDialog.AddResult.Tooltip"));
 		fdAddResult=new FormData();
 		fdAddResult.left = new FormAttachment(middle, 0);
 		fdAddResult.top  = new FormAttachment(wLimit, margin);
@@ -620,13 +622,13 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		// ///////////////////////////////////////////////////////////
 
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 
 		wPreview = new Button(shell, SWT.PUSH);
-		wPreview.setText(Messages.getString("GetFileNamesDialog.Preview.Button"));
+		wPreview.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.Preview.Button"));
 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wCancel , wPreview }, margin, wTabFolder);
 
@@ -730,8 +732,8 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 				} else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-					mb.setMessage(Messages.getString("GetFileNamesDialog.NoFilesFound.DialogMessage"));
-					mb.setText(Messages.getString("System.Dialog.Error.Title"));
+					mb.setMessage(BaseMessages.getString(PKG, "GetFileNamesDialog.NoFilesFound.DialogMessage"));
+					mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
 					mb.open();
 				}
 			}
@@ -770,10 +772,10 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 					}
 
 					dialog.setFilterNames(new String[] {
-							Messages.getString("GetFileNamesDialog.FileType.TextAndCSVFiles"),
-							Messages.getString("System.FileType.CSVFiles"),
-							Messages.getString("System.FileType.TextFiles"),
-							Messages.getString("System.FileType.AllFiles") });
+							BaseMessages.getString(PKG, "GetFileNamesDialog.FileType.TextAndCSVFiles"),
+							BaseMessages.getString(PKG, "System.FileType.CSVFiles"),
+							BaseMessages.getString(PKG, "System.FileType.TextFiles"),
+							BaseMessages.getString(PKG, "System.FileType.AllFiles") });
 
 					if (dialog.open() != null)
 					{
@@ -834,7 +836,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 			 
 			
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, Messages.getString("GetFileNamesDialog.FailedToGetFields.DialogTitle"), Messages.getString("GetFileNamesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "GetFileNamesDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "GetFileNamesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 	 }
 	private void ActiveFileField()
@@ -954,7 +956,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname
 				.getText());
 
-		EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("GetFileNamesDialog.PreviewSize.DialogTitle"), Messages.getString("GetFileNamesDialog.PreviewSize.DialogMessage"));
+		EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "GetFileNamesDialog.PreviewSize.DialogTitle"), BaseMessages.getString(PKG, "GetFileNamesDialog.PreviewSize.DialogMessage"));
 		int previewSize = numberDialog.open();
 		if (previewSize > 0)
 		{
@@ -969,7 +971,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 				if (trans.getResult() != null && trans.getResult().getNrErrors() > 0)
 				{
-					EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("GetFileNamesDialog.ErrorInPreview.DialogMessage"), loggingText, true);
+					EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "GetFileNamesDialog.ErrorInPreview.DialogMessage"), loggingText, true);
 					etd.setReadOnly();
 					etd.open();
 				}

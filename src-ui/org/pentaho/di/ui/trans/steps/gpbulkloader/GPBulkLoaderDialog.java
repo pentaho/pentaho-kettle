@@ -51,14 +51,12 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.gpbulkloader.Messages;
 import org.pentaho.di.trans.steps.gpbulkloader.GPBulkLoaderMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
@@ -68,6 +66,8 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 
 /**
@@ -78,6 +78,8 @@ import org.pentaho.di.ui.core.widget.TextVar;
  */
 public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = GPBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CCombo				wConnection;
 
     private Label               wlSchema;
@@ -166,7 +168,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     	                                  "UTF-16" };        //$NON-NLS-1$
 
     private static final String[] ALL_FILETYPES = new String[] {
-        	Messages.getString("GPBulkLoaderDialog.Filetype.All") };
+        	BaseMessages.getString(PKG, "GPBulkLoaderDialog.Filetype.All") };
 
     private Map<String, Integer> inputFields;
 
@@ -205,14 +207,14 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("GPBulkLoaderDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.Shell.Title")); //$NON-NLS-1$
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("GPBulkLoaderDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -236,7 +238,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
         // Schema line...
         wlSchema=new Label(shell, SWT.RIGHT);
-        wlSchema.setText(Messages.getString("GPBulkLoaderDialog.TargetSchema.Label")); //$NON-NLS-1$
+        wlSchema.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.TargetSchema.Label")); //$NON-NLS-1$
         props.setLook(wlSchema);
         fdlSchema=new FormData();
         fdlSchema.left = new FormAttachment(0, 0);
@@ -256,7 +258,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
 		// Table line...
 		wlTable = new Label(shell, SWT.RIGHT);
-		wlTable.setText(Messages.getString("GPBulkLoaderDialog.TargetTable.Label")); //$NON-NLS-1$
+		wlTable.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.TargetTable.Label")); //$NON-NLS-1$
  		props.setLook(wlTable);
 		fdlTable = new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
@@ -266,7 +268,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		
 		wbTable = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbTable);
-		wbTable.setText(Messages.getString("GPBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbTable.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbTable = new FormData();
 		fdbTable.right = new FormAttachment(100, 0);
 		fdbTable.top = new FormAttachment(wSchema, margin);
@@ -283,7 +285,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
 		// PsqlPath line...
 		wlPsqlPath = new Label(shell, SWT.RIGHT);
-		wlPsqlPath.setText(Messages.getString("GPBulkLoaderDialog.PsqlPath.Label")); //$NON-NLS-1$
+		wlPsqlPath.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.PsqlPath.Label")); //$NON-NLS-1$
  		props.setLook(wlPsqlPath);
 		fdlPsqlPath = new FormData();
 		fdlPsqlPath.left = new FormAttachment(0, 0);
@@ -293,7 +295,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		
 		wbPsqlPath = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbPsqlPath);
-		wbPsqlPath.setText(Messages.getString("GPBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbPsqlPath.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbPsqlPath = new FormData();
 		fdbPsqlPath.right = new FormAttachment(100, 0);
 		fdbPsqlPath.top = new FormAttachment(wTable, margin);
@@ -309,7 +311,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 				
 		// Load Method line
 		wlLoadMethod = new Label(shell, SWT.RIGHT);
-		wlLoadMethod.setText(Messages.getString("GPBulkLoaderDialog.LoadMethod.Label"));
+		wlLoadMethod.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.LoadMethod.Label"));
 		props.setLook(wlLoadMethod);
 		fdlLoadMethod = new FormData();
 		fdlLoadMethod.left = new FormAttachment(0, 0);
@@ -317,9 +319,9 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		fdlLoadMethod.top = new FormAttachment(wPsqlPath, margin);
 		wlLoadMethod.setLayoutData(fdlLoadMethod);
 		wLoadMethod = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		//wLoadMethod.add(Messages.getString("GPBulkLoaderDialog.AutoConcLoadMethod.Label"));
-		wLoadMethod.add(Messages.getString("GPBulkLoaderDialog.AutoEndLoadMethod.Label"));
-		wLoadMethod.add(Messages.getString("GPBulkLoaderDialog.ManualLoadMethod.Label"));
+		//wLoadMethod.add(BaseMessages.getString(PKG, "GPBulkLoaderDialog.AutoConcLoadMethod.Label"));
+		wLoadMethod.add(BaseMessages.getString(PKG, "GPBulkLoaderDialog.AutoEndLoadMethod.Label"));
+		wLoadMethod.add(BaseMessages.getString(PKG, "GPBulkLoaderDialog.ManualLoadMethod.Label"));
 		wLoadMethod.select(0); // +1: starts at -1
 		wLoadMethod.addModifyListener(lsMod);
 		
@@ -338,7 +340,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		
 		// Load Action line
 		wlLoadAction = new Label(shell, SWT.RIGHT);
-		wlLoadAction.setText(Messages.getString("GPBulkLoaderDialog.LoadAction.Label"));
+		wlLoadAction.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.LoadAction.Label"));
 		props.setLook(wlLoadAction);
 		fdlLoadAction = new FormData();
 		fdlLoadAction.left = new FormAttachment(0, 0);
@@ -346,10 +348,10 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		fdlLoadAction.top = new FormAttachment(wLoadMethod, margin);
 		wlLoadAction.setLayoutData(fdlLoadAction);
 		wLoadAction = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-//		wLoadAction.add(Messages.getString("GPBulkLoaderDialog.AppendLoadAction.Label"));
-		wLoadAction.add(Messages.getString("GPBulkLoaderDialog.InsertLoadAction.Label"));
-//		wLoadAction.add(Messages.getString("GPBulkLoaderDialog.ReplaceLoadAction.Label"));
-		wLoadAction.add(Messages.getString("GPBulkLoaderDialog.TruncateLoadAction.Label"));
+//		wLoadAction.add(BaseMessages.getString(PKG, "GPBulkLoaderDialog.AppendLoadAction.Label"));
+		wLoadAction.add(BaseMessages.getString(PKG, "GPBulkLoaderDialog.InsertLoadAction.Label"));
+//		wLoadAction.add(BaseMessages.getString(PKG, "GPBulkLoaderDialog.ReplaceLoadAction.Label"));
+		wLoadAction.add(BaseMessages.getString(PKG, "GPBulkLoaderDialog.TruncateLoadAction.Label"));
 		
 		wLoadAction.select(0); // +1: starts at -1
 		wLoadAction.addModifyListener(lsMod);
@@ -369,7 +371,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
 		// MaxErrors file line
 		wlMaxErrors = new Label(shell, SWT.RIGHT);
-		wlMaxErrors.setText(Messages.getString("GPBulkLoaderDialog.MaxErrors.Label")); //$NON-NLS-1$
+		wlMaxErrors.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.MaxErrors.Label")); //$NON-NLS-1$
  		props.setLook(wlMaxErrors);
 		fdlMaxErrors = new FormData();
 		fdlMaxErrors.left = new FormAttachment(0, 0);
@@ -387,7 +389,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
 		// Db Name Override line
 		wlDbNameOverride = new Label(shell, SWT.RIGHT);
-		wlDbNameOverride.setText(Messages.getString("GPBulkLoaderDialog.DbNameOverride.Label")); //$NON-NLS-1$
+		wlDbNameOverride.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.DbNameOverride.Label")); //$NON-NLS-1$
  		props.setLook(wlDbNameOverride);
 		fdlDbNameOverride = new FormData();
 		fdlDbNameOverride.left = new FormAttachment(0, 0);
@@ -405,7 +407,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		
 		// Control file line
 		wlControlFile = new Label(shell, SWT.RIGHT);
-		wlControlFile.setText(Messages.getString("GPBulkLoaderDialog.ControlFile.Label")); //$NON-NLS-1$
+		wlControlFile.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.ControlFile.Label")); //$NON-NLS-1$
  		props.setLook(wlControlFile);
 		fdlControlFile = new FormData();
 		fdlControlFile.left = new FormAttachment(0, 0);
@@ -414,7 +416,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		wlControlFile.setLayoutData(fdlControlFile);		
 		wbControlFile = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbControlFile);
-		wbControlFile.setText(Messages.getString("GPBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbControlFile.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbControlFile = new FormData();
 		fdbControlFile.right = new FormAttachment(100, 0);
 		fdbControlFile.top = new FormAttachment(wDbNameOverride, margin);
@@ -430,7 +432,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
 		// Data file line
 		wlDataFile = new Label(shell, SWT.RIGHT);
-		wlDataFile.setText(Messages.getString("GPBulkLoaderDialog.DataFile.Label")); //$NON-NLS-1$
+		wlDataFile.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.DataFile.Label")); //$NON-NLS-1$
  		props.setLook(wlDataFile);
 		fdlDataFile = new FormData();
 		fdlDataFile.left = new FormAttachment(0, 0);
@@ -439,7 +441,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		wlDataFile.setLayoutData(fdlDataFile);
 		wbDataFile = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbDataFile);
-		wbDataFile.setText(Messages.getString("GPBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbDataFile.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbDataFile = new FormData();
 		fdbDataFile.right = new FormAttachment(100, 0);
 		fdbDataFile.top = new FormAttachment(wControlFile, margin);
@@ -455,7 +457,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		
 		// Log file line
 		wlLogFile = new Label(shell, SWT.RIGHT);
-		wlLogFile.setText(Messages.getString("GPBulkLoaderDialog.LogFile.Label")); //$NON-NLS-1$
+		wlLogFile.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.LogFile.Label")); //$NON-NLS-1$
  		props.setLook(wlLogFile);
 		fdlLogFile = new FormData();
 		fdlLogFile.left = new FormAttachment(0, 0);
@@ -464,7 +466,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		wlLogFile.setLayoutData(fdlLogFile);
 		wbLogFile = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbLogFile);
-		wbLogFile.setText(Messages.getString("GPBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbLogFile.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbLogFile = new FormData();
 		fdbLogFile.right = new FormAttachment(100, 0);
 		fdbLogFile.top = new FormAttachment(wDataFile, margin);
@@ -485,7 +487,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
         // on one machine, but you may want to use it on your execution server
         //
         wlEncoding=new Label(shell, SWT.RIGHT);
-        wlEncoding.setText(Messages.getString("GPBulkLoaderDialog.Encoding.Label"));
+        wlEncoding.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.Encoding.Label"));
         props.setLook(wlEncoding);
         fdlEncoding=new FormData();
         fdlEncoding.left  = new FormAttachment(0, 0);
@@ -493,7 +495,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
         fdlEncoding.right = new FormAttachment(middle, -margin);
         wlEncoding.setLayoutData(fdlEncoding);
         wEncoding=new Combo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wEncoding.setToolTipText(Messages.getString("GPBulkLoaderDialog.Encoding.Tooltip"));
+        wEncoding.setToolTipText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.Encoding.Tooltip"));
         wEncoding.setItems(encodings);
         props.setLook(wEncoding);
         fdEncoding=new FormData();
@@ -505,7 +507,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
 		// Erase files line
 		wlEraseFiles = new Label(shell, SWT.RIGHT);
-		wlEraseFiles.setText(Messages.getString("GPBulkLoaderDialog.EraseFiles.Label")); //$NON-NLS-1$
+		wlEraseFiles.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.EraseFiles.Label")); //$NON-NLS-1$
  		props.setLook(wlEraseFiles);
 		fdlEraseFiles = new FormData();
 		fdlEraseFiles.left = new FormAttachment(0, 0);
@@ -530,17 +532,17 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wSQL = new Button(shell, SWT.PUSH);
-		wSQL.setText(Messages.getString("GPBulkLoaderDialog.SQL.Button")); //$NON-NLS-1$
+		wSQL.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.SQL.Button")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel , wSQL }, margin, null);
 
 		// The field Table
 		wlReturn = new Label(shell, SWT.NONE);
-		wlReturn.setText(Messages.getString("GPBulkLoaderDialog.Fields.Label")); //$NON-NLS-1$
+		wlReturn.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlReturn);
 		fdlReturn = new FormData();
 		fdlReturn.left = new FormAttachment(0, 0);
@@ -551,25 +553,25 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		int UpInsRows = (input.getFieldTable() != null ? input.getFieldTable().length : 1);
 
 		ciReturn = new ColumnInfo[UpInsCols];
-		ciReturn[0] = new ColumnInfo(Messages.getString("GPBulkLoaderDialog.ColumnInfo.TableField"),ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciReturn[1] = new ColumnInfo(Messages.getString("GPBulkLoaderDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciReturn[2] = new ColumnInfo(Messages.getString("GPBulkLoaderDialog.ColumnInfo.DateMask"), ColumnInfo.COLUMN_TYPE_CCOMBO,
+		ciReturn[0] = new ColumnInfo(BaseMessages.getString(PKG, "GPBulkLoaderDialog.ColumnInfo.TableField"),ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciReturn[1] = new ColumnInfo(BaseMessages.getString(PKG, "GPBulkLoaderDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciReturn[2] = new ColumnInfo(BaseMessages.getString(PKG, "GPBulkLoaderDialog.ColumnInfo.DateMask"), ColumnInfo.COLUMN_TYPE_CCOMBO,
 				                     new String[] {"",                //$NON-NLS-1$
-			                                       Messages.getString("GPBulkLoaderDialog.DateMask.Label"),
-	                                        	   Messages.getString("GPBulkLoaderDialog.DateTimeMask.Label")}, true);
+			                                       BaseMessages.getString(PKG, "GPBulkLoaderDialog.DateMask.Label"),
+	                                        	   BaseMessages.getString(PKG, "GPBulkLoaderDialog.DateTimeMask.Label")}, true);
 		tableFieldColumns.add(ciReturn[0]);
 		wReturn = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 				ciReturn, UpInsRows, lsMod, props);
 
 		wGetLU = new Button(shell, SWT.PUSH);
-		wGetLU.setText(Messages.getString("GPBulkLoaderDialog.GetFields.Label")); //$NON-NLS-1$
+		wGetLU.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.GetFields.Label")); //$NON-NLS-1$
 		fdGetLU = new FormData();
 		fdGetLU.top   = new FormAttachment(wlReturn, margin);
 		fdGetLU.right = new FormAttachment(100, 0);
 		wGetLU.setLayoutData(fdGetLU);
 		
 		wDoMapping = new Button(shell, SWT.PUSH);
-		wDoMapping.setText(Messages.getString("GPBulkLoaderDialog.EditMapping.Label")); //$NON-NLS-1$
+		wDoMapping.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.EditMapping.Label")); //$NON-NLS-1$
 		fdDoMapping = new FormData();
 		fdDoMapping.top   = new FormAttachment(wGetLU, margin);
 		fdDoMapping.right = new FormAttachment(100, 0);
@@ -609,7 +611,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(),Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                        log.logError(toString(),BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -789,7 +791,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		try {
 			sourceFields = transMeta.getPrevStepFields(stepMeta);
 		} catch(KettleException e) {
-			new ErrorDialog(shell, Messages.getString("GPBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title"), Messages.getString("GPBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message"), e);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "GPBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title"), BaseMessages.getString(PKG, "GPBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message"), e);
 			return;
 		}
 		// refresh data
@@ -799,7 +801,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		try {
 			targetFields = stepMetaInterface.getRequiredFields(transMeta);
 		} catch (KettleException e) {
-			new ErrorDialog(shell, Messages.getString("GPBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title"), Messages.getString("GPBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message"), e);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "GPBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title"), BaseMessages.getString(PKG, "GPBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message"), e);
 			return;
 		}
 
@@ -844,15 +846,15 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 			
 			String message="";
 			if (missingSourceFields.length()>0) {
-				message+=Messages.getString("GPBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString())+Const.CR;
+				message+=BaseMessages.getString(PKG, "GPBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString())+Const.CR;
 			}
 			if (missingTargetFields.length()>0) {
-				message+=Messages.getString("GPBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString())+Const.CR;
+				message+=BaseMessages.getString(PKG, "GPBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString())+Const.CR;
 			}
 			message+=Const.CR;
-			message+=Messages.getString("GPBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue")+Const.CR;
+			message+=BaseMessages.getString(PKG, "GPBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue")+Const.CR;
 			MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-			boolean goOn = MessageDialog.openConfirm(shell, Messages.getString("GPBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle"), message);
+			boolean goOn = MessageDialog.openConfirm(shell, BaseMessages.getString(PKG, "GPBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle"), message);
 			if (!goOn) {
 				return;
 			}
@@ -941,7 +943,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), Messages.getString("GPBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "GPBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		wMaxErrors.setText("" + input.getMaxErrors());   //$NON-NLS-1$
 
@@ -957,11 +959,11 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 				if (dateMask!=null) {
 					if ( GPBulkLoaderMeta.DATE_MASK_DATE.equals(dateMask) )
 					{
-					    item.setText(3,Messages.getString("GPBulkLoaderDialog.DateMask.Label"));
+					    item.setText(3,BaseMessages.getString(PKG, "GPBulkLoaderDialog.DateMask.Label"));
 					}
 					else if ( GPBulkLoaderMeta.DATE_MASK_DATETIME.equals(dateMask))
 					{
-						item.setText(3,Messages.getString("GPBulkLoaderDialog.DateTimeMask.Label"));
+						item.setText(3,BaseMessages.getString(PKG, "GPBulkLoaderDialog.DateTimeMask.Label"));
 					}
 					else 
 					{
@@ -1057,15 +1059,15 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
 		inf.setDbNameOverride(wDbNameOverride.getText());
 
-		if(log.isDebug()) log.logDebug(toString(), Messages.getString("GPBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "GPBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrfields; i++)
 		{
 			TableItem item = wReturn.getNonEmpty(i);
 			inf.getFieldTable()[i] = item.getText(1);
 			inf.getFieldStream()[i] = item.getText(2);
-			if ( Messages.getString("GPBulkLoaderDialog.DateMask.Label").equals(item.getText(3)) )
+			if ( BaseMessages.getString(PKG, "GPBulkLoaderDialog.DateMask.Label").equals(item.getText(3)) )
  			    inf.getDateMask()[i] = GPBulkLoaderMeta.DATE_MASK_DATE;
-			else if ( Messages.getString("GPBulkLoaderDialog.DateTimeMask.Label").equals(item.getText(3)) )
+			else if ( BaseMessages.getString(PKG, "GPBulkLoaderDialog.DateTimeMask.Label").equals(item.getText(3)) )
 				inf.getDateMask()[i] = GPBulkLoaderMeta.DATE_MASK_DATETIME;
 			else inf.getDateMask()[i] = "";
 		}
@@ -1084,15 +1086,15 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		 * Set the loadmethod
 		 */
 		String method = wLoadMethod.getText();
-		//if ( Messages.getString("GPBulkLoaderDialog.AutoConcLoadMethod.Label").equals(method) )
+		//if ( BaseMessages.getString(PKG, "GPBulkLoaderDialog.AutoConcLoadMethod.Label").equals(method) )
 		//{
 		//	inf.setLoadMethod(GPBulkLoaderMeta.METHOD_AUTO_CONCURRENT);
 		//}
-		if ( Messages.getString("GPBulkLoaderDialog.AutoEndLoadMethod.Label").equals(method) )
+		if ( BaseMessages.getString(PKG, "GPBulkLoaderDialog.AutoEndLoadMethod.Label").equals(method) )
 		{
 			inf.setLoadMethod(GPBulkLoaderMeta.METHOD_AUTO_END);
 		}
-		else if ( Messages.getString("GPBulkLoaderDialog.ManualLoadMethod.Label").equals(method) )
+		else if ( BaseMessages.getString(PKG, "GPBulkLoaderDialog.ManualLoadMethod.Label").equals(method) )
 		{
 			inf.setLoadMethod(GPBulkLoaderMeta.METHOD_MANUAL);
 		}
@@ -1106,19 +1108,19 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		 * Set the loadaction 
 		 */
 		String action = wLoadAction.getText();
-		if ( Messages.getString("GPBulkLoaderDialog.AppendLoadAction.Label").equals(action) )
+		if ( BaseMessages.getString(PKG, "GPBulkLoaderDialog.AppendLoadAction.Label").equals(action) )
 		{
 			inf.setLoadAction(GPBulkLoaderMeta.ACTION_APPEND);
 		}
-		else if ( Messages.getString("GPBulkLoaderDialog.InsertLoadAction.Label").equals(action) )
+		else if ( BaseMessages.getString(PKG, "GPBulkLoaderDialog.InsertLoadAction.Label").equals(action) )
 		{
 			inf.setLoadAction(GPBulkLoaderMeta.ACTION_INSERT);
 		}
-		else if ( Messages.getString("GPBulkLoaderDialog.ReplaceLoadAction.Label").equals(action) )
+		else if ( BaseMessages.getString(PKG, "GPBulkLoaderDialog.ReplaceLoadAction.Label").equals(action) )
 		{
 			inf.setLoadAction(GPBulkLoaderMeta.ACTION_REPLACE);
 		}
-		else if ( Messages.getString("GPBulkLoaderDialog.TruncateLoadAction.Label").equals(action) )
+		else if ( BaseMessages.getString(PKG, "GPBulkLoaderDialog.TruncateLoadAction.Label").equals(action) )
 		{
 			inf.setLoadAction(GPBulkLoaderMeta.ACTION_TRUNCATE);
 		}
@@ -1141,8 +1143,8 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		if (input.getDatabaseMeta() == null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-			mb.setMessage(Messages.getString("GPBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(Messages.getString("GPBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "GPBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
 		}
 
@@ -1159,7 +1161,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
 		if (inf != null)
 		{
-			if(log.isDebug()) log.logDebug(toString(), Messages.getString("GPBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
+			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "GPBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
 
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());
@@ -1174,8 +1176,8 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-			mb.setMessage(Messages.getString("GPBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(Messages.getString("GPBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "GPBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
 		}
 	}
@@ -1194,7 +1196,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
                     	if ( v.getType() == ValueMetaInterface.TYPE_DATE )
                     	{
                     		// The default is date mask.
-                    		tableItem.setText(3, Messages.getString("GPBulkLoaderDialog.DateMask.Label"));
+                    		tableItem.setText(3, BaseMessages.getString(PKG, "GPBulkLoaderDialog.DateMask.Label"));
                     	}
                     	else
                     	{
@@ -1208,8 +1210,8 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch (KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("GPBulkLoaderDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
-					Messages.getString("GPBulkLoaderDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "GPBulkLoaderDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
+					BaseMessages.getString(PKG, "GPBulkLoaderDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
 		}
 	}
 
@@ -1223,7 +1225,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 			getInfo(info);
 
 			String name = stepname; // new name might not yet be linked to other steps!
-			StepMeta stepMeta = new StepMeta(Messages.getString("GPBulkLoaderDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
+			StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "GPBulkLoaderDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
 			RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
 
 			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev);
@@ -1238,8 +1240,8 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-					mb.setMessage(Messages.getString("GPBulkLoaderDialog.NoSQLNeeds.DialogMessage")); //$NON-NLS-1$
-					mb.setText(Messages.getString("GPBulkLoaderDialog.NoSQLNeeds.DialogTitle")); //$NON-NLS-1$
+					mb.setMessage(BaseMessages.getString(PKG, "GPBulkLoaderDialog.NoSQLNeeds.DialogMessage")); //$NON-NLS-1$
+					mb.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.NoSQLNeeds.DialogTitle")); //$NON-NLS-1$
 					mb.open();
 				}
 			}
@@ -1247,14 +1249,14 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
 				mb.setMessage(sql.getError());
-				mb.setText(Messages.getString("GPBulkLoaderDialog.SQLError.DialogTitle")); //$NON-NLS-1$
+				mb.setText(BaseMessages.getString(PKG, "GPBulkLoaderDialog.SQLError.DialogTitle")); //$NON-NLS-1$
 				mb.open();
 			}
 		}
 		catch (KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("GPBulkLoaderDialog.CouldNotBuildSQL.DialogTitle"), //$NON-NLS-1$
-					Messages.getString("GPBulkLoaderDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "GPBulkLoaderDialog.CouldNotBuildSQL.DialogTitle"), //$NON-NLS-1$
+					BaseMessages.getString(PKG, "GPBulkLoaderDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
 		}
 
 	}

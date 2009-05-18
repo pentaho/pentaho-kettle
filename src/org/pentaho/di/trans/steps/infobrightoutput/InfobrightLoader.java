@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -22,6 +23,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class InfobrightLoader extends BaseStep implements StepInterface {
   
+  private static Class<?> PKG = InfobrightLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   private final KettleRecordPopulator populator;
   
   private InfobrightLoaderMeta meta;
@@ -118,12 +121,12 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
    */
   public void run() {
     try {
-      logBasic(Messages.getString("InfobrightLoader.Log.StartingToRun"));
+      logBasic(BaseMessages.getString(PKG, "InfobrightLoader.Log.StartingToRun"));
       while (processRow(meta, data) && !isStopped())
         {}
       closePipe();
     } catch (Exception e) {
-      logError(Messages.getString("InfobrightLoader.Log.UnexpectedError") + " : " + e.toString());
+      logError(BaseMessages.getString(PKG, "InfobrightLoader.Log.UnexpectedError") + " : " + e.toString());
       logError(Const.getStackTracker(e));
       setErrors(1);
       stopAll();
@@ -146,7 +149,7 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
         data.loader.killQuery();
         logDebug("Loader statement killed.");
       } catch (SQLException sqle) {
-        logError(Messages.getString("InfobrightLoader.Log.FailedToKillQuery") + " : " + sqle.toString());
+        logError(BaseMessages.getString(PKG, "InfobrightLoader.Log.FailedToKillQuery") + " : " + sqle.toString());
         logError(Const.getStackTracker(sqle));
       }
     }
@@ -169,7 +172,7 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
       try {
         closePipe();
       } catch (Exception e) {
-        logError(Messages.getString("InfobrightLoader.Log.UnexpectedError") + " : " + e.toString());
+        logError(BaseMessages.getString(PKG, "InfobrightLoader.Log.UnexpectedError") + " : " + e.toString());
         logError(Const.getStackTracker(e));
       } finally {
         triedToClosePipe = true;

@@ -73,7 +73,9 @@ import org.w3c.dom.Node;
 
 public class Translator2
 {
-    public static final String APP_NAME = Messages.getString("i18nDialog.ApplicationName");
+	private static Class<?> PKG = Translator2.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+    public static final String APP_NAME = BaseMessages.getString(PKG, "i18nDialog.ApplicationName");
     
     private Display display;
     private Shell shell;
@@ -149,7 +151,7 @@ public class Translator2
     
     public void readFiles(java.util.List<String> directories) throws KettleFileException
     {
-        log.logBasic(toString(), Messages.getString("i18n.Log.ScanningSourceDirectories"));
+        log.logBasic(toString(), BaseMessages.getString(PKG, "i18n.Log.ScanningSourceDirectories"));
         try
         {
         	// crawl through the source directories...
@@ -209,7 +211,7 @@ public class Translator2
         	DecimalFormat pctFormat = new DecimalFormat("#00.00");
         	DecimalFormat nrFormat = new DecimalFormat("00");
         	
-        	System.out.println(Messages.getString("i18n.Log.NumberOfKeysFound",""+nrKeys));
+        	System.out.println(BaseMessages.getString(PKG, "i18n.Log.NumberOfKeysFound",""+nrKeys));
         	for (int i=0;i<locales.length;i++) {
         	    double donePct = 100 * (double)keyCounts[i] / (double)nrKeys;
         	    int missingKeys = nrKeys - keyCounts[i];
@@ -220,7 +222,7 @@ public class Translator2
         }
         catch(Exception e)
         {
-            throw new KettleFileException(Messages.getString("i18n.Log.UnableToGetFiles",rootDirectories.toString()), e);
+            throw new KettleFileException(BaseMessages.getString(PKG, "i18n.Log.UnableToGetFiles",rootDirectories.toString()), e);
             
         }
     }
@@ -418,8 +420,8 @@ public class Translator2
 		java.util.List<MessagesStore> changedMessagesStores = store.getChangedMessagesStores();
 		if (changedMessagesStores.size()>0) {
 			MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_WARNING);
-            mb.setMessage(Messages.getString("i18nDialog.ChangedFilesWhenExit",changedMessagesStores.size()+""));
-			mb.setText(Messages.getString("i18nDialog.Warning"));
+            mb.setMessage(BaseMessages.getString(PKG, "i18nDialog.ChangedFilesWhenExit",changedMessagesStores.size()+""));
+			mb.setText(BaseMessages.getString(PKG, "i18nDialog.Warning"));
 			
 			int answer = mb.open();
 			if (answer==SWT.NO) return false;
@@ -453,7 +455,7 @@ public class Translator2
         
         ColumnInfo[] colinfo=new ColumnInfo[]
 	        {
-	            new ColumnInfo(Messages.getString("i18nDialog.Packagename"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+	            new ColumnInfo(BaseMessages.getString(PKG, "i18nDialog.Packagename"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
 	        };
 
         
@@ -496,14 +498,14 @@ public class Translator2
         composite.setLayout(formLayout);
 
         wReload = new Button(composite, SWT.NONE);
-        wReload.setText(Messages.getString("i18nDialog.Reload"));
+        wReload.setText(BaseMessages.getString(PKG, "i18nDialog.Reload"));
         wSave= new Button(composite, SWT.NONE);
-        wSave.setText(Messages.getString("i18nDialog.Save"));
+        wSave.setText(BaseMessages.getString(PKG, "i18nDialog.Save"));
         wZip= new Button(composite, SWT.NONE);
-        wZip.setText(Messages.getString("i18nDialog.Zip"));
-        wZip.setToolTipText(Messages.getString("i18nDialog.Zip.Tip"));
+        wZip.setText(BaseMessages.getString(PKG, "i18nDialog.Zip"));
+        wZip.setToolTipText(BaseMessages.getString(PKG, "i18nDialog.Zip.Tip"));
         wClose = new Button(composite, SWT.NONE);
-        wClose.setText(Messages.getString("i18nDialog.Close"));
+        wClose.setText(BaseMessages.getString(PKG, "i18nDialog.Close"));
         
         BaseStepDialog.positionBottomButtons(composite, new Button[] { wReload, wSave, wZip, wClose, } , Const.MARGIN*3, null);
 
@@ -527,7 +529,7 @@ public class Translator2
         int middle = 40;
         
         wAll = new Button(composite, SWT.CHECK);
-        wAll.setText(Messages.getString("i18nDialog.ShowAllkeys"));
+        wAll.setText(BaseMessages.getString(PKG, "i18nDialog.ShowAllkeys"));
         props.setLook(wAll);
         FormData fdAll = new FormData();
         fdAll.left  = new FormAttachment(0, 0);
@@ -537,7 +539,7 @@ public class Translator2
         
         Label wlTodo = new Label(composite, SWT.LEFT);
         props.setLook(wlTodo);
-        wlTodo.setText(Messages.getString("i18nDialog.ToDoList"));
+        wlTodo.setText(BaseMessages.getString(PKG, "i18nDialog.ToDoList"));
         FormData fdlTodo = new FormData();
         fdlTodo.left  = new FormAttachment(0, 0);
         fdlTodo.right = new FormAttachment(left, 0);
@@ -555,7 +557,7 @@ public class Translator2
         // The key
         //
         Label wlKey = new Label(composite, SWT.RIGHT);
-        wlKey.setText(Messages.getString("i18nDialog.TranslationKey"));
+        wlKey.setText(BaseMessages.getString(PKG, "i18nDialog.TranslationKey"));
         props.setLook(wlKey);
         FormData fdlKey = new FormData();
         fdlKey.left  = new FormAttachment(left, Const.MARGIN);
@@ -575,7 +577,7 @@ public class Translator2
         // The Main translation
         //
         Label wlMain = new Label(composite, SWT.RIGHT);
-        wlMain.setText(Messages.getString("i18nDialog.MainTranslation"));
+        wlMain.setText(BaseMessages.getString(PKG, "i18nDialog.MainTranslation"));
         props.setLook(wlMain);
         FormData fdlMain = new FormData();
         fdlMain.left  = new FormAttachment(left, Const.MARGIN);
@@ -594,14 +596,14 @@ public class Translator2
         wMain.setEditable(false);
 
         wSearch = new Button(composite, SWT.PUSH);
-        wSearch.setText(Messages.getString("i18nDialog.Search"));
+        wSearch.setText(BaseMessages.getString(PKG, "i18nDialog.Search"));
         FormData fdSearch = new FormData();
         fdSearch.right  = new FormAttachment(middle, -Const.MARGIN*2);
         fdSearch.top    = new FormAttachment(wMain, 0, SWT.CENTER);
         wSearch.setLayoutData(fdSearch);
         
         wNext = new Button(composite, SWT.PUSH);
-        wNext.setText(Messages.getString("i18nDialog.Next"));
+        wNext.setText(BaseMessages.getString(PKG, "i18nDialog.Next"));
         FormData fdNext = new FormData();
         fdNext.right  = new FormAttachment(middle, -Const.MARGIN*2);
         fdNext.top    = new FormAttachment(wSearch, Const.MARGIN*2);
@@ -610,7 +612,7 @@ public class Translator2
         // A few lines of source code at the bottom...
         //
         Label wlSource = new Label(composite, SWT.RIGHT);
-        wlSource.setText(Messages.getString("i18nDialog.LineOfSourceCode"));
+        wlSource.setText(BaseMessages.getString(PKG, "i18nDialog.LineOfSourceCode"));
         props.setLook(wlSource);
         FormData fdlSource = new FormData();
         fdlSource.left  = new FormAttachment(left, Const.MARGIN);
@@ -631,7 +633,7 @@ public class Translator2
         // The translation
         //
         Label wlValue = new Label(composite, SWT.RIGHT);
-        wlValue.setText(Messages.getString("i18nDialog.Translation"));
+        wlValue.setText(BaseMessages.getString(PKG, "i18nDialog.Translation"));
         props.setLook(wlValue);
         FormData fdlValue = new FormData();
         fdlValue.left  = new FormAttachment(left, Const.MARGIN);
@@ -650,7 +652,7 @@ public class Translator2
         wValue.setEditable(true);
         
         wApply = new Button(composite, SWT.PUSH);
-        wApply.setText(Messages.getString("i18nDialog.Apply"));
+        wApply.setText(BaseMessages.getString(PKG, "i18nDialog.Apply"));
         FormData fdApply = new FormData();
         fdApply.right  = new FormAttachment(middle, -Const.MARGIN*2);
         fdApply.top    = new FormAttachment(wValue, 0, SWT.CENTER);
@@ -658,7 +660,7 @@ public class Translator2
     	wApply.setEnabled(false);
 
     	wRevert = new Button(composite, SWT.PUSH);
-        wRevert.setText(Messages.getString("i18nDialog.Revert"));
+        wRevert.setText(BaseMessages.getString(PKG, "i18nDialog.Revert"));
         FormData fdRevert = new FormData();
         fdRevert.right  = new FormAttachment(middle, -Const.MARGIN*2);
         fdRevert.top    = new FormAttachment(wApply, Const.MARGIN*2);
@@ -666,14 +668,14 @@ public class Translator2
     	wRevert.setEnabled(false);
     	
         wSearchV = new Button(composite, SWT.PUSH);
-        wSearchV.setText(Messages.getString("i18nDialog.Search"));
+        wSearchV.setText(BaseMessages.getString(PKG, "i18nDialog.Search"));
         FormData fdSearchV = new FormData();
         fdSearchV.right  = new FormAttachment(middle, -Const.MARGIN*2);
         fdSearchV.top    = new FormAttachment(wRevert, Const.MARGIN*4);
         wSearchV.setLayoutData(fdSearchV);
         
         wNextV = new Button(composite, SWT.PUSH);
-        wNextV.setText(Messages.getString("i18nDialog.Next"));
+        wNextV.setText(BaseMessages.getString(PKG, "i18nDialog.Next"));
         FormData fdNextV = new FormData();
         fdNextV.right  = new FormAttachment(middle, -Const.MARGIN*2);
         fdNextV.top    = new FormAttachment(wSearchV, Const.MARGIN*2);
@@ -784,18 +786,18 @@ public class Translator2
 				msg.append(filename).append(Const.CR);
 			}
 			
-			EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("i18nDialog.ChangedFiles"), Messages.getString("i18nDialog.ChangedMessagesFiles"), msg.toString());
+			EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "i18nDialog.ChangedFiles"), BaseMessages.getString(PKG, "i18nDialog.ChangedMessagesFiles"), msg.toString());
 			if (dialog.open()!=null)
 			{
 				try
 				{
 					for (MessagesStore messagesStore : changedMessagesStores) {
 						messagesStore.write();
-						LogWriter.getInstance().logBasic(toString(), Messages.getString("i18n.Log.SavedMessagesFile",messagesStore.getFilename()));	
+						LogWriter.getInstance().logBasic(toString(), BaseMessages.getString(PKG, "i18n.Log.SavedMessagesFile",messagesStore.getFilename()));	
 					}
 				}
 				catch(KettleException e) {
-					new ErrorDialog(shell, Messages.getString("i18n.UnexpectedError"), "There was an error saving the changed messages files:", e);
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "i18n.UnexpectedError"), "There was an error saving the changed messages files:", e);
 					return false;
 				}
 				return true;
@@ -834,7 +836,7 @@ public class Translator2
 				
 				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 				dialog.setFilterExtensions(new String[] {"*.zip", "*"});
-				dialog.setFilterNames(new String[] {Messages.getString("System.FileType.ZIPFiles"), Messages.getString("System.FileType.AllFiles")});
+				dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "System.FileType.ZIPFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
 				if (dialog.open()!=null)
 				{
 					String zipFilename = dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName();
@@ -856,7 +858,7 @@ public class Translator2
 						out.close();
 					}
 					catch(Exception e) {
-						new ErrorDialog(shell, Messages.getString("i18n.UnexpectedError"), "There was an error saving the changed messages files:", e);
+						new ErrorDialog(shell, BaseMessages.getString(PKG, "i18n.UnexpectedError"), "There was an error saving the changed messages files:", e);
 					}
 					
 				}
@@ -873,9 +875,9 @@ public class Translator2
 		// Ask for the search string...
 		//
 		EnterStringDialog dialog = new EnterStringDialog(shell, Const.NVL(searchString, ""), 
-				Messages.getString("i18nDialog.SearchKey"),
-				Messages.getString("i18nDialog.SearchLocale1") + " '" +Const.NVL(searchLocale,"")+ "' "+
-				Messages.getString("i18nDialog.SearchLocale2"));
+				BaseMessages.getString(PKG, "i18nDialog.SearchKey"),
+				BaseMessages.getString(PKG, "i18nDialog.SearchLocale1") + " '" +Const.NVL(searchLocale,"")+ "' "+
+				BaseMessages.getString(PKG, "i18nDialog.SearchLocale2"));
 		searchString = dialog.open();
 		
 		lastFoundKey = null;
@@ -1119,7 +1121,7 @@ public class Translator2
         }
         catch(Throwable e)
         {
-            log.logError(APP_NAME, Messages.getString("i18n.UnexpectedError",e.getMessage()));
+            log.logError(APP_NAME, BaseMessages.getString(PKG, "i18n.UnexpectedError",e.getMessage()));
             log.logError(APP_NAME, Const.getStackTracker(e));
         }
     }

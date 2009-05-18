@@ -42,13 +42,13 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.luciddbbulkloader.LucidDBBulkLoaderMeta;
-import org.pentaho.di.trans.steps.luciddbbulkloader.Messages;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
@@ -67,6 +67,8 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
  */
 public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = LucidDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CCombo				wConnection;
 
     private Label               wlSchema;
@@ -106,7 +108,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	
 	/*
     private static final String[] ALL_FILETYPES = new String[] {
-        	Messages.getString("LucidDBBulkLoaderDialog.Filetype.All") };
+        	BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Filetype.All") };
 	*
 	*/
 
@@ -139,14 +141,14 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("LucidDBBulkLoaderDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Shell.Title")); //$NON-NLS-1$
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("LucidDBBulkLoaderDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -170,7 +172,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
         // Schema line...
         wlSchema=new Label(shell, SWT.RIGHT);
-        wlSchema.setText(Messages.getString("LucidDBBulkLoaderDialog.TargetSchema.Label")); //$NON-NLS-1$
+        wlSchema.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.TargetSchema.Label")); //$NON-NLS-1$
         props.setLook(wlSchema);
         fdlSchema=new FormData();
         fdlSchema.left = new FormAttachment(0, 0);
@@ -189,7 +191,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 		// Table line...
 		wlTable = new Label(shell, SWT.RIGHT);
-		wlTable.setText(Messages.getString("LucidDBBulkLoaderDialog.TargetTable.Label")); //$NON-NLS-1$
+		wlTable.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.TargetTable.Label")); //$NON-NLS-1$
  		props.setLook(wlTable);
 		fdlTable = new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
@@ -199,7 +201,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		
 		wbTable = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbTable);
-		wbTable.setText(Messages.getString("LucidDBBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbTable.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbTable = new FormData();
 		fdbTable.right = new FormAttachment(100, 0);
 		fdbTable.top = new FormAttachment(wSchema, margin);
@@ -215,7 +217,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 		// MaxErrors file line
 		wlMaxErrors = new Label(shell, SWT.RIGHT);
-		wlMaxErrors.setText(Messages.getString("LucidDBBulkLoaderDialog.MaxErrors.Label")); //$NON-NLS-1$
+		wlMaxErrors.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.MaxErrors.Label")); //$NON-NLS-1$
  		props.setLook(wlMaxErrors);
 		fdlMaxErrors = new FormData();
 		fdlMaxErrors.left = new FormAttachment(0, 0);
@@ -234,7 +236,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		// Fifo directory line...
 		//
 		wlFifoPath = new Label(shell, SWT.RIGHT);
-		wlFifoPath.setText(Messages.getString("LucidDBBulkLoaderDialog.FifoPath.Label")); //$NON-NLS-1$
+		wlFifoPath.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.FifoPath.Label")); //$NON-NLS-1$
  		props.setLook(wlFifoPath);
 		fdlFifoPath = new FormData();
 		fdlFifoPath.left = new FormAttachment(0, 0);
@@ -244,7 +246,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		
 		wbFifoPath = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbFifoPath);
-		wbFifoPath.setText(Messages.getString("LucidDBBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbFifoPath.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbFifoPath = new FormData();
 		fdbFifoPath.right = new FormAttachment(100, 0);
 		fdbFifoPath.top = new FormAttachment(wMaxErrors, margin);
@@ -260,7 +262,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 				
         // FifoServer line...
         wlFifoServer=new Label(shell, SWT.RIGHT);
-        wlFifoServer.setText(Messages.getString("LucidDBBulkLoaderDialog.FifoServer.Label")); //$NON-NLS-1$
+        wlFifoServer.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.FifoServer.Label")); //$NON-NLS-1$
         props.setLook(wlFifoServer);
         fdlFifoServer=new FormData();
         fdlFifoServer.left = new FormAttachment(0, 0);
@@ -281,17 +283,17 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wSQL = new Button(shell, SWT.PUSH);
-		wSQL.setText(Messages.getString("LucidDBBulkLoaderDialog.SQL.Button")); //$NON-NLS-1$
+		wSQL.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.SQL.Button")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel , wSQL }, margin, null);
 
 		// The field Table
 		wlReturn = new Label(shell, SWT.NONE);
-		wlReturn.setText(Messages.getString("LucidDBBulkLoaderDialog.Fields.Label")); //$NON-NLS-1$
+		wlReturn.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlReturn);
 		fdlReturn = new FormData();
 		fdlReturn.left = new FormAttachment(0, 0);
@@ -302,22 +304,22 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		int UpInsRows = (input.getFieldTable() != null ? input.getFieldTable().length : 1);
 
 		ColumnInfo[] ciReturn = new ColumnInfo[UpInsCols];
-		ciReturn[0] = new ColumnInfo(Messages.getString("LucidDBBulkLoaderDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		ciReturn[1] = new ColumnInfo(Messages.getString("LucidDBBulkLoaderDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		ciReturn[2] = new ColumnInfo(Messages.getString("LucidDBBulkLoaderDialog.ColumnInfo.FormatOK"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y","N",}, true); // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$
+		ciReturn[0] = new ColumnInfo(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciReturn[1] = new ColumnInfo(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciReturn[2] = new ColumnInfo(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.ColumnInfo.FormatOK"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y","N",}, true); // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$
 
 		wReturn = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 				ciReturn, UpInsRows, lsMod, props);
 
 		wGetLU = new Button(shell, SWT.PUSH);
-		wGetLU.setText(Messages.getString("LucidDBBulkLoaderDialog.GetFields.Label")); //$NON-NLS-1$
+		wGetLU.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.GetFields.Label")); //$NON-NLS-1$
 		fdGetLU = new FormData();
 		fdGetLU.top   = new FormAttachment(wlReturn, margin);
 		fdGetLU.right = new FormAttachment(100, 0);
 		wGetLU.setLayoutData(fdGetLU);
 
 		wDoMapping = new Button(shell, SWT.PUSH);
-		wDoMapping.setText(Messages.getString("LucidDBBulkLoaderDialog.EditMapping.Label")); //$NON-NLS-1$
+		wDoMapping.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.EditMapping.Label")); //$NON-NLS-1$
 		fdDoMapping = new FormData();
 		fdDoMapping.top   = new FormAttachment(wGetLU, margin);
 		fdDoMapping.right = new FormAttachment(100, 0);
@@ -415,7 +417,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), Messages.getString("LucidDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		log.logDebug(toString(), BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		wMaxErrors.setText("" + input.getMaxErrors());   //$NON-NLS-1$
 
@@ -464,7 +466,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		try {
 			sourceFields = transMeta.getPrevStepFields(stepMeta);
 		} catch(KettleException e) {
-			new ErrorDialog(shell, Messages.getString("LucidDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title"), Messages.getString("LucidDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message"), e);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title"), BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message"), e);
 			return;
 		}
 		// refresh data
@@ -474,7 +476,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		try {
 			targetFields = stepMetaInterface.getRequiredFields(transMeta);
 		} catch (KettleException e) {
-			new ErrorDialog(shell, Messages.getString("LucidDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title"), Messages.getString("LucidDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message"), e);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title"), BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message"), e);
 			return;
 		}
 
@@ -519,15 +521,15 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 			
 			String message="";
 			if (missingSourceFields.length()>0) {
-				message+=Messages.getString("LucidDBBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString())+Const.CR;
+				message+=BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString())+Const.CR;
 			}
 			if (missingTargetFields.length()>0) {
-				message+=Messages.getString("LucidDBBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString())+Const.CR;
+				message+=BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString())+Const.CR;
 			}
 			message+=Const.CR;
-			message+=Messages.getString("LucidDBBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue")+Const.CR;
+			message+=BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue")+Const.CR;
 			MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-			boolean goOn = MessageDialog.openConfirm(shell, Messages.getString("LucidDBBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle"), message);
+			boolean goOn = MessageDialog.openConfirm(shell, BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle"), message);
 			if (!goOn) {
 				return;
 			}
@@ -567,7 +569,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 		inf.setMaxErrors( Const.toInt(wMaxErrors.getText(), 0) );
 
-		log.logDebug(toString(), Messages.getString("LucidDBBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
+		log.logDebug(toString(), BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrfields; i++)
 		{
 			TableItem item = wReturn.getNonEmpty(i);
@@ -595,8 +597,8 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		if (input.getDatabaseMeta() == null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-			mb.setMessage(Messages.getString("LucidDBBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(Messages.getString("LucidDBBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
 		}
 
@@ -613,7 +615,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 		if (inf != null)
 		{
-			log.logDebug(toString(), Messages.getString("LucidDBBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
+			log.logDebug(toString(), BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
 
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());
@@ -628,8 +630,8 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-			mb.setMessage(Messages.getString("LucidDBBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(Messages.getString("LucidDBBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
 		}
 	}
@@ -663,8 +665,8 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		}
 		catch (KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("LucidDBBulkLoaderDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
-					Messages.getString("LucidDBBulkLoaderDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
+					BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
 		}
 	}
 
@@ -678,7 +680,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 			getInfo(info);
 
 			String name = stepname; // new name might not yet be linked to other steps!
-			StepMeta stepMeta = new StepMeta(Messages.getString("LucidDBBulkLoaderDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
+			StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
 			RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
 
 			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev);
@@ -693,8 +695,8 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-					mb.setMessage(Messages.getString("LucidDBBulkLoaderDialog.NoSQLNeeds.DialogMessage")); //$NON-NLS-1$
-					mb.setText(Messages.getString("LucidDBBulkLoaderDialog.NoSQLNeeds.DialogTitle")); //$NON-NLS-1$
+					mb.setMessage(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.NoSQLNeeds.DialogMessage")); //$NON-NLS-1$
+					mb.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.NoSQLNeeds.DialogTitle")); //$NON-NLS-1$
 					mb.open();
 				}
 			}
@@ -702,14 +704,14 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
 				mb.setMessage(sql.getError());
-				mb.setText(Messages.getString("LucidDBBulkLoaderDialog.SQLError.DialogTitle")); //$NON-NLS-1$
+				mb.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.SQLError.DialogTitle")); //$NON-NLS-1$
 				mb.open();
 			}
 		}
 		catch (KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("LucidDBBulkLoaderDialog.CouldNotBuildSQL.DialogTitle"), //$NON-NLS-1$
-					Messages.getString("LucidDBBulkLoaderDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.CouldNotBuildSQL.DialogTitle"), //$NON-NLS-1$
+					BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
 		}
 
 	}

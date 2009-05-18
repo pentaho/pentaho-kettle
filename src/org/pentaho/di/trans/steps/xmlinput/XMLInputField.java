@@ -17,6 +17,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.steps.xbaseinput.XBaseInputMeta;
 import org.w3c.dom.Node;
 
 
@@ -30,6 +32,8 @@ import org.w3c.dom.Node;
  */
 public class XMLInputField implements Cloneable
 {
+	private static Class<?> PKG = XBaseInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public final static int TYPE_TRIM_NONE  = 0;
     public final static int TYPE_TRIM_LEFT  = 1;
     public final static int TYPE_TRIM_RIGHT = 2;
@@ -38,10 +42,10 @@ public class XMLInputField implements Cloneable
     public final static String trimTypeCode[] = { "none", "left", "right", "both" };
     
     public final static String trimTypeDesc[] = {
-      Messages.getString("XMLInputField.TrimType.None"),
-      Messages.getString("XMLInputField.TrimType.Left"),
-      Messages.getString("XMLInputField.TrimType.Right"),
-      Messages.getString("XMLInputField.TrimType.Both")
+      BaseMessages.getString(PKG, "XMLInputField.TrimType.None"),
+      BaseMessages.getString(PKG, "XMLInputField.TrimType.Left"),
+      BaseMessages.getString(PKG, "XMLInputField.TrimType.Right"),
+      BaseMessages.getString(PKG, "XMLInputField.TrimType.Both")
     };
     
     public final static String POSITION_MARKER  = ",";

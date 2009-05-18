@@ -18,8 +18,9 @@
  */
 package org.pentaho.di.trans.steps.propertyinput;
 
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 
 
 /**
@@ -30,6 +31,8 @@ import org.pentaho.di.core.row.ValueMeta;
  */
 public class PropertyInputField implements Cloneable
 {
+	private static Class<?> PKG = PropertyInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public final static int TYPE_TRIM_NONE  = 0;
     public final static int TYPE_TRIM_LEFT  = 1;
     public final static int TYPE_TRIM_RIGHT = 2;
@@ -38,10 +41,10 @@ public class PropertyInputField implements Cloneable
     public final static String trimTypeCode[] = { "none", "left", "right", "both" };
     
     public final static String trimTypeDesc[] = {
-      Messages.getString("PropertyInputField.TrimType.None"),
-      Messages.getString("PropertyInputField.TrimType.Left"),
-      Messages.getString("PropertyInputField.TrimType.Right"),
-      Messages.getString("PropertyInputField.TrimType.Both")
+      BaseMessages.getString(PKG, "PropertyInputField.TrimType.None"),
+      BaseMessages.getString(PKG, "PropertyInputField.TrimType.Left"),
+      BaseMessages.getString(PKG, "PropertyInputField.TrimType.Right"),
+      BaseMessages.getString(PKG, "PropertyInputField.TrimType.Both")
     };
     
     public final static int COLUMN_KEY  = 0;
@@ -51,8 +54,8 @@ public class PropertyInputField implements Cloneable
     
     
     public final static String ColumnDesc[] = { 
-    	Messages.getString("PropertyInputField.Column.Key"), 
-    	Messages.getString("PropertyInputField.Column.Value")};
+    	BaseMessages.getString(PKG, "PropertyInputField.Column.Key"), 
+    	BaseMessages.getString(PKG, "PropertyInputField.Column.Value")};
     
 	private String 	  name;
 	private int		  column;

@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
@@ -39,6 +40,8 @@ import org.pentaho.di.ui.core.gui.GUIResource;
  */
 public class CheckBoxVar extends Composite
 {
+	private static Class<?> PKG = CheckBoxVar.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static final PropsUI props = PropsUI.getInstance();
 
     private ControlDecoration controlDecoration;
@@ -78,7 +81,7 @@ public class CheckBoxVar extends Composite
         controlDecoration = new ControlDecoration(wBox, SWT.TOP | SWT.LEFT);
         Image image = GUIResource.getInstance().getImageVariable();
         controlDecoration.setImage( image );
-        controlDecoration.setDescriptionText(Messages.getString("CheckBoxVar.tooltip.InsertVariable"));
+        controlDecoration.setDescriptionText(BaseMessages.getString(PKG, "CheckBoxVar.tooltip.InsertVariable"));
         controlDecoration.addSelectionListener(new SelectionAdapter() {
 			
 				@Override

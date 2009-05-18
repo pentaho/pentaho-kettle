@@ -50,6 +50,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.KettleURLClassLoader;
 import org.pentaho.di.trans.Trans;
@@ -71,6 +72,8 @@ import org.w3c.dom.Node;
  */
 public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterface
 {	
+	private static Class<?> PKG = ScriptValuesMetaMod.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final String JSSCRIPT_TAG_TYPE = "jsScript_type";
 	private static final String JSSCRIPT_TAG_NAME = "jsScript_name";
 	private static final String JSSCRIPT_TAG_SCRIPT= "jsScript_script";
@@ -285,7 +288,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("ScriptValuesMetaMod.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -293,8 +296,8 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		jsScripts = new ScriptValuesScript[1];
 		jsScripts[0] = new ScriptValuesScript(
 				ScriptValuesScript.TRANSFORM_SCRIPT,
-				Messages.getString("ScriptValuesMod.Script1"),
-				"//"+ Messages.getString("ScriptValuesMod.ScriptHere") +Const.CR+Const.CR
+				BaseMessages.getString(PKG, "ScriptValuesMod.Script1"),
+				"//"+ BaseMessages.getString(PKG, "ScriptValuesMod.ScriptHere") +Const.CR+Const.CR
 		);
 		
 		int nrfields=0;
@@ -323,7 +326,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 					// Look up the field to replace...
 					v = row.searchValueMeta(name[i]);
 					if (v==null && Const.isEmpty(rename[i])) {
-						throw new KettleStepException(Messages.getString("ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", name[i]));
+						throw new KettleStepException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", name[i]));
 					}
 					v= row.searchValueMeta(rename[i]);
 					
@@ -426,7 +429,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("ScriptValuesMetaMod.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -455,7 +458,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("ScriptValuesMetaMod.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -500,7 +503,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		}
 		
 		if (prev!=null && strActiveScript.length()>0)		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ScriptValuesMetaMod.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 			
 			// Adding the existing Scripts to the Context
@@ -619,18 +622,18 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			try{
 				jsscript=jscx.compileString(strActiveScript, "script", 1, null); //$NON-NLS-1$
 				
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ScriptValuesMetaMod.CheckResult.ScriptCompiledOK"), stepinfo); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.ScriptCompiledOK"), stepinfo); //$NON-NLS-1$
 				remarks.add(cr);
 
 				try{
 					
 					jsscript.exec(jscx, jsscope);
 
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ScriptValuesMetaMod.CheckResult.ScriptCompiledOK2"), stepinfo); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.ScriptCompiledOK2"), stepinfo); //$NON-NLS-1$
 					remarks.add(cr);
 					
 					if (name.length>0){
-						StringBuffer message = new StringBuffer(Messages.getString("ScriptValuesMetaMod.CheckResult.FailedToGetValues",String.valueOf(name.length))+Const.CR+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+						StringBuffer message = new StringBuffer(BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.FailedToGetValues",String.valueOf(name.length))+Const.CR+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
 												
 						if (error_found)
 						{
@@ -644,12 +647,12 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 					}
 				}catch(JavaScriptException jse){
 					Context.exit();
-					error_message=Messages.getString("ScriptValuesMetaMod.CheckResult.CouldNotExecuteScript")+Const.CR+jse.toString(); //$NON-NLS-1$
+					error_message=BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.CouldNotExecuteScript")+Const.CR+jse.toString(); //$NON-NLS-1$
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 					remarks.add(cr);
 				}catch(Exception e){
 					Context.exit();
-					error_message=Messages.getString("ScriptValuesMetaMod.CheckResult.CouldNotExecuteScript2")+Const.CR+e.toString(); //$NON-NLS-1$
+					error_message=BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.CouldNotExecuteScript2")+Const.CR+e.toString(); //$NON-NLS-1$
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 					remarks.add(cr);
 				}
@@ -669,23 +672,23 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				};
 			}catch(Exception e){
 				Context.exit();
-				error_message = Messages.getString("ScriptValuesMetaMod.CheckResult.CouldNotCompileScript")+Const.CR+e.toString(); //$NON-NLS-1$
+				error_message = BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.CouldNotCompileScript")+Const.CR+e.toString(); //$NON-NLS-1$
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			}
 		}else{
 			Context.exit();
-			error_message = Messages.getString("ScriptValuesMetaMod.CheckResult.CouldNotGetFieldsFromPreviousStep"); //$NON-NLS-1$
+			error_message = BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.CouldNotGetFieldsFromPreviousStep"); //$NON-NLS-1$
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 			remarks.add(cr);
 		}
 
 		// See if we have input streams leading to this step!
 		if (input.length>0){
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ScriptValuesMetaMod.CheckResult.ConnectedStepOK2"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.ConnectedStepOK2"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}else{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("ScriptValuesMetaMod.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}
@@ -826,16 +829,16 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			}
 			catch(Exception e)
 			{
-				message.append(Messages.getString("ScriptValuesMetaMod.CheckResult.ErrorRetrievingValue",name[i])+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+				message.append(BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.ErrorRetrievingValue",name[i])+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 				error_found=true;
 			}
 			res.setLength(length[i], precision[i]);
 				
-			message.append(Messages.getString("ScriptValuesMetaMod.CheckResult.RetrievedValue",name[i],res.toStringMeta())); //$NON-NLS-1$ //$NON-NLS-2$
+			message.append(BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.RetrievedValue",name[i],res.toStringMeta())); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		else
 		{
-			message.append(Messages.getString("ScriptValuesMetaMod.CheckResult.ValueIsEmpty",String.valueOf(i))); //$NON-NLS-1$ //$NON-NLS-2$
+			message.append(BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.ValueIsEmpty",String.valueOf(i))); //$NON-NLS-1$ //$NON-NLS-2$
 			error_found=true;
 		}
 		
@@ -875,7 +878,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				additionalClasses[i] = new ScriptValuesAddClasses(addClass, addObject, strJSName);
 			}
 		}catch(Exception e) {
-			throw new KettleException(Messages.getString("ScriptValuesMetaMod.Exception.UnableToParseXMLforAdditionalClasses"), e); 
+			throw new KettleException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.UnableToParseXMLforAdditionalClasses"), e); 
 		}
 	}
 	
@@ -888,7 +891,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			Class<?> toRun = kl.loadClass(strClassName);
 			return toRun;
 		}catch(Exception e){
-			throw new KettleException(Messages.getString("ScriptValuesMetaMod.Exception.UnableToLoadAdditionalClass"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.UnableToLoadAdditionalClass"), e); //$NON-NLS-1$
 		}
 	}
 	

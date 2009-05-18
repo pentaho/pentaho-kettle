@@ -30,26 +30,27 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Group;
-
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.creditcardvalidator.CreditCardValidatorMeta;
-import org.pentaho.di.trans.steps.creditcardvalidator.Messages;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class CreditCardValidatorDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = CreditCardValidatorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private boolean gotPreviousFields=false;
 
 	private Label        wlFieldName;
@@ -104,14 +105,14 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("CreditCardValidatorDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("CreditCardValidatorDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -130,7 +131,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 
 		// filename field
 		wlFieldName=new Label(shell, SWT.RIGHT);
-		wlFieldName.setText(Messages.getString("CreditCardValidatorDialog.FieldName.Label")); //$NON-NLS-1$
+		wlFieldName.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.FieldName.Label")); //$NON-NLS-1$
  		props.setLook(wlFieldName);
 		fdlFieldName=new FormData();
 		fdlFieldName.left = new FormAttachment(0, 0);
@@ -166,7 +167,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 		
 		// get only digits?
 		wlgetOnlyDigits=new Label(shell, SWT.RIGHT);
-		wlgetOnlyDigits.setText(Messages.getString("CreditCardValidator.getOnlyDigits.Label"));
+		wlgetOnlyDigits.setText(BaseMessages.getString(PKG, "CreditCardValidator.getOnlyDigits.Label"));
  		props.setLook(wlgetOnlyDigits);
 		fdlgetOnlyDigits=new FormData();
 		fdlgetOnlyDigits.left = new FormAttachment(0, 0);
@@ -175,7 +176,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 		wlgetOnlyDigits.setLayoutData(fdlgetOnlyDigits);
 		wgetOnlyDigits=new Button(shell, SWT.CHECK );
  		props.setLook(wgetOnlyDigits);
-		wgetOnlyDigits.setToolTipText(Messages.getString("CreditCardValidator.getOnlyDigits.Tooltip"));
+		wgetOnlyDigits.setToolTipText(BaseMessages.getString(PKG, "CreditCardValidator.getOnlyDigits.Tooltip"));
 		fdgetOnlyDigits=new FormData();
 		fdgetOnlyDigits.left = new FormAttachment(middle, 0);
 		fdgetOnlyDigits.top  = new FormAttachment(wFieldName, margin);
@@ -187,7 +188,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 
 		wOutputFields = new Group(shell, SWT.SHADOW_NONE);
 		props.setLook(wOutputFields);
-		wOutputFields.setText(Messages.getString("CreditCardValidatorDialog.OutputFields.Label"));
+		wOutputFields.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.OutputFields.Label"));
 		
 		FormLayout OutputFieldsgroupLayout = new FormLayout();
 		OutputFieldsgroupLayout.marginWidth = 10;
@@ -197,7 +198,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 		
 		// Result fieldname ...
 		wlResult=new Label(wOutputFields, SWT.RIGHT);
-		wlResult.setText(Messages.getString("CreditCardValidatorDialog.ResultField.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.ResultField.Label")); //$NON-NLS-1$
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, -margin);
@@ -206,7 +207,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 		wlResult.setLayoutData(fdlResult);
 
 		wResult=new TextVar(transMeta,wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wResult.setToolTipText(Messages.getString("CreditCardValidatorDialog.ResultField.Tooltip"));
+		wResult.setToolTipText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.ResultField.Tooltip"));
  		props.setLook(wResult);
 		wResult.addModifyListener(lsMod);
 		fdResult=new FormData();
@@ -218,7 +219,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 		
 		// FileType fieldname ...
 		wlCardType=new Label(wOutputFields, SWT.RIGHT);
-		wlCardType.setText(Messages.getString("CreditCardValidatorDialog.CardType.Label")); //$NON-NLS-1$
+		wlCardType.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.CardType.Label")); //$NON-NLS-1$
  		props.setLook(wlCardType);
  		fdlCardType=new FormData();
  		fdlCardType.left = new FormAttachment(0, -margin);
@@ -227,7 +228,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 		wlCardType.setLayoutData(fdlCardType);
 
 		wFileType=new TextVar(transMeta,wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wFileType.setToolTipText(Messages.getString("CreditCardValidatorDialog.CardType.Tooltip"));
+		wFileType.setToolTipText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.CardType.Tooltip"));
  		props.setLook(wFileType);
 		wFileType.addModifyListener(lsMod);
 		fdCardType=new FormData();
@@ -238,7 +239,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 		
 		// UnvalidMsg fieldname ...
 		wlNotValidMsg=new Label(wOutputFields, SWT.RIGHT);
-		wlNotValidMsg.setText(Messages.getString("CreditCardValidatorDialog.NotValidMsg.Label")); //$NON-NLS-1$
+		wlNotValidMsg.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.NotValidMsg.Label")); //$NON-NLS-1$
  		props.setLook(wlNotValidMsg);
 		fdlNotValidMsg=new FormData();
 		fdlNotValidMsg.left = new FormAttachment(0, -margin);
@@ -247,7 +248,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 		wlNotValidMsg.setLayoutData(fdlNotValidMsg);
 
 		wNotValidMsg=new TextVar(transMeta,wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wNotValidMsg.setToolTipText(Messages.getString("CreditCardValidatorDialog.NotValidMsg.Tooltip"));
+		wNotValidMsg.setToolTipText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.NotValidMsg.Tooltip"));
  		props.setLook(wNotValidMsg);
 		wNotValidMsg.addModifyListener(lsMod);
 		fdNotValidMsg=new FormData();
@@ -268,9 +269,9 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wOutputFields);
 
@@ -353,7 +354,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 				wFieldName.setText(columnName);
 				gotPreviousFields=true;
 			} catch (KettleException ke) {
-				new ErrorDialog(shell, Messages.getString("CreditCardValidatorDialog.FailedToGetFields.DialogTitle"), Messages.getString("CreditCardValidatorDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "CreditCardValidatorDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "CreditCardValidatorDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 	}

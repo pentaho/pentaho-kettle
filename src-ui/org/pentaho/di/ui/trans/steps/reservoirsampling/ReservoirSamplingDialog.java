@@ -36,15 +36,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-
 import org.pentaho.di.trans.steps.reservoirsampling.ReservoirSamplingMeta;
-import org.pentaho.di.trans.steps.reservoirsampling.Messages;
-
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -56,6 +53,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  */
 public class ReservoirSamplingDialog extends BaseStepDialog
   implements StepDialogInterface {
+
+  private static Class<?> PKG = ReservoirSamplingMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   // various UI bits and pieces
   private Label m_wlStepname;
@@ -124,7 +123,7 @@ public class ReservoirSamplingDialog extends BaseStepDialog
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout(formLayout);
-    shell.setText(Messages.getString("ReservoirSamplingDialog.Shell.Title"));
+    shell.setText(BaseMessages.getString(PKG, "ReservoirSamplingDialog.Shell.Title"));
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
@@ -132,7 +131,7 @@ public class ReservoirSamplingDialog extends BaseStepDialog
     // Stepname line
     m_wlStepname = new Label(shell, SWT.RIGHT);
     m_wlStepname.
-      setText(Messages.getString("ReservoirSamplingDialog.StepName.Label"));
+      setText(BaseMessages.getString(PKG, "ReservoirSamplingDialog.StepName.Label"));
     props.setLook(m_wlStepname);
 
     m_fdlStepname = new FormData();
@@ -155,7 +154,7 @@ public class ReservoirSamplingDialog extends BaseStepDialog
     // Sample size text field
     m_wlSampleSize = new Label(shell, SWT.RIGHT);
     m_wlSampleSize.
-      setText(Messages.getString("ReservoirSamplingDialog.SampleSize.Label"));
+      setText(BaseMessages.getString(PKG, "ReservoirSamplingDialog.SampleSize.Label"));
     props.setLook(m_wlSampleSize);
  
     m_fdlSampleSize = new FormData();
@@ -178,7 +177,7 @@ public class ReservoirSamplingDialog extends BaseStepDialog
     // Seed text field
     m_wlSeed = new Label(shell, SWT.RIGHT);
     m_wlSeed.
-      setText(Messages.getString("ReservoirSamplingDialog.Seed.Label"));
+      setText(BaseMessages.getString(PKG, "ReservoirSamplingDialog.Seed.Label"));
     props.setLook(m_wlSeed);
  
     m_fdlSeed = new FormData();
@@ -200,9 +199,9 @@ public class ReservoirSamplingDialog extends BaseStepDialog
 
     // Some buttons
     wOK = new Button(shell, SWT.PUSH);
-    wOK.setText(Messages.getString("System.Button.OK"));
+    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
     wCancel = new Button(shell, SWT.PUSH);
-    wCancel.setText(Messages.getString("System.Button.Cancel"));
+    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
     setButtonPositions(new Button[] { wOK, wCancel }, margin, m_wSeed);
 

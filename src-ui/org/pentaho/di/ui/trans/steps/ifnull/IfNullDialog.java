@@ -35,33 +35,34 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Group;
-
-import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.ifnull.IfNullMeta;
-import org.pentaho.di.trans.steps.ifnull.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 
 public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = IfNullMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private IfNullMeta input;
 	
 	private int FieldsRows=0;
@@ -135,11 +136,11 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		FieldsRows=input.getFieldName().length;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("IfNullDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "IfNullDialog.Shell.Title")); //$NON-NLS-1$
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("IfNullDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "IfNullDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -162,7 +163,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 
 		wAllFields = new Group(shell, SWT.SHADOW_NONE);
 		props.setLook(wAllFields);
-		wAllFields.setText(Messages.getString("IfNullDialog.AllFields.Label"));
+		wAllFields.setText(BaseMessages.getString(PKG, "IfNullDialog.AllFields.Label"));
 		
 		FormLayout AllFieldsgroupLayout = new FormLayout();
 		AllFieldsgroupLayout.marginWidth = 10;
@@ -172,7 +173,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// Replace by Value
 		wlReplaceByValue = new Label(wAllFields, SWT.RIGHT);
-		wlReplaceByValue.setText(Messages.getString("IfNullDialog.ReplaceByValue.Label"));
+		wlReplaceByValue.setText(BaseMessages.getString(PKG, "IfNullDialog.ReplaceByValue.Label"));
 		props.setLook(wlReplaceByValue);
 		fdlReplaceByValue = new FormData();
 		fdlReplaceByValue.left = new FormAttachment(0, 0);
@@ -181,7 +182,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		wlReplaceByValue.setLayoutData(fdlReplaceByValue);
 
 		wReplaceByValue = new TextVar(transMeta, wAllFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wReplaceByValue.setToolTipText(Messages.getString("IfNullDialog.ReplaceByValue.Tooltip"));
+		wReplaceByValue.setToolTipText(BaseMessages.getString(PKG, "IfNullDialog.ReplaceByValue.Tooltip"));
  		props.setLook(wReplaceByValue);
 		fdReplaceByValue=new FormData();
 		fdReplaceByValue.left  = new FormAttachment(middle, 0);
@@ -190,7 +191,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		wReplaceByValue.setLayoutData(fdReplaceByValue);
 		
 	    wlMask=new Label(wAllFields, SWT.RIGHT);
-        wlMask.setText(Messages.getString("IfNullDialog.Mask.Label"));
+        wlMask.setText(BaseMessages.getString(PKG, "IfNullDialog.Mask.Label"));
         props.setLook(wlMask);
         fdlMask=new FormData();
         fdlMask.left = new FormAttachment(0, 0);
@@ -221,7 +222,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// Select fields?
 		wlSelectFields=new Label(shell, SWT.RIGHT);
-		wlSelectFields.setText(Messages.getString("IfNullDialog.SelectFields.Label"));
+		wlSelectFields.setText(BaseMessages.getString(PKG, "IfNullDialog.SelectFields.Label"));
 		props.setLook(wlSelectFields);
 		fdlSelectFields=new FormData();
 		fdlSelectFields.left  = new FormAttachment(0, 0);
@@ -229,7 +230,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		fdlSelectFields.right = new FormAttachment(middle, -margin);
 		wlSelectFields.setLayoutData(fdlSelectFields);
 		wSelectFields=new Button(shell, SWT.CHECK);
-		wSelectFields.setToolTipText(Messages.getString("IfNullDialog.SelectFields.Tooltip"));
+		wSelectFields.setToolTipText(BaseMessages.getString(PKG, "IfNullDialog.SelectFields.Tooltip"));
  		props.setLook(wSelectFields);
 		fdSelectFields=new FormData();
 		fdSelectFields.left  = new FormAttachment(middle, 0);
@@ -240,7 +241,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 	
 		// Select type?
 		wlSelectValuesType=new Label(shell, SWT.RIGHT);
-		wlSelectValuesType.setText(Messages.getString("IfNullDialog.SelectValuesType.Label"));
+		wlSelectValuesType.setText(BaseMessages.getString(PKG, "IfNullDialog.SelectValuesType.Label"));
 		props.setLook(wlSelectValuesType);
 		fdlSelectValuesType=new FormData();
 		fdlSelectValuesType.left  = new FormAttachment(0, 0);
@@ -248,7 +249,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		fdlSelectValuesType.right = new FormAttachment(middle, -margin);
 		wlSelectValuesType.setLayoutData(fdlSelectValuesType);
 		wSelectValuesType=new Button(shell, SWT.CHECK);
-		wSelectValuesType.setToolTipText(Messages.getString("IfNullDialog.SelectValuesType.Tooltip"));
+		wSelectValuesType.setToolTipText(BaseMessages.getString(PKG, "IfNullDialog.SelectValuesType.Tooltip"));
  		props.setLook(wSelectValuesType);
 		fdSelectValuesType=new FormData();
 		fdSelectValuesType.left  = new FormAttachment(middle, 0);
@@ -257,7 +258,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		wSelectValuesType.setLayoutData(fdSelectValuesType);
 		
 		wlValueTypes=new Label(shell, SWT.NONE);
-		wlValueTypes.setText(Messages.getString("IfNullDialog.ValueTypes.Label"));
+		wlValueTypes.setText(BaseMessages.getString(PKG, "IfNullDialog.ValueTypes.Label"));
  		props.setLook(wlValueTypes);
 		fdlValueTypes=new FormData();
 		fdlValueTypes.left = new FormAttachment(0, 0);
@@ -268,9 +269,9 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		int FieldsCols=3;
 		
 		ColumnInfo[] colval=new ColumnInfo[FieldsCols];
-		colval[0]=new ColumnInfo(Messages.getString("IfNullDialog.ValueType.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaInterface.typeCodes);
-		colval[1]=new ColumnInfo(Messages.getString("IfNullDialog.Value.Column"), ColumnInfo.COLUMN_TYPE_TEXT , false);
-		colval[2]=new ColumnInfo(Messages.getString("IfNullDialog.Value.ConversionMask"), ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getDateFormats());
+		colval[0]=new ColumnInfo(BaseMessages.getString(PKG, "IfNullDialog.ValueType.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaInterface.typeCodes);
+		colval[1]=new ColumnInfo(BaseMessages.getString(PKG, "IfNullDialog.Value.Column"), ColumnInfo.COLUMN_TYPE_TEXT , false);
+		colval[2]=new ColumnInfo(BaseMessages.getString(PKG, "IfNullDialog.Value.ConversionMask"), ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getDateFormats());
 		
 		colval[1].setUsingVariables(true);
 		wValueTypes=new TableView(transMeta, shell, 
@@ -292,11 +293,11 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		getFirstData();
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("System.Button.GetFields"));
+		wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
 		
 		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
@@ -362,16 +363,16 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		
         // Table with fields
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("IfNullDialog.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "IfNullDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
 		fdlFields.top  = new FormAttachment(wValueTypes, margin);
 		wlFields.setLayoutData(fdlFields);
 		
-		colinf[0]=new ColumnInfo(Messages.getString("IfNullDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{},false);
-		colinf[1]=new ColumnInfo(Messages.getString("IfNullDialog.Value.Column"), ColumnInfo.COLUMN_TYPE_TEXT , false);
-		colinf[2]=new ColumnInfo(Messages.getString("IfNullDialog.Value.ConversionMask"), ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getDateFormats());
+		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "IfNullDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{},false);
+		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "IfNullDialog.Value.Column"), ColumnInfo.COLUMN_TYPE_TEXT , false);
+		colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "IfNullDialog.Value.ConversionMask"), ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getDateFormats());
 		colinf[1].setUsingVariables(true);
 		wFields=new TableView(transMeta, shell, 
 				  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -445,7 +446,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("System.Dialog.GetFieldsFailed.Title"), Messages.getString("System.Dialog.GetFieldsFailed.Message"), ke);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Title"), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"), ke);
 		}
 
 	}
@@ -456,7 +457,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 					prevFields = transMeta.getPrevStepFields(stepname);
 
 				} catch (KettleException e) {
-					String msg = Messages.getString("IfNullDialog.DoMapping.UnableToFindInput");
+					String msg = BaseMessages.getString(PKG, "IfNullDialog.DoMapping.UnableToFindInput");
 					log.logError(toString(), msg);
 				}
 				String[] prevStepFieldNames = prevFields.getFieldNames();

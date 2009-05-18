@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.ui.core.database.wizard.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
 
@@ -41,6 +41,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class CreateDatabaseWizardPageJDBC extends WizardPage
 {
+	private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label    wlHostname;
 	private Text     wHostname;
 	private FormData fdlHostname, fdHostname;
@@ -62,8 +64,8 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle(Messages.getString("CreateDatabaseWizardPageJDBC.DialogTitle")); //$NON-NLS-1$
-		setDescription(Messages.getString("CreateDatabaseWizardPageJDBC.DialogMessage")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageJDBC.DialogTitle")); //$NON-NLS-1$
+		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageJDBC.DialogMessage")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -84,7 +86,7 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 
 		// HOSTNAME
 		wlHostname = new Label(composite, SWT.RIGHT);
-		wlHostname.setText(Messages.getString("CreateDatabaseWizardPageJDBC.Hostname.Label")); //$NON-NLS-1$
+		wlHostname.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageJDBC.Hostname.Label")); //$NON-NLS-1$
  		props.setLook(wlHostname);
 		fdlHostname = new FormData();
 		fdlHostname.top    = new FormAttachment(0, 0);
@@ -108,7 +110,7 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 		
 		// PORT
 		wlPort = new Label(composite, SWT.RIGHT);
-		wlPort.setText(Messages.getString("CreateDatabaseWizardPageJDBC.Port.Label")); //$NON-NLS-1$
+		wlPort.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageJDBC.Port.Label")); //$NON-NLS-1$
  		props.setLook(wlPort);
 		fdlPort = new FormData();
 		fdlPort.top    = new FormAttachment(wHostname, margin);
@@ -133,7 +135,7 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 
 		// DATABASE NAME
 		wlDBName = new Label(composite, SWT.RIGHT);
-		wlDBName.setText(Messages.getString("CreateDatabaseWizardPageJDBC.DBName.Label")); //$NON-NLS-1$
+		wlDBName.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageJDBC.DBName.Label")); //$NON-NLS-1$
  		props.setLook(wlDBName);
 		fdlDBName = new FormData();
 		fdlDBName.top    = new FormAttachment(wPort, margin);
@@ -176,14 +178,14 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 		
 		if (server==null || port==null || dbname==null)
 		{
-			setErrorMessage(Messages.getString("CreateDatabaseWizardPageJDBC.ErrorMessage.InvalidInput")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageJDBC.ErrorMessage.InvalidInput")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage(Messages.getString("CreateDatabaseWizardPageJDBC.Message.Input")); //$NON-NLS-1$
+			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageJDBC.Message.Input")); //$NON-NLS-1$
 			return true;
 		}
 	}	

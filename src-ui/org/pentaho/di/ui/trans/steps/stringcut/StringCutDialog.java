@@ -40,21 +40,22 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.stringcut.Messages;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.stringcut.StringCutMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 
 public class StringCutDialog extends BaseStepDialog implements StepDialogInterface {
 	
+	private static Class<?> PKG = StringCutMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private Label wlKey;
 
@@ -95,14 +96,14 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("StringCutDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "StringCutDialog.Shell.Title")); //$NON-NLS-1$
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("StringCutDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "StringCutDialog.Stepname.Label")); //$NON-NLS-1$
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -121,7 +122,7 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 		
 
 		wlKey = new Label(shell, SWT.NONE);
-		wlKey.setText(Messages.getString("StringCutDialog.Fields.Label")); //$NON-NLS-1$
+		wlKey.setText(BaseMessages.getString(PKG, "StringCutDialog.Fields.Label")); //$NON-NLS-1$
 		props.setLook(wlKey);
 		fdlKey = new FormData();
 		fdlKey.left = new FormAttachment(0, 0);
@@ -134,18 +135,18 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 
 		ciKey = new ColumnInfo[nrFieldCols];
 		ciKey[0] = new ColumnInfo(
-				Messages.getString("StringCutDialog.ColumnInfo.InStreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.InStreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
 		ciKey[1] = new ColumnInfo(
-				Messages.getString("StringCutDialog.ColumnInfo.OutStreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.OutStreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 		ciKey[2] = new ColumnInfo(
-				Messages.getString("StringCutDialog.ColumnInfo.CutFrom"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.CutFrom"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 		ciKey[3] = new ColumnInfo(
-				Messages.getString("StringCutDialog.ColumnInfo.CutTo"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.CutTo"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 
 		
 		
 		ciKey[2].setUsingVariables(true);
-		ciKey[1].setToolTip(Messages.getString("StringCutDialog.ColumnInfo.OutStreamField.Tooltip"));
+		ciKey[1].setToolTip(BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.OutStreamField.Tooltip"));
 		ciKey[3].setUsingVariables(true);
 
 		
@@ -194,12 +195,12 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		wGet = new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("StringCutDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "StringCutDialog.GetFields.Button")); //$NON-NLS-1$
 		fdGet = new FormData();
 		fdGet.right = new FormAttachment(100, 0);
 		fdGet.top = new FormAttachment(wStepname, 3*middle);
@@ -306,7 +307,7 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 
 		inf.allocate(nrkeys);
 		if(log.isDebug())
-			log.logDebug(toString(), Messages.getString("StringCutDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+			log.logDebug(toString(), BaseMessages.getString(PKG, "StringCutDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrkeys; i++) {
 			TableItem item = wFields.getNonEmpty(i);
 			inf.getFieldInStream()[i] = item.getText(1);
@@ -349,7 +350,7 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 			}
 		} catch (KettleException ke) {
 			new ErrorDialog(
-					shell,Messages.getString("StringCutDialog.FailedToGetFields.DialogTitle"), Messages.getString("StringCutDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					shell,BaseMessages.getString(PKG, "StringCutDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "StringCutDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 

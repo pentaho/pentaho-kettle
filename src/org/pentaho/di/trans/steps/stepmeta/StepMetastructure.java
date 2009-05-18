@@ -6,6 +6,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -13,7 +14,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.delete.Messages;
 
 
 /**
@@ -25,6 +25,8 @@ import org.pentaho.di.trans.steps.delete.Messages;
 
 public class StepMetastructure extends BaseStep implements StepInterface
 {   
+	private static Class<?> PKG = StepMetastructureMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private StepMetastructureMeta meta;
 	private StepMetastructureData data;
 	
@@ -120,13 +122,13 @@ public class StepMetastructure extends BaseStep implements StepInterface
     	//BaseStep.runStepThread(this, meta, data);
     	try
 		{
-			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			logBasic(BaseMessages.getString(PKG, "System.Log.StartingToRun")); //$NON-NLS-1$
 			
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Throwable t)
 		{
-			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();

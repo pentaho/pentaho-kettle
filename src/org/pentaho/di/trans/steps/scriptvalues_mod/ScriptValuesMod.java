@@ -46,6 +46,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -62,6 +63,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @since 5-April-2003
  */
 public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptValuesModInterface {
+  private static Class<?> PKG = ScriptValuesMetaMod.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   private ScriptValuesMetaMod meta;
 
   private ScriptValuesModData data;
@@ -125,14 +128,14 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
       String valname = row.getValueMeta(i).getName();
       if (strTransformScript.indexOf(valname) >= 0) {
         if (log.isDetailed())
-          logDetailed(Messages.getString("ScriptValuesMod.Log.UsedValueName", String.valueOf(i), valname)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          logDetailed(BaseMessages.getString(PKG, "ScriptValuesMod.Log.UsedValueName", String.valueOf(i), valname)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         data.fields_used[nr] = i;
         nr++;
       }
     }
 
     if (log.isDetailed())
-      logDetailed(Messages.getString("ScriptValuesMod.Log.UsingValuesFromInputStream", String.valueOf(data.fields_used.length))); //$NON-NLS-1$ //$NON-NLS-2$
+      logDetailed(BaseMessages.getString(PKG, "ScriptValuesMod.Log.UsingValuesFromInputStream", String.valueOf(data.fields_used.length))); //$NON-NLS-1$ //$NON-NLS-2$
   }
 
   private boolean addValues(RowMetaInterface rowMeta, Object[] row) throws KettleException {
@@ -156,11 +159,11 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
     		  data.replaceIndex[i] = rowMeta.indexOfValue(meta.getName()[i]);
     		  if (data.replaceIndex[i]<0) {
     			  if (Const.isEmpty(meta.getName()[i])) {
-    				  throw new KettleStepException(Messages.getString("ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getName()[i]));
+    				  throw new KettleStepException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getName()[i]));
     			  }
     			  data.replaceIndex[i] = rowMeta.indexOfValue(meta.getRename()[i]);
     			  if (data.replaceIndex[i]<0) {
-    				  throw new KettleStepException(Messages.getString("ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getRename()[i]));
+    				  throw new KettleStepException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getRename()[i]));
     			  }
     		  }
     	  } else {
@@ -239,7 +242,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
             }
           }
         } catch (Exception e) {
-          throw new KettleValueException(Messages.getString("ScriptValuesMod.Log.CouldNotAttachAdditionalScripts"), e); //$NON-NLS-1$
+          throw new KettleValueException(BaseMessages.getString(PKG, "ScriptValuesMod.Log.CouldNotAttachAdditionalScripts"), e); //$NON-NLS-1$
         }
 
         // Adding some default JavaScriptFunctions to the System
@@ -249,7 +252,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
               ScriptValuesAddedFunctions.class, ScriptableObject.DONTENUM);
         } catch (Exception ex) {
           // System.out.println(ex.toString());
-          throw new KettleValueException(Messages.getString("ScriptValuesMod.Log.CouldNotAddDefaultFunctions"), ex); //$NON-NLS-1$
+          throw new KettleValueException(BaseMessages.getString(PKG, "ScriptValuesMod.Log.CouldNotAddDefaultFunctions"), ex); //$NON-NLS-1$
         }
         ;
 
@@ -263,7 +266,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 
         } catch (Exception ex) {
           // System.out.println("Exception Adding the Constants " + ex.toString());
-          throw new KettleValueException(Messages.getString("ScriptValuesMod.Log.CouldNotAddDefaultConstants"), ex);
+          throw new KettleValueException(BaseMessages.getString(PKG, "ScriptValuesMod.Log.CouldNotAddDefaultConstants"), ex);
         }
         ;
 
@@ -280,13 +283,13 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
           }
         } catch (Exception es) {
           // System.out.println("Exception processing StartScript " + es.toString());
-          throw new KettleValueException(Messages.getString("ScriptValuesMod.Log.ErrorProcessingStartScript"), es);
+          throw new KettleValueException(BaseMessages.getString(PKG, "ScriptValuesMod.Log.ErrorProcessingStartScript"), es);
 
         }
         // Now Compile our Script
         data.script = data.cx.compileString(strTransformScript, "script", 1, null);
       } catch (Exception e) {
-        throw new KettleValueException(Messages.getString("ScriptValuesMod.Log.CouldNotCompileJavascript"), e);
+        throw new KettleValueException(BaseMessages.getString(PKG, "ScriptValuesMod.Log.CouldNotCompileJavascript"), e);
       }
     }
 
@@ -348,7 +351,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
         Scriptable jsrowMeta = Context.toObject(rowMeta, data.scope);
         data.scope.put("rowMeta", data.scope, jsrowMeta); //$NON-NLS-1$
       } catch (Exception e) {
-        throw new KettleValueException(Messages.getString("ScriptValuesMod.Log.UnexpectedeError"), e); //$NON-NLS-1$ //$NON-NLS-2$				
+        throw new KettleValueException(BaseMessages.getString(PKG, "ScriptValuesMod.Log.UnexpectedeError"), e); //$NON-NLS-1$ //$NON-NLS-2$				
       }
 
       // Executing our Script
@@ -433,7 +436,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
         //
       }
     } catch (Exception e) {
-      throw new KettleValueException(Messages.getString("ScriptValuesMod.Log.JavascriptError"), e); //$NON-NLS-1$
+      throw new KettleValueException(BaseMessages.getString(PKG, "ScriptValuesMod.Log.JavascriptError"), e); //$NON-NLS-1$
     }
     return bRC;
   }
@@ -617,7 +620,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
           return null;
         }
       } catch (Exception e) {
-        throw new KettleValueException(Messages.getString("ScriptValuesMod.Log.JavascriptError"), e); //$NON-NLS-1$
+        throw new KettleValueException(BaseMessages.getString(PKG, "ScriptValuesMod.Log.JavascriptError"), e); //$NON-NLS-1$
       }
     } else {
       throw new KettleValueException("No name was specified for result value #" + (i + 1));
@@ -650,8 +653,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
           }
         }
       } catch (Exception e) {
-        logError(Messages.getString("ScriptValuesMod.Log.UnexpectedeError") + " : " + e.toString()); //$NON-NLS-1$ //$NON-NLS-2$				
-        logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace") + Const.CR + Const.getStackTracker(e)); //$NON-NLS-1$
+        logError(BaseMessages.getString(PKG, "ScriptValuesMod.Log.UnexpectedeError") + " : " + e.toString()); //$NON-NLS-1$ //$NON-NLS-2$				
+        logError(BaseMessages.getString(PKG, "ScriptValuesMod.Log.ErrorStackTrace") + Const.CR + Const.getStackTracker(e)); //$NON-NLS-1$
         setErrors(1);
         stopAll();
       }
@@ -680,7 +683,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
     }
 
     if (checkFeedback(getLinesRead()))
-      logBasic(Messages.getString("ScriptValuesMod.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+      logBasic(BaseMessages.getString(PKG, "ScriptValuesMod.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
     return bRC;
   }
 
@@ -717,7 +720,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
         Context.exit();
     } catch (Exception er) {
       // Eat this error, it's typically : "Calling Context.exit without previous Context.enter"
-      // logError(Messages.getString("System.Log.UnexpectedError"), er);
+      // logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError"), er);
     }
     ;
 

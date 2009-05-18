@@ -28,12 +28,15 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.fixedinput.FixedFileInputField;
+import org.pentaho.di.trans.steps.fixedinput.FixedInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.trans.steps.fixedinput.Messages;
 
 public class FixedFileImportWizardPage1 extends WizardPage // implements Listener 
 {
+	private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private FixedTableDraw wTable;
 	private FormData fdTable;
 
@@ -48,8 +51,8 @@ public class FixedFileImportWizardPage1 extends WizardPage // implements Listene
 		this.rows=rows;
 		this.fields=fields;
 		
-		setTitle(Messages.getString("FixedFileImportWizardPage1.DialogTitle"));
-		setDescription(Messages.getString("FixedFileImportWizardPage1.DialogMessage"));
+		setTitle(BaseMessages.getString(PKG, "FixedFileImportWizardPage1.DialogTitle"));
+		setDescription(BaseMessages.getString(PKG, "FixedFileImportWizardPage1.DialogMessage"));
 	}
 	
 	public void createControl(Composite parent)
@@ -109,7 +112,7 @@ public class FixedFileImportWizardPage1 extends WizardPage // implements Listene
 		} 
 		else
 		{
-			setErrorMessage(Messages.getString("FixedFileImportWizardPage1.ErrorMarkerNeeded"));
+			setErrorMessage(BaseMessages.getString(PKG, "FixedFileImportWizardPage1.ErrorMarkerNeeded"));
 			return false;
 		}
 	}	

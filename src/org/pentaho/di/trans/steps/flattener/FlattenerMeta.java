@@ -27,6 +27,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -46,6 +47,8 @@ import org.w3c.dom.Node;
 
 public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = FlattenerMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** The field to flatten */
     private String fieldName;
     
@@ -108,7 +111,7 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
         {
             int idx = row.indexOfValue(fieldName);
             if (idx < 0) { 
-            	throw new KettleStepException(Messages.getString("FlattenerMeta.Exception.UnableToLocateFieldInInputFields", fieldName )); //$NON-NLS-1$ //$NON-NLS-2$ 
+            	throw new KettleStepException(BaseMessages.getString(PKG, "FlattenerMeta.Exception.UnableToLocateFieldInInputFields", fieldName )); //$NON-NLS-1$ //$NON-NLS-2$ 
             } 
             
             ValueMetaInterface v = row.getValueMeta(idx);
@@ -125,7 +128,7 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
         }
         else
         {
-            throw new KettleStepException(Messages.getString("FlattenerMeta.Exception.FlattenFieldRequired")); //$NON-NLS-1$
+            throw new KettleStepException(BaseMessages.getString(PKG, "FlattenerMeta.Exception.FlattenFieldRequired")); //$NON-NLS-1$
         }
     }
 
@@ -148,7 +151,7 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(Messages.getString("FlattenerMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "FlattenerMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
         }
     }
 
@@ -187,7 +190,7 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("FlattenerMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "FlattenerMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
         }
     }
 
@@ -204,7 +207,7 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("FlattenerMeta.Exception.UnableToSaveStepInfoToRepository") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "FlattenerMeta.Exception.UnableToSaveStepInfoToRepository") + id_step, e); //$NON-NLS-1$
         }
     }
     
@@ -214,12 +217,12 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
 
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("FlattenerMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FlattenerMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("FlattenerMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FlattenerMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
     }

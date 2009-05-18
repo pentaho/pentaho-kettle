@@ -2,6 +2,7 @@ package org.pentaho.di.trans.steps.excelinput;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Extended {@link KettleValueException} that allows passing extra
@@ -16,6 +17,8 @@ import org.pentaho.di.core.exception.KettleValueException;
  */
 
 public class KettleCellValueException extends KettleException {
+
+	private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private static final long serialVersionUID = 1L;
 	
@@ -50,7 +53,7 @@ public class KettleCellValueException extends KettleException {
 
 	@Override
 	public String getMessage() {
-		String msgText = Messages.getString("KettleCellValueException.CannotConvertFieldFromCell", 
+		String msgText = BaseMessages.getString(PKG, "KettleCellValueException.CannotConvertFieldFromCell", 
 					Integer.toString(sheetnr), Integer.toString(rownr), Integer.toString(colnr), fieldName, super.getMessage());
 		return msgText;
 	}

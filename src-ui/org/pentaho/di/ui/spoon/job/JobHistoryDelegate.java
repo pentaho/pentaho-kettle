@@ -37,21 +37,21 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.spoon.job.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.spoon.job.XulMessages;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 import org.pentaho.xul.toolbar.XulToolbar;
 import org.pentaho.xul.toolbar.XulToolbarButton;
 
 public class JobHistoryDelegate extends SpoonDelegate {
-	
+	private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/job-history-toolbar.xul";
 	public static final String XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES = "ui/job-history-toolbar.properties";
 
@@ -103,7 +103,7 @@ public class JobHistoryDelegate extends SpoonDelegate {
 		//
 		jobHistoryTab = new CTabItem(jobGraph.extraViewTabFolder, SWT.NONE);
 		jobHistoryTab.setImage(GUIResource.getInstance().getImageShowHistory());
-		jobHistoryTab.setText(Messages.getString("Spoon.TransGraph.HistoryTab.Name"));
+		jobHistoryTab.setText(BaseMessages.getString(PKG, "Spoon.TransGraph.HistoryTab.Name"));
 		
 		// Create a composite, slam everything on there like it was in the history tab.
 		//
@@ -122,21 +122,21 @@ public class JobHistoryDelegate extends SpoonDelegate {
 		
 		final int FieldsRows=1;
 		colinf=new ColumnInfo[] {
-            new ColumnInfo(Messages.getString("JobHistory.Column.Name"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("JobHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("JobHistory.Column.Status"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("JobHistory.Column.Duration"),       ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("JobHistory.Column.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("JobHistory.Column.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("JobHistory.Column.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("JobHistory.Column.Input"),          ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("JobHistory.Column.Output"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("JobHistory.Column.Errors"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("JobHistory.Column.StartDate"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("JobHistory.Column.EndDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("JobHistory.Column.LogDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("JobHistory.Column.DependencyDate"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("JobHistory.Column.ReplayDate"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "JobHistory.Column.Name"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "JobHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(BaseMessages.getString(PKG, "JobHistory.Column.Status"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+    		new ColumnInfo(BaseMessages.getString(PKG, "JobHistory.Column.Duration"),       ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "JobHistory.Column.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(BaseMessages.getString(PKG, "JobHistory.Column.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "JobHistory.Column.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(BaseMessages.getString(PKG, "JobHistory.Column.Input"),          ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(BaseMessages.getString(PKG, "JobHistory.Column.Output"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(BaseMessages.getString(PKG, "JobHistory.Column.Errors"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "JobHistory.Column.StartDate"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "JobHistory.Column.EndDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+    		new ColumnInfo(BaseMessages.getString(PKG, "JobHistory.Column.LogDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "JobHistory.Column.DependencyDate"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "JobHistory.Column.ReplayDate"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
         };
 		
         for (int i=3;i<10;i++) colinf[i].setAllignement(SWT.RIGHT);
@@ -160,7 +160,7 @@ public class JobHistoryDelegate extends SpoonDelegate {
 		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY );
 		spoon.props.setLook(wText);
 		wText.setVisible(true);
-        // wText.setText(Messages.getString("TransHistory.PleaseRefresh.Message"));
+        // wText.setText(BaseMessages.getString(PKG, "TransHistory.PleaseRefresh.Message"));
 		
 		// Put text in the middle
 		fdText=new FormData();
@@ -268,7 +268,7 @@ public class JobHistoryDelegate extends SpoonDelegate {
 		        toolBar.layout(true, true);
 			} catch (Throwable t ) {
 				log.logError(toString(), Const.getStackTracker(t));
-				new ErrorDialog(jobHistoryComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
+				new ErrorDialog(jobHistoryComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
 			}
 		}
 
@@ -293,8 +293,8 @@ public class JobHistoryDelegate extends SpoonDelegate {
 
 			} catch (Throwable t ) {
 				t.printStackTrace();
-				new ErrorDialog(jobHistoryComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
-						Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES), new Exception(t));
+				new ErrorDialog(jobHistoryComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
+						BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES), new Exception(t));
 			}
 		}
 
@@ -310,8 +310,8 @@ public class JobHistoryDelegate extends SpoonDelegate {
     	if (databaseMeta!=null && !Const.isEmpty(logTable)) {
     	
 	    	MessageBox mb = new MessageBox(jobGraph.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-	        mb.setMessage(Messages.getString("JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", logTable)); // Nothing found that matches your criteria
-			mb.setText(Messages.getString("JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title")); // Sorry!
+	        mb.setMessage(BaseMessages.getString(PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", logTable)); // Nothing found that matches your criteria
+			mb.setText(BaseMessages.getString(PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title")); // Sorry!
 			if (mb.open()==SWT.YES) {
 				Database database = new Database(databaseMeta);
 				try {
@@ -319,8 +319,8 @@ public class JobHistoryDelegate extends SpoonDelegate {
 					database.truncateTable(logTable);
 				}
 				catch(Exception e) {
-					new ErrorDialog(jobGraph.getShell(), Messages.getString("JobGraph.Dialog.ErrorClearningLoggingTable.Title"), 
-							Messages.getString("JobGraph.Dialog.ErrorClearningLoggingTable.Message"), e);
+					new ErrorDialog(jobGraph.getShell(), BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorClearningLoggingTable.Title"), 
+							BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorClearningLoggingTable.Message"), e);
 				}
 				finally
 				{
@@ -350,8 +350,8 @@ public class JobHistoryDelegate extends SpoonDelegate {
 				spoon.executeJob(jobGraph.getManagedObject(), true, false, replayDate, false);
 			} catch (KettleException e1) {
 				new ErrorDialog(jobGraph.getShell(), 
-						Messages.getString("TransHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
-						Messages.getString("TransHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
+						BaseMessages.getString(PKG, "TransHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "TransHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
 			}
 		}
 	}
@@ -503,7 +503,7 @@ public class JobHistoryDelegate extends SpoonDelegate {
                     }
                     catch(KettleException e)
                     {
-                        new ErrorDialog(jobGraph.getShell(), Messages.getString("JobHistory.Error.GettingLoggingInfo"), Messages.getString("JobHistory.Error.GettingInfoFromLoggingTable"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                        new ErrorDialog(jobGraph.getShell(), BaseMessages.getString(PKG, "JobHistory.Error.GettingLoggingInfo"), BaseMessages.getString(PKG, "JobHistory.Error.GettingInfoFromLoggingTable"), e); //$NON-NLS-1$ //$NON-NLS-2$
                         wFields.clearAll(false);
                     }
                     finally
@@ -550,7 +550,7 @@ public class JobHistoryDelegate extends SpoonDelegate {
             }
             catch (KettleValueException e)
             {
-            	new ErrorDialog(jobGraph.getShell(), Messages.getString("JobHistory.Error.GettingLoggingInfo"), Messages.getString("JobHistory.Error.GettingLogFieldFromLoggingTable"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            	new ErrorDialog(jobGraph.getShell(), BaseMessages.getString(PKG, "JobHistory.Error.GettingLoggingInfo"), BaseMessages.getString(PKG, "JobHistory.Error.GettingLogFieldFromLoggingTable"), e); //$NON-NLS-1$ //$NON-NLS-2$
             } 
             if (logging!=null) 
             {

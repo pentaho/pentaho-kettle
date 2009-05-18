@@ -34,18 +34,20 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.socketreader.Messages;
 import org.pentaho.di.trans.steps.socketreader.SocketReaderMeta;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
 public class SocketReaderDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = SocketReaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private SocketReaderMeta input;
     private TextVar wHostname;
     private TextVar wPort;
@@ -81,14 +83,14 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("SocketReaderDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SocketReaderDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("SocketReaderDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "SocketReaderDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -107,7 +109,7 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
         
         // Hostname line
         Label wlHostname = new Label(shell, SWT.RIGHT);
-        wlHostname.setText(Messages.getString("SocketReaderDialog.Hostname.Label")); //$NON-NLS-1$
+        wlHostname.setText(BaseMessages.getString(PKG, "SocketReaderDialog.Hostname.Label")); //$NON-NLS-1$
         props.setLook(wlHostname);
         FormData fdlHostname = new FormData();
         fdlHostname.left = new FormAttachment(0, 0);
@@ -126,7 +128,7 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
         
         // Port line
         Label wlPort = new Label(shell, SWT.RIGHT);
-        wlPort.setText(Messages.getString("SocketReaderDialog.Port.Label")); //$NON-NLS-1$
+        wlPort.setText(BaseMessages.getString(PKG, "SocketReaderDialog.Port.Label")); //$NON-NLS-1$
         props.setLook(wlPort);
         FormData fdlPort = new FormData();
         fdlPort.left = new FormAttachment(0, 0);
@@ -145,7 +147,7 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
 
         // BufferSize line
         Label wlBufferSize = new Label(shell, SWT.RIGHT);
-        wlBufferSize.setText(Messages.getString("SocketReaderDialog.BufferSize.Label")); //$NON-NLS-1$
+        wlBufferSize.setText(BaseMessages.getString(PKG, "SocketReaderDialog.BufferSize.Label")); //$NON-NLS-1$
         props.setLook(wlBufferSize);
         FormData fdlBufferSize = new FormData();
         fdlBufferSize.left = new FormAttachment(0, 0);
@@ -165,7 +167,7 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
         // Compress socket data?
         Label wlCompressed = new Label(shell, SWT.RIGHT); 
         props.setLook(wlCompressed);
-        wlCompressed.setText(Messages.getString("SocketReaderDialog.Compressed.Label"));
+        wlCompressed.setText(BaseMessages.getString(PKG, "SocketReaderDialog.Compressed.Label"));
         FormData fdlCompressed = new FormData();
         fdlCompressed.top   = new FormAttachment(wBufferSize, margin);
         fdlCompressed.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -182,9 +184,9 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
 
         // Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wCompressed);
 

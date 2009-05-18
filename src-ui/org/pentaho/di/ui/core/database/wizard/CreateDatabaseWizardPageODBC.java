@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.ui.core.database.wizard.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
 
@@ -40,6 +40,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class CreateDatabaseWizardPageODBC extends WizardPage
 {
+	private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label    wlDSN;
 	private Text     wDSN;
 	private FormData fdlDSN, fdDSN;
@@ -53,8 +55,8 @@ public class CreateDatabaseWizardPageODBC extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle(Messages.getString("CreateDatabaseWizardPageODBC.DialogTitle")); //$NON-NLS-1$
-		setDescription(Messages.getString("CreateDatabaseWizardPageODBC.DialogMessage")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageODBC.DialogTitle")); //$NON-NLS-1$
+		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageODBC.DialogMessage")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -74,7 +76,7 @@ public class CreateDatabaseWizardPageODBC extends WizardPage
 		composite.setLayout(compLayout);
 
 		wlDSN = new Label(composite, SWT.RIGHT);
-		wlDSN.setText(Messages.getString("CreateDatabaseWizardPageODBC.DSN.Label")); //$NON-NLS-1$
+		wlDSN.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageODBC.DSN.Label")); //$NON-NLS-1$
  		props.setLook(wlDSN);
 		fdlDSN = new FormData();
 		fdlDSN.left   = new FormAttachment(0,0);
@@ -103,14 +105,14 @@ public class CreateDatabaseWizardPageODBC extends WizardPage
 		String name = wDSN.getText()!=null?wDSN.getText().length()>0?wDSN.getText():null:null;
 		if (name==null)
 		{
-			setErrorMessage(Messages.getString("CreateDatabaseWizardPageODBC.ErrorMessage.DSNRequired")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageODBC.ErrorMessage.DSNRequired")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage(Messages.getString("CreateDatabaseWizardPageODBC.Message.Finish")); //$NON-NLS-1$
+			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageODBC.Message.Finish")); //$NON-NLS-1$
 			return true;
 		}
 	}	

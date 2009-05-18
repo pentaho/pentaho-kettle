@@ -32,26 +32,26 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Group;
-
-import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.fileexists.Messages;
 import org.pentaho.di.trans.steps.fileexists.FileExistsMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class FileExistsDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = FileExistsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private boolean gotPreviousFields=false;
 	private Label        wlFileName;
@@ -105,14 +105,14 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("FileExistsDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "FileExistsDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("FileExistsDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "FileExistsDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -131,7 +131,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 
 		// filename field
 		wlFileName=new Label(shell, SWT.RIGHT);
-		wlFileName.setText(Messages.getString("FileExistsDialog.FileName.Label")); //$NON-NLS-1$
+		wlFileName.setText(BaseMessages.getString(PKG, "FileExistsDialog.FileName.Label")); //$NON-NLS-1$
  		props.setLook(wlFileName);
 		fdlFileName=new FormData();
 		fdlFileName.left = new FormAttachment(0, 0);
@@ -167,7 +167,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Result fieldname ...
 		wlResult=new Label(shell, SWT.RIGHT);
-		wlResult.setText(Messages.getString("FileExistsDialog.ResultField.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "FileExistsDialog.ResultField.Label")); //$NON-NLS-1$
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
@@ -176,7 +176,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 		wlResult.setLayoutData(fdlResult);
 
 		wResult=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wResult.setToolTipText(Messages.getString("FileExistsDialog.ResultField.Tooltip"));
+		wResult.setToolTipText(BaseMessages.getString(PKG, "FileExistsDialog.ResultField.Tooltip"));
  		props.setLook(wResult);
 		wResult.addModifyListener(lsMod);
 		fdResult=new FormData();
@@ -187,7 +187,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Add filename to result filenames?
 		wlAddResult=new Label(shell, SWT.RIGHT);
-		wlAddResult.setText(Messages.getString("FileExistsDialog.AddResult.Label"));
+		wlAddResult.setText(BaseMessages.getString(PKG, "FileExistsDialog.AddResult.Label"));
  		props.setLook(wlAddResult);
 		fdlAddResult=new FormData();
 		fdlAddResult.left = new FormAttachment(0, 0);
@@ -196,7 +196,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 		wlAddResult.setLayoutData(fdlAddResult);
 		wAddResult=new Button(shell, SWT.CHECK );
  		props.setLook(wAddResult);
-		wAddResult.setToolTipText(Messages.getString("FileExistsDialog.AddResult.Tooltip"));
+		wAddResult.setToolTipText(BaseMessages.getString(PKG, "FileExistsDialog.AddResult.Tooltip"));
 		fdAddResult=new FormData();
 		fdAddResult.left = new FormAttachment(middle, 0);
 		fdAddResult.top  = new FormAttachment(wResult, margin);
@@ -208,7 +208,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 
 		wAdditionalFields = new Group(shell, SWT.SHADOW_NONE);
 		props.setLook(wAdditionalFields);
-		wAdditionalFields.setText(Messages.getString("FileExistsDialog.wAdditionalFields.Label"));
+		wAdditionalFields.setText(BaseMessages.getString(PKG, "FileExistsDialog.wAdditionalFields.Label"));
 		
 		FormLayout AdditionalFieldsgroupLayout = new FormLayout();
 		AdditionalFieldsgroupLayout.marginWidth = 10;
@@ -217,7 +217,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// include filetype?
 		wlInclFileType=new Label(wAdditionalFields, SWT.RIGHT);
-		wlInclFileType.setText(Messages.getString("FileExistsDialog.InclFileType.Label"));
+		wlInclFileType.setText(BaseMessages.getString(PKG, "FileExistsDialog.InclFileType.Label"));
  		props.setLook(wlInclFileType);
 		fdlInclFileType=new FormData();
 		fdlInclFileType.left = new FormAttachment(0, 0);
@@ -226,7 +226,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 		wlInclFileType.setLayoutData(fdlInclFileType);
 		wInclFileType=new Button(wAdditionalFields, SWT.CHECK );
  		props.setLook(wInclFileType);
-		wInclFileType.setToolTipText(Messages.getString("FileExistsDialog.InclFileType.Tooltip"));
+		wInclFileType.setToolTipText(BaseMessages.getString(PKG, "FileExistsDialog.InclFileType.Tooltip"));
 		fdInclFileType=new FormData();
 		fdInclFileType.left = new FormAttachment(middle, 0);
 		fdInclFileType.top  = new FormAttachment(wResult, margin);
@@ -244,7 +244,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// FileType fieldname ...
 		wlFileType=new Label(wAdditionalFields, SWT.RIGHT);
-		wlFileType.setText(Messages.getString("FileExistsDialog.FileTypeField.Label")); //$NON-NLS-1$
+		wlFileType.setText(BaseMessages.getString(PKG, "FileExistsDialog.FileTypeField.Label")); //$NON-NLS-1$
  		props.setLook(wlFileType);
 		fdlFileType=new FormData();
 		fdlFileType.left = new FormAttachment(wInclFileType, 2*margin);
@@ -252,7 +252,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 		wlFileType.setLayoutData(fdlFileType);
 
 		wFileType=new TextVar(transMeta, wAdditionalFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wFileType.setToolTipText(Messages.getString("FileExistsDialog.FileTypeField.Tooltip"));
+		wFileType.setToolTipText(BaseMessages.getString(PKG, "FileExistsDialog.FileTypeField.Tooltip"));
  		props.setLook(wFileType);
 		wFileType.addModifyListener(lsMod);
 		fdFileType=new FormData();
@@ -273,9 +273,9 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wAdditionalFields);
 
@@ -360,7 +360,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 				if(fieldvalue!=null) wFileName.setText(fieldvalue);
 				gotPreviousFields=true;
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, Messages.getString("FileExistsDialog.FailedToGetFields.DialogTitle"), Messages.getString("FileExistsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "FileExistsDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "FileExistsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		 }
 	 }

@@ -33,11 +33,14 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 
 
 
 public class WebServer
 {
+	private static Class<?> PKG = WebServer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static LogWriter log = LogWriter.getInstance();
     
     public  static final int PORT = 80;
@@ -250,7 +253,7 @@ public class WebServer
 				server.stop();
 			}
 		} catch (Exception e) {
-			log.logError(Messages.getString("WebServer.Error.FailedToStop.Title"), Messages.getString("WebServer.Error.FailedToStop.Msg", "" + e));
+			log.logError(BaseMessages.getString(PKG, "WebServer.Error.FailedToStop.Title"), BaseMessages.getString(PKG, "WebServer.Error.FailedToStop.Msg", "" + e));
 		}
 	}
     
@@ -259,8 +262,8 @@ public class WebServer
         SocketConnector connector = new SocketConnector();
         connector.setPort(port);
         connector.setHost(hostname);
-        connector.setName(Messages.getString("WebServer.Log.KettleHTTPListener",hostname));
-        log.logBasic(toString(), Messages.getString("WebServer.Log.CreateListener",hostname,""+port));
+        connector.setName(BaseMessages.getString(PKG, "WebServer.Log.KettleHTTPListener",hostname));
+        log.logBasic(toString(), BaseMessages.getString(PKG, "WebServer.Log.CreateListener",hostname,""+port));
 
         server.setConnectors( new Connector[] { connector });
     }

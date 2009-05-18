@@ -50,12 +50,12 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.dialog.Messages;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialogs allows you to select a number of items from a list of strings.
@@ -65,6 +65,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class EnterListDialog extends Dialog 
 {
+	private static Class<?> PKG = EnterListDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private LogWriter log;
 	private PropsUI     props;
 	
@@ -113,7 +115,7 @@ public class EnterListDialog extends Dialog
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
  		shell.setImage(GUIResource.getInstance().getImageTransGraph());
-		shell.setText(Messages.getString("EnterListDialog.Title"));
+		shell.setText(BaseMessages.getString(PKG, "EnterListDialog.Title"));
 		
 		shell.setLayout(new FormLayout());
 		
@@ -175,7 +177,7 @@ public class EnterListDialog extends Dialog
 
  		// Source list to the left...
 		wlListSource  = new Label(leftsplit, SWT.NONE);
-		wlListSource.setText(Messages.getString("EnterListDialog.AvailableItems.Label"));
+		wlListSource.setText(BaseMessages.getString(PKG, "EnterListDialog.AvailableItems.Label"));
  		props.setLook(wlListSource);
 		FormData fdlListSource = new FormData();
 		fdlListSource.left   = new FormAttachment(0, 0); 
@@ -210,10 +212,10 @@ public class EnterListDialog extends Dialog
 		GridLayout gridLayout = new GridLayout(1, false);
 		gButtonGroup.setLayout(gridLayout);
  			
-		wAddOne    = new Button(gButtonGroup, SWT.PUSH); wAddOne   .setText(" > ");  wAddOne   .setToolTipText(Messages.getString("EnterListDialog.AddOne.Tooltip"));
-		wAddAll    = new Button(gButtonGroup, SWT.PUSH); wAddAll   .setText(" >> "); wAddAll   .setToolTipText(Messages.getString("EnterListDialog.AddAll.Tooltip"));
-		wRemoveOne = new Button(gButtonGroup, SWT.PUSH); wRemoveOne.setText(" < ");  wRemoveOne.setToolTipText(Messages.getString("EnterListDialog.RemoveOne.Tooltip"));
-		wRemoveAll = new Button(gButtonGroup, SWT.PUSH); wRemoveAll.setText(" << "); wRemoveAll.setToolTipText(Messages.getString("EnterListDialog.RemoveAll.Tooltip"));
+		wAddOne    = new Button(gButtonGroup, SWT.PUSH); wAddOne   .setText(" > ");  wAddOne   .setToolTipText(BaseMessages.getString(PKG, "EnterListDialog.AddOne.Tooltip"));
+		wAddAll    = new Button(gButtonGroup, SWT.PUSH); wAddAll   .setText(" >> "); wAddAll   .setToolTipText(BaseMessages.getString(PKG, "EnterListDialog.AddAll.Tooltip"));
+		wRemoveOne = new Button(gButtonGroup, SWT.PUSH); wRemoveOne.setText(" < ");  wRemoveOne.setToolTipText(BaseMessages.getString(PKG, "EnterListDialog.RemoveOne.Tooltip"));
+		wRemoveAll = new Button(gButtonGroup, SWT.PUSH); wRemoveAll.setText(" << "); wRemoveAll.setToolTipText(BaseMessages.getString(PKG, "EnterListDialog.RemoveAll.Tooltip"));
 
  		GridData gdAddOne = new GridData(GridData.FILL_BOTH);
 		wAddOne.setLayoutData(gdAddOne);
@@ -248,7 +250,7 @@ public class EnterListDialog extends Dialog
  		props.setLook(rightsplit);
 				
 		wlListDest = new Label(rightsplit, SWT.NONE);
-		wlListDest.setText(Messages.getString("EnterListDialog.Selection.Label"));
+		wlListDest.setText(BaseMessages.getString(PKG, "EnterListDialog.Selection.Label"));
  		props.setLook(wlListDest);
 		FormData fdlListDest = new FormData();
 		fdlListDest.left   = new FormAttachment(0, 0); 
@@ -272,10 +274,10 @@ public class EnterListDialog extends Dialog
  		////////////////////////////////////////////////////////////////
  		
  		wOK = new Button(bottom, SWT.PUSH); 
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		
 		wCancel = new Button(bottom, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
 		FormData fdOK        = new FormData();
 		FormData fdCancel    = new FormData();

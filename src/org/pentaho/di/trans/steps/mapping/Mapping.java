@@ -19,6 +19,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -39,6 +40,8 @@ import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
  */
 public class Mapping extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = MappingMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private MappingMeta meta;
 	private MappingData data;
 	
@@ -164,7 +167,7 @@ public class Mapping extends BaseStep implements StepInterface
         	data.mappingTrans.prepareExecution(getTransMeta().getArguments());
         }
         catch(KettleException e) {
-        	throw new KettleException(Messages.getString("Mapping.Exception.UnableToPrepareExecutionOfMapping"), e);
+        	throw new KettleException(BaseMessages.getString(PKG, "Mapping.Exception.UnableToPrepareExecutionOfMapping"), e);
         }
 
 		// If there is no read/write logging step set, we can insert the data from the first mapping input/output step...
@@ -193,7 +196,7 @@ public class Mapping extends BaseStep implements StepInterface
         	if (!Const.isEmpty(inputDefinition.getInputStepname())) {
         		StepInterface sourceStep = (StepInterface) getTrans().findRunThread(inputDefinition.getInputStepname());
             	if (sourceStep==null) {
-            		throw new KettleException(Messages.getString("MappingDialog.Exception.StepNameNotFound", inputDefinition.getInputStepname()));
+            		throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.StepNameNotFound", inputDefinition.getInputStepname()));
             	}
             	sourceSteps = new StepInterface[] { sourceStep, };
         	} 
@@ -221,10 +224,10 @@ public class Mapping extends BaseStep implements StepInterface
         		// That means we only expect one "mapping input" step in the mapping...
         		
         		if (mappingInputSteps.length==0) {
-        			throw new KettleException(Messages.getString("MappingDialog.Exception.OneMappingInputStepRequired"));
+        			throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.OneMappingInputStepRequired"));
         		}
         		if (mappingInputSteps.length>1) {
-        			throw new KettleException(Messages.getString("MappingDialog.Exception.OnlyOneMappingInputStepAllowed", ""+mappingInputSteps.length));
+        			throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.OnlyOneMappingInputStepAllowed", ""+mappingInputSteps.length));
         		}
         		
         		mappingInputTarget = mappingInputSteps[0];
@@ -238,7 +241,7 @@ public class Mapping extends BaseStep implements StepInterface
         		}
         		// If we still didn't find it it's a drag.
         		if (mappingInputTarget==null) {
-            		throw new KettleException(Messages.getString("MappingDialog.Exception.StepNameNotFound", inputDefinition.getOutputStepname()));
+            		throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.StepNameNotFound", inputDefinition.getOutputStepname()));
         		}
         	}
         	
@@ -268,10 +271,10 @@ public class Mapping extends BaseStep implements StepInterface
         		MappingOutput[] mappingOutputSteps = data.mappingTrans.findMappingOutput();
         		
         		if (mappingOutputSteps.length==0) {
-        			throw new KettleException(Messages.getString("MappingDialog.Exception.OneMappingOutputStepRequired"));
+        			throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.OneMappingOutputStepRequired"));
         		}
         		if (mappingOutputSteps.length>1) {
-        			throw new KettleException(Messages.getString("MappingDialog.Exception.OnlyOneMappingOutputStepAllowed", ""+mappingOutputSteps.length));
+        			throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.OnlyOneMappingOutputStepAllowed", ""+mappingOutputSteps.length));
         		}
         		
         		mappingOutputSource = mappingOutputSteps[0];
@@ -285,7 +288,7 @@ public class Mapping extends BaseStep implements StepInterface
         		//
             	StepInterface target = (StepInterface) getTrans().findRunThread(outputDefinition.getOutputStepname());
             	if (target==null) {
-            		throw new KettleException(Messages.getString("MappingDialog.Exception.StepNameNotFound", outputDefinition.getOutputStepname()));
+            		throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.StepNameNotFound", outputDefinition.getOutputStepname()));
             	}
             	targetSteps = new StepInterface[] { target, };
         	}
@@ -386,13 +389,13 @@ public class Mapping extends BaseStep implements StepInterface
             }
             catch(KettleException e)
             {
-                log.logError(toString(), Messages.getString("Mapping.Log.UnableToLogEndOfTransformation")+e.toString()); //$NON-NLS-1$
+                log.logError(toString(), BaseMessages.getString(PKG, "Mapping.Log.UnableToLogEndOfTransformation")+e.toString()); //$NON-NLS-1$
             }
             
             // See if there was an error in the sub-transformation, in that case, flag error etc.
             if (data.mappingTrans.getErrors()>0)
             {
-                logError(Messages.getString("Mapping.Log.ErrorOccurredInSubTransformation")); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "Mapping.Log.ErrorOccurredInSubTransformation")); //$NON-NLS-1$
                 setErrors(1);
             }
         }

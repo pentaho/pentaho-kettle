@@ -34,14 +34,14 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.ui.spoon.dialog.Messages;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 /**
@@ -52,6 +52,8 @@ import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
  */
 public class EnterPreviewRowsDialog extends Dialog
 {
+	private static Class<?> PKG = EnterPreviewRowsDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String       stepname;
 		
 	private Label        wlStepList;
@@ -89,7 +91,7 @@ public class EnterPreviewRowsDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("EnterPreviewRowsDialog.Dialog.PreviewStep.Title")); //Select the preview step:
+		shell.setText(BaseMessages.getString(PKG, "EnterPreviewRowsDialog.Dialog.PreviewStep.Title")); //Select the preview step:
 		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 
 		int middle = props.getMiddlePct();
@@ -97,7 +99,7 @@ public class EnterPreviewRowsDialog extends Dialog
 
 		// Filename line
 		wlStepList=new Label(shell, SWT.NONE);
-		wlStepList.setText(Messages.getString("EnterPreviewRowsDialog.Dialog.PreviewStep.Message")); //Step name : 
+		wlStepList.setText(BaseMessages.getString(PKG, "EnterPreviewRowsDialog.Dialog.PreviewStep.Message")); //Step name : 
  		props.setLook(wlStepList);
 		fdlStepList=new FormData();
 		fdlStepList.left = new FormAttachment(0, 0);
@@ -125,10 +127,10 @@ public class EnterPreviewRowsDialog extends Dialog
 		});
 
 		wShow=new Button(shell, SWT.PUSH);
-		wShow.setText(Messages.getString("System.Button.Show"));
+		wShow.setText(BaseMessages.getString(PKG, "System.Button.Show"));
 
 		wClose=new Button(shell, SWT.PUSH);
-		wClose.setText(Messages.getString("System.Button.Close"));
+		wClose.setText(BaseMessages.getString(PKG, "System.Button.Close"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wShow, wClose }, margin, null);
 		// Add listeners
@@ -198,8 +200,8 @@ public class EnterPreviewRowsDialog extends Dialog
         else
         {
         	MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-        	mb.setText(Messages.getString("EnterPreviewRowsDialog.Dialog.NoPreviewRowsFound.Title"));
-        	mb.setMessage(Messages.getString("EnterPreviewRowsDialog.Dialog.NoPreviewRowsFound.Message"));
+        	mb.setText(BaseMessages.getString(PKG, "EnterPreviewRowsDialog.Dialog.NoPreviewRowsFound.Title"));
+        	mb.setMessage(BaseMessages.getString(PKG, "EnterPreviewRowsDialog.Dialog.NoPreviewRowsFound.Message"));
         	mb.open();
         }
 	}

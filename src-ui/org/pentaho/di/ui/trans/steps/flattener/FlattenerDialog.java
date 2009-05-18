@@ -36,11 +36,11 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.flattener.FlattenerMeta;
-import org.pentaho.di.trans.steps.flattener.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -51,6 +51,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class FlattenerDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = FlattenerMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
@@ -93,14 +95,14 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("FlattenerDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "FlattenerDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 		
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("FlattenerDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "FlattenerDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -120,7 +122,7 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 
         // Key field...
         wlField=new Label(shell, SWT.RIGHT);
-        wlField.setText(Messages.getString("FlattenerDialog.FlattenField.Label")); //$NON-NLS-1$
+        wlField.setText(BaseMessages.getString(PKG, "FlattenerDialog.FlattenField.Label")); //$NON-NLS-1$
         props.setLook(wlField);
         fdlField=new FormData();
         fdlField.left = new FormAttachment(0, 0);
@@ -153,7 +155,7 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
     );  
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("FlattenerDialog.TargetField.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "FlattenerDialog.TargetField.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left  = new FormAttachment(0, 0);
@@ -164,7 +166,7 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 		int nrKeyRows=(input.getTargetField()!=null?input.getTargetField().length:1);
 		
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo(Messages.getString("FlattenerDialog.ColumnInfo.TargetField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciKey[0]=new ColumnInfo(BaseMessages.getString(PKG, "FlattenerDialog.ColumnInfo.TargetField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		
 		wFields=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -183,9 +185,9 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -231,7 +233,7 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 			  }
 			 if(field!=null) wField.setText(field);
 		 	}catch(KettleException ke){
-				new ErrorDialog(shell, Messages.getString("FlattenerDialog.FailedToGetFields.DialogTitle"), Messages.getString("FlattenerDialog.FailedToGetFields.DialogMessage"), ke);
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "FlattenerDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "FlattenerDialog.FailedToGetFields.DialogMessage"), ke);
 			}
 		 	gotPreviousFields=true;
 		}
@@ -242,7 +244,7 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), Messages.getString("FlattenerDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "FlattenerDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
         if (input.getFieldName()!= null) wField.setText(input.getFieldName());
 

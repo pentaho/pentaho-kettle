@@ -34,8 +34,11 @@ import javax.naming.directory.InitialDirContext;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 
 public class MailValidation {
+
+	private static Class<?> PKG = MailValidatorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private static LogWriter log = LogWriter.getInstance();
 
@@ -68,7 +71,7 @@ public class MailValidation {
 	}
 
 	private static String className() {
-		return Messages.getString("MailValidator.ClassName");
+		return BaseMessages.getString(PKG, "MailValidator.ClassName");
 	}
 
 	private static int hear(BufferedReader in) throws IOException {
@@ -114,7 +117,7 @@ public class MailValidation {
 			});
 			attr = attrs.get("A");
 			if (attr == null)
-				throw new NamingException(Messages.getString("MailValidator.NoMatchName", hostName));
+				throw new NamingException(BaseMessages.getString(PKG, "MailValidator.NoMatchName", hostName));
 		}
 
 		// Huzzah! we have machines to try. Return them as an array list
@@ -148,7 +151,7 @@ public class MailValidation {
 		MailValidationResult result = new MailValidationResult();
 
 		if (!isRegExValid(address)) {
-			result.setErrorMessage(Messages.getString("MailValidator.MalformedAddress", address));
+			result.setErrorMessage(BaseMessages.getString(PKG, "MailValidator.MalformedAddress", address));
 			return result;
 		}
 
@@ -179,11 +182,11 @@ public class MailValidation {
 				// Just because we can send mail to the domain, doesn't mean that the
 				// address is valid, but if we can't, it's a sure sign that it isn't
 				if (mxList == null || mxList.size() == 0) {
-					result.setErrorMessage(Messages.getString("MailValidator.NoMachinesInDomain", domain));
+					result.setErrorMessage(BaseMessages.getString(PKG, "MailValidator.NoMachinesInDomain", domain));
 					return result;
 				}
 			} catch (Exception ex) {
-				result.setErrorMessage(Messages.getString("MailValidator.ErrorGettingMachinesInDomain", ex.getMessage()));
+				result.setErrorMessage(BaseMessages.getString(PKG, "MailValidator.ErrorGettingMachinesInDomain", ex.getMessage()));
 				return result;
 			}
 		} else {
@@ -191,7 +194,7 @@ public class MailValidation {
 		}
 
 		if (log.isDebug())
-			log.logDebug(className(), Messages.getString("MailValidator.ExchangersFound", "" + mxList.size()));
+			log.logDebug(className(), BaseMessages.getString(PKG, "MailValidator.ExchangersFound", "" + mxList.size()));
 
 		// Now, do the SMTP validation, try each mail exchanger until we get
 		// a positive acceptance. It *MAY* be possible for one MX to allow
@@ -206,7 +209,7 @@ public class MailValidation {
 			try {
 				String exhanger = (String) mxList.get(mx);
 				if (log.isDebug())
-					log.logDebug(className(), Messages.getString("MailValidator.TryingExchanger", exhanger));
+					log.logDebug(className(), BaseMessages.getString(PKG, "MailValidator.TryingExchanger", exhanger));
 
 				int res;
 
@@ -216,38 +219,38 @@ public class MailValidation {
 					skt.setSoTimeout(timeout);
 
 				if (log.isDebug())
-					log.logDebug(className(), Messages.getString("MailValidator.ConnectingTo", exhanger, "25", skt.isConnected() + ""));
+					log.logDebug(className(), BaseMessages.getString(PKG, "MailValidator.ConnectingTo", exhanger, "25", skt.isConnected() + ""));
 
 				rdr = new BufferedReader(new InputStreamReader(skt.getInputStream()));
 				wtr = new BufferedWriter(new OutputStreamWriter(skt.getOutputStream()));
 
 				res = hear(rdr);
 				if (res != 220)
-					throw new Exception(Messages.getString("MailValidator.InvalidHeader"));
+					throw new Exception(BaseMessages.getString(PKG, "MailValidator.InvalidHeader"));
 
 				// say HELLO it's me
 				if (log.isDebug())
-					log.logDebug(className(), Messages.getString("MailValidator.SayHello", domain));
+					log.logDebug(className(), BaseMessages.getString(PKG, "MailValidator.SayHello", domain));
 				say(wtr, "EHLO " + domain);
 				res = hear(rdr);
 				if (res != 250)
 					throw new Exception("Not ESMTP");
 				if (log.isDebug())
-					log.logDebug(className(), Messages.getString("MailValidator.ServerReplied", "" + res));
+					log.logDebug(className(), BaseMessages.getString(PKG, "MailValidator.ServerReplied", "" + res));
 
 				// validate the sender address   
 				if (log.isDebug())
-					log.logDebug(className(), Messages.getString("MailValidator.CheckSender", senderAddress));
+					log.logDebug(className(), BaseMessages.getString(PKG, "MailValidator.CheckSender", senderAddress));
 				say(wtr, "MAIL FROM: <" + senderAddress + ">");
 				res = hear(rdr);
 				if (res != 250)
-					throw new Exception(Messages.getString("MailValidator.SenderRejected"));
+					throw new Exception(BaseMessages.getString(PKG, "MailValidator.SenderRejected"));
 				if (log.isDebug())
-					log.logDebug(className(), Messages.getString("MailValidator.SenderAccepted", "" + res));
+					log.logDebug(className(), BaseMessages.getString(PKG, "MailValidator.SenderAccepted", "" + res));
 
 				// Validate receiver
 				if (log.isDebug())
-					log.logDebug(className(), Messages.getString("MailValidator.CheckReceiver", address));
+					log.logDebug(className(), BaseMessages.getString(PKG, "MailValidator.CheckReceiver", address));
 				say(wtr, "RCPT TO: <" + address + ">");
 				res = hear(rdr);
 
@@ -257,10 +260,10 @@ public class MailValidation {
 				say(wtr, "QUIT");
 				hear(rdr);
 				if (res != 250)
-					throw new Exception(Messages.getString("MailValidator.AddressNotValid", address));
+					throw new Exception(BaseMessages.getString(PKG, "MailValidator.AddressNotValid", address));
 
 				if (log.isDebug())
-					log.logDebug(className(), Messages.getString("MailValidator.ReceiverAccepted", address, "" + res));
+					log.logDebug(className(), BaseMessages.getString(PKG, "MailValidator.ReceiverAccepted", address, "" + res));
 				valid = true;
 
 			} catch (Exception ex) {

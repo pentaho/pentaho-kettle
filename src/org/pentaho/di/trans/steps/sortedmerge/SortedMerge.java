@@ -19,6 +19,7 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -36,6 +37,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class SortedMerge extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = SortedMergeMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private SortedMergeMeta meta;
 	private SortedMergeData data;
 	
@@ -188,7 +191,7 @@ public class SortedMerge extends BaseStep implements StepInterface
         
 		putRow(data.rowMeta,row);     // copy row to possible alternate rowset(s).
 
-        if (checkFeedback(getLinesRead())) logBasic(Messages.getString("SortedMerge.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "SortedMerge.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			
 		return true;
 	}

@@ -23,6 +23,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -35,6 +36,8 @@ import org.w3c.dom.Node;
 
 public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = UniqueRowsByHashSetMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** Whether to compare strictly by hash value or to store the row values for strict equality checking */
     private boolean storeValues;
     
@@ -120,7 +123,7 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("UniqueRowsByHashSetMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "UniqueRowsByHashSetMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -174,7 +177,7 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("UniqueRowsByHashSetMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "UniqueRowsByHashSetMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -190,7 +193,7 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 		}
 		catch(KettleException e)
 		{
-			throw new KettleException(Messages.getString("UniqueRowsByHashSetMeta.Exception.UnableToSaveStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "UniqueRowsByHashSetMeta.Exception.UnableToSaveStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -201,12 +204,12 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("UniqueRowsByHashSetMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UniqueRowsByHashSetMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("UniqueRowsByHashSetMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "UniqueRowsByHashSetMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

@@ -15,6 +15,7 @@ package org.pentaho.di.www;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -22,6 +23,8 @@ import org.w3c.dom.Node;
 
 public class WebResult
 {
+	private static Class<?> PKG = WebResult.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final String XML_TAG = "webresult";
     
     public static final String STRING_OK = "OK";
@@ -99,7 +102,7 @@ public class WebResult
         }
         catch(Exception e)
         {
-            throw new KettleXMLException(Messages.getString("WebResult.Error.UnableCreateResult"), e);
+            throw new KettleXMLException(BaseMessages.getString(PKG, "WebResult.Error.UnableCreateResult"), e);
         }
     }
 }

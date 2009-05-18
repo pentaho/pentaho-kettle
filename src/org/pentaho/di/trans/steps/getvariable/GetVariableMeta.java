@@ -28,6 +28,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -43,6 +44,8 @@ import org.w3c.dom.Node;
  */
 public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = GetVariableMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String[] fieldName;
 	private String[] variableString;
 
@@ -329,13 +332,13 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (Const.isEmpty(variableString[i]))
 			{
-				CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("GetVariableMeta.CheckResult.VariableNotSpecified", fieldName[i]), stepMeta);
+				CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetVariableMeta.CheckResult.VariableNotSpecified", fieldName[i]), stepMeta);
 				remarks.add(cr);
 			}
 		}
 		if (remarks.size()==nrRemarks)
 		{
-			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("GetVariableMeta.CheckResult.AllVariablesSpecified"), stepMeta);
+			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetVariableMeta.CheckResult.AllVariablesSpecified"), stepMeta);
 			remarks.add(cr);
 		}
 	}

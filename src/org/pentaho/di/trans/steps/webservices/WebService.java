@@ -48,6 +48,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -70,6 +71,8 @@ import com.ctc.wstx.exc.WstxParsingException;
 
 public class WebService extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = WebServiceMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final String NS_PREFIX = "ns";
 
     private WebServiceData data;
@@ -320,7 +323,7 @@ public class WebService extends BaseStep implements StepInterface
          wsdl = new Wsdl(new java.net.URI(data.realUrl), null, null);
         }
         catch(Exception e){
-         throw new KettleStepException(Messages.getString("WebServices.ERROR0013.ExceptionLoadingWSDL"), e);
+         throw new KettleStepException(BaseMessages.getString(PKG, "WebServices.ERROR0013.ExceptionLoadingWSDL"), e);
         }
         String vURLService = wsdl.getServiceEndpoint();
         
@@ -359,7 +362,7 @@ public class WebService extends BaseStep implements StepInterface
             	soapAction += "/";
             }
             soapAction+=meta.getOperationName()+"\"";            
-            logDetailed(Messages.getString("WebServices.Log.UsingRequestHeaderSOAPAction", soapAction));
+            logDetailed(BaseMessages.getString(PKG, "WebServices.Log.UsingRequestHeaderSOAPAction", soapAction));
             vHttpMethod.setRequestHeader("SOAPAction", soapAction);
 
             RequestEntity requestEntity = new ByteArrayRequestEntity(xml.toString().getBytes("UTF-8"), "UTF-8");
@@ -372,37 +375,37 @@ public class WebService extends BaseStep implements StepInterface
             }
             else if (responseCode == 401)
             {
-                throw new KettleStepException(Messages.getString("WebServices.ERROR0011.Authentication", vURLService));
+                throw new KettleStepException(BaseMessages.getString(PKG, "WebServices.ERROR0011.Authentication", vURLService));
             }
             else if (responseCode == 404)
             {
-            	throw new KettleStepException(Messages.getString("WebServices.ERROR0012.NotFound", vURLService));
+            	throw new KettleStepException(BaseMessages.getString(PKG, "WebServices.ERROR0012.NotFound", vURLService));
             }
             else
             {
-            	throw new KettleStepException(Messages.getString("WebServices.ERROR0001.ServerError", Integer.toString(responseCode), Const.NVL(new String(vHttpMethod.getResponseBody()), ""), vURLService) );
+            	throw new KettleStepException(BaseMessages.getString(PKG, "WebServices.ERROR0001.ServerError", Integer.toString(responseCode), Const.NVL(new String(vHttpMethod.getResponseBody()), ""), vURLService) );
             }
             requestTime += Const.nanoTime() - currentRequestTime;
         }
         catch (URIException e)
         {
-            throw new KettleStepException(Messages.getString("WebServices.ERROR0002.InvalidURI", vURLService), e);
+            throw new KettleStepException(BaseMessages.getString(PKG, "WebServices.ERROR0002.InvalidURI", vURLService), e);
         }
         catch (UnsupportedEncodingException e)
         {
-            throw new KettleStepException(Messages.getString("WebServices.ERROR0003.UnsupportedEncoding", vURLService), e);
+            throw new KettleStepException(BaseMessages.getString(PKG, "WebServices.ERROR0003.UnsupportedEncoding", vURLService), e);
         }
         catch (HttpException e)
         {
-            throw new KettleStepException(Messages.getString("WebServices.ERROR0004.HttpException", vURLService), e);
+            throw new KettleStepException(BaseMessages.getString(PKG, "WebServices.ERROR0004.HttpException", vURLService), e);
         }
         catch (UnknownHostException e)
         {
-            throw new KettleStepException(Messages.getString("WebServices.ERROR0013.UnknownHost", vURLService), e);
+            throw new KettleStepException(BaseMessages.getString(PKG, "WebServices.ERROR0013.UnknownHost", vURLService), e);
         }
         catch (IOException e)
         {
-            throw new KettleStepException(Messages.getString("WebServices.ERROR0005.IOException", vURLService), e);
+            throw new KettleStepException(BaseMessages.getString(PKG, "WebServices.ERROR0005.IOException", vURLService), e);
         }
         finally
         {
@@ -620,7 +623,7 @@ public class WebService extends BaseStep implements StepInterface
 		    				if (log.isDetailed()) {
 				    			StringWriter nodeXML = new StringWriter();
 				    			transformer.transform(new DOMSource(node), new StreamResult(nodeXML));
-				    			logDetailed(Messages.getString("WebServices.Log.ResultRowDataFound", nodeXML.toString()));
+				    			logDetailed(BaseMessages.getString(PKG, "WebServices.Log.ResultRowDataFound", nodeXML.toString()));
 		    				}
 			    			
 				    		// Allocate a new row...
@@ -666,7 +669,7 @@ public class WebService extends BaseStep implements StepInterface
         }
         catch (Exception e)
         {
-            throw new KettleStepException(Messages.getString("WebServices.ERROR0010.OutputParsingError", response.toString()), e);
+            throw new KettleStepException(BaseMessages.getString(PKG, "WebServices.ERROR0010.OutputParsingError", response.toString()), e);
         }
     }
     
@@ -864,7 +867,7 @@ public class WebService extends BaseStep implements StepInterface
 				}
 			}
 		} catch (Exception e) {
-			throw new KettleStepException(Messages.getString("WebServices.ERROR0010.OutputParsingError", response.toString()), e);
+			throw new KettleStepException(BaseMessages.getString(PKG, "WebServices.ERROR0010.OutputParsingError", response.toString()), e);
 		}
 	}
     

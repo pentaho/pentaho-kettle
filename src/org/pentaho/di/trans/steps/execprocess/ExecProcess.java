@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -36,6 +37,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class ExecProcess extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = ExecProcessMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private ExecProcessMeta meta;
     private ExecProcessData data;
     
@@ -72,8 +75,8 @@ public class ExecProcess extends BaseStep implements StepInterface
     		// Check is process field is provided
 			if (Const.isEmpty(meta.getProcessField()))
 			{
-				logError(Messages.getString("ExecProcess.Error.ProcessFieldMissing"));
-				throw new KettleException(Messages.getString("ExecProcess.Error.ProcessFieldMissing"));
+				logError(BaseMessages.getString(PKG, "ExecProcess.Error.ProcessFieldMissing"));
+				throw new KettleException(BaseMessages.getString(PKG, "ExecProcess.Error.ProcessFieldMissing"));
 			}
 			
 			// cache the position of the field			
@@ -83,8 +86,8 @@ public class ExecProcess extends BaseStep implements StepInterface
 				if (data.indexOfProcess<0)
 				{
 					// The field is unreachable !
-					logError(Messages.getString("ExecProcess.Exception.CouldnotFindField")+ "[" + meta.getProcessField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleException(Messages.getString("ExecProcess.Exception.CouldnotFindField",meta.getProcessField())); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "ExecProcess.Exception.CouldnotFindField")+ "[" + meta.getProcessField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "ExecProcess.Exception.CouldnotFindField",meta.getProcessField())); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
     	}// End If first 
@@ -99,7 +102,7 @@ public class ExecProcess extends BaseStep implements StepInterface
         
         try
         {
-         	if(Const.isEmpty(processString)) throw new KettleException(Messages.getString("ExecProcess.ProcessEmpty"));
+         	if(Const.isEmpty(processString)) throw new KettleException(BaseMessages.getString(PKG, "ExecProcess.ProcessEmpty"));
          	
          	// execute and return result as String
          	String resultString=execProcess(processString);
@@ -112,7 +115,7 @@ public class ExecProcess extends BaseStep implements StepInterface
 			 //	add new values to the row.
 	        putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
          	
-	        if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("ExecProcess.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+	        if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "ExecProcess.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
         }
         catch(KettleException e)
         {
@@ -123,7 +126,7 @@ public class ExecProcess extends BaseStep implements StepInterface
         	}
         	else
         	{
-	            logError(Messages.getString("ExecProcess.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "ExecProcess.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
 	            setErrors(1);
 	            stopAll();
 	            setOutputDone();  // signal end to receiver(s)
@@ -174,7 +177,7 @@ public class ExecProcess extends BaseStep implements StepInterface
         {
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), Messages.getString("ExecProcess.Error.ResultFieldMissing"));
+        		log.logError(toString(), BaseMessages.getString(PKG, "ExecProcess.Error.ResultFieldMissing"));
         		return false;
         	}
             return true;
@@ -193,7 +196,7 @@ public class ExecProcess extends BaseStep implements StepInterface
     // Run is were the action happens!
     public void run()
     {
-    	if(log.isBasic()) logBasic(Messages.getString("ExecProcess.Log.StartingToRun")); //$NON-NLS-1$
+    	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ExecProcess.Log.StartingToRun")); //$NON-NLS-1$
         
         try
         {
@@ -201,7 +204,7 @@ public class ExecProcess extends BaseStep implements StepInterface
         }
         catch(Exception e)
         {
-            logError(Messages.getString("ExecProcess.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(BaseMessages.getString(PKG, "ExecProcess.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
             stopAll();

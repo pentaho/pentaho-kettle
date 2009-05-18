@@ -30,6 +30,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -49,6 +50,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class PGBulkLoader extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = PGBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private PGBulkLoaderMeta meta;
 	private PGBulkLoaderData data;	
 	
@@ -256,7 +259,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface
                 // wait for the pgsql process to finish and check for any error...
 				//
             	int exitVal = data.psqlProcess.waitFor();
-				logBasic(Messages.getString("GPBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
+				logBasic(BaseMessages.getString(PKG, "GPBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
 	            
 				return false;
 			}
@@ -293,7 +296,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("GPBulkLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "GPBulkLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
@@ -455,13 +458,13 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			logBasic(BaseMessages.getString(PKG, "System.Log.StartingToRun")); //$NON-NLS-1$
 			
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Throwable t)
 		{
-			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();

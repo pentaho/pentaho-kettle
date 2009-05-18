@@ -14,6 +14,7 @@ package org.pentaho.di.trans.steps.append;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -31,6 +32,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class Append extends BaseStep implements StepInterface
 {   
+	private static Class<?> PKG = Append.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private AppendMeta meta;
 	private AppendData data;
 	
@@ -88,7 +91,7 @@ public class Append extends BaseStep implements StepInterface
                 }
                 catch(KettleRowException e)
                 {
-            	    throw new KettleException(Messages.getString("Append.Exception.InvalidLayoutDetected"), e);
+            	    throw new KettleException(BaseMessages.getString(PKG, "Append.Exception.InvalidLayoutDetected"), e);
                 }
 	    	}	    	
     	}
@@ -100,7 +103,7 @@ public class Append extends BaseStep implements StepInterface
 
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(Messages.getString("AppendRows.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "AppendRows.LineNumber")+getLinesRead()); //$NON-NLS-1$
         }
 
 		return true;
@@ -121,7 +124,7 @@ public class Append extends BaseStep implements StepInterface
         	data.firstTail = true;
             if (meta.getHeadStepName()==null || meta.getTailStepName()==null)
             {
-                logError(Messages.getString("AppendRows.Log.BothHopsAreNeeded")); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "AppendRows.Log.BothHopsAreNeeded")); //$NON-NLS-1$
             }
             else
             {

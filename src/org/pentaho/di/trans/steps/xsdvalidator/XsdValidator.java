@@ -33,6 +33,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -52,6 +53,8 @@ import org.xml.sax.SAXException;
  */
 public class XsdValidator extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = XsdValidatorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private XsdValidatorMeta meta;
 	private XsdValidatorData data;
 	
@@ -93,8 +96,8 @@ public class XsdValidator extends BaseStep implements StepInterface
 				if (data.xmlindex<0)
 				{
 					// The field is unreachable !
-					logError(Messages.getString("XsdValidator.Log.ErrorFindingField")+ "[" + meta.getXMLStream()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(Messages.getString("XsdValidator.Exception.CouldnotFindField",meta.getXMLStream())); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "XsdValidator.Log.ErrorFindingField")+ "[" + meta.getXMLStream()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.CouldnotFindField",meta.getXMLStream())); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 					
 					
@@ -102,8 +105,8 @@ public class XsdValidator extends BaseStep implements StepInterface
 				if (meta.getResultfieldname() == null )
 				{
 					//	Result field is missing !
-					logError(Messages.getString("XsdValidator.Log.ErrorResultFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(Messages.getString("XsdValidator.Exception.ErrorResultFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "XsdValidator.Log.ErrorResultFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.ErrorResultFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 					
 				// Is XSD file is provided?
@@ -111,8 +114,8 @@ public class XsdValidator extends BaseStep implements StepInterface
 				{
 					if(meta.getXSDFilename()==null)
 					{
-						logError(Messages.getString("XsdValidator.Log.ErrorXSDFileMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleStepException(Messages.getString("XsdValidator.Exception.ErrorXSDFileMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "XsdValidator.Log.ErrorXSDFileMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.ErrorXSDFileMissing")); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					else
 					{
@@ -123,15 +126,15 @@ public class XsdValidator extends BaseStep implements StepInterface
 							xsdfile = KettleVFS.getFileObject(environmentSubstitute(meta.getXSDFilename()));
 						    if(!xsdfile.exists())
 						    {
-						    	logError(Messages.getString("XsdValidator.Log.Error.XSDFileNotExists"));
-								throw new KettleStepException(Messages.getString("XsdValidator.Exception.XSDFileNotExists"));
+						    	logError(BaseMessages.getString(PKG, "XsdValidator.Log.Error.XSDFileNotExists"));
+								throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.XSDFileNotExists"));
 						    }
 							
 						}
 						catch (Exception e)
 						{
-							logError(Messages.getString("XsdValidator.Log.Error.GettingXSDFile"));
-							throw new KettleStepException(Messages.getString("XsdValidator.Exception.GettingXSDFile"));
+							logError(BaseMessages.getString(PKG, "XsdValidator.Log.Error.GettingXSDFile"));
+							throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.GettingXSDFile"));
 						}
 						finally
 						{
@@ -149,8 +152,8 @@ public class XsdValidator extends BaseStep implements StepInterface
 				{
 					if(meta.getXSDDefinedField()==null)
 					{
-						logError(Messages.getString("XsdValidator.Log.Error.XSDFieldMissing"));
-						throw new KettleStepException(Messages.getString("XsdValidator.Exception.XSDFieldMissing"));
+						logError(BaseMessages.getString(PKG, "XsdValidator.Log.Error.XSDFieldMissing"));
+						throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.XSDFieldMissing"));
 					}
 					else
 					{
@@ -161,8 +164,8 @@ public class XsdValidator extends BaseStep implements StepInterface
 						if (data.xsdindex<0)
 						{
 							// The field is unreachable !
-							logError(Messages.getString("XsdValidator.Log.ErrorFindingXSDField",meta.getXSDDefinedField())); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleStepException(Messages.getString("XsdValidator.Exception.ErrorFindingXSDField",meta.getXSDDefinedField())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(BaseMessages.getString(PKG, "XsdValidator.Log.ErrorFindingXSDField",meta.getXSDDefinedField())); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.ErrorFindingXSDField",meta.getXSDDefinedField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 				}
@@ -172,8 +175,8 @@ public class XsdValidator extends BaseStep implements StepInterface
 			else
 			{
 				// XML stream field is missing !
-				logError(Messages.getString("XsdValidator.Log.Error.XmlStreamFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-				throw new KettleStepException(Messages.getString("XsdValidator.Exception.XmlStreamFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+				logError(BaseMessages.getString(PKG, "XsdValidator.Log.Error.XmlStreamFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.XmlStreamFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 			
@@ -224,8 +227,8 @@ public class XsdValidator extends BaseStep implements StepInterface
 					File xmlfileValidator = new File(XMLFieldvalue);
 					if (!xmlfileValidator.exists()) 
 					{
-						logError(Messages.getString("XsdValidator.Log.Error.XMLfileMissing",XMLFieldvalue)); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleStepException(Messages.getString("XsdValidator.Exception.XMLfileMissing",XMLFieldvalue)); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "XsdValidator.Log.Error.XMLfileMissing",XMLFieldvalue)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.XMLfileMissing",XMLFieldvalue)); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					sourceXML = new StreamSource(xmlfileValidator);
 				}
@@ -289,7 +292,7 @@ public class XsdValidator extends BaseStep implements StepInterface
 			else
 				outputRowData2=outputRowData;
 			
-			if (log.isRowLevel()) logRowlevel(Messages.getString("XsdValidator.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
+			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "XsdValidator.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
 			
 	        //	add new values to the row.
 	        putRow(data.outputRowMeta, outputRowData2);  // copy row to output rowset(s);
@@ -309,8 +312,8 @@ public class XsdValidator extends BaseStep implements StepInterface
             }
 			else
 			{
-	            logError(Messages.getString("XsdValidator.ErrorProcesing" + " : "+ e.getMessage()));
-	            throw new KettleStepException(Messages.getString("XsdValidator.ErrorProcesing"), e);
+	            logError(BaseMessages.getString(PKG, "XsdValidator.ErrorProcesing" + " : "+ e.getMessage()));
+	            throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.ErrorProcesing"), e);
 			}
 		}
 		

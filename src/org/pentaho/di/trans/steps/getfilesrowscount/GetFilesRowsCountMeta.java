@@ -36,6 +36,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -50,7 +51,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
 public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInterface
-{	
+{
+	private static Class<?> PKG = GetFilesRowsCountMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final String DEFAULT_ROWSCOUNT_FIELDNAME = "rowscount";
 
 	/** Array of filenames */
@@ -427,7 +430,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
         }
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("GetFilesRowsCountMeta.Exception.ErrorReadingRepository"), e);
+			throw new KettleException(BaseMessages.getString(PKG, "GetFilesRowsCountMeta.Exception.ErrorReadingRepository"), e);
 		}
 	}
 	
@@ -457,7 +460,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("GetFilesRowsCountMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
+			throw new KettleException(BaseMessages.getString(PKG, "GetFilesRowsCountMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
 		}
 	}
 	
@@ -481,12 +484,12 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 		// See if we get input...
 		if (input.length>0)
 		{		
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("GetFilesRowsCountMeta.CheckResult.NoInputExpected"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetFilesRowsCountMeta.CheckResult.NoInputExpected"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("GetFilesRowsCountMeta.CheckResult.NoInput"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetFilesRowsCountMeta.CheckResult.NoInput"), stepMeta);
 			remarks.add(cr);
 		}
 		
@@ -494,23 +497,23 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 
 		if (fileInputList==null || fileInputList.getFiles().size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("GetFilesRowsCountMeta.CheckResult.NoFiles"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetFilesRowsCountMeta.CheckResult.NoFiles"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("GetFilesRowsCountMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetFilesRowsCountMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepMeta);
 			remarks.add(cr);
 		}
 		
 		if ((RowSeparator_format.equals("CUSTOM")) && (RowSeparator==null))
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("GetFilesRowsCountMeta.CheckResult.NoSeparator"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetFilesRowsCountMeta.CheckResult.NoSeparator"), stepMeta);
 			remarks.add(cr);
 		}		
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("GetFilesRowsCountMeta.CheckResult.SeparatorOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetFilesRowsCountMeta.CheckResult.SeparatorOk"), stepMeta);
 			remarks.add(cr);
 		}
 		

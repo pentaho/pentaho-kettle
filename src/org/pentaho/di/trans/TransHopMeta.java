@@ -23,6 +23,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
@@ -38,6 +39,8 @@ import org.w3c.dom.Node;
  */
 public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHopMeta>
 {
+	private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final String XML_TAG = "hop";
 
 	private StepMeta from_step;
@@ -107,7 +110,7 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 		} catch (KettleDatabaseException dbe)
 		{
 			throw new KettleException(
-					Messages.getString("TransHopMeta.Exception.LoadTransformationHopInfo") + id_trans_hop, dbe); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "TransHopMeta.Exception.LoadTransformationHopInfo") + id_trans_hop, dbe); //$NON-NLS-1$
 		}
 	}
 
@@ -130,7 +133,7 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 				enabled = en.equalsIgnoreCase("Y"); //$NON-NLS-1$
 		} catch (Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("TransHopMeta.Exception.UnableToLoadHopInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "TransHopMeta.Exception.UnableToLoadHopInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -177,7 +180,7 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 		} catch (KettleDatabaseException dbe)
 		{
 			throw new KettleException(
-					Messages.getString("TransHopMeta.Exception.UnableToSaveTransformationHopInfo") + id_transformation, dbe); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "TransHopMeta.Exception.UnableToSaveTransformationHopInfo") + id_transformation, dbe); //$NON-NLS-1$
 		}
 	}
 

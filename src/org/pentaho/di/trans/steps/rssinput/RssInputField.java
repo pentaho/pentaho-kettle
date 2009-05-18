@@ -14,13 +14,13 @@
 
 package org.pentaho.di.trans.steps.rssinput;
 
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
+import org.w3c.dom.Node;
 
 /**
  * Describes an RssInput field
@@ -30,6 +30,8 @@ import org.pentaho.di.core.exception.KettleValueException;
  */
 public class RssInputField implements Cloneable
 {
+	private static Class<?> PKG = RssInput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public final static int TYPE_TRIM_NONE  = 0;
     public final static int TYPE_TRIM_LEFT  = 1;
     public final static int TYPE_TRIM_RIGHT = 2;
@@ -46,22 +48,22 @@ public class RssInputField implements Cloneable
     public final static String trimTypeCode[] = { "none", "left", "right", "both" };
     
     public final static String trimTypeDesc[] = {
-      Messages.getString("RssInput.Field.TrimType.None"),
-      Messages.getString("RssInput.Field.TrimType.Left"),
-      Messages.getString("RssInput.Field.TrimType.Right"),
-      Messages.getString("RssInput.Field.TrimType.Both")
+      BaseMessages.getString(PKG, "RssInput.Field.TrimType.None"),
+      BaseMessages.getString(PKG, "RssInput.Field.TrimType.Left"),
+      BaseMessages.getString(PKG, "RssInput.Field.TrimType.Right"),
+      BaseMessages.getString(PKG, "RssInput.Field.TrimType.Both")
     };
     
     public final static String ColumnCode[] = {"title","link","descriptiontext","descriptionhtml","comments","guid","pubdate"};
     
     public final static String ColumnDesc[] = { 
-    	Messages.getString("RssInput.Column.Title"), 
-    	Messages.getString("RssInput.Column.Link"),
-    	Messages.getString("RssInput.Column.DescriptionAsText"),
-    	Messages.getString("RssInput.Column.DescriptionAsHtml"),
-    	Messages.getString("RssInput.Column.Comments"),
-    	Messages.getString("RssInput.Column.Guid"),
-    	Messages.getString("RssInput.Column.PubDate")};
+    	BaseMessages.getString(PKG, "RssInput.Column.Title"), 
+    	BaseMessages.getString(PKG, "RssInput.Column.Link"),
+    	BaseMessages.getString(PKG, "RssInput.Column.DescriptionAsText"),
+    	BaseMessages.getString(PKG, "RssInput.Column.DescriptionAsHtml"),
+    	BaseMessages.getString(PKG, "RssInput.Column.Comments"),
+    	BaseMessages.getString(PKG, "RssInput.Column.Guid"),
+    	BaseMessages.getString(PKG, "RssInput.Column.PubDate")};
     
 	private String 	  name;
     private int		  column;

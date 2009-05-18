@@ -26,6 +26,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
@@ -39,6 +40,8 @@ import org.w3c.dom.Node;
 
 public class Carte
 {
+	private static Class<?> PKG = Carte.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private WebServer webServer;
 	private SlaveServerConfig config;
 
@@ -67,7 +70,7 @@ public class Carte
             }
             catch(Exception e)
             {
-                LogWriter.getInstance().logError("Carte", Messages.getString("Carte.Error.CanNotPartPort", slaveServer.getHostname(), ""+port), e);
+                LogWriter.getInstance().logError("Carte", BaseMessages.getString(PKG, "Carte.Error.CanNotPartPort", slaveServer.getHostname(), ""+port), e);
                 allOK=false;
             }
         }
@@ -122,14 +125,14 @@ public class Carte
     	//
         if (config==null)
         {
-            System.err.println(Messages.getString("Carte.Usage.Text"));
+            System.err.println(BaseMessages.getString(PKG, "Carte.Usage.Text"));
             System.err.println();
 
-            System.err.println(Messages.getString("Carte.Usage.Example") + ": Carte 127.0.0.1 8080");
-            System.err.println(Messages.getString("Carte.Usage.Example") + ": Carte 192.168.1.221 8081");
+            System.err.println(BaseMessages.getString(PKG, "Carte.Usage.Example") + ": Carte 127.0.0.1 8080");
+            System.err.println(BaseMessages.getString(PKG, "Carte.Usage.Example") + ": Carte 192.168.1.221 8081");
             System.err.println();
-            System.err.println(Messages.getString("Carte.Usage.Example") + ": Carte /foo/bar/carte-config.xml");
-            System.err.println(Messages.getString("Carte.Usage.Example") + ": Carte http://www.example.com/carte-config.xml");
+            System.err.println(BaseMessages.getString(PKG, "Carte.Usage.Example") + ": Carte /foo/bar/carte-config.xml");
+            System.err.println(BaseMessages.getString(PKG, "Carte.Usage.Example") + ": Carte http://www.example.com/carte-config.xml");
 
             System.exit(1);
         }
@@ -160,7 +163,7 @@ public class Carte
 		}
 		catch(KettleException e)
         {
-            throw new Exception(Messages.getString("Carte.Error.UnableLoadSteps"), e);
+            throw new Exception(BaseMessages.getString(PKG, "Carte.Error.UnableLoadSteps"), e);
         }
 
 		try 
@@ -169,7 +172,7 @@ public class Carte
 		}
 		catch(KettleException e)
         {
-            throw new Exception( Messages.getString("Carte.Error.UnableLoadJobEntries"), e);
+            throw new Exception( BaseMessages.getString(PKG, "Carte.Error.UnableLoadJobEntries"), e);
            
         }
     }

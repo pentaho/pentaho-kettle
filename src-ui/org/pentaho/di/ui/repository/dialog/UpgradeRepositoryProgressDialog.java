@@ -32,6 +32,7 @@ import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
@@ -46,6 +47,8 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
  */
 public class UpgradeRepositoryProgressDialog
 {
+	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Shell shell;
     private Repository rep;
     private boolean upgrade;
@@ -93,8 +96,8 @@ public class UpgradeRepositoryProgressDialog
             	// Ask if you want to do a dry run first?
             	//
             	MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO);
-            	box.setMessage(Messages.getString("UpgradeRepositoryDialog.DryRunQuestion.Message"));
-            	box.setText(Messages.getString("UpgradeRepositoryDialog.DryRunQuestion.Title"));
+            	box.setMessage(BaseMessages.getString(PKG, "UpgradeRepositoryDialog.DryRunQuestion.Message"));
+            	box.setText(BaseMessages.getString(PKG, "UpgradeRepositoryDialog.DryRunQuestion.Title"));
             	int answer = box.open();
             	
                 try
@@ -112,7 +115,7 @@ public class UpgradeRepositoryProgressDialog
                 catch (KettleException e)
                 {
                     LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
-                    throw new InvocationTargetException(e, Messages.getString("UpgradeRepositoryDialog.Error.CreateUpdate", e.getMessage()));
+                    throw new InvocationTargetException(e, BaseMessages.getString(PKG, "UpgradeRepositoryDialog.Error.CreateUpdate", e.getMessage()));
                 }
             }
         };
@@ -147,13 +150,13 @@ public class UpgradeRepositoryProgressDialog
         String sTitle, sMessage;
         if (upgrade)
         {
-            sTitle = Messages.getString("UpgradeRepositoryDialog.ErrorUpgrade.Title");
-            sMessage = Messages.getString("UpgradeRepositoryDialog.ErrorUpgrade.Message");
+            sTitle = BaseMessages.getString(PKG, "UpgradeRepositoryDialog.ErrorUpgrade.Title");
+            sMessage = BaseMessages.getString(PKG, "UpgradeRepositoryDialog.ErrorUpgrade.Message");
         }
         else
         {
-            sTitle = Messages.getString("UpgradeRepositoryDialog.ErrorCreate.Title");
-            sMessage = Messages.getString("UpgradeRepositoryDialog.ErrorCreate.Message");
+            sTitle = BaseMessages.getString(PKG, "UpgradeRepositoryDialog.ErrorCreate.Title");
+            sMessage = BaseMessages.getString(PKG, "UpgradeRepositoryDialog.ErrorCreate.Message");
         }
 
         new ErrorDialog(shell, sTitle, sMessage, e);

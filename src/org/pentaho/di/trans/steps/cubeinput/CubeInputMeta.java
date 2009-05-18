@@ -35,6 +35,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -56,6 +57,8 @@ import org.w3c.dom.Node;
 		categoryDescription="BaseStep.Category.Input", i18nPackageName="org.pentaho.di.trans.step")
 public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = CubeInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String filename;
 	private int rowLimit;
 	private boolean addfilenameresult;
@@ -137,7 +140,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("CubeInputMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -170,11 +173,11 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(KettleFileException kfe)
 		{
-			throw new KettleStepException(Messages.getString("CubeInputMeta.Exception.UnableToReadMetaData"), kfe); //$NON-NLS-1$
+			throw new KettleStepException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.UnableToReadMetaData"), kfe); //$NON-NLS-1$
 		}
 		catch(IOException e)
 		{
-			throw new KettleStepException(Messages.getString("CubeInputMeta.Exception.ErrorOpeningOrReadingCubeFile"), e); //$NON-NLS-1$
+			throw new KettleStepException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.ErrorOpeningOrReadingCubeFile"), e); //$NON-NLS-1$
 		}
 		finally
 		{
@@ -185,7 +188,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			catch(IOException ioe)
 			{
-				throw new KettleStepException(Messages.getString("CubeInputMeta.Exception.UnableToCloseCubeFile"), ioe); //$NON-NLS-1$
+				throw new KettleStepException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.UnableToCloseCubeFile"), ioe); //$NON-NLS-1$
 			}
 		}
 	}
@@ -215,7 +218,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("CubeInputMeta.Exception.UnexpectedErrorWhileReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.UnexpectedErrorWhileReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -231,7 +234,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(KettleException e)
 		{
-			throw new KettleException(Messages.getString("CubeInputMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
@@ -239,7 +242,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		CheckResult cr;
 		
-		cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, Messages.getString("CubeInputMeta.CheckResult.FileSpecificationsNotChecked"), stepinfo); //$NON-NLS-1$
+		cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "CubeInputMeta.CheckResult.FileSpecificationsNotChecked"), stepinfo); //$NON-NLS-1$
 		remarks.add(cr);
 	}
 	

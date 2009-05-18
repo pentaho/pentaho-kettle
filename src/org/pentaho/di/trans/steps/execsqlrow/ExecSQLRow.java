@@ -20,6 +20,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -36,6 +37,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class ExecSQLRow extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = ExecSQLRowMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private ExecSQLRowMeta meta;
 	private ExecSQLRowData data;
 	
@@ -104,7 +107,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface
             // Check is SQL field is provided
 			if (Const.isEmpty(meta.getSqlFieldName()))
 			{
-				throw new KettleException(Messages.getString("ExecSQLRow.Error.SQLFieldFieldMissing"));
+				throw new KettleException(BaseMessages.getString(PKG, "ExecSQLRow.Error.SQLFieldFieldMissing"));
 			}
 			
 			// cache the position of the field			
@@ -114,7 +117,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface
 				if (data.indexOfSQLFieldname<0)
 				{
 					// The field is unreachable !
-					throw new KettleException(Messages.getString("ExecSQLRow.Exception.CouldnotFindField",meta.getSqlFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "ExecSQLRow.Exception.CouldnotFindField",meta.getSqlFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
            
@@ -125,7 +128,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface
     	 
 		try
 		{
-	        if (log.isDebug()) logDebug(Messages.getString("ExecSQLRow.Log.ExecutingSQLScript")+Const.CR+SQLScript); //$NON-NLS-1$
+	        if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExecSQLRow.Log.ExecutingSQLScript")+Const.CR+SQLScript); //$NON-NLS-1$
 	        data.result = data.db.execStatement(SQLScript);
 	
 			RowMetaAndData add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());			
@@ -145,7 +148,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface
 			
 			if (checkFeedback(getLinesWritten()))
 			{
-				if(log.isBasic()) logBasic(Messages.getString("ExecSQLRow.Log.LineNumber") + getLinesWritten()); //$NON-NLS-1$
+				if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ExecSQLRow.Log.LineNumber") + getLinesWritten()); //$NON-NLS-1$
 			}
 		}
 		catch(KettleException e)
@@ -157,7 +160,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface
 			}
 			else
 			{
-				logError(Messages.getString("ExecSQLRow.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "ExecSQLRow.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -177,7 +180,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface
         meta=(ExecSQLRowMeta)smi;
         data=(ExecSQLRowData)sdi;
 
-        if(log.isBasic()) logBasic(Messages.getString("ExecSQLRow.Log.FinishingReadingQuery")); //$NON-NLS-1$
+        if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ExecSQLRow.Log.FinishingReadingQuery")); //$NON-NLS-1$
      
         if( data.db!=null) data.db.disconnect();
 
@@ -216,14 +219,14 @@ public class ExecSQLRow extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 
-                if (log.isDetailed()) logDetailed(Messages.getString("ExecSQLRow.Log.ConnectedToDB")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "ExecSQLRow.Log.ConnectedToDB")); //$NON-NLS-1$
 
                 if(meta.getCommitSize()>1) data.db.setCommit(meta.getCommitSize());
                 return true;
             }
             catch(KettleException e)
             {
-                logError(Messages.getString("ExecSQLRow.Log.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "ExecSQLRow.Log.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
                 setErrors(1);
                 stopAll();
             }

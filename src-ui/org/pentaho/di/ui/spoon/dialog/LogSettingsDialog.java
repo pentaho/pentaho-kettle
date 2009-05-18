@@ -34,16 +34,18 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.Log4JLayoutInterface;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.ui.spoon.dialog.Messages;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class LogSettingsDialog extends Dialog
 {
+	private static Class<?> PKG = LogSettingsDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private LogWriter    log;
 
 	private Label        wlLoglevel;
@@ -89,14 +91,14 @@ public class LogSettingsDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("LogSettingsDialog.Dialog.LoggingParameters.Title")); //Set logging parameters:
+		shell.setText(BaseMessages.getString(PKG, "LogSettingsDialog.Dialog.LoggingParameters.Title")); //Set logging parameters:
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filter line
 		wlFilter=new Label(shell, SWT.RIGHT);
-		wlFilter.setText(Messages.getString("LogSettingsDialog.Label.FilterSelection")); //Select filter 
+		wlFilter.setText(BaseMessages.getString(PKG, "LogSettingsDialog.Label.FilterSelection")); //Select filter 
  		props.setLook(wlFilter);
 		fdlFilter=new FormData();
 		fdlFilter.left = new FormAttachment(0, 0);
@@ -115,7 +117,7 @@ public class LogSettingsDialog extends Dialog
 		wFilter.setLayoutData(fdFilter);
 
 		wlLoglevel=new Label(shell, SWT.RIGHT);
-		wlLoglevel.setText(Messages.getString("LogSettingsDialog.Label.LogLevel")); //Loglevel 
+		wlLoglevel.setText(BaseMessages.getString(PKG, "LogSettingsDialog.Label.LogLevel")); //Loglevel 
  		props.setLook(wlLoglevel);
 		fdlLoglevel=new FormData();
 		fdlLoglevel.left = new FormAttachment(0, 0);
@@ -136,7 +138,7 @@ public class LogSettingsDialog extends Dialog
 
 		// Time?
 		wlTime=new Label(shell, SWT.RIGHT);
-		wlTime.setText(Messages.getString("LogSettingsDialog.Label.EnableTime")); //Enable Time?
+		wlTime.setText(BaseMessages.getString(PKG, "LogSettingsDialog.Label.EnableTime")); //Enable Time?
  		props.setLook(wlTime);
 		fdlTime=new FormData();
 		fdlTime.left = new FormAttachment(0, 0);
@@ -151,9 +153,9 @@ public class LogSettingsDialog extends Dialog
 		wTime.setLayoutData(fdTime);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTime);
 		

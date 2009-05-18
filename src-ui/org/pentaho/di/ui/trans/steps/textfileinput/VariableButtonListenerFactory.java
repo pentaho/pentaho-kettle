@@ -19,14 +19,17 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.widget.GetCaretPositionInterface;
 import org.pentaho.di.ui.core.widget.InsertTextInterface;
-import org.pentaho.di.trans.steps.textfileinput.Messages;
 
 
 public class VariableButtonListenerFactory
 {
+	private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     // Listen to the Variable... button
     public static final SelectionAdapter getSelectionAdapter(final Composite composite, final Text destination, VariableSpace space)
     {
@@ -62,7 +65,7 @@ public class VariableButtonListenerFactory
                     position = getCaretPositionInterface.getCaretPosition();
                 }
                 
-                EnterSelectionDialog esd = new EnterSelectionDialog(composite.getShell(), str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar.Message"));
+                EnterSelectionDialog esd = new EnterSelectionDialog(composite.getShell(), str, BaseMessages.getString(PKG, "System.Dialog.SelectEnvironmentVar.Title"), BaseMessages.getString(PKG, "System.Dialog.SelectEnvironmentVar.Message"));
                 if (esd.open()!=null)
                 {
                     int nr = esd.getSelectionNr();

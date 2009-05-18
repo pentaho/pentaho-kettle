@@ -26,8 +26,9 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.database.dialog.Messages;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 
@@ -38,7 +39,9 @@ import org.pentaho.di.ui.core.gui.GUIResource;
  * @since 22-12-2005
  */
 public class ShowBrowserDialog extends Dialog
-{
+{	
+	private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private String       dialogTitle;
     private String       content;
 		
@@ -98,7 +101,7 @@ public class ShowBrowserDialog extends Dialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		fdOK=new FormData();
 		fdOK.left       = new FormAttachment(50, 0);
 		fdOK.bottom     = new FormAttachment(100, 0);

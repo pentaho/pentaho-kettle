@@ -19,7 +19,6 @@ package org.pentaho.di.ui.trans.steps.mergejoin;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -42,20 +41,23 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mergejoin.MergeJoinMeta;
-import org.pentaho.di.trans.steps.mergejoin.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = MergeJoinMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public static final String STRING_SORT_WARNING_PARAMETER = "MergeJoinSortWarning"; //$NON-NLS-1$
     
 	private Label        wlStep1;
@@ -111,14 +113,14 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("MergeJoinDialog.Shell.Label")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "MergeJoinDialog.Shell.Label")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("MergeJoinDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "MergeJoinDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -140,7 +142,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
         
 		// First step
 		wlStep1=new Label(shell, SWT.RIGHT);
-		wlStep1.setText(Messages.getString("MergeJoinDialog.Step1.Label")); //$NON-NLS-1$
+		wlStep1.setText(BaseMessages.getString(PKG, "MergeJoinDialog.Step1.Label")); //$NON-NLS-1$
  		props.setLook(wlStep1);
 		fdlStep1=new FormData();
 		fdlStep1.left = new FormAttachment(0, 0);
@@ -164,7 +166,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Second step
 		wlStep2=new Label(shell, SWT.RIGHT);
-		wlStep2.setText(Messages.getString("MergeJoinDialog.Step2.Label")); //$NON-NLS-1$
+		wlStep2.setText(BaseMessages.getString(PKG, "MergeJoinDialog.Step2.Label")); //$NON-NLS-1$
  		props.setLook(wlStep2);
 		fdlStep2=new FormData();
 		fdlStep2.left = new FormAttachment(0, 0);
@@ -189,7 +191,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Join type
 		wlType=new Label(shell, SWT.RIGHT);
-		wlType.setText(Messages.getString("MergeJoinDialog.Type.Label")); //$NON-NLS-1$
+		wlType.setText(BaseMessages.getString(PKG, "MergeJoinDialog.Type.Label")); //$NON-NLS-1$
  		props.setLook(wlType);
 		fdlType=new FormData();
 		fdlType.left = new FormAttachment(0, 0);
@@ -211,7 +213,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 
         // THE KEYS TO MATCH for first step...
         wlKeys1=new Label(shell, SWT.NONE);
-        wlKeys1.setText(Messages.getString("MergeJoinDialog.Keys1.Label")); //$NON-NLS-1$
+        wlKeys1.setText(BaseMessages.getString(PKG, "MergeJoinDialog.Keys1.Label")); //$NON-NLS-1$
         props.setLook(wlKeys1);
         fdlKeys1=new FormData();
         fdlKeys1.left  = new FormAttachment(0, 0);
@@ -221,7 +223,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
         int nrKeyRows1 = (input.getKeyFields1()!=null?input.getKeyFields1().length:1);
         
         ColumnInfo[] ciKeys1=new ColumnInfo[] {
-            new ColumnInfo(Messages.getString("MergeJoinDialog.ColumnInfo.KeyField1"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "MergeJoinDialog.ColumnInfo.KeyField1"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
         };
             
         wKeys1=new TableView(transMeta, shell, 
@@ -240,7 +242,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
         wKeys1.setLayoutData(fdKeys1);
 
         wbKeys1=new Button(shell, SWT.PUSH);
-        wbKeys1.setText(Messages.getString("MergeJoinDialog.KeyFields1.Button")); //$NON-NLS-1$
+        wbKeys1.setText(BaseMessages.getString(PKG, "MergeJoinDialog.KeyFields1.Button")); //$NON-NLS-1$
         fdbKeys1 = new FormData();
         fdbKeys1.top   = new FormAttachment(wKeys1, margin);
         fdbKeys1.left  = new FormAttachment(0, 0);
@@ -259,7 +261,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 
         // THE KEYS TO MATCH for second step
         wlKeys2=new Label(shell, SWT.NONE);
-        wlKeys2.setText(Messages.getString("MergeJoinDialog.Keys2.Label")); //$NON-NLS-1$
+        wlKeys2.setText(BaseMessages.getString(PKG, "MergeJoinDialog.Keys2.Label")); //$NON-NLS-1$
         props.setLook(wlKeys2);
         fdlKeys2=new FormData();
         fdlKeys2.left  = new FormAttachment(50, 0);
@@ -269,7 +271,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
         int nrKeyRows2 = (input.getKeyFields2()!=null?input.getKeyFields2().length:1);
         
         ColumnInfo[] ciKeys2=new ColumnInfo[] {
-            new ColumnInfo(Messages.getString("MergeJoinDialog.ColumnInfo.KeyField2"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "MergeJoinDialog.ColumnInfo.KeyField2"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
         };
             
         wKeys2=new TableView(transMeta, shell, 
@@ -288,7 +290,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
         wKeys2.setLayoutData(fdKeys2);
 
         wbKeys2=new Button(shell, SWT.PUSH);
-        wbKeys2.setText(Messages.getString("MergeJoinDialog.KeyFields2.Button")); //$NON-NLS-1$
+        wbKeys2.setText(BaseMessages.getString(PKG, "MergeJoinDialog.KeyFields2.Button")); //$NON-NLS-1$
         fdbKeys2 = new FormData();
         fdbKeys2.top   = new FormAttachment(wKeys2, margin);
         fdbKeys2.left  = new FormAttachment(50, 0);
@@ -306,9 +308,9 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wbKeys1);
 
@@ -411,13 +413,13 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
         if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                 Messages.getString("MergeJoinDialog.InputNeedSort.DialogTitle"),  //$NON-NLS-1$
+                 BaseMessages.getString(PKG, "MergeJoinDialog.InputNeedSort.DialogTitle"),  //$NON-NLS-1$
                  null,
-                 Messages.getString("MergeJoinDialog.InputNeedSort.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+                 BaseMessages.getString(PKG, "MergeJoinDialog.InputNeedSort.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
                  MessageDialog.WARNING,
-                 new String[] { Messages.getString("MergeJoinDialog.InputNeedSort.Option1") }, //$NON-NLS-1$
+                 new String[] { BaseMessages.getString(PKG, "MergeJoinDialog.InputNeedSort.Option1") }, //$NON-NLS-1$
                  0,
-                 Messages.getString("MergeJoinDialog.InputNeedSort.Option2"), //$NON-NLS-1$
+                 BaseMessages.getString(PKG, "MergeJoinDialog.InputNeedSort.Option2"), //$NON-NLS-1$
                  "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
             );
             MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
@@ -451,7 +453,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("MergeJoinDialog.ErrorGettingFields.DialogTitle"), Messages.getString("MergeJoinDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "MergeJoinDialog.ErrorGettingFields.DialogTitle"), BaseMessages.getString(PKG, "MergeJoinDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
     
@@ -474,7 +476,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("MergeJoinDialog.ErrorGettingFields.DialogTitle"), Messages.getString("MergeJoinDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "MergeJoinDialog.ErrorGettingFields.DialogTitle"), BaseMessages.getString(PKG, "MergeJoinDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
     

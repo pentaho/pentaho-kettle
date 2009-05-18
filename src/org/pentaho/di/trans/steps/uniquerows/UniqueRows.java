@@ -14,6 +14,7 @@ package org.pentaho.di.trans.steps.uniquerows;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -30,6 +31,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class UniqueRows extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = UniqueRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private UniqueRowsMeta meta;
 	private UniqueRowsData data;
 	
@@ -78,7 +81,7 @@ public class UniqueRows extends BaseStep implements StepInterface
 				data.fieldnrs[i] = getInputRowMeta().indexOfValue(meta.getCompareFields()[i]);
 				if (data.fieldnrs[i]<0)
 				{
-					logError(Messages.getString("UniqueRows.Log.CouldNotFindFieldInRow",meta.getCompareFields()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "UniqueRows.Log.CouldNotFindFieldInRow",meta.getCompareFields()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -114,7 +117,7 @@ public class UniqueRows extends BaseStep implements StepInterface
 
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(Messages.getString("UniqueRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "UniqueRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
         }
 			
 		return true;

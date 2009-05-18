@@ -16,6 +16,7 @@ import java.io.IOException;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -32,6 +33,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class FilesToResult extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = FilesToResultMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private FilesToResultMeta meta;
 
 	private FilesToResultData data;
@@ -54,7 +57,7 @@ public class FilesToResult extends BaseStep implements StepInterface
 			{
 				addResultFile( resultFile );
 			}
-			logBasic(Messages.getString("FilesToResult.Log.AddedNrOfFiles", String.valueOf(data.filenames
+			logBasic(BaseMessages.getString(PKG, "FilesToResult.Log.AddedNrOfFiles", String.valueOf(data.filenames
 					.size())));
 			setOutputDone();
 			return false;
@@ -68,7 +71,7 @@ public class FilesToResult extends BaseStep implements StepInterface
 
 			if (data.filenameIndex < 0)
 			{
-				logError(Messages.getString("FilesToResult.Log.CouldNotFindField", meta.getFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+				logError(BaseMessages.getString(PKG, "FilesToResult.Log.CouldNotFindField", meta.getFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 				setErrors(1);
 				stopAll();
 				return false;
@@ -98,7 +101,7 @@ public class FilesToResult extends BaseStep implements StepInterface
 		// rowset(s).
 
 		if (checkFeedback(getLinesRead())) {
-			logBasic(Messages.getString("FilesToResult.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+			logBasic(BaseMessages.getString(PKG, "FilesToResult.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
 		}
 
 		return true;

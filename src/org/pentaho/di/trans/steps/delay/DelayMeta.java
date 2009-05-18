@@ -25,6 +25,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -44,6 +45,8 @@ import org.w3c.dom.Node;
 
 public class DelayMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = DelayMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String timeout;
 	private String scaletime;
 	public static String DEFAULT_SCALE_TIME="seconds";
@@ -124,7 +127,7 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	    catch (Exception e)
         {
-            throw new KettleXMLException(Messages.getString("DelayMeta.Exception.UnableToReadStepInfo"), e);
+            throw new KettleXMLException(BaseMessages.getString(PKG, "DelayMeta.Exception.UnableToReadStepInfo"), e);
         }
 	}
 
@@ -152,7 +155,7 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		 catch (Exception e)
 	     {
-	        throw new KettleException(Messages.getString("DelayMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+	        throw new KettleException(BaseMessages.getString(PKG, "DelayMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
 	     }
 	}
 	
@@ -167,7 +170,7 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch (Exception e)
         {
-            throw new KettleException(Messages.getString("DelayMeta.Exception.UnexpectedErrorSavingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "DelayMeta.Exception.UnexpectedErrorSavingStepInfo"), e); //$NON-NLS-1$
         }
 	}
 	
@@ -182,12 +185,12 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (Const.isEmpty(timeout))
         {
-            error_message = Messages.getString("DelayMeta.CheckResult.TimeOutMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "DelayMeta.CheckResult.TimeOutMissing"); //$NON-NLS-1$
             cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
         }
         else
         {
-            error_message = Messages.getString("DelayMeta.CheckResult.TimeOutOk"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "DelayMeta.CheckResult.TimeOutOk"); //$NON-NLS-1$
             cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepinfo);
         }
 		remarks.add(cr);
@@ -196,22 +199,22 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface
 	
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, Messages.getString("DelayMeta.CheckResult.NotReceivingFields"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "DelayMeta.CheckResult.NotReceivingFields"), stepinfo); //$NON-NLS-1$
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("DelayMeta.CheckResult.StepRecevingData",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DelayMeta.CheckResult.StepRecevingData",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		remarks.add(cr);
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("DelayMeta.CheckResult.StepRecevingData2"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DelayMeta.CheckResult.StepRecevingData2"), stepinfo); //$NON-NLS-1$
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("DelayMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "DelayMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
 		}
 		remarks.add(cr);
 	}

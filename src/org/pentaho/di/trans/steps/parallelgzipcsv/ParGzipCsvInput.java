@@ -25,6 +25,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -42,6 +43,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class ParGzipCsvInput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = ParGzipCsvInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private ParGzipCsvInputMeta meta;
 	private ParGzipCsvInputData data;
 	
@@ -143,7 +146,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 			putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
 	        if (checkFeedback(getLinesInput())) 
 	        {
-	        	if(log.isBasic()) logBasic(Messages.getString("ParGzipCsvInput.Log.LineNumber", Long.toString(getLinesInput()))); //$NON-NLS-1$
+	        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ParGzipCsvInput.Log.LineNumber", Long.toString(getLinesInput()))); //$NON-NLS-1$
 	        }
 		}
 			
@@ -226,7 +229,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 				String filenameField = environmentSubstitute(meta.getFilenameField());
 				index = getInputRowMeta().indexOfValue(filenameField);
 				if (index<0) {
-					throw new KettleException(Messages.getString("ParGzipCsvInput.Exception.FilenameFieldNotFound", filenameField));
+					throw new KettleException(BaseMessages.getString(PKG, "ParGzipCsvInput.Exception.FilenameFieldNotFound", filenameField));
 				}
 			}
 				
@@ -238,7 +241,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 		
 		data.filenames = filenames.toArray(new String[filenames.size()]);
 		
-		logBasic(Messages.getString("ParGzipCsvInput.Log.ReadingFromNrFiles", Integer.toString(data.filenames.length)));
+		logBasic(BaseMessages.getString(PKG, "ParGzipCsvInput.Log.ReadingFromNrFiles", Integer.toString(data.filenames.length)));
 	}
 
 	private boolean openNextFile() throws KettleException {
@@ -685,7 +688,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 				String filename = environmentSubstitute(meta.getFilename());
 
 				if (Const.isEmpty(filename)) {
-					logError(Messages.getString("ParGzipCsvInput.MissingFilename.Message"));
+					logError(BaseMessages.getString(PKG, "ParGzipCsvInput.MissingFilename.Message"));
 					return false;
 				}
 

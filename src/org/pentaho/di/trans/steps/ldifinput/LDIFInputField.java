@@ -14,12 +14,12 @@
 
 package org.pentaho.di.trans.steps.ldifinput;
 
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
+import org.w3c.dom.Node;
 
 /**
  * Describes an LDIF field
@@ -29,6 +29,8 @@ import org.pentaho.di.core.exception.KettleValueException;
  */
 public class LDIFInputField implements Cloneable
 {
+	private static Class<?> PKG = LDIFInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public final static int TYPE_TRIM_NONE  = 0;
     public final static int TYPE_TRIM_LEFT  = 1;
     public final static int TYPE_TRIM_RIGHT = 2;
@@ -40,10 +42,10 @@ public class LDIFInputField implements Cloneable
     public final static String trimTypeCode[] = { "none", "left", "right", "both" };
     
     public final static String trimTypeDesc[] = {
-      Messages.getString("LDIFInputField.TrimType.None"),
-      Messages.getString("LDIFInputField.TrimType.Left"),
-      Messages.getString("LDIFInputField.TrimType.Right"),
-      Messages.getString("LDIFInputField.TrimType.Both")
+      BaseMessages.getString(PKG, "LDIFInputField.TrimType.None"),
+      BaseMessages.getString(PKG, "LDIFInputField.TrimType.Left"),
+      BaseMessages.getString(PKG, "LDIFInputField.TrimType.Right"),
+      BaseMessages.getString(PKG, "LDIFInputField.TrimType.Both")
     };
     
     public final static String POSITION_MARKER  = ",";

@@ -35,6 +35,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -55,6 +56,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * @since  version 3.0 RC1
  */
 public class TransDebugDialog extends Dialog {
+    private static Class<?> PKG = TransDebugDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	public static final int DEBUG_CANCEL = 0;
 	public static final int DEBUG_LAUNCH = 1;
@@ -112,30 +114,30 @@ public class TransDebugDialog extends Dialog {
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("TransDebugDialog.Shell.Title")); //$NON-NLS-1$
+        shell.setText(BaseMessages.getString(PKG, "TransDebugDialog.Shell.Title")); //$NON-NLS-1$
 
         margin = Const.MARGIN;
         middle = props.getMiddlePct();
         
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("TransDebugDialog.Configure.Label"));
+        wOK.setText(BaseMessages.getString(PKG, "TransDebugDialog.Configure.Label"));
         wOK.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { ok(true); }});
         wLaunch= new Button(shell, SWT.PUSH);
-        wLaunch.setText(Messages.getString("TransDebugDialog.Launch.Label"));
+        wLaunch.setText(BaseMessages.getString(PKG, "TransDebugDialog.Launch.Label"));
         wLaunch.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { ok(false); }});
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         wCancel.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { cancel(); }});
         
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wLaunch, wOK, wCancel }, margin, null);
     	
-        wOK.setToolTipText(Messages.getString("TransDebugDialog.Configure.ToolTip"));
-        wLaunch.setToolTipText(Messages.getString("TransDebugDialog.Launch.ToolTip"));
+        wOK.setToolTipText(BaseMessages.getString(PKG, "TransDebugDialog.Configure.ToolTip"));
+        wLaunch.setToolTipText(BaseMessages.getString(PKG, "TransDebugDialog.Launch.ToolTip"));
         
         // Add the list of steps
         //
         ColumnInfo[] stepColumns = {
-				new ColumnInfo(Messages.getString("TransDebugDialog.Column.StepName"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), // name, non-numeric, readonly
+				new ColumnInfo(BaseMessages.getString(PKG, "TransDebugDialog.Column.StepName"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), // name, non-numeric, readonly
 			};
 
 		int nrSteps = transDebugMeta.getTransMeta().nrSteps();
@@ -328,7 +330,7 @@ public class TransDebugDialog extends Dialog {
     	
     	// The row count (e.g. number of rows to keep)
     	//
-    	wRowCount = new LabelText(wComposite, Messages.getString("TransDebugDialog.RowCount.Label"), Messages.getString("TransDebugDialog.RowCount.ToolTip"));
+    	wRowCount = new LabelText(wComposite, BaseMessages.getString(PKG, "TransDebugDialog.RowCount.Label"), BaseMessages.getString(PKG, "TransDebugDialog.RowCount.ToolTip"));
     	FormData fdRowCount = new FormData();
     	fdRowCount.left   = new FormAttachment(0, 0);
         fdRowCount.right  = new FormAttachment(100, 0);
@@ -340,8 +342,8 @@ public class TransDebugDialog extends Dialog {
     	//
     	wFirstRows = new Button(wComposite, SWT.CHECK);
     	props.setLook(wFirstRows);
-    	wFirstRows.setText(Messages.getString("TransDebugDialog.FirstRows.Label"));
-    	wFirstRows.setToolTipText(Messages.getString("TransDebugDialog.FirstRows.ToolTip"));
+    	wFirstRows.setText(BaseMessages.getString(PKG, "TransDebugDialog.FirstRows.Label"));
+    	wFirstRows.setToolTipText(BaseMessages.getString(PKG, "TransDebugDialog.FirstRows.ToolTip"));
     	FormData fdFirstRows = new FormData();
     	fdFirstRows.left   = new FormAttachment(middle, 0);
         fdFirstRows.right  = new FormAttachment(100, 0);
@@ -352,8 +354,8 @@ public class TransDebugDialog extends Dialog {
     	//
     	wPauseBreakPoint = new Button(wComposite, SWT.CHECK);
     	props.setLook(wPauseBreakPoint);
-    	wPauseBreakPoint.setText(Messages.getString("TransDebugDialog.PauseBreakPoint.Label"));
-    	wPauseBreakPoint.setToolTipText(Messages.getString("TransDebugDialog.PauseBreakPoint.ToolTip"));
+    	wPauseBreakPoint.setText(BaseMessages.getString(PKG, "TransDebugDialog.PauseBreakPoint.Label"));
+    	wPauseBreakPoint.setToolTipText(BaseMessages.getString(PKG, "TransDebugDialog.PauseBreakPoint.ToolTip"));
     	FormData fdPauseBreakPoint = new FormData();
     	fdPauseBreakPoint.left   = new FormAttachment(middle, 0);
         fdPauseBreakPoint.right  = new FormAttachment(100, 0);
@@ -375,8 +377,8 @@ public class TransDebugDialog extends Dialog {
         
 		wlCondition = new Label(wComposite, SWT.RIGHT);
 		props.setLook(wlCondition);
-		wlCondition.setText(Messages.getString("TransDebugDialog.Condition.Label"));
-		wlCondition.setToolTipText(Messages.getString("TransDebugDialog.Condition.ToolTip"));
+		wlCondition.setText(BaseMessages.getString(PKG, "TransDebugDialog.Condition.Label"));
+		wlCondition.setToolTipText(BaseMessages.getString(PKG, "TransDebugDialog.Condition.ToolTip"));
         FormData fdlCondition = new FormData();
     	fdlCondition.left   = new FormAttachment(0, 0);
         fdlCondition.right  = new FormAttachment(middle, -margin);
@@ -397,8 +399,8 @@ public class TransDebugDialog extends Dialog {
         //
         Button wClear = new Button(wComposite, SWT.PUSH);
         props.setLook(wClear);
-        wClear.setText(Messages.getString("TransDebugDialog.Clear.Label"));
-        wClear.setToolTipText(Messages.getString("TransDebugDialog.Clear.ToolTip"));
+        wClear.setText(BaseMessages.getString(PKG, "TransDebugDialog.Clear.Label"));
+        wClear.setToolTipText(BaseMessages.getString(PKG, "TransDebugDialog.Clear.ToolTip"));
         FormData fdClear = new FormData();
     	fdClear.left   = new FormAttachment(0, 0);
         fdClear.bottom = new FormAttachment(100, 0);

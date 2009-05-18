@@ -24,8 +24,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.ui.spoon.dialog.Messages;
 import org.pentaho.di.core.ProgressMonitorAdapter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -40,6 +40,8 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
  */
 public class AnalyseImpactProgressDialog
 {
+	private static Class<?> PKG = AnalyseImpactProgressDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Shell shell;
 	private TransMeta transMeta;
 	private List<DatabaseImpact> impact;
@@ -72,7 +74,7 @@ public class AnalyseImpactProgressDialog
 				{
 					impact.clear();
 					impactHasRun=false;
-					throw new InvocationTargetException(e, Messages.getString("AnalyseImpactProgressDialog.RuntimeError.UnableToAnalyzeImpact.Exception", e.toString())); //Problem encountered generating impact list: {0}
+					throw new InvocationTargetException(e, BaseMessages.getString(PKG, "AnalyseImpactProgressDialog.RuntimeError.UnableToAnalyzeImpact.Exception", e.toString())); //Problem encountered generating impact list: {0}
 				}
 			}
 		};
@@ -84,11 +86,11 @@ public class AnalyseImpactProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title"), Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages"), e); //"Error checking transformation","An error occured checking this transformation\!"
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title"), BaseMessages.getString(PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages"), e); //"Error checking transformation","An error occured checking this transformation\!"
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title"), Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages"), e); //"Error checking transformation","An error occured checking this transformation\!"
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title"), BaseMessages.getString(PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages"), e); //"Error checking transformation","An error occured checking this transformation\!"
 		}
 		
 		return impactHasRun;

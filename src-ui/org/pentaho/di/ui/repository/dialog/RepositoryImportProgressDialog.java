@@ -32,7 +32,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
@@ -44,15 +43,16 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.ui.repository.dialog.Messages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -66,6 +66,8 @@ import org.w3c.dom.Node;
  */
 public class RepositoryImportProgressDialog extends Dialog
 {
+	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private LogWriter log;
     private Shell shell, parent;
     private Display display;
@@ -113,7 +115,7 @@ public class RepositoryImportProgressDialog extends Dialog
         formLayout.marginWidth = Const.FORM_MARGIN;
         formLayout.marginHeight = Const.FORM_MARGIN;
 
-        shell.setText(Messages.getString("RepositoryImportDialog.Title"));
+        shell.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.Title"));
         shell.setImage(GUIResource.getInstance().getImageSpoon());
         shell.setLayout(formLayout);
 
@@ -148,7 +150,7 @@ public class RepositoryImportProgressDialog extends Dialog
 
         // Buttons
         wClose = new Button(shell, SWT.PUSH);
-        wClose.setText(Messages.getString("System.Button.Close"));
+        wClose.setText(BaseMessages.getString(PKG, "System.Button.Close"));
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wClose }, Const.MARGIN, (Control) null);
 
@@ -216,7 +218,7 @@ public class RepositoryImportProgressDialog extends Dialog
     	//
     	TransMeta ti = new TransMeta(transnode, rep);
 
-    	wLabel.setText(Messages.getString("RepositoryImportDialog.ImportTrans.Label", Integer.toString(transformationNumber), Integer.toString(nrtrans), ti.getName()));
+    	wLabel.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.ImportTrans.Label", Integer.toString(transformationNumber), Integer.toString(nrtrans), ti.getName()));
 
     	// What's the directory path?
     	String directoryPath = XMLHandler.getTagValue(transnode, "info", "directory");
@@ -229,16 +231,16 @@ public class RepositoryImportProgressDialog extends Dialog
     		if (askDirectory)
     		{
     			MessageDialogWithToggle mb = new MessageDialogWithToggle(shell,
-    					Messages.getString("RepositoryImportDialog.CreateDir.Title"),
+    					BaseMessages.getString(PKG, "RepositoryImportDialog.CreateDir.Title"),
     					null,
-    					Messages.getString("RepositoryImportDialog.CreateDir.Message", directoryPath),
+    					BaseMessages.getString(PKG, "RepositoryImportDialog.CreateDir.Message", directoryPath),
     					MessageDialog.QUESTION,
     					new String[] {
-    				Messages.getString("System.Button.Yes"),
-    				Messages.getString("System.Button.No"),
-    				Messages.getString("System.Button.Cancel") },
+    				BaseMessages.getString(PKG, "System.Button.Yes"),
+    				BaseMessages.getString(PKG, "System.Button.No"),
+    				BaseMessages.getString(PKG, "System.Button.Cancel") },
     				1,
-    				Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
+    				BaseMessages.getString(PKG, "RepositoryImportDialog.DontAskAgain.Label"),
     				!askDirectory);
     			MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
     			int answer = mb.open();
@@ -252,7 +254,7 @@ public class RepositoryImportProgressDialog extends Dialog
 
     		if (makeDirectory)
     		{
-    			addLog(Messages.getString("RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
+    			addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
     			targetDirectory = baseDirectory.createDirectory(rep, directoryPath);
     		}
     		else
@@ -267,14 +269,14 @@ public class RepositoryImportProgressDialog extends Dialog
     	if (id > 0 && askOverwrite)
     	{
     		MessageDialogWithToggle md = new MessageDialogWithToggle(shell,
-    				Messages.getString("RepositoryImportDialog.OverwriteTrans.Title"),
+    				BaseMessages.getString(PKG, "RepositoryImportDialog.OverwriteTrans.Title"),
     				null,
-    				Messages.getString("RepositoryImportDialog.OverwriteTrans.Message", ti.getName()),
+    				BaseMessages.getString(PKG, "RepositoryImportDialog.OverwriteTrans.Message", ti.getName()),
     				MessageDialog.QUESTION,
-    				new String[] { Messages.getString("System.Button.Yes"),
-    			Messages.getString("System.Button.No") },
+    				new String[] { BaseMessages.getString(PKG, "System.Button.Yes"),
+    			BaseMessages.getString(PKG, "System.Button.No") },
     			1,
-    			Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
+    			BaseMessages.getString(PKG, "RepositoryImportDialog.DontAskAgain.Label"),
     			!askOverwrite);
     		MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
     		int answer = md.open();
@@ -307,17 +309,17 @@ public class RepositoryImportProgressDialog extends Dialog
     			ti.setModifiedDate( new Date() );                 
     			ti.setModifiedUser( rep.getUserInfo().getLogin() );
     			ti.saveRep(rep);
-    			addLog(Messages.getString("RepositoryImportDialog.TransSaved.Log", Integer.toString(transformationNumber), ti.getName()));
+    			addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.TransSaved.Log", Integer.toString(transformationNumber), ti.getName()));
     		}
     		catch (Exception e)
     		{
-    			addLog(Messages.getString("RepositoryImportDialog.ErrorSavingTrans.Log", Integer.toString(transformationNumber), ti.getName(), e.toString()));
+    			addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.ErrorSavingTrans.Log", Integer.toString(transformationNumber), ti.getName(), e.toString()));
     			addLog(Const.getStackTracker(e));
     		}
     	}
     	else
     	{
-    		addLog(Messages.getString("RepositoryImportDialog.ErrorSavingTrans2.Log", ti.getName()));
+    		addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.ErrorSavingTrans2.Log", ti.getName()));
     	}
     	return true;
     }
@@ -327,7 +329,7 @@ public class RepositoryImportProgressDialog extends Dialog
         // Load the job from the XML node.
                         JobMeta ji = new JobMeta(log, jobnode, rep, SpoonFactory.getInstance());
 
-        wLabel.setText(Messages.getString("RepositoryImportDialog.ImportJob.Label", Integer.toString(nrthis), Integer.toString(nrjobs), ji.getName()));
+        wLabel.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.ImportJob.Label", Integer.toString(nrthis), Integer.toString(nrjobs), ji.getName()));
 
         // What's the directory path?
         String directoryPath = Const.NVL(XMLHandler.getTagValue(jobnode, "directory"), Const.FILE_SEPARATOR);
@@ -338,16 +340,16 @@ public class RepositoryImportProgressDialog extends Dialog
             if (askDirectory)
             {
                 MessageDialogWithToggle mb = new MessageDialogWithToggle(shell,
-                    Messages.getString("RepositoryImportDialog.CreateDir.Title"),
+                    BaseMessages.getString(PKG, "RepositoryImportDialog.CreateDir.Title"),
                     null,
-                    Messages.getString("RepositoryImportDialog.CreateDir.Message", directoryPath),
+                    BaseMessages.getString(PKG, "RepositoryImportDialog.CreateDir.Message", directoryPath),
                     MessageDialog.QUESTION,
                     new String[] {
-                                  Messages.getString("System.Button.Yes"),
-                                  Messages.getString("System.Button.No"),
-                                  Messages.getString("System.Button.Cancel") },
+                                  BaseMessages.getString(PKG, "System.Button.Yes"),
+                                  BaseMessages.getString(PKG, "System.Button.No"),
+                                  BaseMessages.getString(PKG, "System.Button.Cancel") },
                     1,
-                    Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
+                    BaseMessages.getString(PKG, "RepositoryImportDialog.DontAskAgain.Label"),
                     !askDirectory);
                 MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
                 int answer = mb.open();
@@ -361,7 +363,7 @@ public class RepositoryImportProgressDialog extends Dialog
 
             if (makeDirectory)
             {
-                addLog(Messages.getString("RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
+                addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
                 targetDirectory = baseDirectory.createDirectory(rep, directoryPath);
             }
             else
@@ -376,14 +378,14 @@ public class RepositoryImportProgressDialog extends Dialog
         if (id > 0 && askOverwrite)
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell,
-                Messages.getString("RepositoryImportDialog.OverwriteJob.Title"),
+                BaseMessages.getString(PKG, "RepositoryImportDialog.OverwriteJob.Title"),
                 null,
-                Messages.getString("RepositoryImportDialog.OverwriteJob.Message", ji.getName()),
+                BaseMessages.getString(PKG, "RepositoryImportDialog.OverwriteJob.Message", ji.getName()),
                 MessageDialog.QUESTION,
-                new String[] { Messages.getString("System.Button.Yes"),
-                              Messages.getString("System.Button.No") },
+                new String[] { BaseMessages.getString(PKG, "System.Button.Yes"),
+                              BaseMessages.getString(PKG, "System.Button.No") },
                 1,
-                Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
+                BaseMessages.getString(PKG, "RepositoryImportDialog.DontAskAgain.Label"),
                 !askOverwrite);
             MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
             int answer = md.open();
@@ -398,26 +400,26 @@ public class RepositoryImportProgressDialog extends Dialog
         {
             ji.setDirectory(targetDirectory);
             ji.saveRep(rep);
-            addLog(Messages.getString("RepositoryImportDialog.JobSaved.Log", Integer.toString(nrthis), ji.getName()));
+            addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.JobSaved.Log", Integer.toString(nrthis), ji.getName()));
         }
         else
         {
-            addLog(Messages.getString("RepositoryImportDialog.ErrorSavingJob.Log", ji.getName()));
+            addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.ErrorSavingJob.Log", ji.getName()));
         }
         return true;
     }
 	
     private void importAll() {
-		wLabel.setText(Messages.getString("RepositoryImportDialog.ImportXML.Label"));
+		wLabel.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.ImportXML.Label"));
 		try {
 			for (int ii = 0; ii < filenames.length; ++ii) {
 				
 				final String filename = ((fileDirectory != null) && (fileDirectory.length() > 0)) ? fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
 				if(log.isBasic()) log.logBasic("Repository", "Import objects from XML file [" + filename + "]"); //$NON-NLS-1$ //$NON-NLS-2$
-				addLog(Messages.getString("RepositoryImportDialog.WhichFile.Log", filename));
+				addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.WhichFile.Log", filename));
 
 				// To where?
-				wLabel.setText(Messages.getString("RepositoryImportDialog.WhichDir.Label"));
+				wLabel.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.WhichDir.Label"));
 
 				Document doc = XMLHandler.loadXMLFile(filename);
 				if (doc != null) {
@@ -446,13 +448,13 @@ public class RepositoryImportProgressDialog extends Dialog
 								//
 								new ErrorDialog(
 										shell,
-										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringTransformationImport.Title"),
-										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringTransformationImport.Message"),
+										BaseMessages.getString(PKG, "RepositoryImportDialog.UnexpectedErrorDuringTransformationImport.Title"),
+										BaseMessages.getString(PKG, "RepositoryImportDialog.UnexpectedErrorDuringTransformationImport.Message"),
 										e);
 
 								MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-								mb.setMessage(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Message"));
-								mb.setText(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Title"));
+								mb.setMessage(BaseMessages.getString(PKG, "RepositoryImportDialog.DoYouWantToContinue.Message"));
+								mb.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.DoYouWantToContinue.Title"));
 								int answer = mb.open();
 								if (answer == SWT.NO) return;
 							}
@@ -480,13 +482,13 @@ public class RepositoryImportProgressDialog extends Dialog
 								//
 								new ErrorDialog(
 										shell,
-										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringJobImport.Title"),
-										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringJobImport.Message"),
+										BaseMessages.getString(PKG, "RepositoryImportDialog.UnexpectedErrorDuringJobImport.Title"),
+										BaseMessages.getString(PKG, "RepositoryImportDialog.UnexpectedErrorDuringJobImport.Message"),
 										e);
 	
 								MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-								mb.setMessage(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Message"));
-								mb.setText(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Title"));
+								mb.setMessage(BaseMessages.getString(PKG, "RepositoryImportDialog.DoYouWantToContinue.Message"));
+								mb.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.DoYouWantToContinue.Title"));
 								int answer = mb.open();
 								if (answer == SWT.NO) return;
 							}
@@ -518,13 +520,13 @@ public class RepositoryImportProgressDialog extends Dialog
 								//
 								new ErrorDialog(
 										shell,
-										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringTransformationImport.Title"),
-										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringTransformationImport.Message"),
+										BaseMessages.getString(PKG, "RepositoryImportDialog.UnexpectedErrorDuringTransformationImport.Title"),
+										BaseMessages.getString(PKG, "RepositoryImportDialog.UnexpectedErrorDuringTransformationImport.Message"),
 										e);
 	
 								MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-								mb.setMessage(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Message"));
-								mb.setText(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Title"));
+								mb.setMessage(BaseMessages.getString(PKG, "RepositoryImportDialog.DoYouWantToContinue.Message"));
+								mb.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.DoYouWantToContinue.Title"));
 								int answer = mb.open();
 								if (answer == SWT.NO) return;
 							}
@@ -560,13 +562,13 @@ public class RepositoryImportProgressDialog extends Dialog
 								//
 								new ErrorDialog(
 										shell,
-										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringJobImport.Title"),
-										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringJobImport.Message"),
+										BaseMessages.getString(PKG, "RepositoryImportDialog.UnexpectedErrorDuringJobImport.Title"),
+										BaseMessages.getString(PKG, "RepositoryImportDialog.UnexpectedErrorDuringJobImport.Message"),
 										e);
 	
 								MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-								mb.setMessage(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Message"));
-								mb.setText(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Title"));
+								mb.setMessage(BaseMessages.getString(PKG, "RepositoryImportDialog.DoYouWantToContinue.Message"));
+								mb.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.DoYouWantToContinue.Title"));
 								int answer = mb.open();
 								if (answer == SWT.NO) return;
 							}
@@ -577,15 +579,15 @@ public class RepositoryImportProgressDialog extends Dialog
 					}
 				} else {
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(Messages.getString("RepositoryImportDialog.ErrorInvalidXML.Message"));
-					mb.setText(Messages.getString("RepositoryImportDialog.ErrorInvalidXML.Title"));
+					mb.setMessage(BaseMessages.getString(PKG, "RepositoryImportDialog.ErrorInvalidXML.Message"));
+					mb.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.ErrorInvalidXML.Title"));
 					mb.open();
 				}
 			}
-			addLog(Messages.getString("RepositoryImportDialog.ImportFinished.Log"));
+			addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.ImportFinished.Log"));
 		} catch (KettleException e) {
-			new ErrorDialog(shell, Messages.getString("RepositoryImportDialog.ErrorGeneral.Title"), Messages
-					.getString("RepositoryImportDialog.ErrorGeneral.Message"), e);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryImportDialog.ErrorGeneral.Title"), 
+					BaseMessages.getString(PKG, "RepositoryImportDialog.ErrorGeneral.Message"), e);
 		}
 	}
 }

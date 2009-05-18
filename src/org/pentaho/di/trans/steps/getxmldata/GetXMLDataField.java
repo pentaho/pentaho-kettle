@@ -14,13 +14,13 @@
 
 package org.pentaho.di.trans.steps.getxmldata;
 
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
+import org.w3c.dom.Node;
 
 /**
  * Describes an XML field and the position in an XML field.
@@ -30,6 +30,8 @@ import org.pentaho.di.core.exception.KettleValueException;
  */
 public class GetXMLDataField implements Cloneable
 {
+	private static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public final static int TYPE_TRIM_NONE  = 0;
     public final static int TYPE_TRIM_LEFT  = 1;
     public final static int TYPE_TRIM_RIGHT = 2;
@@ -41,10 +43,10 @@ public class GetXMLDataField implements Cloneable
     public final static String trimTypeCode[] = { "none", "left", "right", "both" };
     
     public final static String trimTypeDesc[] = {
-      Messages.getString("GetXMLDataField.TrimType.None"),
-      Messages.getString("GetXMLDataField.TrimType.Left"),
-      Messages.getString("GetXMLDataField.TrimType.Right"),
-      Messages.getString("GetXMLDataField.TrimType.Both")
+      BaseMessages.getString(PKG, "GetXMLDataField.TrimType.None"),
+      BaseMessages.getString(PKG, "GetXMLDataField.TrimType.Left"),
+      BaseMessages.getString(PKG, "GetXMLDataField.TrimType.Right"),
+      BaseMessages.getString(PKG, "GetXMLDataField.TrimType.Both")
     };
     
     ////////////////////////////////////////////////////////////////
@@ -65,8 +67,8 @@ public class GetXMLDataField implements Cloneable
     public final static String ElementOldTypeCode[] = { "node", "attribut" };
     
     public final static String ElementTypeDesc[] = {
-        Messages.getString("GetXMLDataField.ElementType.Node"),
-        Messages.getString("GetXMLDataField.ElementType.Attribute")
+        BaseMessages.getString(PKG, "GetXMLDataField.ElementType.Node"),
+        BaseMessages.getString(PKG, "GetXMLDataField.ElementType.Attribute")
       };
     
     

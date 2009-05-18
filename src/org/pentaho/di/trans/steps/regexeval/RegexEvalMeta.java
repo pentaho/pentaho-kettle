@@ -29,6 +29,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
@@ -42,6 +43,8 @@ import org.w3c.dom.Node;
 
 public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = RegexEvalMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private String  script;
     private String  matcher;
     private String  resultfieldname;
@@ -386,7 +389,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         catch (Exception e)
         {
             throw new KettleXMLException(
-                    Messages.getString("RegexEvalMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+                    BaseMessages.getString(PKG, "RegexEvalMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
         }
     }
 
@@ -530,7 +533,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         catch (Exception e)
         {
             throw new KettleException(
-                    Messages.getString("RegexEvalMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
+                    BaseMessages.getString(PKG, "RegexEvalMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -573,7 +576,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         catch (Exception e)
         {
             throw new KettleException(
-                    Messages.getString("RegexEvalMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+                    BaseMessages.getString(PKG, "RegexEvalMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -585,13 +588,13 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
 
         if (prev != null && prev.size() > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RegexEvalMeta.CheckResult.ConnectedStepOK", String.valueOf(prev.size())), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "RegexEvalMeta.CheckResult.ConnectedStepOK", String.valueOf(prev.size())), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
             remarks.add(cr);
         }
         else
         {
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, 
-            		Messages.getString("RegexEvalMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
+            		BaseMessages.getString(PKG, "RegexEvalMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
 
@@ -599,13 +602,13 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         if (!Const.isEmpty(matcher))
         {
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, 
-            		Messages.getString("RegexEvalMeta.CheckResult.MatcherOK"), stepMeta);
+            		BaseMessages.getString(PKG, "RegexEvalMeta.CheckResult.MatcherOK"), stepMeta);
             remarks.add(cr);
         }
         else
         {
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, 
-            		Messages.getString("RegexEvalMeta.CheckResult.NoMatcher"), stepMeta);
+            		BaseMessages.getString(PKG, "RegexEvalMeta.CheckResult.NoMatcher"), stepMeta);
             remarks.add(cr);
 
         }
@@ -614,13 +617,13 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         if (!Const.isEmpty(resultfieldname))
         {
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, 
-            		Messages.getString("RegexEvalMeta.CheckResult.ResultFieldnameOK"), stepMeta);
+            		BaseMessages.getString(PKG, "RegexEvalMeta.CheckResult.ResultFieldnameOK"), stepMeta);
             remarks.add(cr);
         }
         else
         {
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, 
-            		Messages.getString("RegexEvalMeta.CheckResult.NoResultFieldname"), stepMeta);
+            		BaseMessages.getString(PKG, "RegexEvalMeta.CheckResult.NoResultFieldname"), stepMeta);
             remarks.add(cr);
         }
 

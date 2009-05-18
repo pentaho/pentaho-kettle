@@ -87,6 +87,7 @@ import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
@@ -129,15 +130,18 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
  *
  */
 public class JobGraph extends Composite implements Redrawable, TabItemInterface {
+	
+  private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   private static final String XUL_FILE_JOB_TOOLBAR = "ui/job-toolbar.xul";
 
   public static final String XUL_FILE_JOB_TOOLBAR_PROPERTIES = "ui/job-toolbar.properties";
 
-  public final static String START_TEXT = Messages.getString("JobLog.Button.Start"); //$NON-NLS-1$
+  public final static String START_TEXT = BaseMessages.getString(PKG, "JobLog.Button.Start"); //$NON-NLS-1$
 
-  // public final static String PAUSE_TEXT = Messages.getString("JobLog.Button.PauseJob"); //$NON-NLS-1$    TODO 
-  // public final static String RESUME_TEXT = Messages.getString("JobLog.Button.ResumeJob"); //$NON-NLS-1$  TODO
-  public final static String STOP_TEXT = Messages.getString("JobLog.Button.Stop"); //$NON-NLS-1$
+  // public final static String PAUSE_TEXT = BaseMessages.getString(PKG, "JobLog.Button.PauseJob"); //$NON-NLS-1$    TODO 
+  // public final static String RESUME_TEXT = BaseMessages.getString(PKG, "JobLog.Button.ResumeJob"); //$NON-NLS-1$  TODO
+  public final static String STOP_TEXT = BaseMessages.getString(PKG, "JobLog.Button.Stop"); //$NON-NLS-1$
 
   private final static String STRING_PARALLEL_WARNING_PARAMETER = "ParallelJobEntriesWarning";
 
@@ -301,8 +305,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
           "job-graph-entry");
     } catch (Throwable t) {
       log.logError(toString(), Const.getStackTracker(t));
-      new ErrorDialog(shell, Messages.getString("JobGraph.Exception.ErrorReadingXULFile.Title"), 
-    		  Messages.getString("JobGraph.Exception.ErrorReadingXULFile.Message", Spoon.XUL_FILE_MENUS), new Exception(t));
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "JobGraph.Exception.ErrorReadingXULFile.Title"), 
+    		  BaseMessages.getString(PKG, "JobGraph.Exception.ErrorReadingXULFile.Message", Spoon.XUL_FILE_MENUS), new Exception(t));
     }
     
 
@@ -518,12 +522,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
             if (hi != null) {
               int id = 0;
               if (!spoon.props.getAutoSplit()) {
-                MessageDialogWithToggle md = new MessageDialogWithToggle(shell, Messages
-                    .getString("JobGraph.Dialog.SplitHop.Title"), null, Messages
-                    .getString("JobGraph.Dialog.SplitHop.Message")
+                MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
+                	BaseMessages.getString(PKG, "JobGraph.Dialog.SplitHop.Title"), null, 
+                	BaseMessages.getString(PKG, "JobGraph.Dialog.SplitHop.Message")
                     + Const.CR + hi.from_entry.getName() + " --> " + hi.to_entry.getName(), MessageDialog.QUESTION,
-                    new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") },
-                    0, Messages.getString("JobGraph.Dialog.SplitHop.Toggle"), spoon.props.getAutoSplit());
+                    new String[] { BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") },
+                    0, BaseMessages.getString(PKG, "JobGraph.Dialog.SplitHop.Toggle"), spoon.props.getAutoSplit());
                 MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
                 id = md.open();
                 spoon.props.setAutoSplit(md.getToggleState());
@@ -717,8 +721,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
                 // See if we want to draw a tool tip explaining how to create new hops...
                 //
                 if (jobMeta.nrJobEntries() > 1 && jobMeta.nrJobEntries() < 5 && spoon.props.isShowingHelpToolTips()) {
-                  showHelpTip(p.x, p.y, Messages.getString("JobGraph.HelpToolTip.CreatingHops.Title"), Messages
-                      .getString("JobGraph.HelpToolTip.CreatingHops.Message"));
+                  showHelpTip(p.x, p.y, BaseMessages.getString(PKG, "JobGraph.HelpToolTip.CreatingHops.Title"), 
+                		 BaseMessages.getString(PKG, "JobGraph.HelpToolTip.CreatingHops.Message"));
                 }
               }
             }
@@ -776,7 +780,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
               break;
           }
         } catch (Exception e) {
-          new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorDroppingObject.Message"), Messages.getString("JobGraph.Dialog.ErrorDroppingObject.Title"), e);
+          new ErrorDialog(shell, BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorDroppingObject.Message"), BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorDroppingObject.Title"), e);
         }
       }
 
@@ -857,8 +861,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
       addToolBarListeners();
     } catch (Throwable t) {
       log.logError(toString(), Const.getStackTracker(t));
-      new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
-    		  Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR), new Exception(t));
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
+    		  BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR), new Exception(t));
     }
   }
 
@@ -882,8 +886,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
       }
     } catch (Exception e) {
       MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_ERROR);
-      mb.setMessage(Messages.getString("TransGraph.Dialog.InvalidZoomMeasurement.Message", zoomLabel.getText())); //$NON-NLS-1$
-      mb.setText(Messages.getString("TransGraph.Dialog.InvalidZoomMeasurement.Title")); //$NON-NLS-1$
+      mb.setMessage(BaseMessages.getString(PKG, "TransGraph.Dialog.InvalidZoomMeasurement.Message", zoomLabel.getText())); //$NON-NLS-1$
+      mb.setText(BaseMessages.getString(PKG, "TransGraph.Dialog.InvalidZoomMeasurement.Title")); //$NON-NLS-1$
       mb.open();
     }
     redraw();
@@ -906,8 +910,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
     } catch (Throwable t) {
       t.printStackTrace();
-      new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
-    		  Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR_PROPERTIES), new Exception(t));
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
+    		  BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR_PROPERTIES), new Exception(t));
     }
   }
 
@@ -1058,8 +1062,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     JobEntryCopy[] jobs = jobMeta.getAllJobGraphEntries(newName);
     if (jobs != null && jobs.length > 0) {
       MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-      mb.setMessage(Messages.getString("Spoon.Dialog.JobEntryNameExists.Message", newName));
-      mb.setText(Messages.getString("Spoon.Dialog.JobEntryNameExists.Title"));
+      mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.JobEntryNameExists.Message", newName));
+      mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.JobEntryNameExists.Title"));
       mb.open();
     } else {
       jobEntry.setName(newName);
@@ -1071,8 +1075,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
   public static void showOnlyStartOnceMessage(Shell shell) {
     MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_ERROR);
-    mb.setMessage(Messages.getString("JobGraph.Dialog.OnlyUseStartOnce.Message"));
-    mb.setText(Messages.getString("JobGraph.Dialog.OnlyUseStartOnce.Title"));
+    mb.setMessage(BaseMessages.getString(PKG, "JobGraph.Dialog.OnlyUseStartOnce.Message"));
+    mb.setText(BaseMessages.getString(PKG, "JobGraph.Dialog.OnlyUseStartOnce.Title"));
     mb.open();
   }
 
@@ -1089,7 +1093,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     }
 
     // Display the delete confirmation message box
-    MessageBox mb = new DeleteMessageBox(shell, Messages.getString("Spoon.Dialog.DeletionConfirm.Message"), //$NON-NLS-1$
+    MessageBox mb = new DeleteMessageBox(shell, BaseMessages.getString(PKG, "Spoon.Dialog.DeletionConfirm.Message"), //$NON-NLS-1$
         stepList);
     int answer = mb.open();
     if (answer == SWT.YES) {
@@ -1187,7 +1191,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
     helpTip.setTitle(tipTitle);
     helpTip.setMessage(tipMessage);
-    helpTip.setCheckBoxMessage(Messages.getString("JobGraph.HelpToolTip.DoNotShowAnyMoreCheckBox.Message"));
+    helpTip.setCheckBoxMessage(BaseMessages.getString(PKG, "JobGraph.HelpToolTip.DoNotShowAnyMoreCheckBox.Message"));
     // helpTip.hide();
     // int iconSize = spoon.props.getIconSize();
     org.eclipse.swt.graphics.Point location = new org.eclipse.swt.graphics.Point(x - 5, y - 5);
@@ -1223,8 +1227,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
   }
 
   public void editEntryDescription() {
-    String title = Messages.getString("JobGraph.Dialog.EditDescription.Title"); //$NON-NLS-1$
-    String message = Messages.getString("JobGraph.Dialog.EditDescription.Message"); //$NON-NLS-1$
+    String title = BaseMessages.getString(PKG, "JobGraph.Dialog.EditDescription.Title"); //$NON-NLS-1$
+    String message = BaseMessages.getString(PKG, "JobGraph.Dialog.EditDescription.Message"); //$NON-NLS-1$
     EnterTextDialog dd = new EnterTextDialog(shell, title, message, getJobEntry().getDescription());
     String des = dd.open();
     if (des != null)
@@ -1241,11 +1245,11 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
       //
       if ("Y".equalsIgnoreCase(spoon.props.getCustomParameter(STRING_PARALLEL_WARNING_PARAMETER, "Y"))) //$NON-NLS-1$ //$NON-NLS-2$
       {
-        MessageDialogWithToggle md = new MessageDialogWithToggle(shell, Messages
-            .getString("JobGraph.ParallelJobEntriesWarning.DialogTitle"), //$NON-NLS-1$
-            null, Messages.getString("JobGraph.ParallelJobEntriesWarning.DialogMessage", Const.CR) + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
-            MessageDialog.WARNING, new String[] { Messages.getString("JobGraph.ParallelJobEntriesWarning.Option1") }, //$NON-NLS-1$
-            0, Messages.getString("JobGraph.ParallelJobEntriesWarning.Option2"), //$NON-NLS-1$
+        MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
+        		BaseMessages.getString(PKG, "JobGraph.ParallelJobEntriesWarning.DialogTitle"), //$NON-NLS-1$
+            null, BaseMessages.getString(PKG, "JobGraph.ParallelJobEntriesWarning.DialogMessage", Const.CR) + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+            MessageDialog.WARNING, new String[] { BaseMessages.getString(PKG, "JobGraph.ParallelJobEntriesWarning.Option1") }, //$NON-NLS-1$
+            0, BaseMessages.getString(PKG, "JobGraph.ParallelJobEntriesWarning.Option2"), //$NON-NLS-1$
             "N".equalsIgnoreCase(spoon.props.getCustomParameter(STRING_PARALLEL_WARNING_PARAMETER, "Y")) //$NON-NLS-1$ //$NON-NLS-2$
         );
         MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
@@ -1323,18 +1327,18 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         
         if (jobEntry.isTransformation()) {
             item.setEnabled(true);
-            item.setText(Messages.getString("JobGraph.PopupMenu.JobEntry.LaunchSpoon"));
+            item.setText(BaseMessages.getString(PKG, "JobGraph.PopupMenu.JobEntry.LaunchSpoon"));
             menu.addMenuListener("job-graph-entry-launch", this, "openTransformation"); //$NON-NLS-1$ //$NON-NLS-2$
         } else if (jobEntry.isJob()) {
             item.setEnabled(true);
-            item.setText(Messages.getString("JobGraph.PopupMenu.JobEntry.LaunchChef"));
+            item.setText(BaseMessages.getString(PKG, "JobGraph.PopupMenu.JobEntry.LaunchChef"));
             menu.addMenuListener("job-graph-entry-launch", this, "openJob"); //$NON-NLS-1$ //$NON-NLS-2$
         } else {
             item.setEnabled(false);
         }
 
         item = menu.getMenuItemById("job-graph-entry-align-snap"); //$NON-NLS-1$
-        item.setText(Messages.getString("JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid") + ConstUI.GRID_SIZE
+        item.setText(BaseMessages.getString(PKG, "JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid") + ConstUI.GRID_SIZE
             + ")\tALT-HOME");
 
         XulMenu aMenu = menu.getMenuById("job-graph-entry-align"); //$NON-NLS-1$
@@ -1442,9 +1446,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
           if (miDisHop != null) {
             if (hi.isEnabled())
-              miDisHop.setText(Messages.getString("JobGraph.PopupMenu.Hop.Disable")); //$NON-NLS-1$
+              miDisHop.setText(BaseMessages.getString(PKG, "JobGraph.PopupMenu.Hop.Disable")); //$NON-NLS-1$
             else
-              miDisHop.setText(Messages.getString("JobGraph.PopupMenu.Hop.Enable")); //$NON-NLS-1$
+              miDisHop.setText(BaseMessages.getString(PKG, "JobGraph.PopupMenu.Hop.Enable")); //$NON-NLS-1$
           }
           ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
         }
@@ -1509,8 +1513,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
   public void newNote() {
     selrect = null;
-    String title = Messages.getString("JobGraph.Dialog.EditNote.Title");
-    String message = Messages.getString("JobGraph.Dialog.EditNote.Message");
+    String title = BaseMessages.getString(PKG, "JobGraph.Dialog.EditNote.Title");
+    String message = BaseMessages.getString(PKG, "JobGraph.Dialog.EditNote.Message");
     EnterTextDialog dd = new EnterTextDialog(shell, title, message, "");
     String n = dd.open();
     if (n != null) {
@@ -1573,8 +1577,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     if (jobMeta.hasLoop(currentHop.from_entry)) {
       spoon.refreshGraph();
       MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
-      mb.setMessage(Messages.getString("JobGraph.Dialog.HopFlipCausesLoop.Message"));
-      mb.setText(Messages.getString("JobGraph.Dialog.HopFlipCausesLoop.Title"));
+      mb.setMessage(BaseMessages.getString(PKG, "JobGraph.Dialog.HopFlipCausesLoop.Message"));
+      mb.setText(BaseMessages.getString(PKG, "JobGraph.Dialog.HopFlipCausesLoop.Title"));
       mb.open();
 
       dummy = currentHop.from_entry;
@@ -1716,14 +1720,14 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         newTrans.clearChanged();
         spoon.open();
       } catch (Throwable e) {
-        new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title"),
-            Messages.getString("JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message"), (Exception) e);
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title"),
+            BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message"), (Exception) e);
       }
     } else {
       try {
         // only try to load if the file exists...
         if (Const.isEmpty(exactFilename)) {
-          throw new Exception(Messages.getString("JobGraph.Exception.NoFilenameSpecified"));
+          throw new Exception(BaseMessages.getString(PKG, "JobGraph.Exception.NoFilenameSpecified"));
         }
         TransMeta launchTransMeta = null;
         if (KettleVFS.fileExists(exactFilename)) {
@@ -1741,8 +1745,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         spoon.addTransGraph(launchTransMeta);
         spoon.open();
       } catch (Throwable e) {
-        new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Title"), 
-        		Messages.getString("JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Message"), (Exception) e);
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Title"), 
+        		BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Message"), (Exception) e);
       }
 
     }
@@ -1771,13 +1775,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         spoon.setParametersAsVariablesInUI(newJobMeta, newJobMeta);
         spoon.delegates.jobs.addJobGraph(newJobMeta);
       } catch (Throwable e) {
-        new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title"), 
-        		Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message"), e);
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title"), 
+        		BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message"), e);
       }
     } else {
       try {
         if (Const.isEmpty(exactFilename)) {
-          throw new Exception(Messages.getString("JobGraph.Exception.NoFilenameSpecified"));
+          throw new Exception(BaseMessages.getString(PKG, "JobGraph.Exception.NoFilenameSpecified"));
         }
 
         JobMeta newJobMeta;
@@ -1794,8 +1798,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         newJobMeta.clearChanged();
         spoon.delegates.jobs.addJobGraph(newJobMeta);
       } catch (Throwable e) {
-        new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Title"),
-            Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Message"), e);
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Title"),
+            BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Message"), e);
       }
     }
     spoon.applyVariables();
@@ -2140,8 +2144,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
   protected void editNote(NotePadMeta ni) {
     NotePadMeta before = (NotePadMeta) ni.clone();
-    String title = Messages.getString("JobGraph.Dialog.EditNote.Title");
-    String message = Messages.getString("JobGraph.Dialog.EditNote.Message");
+    String title = BaseMessages.getString(PKG, "JobGraph.Dialog.EditNote.Title");
+    String message = BaseMessages.getString(PKG, "JobGraph.Dialog.EditNote.Message");
     EnterTextDialog dd = new EnterTextDialog(shell, title, message, ni.getNote());
     String n = dd.open();
     if (n != null) {
@@ -2394,16 +2398,16 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
   public int showChangedWarning() {
     MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING);
-    mb.setMessage(Messages.getString("Spoon.Dialog.FileChangedSaveFirst.Message", spoon.delegates.tabs
+    mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.FileChangedSaveFirst.Message", spoon.delegates.tabs
         .makeJobGraphTabName(jobMeta)));//"This model has changed.  Do you want to save it?"
-    mb.setText(Messages.getString("Spoon.Dialog.FileChangedSaveFirst.Title"));
+    mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.FileChangedSaveFirst.Title"));
     return mb.open();
   }
 
   public static int showChangedWarning(Shell shell, String name) {
     MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING);
-    mb.setMessage(Messages.getString("JobGraph.Dialog.PromptSave.Message", name));
-    mb.setText(Messages.getString("JobGraph.Dialog.PromptSave.Title"));
+    mb.setMessage(BaseMessages.getString(PKG, "JobGraph.Dialog.PromptSave.Message", name));
+    mb.setText(BaseMessages.getString(PKG, "JobGraph.Dialog.PromptSave.Title"));
     return mb.open();
   }
 
@@ -2422,8 +2426,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         SharedObjects sharedObjects = jobMeta.readSharedObjects(rep);
         spoon.sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
       } catch (Exception e) {
-        new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), 
-        		Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.delegates.tabs
+        new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title"), 
+        		BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.delegates.tabs
                 .makeJobGraphTabName(jobMeta)), e);
       }
     }
@@ -2469,7 +2473,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     //
     closeButton = new Label(extraViewComposite, SWT.NONE);
     closeButton.setImage(GUIResource.getInstance().getImageClosePanel());
-    closeButton.setToolTipText(Messages.getString("JobGraph.ExecutionResultsPanel.CloseButton.Tooltip"));
+    closeButton.setToolTipText(BaseMessages.getString(PKG, "JobGraph.ExecutionResultsPanel.CloseButton.Tooltip"));
     FormData fdClose = new FormData();
     fdClose.right = new FormAttachment(100, 0);
     fdClose.top = new FormAttachment(0, 0);
@@ -2482,7 +2486,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
     minMaxButton = new Label(extraViewComposite, SWT.NONE);
     minMaxButton.setImage(GUIResource.getInstance().getImageMaximizePanel());
-    minMaxButton.setToolTipText(Messages.getString("JobGraph.ExecutionResultsPanel.MaxButton.Tooltip"));
+    minMaxButton.setToolTipText(BaseMessages.getString(PKG, "JobGraph.ExecutionResultsPanel.MaxButton.Tooltip"));
     FormData fdMinMax = new FormData();
     fdMinMax.right = new FormAttachment(closeButton, -Const.MARGIN);
     fdMinMax.top = new FormAttachment(0, 0);
@@ -2498,7 +2502,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     Label wResultsLabel = new Label(extraViewComposite, SWT.LEFT);
     wResultsLabel.setFont(GUIResource.getInstance().getFontMediumBold());
     wResultsLabel.setBackground(GUIResource.getInstance().getColorLightGray());
-    wResultsLabel.setText(Messages.getString("JobLog.ResultsPanel.NameLabel"));
+    wResultsLabel.setText(BaseMessages.getString(PKG, "JobLog.ResultsPanel.NameLabel"));
     FormData fdResultsLabel = new FormData();
     fdResultsLabel.left = new FormAttachment(0, 0);
     fdResultsLabel.right = new FormAttachment(100, 0);
@@ -2549,7 +2553,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     
     XulToolbarButton button = toolbar.getButtonById("job-show-results");
     button.setImage(GUIResource.getInstance().getImageShowResults());
-    button.setHint(Messages.getString("Spoon.Tooltip.ShowExecutionResults"));
+    button.setHint(BaseMessages.getString(PKG, "Spoon.Tooltip.ShowExecutionResults"));
 
   }
 
@@ -2562,13 +2566,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
       //
       sashForm.setMaximizedControl(null);
       minMaxButton.setImage(GUIResource.getInstance().getImageMaximizePanel());
-      minMaxButton.setToolTipText(Messages.getString("JobGraph.ExecutionResultsPanel.MaxButton.Tooltip"));
+      minMaxButton.setToolTipText(BaseMessages.getString(PKG, "JobGraph.ExecutionResultsPanel.MaxButton.Tooltip"));
     } else {
       // Maximize
       //
       sashForm.setMaximizedControl(extraViewComposite);
       minMaxButton.setImage(GUIResource.getInstance().getImageMinimizePanel());
-      minMaxButton.setToolTipText(Messages.getString("JobGraph.ExecutionResultsPanel.MinButton.Tooltip"));
+      minMaxButton.setToolTipText(BaseMessages.getString(PKG, "JobGraph.ExecutionResultsPanel.MinButton.Tooltip"));
     }
   }
 
@@ -2599,7 +2603,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     
     XulToolbarButton button = toolbar.getButtonById("job-show-results");
     button.setImage(GUIResource.getInstance().getImageHideResults());
-    button.setHint(Messages.getString("Spoon.Tooltip.HideExecutionResults"));
+    button.setHint(BaseMessages.getString(PKG, "Spoon.Tooltip.HideExecutionResults"));
 
   }
 
@@ -2645,18 +2649,18 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
       // Auto save feature...
       if (jobMeta.hasChanged()) {
         if (spoon.props.getAutoSave()) {
-        	if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobLog.Log.AutoSaveFileBeforeRunning")); //$NON-NLS-1$
-          System.out.println(Messages.getString("JobLog.Log.AutoSaveFileBeforeRunning2")); //$NON-NLS-1$
+        	if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobLog.Log.AutoSaveFileBeforeRunning")); //$NON-NLS-1$
+          System.out.println(BaseMessages.getString(PKG, "JobLog.Log.AutoSaveFileBeforeRunning2")); //$NON-NLS-1$
           spoon.saveToFile(jobMeta);
         } else {
           MessageDialogWithToggle md = new MessageDialogWithToggle(
               shell,
-              Messages.getString("JobLog.Dialog.SaveChangedFile.Title"), //$NON-NLS-1$
+              BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Title"), //$NON-NLS-1$
               null,
-              Messages.getString("JobLog.Dialog.SaveChangedFile.Message") + Const.CR + Messages.getString("JobLog.Dialog.SaveChangedFile.Message2") + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+              BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Message") + Const.CR + BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Message2") + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
               MessageDialog.QUESTION, new String[] {
-                  Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
-              0, Messages.getString("JobLog.Dialog.SaveChangedFile.Toggle"), //$NON-NLS-1$
+                  BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
+              0, BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Toggle"), //$NON-NLS-1$
               spoon.props.getAutoSave());
           int answer = md.open();
           if ((answer & 0xFF) == 0) {
@@ -2693,7 +2697,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
             } 
             job.getJobMeta().activateParameters();
             
-            log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.StartingJob")); //$NON-NLS-1$
+            log.logMinimal(Spoon.APP_NAME, BaseMessages.getString(PKG, "JobLog.Log.StartingJob")); //$NON-NLS-1$
             job.start();
             jobGridDelegate.previousNrItems = -1;
             // Link to the new jobTracker!
@@ -2715,30 +2719,30 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
           } catch (KettleException e) {
             new ErrorDialog(
                 shell,
-                Messages.getString("JobLog.Dialog.CanNotOpenJob.Title"), Messages.getString("JobLog.Dialog.CanNotOpenJob.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                BaseMessages.getString(PKG, "JobLog.Dialog.CanNotOpenJob.Title"), BaseMessages.getString(PKG, "JobLog.Dialog.CanNotOpenJob.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
             job = null;
           }
         } else {
           MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-          m.setText(Messages.getString("JobLog.Dialog.JobIsAlreadyRunning.Title")); //$NON-NLS-1$
-          m.setMessage(Messages.getString("JobLog.Dialog.JobIsAlreadyRunning.Message")); //$NON-NLS-1$
+          m.setText(BaseMessages.getString(PKG, "JobLog.Dialog.JobIsAlreadyRunning.Title")); //$NON-NLS-1$
+          m.setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.JobIsAlreadyRunning.Message")); //$NON-NLS-1$
           m.open();
         }
       } else {
         if (jobMeta.hasChanged()) {
           MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-          m.setText(Messages.getString("JobLog.Dialog.JobHasChangedSave.Title")); //$NON-NLS-1$
-          m.setMessage(Messages.getString("JobLog.Dialog.JobHasChangedSave.Message")); //$NON-NLS-1$
+          m.setText(BaseMessages.getString(PKG, "JobLog.Dialog.JobHasChangedSave.Title")); //$NON-NLS-1$
+          m.setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.JobHasChangedSave.Message")); //$NON-NLS-1$
           m.open();
         } else if (spoon.rep != null && jobMeta.getName() == null) {
           MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-          m.setText(Messages.getString("JobLog.Dialog.PleaseGiveThisJobAName.Title")); //$NON-NLS-1$
-          m.setMessage(Messages.getString("JobLog.Dialog.PleaseGiveThisJobAName.Message")); //$NON-NLS-1$
+          m.setText(BaseMessages.getString(PKG, "JobLog.Dialog.PleaseGiveThisJobAName.Title")); //$NON-NLS-1$
+          m.setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.PleaseGiveThisJobAName.Message")); //$NON-NLS-1$
           m.open();
         } else {
           MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-          m.setText(Messages.getString("JobLog.Dialog.NoFilenameSaveYourJobFirst.Title")); //$NON-NLS-1$
-          m.setMessage(Messages.getString("JobLog.Dialog.NoFilenameSaveYourJobFirst.Message")); //$NON-NLS-1$
+          m.setText(BaseMessages.getString(PKG, "JobLog.Dialog.NoFilenameSaveYourJobFirst.Title")); //$NON-NLS-1$
+          m.setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.NoFilenameSaveYourJobFirst.Message")); //$NON-NLS-1$
           m.open();
         }
       }
@@ -2757,7 +2761,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
       running = false;
       for (RefreshListener listener : refreshListeners)
         listener.refreshNeeded();
-      log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.JobHasEnded")); //$NON-NLS-1$
+      log.logMinimal(Spoon.APP_NAME, BaseMessages.getString(PKG, "JobLog.Log.JobHasEnded")); //$NON-NLS-1$
     }
     setControlStates();
   }
@@ -2770,13 +2774,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         job.waitUntilFinished(5000); // wait until everything is stopped, maximum 5 seconds...
         job = null;
         running = false;
-        log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.JobWasStopped")); //$NON-NLS-1$
+        log.logMinimal(Spoon.APP_NAME, BaseMessages.getString(PKG, "JobLog.Log.JobWasStopped")); //$NON-NLS-1$
       }
     } catch (KettleJobException je) {
       MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-      m.setText(Messages.getString("JobLog.Dialog.UnableToSaveStopLineInLoggingTable.Title")); //$NON-NLS-1$
+      m.setText(BaseMessages.getString(PKG, "JobLog.Dialog.UnableToSaveStopLineInLoggingTable.Title")); //$NON-NLS-1$
       m
-          .setMessage(Messages.getString("JobLog.Dialog.UnableToSaveStopLineInLoggingTable.Message") + Const.CR + je.toString()); //$NON-NLS-1$
+          .setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.UnableToSaveStopLineInLoggingTable.Message") + Const.CR + je.toString()); //$NON-NLS-1$
       m.open();
     } finally {
       setControlStates();
@@ -2805,7 +2809,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         {
         	pauseButton.setEnable(running);
         	pauseButton.setText( pausing ? RESUME_TEXT : PAUSE_TEXT );
-        	pauseButton.setHint( pausing ? Messages.getString("Spoon.Tooltip.ResumeTranformation") : Messages.getString("Spoon.Tooltip.PauseTranformation"));
+        	pauseButton.setHint( pausing ? BaseMessages.getString(PKG, "Spoon.Tooltip.ResumeTranformation") : BaseMessages.getString(PKG, "Spoon.Tooltip.PauseTranformation"));
         }
         */
         // Stop button...

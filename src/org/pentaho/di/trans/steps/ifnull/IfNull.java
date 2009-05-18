@@ -17,8 +17,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -26,7 +28,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.core.Const;
 
 
 /**
@@ -38,6 +39,8 @@ import org.pentaho.di.core.Const;
 
 public class IfNull extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = IfNullMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private IfNullMeta meta;
 	private IfNullData data;
 	
@@ -89,14 +92,14 @@ public class IfNull extends BaseStep implements StepInterface
 						data.fieldnrs[i]=data.outputRowMeta.indexOfValue(meta.getFieldName()[i]);
 						if (data.fieldnrs[i]<0)
 						{
-							logError(Messages.getString("IfNull.Log.CanNotFindField",meta.getFieldName()[i]));
-							throw new KettleException(Messages.getString("IfNull.Log.CanNotFindField",meta.getFieldName()[i]));
+							logError(BaseMessages.getString(PKG, "IfNull.Log.CanNotFindField",meta.getFieldName()[i]));
+							throw new KettleException(BaseMessages.getString(PKG, "IfNull.Log.CanNotFindField",meta.getFieldName()[i]));
 						}
 						data.defaultValues[i]=environmentSubstitute(meta.getReplaceValue()[i]); 
 						data.defaultMasks[i]=environmentSubstitute(meta.getReplaceMask()[i]); 
 		 			}
 				}else
-					throw new KettleException(Messages.getString("IfNull.Log.SelectFieldsEmpty"));
+					throw new KettleException(BaseMessages.getString(PKG, "IfNull.Log.SelectFieldsEmpty"));
 			}else if(meta.isSelectValuesType())
 			{
 				// Consider only select value types
@@ -115,7 +118,7 @@ public class IfNull extends BaseStep implements StepInterface
 
 					for (int i=0;i<meta.getTypeName().length;i++){
 						if(!AlllistTypes.contains(meta.getTypeName()[i]))
-								throw new KettleException(Messages.getString("IfNull.Log.CanNotFindValueType",meta.getTypeName()[i]));
+								throw new KettleException(BaseMessages.getString(PKG, "IfNull.Log.CanNotFindValueType",meta.getTypeName()[i]));
 
 						data.ListTypes.put(meta.getTypeName()[i], i);
 						data.defaultValues[i]=environmentSubstitute(meta.getTypeReplaceValue()[i]); 
@@ -138,7 +141,7 @@ public class IfNull extends BaseStep implements StepInterface
 					{
 						data.fieldnrs[i]=fieldnr[i];
 					}	
-				}else throw new KettleException(Messages.getString("IfNull.Log.SelectValueTypesEmpty"));
+				}else throw new KettleException(BaseMessages.getString(PKG, "IfNull.Log.SelectValueTypesEmpty"));
 			
 			}else
 			{
@@ -173,7 +176,7 @@ public class IfNull extends BaseStep implements StepInterface
         	}
         	else
         	{
-        		logError(Messages.getString("IfNull.Log.ErrorInStep",e.getMessage())); //$NON-NLS-1$
+        		logError(BaseMessages.getString(PKG, "IfNull.Log.ErrorInStep",e.getMessage())); //$NON-NLS-1$
         		e.printStackTrace();
 				setErrors(1);
 				stopAll();

@@ -31,6 +31,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -47,6 +48,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class DimensionLookup extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = DimensionLookupMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private final static int CREATION_METHOD_AUTOINC  = 1;
     private final static int CREATION_METHOD_SEQUENCE = 2;
 	private final static int CREATION_METHOD_TABLEMAX = 3;
@@ -117,7 +120,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             if (data.startDateChoice==DimensionLookupMeta.START_DATE_ALTERNATIVE_COLUMN_VALUE) {
             	data.startDateFieldIndex = getInputRowMeta().indexOfValue(meta.getStartDateFieldName());
             	if (data.startDateFieldIndex<0) {
-            		throw new KettleStepException(Messages.getString("DimensionLookup.Exception.StartDateValueColumnNotFound", meta.getStartDateFieldName()));
+            		throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.StartDateValueColumnNotFound", meta.getStartDateFieldName()));
             	}
             }
           
@@ -129,7 +132,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 data.keynrs[i]=getInputRowMeta().indexOfValue(meta.getKeyStream()[i]);
                 if (data.keynrs[i]<0) // couldn't find field!
                 {
-                    throw new KettleStepException(Messages.getString("DimensionLookup.Exception.KeyFieldNotFound",meta.getKeyStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.KeyFieldNotFound",meta.getKeyStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
 
@@ -141,7 +144,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 	                data.fieldnrs[i]=data.outputRowMeta.indexOfValue(meta.getFieldStream()[i]);
 	                if (data.fieldnrs[i] < 0) 
 	                {
-	                  throw new KettleStepException(Messages.getString("DimensionLookup.Exception.KeyFieldNotFound", meta.getFieldStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+	                  throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.KeyFieldNotFound", meta.getFieldStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 	                }
             	} else {
             		data.fieldnrs[i]=-1;
@@ -204,12 +207,12 @@ public class DimensionLookup extends BaseStep implements StepInterface
             
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(Messages.getString("DimensionLookup.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "DimensionLookup.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
         }
         catch(KettleException e)
         {
-            logError(Messages.getString("DimensionLookup.Log.StepCanNotContinueForErrors", e.getMessage())); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(BaseMessages.getString(PKG, "DimensionLookup.Log.StepCanNotContinueForErrors", e.getMessage())); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e)); //$NON-NLS-1$ //$NON-NLS-2$
             setErrors(1);
             stopAll();
@@ -271,7 +274,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				if (index<0) {
 					// Just to be safe...
 					//
-					throw new KettleStepException(Messages.getString("DimensionLookup.Exception.KeyFieldNotFound", meta.getFieldStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$ 
+					throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.KeyFieldNotFound", meta.getFieldStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$ 
 				}
 				data.preloadIndexes.add(index);
 			}
@@ -363,14 +366,14 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				}
 				catch(Exception e) // TODO : remove exception??
 				{
-					throw new KettleStepException(Messages.getString("DimensionLookup.Exception.ErrorDetectedInGettingKey",i+"",data.keynrs[i]+"/"+rowMeta.size(),rowMeta.getString(row))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+					throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.ErrorDetectedInGettingKey",i+"",data.keynrs[i]+"/"+rowMeta.size(),rowMeta.getString(row))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 				}
 			}
 
 	        lookupRow[meta.getKeyStream().length]=valueDate;  // ? >= date_from
 	        lookupRow[meta.getKeyStream().length+1]=valueDate; // ? < date_to
 			
-			if (log.isDebug()) logDebug(Messages.getString("DimensionLookup.Log.LookupRow")+data.lookupRowMeta.getString(lookupRow)); //$NON-NLS-1$ //$NON-NLS-2$
+			if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "DimensionLookup.Log.LookupRow")+data.lookupRowMeta.getString(lookupRow)); //$NON-NLS-1$ //$NON-NLS-2$
 			
 	        // Do the lookup and see if we can find anything in the database.
 	        // But before that, let's see if we can find anything in the cache
@@ -425,7 +428,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		{
 			if (returnRow==null) // The dimension entry was not found, we need to add it!
 			{
-				if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.NoDimensionEntryFound")+lookupRowMeta.getString(lookupRow)+")"); //$NON-NLS-1$ //$NON-NLS-2$
+				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.NoDimensionEntryFound")+lookupRowMeta.getString(lookupRow)+")"); //$NON-NLS-1$ //$NON-NLS-2$
 				//logDetailed("Entry not found: add value!");
 				// Date range: ]-oo,+oo[ 
 				valueDateFrom = data.min_date;
@@ -445,7 +448,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 						break;
 				    case CREATION_METHOD_SEQUENCE:						
 						technicalKey=data.db.getNextSequenceValue(data.realSchemaName, meta.getSequenceName(), meta.getKeyField());
-						if (technicalKey!=null && log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.FoundNextSequence")+technicalKey.toString()); //$NON-NLS-1$
+						if (technicalKey!=null && log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.FoundNextSequence")+technicalKey.toString()); //$NON-NLS-1$
 						break;					
 				}	               
 
@@ -483,11 +486,11 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 }
                 */
                 
-				if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.AddedDimensionEntry")+data.returnRowMeta.getString(returnRow)); //$NON-NLS-1$
+				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.AddedDimensionEntry")+data.returnRowMeta.getString(returnRow)); //$NON-NLS-1$
 			}
 			else  // The entry was found: do we need to insert, update or both?
 			{
-				if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.DimensionEntryFound")+data.returnRowMeta.getString(returnRow)); //$NON-NLS-1$
+				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.DimensionEntryFound")+data.returnRowMeta.getString(returnRow)); //$NON-NLS-1$
                 
 				// What's the key?  The first value of the return row
 				technicalKey = data.returnRowMeta.getInteger(returnRow, 0);
@@ -536,7 +539,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 	                            punch=true;
 	                      }
 						  
-						  if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.ComparingValues",""+v1,""+v2,String.valueOf(cmp),String.valueOf(identical),String.valueOf(insert),String.valueOf(punch))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+						  if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.ComparingValues",""+v1,""+v2,String.valueOf(cmp),String.valueOf(identical),String.valueOf(insert),String.valueOf(punch))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 					}
 				}
 				
@@ -544,7 +547,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				{
 					if (!identical)
 					{
-						if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.UpdateRowWithValues")+getInputRowMeta().getString(row)); //$NON-NLS-1$
+						if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.UpdateRowWithValues")+getInputRowMeta().getString(row)); //$NON-NLS-1$
 						/*
 						 * UPDATE d_customer
 						 * SET    fieldlookup[] = row.getValue(fieldnrs)
@@ -562,14 +565,14 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					}
 					else
 					{
-						if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.SkipLine")); //$NON-NLS-1$
+						if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.SkipLine")); //$NON-NLS-1$
 						// Don't do anything, everything is file in de dimension.
 						incrementLinesSkipped();
 					}
 				}
 				else
 				{
-					if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.InsertNewVersion")+technicalKey.toString()); //$NON-NLS-1$
+					if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.InsertNewVersion")+technicalKey.toString()); //$NON-NLS-1$
 					
 	                Long valueNewVersion = valueVersion + 1;
 					valueDateFrom = data.valueDateNow;
@@ -585,7 +588,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					if (meta.getDatabaseMeta().supportsSequences() && meta.getSequenceName()!=null && meta.getSequenceName().length()>0)
 					{
 						technicalKey=data.db.getNextSequenceValue(data.realSchemaName, meta.getSequenceName(), meta.getKeyField());
-						if (technicalKey!=null && log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.FoundNextSequence2")+technicalKey.toString()); //$NON-NLS-1$
+						if (technicalKey!=null && log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.FoundNextSequence2")+technicalKey.toString()); //$NON-NLS-1$
 					}
 					else
 					// Use our own sequence here...
@@ -622,11 +625,11 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				
 				returnRow = new Object[data.returnRowMeta.size()];
 				returnRow[0] = technicalKey;
-				if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.TechnicalKey")+technicalKey); //$NON-NLS-1$
+				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.TechnicalKey")+technicalKey); //$NON-NLS-1$
 			}
 		}
 		
-		if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.AddValuesToRow")+data.returnRowMeta.getString(returnRow)); //$NON-NLS-1$
+		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.AddValuesToRow")+data.returnRowMeta.getString(returnRow)); //$NON-NLS-1$
         
         
         // Copy the results to the output row...
@@ -979,7 +982,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
         case DimensionLookupMeta.START_DATE_ALTERNATIVE_NULL           : insertRow[insertIndex++] = null; break;
         case DimensionLookupMeta.START_DATE_ALTERNATIVE_COLUMN_VALUE   : insertRow[insertIndex++] = inputRowMeta.getDate(row, data.startDateFieldIndex); break;
         default: 
-        	throw new KettleStepException(Messages.getString("DimensionLookup.Exception.IllegalStartDateSelection", Integer.toString(data.startDateChoice)));
+        	throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.IllegalStartDateSelection", Integer.toString(data.startDateChoice)));
         }
 
         insertRow[insertIndex++] = dateTo;
@@ -1538,14 +1541,14 @@ public class DimensionLookup extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 				
-                if (log.isDetailed()) logDetailed(Messages.getString("DimensionLookup.Log.ConnectedToDB")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DimensionLookup.Log.ConnectedToDB")); //$NON-NLS-1$
 				data.db.setCommit(meta.getCommitSize());
 				
 				return true;
 			}
 			catch(KettleException ke)
 			{
-				logError(Messages.getString("DimensionLookup.Log.ErrorOccurredInProcessing")+ke.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DimensionLookup.Log.ErrorOccurredInProcessing")+ke.getMessage()); //$NON-NLS-1$
 			}
 		}
 		return false;
@@ -1572,7 +1575,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
         }
         catch(KettleDatabaseException e)
         {
-            logError(Messages.getString("DimensionLookup.Log.ErrorOccurredInProcessing")+e.getMessage()); //$NON-NLS-1$
+            logError(BaseMessages.getString(PKG, "DimensionLookup.Log.ErrorOccurredInProcessing")+e.getMessage()); //$NON-NLS-1$
         }
         finally 
         {        

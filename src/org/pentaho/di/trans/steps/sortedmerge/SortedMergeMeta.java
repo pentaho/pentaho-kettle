@@ -26,6 +26,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -44,6 +45,8 @@ import org.w3c.dom.Node;
 
 public class SortedMergeMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = SortedMergeMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** order by which fields? */
     private String  fieldName[];
     /** false : descending, true=ascending */
@@ -197,7 +200,7 @@ public class SortedMergeMeta extends BaseStepMeta implements StepMetaInterface
         
         if (prev!=null && prev.size()>0)
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("SortedMergeMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SortedMergeMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
             remarks.add(cr);
             
             String  error_message="";
@@ -215,7 +218,7 @@ public class SortedMergeMeta extends BaseStepMeta implements StepMetaInterface
             }
             if (error_found) 
             {
-                error_message=Messages.getString("SortedMergeMeta.CheckResult.SortKeysNotFound", error_message);
+                error_message=BaseMessages.getString(PKG, "SortedMergeMeta.CheckResult.SortKeysNotFound", error_message);
 
                 cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
                 remarks.add(cr);
@@ -224,31 +227,31 @@ public class SortedMergeMeta extends BaseStepMeta implements StepMetaInterface
             {
                 if (fieldName.length>0)
                 {
-                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("SortedMergeMeta.CheckResult.AllSortKeysFound"), stepMeta);
+                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SortedMergeMeta.CheckResult.AllSortKeysFound"), stepMeta);
                     remarks.add(cr);
                 }
                 else
                 {
-                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SortedMergeMeta.CheckResult.NoSortKeysEntered"), stepMeta);
+                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SortedMergeMeta.CheckResult.NoSortKeysEntered"), stepMeta);
                     remarks.add(cr);
                 }
             }
         }
         else
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SortedMergeMeta.CheckResult.NoFields"), stepMeta);
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SortedMergeMeta.CheckResult.NoFields"), stepMeta);
             remarks.add(cr);
         }
         
         // See if we have input streams leading to this step!
         if (input.length>0)
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("SortedMergeMeta.CheckResult.ExpectedInputOk"), stepMeta);
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SortedMergeMeta.CheckResult.ExpectedInputOk"), stepMeta);
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SortedMergeMeta.CheckResult.ExpectedInputError"), stepMeta);
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SortedMergeMeta.CheckResult.ExpectedInputError"), stepMeta);
             remarks.add(cr);
         }
     }

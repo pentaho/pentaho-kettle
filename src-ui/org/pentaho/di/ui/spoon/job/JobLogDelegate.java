@@ -20,20 +20,20 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.BufferChangedListener;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
-import org.pentaho.di.ui.spoon.job.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.spoon.job.XulMessages;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 import org.pentaho.xul.swt.toolbar.Toolbar;
 
 public class JobLogDelegate extends SpoonDelegate {
-	
+	private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final String XUL_FILE_TRANS_LOG_TOOLBAR = "ui/job-log-toolbar.xul";
 	public static final String XUL_FILE_TRANS_LOG_TOOLBAR_PROPERTIES = "ui/job-log-toolbar.properties";
 
@@ -79,7 +79,7 @@ public class JobLogDelegate extends SpoonDelegate {
 		//
 		jobLogTab = new CTabItem(jobGraph.extraViewTabFolder, SWT.NONE);
 		jobLogTab.setImage(GUIResource.getInstance().getImageShowLog());
-		jobLogTab.setText(Messages.getString("JobGraph.LogTab.Name"));
+		jobLogTab.setText(BaseMessages.getString(PKG, "JobGraph.LogTab.Name"));
 
 		jobLogComposite = new Composite(jobGraph.extraViewTabFolder, SWT.NONE);
 		jobLogComposite.setLayout(new FormLayout());
@@ -158,7 +158,7 @@ public class JobLogDelegate extends SpoonDelegate {
 	        toolBar.layout(true, true);
 		} catch (Throwable t ) {
 			log.logError(toString(), Const.getStackTracker(t));
-			new ErrorDialog(jobLogComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR), new Exception(t));
+			new ErrorDialog(jobLogComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR), new Exception(t));
 		}
 	}
 
@@ -183,8 +183,8 @@ public class JobLogDelegate extends SpoonDelegate {
 
 		} catch (Throwable t ) {
 			t.printStackTrace();
-			new ErrorDialog(jobLogComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
-					Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR_PROPERTIES), new Exception(t));
+			new ErrorDialog(jobLogComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
+					BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR_PROPERTIES), new Exception(t));
 		}
 	}
 
@@ -211,8 +211,8 @@ public class JobLogDelegate extends SpoonDelegate {
 			if (all.substring(i, i+crlen).equalsIgnoreCase(Const.CR))
 			{
 				String line = all.substring(startpos, i);
-				if (line.toUpperCase().indexOf(Messages.getString("JobLog.System.ERROR"))>=0 || //$NON-NLS-1$
-				    line.toUpperCase().indexOf(Messages.getString("JobLog.System.EXCEPTION"))>=0 //$NON-NLS-1$
+				if (line.toUpperCase().indexOf(BaseMessages.getString(PKG, "JobLog.System.ERROR"))>=0 || //$NON-NLS-1$
+				    line.toUpperCase().indexOf(BaseMessages.getString(PKG, "JobLog.System.EXCEPTION"))>=0 //$NON-NLS-1$
 				    ) 
 				{
 					err.add(line);
@@ -224,8 +224,8 @@ public class JobLogDelegate extends SpoonDelegate {
 			i++;
 		}
 		String line = all.substring(startpos);
-		if (line.toUpperCase().indexOf(Messages.getString("JobLog.System.ERROR"))>=0 || //$NON-NLS-1$
-		    line.toUpperCase().indexOf(Messages.getString("JobLog.System.EXCEPTION"))>=0 //$NON-NLS-1$
+		if (line.toUpperCase().indexOf(BaseMessages.getString(PKG, "JobLog.System.ERROR"))>=0 || //$NON-NLS-1$
+		    line.toUpperCase().indexOf(BaseMessages.getString(PKG, "JobLog.System.EXCEPTION"))>=0 //$NON-NLS-1$
 		    ) 
 		{
 			err.add(line);
@@ -236,7 +236,7 @@ public class JobLogDelegate extends SpoonDelegate {
 			String err_lines[] = new String[err.size()];
 			for (i=0;i<err_lines.length;i++) err_lines[i] = err.get(i);
 			
-			EnterSelectionDialog esd = new EnterSelectionDialog(jobGraph.getShell(), err_lines, Messages.getString("JobLog.Dialog.ErrorLines.Title"), Messages.getString("JobLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+			EnterSelectionDialog esd = new EnterSelectionDialog(jobGraph.getShell(), err_lines, BaseMessages.getString(PKG, "JobLog.Dialog.ErrorLines.Title"), BaseMessages.getString(PKG, "JobLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
 			line = esd.open();
 			if (line!=null)
 			{

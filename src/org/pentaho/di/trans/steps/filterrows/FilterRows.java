@@ -14,6 +14,7 @@ package org.pentaho.di.trans.steps.filterrows;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -30,6 +31,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class FilterRows extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = FilterRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private FilterRowsMeta meta;
 	private FilterRowsData data;
 	
@@ -46,9 +49,9 @@ public class FilterRows extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			String message = Messages.getString("FilterRows.Exception.UnexpectedErrorFoundInEvaluationFuction");  //$NON-NLS-1$
+			String message = BaseMessages.getString(PKG, "FilterRows.Exception.UnexpectedErrorFoundInEvaluationFuction");  //$NON-NLS-1$
 			logError(message);
-			logError(Messages.getString("FilterRows.Log.ErrorOccurredForRow")+rowMeta.getString(row)); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "FilterRows.Log.ErrorOccurredForRow")+rowMeta.getString(row)); //$NON-NLS-1$
 			logError(Const.getStackTracker(e));
 			throw new KettleException(message, e);
 		}
@@ -82,13 +85,13 @@ public class FilterRows extends BaseStep implements StepInterface
             	data.trueRowSet = findOutputRowSet(getStepname(), getCopy(), meta.getSendTrueStepname(), 0);
             	if ( data.trueRowSet == null )
             	{
-            		throw new KettleException(Messages.getString("FilterRows.Log.TargetStepInvalid", meta.getSendTrueStepname()));
+            		throw new KettleException(BaseMessages.getString(PKG, "FilterRows.Log.TargetStepInvalid", meta.getSendTrueStepname()));
             	}
             	
             	data.falseRowSet = findOutputRowSet(getStepname(), getCopy(), meta.getSendFalseStepname(), 0);
             	if ( data.falseRowSet == null )
             	{
-            		throw new KettleException(Messages.getString("FilterRows.Log.TargetStepInvalid", meta.getSendFalseStepname()));
+            		throw new KettleException(BaseMessages.getString(PKG, "FilterRows.Log.TargetStepInvalid", meta.getSendFalseStepname()));
             	}            	
             }
         }
@@ -117,7 +120,7 @@ public class FilterRows extends BaseStep implements StepInterface
 		
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(Messages.getString("FilterRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "FilterRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
         }
 			
 		return true;
@@ -135,7 +138,7 @@ public class FilterRows extends BaseStep implements StepInterface
         {
             if (meta.getSendTrueStepname()!=null ^ meta.getSendFalseStepname()!=null)
             {
-                logError(Messages.getString("FilterRows.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "FilterRows.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
             }
             else
             {

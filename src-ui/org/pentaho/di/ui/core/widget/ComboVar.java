@@ -28,6 +28,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 /**
@@ -38,6 +39,8 @@ import org.pentaho.di.ui.core.gui.GUIResource;
  * @since 17-may-2006
  */
 public class ComboVar extends Composite {
+  private static Class<?> PKG = ComboVar.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   private String toolTipText;
 
   // private static final PropsUI props = PropsUI.getInstance();
@@ -92,7 +95,7 @@ public class ComboVar extends Composite {
     controlDecoration = new ControlDecoration(wCombo, SWT.TOP | SWT.RIGHT);
     Image image = GUIResource.getInstance().getImageVariable();
     controlDecoration.setImage(image);
-    controlDecoration.setDescriptionText(Messages.getString("TextVar.tooltip.InsertVariable"));
+    controlDecoration.setDescriptionText(BaseMessages.getString(PKG, "TextVar.tooltip.InsertVariable"));
 
     //props.setLook(wText);
 

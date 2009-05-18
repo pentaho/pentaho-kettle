@@ -26,7 +26,6 @@ import javax.activation.DataHandler;
 import javax.activation.URLDataSource;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -38,9 +37,12 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileType;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -48,9 +50,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.core.xml.XMLHandler;
 
 
 /**
@@ -62,6 +61,8 @@ import org.pentaho.di.core.xml.XMLHandler;
 
 public class Mail extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = MailMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private MailMeta meta;
 	private MailData data;
 	
@@ -91,39 +92,39 @@ public class Mail extends BaseStep implements StepInterface
 			
 			// Check is filename field is provided
 			if (Const.isEmpty(meta.getDestination()))
-				throw new KettleException(Messages.getString("Mail.Log.DestinationFieldEmpty"));
+				throw new KettleException(BaseMessages.getString(PKG, "Mail.Log.DestinationFieldEmpty"));
 			
 			
 			// Check is replyname field is provided
 			if (Const.isEmpty(meta.getReplyAddress()))
-				throw new KettleException(Messages.getString("Mail.Log.ReplyFieldEmpty"));
+				throw new KettleException(BaseMessages.getString(PKG, "Mail.Log.ReplyFieldEmpty"));
 			
 			// Check is SMTP server is provided
 			if (Const.isEmpty(meta.getServer()))
-				throw new KettleException(Messages.getString("Mail.Log.ServerFieldEmpty"));
+				throw new KettleException(BaseMessages.getString(PKG, "Mail.Log.ServerFieldEmpty"));
 			
 			
 			// Check Attached filenames when dynamic
 			if (meta.isDynamicFilename() && Const.isEmpty(meta.getDynamicFieldname()))
-				throw new KettleException(Messages.getString("Mail.Log.DynamicFilenameFielddEmpty"));
+				throw new KettleException(BaseMessages.getString(PKG, "Mail.Log.DynamicFilenameFielddEmpty"));
 			
 			
 			// Check  Attached zipfilename when dynamic
 			if (meta.isZipFilenameDynamic() && Const.isEmpty(meta.getDynamicZipFilenameField()))
-				throw new KettleException(Messages.getString("Mail.Log.DynamicZipFilenameFieldEmpty"));
+				throw new KettleException(BaseMessages.getString(PKG, "Mail.Log.DynamicZipFilenameFieldEmpty"));
 			
 			if(meta.isZipFiles() && Const.isEmpty(meta.getZipFilename()))
-				throw new KettleException(Messages.getString("Mail.Log.ZipFilenameEmpty"));	
+				throw new KettleException(BaseMessages.getString(PKG, "Mail.Log.ZipFilenameEmpty"));	
 			
 			// check authentication 
 			if(meta.isUsingAuthentication()) {
 				// check authentication user
 				if (Const.isEmpty(meta.getAuthenticationUser()))
-					throw new KettleException(Messages.getString("Mail.Log.AuthenticationUserFieldEmpty"));
+					throw new KettleException(BaseMessages.getString(PKG, "Mail.Log.AuthenticationUserFieldEmpty"));
 				
 				// check authentication pass
 				if (Const.isEmpty(meta.getAuthenticationPassword()))
-					throw new KettleException(Messages.getString("Mail.Log.AuthenticationPasswordFieldEmpty"));
+					throw new KettleException(BaseMessages.getString(PKG, "Mail.Log.AuthenticationPasswordFieldEmpty"));
 			}
 			
 			// cache the position of the destination field			
@@ -131,7 +132,7 @@ public class Mail extends BaseStep implements StepInterface
 				String realDestinationFieldname=meta.getDestination();
 				data.indexOfDestination =data.previousRowMeta.indexOfValue(realDestinationFieldname);
 				if (data.indexOfDestination<0)
-					throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindDestinationField",realDestinationFieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindDestinationField",realDestinationFieldname)); //$NON-NLS-1$ //$NON-NLS-2$
 			}  
 			
 			// Cc
@@ -141,7 +142,7 @@ public class Mail extends BaseStep implements StepInterface
 					String realDestinationCcFieldname=meta.getDestinationCc();
 					data.indexOfDestinationCc =data.previousRowMeta.indexOfValue(realDestinationCcFieldname);
 					if (data.indexOfDestinationCc<0)
-						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindDestinationCcField",realDestinationCcFieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindDestinationCcField",realDestinationCcFieldname)); //$NON-NLS-1$ //$NON-NLS-2$
 				}  
 			}
 			// BCc
@@ -151,7 +152,7 @@ public class Mail extends BaseStep implements StepInterface
 					String realDestinationBCcFieldname=meta.getDestinationBCc();
 					data.indexOfDestinationBCc =data.previousRowMeta.indexOfValue(realDestinationBCcFieldname);
 					if (data.indexOfDestinationBCc<0)
-						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindDestinationBCcField",realDestinationBCcFieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindDestinationBCcField",realDestinationBCcFieldname)); //$NON-NLS-1$ //$NON-NLS-2$
 				}  
 			}
 			// Sender Name
@@ -161,7 +162,7 @@ public class Mail extends BaseStep implements StepInterface
 					String realSenderName=meta.getReplyName();
 					data.indexOfSenderName =data.previousRowMeta.indexOfValue(realSenderName);
 					if (data.indexOfSenderName<0)
-						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindReplyNameField",realSenderName)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindReplyNameField",realSenderName)); //$NON-NLS-1$ //$NON-NLS-2$
 				}  
 			}
 			// Sender address
@@ -170,7 +171,7 @@ public class Mail extends BaseStep implements StepInterface
 				String realSenderAddress=meta.getReplyAddress();
 				data.indexOfSenderAddress =data.previousRowMeta.indexOfValue(realSenderAddress);
 				if (data.indexOfSenderAddress<0)
-					throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindReplyAddressField",realSenderAddress)); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindReplyAddressField",realSenderAddress)); //$NON-NLS-1$ //$NON-NLS-2$
 			}  
 			
 			// Reply to
@@ -180,7 +181,7 @@ public class Mail extends BaseStep implements StepInterface
 					String realReplyToAddresses=meta.getReplyToAddresses();
 					data.indexOfReplyToAddresses =data.previousRowMeta.indexOfValue(realReplyToAddresses);
 					if (data.indexOfReplyToAddresses<0)
-						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindReplyToAddressesField",realReplyToAddresses)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindReplyToAddressesField",realReplyToAddresses)); //$NON-NLS-1$ //$NON-NLS-2$
 				}  
 			}
 			
@@ -191,7 +192,7 @@ public class Mail extends BaseStep implements StepInterface
 					String realContactPerson=meta.getContactPerson();
 					data.indexOfContactPerson =data.previousRowMeta.indexOfValue(realContactPerson);
 					if (data.indexOfContactPerson<0)
-						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindContactPersonField",realContactPerson)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindContactPersonField",realContactPerson)); //$NON-NLS-1$ //$NON-NLS-2$
 				}  
 			}
 			// Contact Phone
@@ -201,7 +202,7 @@ public class Mail extends BaseStep implements StepInterface
 					String realContactPhone=meta.getContactPhone();
 					data.indexOfContactPhone =data.previousRowMeta.indexOfValue(realContactPhone);
 					if (data.indexOfContactPhone<0)
-						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindContactPhoneField",realContactPhone)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindContactPhoneField",realContactPhone)); //$NON-NLS-1$ //$NON-NLS-2$
 				}  
 			}
 			// cache the position of the Server field			
@@ -209,7 +210,7 @@ public class Mail extends BaseStep implements StepInterface
 				String realServer=meta.getServer();
 				data.indexOfServer =data.previousRowMeta.indexOfValue(realServer);
 				if (data.indexOfServer<0)
-					throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindServerField",realServer)); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindServerField",realServer)); //$NON-NLS-1$ //$NON-NLS-2$
 			} 
 			// Port
 			if (!Const.isEmpty(meta.getPort())){
@@ -218,7 +219,7 @@ public class Mail extends BaseStep implements StepInterface
 					String realPort=meta.getPort();
 					data.indexOfPort =data.previousRowMeta.indexOfValue(realPort);
 					if (data.indexOfPort<0)
-						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindPortField",realPort)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindPortField",realPort)); //$NON-NLS-1$ //$NON-NLS-2$
 				}  
 			}
 			// Authentication
@@ -228,7 +229,7 @@ public class Mail extends BaseStep implements StepInterface
 					String realAuthenticationUser=meta.getAuthenticationUser();
 					data.indexOfAuthenticationUser =data.previousRowMeta.indexOfValue(realAuthenticationUser);
 					if (data.indexOfAuthenticationUser<0)
-						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindAuthenticationUserField",realAuthenticationUser)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindAuthenticationUserField",realAuthenticationUser)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				
 				// cache the position of the Authentication password field			
@@ -236,7 +237,7 @@ public class Mail extends BaseStep implements StepInterface
 					String realAuthenticationPassword=meta.getAuthenticationPassword();
 					data.indexOfAuthenticationPass =data.previousRowMeta.indexOfValue(realAuthenticationPassword);
 					if (data.indexOfAuthenticationPass<0)
-						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindAuthenticationPassField",realAuthenticationPassword)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindAuthenticationPassField",realAuthenticationPassword)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 			// Mail Subject
@@ -246,7 +247,7 @@ public class Mail extends BaseStep implements StepInterface
 					String realSubject=meta.getSubject();
 					data.indexOfSubject =data.previousRowMeta.indexOfValue(realSubject);
 					if (data.indexOfSubject<0)
-						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindSubjectField",realSubject)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindSubjectField",realSubject)); //$NON-NLS-1$ //$NON-NLS-2$
 				}  
 			}
 			// Mail Comment
@@ -256,7 +257,7 @@ public class Mail extends BaseStep implements StepInterface
 					String realComment=meta.getComment();
 					data.indexOfComment =data.previousRowMeta.indexOfValue(realComment);
 					if (data.indexOfComment<0)
-						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindCommentField",realComment)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindCommentField",realComment)); //$NON-NLS-1$ //$NON-NLS-2$
 				}  
 			}	
 			
@@ -267,7 +268,7 @@ public class Mail extends BaseStep implements StepInterface
 					String realZipFilename=meta.getDynamicZipFilenameField();
 					data.indexOfDynamicZipFilename =data.previousRowMeta.indexOfValue(realZipFilename);
 					if (data.indexOfDynamicZipFilename<0)
-						throw new KettleException(Messages.getString("Mail.Exception.CouldnotSourceAttachedZipFilenameField",realZipFilename)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotSourceAttachedZipFilenameField",realZipFilename)); //$NON-NLS-1$ //$NON-NLS-2$
 				}  
 			}
 			data.zipFileLimit=Const.toLong(environmentSubstitute(meta.getZipLimitSize()), 0);
@@ -283,7 +284,7 @@ public class Mail extends BaseStep implements StepInterface
 					String realSourceattachedFilename=meta.getDynamicFieldname();
 					data.indexOfSourceFilename =data.previousRowMeta.indexOfValue(realSourceattachedFilename);
 					if (data.indexOfSourceFilename<0)
-						throw new KettleException(Messages.getString("Mail.Exception.CouldnotSourceAttachedFilenameField",realSourceattachedFilename)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotSourceAttachedFilenameField",realSourceattachedFilename)); //$NON-NLS-1$ //$NON-NLS-2$
 				}  
 				
 				// cache the position of the attached wildcard field		
@@ -292,7 +293,7 @@ public class Mail extends BaseStep implements StepInterface
 						String realSourceattachedWildcard=meta.getDynamicWildcard();
 						data.indexOfSourceWildcard =data.previousRowMeta.indexOfValue(realSourceattachedWildcard);
 						if (data.indexOfSourceWildcard<0)
-							throw new KettleException(Messages.getString("Mail.Exception.CouldnotSourceAttachedWildcard",realSourceattachedWildcard)); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotSourceAttachedWildcard",realSourceattachedWildcard)); //$NON-NLS-1$ //$NON-NLS-2$
 					}  
 				}		
 			}else
@@ -351,7 +352,7 @@ public class Mail extends BaseStep implements StepInterface
 			
 			putRow(getInputRowMeta(), r);     // copy row to possible alternate rowset(s).);  // copy row to output rowset(s);
 
-	        if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("Mail.Log.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+	        if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "Mail.Log.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
 	        
 		} catch (Exception e)
 		 {
@@ -360,7 +361,7 @@ public class Mail extends BaseStep implements StepInterface
 		        errorMessage = e.toString();
 			}
 			else {
-				throw new KettleException(Messages.getString("Mail.Error.General"), e);
+				throw new KettleException(BaseMessages.getString(PKG, "Mail.Error.General"), e);
 			}
 			if (sendToErrorRow){
 			   // Simply add this row to the error row
@@ -429,7 +430,7 @@ public class Mail extends BaseStep implements StepInterface
 	    	if(!Const.isEmpty(senderName)) email_address=senderName+'<'+email_address+'>';	 	 
 	        msg.setFrom(new InternetAddress(email_address));
 	      } else {
-	        throw new MessagingException(Messages.getString("Mail.Error.ReplyEmailNotFilled"));
+	        throw new MessagingException(BaseMessages.getString(PKG, "Mail.Error.ReplyEmailNotFilled"));
 	      }
 	
 	      // Set reply to 
@@ -488,16 +489,16 @@ public class Mail extends BaseStep implements StepInterface
 	    
 	
 	      if (meta.getIncludeDate())
-	        messageText.append(Messages.getString("Mail.Log.Comment.MsgDate") +": ").append(XMLHandler.date2string(new Date())).append(Const.CR).append(
+	        messageText.append(BaseMessages.getString(PKG, "Mail.Log.Comment.MsgDate") +": ").append(XMLHandler.date2string(new Date())).append(Const.CR).append(
 	            Const.CR);
 	
 	
 	      if (!meta.isOnlySendComment()
 	          && (!Const.isEmpty(contactPerson) || !Const.isEmpty(contactPhone))){
-	        messageText.append(Messages.getString("Mail.Log.Comment.ContactInfo") + " :").append(Const.CR);
+	        messageText.append(BaseMessages.getString(PKG, "Mail.Log.Comment.ContactInfo") + " :").append(Const.CR);
 	        messageText.append("---------------------").append(Const.CR);
-	        messageText.append(Messages.getString("Mail.Log.Comment.PersonToContact")+" : ").append(contactPerson).append(Const.CR);
-	        messageText.append(Messages.getString("Mail.Log.Comment.Tel") + "  : ").append(contactPhone).append(Const.CR);
+	        messageText.append(BaseMessages.getString(PKG, "Mail.Log.Comment.PersonToContact")+" : ").append(contactPerson).append(Const.CR);
+	        messageText.append(BaseMessages.getString(PKG, "Mail.Log.Comment.Tel") + "  : ").append(contactPhone).append(Const.CR);
 	        messageText.append(Const.CR);
 	      }
 	      data.parts = new MimeMultipart(); 
@@ -621,8 +622,8 @@ public class Mail extends BaseStep implements StepInterface
 						    	  }
 					        } // end for
 						 	if(zipFiles) {	
-						 		if(log.isDebug()) log.logDebug(toString() ,Messages.getString("Mail.Log.FileSize",""+FileSize));
-						 		if(log.isDebug()) log.logDebug(toString() ,Messages.getString("Mail.Log.LimitSize",""+data.zipFileLimit));
+						 		if(log.isDebug()) log.logDebug(toString() ,BaseMessages.getString(PKG, "Mail.Log.FileSize",""+FileSize));
+						 		if(log.isDebug()) log.logDebug(toString() ,BaseMessages.getString(PKG, "Mail.Log.LimitSize",""+data.zipFileLimit));
 						 		
 						 		if(data.zipFileLimit>0 && FileSize>data.zipFileLimit){
 							
@@ -659,7 +660,7 @@ public class Mail extends BaseStep implements StepInterface
 						 	}
 						}
 					}else{
-						log.logError(toString(),Messages.getString("Mail.Error.SourceFileFolderNotExists",realSourceFileFoldername));
+						log.logError(toString(),BaseMessages.getString(PKG, "Mail.Error.SourceFileFolderNotExists",realSourceFileFoldername));
 					}
 				}	
 			}catch(Exception e)
@@ -695,7 +696,7 @@ public class Mail extends BaseStep implements StepInterface
           files.setFileName(file.getName().getBaseName());
           // add the part with the file in the BodyPart();
           data.parts.addBodyPart(files);
-          if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Mail.Log.AttachedFile",fds.getName()));
+          if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Mail.Log.AttachedFile",fds.getName()));
           
 	  }
 	  private class TextFileSelector implements FileSelector 
@@ -733,7 +734,7 @@ public class Mail extends BaseStep implements StepInterface
 				}
 				catch (Exception e) 
 				{
-					log.logError(toString(), Messages.getString("Mail.Error.FindingFiles", info.getFile().toString(),e.getMessage()));
+					log.logError(toString(), BaseMessages.getString(PKG, "Mail.Error.FindingFiles", info.getFile().toString(),e.getMessage()));
 					 returncode= false;
 				}
 				return returncode;

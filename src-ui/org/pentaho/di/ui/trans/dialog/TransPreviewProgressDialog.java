@@ -29,6 +29,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.debug.BreakPointListener;
@@ -46,6 +47,8 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
  */
 public class TransPreviewProgressDialog
 {
+    private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Shell shell;
     private TransMeta transMeta;
     private String[] previewStepNames;
@@ -108,12 +111,12 @@ public class TransPreviewProgressDialog
         }
         catch (InvocationTargetException e)
         {
-            new ErrorDialog(shell, Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
             transMeta = null;
         }
         catch (InterruptedException e)
         {
-            new ErrorDialog(shell, Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
             transMeta = null;
         }
 
@@ -124,7 +127,7 @@ public class TransPreviewProgressDialog
     {
         LogWriter log = LogWriter.getInstance();
         
-        progressMonitor.beginTask(Messages.getString("TransPreviewProgressDialog.Monitor.BeginTask.Title"), 100); //$NON-NLS-1$
+        progressMonitor.beginTask(BaseMessages.getString(PKG, "TransPreviewProgressDialog.Monitor.BeginTask.Title"), 100); //$NON-NLS-1$
         
         // Log preview activity to a String:
         Log4jStringAppender stringAppender = LogWriter.createStringAppender();
@@ -140,8 +143,8 @@ public class TransPreviewProgressDialog
 		} catch (final KettleException e) {
 			shell.getDisplay().asyncExec(new Runnable() {
 				public void run() {
-					new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages
-							.getString("TransPreviewProgressDialog.Exception.ErrorPreparingTransformation"), e);
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), 
+						BaseMessages.getString(PKG, "TransPreviewProgressDialog.Exception.ErrorPreparingTransformation"), e);
 				}
 			});
 			
@@ -173,8 +176,8 @@ public class TransPreviewProgressDialog
 		} catch (final KettleException e) {
 			shell.getDisplay().asyncExec(new Runnable() {
 				public void run() {
-					new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages
-							.getString("TransPreviewProgressDialog.Exception.ErrorPreparingTransformation"), e);
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), 
+						BaseMessages.getString(PKG, "TransPreviewProgressDialog.Exception.ErrorPreparingTransformation"), e);
 				}
 			});
 			
@@ -195,7 +198,7 @@ public class TransPreviewProgressDialog
 					public void breakPointHit(TransDebugMeta transDebugMeta, StepDebugMeta stepDebugMeta, RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer) {
 						String stepName =  stepDebugMeta.getStepMeta().getName();
 						previewComplete.add(stepName);
-						progressMonitor.subTask( Messages.getString("TransPreviewProgressDialog.SubTask.StepPreviewFinished", stepName) );
+						progressMonitor.subTask( BaseMessages.getString(PKG, "TransPreviewProgressDialog.SubTask.StepPreviewFinished", stepName) );
 					}
 				}
 			);

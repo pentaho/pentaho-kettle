@@ -32,6 +32,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -52,6 +53,8 @@ import org.w3c.dom.Node;
  
 public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = XBaseInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String 	dbfFileName;
 	private int 	rowLimit;
 	private boolean rowNrAdded;
@@ -275,7 +278,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("XBaseInputMeta.Exception.UnableToReadStepInformationFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "XBaseInputMeta.Exception.UnableToReadStepInformationFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -332,7 +335,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception ke)
 	    {
-			throw new KettleStepException(Messages.getString("XBaseInputMeta.Exception.UnableToReadMetaDataFromXBaseFile"), ke); //$NON-NLS-1$
+			throw new KettleStepException(BaseMessages.getString(PKG, "XBaseInputMeta.Exception.UnableToReadMetaDataFromXBaseFile"), ke); //$NON-NLS-1$
 	    }
         finally
         {
@@ -362,7 +365,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
     	FileInputList fileList = getTextFileList(space);
         if (fileList.nrOfFiles()==0)
         {
-            throw new KettleStepException(Messages.getString("XBaseInputMeta.Exception.NoFilesFoundToProcess")); //$NON-NLS-1$
+            throw new KettleStepException(BaseMessages.getString(PKG, "XBaseInputMeta.Exception.NoFilesFoundToProcess")); //$NON-NLS-1$
         }
 
         row.addRowMeta( getOutputFields(fileList, name) );
@@ -408,7 +411,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("XBaseInputMeta.Exception.UnexpectedErrorReadingMetaDataFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "XBaseInputMeta.Exception.UnexpectedErrorReadingMetaDataFromRepository"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -432,7 +435,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("XBaseInputMeta.Exception.UnableToSaveMetaDataToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "XBaseInputMeta.Exception.UnableToSaveMetaDataToRepository")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
@@ -447,42 +450,42 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
             {
         	     if ( Const.isEmpty(getAcceptingStepName()) ) 
            	     {
-        	    	 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XBaseInput.Log.Error.InvalidAcceptingStepName"), stepMeta); //$NON-NLS-1$
+        	    	 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XBaseInput.Log.Error.InvalidAcceptingStepName"), stepMeta); //$NON-NLS-1$
         	    	 remarks.add(cr);
                  }
            	
            	     if ( Const.isEmpty(getAcceptingField()) )
            	     {
-           	    	cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XBaseInput.Log.Error.InvalidAcceptingFieldName"), stepMeta); //$NON-NLS-1$
+           	    	cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XBaseInput.Log.Error.InvalidAcceptingFieldName"), stepMeta); //$NON-NLS-1$
            	    	remarks.add(cr);
                  }
             }
             else
             {		
-			    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XBaseInputMeta.Remark.PleaseSelectFileToUse"), stepMeta); //$NON-NLS-1$
+			    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XBaseInputMeta.Remark.PleaseSelectFileToUse"), stepMeta); //$NON-NLS-1$
 			    remarks.add(cr);
             }
 		}
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XBaseInputMeta.Remark.FileToUseIsSpecified"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XBaseInputMeta.Remark.FileToUseIsSpecified"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
 
             XBase xbi = new XBase(transMeta.environmentSubstitute(dbfFileName));
             try
             {
                 xbi.open();
-                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XBaseInputMeta.Remark.FileExistsAndCanBeOpened"), stepMeta); //$NON-NLS-1$
+                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XBaseInputMeta.Remark.FileExistsAndCanBeOpened"), stepMeta); //$NON-NLS-1$
                 remarks.add(cr);
                 
                 RowMetaInterface r = xbi.getFields();
             
-                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, r.size()+Messages.getString("XBaseInputMeta.Remark.OutputFieldsCouldBeDetermined"), stepMeta); //$NON-NLS-1$
+                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, r.size()+BaseMessages.getString(PKG, "XBaseInputMeta.Remark.OutputFieldsCouldBeDetermined"), stepMeta); //$NON-NLS-1$
                 remarks.add(cr);
             }
             catch(KettleException ke)
             {
-                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XBaseInputMeta.Remark.NoFieldsCouldBeFoundInFileBecauseOfError")+Const.CR+ke.getMessage(), stepMeta); //$NON-NLS-1$
+                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XBaseInputMeta.Remark.NoFieldsCouldBeFoundInFileBecauseOfError")+Const.CR+ke.getMessage(), stepMeta); //$NON-NLS-1$
                 remarks.add(cr);
             }
             finally

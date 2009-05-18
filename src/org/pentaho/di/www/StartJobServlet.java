@@ -25,6 +25,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
 import org.pentaho.di.trans.StepLoader;
@@ -32,6 +33,8 @@ import org.pentaho.di.trans.StepLoader;
 
 public class StartJobServlet extends HttpServlet
 {
+	private static Class<?> PKG = StartJobServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private static final long serialVersionUID = -8487225953910464032L;
 
 	public static final String CONTEXT_PATH = "/kettle/startJob";
@@ -52,7 +55,7 @@ public class StartJobServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), Messages.getString("StartJobServlet.Log.StartJobRequested"));
+        if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "StartJobServlet.Log.StartJobRequested"));
 
         String jobName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -114,7 +117,7 @@ public class StartJobServlet extends HttpServlet
                 
                 job.start(); // runs the thread in the background...
 
-                String message = Messages.getString("StartJobServlet.Log.JobStarted",jobName);
+                String message = BaseMessages.getString(PKG, "StartJobServlet.Log.JobStarted",jobName);
                 if (useXML)
                 {
                     out.println(new WebResult(WebResult.STRING_OK, message).getXML());
@@ -123,14 +126,14 @@ public class StartJobServlet extends HttpServlet
                 {
                     
                     out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/jobStatus?name="+URLEncoder.encode(jobName, "UTF-8")+"\">" +Messages.getString("JobStatusServlet.BackToJobStatusPage") +"</a><p>");
+                    out.println("<a href=\"/kettle/jobStatus?name="+URLEncoder.encode(jobName, "UTF-8")+"\">" +BaseMessages.getString(PKG, "JobStatusServlet.BackToJobStatusPage") +"</a><p>");
                     
                     
                 }
             }
             else
             {
-                String message = Messages.getString("StartJobServlet.Log.SpecifiedJobNotFound",jobName);
+                String message = BaseMessages.getString(PKG, "StartJobServlet.Log.SpecifiedJobNotFound",jobName);
                 if (useXML)
                 {
                     out.println(new WebResult(WebResult.STRING_ERROR, message));
@@ -138,7 +141,7 @@ public class StartJobServlet extends HttpServlet
                 else
                 {
                     out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/status\">" + Messages.getString("TransStatusServlet.BackToStatusPage") + "</a><p>");
+                    out.println("<a href=\"/kettle/status\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
                 }
             }
         }
@@ -146,7 +149,7 @@ public class StartJobServlet extends HttpServlet
         {
             if (useXML)
             {
-                out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("StartJobServlet.Error.UnexpectedError",Const.CR+Const.getStackTracker(ex))));
+                out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "StartJobServlet.Error.UnexpectedError",Const.CR+Const.getStackTracker(ex))));
             }
             else
             {

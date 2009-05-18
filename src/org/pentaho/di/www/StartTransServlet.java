@@ -25,11 +25,14 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 
 
 public class StartTransServlet extends HttpServlet
 {
+	private static Class<?> PKG = StartTransServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static final long serialVersionUID = -5879200987669847357L;
     
     public static final String CONTEXT_PATH = "/kettle/startTrans";
@@ -50,7 +53,7 @@ public class StartTransServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), Messages.getString("StartTransServlet.Log.StartTransRequested"));
+        if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "StartTransServlet.Log.StartTransRequested"));
 
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -69,7 +72,7 @@ public class StartTransServlet extends HttpServlet
             response.setContentType("text/html");
             out.println("<HTML>");
             out.println("<HEAD>");
-            out.println("<TITLE>" + Messages.getString("StartTransServlet.Log.StartOfTrans") + "</TITLE>");
+            out.println("<TITLE>" + BaseMessages.getString(PKG, "StartTransServlet.Log.StartOfTrans") + "</TITLE>");
             out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">");
             out.println("</HEAD>");
             out.println("<BODY>");
@@ -87,7 +90,7 @@ public class StartTransServlet extends HttpServlet
                 
                 trans.execute(null);
 
-                String message = Messages.getString("StartTransServlet.Log.TransStarted",transName);
+                String message = BaseMessages.getString(PKG, "StartTransServlet.Log.TransStarted",transName);
                 if (useXML)
                 {
                     out.println(new WebResult(WebResult.STRING_OK, message).getXML());
@@ -96,12 +99,12 @@ public class StartTransServlet extends HttpServlet
                 {
                     
                     out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("TransStatusServlet.BackToStatusPage")+ "</a><p>");
+                    out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage")+ "</a><p>");
                 }
             }
             else
             {
-                String message = Messages.getString("TransStatusServlet.Log.CoundNotFindSpecTrans",transName);
+                String message = BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans",transName);
                 if (useXML)
                 {
                     out.println(new WebResult(WebResult.STRING_ERROR, message));
@@ -109,7 +112,7 @@ public class StartTransServlet extends HttpServlet
                 else
                 {
                     out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/status\">" + Messages.getString("TransStatusServlet.BackToStatusPage")+"</a><p>");
+                    out.println("<a href=\"/kettle/status\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage")+"</a><p>");
                 }
             }
         }
@@ -117,7 +120,7 @@ public class StartTransServlet extends HttpServlet
         {
             if (useXML)
             {
-                out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("StartTransServlet.Error.UnexpectedError",Const.CR+Const.getStackTracker(ex))));
+                out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "StartTransServlet.Error.UnexpectedError",Const.CR+Const.getStackTracker(ex))));
             }
             else
             {

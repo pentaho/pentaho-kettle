@@ -30,12 +30,13 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.append.Append;
 import org.pentaho.di.trans.steps.append.AppendMeta;
-import org.pentaho.di.trans.steps.append.Messages;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Dialog for the append step.
@@ -44,6 +45,8 @@ import org.pentaho.di.trans.steps.append.Messages;
  */
 public class AppendDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = Append.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlHeadHop;
 	private CCombo       wHeadHop;
 	private FormData     fdlHeadHop, fdHeadHop;
@@ -83,14 +86,14 @@ public class AppendDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("AppendDialog.Shell.Label")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "AppendDialog.Shell.Label")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("AppendDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "AppendDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -111,7 +114,7 @@ public class AppendDialog extends BaseStepDialog implements StepDialogInterface
         String previousSteps[] = transMeta.getPrevStepNames(stepname);
         
 		wlHeadHop=new Label(shell, SWT.RIGHT);
-		wlHeadHop.setText(Messages.getString("AppendDialog.HeadHop.Label")); //$NON-NLS-1$
+		wlHeadHop.setText(BaseMessages.getString(PKG, "AppendDialog.HeadHop.Label")); //$NON-NLS-1$
  		props.setLook(wlHeadHop);
 		fdlHeadHop=new FormData();
 		fdlHeadHop.left = new FormAttachment(0, 0);
@@ -134,7 +137,7 @@ public class AppendDialog extends BaseStepDialog implements StepDialogInterface
 		wHeadHop.setLayoutData(fdHeadHop);
 
 		wlTailHop=new Label(shell, SWT.RIGHT);
-		wlTailHop.setText(Messages.getString("AppendDialog.TailHop.Label")); //$NON-NLS-1$
+		wlTailHop.setText(BaseMessages.getString(PKG, "AppendDialog.TailHop.Label")); //$NON-NLS-1$
  		props.setLook(wlTailHop);
 		fdlTailHop=new FormData();
 		fdlTailHop.left = new FormAttachment(0, 0);
@@ -158,9 +161,9 @@ public class AppendDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTailHop);
 

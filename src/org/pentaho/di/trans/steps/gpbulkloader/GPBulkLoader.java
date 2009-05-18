@@ -37,6 +37,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -55,6 +56,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class GPBulkLoader extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = GPBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	Process psqlProcess = null;
 	
 	private GPBulkLoaderMeta meta;
@@ -431,7 +434,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
             {
                 // any error???
             	int exitVal = psqlProcess.waitFor();
-				logBasic(Messages.getString("GPBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
+				logBasic(BaseMessages.getString(PKG, "GPBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
             }
         }
         catch ( Exception ex )
@@ -483,7 +486,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 				//			if ( psqlProcess != null )
 				//			{
 				//				int exitVal = psqlProcess.waitFor();
-				//				logBasic(Messages.getString("GPBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
+				//				logBasic(BaseMessages.getString(PKG, "GPBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
 				//			}
 				//			else
 				//			{
@@ -521,7 +524,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
-			logError(Messages.getString("GPBulkLoader.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "GPBulkLoader.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
@@ -615,13 +618,13 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			logBasic(BaseMessages.getString(PKG, "System.Log.StartingToRun")); //$NON-NLS-1$
 			
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Throwable t)
 		{
-			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();

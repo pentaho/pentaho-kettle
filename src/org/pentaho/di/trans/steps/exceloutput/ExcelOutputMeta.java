@@ -30,6 +30,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -52,6 +53,8 @@ import org.w3c.dom.Node;
 
 public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 {
+	private static Class<?> PKG = ExcelOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** The base name of the output file */
 	private  String fileName;
 
@@ -865,7 +868,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		// Check output fields
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ExcelOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExcelOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
 			remarks.add(cr);
 			
 			String  error_message="";
@@ -883,13 +886,13 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			}
 			if (error_found) 
 			{
-				error_message= Messages.getString("ExcelOutputMeta.CheckResult.FieldsNotFound", error_message);
+				error_message= BaseMessages.getString(PKG, "ExcelOutputMeta.CheckResult.FieldsNotFound", error_message);
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ExcelOutputMeta.CheckResult.AllFieldsFound"), stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExcelOutputMeta.CheckResult.AllFieldsFound"), stepMeta);
 				remarks.add(cr);
 			}
 		}
@@ -897,16 +900,16 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ExcelOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExcelOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("ExcelOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExcelOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
 			remarks.add(cr);
 		}
 		
-		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, Messages.getString("ExcelOutputMeta.CheckResult.FilesNotChecked"), stepMeta);
+		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "ExcelOutputMeta.CheckResult.FilesNotChecked"), stepMeta);
 		remarks.add(cr);
 	}
 	

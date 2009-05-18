@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.ui.core.database.wizard.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
 
@@ -39,6 +39,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class CreateDatabaseWizardPageInformix extends WizardPage
 {
+	private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label    wlServername;
 	private Text     wServername;
 	private FormData fdlServername, fdServername;
@@ -52,8 +54,8 @@ public class CreateDatabaseWizardPageInformix extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle(Messages.getString("CreateDatabaseWizardPageInformix.DialogTitle")); //$NON-NLS-1$
-		setDescription(Messages.getString("CreateDatabaseWizardPageInformix.DialogMessage")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageInformix.DialogTitle")); //$NON-NLS-1$
+		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageInformix.DialogMessage")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -73,7 +75,7 @@ public class CreateDatabaseWizardPageInformix extends WizardPage
 		composite.setLayout(compLayout);
 
 		wlServername = new Label(composite, SWT.RIGHT);
-		wlServername.setText(Messages.getString("CreateDatabaseWizardPageInformix.Servername.Label")); //$NON-NLS-1$
+		wlServername.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageInformix.Servername.Label")); //$NON-NLS-1$
  		props.setLook(wlServername);
 		fdlServername = new FormData();
 		fdlServername.top    = new FormAttachment(0, 0);
@@ -105,14 +107,14 @@ public class CreateDatabaseWizardPageInformix extends WizardPage
 		String name = wServername.getText()!=null?wServername.getText().length()>0?wServername.getText():null:null;
 		if (name==null)
 		{
-			setErrorMessage(Messages.getString("CreateDatabaseWizardPageInformix.ErrorMessage.ServernameRequired")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageInformix.ErrorMessage.ServernameRequired")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage(Messages.getString("CreateDatabaseWizardPageInformix.Message.Next")); //$NON-NLS-1$
+			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageInformix.Message.Next")); //$NON-NLS-1$
 			return true;
 		}
 	}	

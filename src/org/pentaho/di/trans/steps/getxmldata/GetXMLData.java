@@ -36,6 +36,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -54,6 +55,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class GetXMLData extends BaseStep implements StepInterface  
 {
+	private static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private GetXMLDataMeta meta;
 	private GetXMLDataData data;
 
@@ -82,7 +85,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 
 			if(data.prunePath!=null) { 
 				// when pruning is on: reader.read() below will wait until all is processed in the handler
-				if (log.isDetailed()) logDetailed(Messages.getString("GetXMLData.Log.StreamingMode.Activated"));
+				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetXMLData.Log.StreamingMode.Activated"));
 				reader.addHandler( data.prunePath, 
 				    new ElementHandler() {
 				        public void onStart(ElementPath path) {
@@ -94,14 +97,14 @@ public class GetXMLData extends BaseStep implements StepInterface
 				        		// the only solution I see is to prune / detach the document and this will lead into a 
 				        		// NPE or other errors depending on the parsing location - this will be treated in the catch part below
 				        		// any better idea is welcome
-				        		if (log.isBasic()) logBasic(Messages.getString("GetXMLData.Log.StreamingMode.Stopped"));
+				        		if (log.isBasic()) logBasic(BaseMessages.getString(PKG, "GetXMLData.Log.StreamingMode.Stopped"));
 				        		data.stopPruning=true;
 				        		path.getCurrent().getDocument().detach();  // trick to stop reader
 				        		return;
 				        	}
 				    		
 				            // process a ROW element
-				        	if (log.isDebug()) logDebug(Messages.getString("GetXMLData.Log.StreamingMode.StartProcessing"));
+				        	if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetXMLData.Log.StreamingMode.StartProcessing"));
 				            Element row = path.getCurrent();
 				            try {
 				            	processStreaming(row.getDocument());
@@ -112,7 +115,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 				            }
 				            // prune the tree
 				            row.detach();
-				            if (log.isDebug()) logDebug(Messages.getString("GetXMLData.Log.StreamingMode.EndProcessing"));
+				            if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetXMLData.Log.StreamingMode.EndProcessing"));
 				        }
 				    }
 				);
@@ -158,14 +161,14 @@ public class GetXMLData extends BaseStep implements StepInterface
    private void processStreaming(Document document) throws KettleException  {
 	   	data.document = document;
 		if(meta.isNamespaceAware())	prepareNSMap(data.document.getRootElement());
-	   	if (log.isDebug()) logDebug(Messages.getString("GetXMLData.Log.StreamingMode.ApplyXPath"));
+	   	if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetXMLData.Log.StreamingMode.ApplyXPath"));
 		if(!applyXPath())
 		{
-			throw new KettleException (Messages.getString("GetXMLData.Log.UnableApplyXPath"));
+			throw new KettleException (BaseMessages.getString(PKG, "GetXMLData.Log.UnableApplyXPath"));
 		}
 		// main loop through the data until limit is reached or transformation is stopped
 		// similar functionality like in BaseStep.runStepThread
-		if (log.isDebug()) logDebug(Messages.getString("GetXMLData.Log.StreamingMode.ProcessingRows"));
+		if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetXMLData.Log.StreamingMode.ProcessingRows"));
 		boolean cont=true;
 		while (data.nodenr<data.nodesize && cont && !isStopped())
 		{
@@ -173,7 +176,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 			if (data.errorInRowButContinue) continue; // do not put out the row but continue
 			cont=putRowOut(r);  //false when limit is reached, functionality is there but we can not stop reading the hole file (slow but works)
 		} 		
-		if (log.isDebug()) logDebug(Messages.getString("GetXMLData.Log.StreamingMode.FreeMemory"));
+		if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetXMLData.Log.StreamingMode.FreeMemory"));
 		// free allocated memory
 		data.an.clear();
 		data.nodesize=data.an.size();
@@ -228,18 +231,18 @@ public class GetXMLData extends BaseStep implements StepInterface
 		if (nonExistantFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
-			log.logError(Messages.getString("GetXMLData.Log.RequiredFilesTitle"), Messages.getString("GetXMLData.Log.RequiredFiles", message));
+			log.logError(BaseMessages.getString(PKG, "GetXMLData.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "GetXMLData.Log.RequiredFiles", message));
 
-			throw new KettleException(Messages.getString("GetXMLData.Log.RequiredFilesMissing",message));
+			throw new KettleException(BaseMessages.getString(PKG, "GetXMLData.Log.RequiredFilesMissing",message));
 		}
 
 		List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
 		if (nonAccessibleFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
-			log.logError(Messages.getString("GetXMLData.Log.RequiredFilesTitle"), Messages.getString("GetXMLData.Log.RequiredNotAccessibleFiles",message));
+			log.logError(BaseMessages.getString(PKG, "GetXMLData.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "GetXMLData.Log.RequiredNotAccessibleFiles",message));
 
-				throw new KettleException(Messages.getString("GetXMLData.Log.RequiredNotAccessibleFilesMissing",message));
+				throw new KettleException(BaseMessages.getString(PKG, "GetXMLData.Log.RequiredNotAccessibleFilesMissing",message));
 		}
 	}
    private boolean ReadNextString()
@@ -250,7 +253,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 		   
 		   if (data.readrow==null) // finished processing!
            {
-           	if (log.isDetailed()) logDetailed(Messages.getString("GetXMLData.Log.FinishedProcessing"));
+           	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetXMLData.Log.FinishedProcessing"));
                return false;
            }
 
@@ -281,8 +284,8 @@ public class GetXMLData extends BaseStep implements StepInterface
 					// Check is XML field is provided
 					if (Const.isEmpty(meta.getXMLField()))
 					{
-						logError(Messages.getString("GetXMLData.Log.NoField"));
-						throw new KettleException(Messages.getString("GetXMLData.Log.NoField"));
+						logError(BaseMessages.getString(PKG, "GetXMLData.Log.NoField"));
+						throw new KettleException(BaseMessages.getString(PKG, "GetXMLData.Log.NoField"));
 					}
 					
 					// cache the position of the field			
@@ -292,8 +295,8 @@ public class GetXMLData extends BaseStep implements StepInterface
 						if (data.indexOfXmlField<0)
 						{
 							// The field is unreachable !
-							logError(Messages.getString("GetXMLData.Log.ErrorFindingField")+ "[" + meta.getXMLField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(Messages.getString("GetXMLData.Exception.CouldnotFindField",meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(BaseMessages.getString(PKG, "GetXMLData.Log.ErrorFindingField")+ "[" + meta.getXMLField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(BaseMessages.getString(PKG, "GetXMLData.Exception.CouldnotFindField",meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 				}
@@ -305,7 +308,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 			   // get XML field value
 			   String Fieldvalue= getInputRowMeta().getString(data.readrow,data.indexOfXmlField);
 				
-			   if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.XMLStream", meta.getXMLField(),Fieldvalue));
+			   if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "GetXMLData.Log.XMLStream", meta.getXMLField(),Fieldvalue));
 
 			   if(meta.getIsAFile())
 			   {
@@ -317,17 +320,17 @@ public class GetXMLData extends BaseStep implements StepInterface
 						//Open the XML document
 						if(!setDocument(null,file,false,false)) 
 						{
-							throw new KettleException (Messages.getString("GetXMLData.Log.UnableCreateDocument"));
+							throw new KettleException (BaseMessages.getString(PKG, "GetXMLData.Log.UnableCreateDocument"));
 						}
 						
 						if(!applyXPath())
 						{
-							throw new KettleException (Messages.getString("GetXMLData.Log.UnableApplyXPath"));
+							throw new KettleException (BaseMessages.getString(PKG, "GetXMLData.Log.UnableApplyXPath"));
 						}
 
 						addFileToResultFilesname(file);
 			            
-			            if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.LoopFileOccurences",""+data.nodesize,file.getName().getBaseName()));
+			            if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "GetXMLData.Log.LoopFileOccurences",""+data.nodesize,file.getName().getBaseName()));
 						
 					}
 					catch (Exception e)
@@ -349,21 +352,21 @@ public class GetXMLData extends BaseStep implements StepInterface
 					//Open the XML document
 					if(!setDocument(Fieldvalue,null,xmltring,url)) 
 					{
-						throw new KettleException (Messages.getString("GetXMLData.Log.UnableCreateDocument"));
+						throw new KettleException (BaseMessages.getString(PKG, "GetXMLData.Log.UnableCreateDocument"));
 					}
 	
 					// Apply XPath and set node list
 					if(!applyXPath())
 					{
-						throw new KettleException (Messages.getString("GetXMLData.Log.UnableApplyXPath"));
+						throw new KettleException (BaseMessages.getString(PKG, "GetXMLData.Log.UnableApplyXPath"));
 					}
-					if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.LoopFileOccurences",""+data.nodesize));		
+					if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "GetXMLData.Log.LoopFileOccurences",""+data.nodesize));		
 			    }
 		   }
 	   }
 		catch(Exception e)
 		{
-			logError(Messages.getString("GetXMLData.Log.UnexpectedError", e.toString()));
+			logError(BaseMessages.getString(PKG, "GetXMLData.Log.UnexpectedError", e.toString()));
 			stopAll();
 			logError(Const.getStackTracker(e));
 			setErrors(1);
@@ -378,7 +381,7 @@ public class GetXMLData extends BaseStep implements StepInterface
        {
 			// Add this to the result file names...
 			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
-			resultFile.setComment(Messages.getString("GetXMLData.Log.FileAddedResult"));
+			resultFile.setComment(BaseMessages.getString(PKG, "GetXMLData.Log.FileAddedResult"));
 			addResultFile(resultFile);
        }
    }
@@ -462,7 +465,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 		   data.nodenr=0;
 	   }catch (Exception e)
 	   {
-		   log.logError(toString(),Messages.getString("GetXMLData.Log.ErrorApplyXPath",e.getMessage()));
+		   log.logError(toString(),BaseMessages.getString(PKG, "GetXMLData.Log.ErrorApplyXPath",e.getMessage()));
 		   return false;
 	   }
 	   return true;
@@ -473,7 +476,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 		{
             if (data.filenr>=data.files.nrOfFiles()) // finished processing!
             {
-            	if (log.isDetailed()) logDetailed(Messages.getString("GetXMLData.Log.FinishedProcessing"));
+            	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetXMLData.Log.FinishedProcessing"));
                 return false;
             }
             
@@ -490,25 +493,25 @@ public class GetXMLData extends BaseStep implements StepInterface
 			if(meta.isIgnoreEmptyFile() && fileSize==0)
 			{
 				// log only basic as a warning (was before logError)
-				log.logBasic(toString(),Messages.getString("GetXMLData.Error.FileSizeZero", ""+data.file.getName()));
+				log.logBasic(toString(),BaseMessages.getString(PKG, "GetXMLData.Error.FileSizeZero", ""+data.file.getName()));
 				openNextFile();
 				
 			}else
 			{
-				if (log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.OpeningFile", data.file.toString()));
+				if (log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "GetXMLData.Log.OpeningFile", data.file.toString()));
 	            
 				//Open the XML document
 				if(!setDocument(null,data.file,false,false)) 
 				{
 					if(data.stopPruning) return false; // ignore error when stopped while pruning
-					throw new KettleException (Messages.getString("GetXMLData.Log.UnableCreateDocument"));
+					throw new KettleException (BaseMessages.getString(PKG, "GetXMLData.Log.UnableCreateDocument"));
 				}
 
 				// Apply XPath and set node list
 				if(data.prunePath==null) { // this was already done in processStreaming()
 					if(!applyXPath())
 					{
-						throw new KettleException (Messages.getString("GetXMLData.Log.UnableApplyXPath"));
+						throw new KettleException (BaseMessages.getString(PKG, "GetXMLData.Log.UnableApplyXPath"));
 					}
 				}
 				
@@ -516,14 +519,14 @@ public class GetXMLData extends BaseStep implements StepInterface
 	
 	            if (log.isDetailed()) 
 	            {
-	            	logDetailed(Messages.getString("GetXMLData.Log.FileOpened", data.file.toString()));
-	               log.logDetailed(toString(),Messages.getString("GetXMLData.Log.LoopFileOccurences",""+data.nodesize,data.file.getName().getBaseName()));
+	            	logDetailed(BaseMessages.getString(PKG, "GetXMLData.Log.FileOpened", data.file.toString()));
+	               log.logDetailed(toString(),BaseMessages.getString(PKG, "GetXMLData.Log.LoopFileOccurences",""+data.nodesize,data.file.getName().getBaseName()));
 	            }   
 	         }
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("GetXMLData.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
+			logError(BaseMessages.getString(PKG, "GetXMLData.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
 			stopAll();
 			setErrors(1);
 			return false;
@@ -541,7 +544,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 		
 			if(!meta.isdoNotFailIfNoFile() && data.files.nrOfFiles()==0)
 			{
-				throw new KettleException(Messages.getString("GetXMLData.Log.NoFiles"));
+				throw new KettleException(BaseMessages.getString(PKG, "GetXMLData.Log.NoFiles"));
 			}
 
 			handleMissingFiles();
@@ -584,7 +587,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 //	        return false; // end of data or error.
 //	     }
 		 
-		 if (log.isRowLevel()) logRowlevel(Messages.getString("GetXMLData.Log.ReadRow", r.toString()));
+		 if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetXMLData.Log.ReadRow", r.toString()));
 		 incrementLinesInput();
 		 data.rownr++;
 		 putRow(data.outputRowMeta, r);  // copy row to output rowset(s);
@@ -645,7 +648,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 		 }
 		 catch (Exception e)
 		 {
-			throw new KettleException(Messages.getString("GetXMLData.Error.UnableReadFile"), e);
+			throw new KettleException(BaseMessages.getString(PKG, "GetXMLData.Error.UnableReadFile"), e);
 		 }
 		 
 		 return r;
@@ -793,7 +796,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 			data.nrInputFields=meta.getInputFields().length;
 			data.PathValue=environmentSubstitute(meta.getLoopXPath());
 			if(!data.PathValue.substring(0,1).equals("/")) data.PathValue="/" + data.PathValue;
-			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.LoopXPath",data.PathValue));
+			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "GetXMLData.Log.LoopXPath",data.PathValue));
 			
 			data.prunePath=environmentSubstitute(meta.getPrunePath());
 			if(data.prunePath!=null) {

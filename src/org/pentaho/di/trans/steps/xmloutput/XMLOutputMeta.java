@@ -30,6 +30,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -51,6 +52,8 @@ import org.w3c.dom.Node;
  */
 public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = XMLOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	/** The base name of the output file */
 	private String fileName;
 
@@ -718,7 +721,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		// Check output fields
 		if (prev != null && prev.size() > 0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("XMLOutputMeta.CheckResult.FieldsReceived", "" + prev.size()), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.FieldsReceived", "" + prev.size()), stepinfo);
 			remarks.add(cr);
 
 			String error_message = "";
@@ -736,12 +739,12 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			if (error_found)
 			{
-				error_message = Messages.getString("XMLOutputMeta.CheckResult.FieldsNotFound", error_message);
+				error_message = BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.FieldsNotFound", error_message);
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			} else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("XMLOutputMeta.CheckResult.AllFieldsFound"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.AllFieldsFound"), stepinfo);
 				remarks.add(cr);
 			}
 		}
@@ -749,15 +752,15 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length > 0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("XMLOutputMeta.CheckResult.ExpectedInputOk"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.ExpectedInputOk"), stepinfo);
 			remarks.add(cr);
 		} else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("XMLOutputMeta.CheckResult.ExpectedInputError"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.ExpectedInputError"), stepinfo);
 			remarks.add(cr);
 		}
 
-		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, Messages.getString("XMLOutputMeta.CheckResult.FilesNotChecked"), stepinfo);
+		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.FilesNotChecked"), stepinfo);
 		remarks.add(cr);
 	}
 

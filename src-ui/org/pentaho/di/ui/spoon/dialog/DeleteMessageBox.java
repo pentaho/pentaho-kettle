@@ -19,6 +19,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Displays the delete message box to confirm deletes of multiple
@@ -26,9 +27,10 @@ import org.pentaho.di.core.Const;
  * @author David Kincade
  */
 public class DeleteMessageBox extends MessageBox {
-  
+  private static Class<?> PKG = DeleteMessageBox.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   // The title for the message box
-  private static final String title = Messages.getString("DeleteMessageBox.Title"); //$NON-NLS-1$ 
+  private static final String title = BaseMessages.getString(PKG, "DeleteMessageBox.Title"); //$NON-NLS-1$ 
 
   // The text to display in the dialog
   private String text = null;

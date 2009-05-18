@@ -34,19 +34,21 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.samplerows.SampleRowsMeta;
-import org.pentaho.di.trans.steps.samplerows.Messages;
+import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
 public class SampleRowsDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = SampleRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private LabelTextVar wLinesRange;
     private FormData fdLinesRange,fdLineNumberField;
     private LabelTextVar wLineNumberField;
@@ -81,14 +83,14 @@ public class SampleRowsDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("SampleRowsDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SampleRowsDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("SampleRowsDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "SampleRowsDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -107,8 +109,8 @@ public class SampleRowsDialog extends BaseStepDialog implements StepDialogInterf
 		
 		
 		// Lines ragne
-        wLinesRange = new LabelTextVar(transMeta,shell, Messages.getString("SampleRowsDialog.LinesRange.Label"),
-        		Messages.getString("SampleRowsDialog.LinesRange.Tooltip"));
+        wLinesRange = new LabelTextVar(transMeta,shell, BaseMessages.getString(PKG, "SampleRowsDialog.LinesRange.Label"),
+        		BaseMessages.getString(PKG, "SampleRowsDialog.LinesRange.Tooltip"));
         props.setLook(wLinesRange);
         wLinesRange.addModifyListener(lsMod);
         fdLinesRange = new FormData();
@@ -118,8 +120,8 @@ public class SampleRowsDialog extends BaseStepDialog implements StepDialogInterf
         wLinesRange.setLayoutData(fdLinesRange);
    
         // Add line number to output?
-        wLineNumberField = new LabelTextVar(transMeta,shell, Messages.getString("SampleRowsDialog.LineNumberField.Label"),
-        		Messages.getString("SampleRowsDialog.LineNumberField.Tooltip"));
+        wLineNumberField = new LabelTextVar(transMeta,shell, BaseMessages.getString(PKG, "SampleRowsDialog.LineNumberField.Label"),
+        		BaseMessages.getString(PKG, "SampleRowsDialog.LineNumberField.Tooltip"));
         props.setLook(wLinesRange);
         wLineNumberField.addModifyListener(lsMod);
         fdLineNumberField = new FormData();
@@ -131,9 +133,9 @@ public class SampleRowsDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wLineNumberField);
 

@@ -31,6 +31,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -50,6 +51,8 @@ import org.w3c.dom.Node;
  */
 public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterface
 {
+	private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final int FILE_COMPRESSION_TYPE_NONE = 0;
     public static final int FILE_COMPRESSION_TYPE_ZIP  = 1;
     public static final int FILE_COMPRESSION_TYPE_GZIP = 2;
@@ -1130,7 +1133,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		// Check output fields
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TextFileOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepinfo);
 			remarks.add(cr);
 			
 			String  error_message="";
@@ -1148,13 +1151,13 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			}
 			if (error_found) 
 			{
-				error_message= Messages.getString("TextFileOutputMeta.CheckResult.FieldsNotFound", error_message);
+				error_message= BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.FieldsNotFound", error_message);
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TextFileOutputMeta.CheckResult.AllFieldsFound"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.AllFieldsFound"), stepinfo);
 				remarks.add(cr);
 			}
 		}
@@ -1162,16 +1165,16 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TextFileOutputMeta.CheckResult.ExpectedInputOk"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.ExpectedInputOk"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("TextFileOutputMeta.CheckResult.ExpectedInputError"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.ExpectedInputError"), stepinfo);
 			remarks.add(cr);
 		}
 		
-		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, Messages.getString("TextFileOutputMeta.CheckResult.FilesNotChecked"), stepinfo);
+		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.FilesNotChecked"), stepinfo);
 		remarks.add(cr);
 	}
 

@@ -42,19 +42,19 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
-import org.pentaho.di.ui.core.database.dialog.Messages;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.StyledTextComp;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 /**
  * Dialog that allows the user to launch SQL statements towards the database.
@@ -65,6 +65,8 @@ import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
  */
 public class SQLEditor extends Dialog
 {
+	private static Class<?> PKG = SQLEditor.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private LogWriter    log;
 	private PropsUI        props;
 		
@@ -108,13 +110,13 @@ public class SQLEditor extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("SQLEditor.Title"));
+		shell.setText(BaseMessages.getString(PKG, "SQLEditor.Title"));
 		
 		int margin = Const.MARGIN;
 
 		// Script line
 		wlScript=new Label(shell, SWT.NONE);
-		wlScript.setText(Messages.getString("SQLEditor.Editor.Label"));
+		wlScript.setText(BaseMessages.getString(PKG, "SQLEditor.Editor.Label"));
  		props.setLook(wlScript);
 
 		fdlScript=new FormData();
@@ -165,7 +167,7 @@ public class SQLEditor extends Dialog
 		wScript.addLineStyleListener(lineStyler);
 
 		wlPosition=new Label(shell, SWT.NONE);
-		wlPosition.setText(Messages.getString("SQLEditor.LineNr.Label", "0"));
+		wlPosition.setText(BaseMessages.getString(PKG, "SQLEditor.LineNr.Label", "0"));
  		props.setLook(wlPosition);
 		fdlPosition=new FormData();
 		fdlPosition.left = new FormAttachment(0, 0);
@@ -174,13 +176,13 @@ public class SQLEditor extends Dialog
 		wlPosition.setLayoutData(fdlPosition);
 
 		wExec=new Button(shell, SWT.PUSH);
-		wExec.setText(Messages.getString("SQLEditor.Button.Execute"));
+		wExec.setText(BaseMessages.getString(PKG, "SQLEditor.Button.Execute"));
         wClear=new Button(shell, SWT.PUSH);
-        wClear.setText(Messages.getString("SQLEditor.Button.ClearCache"));
+        wClear.setText(BaseMessages.getString(PKG, "SQLEditor.Button.ClearCache"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Close"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Close"));
 
-        wClear.setToolTipText(Messages.getString("SQLEditor.Button.ClearCache.Tooltip"));
+        wClear.setToolTipText(BaseMessages.getString(PKG, "SQLEditor.Button.ClearCache.Tooltip"));
         
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wExec, wClear, wCancel }, margin, null);
 		
@@ -220,14 +222,14 @@ public class SQLEditor extends Dialog
 			colnr++;
 		}
 
-		wlPosition.setText(Messages.getString("SQLEditor.Position.Label",""+linenr, ""+colnr));
+		wlPosition.setText(BaseMessages.getString(PKG, "SQLEditor.Position.Label",""+linenr, ""+colnr));
 
 	}
 	private void clearCache()
     {
         MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES | SWT.CANCEL);
-        mb.setMessage(Messages.getString("SQLEditor.ClearWholeCache.Message", connection.getName()));
-        mb.setText(Messages.getString("SQLEditor.ClearWholeCache.Title"));
+        mb.setMessage(BaseMessages.getString(PKG, "SQLEditor.ClearWholeCache.Message", connection.getName()));
+        mb.setText(BaseMessages.getString(PKG, "SQLEditor.ClearWholeCache.Title"));
         int answer = mb.open();
 
         switch(answer)
@@ -236,8 +238,8 @@ public class SQLEditor extends Dialog
             DBCache.getInstance().clear(connection.getName());
             
             mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-            mb.setMessage(Messages.getString("SQLEditor.ConnectionCacheCleared.Message", connection.getName()));
-            mb.setText(Messages.getString("SQLEditor.ConnectionCacheCleared.Title"));
+            mb.setMessage(BaseMessages.getString(PKG, "SQLEditor.ConnectionCacheCleared.Message", connection.getName()));
+            mb.setText(BaseMessages.getString(PKG, "SQLEditor.ConnectionCacheCleared.Title"));
             mb.open();
             
             break;
@@ -245,8 +247,8 @@ public class SQLEditor extends Dialog
             DBCache.getInstance().clear(null);
             
             mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-            mb.setMessage(Messages.getString("SQLEditor.WholeCacheCleared.Message"));
-            mb.setText(Messages.getString("SQLEditor.WholeCacheCleared.Title"));
+            mb.setMessage(BaseMessages.getString(PKG, "SQLEditor.WholeCacheCleared.Message"));
+            mb.setText(BaseMessages.getString(PKG, "SQLEditor.WholeCacheCleared.Title"));
             mb.open();
         
             break;
@@ -341,20 +343,20 @@ public class SQLEditor extends Dialog
                                     RowMetaInterface rowMeta = db.getReturnRowMeta();
     								if (rows.size()>0)
     								{
-    									PreviewRowsDialog prd = new PreviewRowsDialog(shell, ci, SWT.NONE, Messages.getString("SQLEditor.ResultRows.Title", Integer.toString(nrstats)), rowMeta, rows);
+    									PreviewRowsDialog prd = new PreviewRowsDialog(shell, ci, SWT.NONE, BaseMessages.getString(PKG, "SQLEditor.ResultRows.Title", Integer.toString(nrstats)), rowMeta, rows);
     									prd.open();
     								}
     								else
     								{
     									MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-    									mb.setMessage(Messages.getString("SQLEditor.NoRows.Message", sql));
-    									mb.setText(Messages.getString("SQLEditor.NoRows.Title"));
+    									mb.setMessage(BaseMessages.getString(PKG, "SQLEditor.NoRows.Message", sql));
+    									mb.setText(BaseMessages.getString(PKG, "SQLEditor.NoRows.Title"));
     									mb.open();
     								}
     							}
     							catch(KettleDatabaseException dbe)
     							{
-    								new ErrorDialog(shell, Messages.getString("SQLEditor.ErrorExecSQL.Title"), Messages.getString("SQLEditor.ErrorExecSQL.Message", sql), dbe);
+    								new ErrorDialog(shell, BaseMessages.getString(PKG, "SQLEditor.ErrorExecSQL.Title"), BaseMessages.getString(PKG, "SQLEditor.ErrorExecSQL.Message", sql), dbe);
     							}
     						}
     						else
@@ -367,7 +369,7 @@ public class SQLEditor extends Dialog
     							{
     							    log.logDetailed(toString(), "Executing SQL: "+Const.CR+sql);
     								db.execStatement(sql);
-                                    message.append(Messages.getString("SQLEditor.Log.SQLExecuted", sql));
+                                    message.append(BaseMessages.getString(PKG, "SQLEditor.Log.SQLExecuted", sql));
                                     message.append(Const.CR);
                                     
     								// Clear the database cache, in case we're using one...
@@ -375,9 +377,9 @@ public class SQLEditor extends Dialog
     							}
     							catch(Exception dbe)
     							{
-                                    String error = Messages.getString("SQLEditor.Log.SQLExecError", sql, dbe.toString());
+                                    String error = BaseMessages.getString(PKG, "SQLEditor.Log.SQLExecError", sql, dbe.toString());
                                     message.append(error).append(Const.CR);
-    								new ErrorDialog(shell, Messages.getString("SQLEditor.ErrorExecSQL.Title"), error, dbe);
+    								new ErrorDialog(shell, BaseMessages.getString(PKG, "SQLEditor.ErrorExecSQL.Title"), error, dbe);
     							}
     						}
     					}
@@ -389,18 +391,18 @@ public class SQLEditor extends Dialog
     					to++;
     				}
     			}
-                message.append(Messages.getString("SQLEditor.Log.StatsExecuted", Integer.toString(nrstats)));
+                message.append(BaseMessages.getString(PKG, "SQLEditor.Log.StatsExecuted", Integer.toString(nrstats)));
                 if (partitionId!=null)
-                    message.append(Messages.getString("SQLEditor.Log.OnPartition", partitionId));
+                    message.append(BaseMessages.getString(PKG, "SQLEditor.Log.OnPartition", partitionId));
                 message.append(Const.CR);
     		}
     		catch(KettleDatabaseException dbe)
     		{
     			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                String error = Messages.getString("SQLEditor.Error.CouldNotConnect.Message", (connection==null ? "" : connection.getName()), dbe.getMessage());
+                String error = BaseMessages.getString(PKG, "SQLEditor.Error.CouldNotConnect.Message", (connection==null ? "" : connection.getName()), dbe.getMessage());
                 message.append(error).append(Const.CR);
     			mb.setMessage(error);
-    			mb.setText(Messages.getString("SQLEditor.Error.CouldNotConnect.Title"));
+    			mb.setText(BaseMessages.getString(PKG, "SQLEditor.Error.CouldNotConnect.Title"));
     			mb.open(); 
     		}
     		finally
@@ -409,8 +411,8 @@ public class SQLEditor extends Dialog
     		}
         }
         
-        EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("SQLEditor.Result.Title"),
-            Messages.getString("SQLEditor.Result.Message"), message.toString(), true);
+        EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SQLEditor.Result.Title"),
+            BaseMessages.getString(PKG, "SQLEditor.Result.Message"), message.toString(), true);
         dialog.open();
 	}
 	

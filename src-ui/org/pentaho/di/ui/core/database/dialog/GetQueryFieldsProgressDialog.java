@@ -21,8 +21,8 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.ui.core.database.dialog.Messages;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 /**
@@ -34,6 +34,8 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
  */
 public class GetQueryFieldsProgressDialog
 {
+	private static Class<?> PKG = GetQueryFieldsProgressDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Shell shell;
 	private DatabaseMeta dbMeta;
 	private String sql;
@@ -126,7 +128,7 @@ public class GetQueryFieldsProgressDialog
     */
     private void showErrorDialog(Exception e)
     {
-        new ErrorDialog(shell, Messages.getString("GetQueryFieldsProgressDialog.Error.Title"),
-            Messages.getString("GetQueryFieldsProgressDialog.Error.Message"), e);
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "GetQueryFieldsProgressDialog.Error.Title"),
+            BaseMessages.getString(PKG, "GetQueryFieldsProgressDialog.Error.Message"), e);
     }
 }

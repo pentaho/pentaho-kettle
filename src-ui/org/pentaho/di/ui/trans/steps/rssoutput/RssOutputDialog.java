@@ -33,9 +33,9 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
@@ -46,28 +46,28 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
-
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.rssoutput.RssOutputMeta;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.trans.steps.rssoutput.RssOutputMeta;
-import org.pentaho.di.trans.steps.rssoutput.Messages;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 
 public class RssOutputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = RssOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private Label        wlRemarqChannel;
 	private FormData     fdlRemarqChannel;
@@ -303,14 +303,14 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("RssOutputDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "RssOutputDialog.DialogTitle"));
 		
         // get previous fields name
 		getFields();
 		
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -337,7 +337,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		
 		wChannelTab=new CTabItem(wTabFolder, SWT.NONE);
-		wChannelTab.setText(Messages.getString("RssOutputDialog.ChannelTab.TabTitle"));
+		wChannelTab.setText(BaseMessages.getString(PKG, "RssOutputDialog.ChannelTab.TabTitle"));
 		
 		wChannelComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wChannelComp);
@@ -349,7 +349,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 			
 		// Create Custom RSS?
 		wlCustomRss=new Label(wChannelComp, SWT.RIGHT);
-		wlCustomRss.setText(Messages.getString("RssOutputDialog.CustomRss.Label"));
+		wlCustomRss.setText(BaseMessages.getString(PKG, "RssOutputDialog.CustomRss.Label"));
 		props.setLook(wlCustomRss);
 		fdlCustomRss=new FormData();
 		fdlCustomRss.left  = new FormAttachment(0, 0);
@@ -357,7 +357,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlCustomRss.right = new FormAttachment(middle, -margin);
 		wlCustomRss.setLayoutData(fdlCustomRss);
 		wCustomRss=new Button(wChannelComp, SWT.CHECK);
-		wCustomRss.setToolTipText(Messages.getString("RssOutputDialog.CustomRss.Tooltip"));
+		wCustomRss.setToolTipText(BaseMessages.getString(PKG, "RssOutputDialog.CustomRss.Tooltip"));
  		props.setLook(wCustomRss);
 		fdCustomRss=new FormData();
 		fdCustomRss.left  = new FormAttachment(middle, 0);
@@ -376,7 +376,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// Create Custom RSS?
 		wlDisplayItem=new Label(wChannelComp, SWT.RIGHT);
-		wlDisplayItem.setText(Messages.getString("RssOutputDialog.DisplayItem.Label"));
+		wlDisplayItem.setText(BaseMessages.getString(PKG, "RssOutputDialog.DisplayItem.Label"));
 		props.setLook(wlDisplayItem);
 		fdlDisplayItem=new FormData();
 		fdlDisplayItem.left  = new FormAttachment(0, 0);
@@ -384,7 +384,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlDisplayItem.right = new FormAttachment(middle, -margin);
 		wlDisplayItem.setLayoutData(fdlDisplayItem);
 		wDisplayItem=new Button(wChannelComp, SWT.CHECK);
-		wDisplayItem.setToolTipText(Messages.getString("RssOutputDialog.DisplayItem.Tooltip"));
+		wDisplayItem.setToolTipText(BaseMessages.getString(PKG, "RssOutputDialog.DisplayItem.Tooltip"));
  		props.setLook(wDisplayItem);
 		fdDisplayItem=new FormData();
 		fdDisplayItem.left  = new FormAttachment(middle, 0);
@@ -407,7 +407,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		wChannelGroup = new Group(wChannelComp, SWT.SHADOW_NONE);
 		props.setLook(wChannelGroup);
-		wChannelGroup.setText(Messages.getString("RssOutputDialog.Group.ChannelGroup.Label"));
+		wChannelGroup.setText(BaseMessages.getString(PKG, "RssOutputDialog.Group.ChannelGroup.Label"));
 		
 		FormLayout groupChannelGroupLayout = new FormLayout();
 		groupChannelGroupLayout.marginWidth = 10;
@@ -416,7 +416,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// RemarqChannel
 		wlRemarqChannel=new Label(wChannelGroup, SWT.RIGHT);
-		wlRemarqChannel.setText(Messages.getString("RssOutputDialog.RemarqChannel.Label"));
+		wlRemarqChannel.setText(BaseMessages.getString(PKG, "RssOutputDialog.RemarqChannel.Label"));
 		props.setLook(wlRemarqChannel);
 		fdlRemarqChannel=new FormData();
 		fdlRemarqChannel.left  = new FormAttachment(0, 0);
@@ -426,7 +426,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// RemarqMandatory
 		wlRemarqMandatory=new Label(wChannelGroup, SWT.RIGHT);
-		wlRemarqMandatory.setText(Messages.getString("RssOutputDialog.RemarqMandatory.Label"));
+		wlRemarqMandatory.setText(BaseMessages.getString(PKG, "RssOutputDialog.RemarqMandatory.Label"));
 		props.setLook(wlRemarqMandatory);
 		fdlRemarqMandatory=new FormData();
 		fdlRemarqMandatory.left  = new FormAttachment(0, 0);
@@ -438,7 +438,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		// ChannelTitle line
 		
 		wlChannelTitle=new Label(wChannelGroup, SWT.RIGHT);
-        wlChannelTitle.setText(Messages.getString("RssOutputDialog.ChannelTitle.Label"));
+        wlChannelTitle.setText(BaseMessages.getString(PKG, "RssOutputDialog.ChannelTitle.Label"));
         props.setLook(wlChannelTitle);
         fdlChannelTitle=new FormData();
         fdlChannelTitle.left = new FormAttachment(0, 0);
@@ -459,7 +459,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
         // Channel Description
 		wlChannelDescription=new Label(wChannelGroup, SWT.RIGHT);
-        wlChannelDescription.setText(Messages.getString("RssOutputDialog.ChannelDescription.Label"));
+        wlChannelDescription.setText(BaseMessages.getString(PKG, "RssOutputDialog.ChannelDescription.Label"));
         props.setLook(wlChannelDescription);
         fdlChannelDescription=new FormData();
         fdlChannelDescription.left = new FormAttachment(0, 0);
@@ -479,7 +479,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
         
 		// ChannelLink line
     	wlChannelLink=new Label(wChannelGroup, SWT.RIGHT);
-        wlChannelLink.setText(Messages.getString("RssOutputDialog.ChannelLink.Label"));
+        wlChannelLink.setText(BaseMessages.getString(PKG, "RssOutputDialog.ChannelLink.Label"));
         props.setLook(wlChannelLink);
         fdlChannelLink=new FormData();
         fdlChannelLink.left = new FormAttachment(0, 0);
@@ -499,7 +499,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// ChannelPubDate line
     	wlChannelPubDate=new Label(wChannelGroup, SWT.RIGHT);
-        wlChannelPubDate.setText(Messages.getString("RssOutputDialog.ChannelPubDate.Label"));
+        wlChannelPubDate.setText(BaseMessages.getString(PKG, "RssOutputDialog.ChannelPubDate.Label"));
         props.setLook(wlChannelPubDate);
         fdlChannelPubDate=new FormData();
         fdlChannelPubDate.left = new FormAttachment(0, 0);
@@ -519,7 +519,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
         // Channel Language
     	wlChannelLanguage=new Label(wChannelGroup, SWT.RIGHT);
-        wlChannelLanguage.setText(Messages.getString("RssOutputDialog.ChannelLanguage.Label"));
+        wlChannelLanguage.setText(BaseMessages.getString(PKG, "RssOutputDialog.ChannelLanguage.Label"));
         props.setLook(wlChannelLanguage);
         fdlChannelLanguage=new FormData();
         fdlChannelLanguage.left = new FormAttachment(0, 0);
@@ -539,7 +539,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
         
         // Channel Author
 		wlChannelAuthor=new Label(wChannelGroup, SWT.RIGHT);
-        wlChannelAuthor.setText(Messages.getString("RssOutputDialog.ChannelAuthor.Label"));
+        wlChannelAuthor.setText(BaseMessages.getString(PKG, "RssOutputDialog.ChannelAuthor.Label"));
         props.setLook(wlChannelAuthor);
         fdlChannelAuthor=new FormData();
         fdlChannelAuthor.left = new FormAttachment(0, 0);
@@ -559,7 +559,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
         
         // Channel Copyright
     	wlChannelCopyright=new Label(wChannelGroup, SWT.RIGHT);
-        wlChannelCopyright.setText(Messages.getString("RssOutputDialog.ChannelCopyright.Label"));
+        wlChannelCopyright.setText(BaseMessages.getString(PKG, "RssOutputDialog.ChannelCopyright.Label"));
         props.setLook(wlChannelCopyright);
         fdlChannelCopyright=new FormData();
         fdlChannelCopyright.left = new FormAttachment(0, 0);
@@ -579,7 +579,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
         
         // Add Image ?
 		wlAddImage=new Label(wChannelGroup, SWT.RIGHT);
-		wlAddImage.setText(Messages.getString("RssOutputDialog.AddImage.Label"));
+		wlAddImage.setText(BaseMessages.getString(PKG, "RssOutputDialog.AddImage.Label"));
  		props.setLook(wlAddImage);
 		fdlAddImage=new FormData();
 		fdlAddImage.left = new FormAttachment(0, 0);
@@ -587,7 +587,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlAddImage.right= new FormAttachment(middle, -margin);
 		wlAddImage.setLayoutData(fdlAddImage);
 		wAddImage=new Button(wChannelGroup, SWT.CHECK );
-		wAddImage.setToolTipText(Messages.getString("RssOutputDialog.AddImage.Tooltip"));
+		wAddImage.setToolTipText(BaseMessages.getString(PKG, "RssOutputDialog.AddImage.Tooltip"));
  		props.setLook(wAddImage);
 		fdAddImage=new FormData();
 		fdAddImage.left = new FormAttachment(middle, 0);
@@ -607,7 +607,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
         
         // Channel Image title
     	wlChannelImageTitle=new Label(wChannelGroup, SWT.RIGHT);
-        wlChannelImageTitle.setText(Messages.getString("RssOutputDialog.ChannelImageTitle.Label"));
+        wlChannelImageTitle.setText(BaseMessages.getString(PKG, "RssOutputDialog.ChannelImageTitle.Label"));
         props.setLook(wlChannelImageTitle);
         fdlChannelImageTitle=new FormData();
         fdlChannelImageTitle.left = new FormAttachment(0, 0);
@@ -627,7 +627,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
         // Channel Image Link
     	wlChannelImageLink=new Label(wChannelGroup, SWT.RIGHT);
-        wlChannelImageLink.setText(Messages.getString("RssOutputDialog.ChannelImageLink.Label"));
+        wlChannelImageLink.setText(BaseMessages.getString(PKG, "RssOutputDialog.ChannelImageLink.Label"));
         props.setLook(wlChannelImageLink);
         fdlChannelImageLink=new FormData();
         fdlChannelImageLink.left = new FormAttachment(0, 0);
@@ -647,7 +647,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
         // Channel Image Url
         wlChannelImageUrl=new Label(wChannelGroup, SWT.RIGHT);
-        wlChannelImageUrl.setText(Messages.getString("RssOutputDialog.ChannelImageUrl.Label"));
+        wlChannelImageUrl.setText(BaseMessages.getString(PKG, "RssOutputDialog.ChannelImageUrl.Label"));
         props.setLook(wlChannelImageUrl);
         fdlChannelImageUrl=new FormData();
         fdlChannelImageUrl.left = new FormAttachment(0, 0);
@@ -667,7 +667,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
         // Channel Image Description
         wlChannelImageDescription=new Label(wChannelGroup, SWT.RIGHT);
-        wlChannelImageDescription.setText(Messages.getString("RssOutputDialog.ChannelImageDescription.Label"));
+        wlChannelImageDescription.setText(BaseMessages.getString(PKG, "RssOutputDialog.ChannelImageDescription.Label"));
         props.setLook(wlChannelImageDescription);
         fdlChannelImageDescription=new FormData();
         fdlChannelImageDescription.left = new FormAttachment(0, 0);
@@ -687,7 +687,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
         // Encoding
         wlEncoding=new Label(wChannelComp, SWT.RIGHT);
-        wlEncoding.setText(Messages.getString("RssOutputDialog.Encoding.Label"));
+        wlEncoding.setText(BaseMessages.getString(PKG, "RssOutputDialog.Encoding.Label"));
         props.setLook(wlEncoding);
         fdlEncoding=new FormData();
         fdlEncoding.left = new FormAttachment(0, 0);
@@ -723,7 +723,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
         
         // Version
 		wlVersion=new Label(wChannelComp, SWT.RIGHT);
-        wlVersion.setText(Messages.getString("RssOutputDialog.Version.Label"));
+        wlVersion.setText(BaseMessages.getString(PKG, "RssOutputDialog.Version.Label"));
         props.setLook(wlVersion);
         fdlVersion=new FormData();
         fdlVersion.left = new FormAttachment(0, 0);
@@ -777,7 +777,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		
 		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
-		wGeneralTab.setText(Messages.getString("RssOutputDialog.GeneralTab.TabTitle"));
+		wGeneralTab.setText(BaseMessages.getString(PKG, "RssOutputDialog.GeneralTab.TabTitle"));
 		
 		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wGeneralComp);
@@ -795,7 +795,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		wFields = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wFields);
-		wFields.setText(Messages.getString("RssOutputDialog.Group.Fields.Label"));
+		wFields.setText(BaseMessages.getString(PKG, "RssOutputDialog.Group.Fields.Label"));
 		
 		FormLayout groupFieldsLayout = new FormLayout();
 		groupFieldsLayout.marginWidth = 10;
@@ -804,7 +804,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// RemarqItem
 		wlRemarqItem=new Label(wFields, SWT.RIGHT);
-		wlRemarqItem.setText(Messages.getString("RssOutputDialog.RemarqItem.Label"));
+		wlRemarqItem.setText(BaseMessages.getString(PKG, "RssOutputDialog.RemarqItem.Label"));
 		props.setLook(wlRemarqItem);
 		fdlRemarqItem=new FormData();
 		fdlRemarqItem.left  = new FormAttachment(0, 0);
@@ -815,7 +815,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
  		// Item Title
 		wlItemTitle=new Label(wFields, SWT.RIGHT);
-        wlItemTitle.setText(Messages.getString("RssOutputDialog.ItemTitle.Label"));
+        wlItemTitle.setText(BaseMessages.getString(PKG, "RssOutputDialog.ItemTitle.Label"));
         props.setLook(wlItemTitle);
         fdlItemTitle=new FormData();
         fdlItemTitle.left = new FormAttachment(0, 0);
@@ -836,7 +836,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
  		// Item Description
 		wlItemDescription=new Label(wFields, SWT.RIGHT);
-        wlItemDescription.setText(Messages.getString("RssOutputDialog.ItemDescripion.Label"));
+        wlItemDescription.setText(BaseMessages.getString(PKG, "RssOutputDialog.ItemDescripion.Label"));
         props.setLook(wlItemDescription);
         fdlItemDescription=new FormData();
         fdlItemDescription.left = new FormAttachment(0, 0);
@@ -856,7 +856,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
        
  		// Item Link
 		wlItemLink=new Label(wFields, SWT.RIGHT);
-        wlItemLink.setText(Messages.getString("RssOutputDialog.ItemLink.Label"));
+        wlItemLink.setText(BaseMessages.getString(PKG, "RssOutputDialog.ItemLink.Label"));
         props.setLook(wlItemLink);
         fdlItemLink=new FormData();
         fdlItemLink.left = new FormAttachment(0, 0);
@@ -876,7 +876,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
  		
         // Item PubDate
 		wlItemPubDate=new Label(wFields, SWT.RIGHT);
-        wlItemPubDate.setText(Messages.getString("RssOutputDialog.ItemPubDate.Label"));
+        wlItemPubDate.setText(BaseMessages.getString(PKG, "RssOutputDialog.ItemPubDate.Label"));
         props.setLook(wlItemPubDate);
         fdlItemPubDate=new FormData();
         fdlItemPubDate.left = new FormAttachment(0, 0);
@@ -896,7 +896,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
          
  		// Item Author
 		wlItemAuthor=new Label(wFields, SWT.RIGHT);
-        wlItemAuthor.setText(Messages.getString("RssOutputDialog.ItemAuthor.Label"));
+        wlItemAuthor.setText(BaseMessages.getString(PKG, "RssOutputDialog.ItemAuthor.Label"));
         props.setLook(wlItemAuthor);
         fdlItemAuthor=new FormData();
         fdlItemAuthor.left = new FormAttachment(0, 0);
@@ -916,7 +916,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
         
         // Add GeoRSS ?
 		wlAddGeoRSS=new Label(wFields, SWT.RIGHT);
-		wlAddGeoRSS.setText(Messages.getString("RssOutputDialog.AddGeoRSS.Label"));
+		wlAddGeoRSS.setText(BaseMessages.getString(PKG, "RssOutputDialog.AddGeoRSS.Label"));
  		props.setLook(wlAddGeoRSS);
 		fdlAddGeoRSS=new FormData();
 		fdlAddGeoRSS.left = new FormAttachment(0, 0);
@@ -924,7 +924,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlAddGeoRSS.right= new FormAttachment(middle, -margin);
 		wlAddGeoRSS.setLayoutData(fdlAddGeoRSS);
 		wAddGeoRSS=new Button(wFields, SWT.CHECK );
-		wAddGeoRSS.setToolTipText(Messages.getString("RssOutputDialog.AddGeoRSS.Tooltip"));
+		wAddGeoRSS.setToolTipText(BaseMessages.getString(PKG, "RssOutputDialog.AddGeoRSS.Tooltip"));
  		props.setLook(wAddGeoRSS);
 		fdAddGeoRSS=new FormData();
 		fdAddGeoRSS.left = new FormAttachment(middle, 0);
@@ -942,7 +942,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		);
 	    // Add GeoRSS ?
 		wluseGeoRSSGML=new Label(wFields, SWT.RIGHT);
-		wluseGeoRSSGML.setText(Messages.getString("RssOutputDialog.useGeoRSSGML.Label"));
+		wluseGeoRSSGML.setText(BaseMessages.getString(PKG, "RssOutputDialog.useGeoRSSGML.Label"));
  		props.setLook(wluseGeoRSSGML);
 		fdluseGeoRSSGML=new FormData();
 		fdluseGeoRSSGML.left = new FormAttachment(0, 0);
@@ -950,7 +950,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdluseGeoRSSGML.right= new FormAttachment(middle, -margin);
 		wluseGeoRSSGML.setLayoutData(fdluseGeoRSSGML);
 		wuseGeoRSSGML=new Button(wFields, SWT.CHECK );
-		wuseGeoRSSGML.setToolTipText(Messages.getString("RssOutputDialog.useGeoRSSGML.Tooltip"));
+		wuseGeoRSSGML.setToolTipText(BaseMessages.getString(PKG, "RssOutputDialog.useGeoRSSGML.Tooltip"));
  		props.setLook(wuseGeoRSSGML);
 		fduseGeoRSSGML=new FormData();
 		fduseGeoRSSGML.left = new FormAttachment(middle, 0);
@@ -968,7 +968,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
        
  		// GeoPointLat
 		wlGeoPointLat=new Label(wFields, SWT.RIGHT);
-        wlGeoPointLat.setText(Messages.getString("RssOutputDialog.GeoPointLat.Label"));
+        wlGeoPointLat.setText(BaseMessages.getString(PKG, "RssOutputDialog.GeoPointLat.Label"));
         props.setLook(wlGeoPointLat);
         fdlGeoPointLat=new FormData();
         fdlGeoPointLat.left = new FormAttachment(0, 0);
@@ -988,7 +988,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
         
  		// GeoPointLong
 		wlGeoPointLong=new Label(wFields, SWT.RIGHT);
-        wlGeoPointLong.setText(Messages.getString("RssOutputDialog.GeoPointLong.Label"));
+        wlGeoPointLong.setText(BaseMessages.getString(PKG, "RssOutputDialog.GeoPointLong.Label"));
         props.setLook(wlGeoPointLong);
         fdlGeoPointLong=new FormData();
         fdlGeoPointLong.left = new FormAttachment(0, 0);
@@ -1044,7 +1044,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		//////////////////////////
 		
 		wCustomTab=new CTabItem(wTabFolder, SWT.NONE);
-		wCustomTab.setText(Messages.getString("RssOutputDialog.CustomTab.TabTitle"));
+		wCustomTab.setText(BaseMessages.getString(PKG, "RssOutputDialog.CustomTab.TabTitle"));
 		
 		wCustomComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wCustomComp);
@@ -1056,7 +1056,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		
 		wlChannelCustom = new Label(wCustomComp, SWT.NONE);
-		wlChannelCustom.setText(Messages.getString("RssOutputDialog.Keys.Label")); //$NON-NLS-1$
+		wlChannelCustom.setText(BaseMessages.getString(PKG, "RssOutputDialog.Keys.Label")); //$NON-NLS-1$
  		props.setLook(wlChannelCustom);
 		fdlChannelCustom = new FormData();
 		fdlChannelCustom.left = new FormAttachment(0, 0);
@@ -1067,8 +1067,8 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		int nrChannelRows = (input.getChannelCustomFields() != null ? input.getChannelCustomFields().length : 1);
 
 		ColumnInfo[] ciChannel = new ColumnInfo[nrChannelCols];
-		ciChannel[0] = new ColumnInfo(Messages.getString("RssOutputDialog.ColumnInfo.Tag"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		ciChannel[1] = new ColumnInfo(Messages.getString("RssOutputDialog.ColumnInfo.Field"), ColumnInfo.COLUMN_TYPE_CCOMBO);
+		ciChannel[0] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.Tag"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciChannel[1] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.Field"), ColumnInfo.COLUMN_TYPE_CCOMBO);
 		ciChannel[0].setUsingVariables(true);
 		ciChannel[1].setComboValues(fieldNames);
 		wChannelCustom=new TableView(transMeta,wCustomComp,
@@ -1080,7 +1080,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 			      );
 		
 		wGet = new Button(wCustomComp, SWT.PUSH);
-		wGet.setText(Messages.getString("RssOutputDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "RssOutputDialog.GetFields.Button")); //$NON-NLS-1$
 		fdGet = new FormData();
 		fdGet.right = new FormAttachment(100, 0);
 		fdGet.top = new FormAttachment(wlChannelCustom, margin);
@@ -1095,16 +1095,16 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
 		
 		// THE Item Custom
 		wlItemCustom = new Label(wCustomComp, SWT.NONE);
-		wlItemCustom.setText(Messages.getString("RssOutputDialog.ItemCustom.Label")); //$NON-NLS-1$
+		wlItemCustom.setText(BaseMessages.getString(PKG, "RssOutputDialog.ItemCustom.Label")); //$NON-NLS-1$
  		props.setLook(wlItemCustom);
 		fdlItemCustom = new FormData();
 		fdlItemCustom.left = new FormAttachment(0, 0);
@@ -1115,14 +1115,14 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		int UpInsRows = (input.getItemCustomFields()!= null ? input.getItemCustomFields().length : 1);
 
 		ColumnInfo[] ciItem = new ColumnInfo[UpInsCols];
-		ciItem[0] = new ColumnInfo(Messages.getString("RssOutputDialog.ColumnInfo.Tag"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		ciItem[1] = new ColumnInfo(Messages.getString("RssOutputDialog.ColumnInfo.Field"), ColumnInfo.COLUMN_TYPE_CCOMBO);//$NON-NLS-1$
+		ciItem[0] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.Tag"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciItem[1] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.Field"), ColumnInfo.COLUMN_TYPE_CCOMBO);//$NON-NLS-1$
 		ciItem[1].setComboValues(fieldNames);
 		wItemCustom = new TableView(transMeta,wCustomComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 				ciItem, UpInsRows, lsMod, props);
 
 		wGetCustomItem = new Button(wCustomComp, SWT.PUSH);
-		wGetCustomItem.setText(Messages.getString("RssOutputDialog.GetItemFields.Label")); //$NON-NLS-1$
+		wGetCustomItem.setText(BaseMessages.getString(PKG, "RssOutputDialog.GetItemFields.Label")); //$NON-NLS-1$
 		fdGetCustomItem = new FormData();
 		fdGetCustomItem.top   = new FormAttachment(wlItemCustom, margin);
 		fdGetCustomItem.right = new FormAttachment(100, 0);
@@ -1158,7 +1158,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		//////////////////////////////////////
 		
 		wCustomNameSpace=new CTabItem(wTabFolder, SWT.NONE);
-		wCustomNameSpace.setText(Messages.getString("RssOutputDialog.CustomNameSpace.TabTitle"));
+		wCustomNameSpace.setText(BaseMessages.getString(PKG, "RssOutputDialog.CustomNameSpace.TabTitle"));
 		wCustomNameSpaceComp  = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wCustomNameSpaceComp);
 		FormLayout customnamespaceLayout = new FormLayout();
@@ -1168,7 +1168,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Namespaces
 		wlNameSpace = new Label(wCustomNameSpaceComp, SWT.NONE);
-		wlNameSpace.setText(Messages.getString("RssOutputDialog.NameSpace.Label")); //$NON-NLS-1$
+		wlNameSpace.setText(BaseMessages.getString(PKG, "RssOutputDialog.NameSpace.Label")); //$NON-NLS-1$
  		props.setLook(wlNameSpace);
 		fdlNameSpace = new FormData();
 		fdlNameSpace.left = new FormAttachment(0, 0);
@@ -1179,8 +1179,8 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		int nrRows = (input.getNameSpaces()!= null ? input.getNameSpaces().length : 1);
 
 		ColumnInfo[] ciNameSpace = new ColumnInfo[2];
-		ciNameSpace[0] = new ColumnInfo(Messages.getString("RssOutputDialog.ColumnInfo.NameSpace.Title"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		ciNameSpace[1] = new ColumnInfo(Messages.getString("RssOutputDialog.ColumnInfo.NameSpace"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciNameSpace[0] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.NameSpace.Title"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciNameSpace[1] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.NameSpace"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 		ciNameSpace[0].setUsingVariables(true);
 		ciNameSpace[1].setUsingVariables(true);
 		wNameSpaceCustom = new TableView(transMeta,wCustomNameSpaceComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
@@ -1218,7 +1218,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		// START OF CONTENT TAB///
 		///
 		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-		wContentTab.setText(Messages.getString("RssOutputDialog.ContentTab.TabTitle"));
+		wContentTab.setText(BaseMessages.getString(PKG, "RssOutputDialog.ContentTab.TabTitle"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;
@@ -1235,7 +1235,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		wFileName = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wFileName);
-		wFileName.setText(Messages.getString("RssOutputDialog.Group.File.Label"));
+		wFileName.setText(BaseMessages.getString(PKG, "RssOutputDialog.Group.File.Label"));
 		
 		FormLayout groupFileLayout = new FormLayout();
 		groupFileLayout.marginWidth = 10;
@@ -1246,7 +1246,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// Filename line
 		wlFilename=new Label(wFileName, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("RssOutputDialog.Filename.Label"));
+		wlFilename.setText(BaseMessages.getString(PKG, "RssOutputDialog.Filename.Label"));
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -1256,7 +1256,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		wbFilename=new Button(wFileName, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFilename);
-		wbFilename.setText(Messages.getString("System.Button.Browse"));
+		wbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(wFields, 0);
@@ -1273,7 +1273,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// Create Parent Folder
 		wlCreateParentFolder=new Label(wFileName, SWT.RIGHT);
-		wlCreateParentFolder.setText(Messages.getString("RssOutputDialog.CreateParentFolder.Label"));
+		wlCreateParentFolder.setText(BaseMessages.getString(PKG, "RssOutputDialog.CreateParentFolder.Label"));
  		props.setLook(wlCreateParentFolder);
 		fdlCreateParentFolder=new FormData();
 		fdlCreateParentFolder.left = new FormAttachment(0, 0);
@@ -1281,7 +1281,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlCreateParentFolder.right= new FormAttachment(middle, -margin);
 		wlCreateParentFolder.setLayoutData(fdlCreateParentFolder);
 		wCreateParentFolder=new Button(wFileName, SWT.CHECK );
-		wCreateParentFolder.setToolTipText(Messages.getString("RssOutputDialog.CreateParentFolder.Tooltip"));
+		wCreateParentFolder.setToolTipText(BaseMessages.getString(PKG, "RssOutputDialog.CreateParentFolder.Tooltip"));
  		props.setLook(wCreateParentFolder);
 		fdCreateParentFolder=new FormData();
 		fdCreateParentFolder.left = new FormAttachment(middle, 0);
@@ -1299,7 +1299,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// FileName defined in a field
 		wlFileNameInField=new Label(wFileName, SWT.RIGHT);
-		wlFileNameInField.setText(Messages.getString("RssOutputDialog.FileNameInField.Label"));
+		wlFileNameInField.setText(BaseMessages.getString(PKG, "RssOutputDialog.FileNameInField.Label"));
  		props.setLook(wlFileNameInField);
 		fdlFileNameInField=new FormData();
 		fdlFileNameInField.left = new FormAttachment(0, 0);
@@ -1307,7 +1307,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlFileNameInField.right= new FormAttachment(middle, -margin);
 		wlFileNameInField.setLayoutData(fdlFileNameInField);
 		wFileNameInField=new Button(wFileName, SWT.CHECK );
-		wFileNameInField.setToolTipText(Messages.getString("RssOutputDialog.FileNameInField.Tooltip"));
+		wFileNameInField.setToolTipText(BaseMessages.getString(PKG, "RssOutputDialog.FileNameInField.Tooltip"));
  		props.setLook(wFileNameInField);
 		fdFileNameInField=new FormData();
 		fdFileNameInField.left = new FormAttachment(middle, 0);
@@ -1325,7 +1325,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// FieldFieldFileName line
 		wlFieldFilename=new Label(wFileName, SWT.RIGHT);
-		wlFieldFilename.setText(Messages.getString("RssOutputDialog.FieldFilename.Label"));
+		wlFieldFilename.setText(BaseMessages.getString(PKG, "RssOutputDialog.FieldFilename.Label"));
         props.setLook(wlFieldFilename);
         fdlFieldFilename=new FormData();
         fdlFieldFilename.left = new FormAttachment(0, 0);
@@ -1346,7 +1346,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// Extension line
 		wlExtension=new Label(wFileName, SWT.RIGHT);
-		wlExtension.setText(Messages.getString("System.Label.Extension"));
+		wlExtension.setText(BaseMessages.getString(PKG, "System.Label.Extension"));
  		props.setLook(wlExtension);
 		fdlExtension=new FormData();
 		fdlExtension.left = new FormAttachment(0, 0);
@@ -1365,7 +1365,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Create multi-part file?
 		wlAddStepnr=new Label(wFileName, SWT.RIGHT);
-		wlAddStepnr.setText(Messages.getString("RssOutputDialog.AddStepnr.Label"));
+		wlAddStepnr.setText(BaseMessages.getString(PKG, "RssOutputDialog.AddStepnr.Label"));
  		props.setLook(wlAddStepnr);
 		fdlAddStepnr=new FormData();
 		fdlAddStepnr.left = new FormAttachment(0, 0);
@@ -1391,7 +1391,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 	
 		// Create multi-part file?
 		wlAddDate=new Label(wFileName, SWT.RIGHT);
-		wlAddDate.setText(Messages.getString("RssOutputDialog.AddDate.Label"));
+		wlAddDate.setText(BaseMessages.getString(PKG, "RssOutputDialog.AddDate.Label"));
  		props.setLook(wlAddDate);
 		fdlAddDate=new FormData();
 		fdlAddDate.left = new FormAttachment(0, 0);
@@ -1416,7 +1416,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		);
 		// Create multi-part file?
 		wlAddTime=new Label(wFileName, SWT.RIGHT);
-		wlAddTime.setText(Messages.getString("RssOutputDialog.AddTime.Label"));
+		wlAddTime.setText(BaseMessages.getString(PKG, "RssOutputDialog.AddTime.Label"));
  		props.setLook(wlAddTime);
 		fdlAddTime=new FormData();
 		fdlAddTime.left = new FormAttachment(0, 0);
@@ -1445,7 +1445,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		wbShowFiles=new Button(wFileName, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbShowFiles);
-		wbShowFiles.setText(Messages.getString("RssOutputDialog.ShowFiles.Button"));
+		wbShowFiles.setText(BaseMessages.getString(PKG, "RssOutputDialog.ShowFiles.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left = new FormAttachment(middle, 0);
 		fdbShowFiles.top  = new FormAttachment(wAddTime, margin*2);
@@ -1459,15 +1459,15 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 					String files[] = tfoi.getFiles(transMeta);
 					if (files!=null && files.length>0)
 					{
-						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("RssOutputDialog.SelectOutputFiles.DialogTitle"), Messages.getString("RssOutputDialog.SelectOutputFiles.DialogMessage"));
+						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, BaseMessages.getString(PKG, "RssOutputDialog.SelectOutputFiles.DialogTitle"), BaseMessages.getString(PKG, "RssOutputDialog.SelectOutputFiles.DialogMessage"));
 						esd.setViewOnly();
 						esd.open();
 					}
 					else
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage(Messages.getString("RssOutputDialog.NoFilesFound.DialogMessage"));
-						mb.setText(Messages.getString("System.DialogTitle.Error"));
+						mb.setMessage(BaseMessages.getString(PKG, "RssOutputDialog.NoFilesFound.DialogMessage"));
+						mb.setText(BaseMessages.getString(PKG, "System.DialogTitle.Error"));
 						mb.open(); 
 					}
 				}
@@ -1496,7 +1496,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		wResultFile = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wResultFile);
-		wResultFile.setText(Messages.getString("RssOutputDialog.Group.ResultFile.Label"));
+		wResultFile.setText(BaseMessages.getString(PKG, "RssOutputDialog.Group.ResultFile.Label"));
 		
 		FormLayout groupResultFile = new FormLayout();
 		groupResultFile.marginWidth = 10;
@@ -1505,7 +1505,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Add File to the result files name
 		wlAddToResult=new Label(wResultFile, SWT.RIGHT);
-		wlAddToResult.setText(Messages.getString("RssOutputDialog.AddFileToResult.Label"));
+		wlAddToResult.setText(BaseMessages.getString(PKG, "RssOutputDialog.AddFileToResult.Label"));
 		props.setLook(wlAddToResult);
 		fdlAddToResult=new FormData();
 		fdlAddToResult.left  = new FormAttachment(0, 0);
@@ -1513,7 +1513,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlAddToResult.right = new FormAttachment(middle, -margin);
 		wlAddToResult.setLayoutData(fdlAddToResult);
 		wAddToResult=new Button(wResultFile, SWT.CHECK);
-		wAddToResult.setToolTipText(Messages.getString("RssOutputDialog.AddFileToResult.Tooltip"));
+		wAddToResult.setToolTipText(BaseMessages.getString(PKG, "RssOutputDialog.AddFileToResult.Tooltip"));
  		props.setLook(wAddToResult);
 		fdAddToResult=new FormData();
 		fdAddToResult.left  = new FormAttachment(middle, 0);
@@ -1595,7 +1595,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 					{
 						dialog.setFileName(transMeta.environmentSubstitute(wFilename.getText()));
 					}
-					dialog.setFilterNames(new String[] {Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.AllFiles")});
+					dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "System.FileType.TextFiles"), BaseMessages.getString(PKG, "System.FileType.CSVFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
 					if (dialog.open()!=null)
 					{
 						String extension = wExtension.getText();
@@ -1785,7 +1785,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 				fieldNames = r.getFieldNames();
 			 }
 		 	}catch(KettleException ke){
-				new ErrorDialog(shell, Messages.getString("RssOutputDialog.FailedToGetFields.DialogTitle"), Messages.getString("RssOutputDialog.FailedToGetFields.DialogMessage"), ke);
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "RssOutputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "RssOutputDialog.FailedToGetFields.DialogMessage"), ke);
 			}
 		 	gotPreviousFields=true;
 		}
@@ -1810,8 +1810,8 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 			}
 			catch (KettleException ke)
 			{
-				new ErrorDialog(shell, Messages.getString("RssOutputDialog.UnableToGetFieldsError.DialogTitle"), //$NON-NLS-1$
-						Messages.getString("RssOutputDialog.UnableToGetFieldsError.DialogMessage"), ke); //$NON-NLS-1$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "RssOutputDialog.UnableToGetFieldsError.DialogTitle"), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "RssOutputDialog.UnableToGetFieldsError.DialogMessage"), ke); //$NON-NLS-1$
 			}
 		}
 

@@ -23,22 +23,21 @@ package org.pentaho.di.trans.steps.ldapinput;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -47,9 +46,11 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 {	
+	private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	/** Flag indicating that we use authentication for connection */
 	private boolean useAuthentication;
@@ -464,7 +465,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("LDAPInputMeta.UnableToLoadFromXML"), e);
+			throw new KettleXMLException(BaseMessages.getString(PKG, "LDAPInputMeta.UnableToLoadFromXML"), e);
 		}
 	}
 	
@@ -590,7 +591,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
         }
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("LDAPInputMeta.Exception.ErrorReadingRepository"), e);
+			throw new KettleException(BaseMessages.getString(PKG, "LDAPInputMeta.Exception.ErrorReadingRepository"), e);
 		}
 	}
 	
@@ -634,7 +635,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("LDAPInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
+			throw new KettleException(BaseMessages.getString(PKG, "LDAPInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
 		}
 	}
 	
@@ -648,37 +649,37 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 
 		// Check output fields
 		if(inputFields.length==0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("LDAPInputMeta.CheckResult.NoOutputFields"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.NoOutputFields"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("LDAPInputMeta.CheckResult.OutputFieldsOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.OutputFieldsOk"), stepMeta);
 		remarks.add(cr);
 		
 		// See if we get input...
 		if (input.length>0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("LDAPInputMeta.CheckResult.NoInputExpected"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.NoInputExpected"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("LDAPInputMeta.CheckResult.NoInput"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.NoInput"), stepMeta);
 		remarks.add(cr);
 		
 		// Check hostname
 		if(Const.isEmpty(Host))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("LDAPInputMeta.CheckResult.HostnameMissing"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.HostnameMissing"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("LDAPInputMeta.CheckResult.HostnameOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.HostnameOk"), stepMeta);
 		remarks.add(cr);
 		
 		// Check search base
 		if(Const.isEmpty(searchBase))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("LDAPInputMeta.CheckResult.SearchBaseMissing"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.SearchBaseMissing"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("LDAPInputMeta.CheckResult.SearchBaseOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.SearchBaseOk"), stepMeta);
 		remarks.add(cr);
 		
 		// Check filter String
 		if(Const.isEmpty(filterString))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("LDAPInputMeta.CheckResult.FilterStringMissing"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.FilterStringMissing"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("LDAPInputMeta.CheckResult.FilterStringOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.FilterStringOk"), stepMeta);
 		remarks.add(cr);
 		
 	}

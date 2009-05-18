@@ -22,6 +22,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -41,6 +42,8 @@ import org.w3c.dom.NodeList;
  */
 public class XMLInput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = XMLInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private XMLInputMeta meta;
 
 	private XMLInputData data;
@@ -76,7 +79,7 @@ public class XMLInput extends BaseStep implements StepInterface
 		}
 
 		if (log.isRowLevel())
-			logRowlevel(Messages.getString("XMLInput.Log.ReadRow", outputRowData.toString()));
+			logRowlevel(BaseMessages.getString(PKG, "XMLInput.Log.ReadRow", outputRowData.toString()));
 
 		incrementLinesInput();
 
@@ -154,7 +157,7 @@ public class XMLInput extends BaseStep implements StepInterface
 						} else
 						{
 							if (log.isDebug())
-								logDebug(Messages.getString("XMLInput.Log.UnableToFindPosition", pos
+								logDebug(BaseMessages.getString(PKG, "XMLInput.Log.UnableToFindPosition", pos
 										.toString(), node.toString()));
 						}
 						node = subNode;
@@ -174,7 +177,7 @@ public class XMLInput extends BaseStep implements StepInterface
 						} else
 						{
 							if (log.isDebug())
-								logDebug(Messages.getString("XMLInput.Log.UnableToFindPosition", pos
+								logDebug(BaseMessages.getString(PKG, "XMLInput.Log.UnableToFindPosition", pos
 										.toString(), node.toString()));
 						}
 						node = subNode;
@@ -279,7 +282,7 @@ public class XMLInput extends BaseStep implements StepInterface
 			if (data.filenr >= data.files.size()) // finished processing!
 			{
 				if (log.isDetailed())
-					logDetailed(Messages.getString("XMLInput.Log.FinishedProcessing"));
+					logDetailed(BaseMessages.getString(PKG, "XMLInput.Log.FinishedProcessing"));
 				return false;
 			}
 
@@ -287,7 +290,7 @@ public class XMLInput extends BaseStep implements StepInterface
 			data.last_file = (data.filenr == data.files.size() - 1);
 			data.file = (FileObject) data.files.get(data.filenr);
 
-			logBasic(Messages.getString("XMLInput.Log.OpeningFile", data.file.toString()));
+			logBasic(BaseMessages.getString(PKG, "XMLInput.Log.OpeningFile", data.file.toString()));
 
 			// Move file pointer ahead!
 			data.filenr++;
@@ -307,7 +310,7 @@ public class XMLInput extends BaseStep implements StepInterface
 			addResultFile(resultFile);
 
 			if (log.isDetailed())
-				logDetailed(Messages.getString("XMLInput.Log.FileOpened", data.file.toString()));
+				logDetailed(BaseMessages.getString(PKG, "XMLInput.Log.FileOpened", data.file.toString()));
 
 			// Position in the file...
 			data.section = data.document;
@@ -323,7 +326,7 @@ public class XMLInput extends BaseStep implements StepInterface
 			data.itemPosition = (int) meta.getNrRowsToSkip();
 		} catch (Exception e)
 		{
-			logError(Messages.getString("XMLInput.Log.UnableToOpenFile", "" + data.filenr, data.file
+			logError(BaseMessages.getString(PKG, "XMLInput.Log.UnableToOpenFile", "" + data.filenr, data.file
 					.toString(), e.toString()));
 			stopAll();
 			setErrors(1);
@@ -342,7 +345,7 @@ public class XMLInput extends BaseStep implements StepInterface
 			data.files = meta.getFiles(this).getFiles();
 			if (data.files == null || data.files.size() == 0)
 			{
-				logError(Messages.getString("XMLInput.Log.NoFiles"));
+				logError(BaseMessages.getString(PKG, "XMLInput.Log.NoFiles"));
 				return false;
 			}
 

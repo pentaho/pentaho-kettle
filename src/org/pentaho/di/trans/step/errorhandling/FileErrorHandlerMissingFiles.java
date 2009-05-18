@@ -17,14 +17,17 @@ import java.util.Date;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStep;
 
 public class FileErrorHandlerMissingFiles extends
 		AbstractFileErrorHandler {
 
-	public static final String THIS_FILE_DOES_NOT_EXIST = Messages.getString("FileErrorHandlerMissingFiles.FILE_DOES_NOT_EXIST"); //$NON-NLS-1$
+	private static Class<?> PKG = FileErrorHandlerMissingFiles.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public static final String THIS_FILE_WAS_NOT_ACCESSIBLE = Messages.getString("FileErrorHandlerMissingFiles.FILE_WAS_NOT_ACCESSIBLE"); //$NON-NLS-1$
+	public static final String THIS_FILE_DOES_NOT_EXIST = BaseMessages.getString(PKG, "FileErrorHandlerMissingFiles.FILE_DOES_NOT_EXIST"); //$NON-NLS-1$
+
+	public static final String THIS_FILE_WAS_NOT_ACCESSIBLE = BaseMessages.getString(PKG, "FileErrorHandlerMissingFiles.FILE_WAS_NOT_ACCESSIBLE"); //$NON-NLS-1$
 
 	public FileErrorHandlerMissingFiles(Date date,
 			String destinationDirectory, String fileExtension, String encoding, BaseStep baseStep) {
@@ -41,7 +44,7 @@ public class FileErrorHandlerMissingFiles extends
 			getWriter(NO_PARTS).write(THIS_FILE_DOES_NOT_EXIST);
 			getWriter(NO_PARTS).write(Const.CR);
 		} catch (Exception e) {
-			throw new KettleException(Messages.getString("FileErrorHandlerMissingFiles.Exception.CouldNotCreateNonExistantFile") //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "FileErrorHandlerMissingFiles.Exception.CouldNotCreateNonExistantFile") //$NON-NLS-1$
 					+ file.getName().getURI(), e);
 		}
 	}
@@ -53,7 +56,7 @@ public class FileErrorHandlerMissingFiles extends
 			getWriter(NO_PARTS).write(Const.CR);
 		} catch (Exception e) {
 			throw new KettleException(
-					Messages.getString("FileErrorHandlerMissingFiles.Exception.CouldNotCreateNonAccessibleFile") + file.getName().getURI(), //$NON-NLS-1$
+					BaseMessages.getString(PKG, "FileErrorHandlerMissingFiles.Exception.CouldNotCreateNonAccessibleFile") + file.getName().getURI(), //$NON-NLS-1$
 					e);
 		}
 	}

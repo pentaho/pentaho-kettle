@@ -16,6 +16,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -34,6 +35,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class SetVariable extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = SetVariableMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private SetVariableMeta meta;
 	private SetVariableData data;
 	
@@ -55,7 +58,7 @@ public class SetVariable extends BaseStep implements StepInterface
 			if (first)
 			{
 				// We do not received any row !!
-				logBasic(Messages.getString("SetVariable.Log.NoInputRowSetDefault"));
+				logBasic(BaseMessages.getString(PKG, "SetVariable.Log.NoInputRowSetDefault"));
 				for (int i=0;i<meta.getFieldName().length;i++)
 		        {
 					if(!Const.isEmpty(meta.getDefaultValue()[i])) setValue(rowData,i,true); 
@@ -73,7 +76,7 @@ public class SetVariable extends BaseStep implements StepInterface
 		    
 		    data.outputMeta = getInputRowMeta().clone();
             
-            logBasic(Messages.getString("SetVariable.Log.SettingVar"));
+            logBasic(BaseMessages.getString(PKG, "SetVariable.Log.SettingVar"));
 
             for (int i=0;i<meta.getFieldName().length;i++)
             {
@@ -84,7 +87,7 @@ public class SetVariable extends BaseStep implements StepInterface
             return true;		
          }
 
-        throw new KettleStepException(Messages.getString("SetVariable.RuntimeError.MoreThanOneRowReceived.SETVARIABLE0007"));
+        throw new KettleStepException(BaseMessages.getString(PKG, "SetVariable.RuntimeError.MoreThanOneRowReceived.SETVARIABLE0007"));
 	}
 	
 	private void setValue(Object[] rowData,int i,boolean usedefault) throws KettleException
@@ -231,7 +234,7 @@ public class SetVariable extends BaseStep implements StepInterface
             }
         }               
         
-        logBasic(Messages.getString("SetVariable.Log.SetVariableToValue",meta.getVariableName()[i],value));
+        logBasic(BaseMessages.getString(PKG, "SetVariable.Log.SetVariableToValue",meta.getVariableName()[i],value));
 	}
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)

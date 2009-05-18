@@ -6,6 +6,7 @@ import org.pentaho.di.core.SimpleTokenizer;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -14,8 +15,10 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
- public class SplitFieldToRows extends BaseStep implements StepInterface
+public class SplitFieldToRows extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = SplitFieldToRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private SplitFieldToRowsMeta meta;
 	private SplitFieldToRowsData data;
 	
@@ -39,19 +42,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 			int numErrors = 0;
 			if (Const.isEmpty(meta.getNewFieldname()))
 			{
-				logError(Messages.getString("SplitFieldToRows.Log.NewFieldNameIsNull")); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "SplitFieldToRows.Log.NewFieldNameIsNull")); //$NON-NLS-1$
 				numErrors++;
 			}
 
 			if (data.fieldnr < 0)
 			{
-				logError(Messages.getString("SplitFieldToRows.Log.CouldNotFindFieldToSplit", realSplitFieldName)); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "SplitFieldToRows.Log.CouldNotFindFieldToSplit", realSplitFieldName)); //$NON-NLS-1$
 				numErrors++;
 			}
 			
 			if (!rowMeta.getValueMeta(data.fieldnr).isString())
 			{
-				logError(Messages.getString("SplitFieldToRows.Log.SplitFieldNotValid",realSplitFieldName)); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "SplitFieldToRows.Log.SplitFieldNotValid",realSplitFieldName)); //$NON-NLS-1$
 				numErrors++;
 			}
 
@@ -60,7 +63,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 				String realRowNumberField=environmentSubstitute(meta.getRowNumberField());
 				if(Const.isEmpty(realRowNumberField))
 				{
-					log.logError(toString(), Messages.getString("SplitFieldToRows.Exception.RownrFieldMissing"));
+					log.logError(toString(), BaseMessages.getString(PKG, "SplitFieldToRows.Exception.RownrFieldMissing"));
 					numErrors++;
 				}
 			}
@@ -121,7 +124,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
         if (checkFeedback(getLinesRead())) {
 			if(log.isDetailed()) 
 			{
-				if(log.isDetailed()) logBasic(Messages.getString("SplitFieldToRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+				if(log.isDetailed()) logBasic(BaseMessages.getString(PKG, "SplitFieldToRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			}
 		}
 			

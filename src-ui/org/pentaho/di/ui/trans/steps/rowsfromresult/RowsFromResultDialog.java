@@ -36,17 +36,19 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.rowsfromresult.Messages;
 import org.pentaho.di.trans.steps.rowsfromresult.RowsFromResultMeta;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class RowsFromResultDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = RowsFromResultMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label wlFields;
 
 	private TableView wFields;
@@ -84,14 +86,14 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("RowsFromResultDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "RowsFromResultDialog.Shell.Title")); //$NON-NLS-1$
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("RowsFromResultDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "RowsFromResultDialog.Stepname.Label")); //$NON-NLS-1$
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -109,7 +111,7 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 		wStepname.setLayoutData(fdStepname);
 
 		wlFields = new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("RowsFromResultDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "RowsFromResultDialog.Fields.Label")); //$NON-NLS-1$
 		props.setLook(wlFields);
 		fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -120,13 +122,13 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 
 		ColumnInfo[] colinf = new ColumnInfo[] {
 				new ColumnInfo(
-						Messages.getString("RowsFromResultDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "RowsFromResultDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
 				new ColumnInfo(
-						Messages.getString("RowsFromResultDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getAllTypes()), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "RowsFromResultDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getAllTypes()), //$NON-NLS-1$
 				new ColumnInfo(
-						Messages.getString("RowsFromResultDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "RowsFromResultDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
 				new ColumnInfo(
-						Messages.getString("RowsFromResultDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "RowsFromResultDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
 		};
 
 		wFields = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,
@@ -134,9 +136,9 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 
 		// Some buttons
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 

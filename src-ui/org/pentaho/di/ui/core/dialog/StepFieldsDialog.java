@@ -33,17 +33,17 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.dialog.Messages;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 /**
@@ -54,6 +54,8 @@ import org.pentaho.di.ui.core.widget.TableView;
  */
 public class StepFieldsDialog extends Dialog
 {
+	private static Class<?> PKG = StepFieldsDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlStepname;
 	private Text         wStepname;
 	private FormData     fdlStepname, fdStepname;
@@ -97,13 +99,13 @@ public class StepFieldsDialog extends Dialog
 
 		shell.setLayout(formLayout);
 		shell.setImage(GUIResource.getInstance().getImageTransGraph());
-		shell.setText(Messages.getString("StepFieldsDialog.Title"));
+		shell.setText(BaseMessages.getString(PKG, "StepFieldsDialog.Title"));
 		
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlStepname=new Label(shell, SWT.NONE);
-		wlStepname.setText(Messages.getString("StepFieldsDialog.Name.Label"));
+		wlStepname.setText(BaseMessages.getString(PKG, "StepFieldsDialog.Name.Label"));
 		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -119,7 +121,7 @@ public class StepFieldsDialog extends Dialog
 		wStepname.setLayoutData(fdStepname);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("StepFieldsDialog.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "StepFieldsDialog.Fields.Label"));
 		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -129,17 +131,17 @@ public class StepFieldsDialog extends Dialog
 		final int FieldsRows=input.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[] {
-			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Fieldname"),   ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Type"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Length"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Precision"),   ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Origin"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.StorageType"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.ConversionMask"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Decimal"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Group"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.TrimType"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Comments"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.Fieldname"),   ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.Type"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.Length"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.Precision"),   ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.Origin"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.StorageType"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.ConversionMask"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.Decimal"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.Group"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.TrimType"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.Comments"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
 		};
 		
 		wFields=new TableView(variables, shell, 
@@ -160,9 +162,9 @@ public class StepFieldsDialog extends Dialog
 		wFields.setLayoutData(fdFields);
 
 		wEdit=new Button(shell, SWT.PUSH);
-		wEdit.setText(Messages.getString("StepFieldsDialog.Buttons.EditOrigin"));
+		wEdit.setText(BaseMessages.getString(PKG, "StepFieldsDialog.Buttons.EditOrigin"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wEdit, wCancel }, margin, wFields);
 		
@@ -261,8 +263,8 @@ public class StepFieldsDialog extends Dialog
 		{
 			stepname = null;
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-            mb.setText(Messages.getString("StepFieldsDialog.OriginStep.Title")); //$NON-NLS-1$
-            mb.setMessage(Messages.getString("StepFieldsDialog.OriginStep.Message")); //$NON-NLS-1$
+            mb.setText(BaseMessages.getString(PKG, "StepFieldsDialog.OriginStep.Title")); //$NON-NLS-1$
+            mb.setMessage(BaseMessages.getString(PKG, "StepFieldsDialog.OriginStep.Message")); //$NON-NLS-1$
             mb.open();
 		}
 		

@@ -15,8 +15,6 @@ package org.pentaho.di.trans.steps.replacestring;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -30,6 +28,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
@@ -39,9 +38,12 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 
 public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface {
+
+	private static Class<?> PKG = ReplaceStringMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private String fieldInStream[];
 	
@@ -61,16 +63,16 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 	public final static String caseSensitiveCode[] = { "no", "yes"};
 	
 	public static final String[] caseSensitiveDesc = new String[] { 
-			Messages.getString("System.Combo.No"), 
-			Messages.getString("System.Combo.Yes") };
+			BaseMessages.getString(PKG, "System.Combo.No"), 
+			BaseMessages.getString(PKG, "System.Combo.Yes") };
 	
 	public final static int CASE_SENSITIVE_NO = 0;
 
 	public final static int CASE_SENSITIVE_YES = 1;
 	
 	public static final String[] wholeWordDesc = new String[] { 
-		Messages.getString("System.Combo.No"), 
-		Messages.getString("System.Combo.Yes") };
+		BaseMessages.getString(PKG, "System.Combo.No"), 
+		BaseMessages.getString(PKG, "System.Combo.Yes") };
 
 	public final static String wholeWordCode[] = { "no", "yes"};
 
@@ -80,8 +82,8 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 
 	
 	public static final String[] useRegExDesc = new String[] { 
-		Messages.getString("System.Combo.No"), 
-		Messages.getString("System.Combo.Yes") };
+		BaseMessages.getString(PKG, "System.Combo.No"), 
+		BaseMessages.getString(PKG, "System.Combo.Yes") };
 
 	public final static String useRegExCode[] = { "no", "yes"};
 
@@ -208,7 +210,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 			}
 		} catch (Exception e) {
 			throw new KettleXMLException(
-					Messages.getString("ReplaceStringMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "ReplaceStringMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -261,7 +263,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 			}
 		} catch (Exception e) {
 			throw new KettleException(
-					Messages.getString("ReplaceStringMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "ReplaceStringMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -279,9 +281,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 				
 			}
 		} catch (Exception e) {
-			throw new KettleException(
-					Messages
-							.getString("ReplaceStringMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "ReplaceStringMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
 		}
 	}
 	 public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep,
@@ -313,7 +313,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 		boolean error_found = false;
 
 		if (prev == null) {
-			error_message += Messages.getString("ReplaceStringMeta.CheckResult.NoInputReceived") + Const.CR; //$NON-NLS-1$
+			error_message += BaseMessages.getString(PKG, "ReplaceStringMeta.CheckResult.NoInputReceived") + Const.CR; //$NON-NLS-1$
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR,
 					error_message, stepinfo);
 			remarks.add(cr);
@@ -326,7 +326,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 				if (v == null) {
 					if (first) {
 						first = false;
-						error_message += Messages.getString("ReplaceStringMeta.CheckResult.MissingInStreamFields") + Const.CR; //$NON-NLS-1$
+						error_message += BaseMessages.getString(PKG, "ReplaceStringMeta.CheckResult.MissingInStreamFields") + Const.CR; //$NON-NLS-1$
 					}
 					error_found = true;
 					error_message += "\t\t" + field + Const.CR; //$NON-NLS-1$
@@ -338,7 +338,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 			} else {
 				cr = new CheckResult(
 						CheckResult.TYPE_RESULT_OK,
-						Messages.getString("ReplaceStringMeta.CheckResult.FoundInStreamFields"), stepinfo); //$NON-NLS-1$
+						BaseMessages.getString(PKG, "ReplaceStringMeta.CheckResult.FoundInStreamFields"), stepinfo); //$NON-NLS-1$
 			}
 			remarks.add(cr);
 
@@ -353,7 +353,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 					if (v.getType() != ValueMeta.TYPE_STRING) {
 						if (first) {
 							first = false;
-							error_message += Messages.getString("ReplaceStringMeta.CheckResult.OperationOnNonStringFields") + Const.CR; //$NON-NLS-1$
+							error_message += BaseMessages.getString(PKG, "ReplaceStringMeta.CheckResult.OperationOnNonStringFields") + Const.CR; //$NON-NLS-1$
 						}
 						error_found = true;
 						error_message += "\t\t" + field + Const.CR; //$NON-NLS-1$
@@ -365,14 +365,14 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 						error_message, stepinfo);
 			} else {
 				cr = new CheckResult(
-						CheckResult.TYPE_RESULT_OK,Messages.getString("ReplaceStringMeta.CheckResult.AllOperationsOnStringFields"), stepinfo); //$NON-NLS-1$
+						CheckResult.TYPE_RESULT_OK,BaseMessages.getString(PKG, "ReplaceStringMeta.CheckResult.AllOperationsOnStringFields"), stepinfo); //$NON-NLS-1$
 			}
 			remarks.add(cr);
 
 			if (fieldInStream.length>0) {
 				for (int idx = 0; idx < fieldInStream.length; idx++) {
 					if (Const.isEmpty(fieldInStream[idx])) {
-						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR,Messages.getString("ReplaceStringMeta.CheckResult.InStreamFieldMissing", new Integer(idx + 1).toString()), stepinfo); //$NON-NLS-1$
+						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR,BaseMessages.getString(PKG, "ReplaceStringMeta.CheckResult.InStreamFieldMissing", new Integer(idx + 1).toString()), stepinfo); //$NON-NLS-1$
 						remarks.add(cr);
 					
 					}
@@ -384,7 +384,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 				for (int jdx = 0; jdx < fieldInStream.length; jdx++) {
 					if (fieldInStream[idx].equals(fieldInStream[jdx])
 							&& idx != jdx && idx < jdx) {
-						error_message = Messages.getString("ReplaceStringMeta.CheckResult.FieldInputError", fieldInStream[idx]); //$NON-NLS-1$
+						error_message = BaseMessages.getString(PKG, "ReplaceStringMeta.CheckResult.FieldInputError", fieldInStream[idx]); //$NON-NLS-1$
 						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR,	error_message, stepinfo);
 						remarks.add(cr);
 					}

@@ -24,6 +24,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 
 /**
@@ -32,10 +33,12 @@ import org.pentaho.di.i18n.LanguageChoice;
  */
 public class StepPlugin extends Plugin<String[]>
 {
+	private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String category;
 	private String errorHelpFile;
     
-    public static final String[] typeDesc = new String[] { Messages.getString("StepPlugin.Type.All.Desc"), Messages.getString("StepPlugin.Type.Native.Desc"), Messages.getString("StepPlugin.Type.Plugin.Desc"), }; 
+    public static final String[] typeDesc = new String[] { BaseMessages.getString(PKG, "StepPlugin.Type.All.Desc"), BaseMessages.getString(PKG, "StepPlugin.Type.Native.Desc"), BaseMessages.getString(PKG, "StepPlugin.Type.Plugin.Desc"), }; 
 
 	private boolean separateClassloaderNeeded;
 
@@ -104,7 +107,7 @@ public class StepPlugin extends Plugin<String[]>
 			return localizedCategory;
 		}
 		if (category == null)
-			return Messages.getString("StepPlugin.Label"); //$NON-NLS-1$
+			return BaseMessages.getString(PKG, "StepPlugin.Label"); //$NON-NLS-1$
 		return category;
 	}
 
@@ -247,17 +250,17 @@ public class StepPlugin extends Plugin<String[]>
     {
     	RowMetaInterface row = new RowMeta();
     	
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Type.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ID.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Description.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ToolTip.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Directory.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.JarFiles.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.IconFile.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ClassName.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Category.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ErrorHelpFile.Label"), ValueMetaInterface.TYPE_STRING));
-    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.SeparateClassloader.Label"), ValueMetaInterface.TYPE_BOOLEAN));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "StepPlugin.Information.Type.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "StepPlugin.Information.ID.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "StepPlugin.Information.Description.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "StepPlugin.Information.ToolTip.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "StepPlugin.Information.Directory.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "StepPlugin.Information.JarFiles.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "StepPlugin.Information.IconFile.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "StepPlugin.Information.ClassName.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "StepPlugin.Information.Category.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "StepPlugin.Information.ErrorHelpFile.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "StepPlugin.Information.SeparateClassloader.Label"), ValueMetaInterface.TYPE_BOOLEAN));
 
         return row;
     }

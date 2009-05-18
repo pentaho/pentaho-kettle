@@ -13,16 +13,17 @@ package org.pentaho.di.trans.steps.http;
 
 import java.io.InputStream;
 
-import org.pentaho.di.core.Const;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.util.URIUtil;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -40,6 +41,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class HTTP extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = HTTPMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private HTTPMeta meta;
 	private HTTPData data;
 	
@@ -60,8 +63,8 @@ public class HTTP extends BaseStep implements StepInterface
 				data.argnrs[i]=rowMeta.indexOfValue(meta.getArgumentField()[i]);
 				if (data.argnrs[i]<0)
 				{
-					logError(Messages.getString("HTTP.Log.ErrorFindingField")+meta.getArgumentField()[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(Messages.getString("HTTP.Exception.CouldnotFindField",meta.getArgumentField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "HTTP.Log.ErrorFindingField")+meta.getArgumentField()[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "HTTP.Exception.CouldnotFindField",meta.getArgumentField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		}
@@ -74,7 +77,7 @@ public class HTTP extends BaseStep implements StepInterface
         String url = determineUrl(rowMeta, rowData);
         try
         {
-            if(log.isDetailed()) logDetailed(Messages.getString("HTTP.Log.Connecting",url));
+            if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "HTTP.Log.Connecting",url));
             
             // Prepare HTTP get
             // 
@@ -88,7 +91,7 @@ public class HTTP extends BaseStep implements StepInterface
                 int result = httpclient.executeMethod(method);
                 
                 // The status code
-                if (log.isDebug()) log.logDebug(toString(), Messages.getString("HTTP.Log.ResponseStatusCode", ""+result));
+                if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTP.Log.ResponseStatusCode", ""+result));
                 
                 // the response
                 InputStream inputStream = method.getResponseBodyAsStream();
@@ -110,7 +113,7 @@ public class HTTP extends BaseStep implements StepInterface
         }
         catch(Exception e)
         {
-            throw new KettleException(Messages.getString("HTTP.Log.UnableGetResult",url), e);
+            throw new KettleException(BaseMessages.getString(PKG, "HTTP.Log.UnableGetResult",url), e);
         }
     }
 
@@ -148,7 +151,7 @@ public class HTTP extends BaseStep implements StepInterface
 	    }
 	    catch(Exception e)
 	    {
-	        throw new KettleException(Messages.getString("HTTP.Log.UnableCreateUrl"), e);
+	        throw new KettleException(BaseMessages.getString(PKG, "HTTP.Log.UnableCreateUrl"), e);
 	    }
     }
 
@@ -176,8 +179,8 @@ public class HTTP extends BaseStep implements StepInterface
 			{
 				if(Const.isEmpty(meta.getUrlField()))
 				{
-					logError(Messages.getString("HTTP.Log.NoField"));
-					throw new KettleException(Messages.getString("HTTP.Log.NoField"));
+					logError(BaseMessages.getString(PKG, "HTTP.Log.NoField"));
+					throw new KettleException(BaseMessages.getString(PKG, "HTTP.Log.NoField"));
 				}
 				
 				// cache the position of the field			
@@ -188,8 +191,8 @@ public class HTTP extends BaseStep implements StepInterface
 					if (data.indexOfUrlField<0)
 					{
 						// The field is unreachable !
-						logError(Messages.getString("HTTP.Log.ErrorFindingField",realUrlfieldName)); 
-						throw new KettleException(Messages.getString("HTTP.Exception.ErrorFindingField",realUrlfieldName)); 
+						logError(BaseMessages.getString(PKG, "HTTP.Log.ErrorFindingField",realUrlfieldName)); 
+						throw new KettleException(BaseMessages.getString(PKG, "HTTP.Exception.ErrorFindingField",realUrlfieldName)); 
 					}
 				}
 			}else
@@ -205,7 +208,7 @@ public class HTTP extends BaseStep implements StepInterface
 				
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isDetailed()) logDetailed(Messages.getString("HTTP.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "HTTP.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
 		}
 		catch(KettleException e)
@@ -217,7 +220,7 @@ public class HTTP extends BaseStep implements StepInterface
 	        }
 			else
 			{
-				logError(Messages.getString("HTTP.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "HTTP.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)

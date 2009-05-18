@@ -24,11 +24,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.Trans;
 
 public class GetStatusServlet extends HttpServlet
 {
+	private static Class<?> PKG = GetStatusServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static final long serialVersionUID = 3634806745372015720L;
     
     public static final String CONTEXT_PATH = "/kettle/status";
@@ -54,7 +57,7 @@ public class GetStatusServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), Messages.getString("GetStatusServlet.StatusRequested"));
+        if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "GetStatusServlet.StatusRequested"));
         response.setStatus(HttpServletResponse.SC_OK);
         
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -105,15 +108,15 @@ public class GetStatusServlet extends HttpServlet
         else
         {    
             out.println("<HTML>");
-            out.println("<HEAD><TITLE>" + Messages.getString("GetStatusServlet.KettleSlaveServerStatus") + "</TITLE></HEAD>");
+            out.println("<HEAD><TITLE>" + BaseMessages.getString(PKG, "GetStatusServlet.KettleSlaveServerStatus") + "</TITLE></HEAD>");
             out.println("<BODY>");
-            out.println("<H1>" + Messages.getString("GetStatusServlet.TopStatus") + "</H1>");
+            out.println("<H1>" + BaseMessages.getString(PKG, "GetStatusServlet.TopStatus") + "</H1>");
     
     
             try
             {
                 out.println("<table border=\"1\">");
-                out.print("<tr> <th>" + Messages.getString("GetStatusServlet.TransName") + "</th> <th>" + Messages.getString("GetStatusServlet.Status") + "</th> </tr>");
+                out.print("<tr> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.TransName") + "</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.Status") + "</th> </tr>");
 
                 for (int i=0;i<transNames.length;i++)
                 {
@@ -129,7 +132,7 @@ public class GetStatusServlet extends HttpServlet
                 out.print("</table><p>");
                 
                 out.println("<table border=\"1\">");
-                out.print("<tr> <th>" + Messages.getString("GetStatusServlet.JobName") + "</th> <th>" + Messages.getString("GetStatusServlet.Status") + "</th> </tr>");
+                out.print("<tr> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.JobName") + "</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.Status") + "</th> </tr>");
 
                 for (int i=0;i<jobNames.length;i++)
                 {

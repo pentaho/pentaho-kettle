@@ -32,6 +32,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -52,6 +53,8 @@ import org.xml.sax.InputSource;
  */
 public class XMLJoin extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = XMLJoinMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private XMLJoinMeta meta;
     private XMLJoinData data;
     
@@ -94,7 +97,7 @@ public class XMLJoin extends BaseStep implements StepInterface
         		}
         	}        	
         	//Throw exception if target field has not been found
-        	if(target_field_id == -1) throw new KettleException(Messages.getString("XMLJoin.Exception.FieldNotFound", meta.getTargetXMLfield()));
+        	if(target_field_id == -1) throw new KettleException(BaseMessages.getString(PKG, "XMLJoin.Exception.FieldNotFound", meta.getTargetXMLfield()));
         	
         	data.outputRowMeta = data.TargetRowSet.getRowMeta().clone();
         	meta.getFields(data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.TargetRowSet.getRowMeta() }, null, this);
@@ -168,7 +171,7 @@ public class XMLJoin extends BaseStep implements StepInterface
 	    		}
 	    	}        	
 	    	//Throw exception if source xml field has not been found
-	    	if(data.iSourceXMLField == -1) throw new KettleException(Messages.getString("XMLJoin.Exception.FieldNotFound", meta.getSourceXMLfield()));
+	    	if(data.iSourceXMLField == -1) throw new KettleException(BaseMessages.getString(PKG, "XMLJoin.Exception.FieldNotFound", meta.getSourceXMLfield()));
         }
         
         if(meta.isComplexJoin() && data.iCompareFieldID == -1){
@@ -180,7 +183,7 @@ public class XMLJoin extends BaseStep implements StepInterface
 	    		}
 	    	}        	
 	    	//Throw exception if source xml field has not been found
-	    	if(data.iCompareFieldID == -1) throw new KettleException(Messages.getString("XMLJoin.Exception.FieldNotFound", meta.getJoinCompareField()));  	
+	    	if(data.iCompareFieldID == -1) throw new KettleException(BaseMessages.getString(PKG, "XMLJoin.Exception.FieldNotFound", meta.getJoinCompareField()));  	
         }
         
         //get XML tags to join

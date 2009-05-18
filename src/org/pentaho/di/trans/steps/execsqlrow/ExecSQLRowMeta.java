@@ -29,6 +29,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
@@ -50,6 +51,8 @@ import org.w3c.dom.Node;
  
 public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = ExecSQLRowMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private DatabaseMeta databaseMeta;
 	private String       sqlField;
 
@@ -208,7 +211,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
         }
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("ExecSQLRowMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "ExecSQLRowMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -260,7 +263,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("ExecSQLRowMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "ExecSQLRowMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -283,7 +286,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("ExecSQLRowMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "ExecSQLRowMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
@@ -293,7 +296,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (databaseMeta!=null)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExecSQLRowMeta.CheckResult.ConnectionExists"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.ConnectionExists"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 
 			Database db = new Database(databaseMeta);
@@ -302,18 +305,18 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 			try
 			{
 				db.connect();
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExecSQLRowMeta.CheckResult.DBConnectionOK"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.DBConnectionOK"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 
 				if (sqlField!=null && sqlField.length()!=0)
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExecSQLRowMeta.CheckResult.SQLFieldNameEntered"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.SQLFieldNameEntered"), stepMeta); //$NON-NLS-1$
 				else
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExecSQLRowMeta.CheckResult.SQLFieldNameMissing"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.SQLFieldNameMissing"), stepMeta); //$NON-NLS-1$
 					remarks.add(cr);
 			}
 			catch(KettleException e)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExecSQLRowMeta.CheckResult.ErrorOccurred")+e.getMessage(), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.ErrorOccurred")+e.getMessage(), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			}
 			finally
@@ -323,18 +326,18 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExecSQLRowMeta.CheckResult.ConnectionNeeded"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.ConnectionNeeded"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 
             if (input.length>0)
             {
-                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExecSQLRowMeta.CheckResult.StepReceivingInfoOK"), stepMeta); //$NON-NLS-1$
+                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.StepReceivingInfoOK"), stepMeta); //$NON-NLS-1$
                 remarks.add(cr);
             }
             else
             {
-                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExecSQLRowMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
+                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
                 remarks.add(cr);
             }
       

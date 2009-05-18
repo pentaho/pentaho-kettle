@@ -32,6 +32,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -55,6 +56,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class CombinationLookup extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = CombinationLookupMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private final static int CREATION_METHOD_AUTOINC  = 1;
     private final static int CREATION_METHOD_SEQUENCE = 2;
 	private final static int CREATION_METHOD_TABLEMAX = 3;
@@ -269,14 +272,14 @@ public class CombinationLookup extends BaseStep implements StepInterface
 						break;
 				    case CREATION_METHOD_SEQUENCE:
 						val_key=data.db.getNextSequenceValue(data.realSchemaName, meta.getSequenceFrom(), meta.getTechnicalKeyField());
-						if (val_key!=null && log.isRowLevel()) logRowlevel(Messages.getString("CombinationLookup.Log.FoundNextSequenceValue")+val_key.toString()); //$NON-NLS-1$
+						if (val_key!=null && log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "CombinationLookup.Log.FoundNextSequenceValue")+val_key.toString()); //$NON-NLS-1$
 						break;
 				}
 
 				val_key = combiInsert( rowMeta, row, val_key, val_hash );
 				incrementLinesOutput();
 
-                if (log.isRowLevel()) logRowlevel(Messages.getString("CombinationLookup.Log.AddedDimensionEntry")+val_key); //$NON-NLS-1$
+                if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "CombinationLookup.Log.AddedDimensionEntry")+val_key); //$NON-NLS-1$
 
 				// Also store it in our Hashtable...
 				addToCache(data.hashRowMeta, hashRow, val_key);
@@ -349,7 +352,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
                 data.keynrs[i]=getInputRowMeta().indexOfValue(meta.getKeyField()[i]);
                 if (data.keynrs[i]<0) // couldn't find field!
                 {
-                    throw new KettleStepException(Messages.getString("CombinationLookup.Exception.FieldNotFound",meta.getKeyField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new KettleStepException(BaseMessages.getString(PKG, "CombinationLookup.Exception.FieldNotFound",meta.getKeyField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
 
@@ -386,12 +389,12 @@ public class CombinationLookup extends BaseStep implements StepInterface
 
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(Messages.getString("CombinationLookup.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "CombinationLookup.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
 		}
 		catch(KettleException e)
 		{
-			logError(Messages.getString("CombinationLookup.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "CombinationLookup.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
@@ -719,14 +722,14 @@ public class CombinationLookup extends BaseStep implements StepInterface
 					data.db.connect(getPartitionID()); 
 				}
 
-				if (log.isDetailed()) logDetailed(Messages.getString("CombinationLookup.Log.ConnectedToDB")); //$NON-NLS-1$
+				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "CombinationLookup.Log.ConnectedToDB")); //$NON-NLS-1$
 				data.db.setCommit(meta.getCommitSize());
 
 				return true;
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				logError(Messages.getString("CombinationLookup.Log.UnableToConnectDB")+dbe.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "CombinationLookup.Log.UnableToConnectDB")+dbe.getMessage()); //$NON-NLS-1$
 			}
 		}
 		return false;
@@ -753,7 +756,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
         }
         catch(KettleDatabaseException e)
         {
-            logError(Messages.getString("CombinationLookup.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(BaseMessages.getString(PKG, "CombinationLookup.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
         }
         finally 
         {

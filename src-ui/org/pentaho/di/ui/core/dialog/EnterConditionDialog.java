@@ -32,6 +32,7 @@ import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -48,6 +49,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  */
 public class EnterConditionDialog extends Dialog 
 {
+	private static Class<?> PKG = EnterConditionDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private PropsUI props;
 	
 	private Shell     shell;
@@ -72,7 +75,7 @@ public class EnterConditionDialog extends Dialog
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
-		shell.setText(Messages.getString("EnterConditionDialog.Title"));
+		shell.setText(BaseMessages.getString(PKG, "EnterConditionDialog.Title"));
 		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 		
 		FormLayout formLayout = new FormLayout ();
@@ -89,10 +92,10 @@ public class EnterConditionDialog extends Dialog
  		
  		// Buttons
 		wOK = new Button(shell, SWT.PUSH); 
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 	
 		FormData fdCond      = new FormData(); 
 		

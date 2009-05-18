@@ -26,16 +26,19 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.database.dialog.Messages;
 
 
 
 public class EnterSearchDialog
 {
+	private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static final PropsUI props = PropsUI.getInstance();
     private Shell parentShell;
     private Shell shell;
@@ -76,7 +79,7 @@ public class EnterSearchDialog
         shell = new Shell(parentShell,  SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
         props.setLook(shell);
 		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
-        shell.setText(Messages.getString("EnterSearchDialog.Shell.Title"));
+        shell.setText(BaseMessages.getString(PKG, "EnterSearchDialog.Shell.Title"));
         
         FormLayout formLayout = new FormLayout ();
         formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -88,7 +91,7 @@ public class EnterSearchDialog
         
         // Search Steps?...
         wlStep=new Label(shell, SWT.RIGHT);
-        wlStep.setText(Messages.getString("EnterSearchDialog.Step.Label"));
+        wlStep.setText(BaseMessages.getString(PKG, "EnterSearchDialog.Step.Label"));
         props.setLook(wlStep);
         FormData fdlStep=new FormData();
         fdlStep.left = new FormAttachment(0, 0);
@@ -98,7 +101,7 @@ public class EnterSearchDialog
         
         wStep=new Button(shell, SWT.CHECK );
         props.setLook(wStep);
-        wStep.setToolTipText(Messages.getString("EnterSearchDialog.Step.Tooltip"));
+        wStep.setToolTipText(BaseMessages.getString(PKG, "EnterSearchDialog.Step.Tooltip"));
         FormData fdStep=new FormData();
         fdStep.left = new FormAttachment(middle, 0);
         fdStep.top  = new FormAttachment(0, 0);
@@ -107,7 +110,7 @@ public class EnterSearchDialog
 
         // Search databases...
         wlDB=new Label(shell, SWT.RIGHT);
-        wlDB.setText(Messages.getString("EnterSearchDialog.DB.Label"));
+        wlDB.setText(BaseMessages.getString(PKG, "EnterSearchDialog.DB.Label"));
         props.setLook(wlDB);
         FormData fdlDB=new FormData();
         fdlDB.left = new FormAttachment(0, 0);
@@ -116,7 +119,7 @@ public class EnterSearchDialog
         wlDB.setLayoutData(fdlDB);
         wDB=new Button(shell, SWT.CHECK );
         props.setLook(wDB);
-        wDB.setToolTipText(Messages.getString("EnterSearchDialog.DB.Tooltip"));
+        wDB.setToolTipText(BaseMessages.getString(PKG, "EnterSearchDialog.DB.Tooltip"));
         FormData fdDB=new FormData();
         fdDB.left = new FormAttachment(middle, 0);
         fdDB.top  = new FormAttachment(wStep, margin);
@@ -125,7 +128,7 @@ public class EnterSearchDialog
 
         // Search notes...
         wlNote=new Label(shell, SWT.RIGHT);
-        wlNote.setText(Messages.getString("EnterSearchDialog.Note.Label"));
+        wlNote.setText(BaseMessages.getString(PKG, "EnterSearchDialog.Note.Label"));
         props.setLook(wlNote);
         FormData fdlNote=new FormData();
         fdlNote.left = new FormAttachment(0, 0);
@@ -134,7 +137,7 @@ public class EnterSearchDialog
         wlNote.setLayoutData(fdlNote);
         wNote=new Button(shell, SWT.CHECK );
         props.setLook(wNote);
-        wNote.setToolTipText(Messages.getString("EnterSearchDialog.Note.Tooltip"));
+        wNote.setToolTipText(BaseMessages.getString(PKG, "EnterSearchDialog.Note.Tooltip"));
         FormData fdNote=new FormData();
         fdNote.left = new FormAttachment(middle, 0);
         fdNote.top  = new FormAttachment(wDB, margin);
@@ -143,7 +146,7 @@ public class EnterSearchDialog
 
         // Filter line
         wlFilter=new Label(shell, SWT.RIGHT);
-        wlFilter.setText(Messages.getString("EnterSearchDialog.FilterSelection.Label")); //Select filter 
+        wlFilter.setText(BaseMessages.getString(PKG, "EnterSearchDialog.FilterSelection.Label")); //Select filter 
         props.setLook(wlFilter);
         FormData fdlFilter=new FormData();
         fdlFilter.left = new FormAttachment(0, 0);
@@ -159,11 +162,11 @@ public class EnterSearchDialog
         wFilter.setLayoutData(fdFilter);
 
         Button wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wOK.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { ok(); } } );
         
         Button wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         wCancel.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { cancel(); } } );
         
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, Const.MARGIN, wFilter);

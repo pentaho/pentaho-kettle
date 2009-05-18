@@ -17,10 +17,12 @@ import java.util.Date;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStep;
 
 
 public class FileErrorHandlerContentLineNumber extends AbstractFileErrorHandler {
+	private static Class<?> PKG = FileErrorHandlerContentLineNumber.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	public FileErrorHandlerContentLineNumber(Date date,
 			String destinationDirectory, String fileExtension, String encoding, BaseStep baseStep) {
@@ -33,7 +35,7 @@ public class FileErrorHandlerContentLineNumber extends AbstractFileErrorHandler 
 			getWriter(filePart).write(String.valueOf(lineNr));
 			getWriter(filePart).write(Const.CR);
 		} catch (Exception e) {
-			throw new KettleException(Messages.getString("FileErrorHandlerContentLineNumber.Exception.CouldNotCreateWriteLine") + lineNr, //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "FileErrorHandlerContentLineNumber.Exception.CouldNotCreateWriteLine") + lineNr, //$NON-NLS-1$
 					e);
 
 		}

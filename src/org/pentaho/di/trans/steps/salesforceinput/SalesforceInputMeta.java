@@ -22,25 +22,24 @@
 
 package org.pentaho.di.trans.steps.salesforceinput;
 
-import org.w3c.dom.Node;
-
 import java.util.List;
 import java.util.Map;
 
-import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -49,11 +48,13 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 
 public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterface
 {	
-	
+	private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public String TargetDefaultURL= "https://www.salesforce.com/services/Soap/u/10.0";
  	 
 	/** Flag indicating that we should include the generated SQL in the output */
@@ -668,7 +669,7 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("SalesforceInputMeta.Exception.ErrorReadingRepository"), e);
+			throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputMeta.Exception.ErrorReadingRepository"), e);
 		}
 	}
 	
@@ -728,7 +729,7 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("SalesforceInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
+			throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
 		}
 	}
 	
@@ -739,63 +740,63 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 
 		// See if we get input...
 		if (input.length>0)	
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SalesforceInputMeta.CheckResult.NoInputExpected"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoInputExpected"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SalesforceInputMeta.CheckResult.NoInput"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoInput"), stepMeta);
 		remarks.add(cr);
 		
 		// check URL
 		if(Const.isEmpty(targeturl))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SalesforceInputMeta.CheckResult.NoURL"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoURL"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SalesforceInputMeta.CheckResult.URLOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.URLOk"), stepMeta);
 		remarks.add(cr);
 		
 		// check username
 		if(Const.isEmpty(username))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SalesforceInputMeta.CheckResult.NoUsername"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoUsername"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SalesforceInputMeta.CheckResult.UsernameOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.UsernameOk"), stepMeta);
 		remarks.add(cr);
 		
 		// check module
 		if(Const.isEmpty(module))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SalesforceInputMeta.CheckResult.NoModule"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoModule"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SalesforceInputMeta.CheckResult.ModuleOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.ModuleOk"), stepMeta);
 		remarks.add(cr);
 		
 		// check return fields
 		if(inputFields.length==0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SalesforceInputMeta.CheckResult.NoFields"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoFields"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SalesforceInputMeta.CheckResult.FieldsOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.FieldsOk"), stepMeta);
 		remarks.add(cr);
 		
 		// check additionals fields
 		if(includeTargetURL && Const.isEmpty(targetURLField))
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SalesforceInputMeta.CheckResult.NoTargetURLField"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoTargetURLField"), stepMeta);
 			remarks.add(cr);
 		}
 		if(includeSQL && Const.isEmpty(sqlField))
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SalesforceInputMeta.CheckResult.NoSQLField"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoSQLField"), stepMeta);
 			remarks.add(cr);
 		}
 		if(includeModule && Const.isEmpty(moduleField))
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SalesforceInputMeta.CheckResult.NoModuleField"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoModuleField"), stepMeta);
 			remarks.add(cr);
 		}
 		if(includeTimestamp && Const.isEmpty(timestampField))
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SalesforceInputMeta.CheckResult.NoTimestampField"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoTimestampField"), stepMeta);
 			remarks.add(cr);
 		}
 		if(includeRowNumber && Const.isEmpty(rowNumberField))
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SalesforceInputMeta.CheckResult.NoRowNumberField"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoRowNumberField"), stepMeta);
 			remarks.add(cr);
 		}
 	}

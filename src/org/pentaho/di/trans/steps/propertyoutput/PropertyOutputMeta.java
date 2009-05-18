@@ -19,20 +19,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
 import org.apache.commons.vfs.FileObject;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -44,6 +44,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 /**
  * Output rows to Properties file and create a file.
@@ -55,7 +56,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  
 public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterface
 {
-		
+	private static Class<?> PKG = PropertyOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
   
     private String 		keyfield;
     private String 		valuefield;
@@ -440,12 +441,12 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 		// Now see what we can find as previous step...
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("PropertyOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "PropertyOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("PropertyOutputMeta.CheckResult.NoFields"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "PropertyOutputMeta.CheckResult.NoFields"), stepMeta);
 			remarks.add(cr);
 		}
 				
@@ -454,24 +455,24 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("PropertyOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "PropertyOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("PropertyOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "PropertyOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
 			remarks.add(cr);
 		}
 		
 		// Check if filename is given
 		if(!Const.isEmpty(fileName))
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("PropertyOutputMeta.CheckResult.FilenameOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "PropertyOutputMeta.CheckResult.FilenameOk"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("PropertyOutputMeta.CheckResult.FilenameError"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "PropertyOutputMeta.CheckResult.FilenameError"), stepMeta);
 			remarks.add(cr);
 		}
 		
@@ -480,12 +481,12 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 		ValueMetaInterface v = prev.searchValueMeta(keyfield);
 		if(v==null)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("PropertyOutputMeta.CheckResult.KeyFieldMissing"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "PropertyOutputMeta.CheckResult.KeyFieldMissing"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("PropertyOutputMeta.CheckResult.KeyFieldOk"), stepMeta); 
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "PropertyOutputMeta.CheckResult.KeyFieldOk"), stepMeta); 
 			remarks.add(cr);
 		}
 		
@@ -494,12 +495,12 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 		v = prev.searchValueMeta(valuefield);
 		if(v==null)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("PropertyOutputMeta.CheckResult.ValueFieldMissing"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "PropertyOutputMeta.CheckResult.ValueFieldMissing"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("PropertyOutputMeta.CheckResult.ValueFieldOk"), stepMeta); 
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "PropertyOutputMeta.CheckResult.ValueFieldOk"), stepMeta); 
 			remarks.add(cr);
 		}
 		

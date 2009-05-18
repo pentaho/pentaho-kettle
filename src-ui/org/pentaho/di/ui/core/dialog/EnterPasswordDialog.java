@@ -29,11 +29,11 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.dialog.Messages;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.core.PropsUI;
 
 /**
  * A dialog that asks for a password.
@@ -43,6 +43,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class EnterPasswordDialog extends Dialog
 {
+	private static Class<?> PKG = EnterPasswordDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private String title, message;
 		
 	private Label        wlDesc;
@@ -135,9 +137,9 @@ public class EnterPasswordDialog extends Dialog
 		if (!readonly)
 		{
 			wOK=new Button(shell, SWT.PUSH);
-			wOK.setText(Messages.getString("System.Button.OK"));
+			wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 			wCancel=new Button(shell, SWT.PUSH);
-			wCancel.setText(Messages.getString("System.Button.Cancel"));
+			wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 			fdOK=new FormData();
 			fdOK.left       = new FormAttachment(33, 0);
 			fdOK.bottom     = new FormAttachment(100, 0);
@@ -157,7 +159,7 @@ public class EnterPasswordDialog extends Dialog
 		else
 		{
 			wOK=new Button(shell, SWT.PUSH);
-			wOK.setText(Messages.getString("System.Button.Close"));
+			wOK.setText(BaseMessages.getString(PKG, "System.Button.Close"));
 			fdOK=new FormData();
 			fdOK.left       = new FormAttachment(50, 0);
 			fdOK.bottom     = new FormAttachment(100, 0);

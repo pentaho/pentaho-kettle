@@ -59,6 +59,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
@@ -66,7 +67,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.ldapinput.LDAPInputField;
 import org.pentaho.di.trans.steps.ldapinput.LDAPInputMeta;
-import org.pentaho.di.trans.steps.ldapinput.Messages;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -80,6 +80,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
@@ -191,14 +193,14 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("LDAPInputDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "LDAPInputDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -222,7 +224,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		// START OF GENERAL TAB   ///
 		//////////////////////////
 		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
-		wGeneralTab.setText(Messages.getString("LDAPInputDialog.General.Tab"));
+		wGeneralTab.setText(BaseMessages.getString(PKG, "LDAPInputDialog.General.Tab"));
 		
 		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wGeneralComp);
@@ -238,7 +240,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		wConnectionGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wConnectionGroup);
-		wConnectionGroup.setText(Messages.getString("LDAPInputDialog.Group.ConnectionGroup.Label"));
+		wConnectionGroup.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Group.ConnectionGroup.Label"));
 		
 		FormLayout connectiongroupLayout = new FormLayout();
 		connectiongroupLayout.marginWidth = 10;
@@ -247,7 +249,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Host line
 		wlHost=new Label(wConnectionGroup, SWT.RIGHT);
-		wlHost.setText(Messages.getString("LDAPInputDialog.Host.Label"));
+		wlHost.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Host.Label"));
  		props.setLook(wlHost);
 		fdlHost=new FormData();
 		fdlHost.left = new FormAttachment(0, 0);
@@ -255,7 +257,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlHost.right= new FormAttachment(middle, -margin);
 		wlHost.setLayoutData(fdlHost);
 		wHost=new TextVar(transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wHost.setToolTipText(Messages.getString("LDAPInputDialog.Host.Tooltip"));
+		wHost.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.Host.Tooltip"));
 		props.setLook(wHost);
 		wHost.addModifyListener(lsMod);
 		fdHost=new FormData();
@@ -266,7 +268,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// Port line
 		wlPort=new Label(wConnectionGroup, SWT.RIGHT);
-		wlPort.setText(Messages.getString("LDAPInputDialog.Port.Label"));
+		wlPort.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Port.Label"));
  		props.setLook(wlPort);
 		fdlPort=new FormData();
 		fdlPort.left = new FormAttachment(0, 0);
@@ -275,7 +277,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wlPort.setLayoutData(fdlPort);
 		wPort=new TextVar(transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wPort);
-		wPort.setToolTipText(Messages.getString("LDAPInputDialog.Port.Tooltip"));
+		wPort.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.Port.Tooltip"));
 		wPort.addModifyListener(lsMod);
 		fdPort=new FormData();
 		fdPort.left = new FormAttachment(middle, 0);
@@ -285,7 +287,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// using authentication ?
 		wlusingAuthentication=new Label(wConnectionGroup, SWT.RIGHT);
-		wlusingAuthentication.setText(Messages.getString("LDAPInputDialog.usingAuthentication.Label"));
+		wlusingAuthentication.setText(BaseMessages.getString(PKG, "LDAPInputDialog.usingAuthentication.Label"));
  		props.setLook(wlusingAuthentication);
 		fdlusingAuthentication=new FormData();
 		fdlusingAuthentication.left = new FormAttachment(0, 0);
@@ -294,7 +296,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wlusingAuthentication.setLayoutData(fdlusingAuthentication);
 		wusingAuthentication=new Button(wConnectionGroup, SWT.CHECK );
  		props.setLook(wusingAuthentication);
-		wusingAuthentication.setToolTipText(Messages.getString("LDAPInputDialog.usingAuthentication.Tooltip"));
+		wusingAuthentication.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.usingAuthentication.Tooltip"));
 		fdRownum=new FormData();
 		fdRownum.left = new FormAttachment(middle, 0);
 		fdRownum.top  = new FormAttachment(wPort, margin);
@@ -311,7 +313,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	
 		// UserName line
 		wlUserName=new Label(wConnectionGroup, SWT.RIGHT);
-		wlUserName.setText(Messages.getString("LDAPInputDialog.Username.Label"));
+		wlUserName.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Username.Label"));
  		props.setLook(wlUserName);
 		fdlUserName=new FormData();
 		fdlUserName.left = new FormAttachment(0, 0);
@@ -320,7 +322,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wlUserName.setLayoutData(fdlUserName);
 		wUserName=new TextVar(transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wUserName);
-		wUserName.setToolTipText(Messages.getString("LDAPInputDialog.Username.Tooltip"));
+		wUserName.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.Username.Tooltip"));
 		wUserName.addModifyListener(lsMod);
 		fdUserName=new FormData();
 		fdUserName.left = new FormAttachment(middle, 0);
@@ -330,7 +332,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Password line
 		wlPassword=new Label(wConnectionGroup, SWT.RIGHT);
-		wlPassword.setText(Messages.getString("LDAPInputDialog.Password.Label"));
+		wlPassword.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Password.Label"));
  		props.setLook(wlPassword);
 		fdlPassword=new FormData();
 		fdlPassword.left = new FormAttachment(0, 0);
@@ -338,7 +340,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlPassword.right= new FormAttachment(middle, -margin);
 		wlPassword.setLayoutData(fdlPassword);
 		wPassword=new TextVar(transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wPassword.setToolTipText(Messages.getString("LDAPInputDialog.Password.Tooltip"));
+		wPassword.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.Password.Tooltip"));
  		props.setLook(wPassword);
         wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
@@ -352,10 +354,10 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// Test LDAP connection button
 		wTest=new Button(wConnectionGroup,SWT.PUSH);
-		wTest.setText(Messages.getString("LDAPInputDialog.TestConnection.Label"));
+		wTest.setText(BaseMessages.getString(PKG, "LDAPInputDialog.TestConnection.Label"));
  		props.setLook(wTest);
 		fdTest=new FormData();
-		wTest.setToolTipText(Messages.getString("LDAPInputDialog.TestConnection.Tooltip"));
+		wTest.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.TestConnection.Tooltip"));
 		//fdTest.left = new FormAttachment(middle, 0);
 		fdTest.top  = new FormAttachment(wPassword, margin);
 		fdTest.right= new FormAttachment(100, 0);
@@ -378,7 +380,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		wSearchGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wSearchGroup);
-		wSearchGroup.setText(Messages.getString("LDAPInputDialog.Group.SearchGroup.Label"));
+		wSearchGroup.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Group.SearchGroup.Label"));
 		
 		FormLayout searchgroupLayout = new FormLayout();
 		searchgroupLayout.marginWidth = 10;
@@ -387,7 +389,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// SearchBase line
 		wlSearchBase=new Label(wSearchGroup, SWT.RIGHT);
-		wlSearchBase.setText(Messages.getString("LDAPInputDialog.SearchBase.Label"));
+		wlSearchBase.setText(BaseMessages.getString(PKG, "LDAPInputDialog.SearchBase.Label"));
  		props.setLook(wlSearchBase);
 		fdlSearchBase=new FormData();
 		fdlSearchBase.left = new FormAttachment(0, 0);
@@ -396,7 +398,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wlSearchBase.setLayoutData(fdlSearchBase);
 		wSearchBase=new TextVar(transMeta, wSearchGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wSearchBase);
-		wSearchBase.setToolTipText(Messages.getString("LDAPInputDialog.SearchBase.Tooltip"));
+		wSearchBase.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.SearchBase.Tooltip"));
 		wSearchBase.addModifyListener(lsMod);
 		fdSearchBase=new FormData();
 		fdSearchBase.left = new FormAttachment(middle, 0);
@@ -407,7 +409,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// Filter String
         wlFilterString = new Label(wSearchGroup, SWT.RIGHT);
-        wlFilterString.setText(Messages.getString("LDAPInputDialog.FilterString.Label"));
+        wlFilterString.setText(BaseMessages.getString(PKG, "LDAPInputDialog.FilterString.Label"));
         props.setLook(wlFilterString);
         fdlFilterString = new FormData();
         fdlFilterString.left = new FormAttachment(0, 0);
@@ -416,7 +418,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
         wlFilterString.setLayoutData(fdlFilterString);
 
         wFilterString = new Text(wSearchGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-        wFilterString.setToolTipText(Messages.getString("LDAPInputDialog.FilterString.Tooltip"));
+        wFilterString.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.FilterString.Tooltip"));
         props.setLook(wFilterString);
         wFilterString.addModifyListener(lsMod);
         fdFilterString = new FormData();
@@ -460,7 +462,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		// START OF CONTENT TAB///
 		///
 		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-		wContentTab.setText(Messages.getString("LDAPInputDialog.Content.Tab"));
+		wContentTab.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Content.Tab"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;
@@ -479,7 +481,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		wAdditionalGroup = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wAdditionalGroup);
-		wAdditionalGroup.setText(Messages.getString("LDAPInputDialog.Group.AdditionalGroup.Label"));
+		wAdditionalGroup.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Group.AdditionalGroup.Label"));
 		
 		FormLayout additionalgroupLayout = new FormLayout();
 		additionalgroupLayout.marginWidth = 10;
@@ -490,7 +492,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	
 		
 		wlInclRownum=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlInclRownum.setText(Messages.getString("LDAPInputDialog.InclRownum.Label"));
+		wlInclRownum.setText(BaseMessages.getString(PKG, "LDAPInputDialog.InclRownum.Label"));
  		props.setLook(wlInclRownum);
 		fdlInclRownum=new FormData();
 		fdlInclRownum.left = new FormAttachment(0, 0);
@@ -499,14 +501,14 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wlInclRownum.setLayoutData(fdlInclRownum);
 		wInclRownum=new Button(wAdditionalGroup, SWT.CHECK );
  		props.setLook(wInclRownum);
-		wInclRownum.setToolTipText(Messages.getString("LDAPInputDialog.InclRownum.Tooltip"));
+		wInclRownum.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.InclRownum.Tooltip"));
 		fdRownum=new FormData();
 		fdRownum.left = new FormAttachment(middle, 0);
 		fdRownum.top  = new FormAttachment(0, margin);
 		wInclRownum.setLayoutData(fdRownum);
 
 		wlInclRownumField=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlInclRownumField.setText(Messages.getString("LDAPInputDialog.InclRownumField.Label"));
+		wlInclRownumField.setText(BaseMessages.getString(PKG, "LDAPInputDialog.InclRownumField.Label"));
  		props.setLook(wlInclRownumField);
 		fdlInclRownumField=new FormData();
 		fdlInclRownumField.left = new FormAttachment(wInclRownum, margin);
@@ -536,7 +538,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		
 		wlLimit=new Label(wContentComp, SWT.RIGHT);
-		wlLimit.setText(Messages.getString("LDAPInputDialog.Limit.Label"));
+		wlLimit.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Limit.Label"));
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -554,7 +556,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// TimeLimit
 		wlTimeLimit=new Label(wContentComp, SWT.RIGHT);
-		wlTimeLimit.setText(Messages.getString("LDAPInputDialog.TimeLimit.Label"));
+		wlTimeLimit.setText(BaseMessages.getString(PKG, "LDAPInputDialog.TimeLimit.Label"));
  		props.setLook(wlTimeLimit);
 		fdlTimeLimit=new FormData();
 		fdlTimeLimit.left = new FormAttachment(0, 0);
@@ -563,7 +565,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wlTimeLimit.setLayoutData(fdlTimeLimit);
 		wTimeLimit=new TextVar(transMeta,wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTimeLimit);
- 		wTimeLimit.setToolTipText(Messages.getString("LDAPInputDialog.TimeLimit.Tooltip"));
+ 		wTimeLimit.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.TimeLimit.Tooltip"));
 		wTimeLimit.addModifyListener(lsMod);
 		
 		fdTimeLimit=new FormData();
@@ -574,7 +576,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// Multi valued field separator
 		wlMultiValuedSeparator=new Label(wContentComp, SWT.RIGHT);
-		wlMultiValuedSeparator.setText(Messages.getString("LDAPInputDialog.MultiValuedSeparator.Label"));
+		wlMultiValuedSeparator.setText(BaseMessages.getString(PKG, "LDAPInputDialog.MultiValuedSeparator.Label"));
  		props.setLook(wlMultiValuedSeparator);
 		fdlMultiValuedSeparator=new FormData();
 		fdlMultiValuedSeparator.left = new FormAttachment(0, 0);
@@ -583,7 +585,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wlMultiValuedSeparator.setLayoutData(fdlMultiValuedSeparator);
 		wMultiValuedSeparator=new TextVar(transMeta,wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wMultiValuedSeparator);
- 		wMultiValuedSeparator.setToolTipText(Messages.getString("LDAPInputDialog.MultiValuedSeparator.Tooltip"));
+ 		wMultiValuedSeparator.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.MultiValuedSeparator.Tooltip"));
 		wMultiValuedSeparator.addModifyListener(lsMod);
 		fdMultiValuedSeparator=new FormData();
 		fdMultiValuedSeparator.left = new FormAttachment(middle, 0);
@@ -609,7 +611,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		// Fields tab...
 		//
 		wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
-		wFieldsTab.setText(Messages.getString("LDAPInputDialog.Fields.Tab"));
+		wFieldsTab.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Fields.Tab"));
 		
 		FormLayout fieldsLayout = new FormLayout ();
 		fieldsLayout.marginWidth  = Const.FORM_MARGIN;
@@ -620,7 +622,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
  		props.setLook(wFieldsComp);
 		
  		wGet=new Button(wFieldsComp, SWT.PUSH);
-		wGet.setText(Messages.getString("LDAPInputDialog.GetFields.Button"));
+		wGet.setText(BaseMessages.getString(PKG, "LDAPInputDialog.GetFields.Button"));
 		fdGet=new FormData();
 		fdGet.left=new FormAttachment(50, 0);
 		fdGet.bottom =new FormAttachment(100, 0);
@@ -631,50 +633,50 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		ColumnInfo[] colinf=new ColumnInfo[]
             {
 			 new ColumnInfo(
-         Messages.getString("LDAPInputDialog.FieldsTable.Name.Column"),
+         BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Name.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
-         new ColumnInfo(Messages.getString("LDAPInputDialog.FieldsTable.Attribute.Column"),ColumnInfo.COLUMN_TYPE_TEXT,false),
-		 new ColumnInfo(Messages.getString("LDAPInputDialog.FieldsTable.Type.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,ValueMeta.getTypes(),true ),
-		 new ColumnInfo(Messages.getString("LDAPInputDialog.FieldsTable.Format.Column"),
+         new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Attribute.Column"),ColumnInfo.COLUMN_TYPE_TEXT,false),
+		 new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Type.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,ValueMeta.getTypes(),true ),
+		 new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Format.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,Const.getConversionFormats()),
          new ColumnInfo(
-         Messages.getString("LDAPInputDialog.FieldsTable.Length.Column"),
+         BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Length.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("LDAPInputDialog.FieldsTable.Precision.Column"),
+         BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Precision.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("LDAPInputDialog.FieldsTable.Currency.Column"),
+         BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Currency.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("LDAPInputDialog.FieldsTable.Decimal.Column"),
+         BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Decimal.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("LDAPInputDialog.FieldsTable.Group.Column"),
+         BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Group.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("LDAPInputDialog.FieldsTable.TrimType.Column"),
+         BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.TrimType.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
          LDAPInputField.trimTypeDesc,
          true ),
 			 new ColumnInfo(
-         Messages.getString("LDAPInputDialog.FieldsTable.Repeat.Column"),
+         BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Repeat.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
-         new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") },
+         new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") },
          true ),
      
     };
 		
 		colinf[0].setUsingVariables(true);
-		colinf[0].setToolTip(Messages.getString("LDAPInputDialog.FieldsTable.Name.Column.Tooltip"));
+		colinf[0].setToolTip(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Name.Column.Tooltip"));
 		colinf[1].setUsingVariables(true);
-		colinf[1].setToolTip(Messages.getString("LDAPInputDialog.FieldsTable.Attribute.Column.Tooltip"));
+		colinf[1].setToolTip(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Attribute.Column.Tooltip"));
 		
 		wFields=new TableView(transMeta,wFieldsComp, 
 						      SWT.FULL_SELECTION | SWT.MULTI, 
@@ -709,13 +711,13 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wTabFolder.setLayoutData(fdTabFolder);
 		
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 
 		wPreview=new Button(shell, SWT.PUSH);
-		wPreview.setText(Messages.getString("LDAPInputDialog.Button.PreviewRows"));
+		wPreview.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Button.PreviewRows"));
 		
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
 
@@ -804,16 +806,16 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			{
 				
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-				mb.setMessage(Messages.getString("LDAPInputDialog.Connected.OK") +Const.CR); //$NON-NLS-1$
-				mb.setText(Messages.getString("LDAPInputDialog.Connected.Title.Ok")); //$NON-NLS-1$
+				mb.setMessage(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.OK") +Const.CR); //$NON-NLS-1$
+				mb.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.Title.Ok")); //$NON-NLS-1$
 				mb.open();
 				
 			}
 			else
 			{	
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(Messages.getString("LDAPInputDialog.Connected.NOK.DirecttoryContextNull"));
-				mb.setText(Messages.getString("LDAPInputDialog.Connected.Title.Error")); //$NON-NLS-1$
+				mb.setMessage(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.NOK.DirecttoryContextNull"));
+				mb.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.Title.Error")); //$NON-NLS-1$
 				mb.open(); 
 				
 			}
@@ -823,8 +825,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		catch(Exception e)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("LDAPInputDialog.Connected.NOK",e.getMessage()));
-			mb.setText(Messages.getString("LDAPInputDialog.Connected.Title.Error")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.NOK",e.getMessage()));
+			mb.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.Title.Error")); //$NON-NLS-1$
 			mb.open(); 
 		} 
 	}
@@ -911,11 +913,11 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("LDAPInputDialog.ErrorGettingColums.DialogTitle"), Messages.getString("LDAPInputDialog.ErrorGettingColums.DialogMessage"), e);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "LDAPInputDialog.ErrorGettingColums.DialogTitle"), BaseMessages.getString(PKG, "LDAPInputDialog.ErrorGettingColums.DialogMessage"), e);
         }
     	catch(Exception e)
 		{
-    		 new ErrorDialog(shell, Messages.getString("LDAPInputDialog.ErrorGettingColums.DialogTitle"), Messages.getString("LDAPInputDialog.ErrorGettingColums.DialogMessage"), e);
+    		 new ErrorDialog(shell, BaseMessages.getString(PKG, "LDAPInputDialog.ErrorGettingColums.DialogTitle"), BaseMessages.getString(PKG, "LDAPInputDialog.ErrorGettingColums.DialogMessage"), e);
 
 		}  
 	}
@@ -1002,7 +1004,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		if (in.getSearchBase()!= null)  wSearchBase.setText(in.getSearchBase());
 		
 		
-		log.logDebug(toString(), Messages.getString("LDAPInputDialog.Log.GettingFieldsInfo"));
+		log.logDebug(toString(), BaseMessages.getString(PKG, "LDAPInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
 		    LDAPInputField field = in.getInputFields()[i];
@@ -1020,7 +1022,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     			String group    = field.getGroupSymbol();
     			String decim    = field.getDecimalSymbol();
     			String trim     = field.getTrimTypeDesc();
-    			String rep      = field.isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No");
+    			String rep      = field.isRepeated()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No");
     			
                 if (name    !=null) item.setText( 1, name);
                 if (xpath   !=null) item.setText( 2, xpath);
@@ -1063,7 +1065,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("LDAPInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("LDAPInputDialog.ErrorParsingData.DialogMessage"), e);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "LDAPInputDialog.ErrorParsingData.DialogTitle"), BaseMessages.getString(PKG, "LDAPInputDialog.ErrorParsingData.DialogMessage"), e);
         }
 		dispose();
 	}
@@ -1109,7 +1111,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			field.setDecimalSymbol( item.getText(8) );
 			field.setGroupSymbol( item.getText(9) );
 			field.setTrimType( LDAPInputField.getTrimTypeByDesc(item.getText(10)) );
-			field.setRepeated( Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(11)) );		
+			field.setRepeated( BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(11)) );		
             
 			in.getInputFields()[i] = field;
 		}	
@@ -1137,7 +1139,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
         
             TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
             
-            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("LDAPInputDialog.NumberRows.DialogTitle"), Messages.getString("LDAPInputDialog.NumberRows.DialogMessage"));
+            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "LDAPInputDialog.NumberRows.DialogTitle"), BaseMessages.getString(PKG, "LDAPInputDialog.NumberRows.DialogMessage"));
             int previewSize = numberDialog.open();
             if (previewSize>0)
             {
@@ -1151,8 +1153,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
                     
                     if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                     {
-                    	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
-                    			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+                    	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
+                    			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true );
                     	etd.setReadOnly();
                     	etd.open();
                     }
@@ -1167,7 +1169,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("LDAPInputDialog.ErrorPreviewingData.DialogTitle"), Messages.getString("LDAPInputDialog.ErrorPreviewingData.DialogMessage"), e);
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "LDAPInputDialog.ErrorPreviewingData.DialogTitle"), BaseMessages.getString(PKG, "LDAPInputDialog.ErrorPreviewingData.DialogMessage"), e);
        }
 	}
 	

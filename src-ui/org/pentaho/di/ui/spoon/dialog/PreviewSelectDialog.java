@@ -31,20 +31,22 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.ui.spoon.dialog.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 public class PreviewSelectDialog extends Dialog
 {
+	private static Class<?> PKG = PreviewSelectDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlFields;
 	
 	private TableView    wFields;
@@ -84,13 +86,13 @@ public class PreviewSelectDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("PreviewSelectDialog.Dialog.PreviewSelection.Title")); //Preview selection screen
+		shell.setText(BaseMessages.getString(PKG, "PreviewSelectDialog.Dialog.PreviewSelection.Title")); //Preview selection screen
 		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 			
 		int margin = Const.MARGIN;
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("PreviewSelectDialog.Label.Steps")); //Steps: 
+		wlFields.setText(BaseMessages.getString(PKG, "PreviewSelectDialog.Label.Steps")); //Steps: 
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -100,8 +102,8 @@ public class PreviewSelectDialog extends Dialog
 		final int FieldsRows=trans.nrUsedSteps();
 		
 		ColumnInfo[] colinf = {
-		  new ColumnInfo( Messages.getString("PreviewSelectDialog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
-		  new ColumnInfo( Messages.getString("PreviewSelectDialog.Column.PreviewSize"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
+		  new ColumnInfo( BaseMessages.getString(PKG, "PreviewSelectDialog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
+		  new ColumnInfo( BaseMessages.getString(PKG, "PreviewSelectDialog.Column.PreviewSize"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
 		};
 		
 		wFields=new TableView(trans, shell, 
@@ -121,9 +123,9 @@ public class PreviewSelectDialog extends Dialog
 		wFields.setLayoutData(fdFields);
 
 		wPreview=new Button(shell, SWT.PUSH);
-		wPreview.setText(Messages.getString("System.Button.Show"));
+		wPreview.setText(BaseMessages.getString(PKG, "System.Button.Show"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Close"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Close"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wPreview, wCancel }, margin, null);
 		

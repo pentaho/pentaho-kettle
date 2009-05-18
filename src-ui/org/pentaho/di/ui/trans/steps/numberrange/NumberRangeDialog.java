@@ -14,15 +14,15 @@ package org.pentaho.di.ui.trans.steps.numberrange;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -36,18 +36,18 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.numberrange.Messages;
 import org.pentaho.di.trans.steps.numberrange.NumberRangeMeta;
 import org.pentaho.di.trans.steps.numberrange.NumberRangeRule;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.core.exception.KettleException;
 
 
 /**
@@ -59,6 +59,7 @@ import org.pentaho.di.core.exception.KettleException;
 public class NumberRangeDialog extends BaseStepDialog implements
 	 		StepDialogInterface 
  {
+	private static Class<?> PKG = NumberRangeMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	 
 	 	private NumberRangeMeta input;
 	 
@@ -99,12 +100,12 @@ public class NumberRangeDialog extends BaseStepDialog implements
 					formLayout.marginHeight = Const.FORM_MARGIN;
 			
 					shell.setLayout(formLayout);
-					shell.setText(Messages.getString("NumberRange.TypeLongDesc")); //$NON-NLS-1$
+					shell.setText(BaseMessages.getString(PKG, "NumberRange.TypeLongDesc")); //$NON-NLS-1$
 			
 						// Create controls
-						wStepname = createLine(lsMod, Messages.getString("NumberRange.StepName"), null);
-					inputFieldControl = createLineCombo(lsMod, Messages.getString("NumberRange.InputField"), wStepname);
-					outputFieldControl = createLine(lsMod, Messages.getString("NumberRange.OutputField"),inputFieldControl);
+						wStepname = createLine(lsMod, BaseMessages.getString(PKG, "NumberRange.StepName"), null);
+					inputFieldControl = createLineCombo(lsMod, BaseMessages.getString(PKG, "NumberRange.InputField"), wStepname);
+					outputFieldControl = createLine(lsMod, BaseMessages.getString(PKG, "NumberRange.OutputField"),inputFieldControl);
 					
 					inputFieldControl.addFocusListener(new FocusListener()
 				            {
@@ -122,7 +123,7 @@ public class NumberRangeDialog extends BaseStepDialog implements
 				                }
 				            }
 				        );       
-					fallBackValueControl = createLine(lsMod,Messages.getString("NumberRange.DefaultValue"), outputFieldControl);
+					fallBackValueControl = createLine(lsMod,BaseMessages.getString(PKG, "NumberRange.DefaultValue"), outputFieldControl);
 			
 						createRulesTable(lsMod);
 			
@@ -195,7 +196,7 @@ public class NumberRangeDialog extends BaseStepDialog implements
 	 	private void createRulesTable(ModifyListener lsMod) 
 		{
 					Label rulesLable = new Label(shell, SWT.NONE);
-					rulesLable.setText(Messages.getString("NumberRange.Ranges")); //$NON-NLS-1$
+					rulesLable.setText(BaseMessages.getString(PKG, "NumberRange.Ranges")); //$NON-NLS-1$
 					props.setLook(rulesLable);
 					FormData lableFormData = new FormData();
 					lableFormData.left = new FormAttachment(0, 0);
@@ -208,11 +209,11 @@ public class NumberRangeDialog extends BaseStepDialog implements
 						final int FieldsRows = input.getRules().size();
 			
 						ColumnInfo[] colinf = new ColumnInfo[3];
-					colinf[0] = new ColumnInfo(Messages.getString("NumberRange.LowerBound"), ColumnInfo.COLUMN_TYPE_TEXT,
+					colinf[0] = new ColumnInfo(BaseMessages.getString(PKG, "NumberRange.LowerBound"), ColumnInfo.COLUMN_TYPE_TEXT,
 								false);
-					colinf[1] = new ColumnInfo(Messages.getString("NumberRange.UpperBound"), ColumnInfo.COLUMN_TYPE_TEXT,
+					colinf[1] = new ColumnInfo(BaseMessages.getString(PKG, "NumberRange.UpperBound"), ColumnInfo.COLUMN_TYPE_TEXT,
 								false);
-					colinf[2] = new ColumnInfo(Messages.getString("NumberRange.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false);
+					colinf[2] = new ColumnInfo(BaseMessages.getString(PKG, "NumberRange.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false);
 			
 					rulesControl = new TableView(transMeta,shell, SWT.BORDER
 								| SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,props);
@@ -396,7 +397,7 @@ public class NumberRangeDialog extends BaseStepDialog implements
 			} 
 			catch (KettleException ke) 
 			{
-				new ErrorDialog(shell, Messages.getString("NumberRange.TypeLongDesc"), "Can't get fields",	ke);
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "NumberRange.TypeLongDesc"), "Can't get fields",	ke);
 			}
 		}
 	 

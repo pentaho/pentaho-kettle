@@ -24,6 +24,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -41,6 +42,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class FixedInput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private FixedInputMeta meta;
 	private FixedInputData data;
 	
@@ -83,7 +86,7 @@ public class FixedInput extends BaseStep implements StepInterface
 		
 		putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
 
-        if (checkFeedback(getLinesInput())) logBasic(Messages.getString("FixedInput.Log.LineNumber", Long.toString(getLinesInput()))); //$NON-NLS-1$
+        if (checkFeedback(getLinesInput())) logBasic(BaseMessages.getString(PKG, "FixedInput.Log.LineNumber", Long.toString(getLinesInput()))); //$NON-NLS-1$
         
 		return true;
 	}
@@ -239,7 +242,7 @@ public class FixedInput extends BaseStep implements StepInterface
 				data.filename = environmentSubstitute(meta.getFilename());
 				
 				if (Const.isEmpty(data.filename)) {
-					logError(Messages.getString("FixedInput.MissingFilename.Message"));
+					logError(BaseMessages.getString(PKG, "FixedInput.MissingFilename.Message"));
 					return false;
 				}
 				

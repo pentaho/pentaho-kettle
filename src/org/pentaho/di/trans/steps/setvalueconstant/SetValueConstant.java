@@ -12,8 +12,10 @@
 */
 package org.pentaho.di.trans.steps.setvalueconstant;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -21,7 +23,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.core.Const;
 
 
 /**
@@ -33,6 +34,8 @@ import org.pentaho.di.core.Const;
 
 public class SetValueConstant extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = SetValueConstantMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private SetValueConstantMeta meta;
 	private SetValueConstantData data;
 	
@@ -82,7 +85,7 @@ public class SetValueConstant extends BaseStep implements StepInterface
 					{
 						if(meta.getFieldName()[j].equals(meta.getFieldName()[i]))
 						{
-							if(j!=i) throw new KettleException(Messages.getString("SetValueConstant.Log.FieldSpecifiedMoreThatOne",meta.getFieldName()[i],""+i,""+j));
+							if(j!=i) throw new KettleException(BaseMessages.getString(PKG, "SetValueConstant.Log.FieldSpecifiedMoreThatOne",meta.getFieldName()[i],""+i,""+j));
 						}
 					}
 					
@@ -90,8 +93,8 @@ public class SetValueConstant extends BaseStep implements StepInterface
 					
 					if (data.fieldnrs[i]<0)
 					{
-						logError(Messages.getString("SetValueConstant.Log.CanNotFindField",meta.getFieldName()[i]));
-						throw new KettleException(Messages.getString("SetValueConstant.Log.CanNotFindField",meta.getFieldName()[i]));
+						logError(BaseMessages.getString(PKG, "SetValueConstant.Log.CanNotFindField",meta.getFieldName()[i]));
+						throw new KettleException(BaseMessages.getString(PKG, "SetValueConstant.Log.CanNotFindField",meta.getFieldName()[i]));
 					}
 					
 					if(meta.isUseVars())
@@ -100,7 +103,7 @@ public class SetValueConstant extends BaseStep implements StepInterface
 						data.realReplaceByvalues[i]=meta.getReplaceValue()[i];
 	 			}
 			}else
-				throw new KettleException(Messages.getString("SetValueConstant.Log.SelectFieldsEmpty"));
+				throw new KettleException(BaseMessages.getString(PKG, "SetValueConstant.Log.SelectFieldsEmpty"));
 
 			data.fieldnr=data.fieldnrs.length;
 
@@ -122,7 +125,7 @@ public class SetValueConstant extends BaseStep implements StepInterface
         	}
         	else
         	{
-        		logError(Messages.getString("SetValueConstant.Log.ErrorInStep",e.getMessage())); //$NON-NLS-1$
+        		logError(BaseMessages.getString(PKG, "SetValueConstant.Log.ErrorInStep",e.getMessage())); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)

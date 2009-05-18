@@ -51,14 +51,12 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.orabulkloader.Messages;
 import org.pentaho.di.trans.steps.orabulkloader.OraBulkLoaderMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
@@ -68,6 +66,8 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 
 /**
@@ -78,6 +78,8 @@ import org.pentaho.di.ui.core.widget.TextVar;
  */
 public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = OraBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CCombo				wConnection;
 
     private Label               wlSchema;
@@ -213,7 +215,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         					                      "UTF8", };       //$NON-NLS-1$
 
     private static final String[] ALL_FILETYPES = new String[] {
-        	Messages.getString("OraBulkLoaderDialog.Filetype.All") };
+        	BaseMessages.getString(PKG, "OraBulkLoaderDialog.Filetype.All") };
 
 
 	public OraBulkLoaderDialog(Shell parent, Object in, TransMeta transMeta, String sname)
@@ -251,14 +253,14 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("OraBulkLoaderDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Shell.Title")); //$NON-NLS-1$
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("OraBulkLoaderDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -282,7 +284,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
         // Schema line...
         wlSchema=new Label(shell, SWT.RIGHT);
-        wlSchema.setText(Messages.getString("OraBulkLoaderDialog.TargetSchema.Label")); //$NON-NLS-1$
+        wlSchema.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.TargetSchema.Label")); //$NON-NLS-1$
         props.setLook(wlSchema);
         fdlSchema=new FormData();
         fdlSchema.left = new FormAttachment(0, 0);
@@ -302,7 +304,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
 		// Table line...
 		wlTable = new Label(shell, SWT.RIGHT);
-		wlTable.setText(Messages.getString("OraBulkLoaderDialog.TargetTable.Label")); //$NON-NLS-1$
+		wlTable.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.TargetTable.Label")); //$NON-NLS-1$
  		props.setLook(wlTable);
 		fdlTable = new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
@@ -312,7 +314,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		
 		wbTable = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbTable);
-		wbTable.setText(Messages.getString("OraBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbTable.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbTable = new FormData();
 		fdbTable.right = new FormAttachment(100, 0);
 		fdbTable.top = new FormAttachment(wSchema, margin);
@@ -329,7 +331,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
 		// Sqlldr line...
 		wlSqlldr = new Label(shell, SWT.RIGHT);
-		wlSqlldr.setText(Messages.getString("OraBulkLoaderDialog.Sqlldr.Label")); //$NON-NLS-1$
+		wlSqlldr.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Sqlldr.Label")); //$NON-NLS-1$
  		props.setLook(wlSqlldr);
 		fdlSqlldr = new FormData();
 		fdlSqlldr.left = new FormAttachment(0, 0);
@@ -339,7 +341,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		
 		wbSqlldr = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbSqlldr);
-		wbSqlldr.setText(Messages.getString("OraBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbSqlldr.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbSqlldr = new FormData();
 		fdbSqlldr.right = new FormAttachment(100, 0);
 		fdbSqlldr.top = new FormAttachment(wTable, margin);
@@ -355,7 +357,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 				
 		// Load Method line
 		wlLoadMethod = new Label(shell, SWT.RIGHT);
-		wlLoadMethod.setText(Messages.getString("OraBulkLoaderDialog.LoadMethod.Label"));
+		wlLoadMethod.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.LoadMethod.Label"));
 		props.setLook(wlLoadMethod);
 		fdlLoadMethod = new FormData();
 		fdlLoadMethod.left = new FormAttachment(0, 0);
@@ -363,9 +365,9 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdlLoadMethod.top = new FormAttachment(wSqlldr, margin);
 		wlLoadMethod.setLayoutData(fdlLoadMethod);
 		wLoadMethod = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wLoadMethod.add(Messages.getString("OraBulkLoaderDialog.AutoEndLoadMethod.Label"));
-		wLoadMethod.add(Messages.getString("OraBulkLoaderDialog.ManualLoadMethod.Label"));
-		wLoadMethod.add(Messages.getString("OraBulkLoaderDialog.AutoConcLoadMethod.Label"));
+		wLoadMethod.add(BaseMessages.getString(PKG, "OraBulkLoaderDialog.AutoEndLoadMethod.Label"));
+		wLoadMethod.add(BaseMessages.getString(PKG, "OraBulkLoaderDialog.ManualLoadMethod.Label"));
+		wLoadMethod.add(BaseMessages.getString(PKG, "OraBulkLoaderDialog.AutoConcLoadMethod.Label"));
 		wLoadMethod.select(0); // +1: starts at -1
 		wLoadMethod.addModifyListener(lsMod);
 		
@@ -384,7 +386,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Load Action line
 		wlLoadAction = new Label(shell, SWT.RIGHT);
-		wlLoadAction.setText(Messages.getString("OraBulkLoaderDialog.LoadAction.Label"));
+		wlLoadAction.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.LoadAction.Label"));
 		props.setLook(wlLoadAction);
 		fdlLoadAction = new FormData();
 		fdlLoadAction.left = new FormAttachment(0, 0);
@@ -392,10 +394,10 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdlLoadAction.top = new FormAttachment(wLoadMethod, margin);
 		wlLoadAction.setLayoutData(fdlLoadAction);
 		wLoadAction = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wLoadAction.add(Messages.getString("OraBulkLoaderDialog.AppendLoadAction.Label"));
-		wLoadAction.add(Messages.getString("OraBulkLoaderDialog.InsertLoadAction.Label"));
-		wLoadAction.add(Messages.getString("OraBulkLoaderDialog.ReplaceLoadAction.Label"));
-		wLoadAction.add(Messages.getString("OraBulkLoaderDialog.TruncateLoadAction.Label"));
+		wLoadAction.add(BaseMessages.getString(PKG, "OraBulkLoaderDialog.AppendLoadAction.Label"));
+		wLoadAction.add(BaseMessages.getString(PKG, "OraBulkLoaderDialog.InsertLoadAction.Label"));
+		wLoadAction.add(BaseMessages.getString(PKG, "OraBulkLoaderDialog.ReplaceLoadAction.Label"));
+		wLoadAction.add(BaseMessages.getString(PKG, "OraBulkLoaderDialog.TruncateLoadAction.Label"));
 		
 		wLoadAction.select(0); // +1: starts at -1
 		wLoadAction.addModifyListener(lsMod);
@@ -415,7 +417,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
 		// MaxErrors file line
 		wlMaxErrors = new Label(shell, SWT.RIGHT);
-		wlMaxErrors.setText(Messages.getString("OraBulkLoaderDialog.MaxErrors.Label")); //$NON-NLS-1$
+		wlMaxErrors.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.MaxErrors.Label")); //$NON-NLS-1$
  		props.setLook(wlMaxErrors);
 		fdlMaxErrors = new FormData();
 		fdlMaxErrors.left = new FormAttachment(0, 0);
@@ -433,7 +435,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Commmit/batch file line
 		wlCommit = new Label(shell, SWT.RIGHT);
-		wlCommit.setText(Messages.getString("OraBulkLoaderDialog.Commit.Label")); //$NON-NLS-1$
+		wlCommit.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Commit.Label")); //$NON-NLS-1$
  		props.setLook(wlCommit);
 		fdlCommit = new FormData();
 		fdlCommit.left = new FormAttachment(0, 0);
@@ -451,7 +453,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Bindsize line
 		wlBindSize = new Label(shell, SWT.RIGHT);
-		wlBindSize.setText(Messages.getString("OraBulkLoaderDialog.BindSize.Label")); //$NON-NLS-1$
+		wlBindSize.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.BindSize.Label")); //$NON-NLS-1$
  		props.setLook(wlBindSize);
 		fdlBindSize = new FormData();
 		fdlBindSize.left = new FormAttachment(0, 0);
@@ -469,7 +471,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
 		// Readsize line
 		wlReadSize = new Label(shell, SWT.RIGHT);
-		wlReadSize.setText(Messages.getString("OraBulkLoaderDialog.ReadSize.Label")); //$NON-NLS-1$
+		wlReadSize.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.ReadSize.Label")); //$NON-NLS-1$
  		props.setLook(wlReadSize);
 		fdlReadSize = new FormData();
 		fdlReadSize.left = new FormAttachment(0, 0);
@@ -487,7 +489,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
 		// Db Name Override line
 		wlDbNameOverride = new Label(shell, SWT.RIGHT);
-		wlDbNameOverride.setText(Messages.getString("OraBulkLoaderDialog.DbNameOverride.Label")); //$NON-NLS-1$
+		wlDbNameOverride.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.DbNameOverride.Label")); //$NON-NLS-1$
  		props.setLook(wlDbNameOverride);
 		fdlDbNameOverride = new FormData();
 		fdlDbNameOverride.left = new FormAttachment(0, 0);
@@ -505,7 +507,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Control file line
 		wlControlFile = new Label(shell, SWT.RIGHT);
-		wlControlFile.setText(Messages.getString("OraBulkLoaderDialog.ControlFile.Label")); //$NON-NLS-1$
+		wlControlFile.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.ControlFile.Label")); //$NON-NLS-1$
  		props.setLook(wlControlFile);
 		fdlControlFile = new FormData();
 		fdlControlFile.left = new FormAttachment(0, 0);
@@ -514,7 +516,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		wlControlFile.setLayoutData(fdlControlFile);		
 		wbControlFile = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbControlFile);
-		wbControlFile.setText(Messages.getString("OraBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbControlFile.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbControlFile = new FormData();
 		fdbControlFile.right = new FormAttachment(100, 0);
 		fdbControlFile.top = new FormAttachment(wDbNameOverride, margin);
@@ -530,7 +532,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
 		// Data file line
 		wlDataFile = new Label(shell, SWT.RIGHT);
-		wlDataFile.setText(Messages.getString("OraBulkLoaderDialog.DataFile.Label")); //$NON-NLS-1$
+		wlDataFile.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.DataFile.Label")); //$NON-NLS-1$
  		props.setLook(wlDataFile);
 		fdlDataFile = new FormData();
 		fdlDataFile.left = new FormAttachment(0, 0);
@@ -539,7 +541,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		wlDataFile.setLayoutData(fdlDataFile);
 		wbDataFile = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbDataFile);
-		wbDataFile.setText(Messages.getString("OraBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbDataFile.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbDataFile = new FormData();
 		fdbDataFile.right = new FormAttachment(100, 0);
 		fdbDataFile.top = new FormAttachment(wControlFile, margin);
@@ -555,7 +557,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Log file line
 		wlLogFile = new Label(shell, SWT.RIGHT);
-		wlLogFile.setText(Messages.getString("OraBulkLoaderDialog.LogFile.Label")); //$NON-NLS-1$
+		wlLogFile.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.LogFile.Label")); //$NON-NLS-1$
  		props.setLook(wlLogFile);
 		fdlLogFile = new FormData();
 		fdlLogFile.left = new FormAttachment(0, 0);
@@ -564,7 +566,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		wlLogFile.setLayoutData(fdlLogFile);
 		wbLogFile = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbLogFile);
-		wbLogFile.setText(Messages.getString("OraBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbLogFile.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbLogFile = new FormData();
 		fdbLogFile.right = new FormAttachment(100, 0);
 		fdbLogFile.top = new FormAttachment(wDataFile, margin);
@@ -580,7 +582,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
 		// Bad file line
 		wlBadFile = new Label(shell, SWT.RIGHT);
-		wlBadFile.setText(Messages.getString("OraBulkLoaderDialog.BadFile.Label")); //$NON-NLS-1$
+		wlBadFile.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.BadFile.Label")); //$NON-NLS-1$
  		props.setLook(wlBadFile);
 		fdlBadFile = new FormData();
 		fdlBadFile.left = new FormAttachment(0, 0);
@@ -589,7 +591,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		wlBadFile.setLayoutData(fdlBadFile);
 		wbBadFile = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbBadFile);
-		wbBadFile.setText(Messages.getString("OraBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbBadFile.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbBadFile = new FormData();
 		fdbBadFile.right = new FormAttachment(100, 0);
 		fdbBadFile.top = new FormAttachment(wLogFile, margin);
@@ -605,7 +607,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Discard file line
 		wlDiscardFile = new Label(shell, SWT.RIGHT);
-		wlDiscardFile.setText(Messages.getString("OraBulkLoaderDialog.DiscardFile.Label")); //$NON-NLS-1$
+		wlDiscardFile.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.DiscardFile.Label")); //$NON-NLS-1$
  		props.setLook(wlDiscardFile);
 		fdlDiscardFile = new FormData();
 		fdlDiscardFile.left = new FormAttachment(0, 0);
@@ -614,7 +616,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		wlDiscardFile.setLayoutData(fdlDiscardFile);
 		wbDiscardFile = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbDiscardFile);
-		wbDiscardFile.setText(Messages.getString("OraBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbDiscardFile.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbDiscardFile = new FormData();
 		fdbDiscardFile.right = new FormAttachment(100, 0);
 		fdbDiscardFile.top = new FormAttachment(wBadFile, margin);
@@ -635,7 +637,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         // on one machine, but you may want to use it on your execution server
         //
         wlEncoding=new Label(shell, SWT.RIGHT);
-        wlEncoding.setText(Messages.getString("OraBulkLoaderDialog.Encoding.Label"));
+        wlEncoding.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Encoding.Label"));
         props.setLook(wlEncoding);
         fdlEncoding=new FormData();
         fdlEncoding.left  = new FormAttachment(0, 0);
@@ -643,7 +645,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         fdlEncoding.right = new FormAttachment(middle, -margin);
         wlEncoding.setLayoutData(fdlEncoding);
         wEncoding=new Combo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wEncoding.setToolTipText(Messages.getString("OraBulkLoaderDialog.Encoding.Tooltip"));
+        wEncoding.setToolTipText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Encoding.Tooltip"));
         wEncoding.setItems(encodings);
         props.setLook(wEncoding);
         fdEncoding=new FormData();
@@ -655,7 +657,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
                
         // Oracle character set name line
         wlCharacterSetName=new Label(shell, SWT.RIGHT);
-        wlCharacterSetName.setText(Messages.getString("OraBulkLoaderDialog.CharacterSetName.Label"));
+        wlCharacterSetName.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.CharacterSetName.Label"));
         props.setLook(wlCharacterSetName);
         fdlCharacterSetName=new FormData();
         fdlCharacterSetName.left  = new FormAttachment(0, 0);
@@ -663,7 +665,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         fdlCharacterSetName.right = new FormAttachment(middle, -margin);
         wlCharacterSetName.setLayoutData(fdlCharacterSetName);
         wCharacterSetName=new Combo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wCharacterSetName.setToolTipText(Messages.getString("OraBulkLoaderDialog.CharacterSetName.Tooltip"));
+        wCharacterSetName.setToolTipText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.CharacterSetName.Tooltip"));
         wCharacterSetName.setItems(characterSetNames);
         props.setLook(wCharacterSetName);
         fdCharacterSetName=new FormData();
@@ -675,7 +677,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         
         // Alternate Record Terminator
 		wlAltRecordTerm = new Label(shell, SWT.RIGHT);
-		wlAltRecordTerm.setText(Messages.getString("OraBulkLoaderDialog.AltRecordTerm.Label")); //$NON-NLS-1$
+		wlAltRecordTerm.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.AltRecordTerm.Label")); //$NON-NLS-1$
  		props.setLook(wlAltRecordTerm);
 		fdlAltRecordTerm = new FormData();
 		fdlAltRecordTerm.left = new FormAttachment(0, 0);
@@ -693,7 +695,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 				
 		// DirectPath line
 		wlDirectPath = new Label(shell, SWT.RIGHT);
-		wlDirectPath.setText(Messages.getString("OraBulkLoaderDialog.DirectPath.Label")); //$NON-NLS-1$
+		wlDirectPath.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.DirectPath.Label")); //$NON-NLS-1$
  		props.setLook(wlDirectPath);
 		fdlDirectPath = new FormData();
 		fdlDirectPath.left = new FormAttachment(0, 0);
@@ -718,7 +720,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
 		// Erase files line
 		wlEraseFiles = new Label(shell, SWT.RIGHT);
-		wlEraseFiles.setText(Messages.getString("OraBulkLoaderDialog.EraseFiles.Label")); //$NON-NLS-1$
+		wlEraseFiles.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.EraseFiles.Label")); //$NON-NLS-1$
  		props.setLook(wlEraseFiles);
 		fdlEraseFiles = new FormData();
 		fdlEraseFiles.left = new FormAttachment(0, 0);
@@ -743,7 +745,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Fail on warning line
 		wlFailOnWarning = new Label(shell, SWT.RIGHT);
-		wlFailOnWarning.setText(Messages.getString("OraBulkLoaderDialog.FailOnWarning.Label")); //$NON-NLS-1$
+		wlFailOnWarning.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.FailOnWarning.Label")); //$NON-NLS-1$
  		props.setLook(wlFailOnWarning);
 		fdlFailOnWarning = new FormData();
 		fdlFailOnWarning.left = new FormAttachment(0, 0);
@@ -768,7 +770,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Fail on error line
 		wlFailOnError = new Label(shell, SWT.RIGHT);
-		wlFailOnError.setText(Messages.getString("OraBulkLoaderDialog.FailOnError.Label")); //$NON-NLS-1$
+		wlFailOnError.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.FailOnError.Label")); //$NON-NLS-1$
  		props.setLook(wlFailOnError);
 		fdlFailOnError = new FormData();
 		fdlFailOnError.left = new FormAttachment(0, 0);
@@ -793,17 +795,17 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wSQL = new Button(shell, SWT.PUSH);
-		wSQL.setText(Messages.getString("OraBulkLoaderDialog.SQL.Button")); //$NON-NLS-1$
+		wSQL.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.SQL.Button")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel , wSQL }, margin, null);
 
 		// The field Table
 		wlReturn = new Label(shell, SWT.NONE);
-		wlReturn.setText(Messages.getString("OraBulkLoaderDialog.Fields.Label")); //$NON-NLS-1$
+		wlReturn.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlReturn);
 		fdlReturn = new FormData();
 		fdlReturn.left = new FormAttachment(0, 0);
@@ -814,25 +816,25 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		int UpInsRows = (input.getFieldTable() != null ? input.getFieldTable().length : 1);
 
 		ciReturn = new ColumnInfo[UpInsCols];
-		ciReturn[0] = new ColumnInfo(Messages.getString("OraBulkLoaderDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciReturn[1] = new ColumnInfo(Messages.getString("OraBulkLoaderDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciReturn[2] = new ColumnInfo(Messages.getString("OraBulkLoaderDialog.ColumnInfo.DateMask"), ColumnInfo.COLUMN_TYPE_CCOMBO, 
+		ciReturn[0] = new ColumnInfo(BaseMessages.getString(PKG, "OraBulkLoaderDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciReturn[1] = new ColumnInfo(BaseMessages.getString(PKG, "OraBulkLoaderDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciReturn[2] = new ColumnInfo(BaseMessages.getString(PKG, "OraBulkLoaderDialog.ColumnInfo.DateMask"), ColumnInfo.COLUMN_TYPE_CCOMBO, 
 				                     new String[] {"",                //$NON-NLS-1$
-			                                       Messages.getString("OraBulkLoaderDialog.DateMask.Label"),
-	                                        	   Messages.getString("OraBulkLoaderDialog.DateTimeMask.Label")}, true); 
+			                                       BaseMessages.getString(PKG, "OraBulkLoaderDialog.DateMask.Label"),
+	                                        	   BaseMessages.getString(PKG, "OraBulkLoaderDialog.DateTimeMask.Label")}, true); 
 		tableFieldColumns.add(ciReturn[0]);
 		wReturn = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 				ciReturn, UpInsRows, lsMod, props);
 
 		wGetLU = new Button(shell, SWT.PUSH);
-		wGetLU.setText(Messages.getString("OraBulkLoaderDialog.GetFields.Label")); //$NON-NLS-1$
+		wGetLU.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.GetFields.Label")); //$NON-NLS-1$
 		fdGetLU = new FormData();
 		fdGetLU.top   = new FormAttachment(wlReturn, margin);
 		fdGetLU.right = new FormAttachment(100, 0);
 		wGetLU.setLayoutData(fdGetLU);
 
 		wDoMapping = new Button(shell, SWT.PUSH);
-		wDoMapping.setText(Messages.getString("OraBulkLoaderDialog.EditMapping.Label")); //$NON-NLS-1$
+		wDoMapping.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.EditMapping.Label")); //$NON-NLS-1$
 		fdDoMapping = new FormData();
 		fdDoMapping.top   = new FormAttachment(wGetLU, margin);
 		fdDoMapping.right = new FormAttachment(100, 0);
@@ -873,7 +875,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(),Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                        log.logError(toString(),BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -1144,7 +1146,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), Messages.getString("OraBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "OraBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		wMaxErrors.setText("" + input.getMaxErrors());   //$NON-NLS-1$
 		wCommit.setText("" + input.getCommitSize());     //$NON-NLS-1$
@@ -1163,11 +1165,11 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 				if (dateMask!=null) {
 					if ( OraBulkLoaderMeta.DATE_MASK_DATE.equals(dateMask) )
 					{
-					    item.setText(3,Messages.getString("OraBulkLoaderDialog.DateMask.Label"));
+					    item.setText(3,BaseMessages.getString(PKG, "OraBulkLoaderDialog.DateMask.Label"));
 					}
 					else if ( OraBulkLoaderMeta.DATE_MASK_DATETIME.equals(dateMask)) 
 					{
-						item.setText(3,Messages.getString("OraBulkLoaderDialog.DateTimeMask.Label"));
+						item.setText(3,BaseMessages.getString(PKG, "OraBulkLoaderDialog.DateTimeMask.Label"));
 					}
 					else 
 					{
@@ -1272,15 +1274,15 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		inf.setReadSize( Const.toInt(wReadSize.getText(), 0) );
 		inf.setDbNameOverride(wDbNameOverride.getText());
 
-		if(log.isDebug()) log.logDebug(toString(), Messages.getString("OraBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "OraBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrfields; i++)
 		{
 			TableItem item = wReturn.getNonEmpty(i);
 			inf.getFieldTable()[i] = item.getText(1);
 			inf.getFieldStream()[i] = item.getText(2);
-			if ( Messages.getString("OraBulkLoaderDialog.DateMask.Label").equals(item.getText(3)) )
+			if ( BaseMessages.getString(PKG, "OraBulkLoaderDialog.DateMask.Label").equals(item.getText(3)) )
  			    inf.getDateMask()[i] = OraBulkLoaderMeta.DATE_MASK_DATE;
-			else if ( Messages.getString("OraBulkLoaderDialog.DateTimeMask.Label").equals(item.getText(3)) )
+			else if ( BaseMessages.getString(PKG, "OraBulkLoaderDialog.DateTimeMask.Label").equals(item.getText(3)) )
 				inf.getDateMask()[i] = OraBulkLoaderMeta.DATE_MASK_DATETIME;
 			else inf.getDateMask()[i] = "";
 		}
@@ -1306,15 +1308,15 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		 * Set the loadmethod
 		 */
 		String method = wLoadMethod.getText();
-		if ( Messages.getString("OraBulkLoaderDialog.AutoConcLoadMethod.Label").equals(method) ) 
+		if ( BaseMessages.getString(PKG, "OraBulkLoaderDialog.AutoConcLoadMethod.Label").equals(method) ) 
 		{
 			inf.setLoadMethod(OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT);
 		}
-		else if ( Messages.getString("OraBulkLoaderDialog.AutoEndLoadMethod.Label").equals(method) ) 
+		else if ( BaseMessages.getString(PKG, "OraBulkLoaderDialog.AutoEndLoadMethod.Label").equals(method) ) 
 		{
 			inf.setLoadMethod(OraBulkLoaderMeta.METHOD_AUTO_END);
 		}
-		else if ( Messages.getString("OraBulkLoaderDialog.ManualLoadMethod.Label").equals(method) ) 
+		else if ( BaseMessages.getString(PKG, "OraBulkLoaderDialog.ManualLoadMethod.Label").equals(method) ) 
 		{
 			inf.setLoadMethod(OraBulkLoaderMeta.METHOD_MANUAL);
 		}
@@ -1328,19 +1330,19 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		 * Set the loadaction 
 		 */
 		String action = wLoadAction.getText();
-		if ( Messages.getString("OraBulkLoaderDialog.AppendLoadAction.Label").equals(action) ) 
+		if ( BaseMessages.getString(PKG, "OraBulkLoaderDialog.AppendLoadAction.Label").equals(action) ) 
 		{
 			inf.setLoadAction(OraBulkLoaderMeta.ACTION_APPEND);
 		}
-		else if ( Messages.getString("OraBulkLoaderDialog.InsertLoadAction.Label").equals(action) )
+		else if ( BaseMessages.getString(PKG, "OraBulkLoaderDialog.InsertLoadAction.Label").equals(action) )
 		{
 			inf.setLoadAction(OraBulkLoaderMeta.ACTION_INSERT);
 		}
-		else if ( Messages.getString("OraBulkLoaderDialog.ReplaceLoadAction.Label").equals(action) )
+		else if ( BaseMessages.getString(PKG, "OraBulkLoaderDialog.ReplaceLoadAction.Label").equals(action) )
 		{
 			inf.setLoadAction(OraBulkLoaderMeta.ACTION_REPLACE);
 		}
-		else if ( Messages.getString("OraBulkLoaderDialog.TruncateLoadAction.Label").equals(action) )
+		else if ( BaseMessages.getString(PKG, "OraBulkLoaderDialog.TruncateLoadAction.Label").equals(action) )
 		{
 			inf.setLoadAction(OraBulkLoaderMeta.ACTION_TRUNCATE);
 		}
@@ -1363,8 +1365,8 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		if (input.getDatabaseMeta() == null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-			mb.setMessage(Messages.getString("OraBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(Messages.getString("OraBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "OraBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
 		}
 
@@ -1381,7 +1383,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
 		if (inf != null)
 		{
-			if(log.isDebug()) log.logDebug(toString(), Messages.getString("OraBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
+			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "OraBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
 
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());
@@ -1396,8 +1398,8 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-			mb.setMessage(Messages.getString("OraBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(Messages.getString("OraBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "OraBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
 		}
 	}
@@ -1416,7 +1418,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
                     	if ( v.getType() == ValueMetaInterface.TYPE_DATE )
                     	{
                     		// The default is date mask.
-                    		tableItem.setText(3, Messages.getString("OraBulkLoaderDialog.DateMask.Label"));	
+                    		tableItem.setText(3, BaseMessages.getString(PKG, "OraBulkLoaderDialog.DateMask.Label"));	
                     	}
                     	else
                     	{
@@ -1430,8 +1432,8 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		}
 		catch (KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("OraBulkLoaderDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
-					Messages.getString("OraBulkLoaderDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "OraBulkLoaderDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
+					BaseMessages.getString(PKG, "OraBulkLoaderDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
 		}
 	}
 
@@ -1445,7 +1447,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 			getInfo(info);
 
 			String name = stepname; // new name might not yet be linked to other steps!
-			StepMeta stepMeta = new StepMeta(Messages.getString("OraBulkLoaderDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
+			StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "OraBulkLoaderDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
 			RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
 
 			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev);
@@ -1460,8 +1462,8 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-					mb.setMessage(Messages.getString("OraBulkLoaderDialog.NoSQLNeeds.DialogMessage")); //$NON-NLS-1$
-					mb.setText(Messages.getString("OraBulkLoaderDialog.NoSQLNeeds.DialogTitle")); //$NON-NLS-1$
+					mb.setMessage(BaseMessages.getString(PKG, "OraBulkLoaderDialog.NoSQLNeeds.DialogMessage")); //$NON-NLS-1$
+					mb.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.NoSQLNeeds.DialogTitle")); //$NON-NLS-1$
 					mb.open();
 				}
 			}
@@ -1469,14 +1471,14 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
 				mb.setMessage(sql.getError());
-				mb.setText(Messages.getString("OraBulkLoaderDialog.SQLError.DialogTitle")); //$NON-NLS-1$
+				mb.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.SQLError.DialogTitle")); //$NON-NLS-1$
 				mb.open();
 			}
 		}
 		catch (KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("OraBulkLoaderDialog.CouldNotBuildSQL.DialogTitle"), //$NON-NLS-1$
-					Messages.getString("OraBulkLoaderDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "OraBulkLoaderDialog.CouldNotBuildSQL.DialogTitle"), //$NON-NLS-1$
+					BaseMessages.getString(PKG, "OraBulkLoaderDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
 		}
 
 	}
@@ -1495,7 +1497,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		try {
 			sourceFields = transMeta.getPrevStepFields(stepMeta);
 		} catch(KettleException e) {
-			new ErrorDialog(shell, Messages.getString("OraBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title"), Messages.getString("OraBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message"), e);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "OraBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title"), BaseMessages.getString(PKG, "OraBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message"), e);
 			return;
 		}
 		// refresh data
@@ -1505,7 +1507,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		try {
 			targetFields = stepMetaInterface.getRequiredFields(transMeta);
 		} catch (KettleException e) {
-			new ErrorDialog(shell, Messages.getString("OraBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title"), Messages.getString("OraBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message"), e);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "OraBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title"), BaseMessages.getString(PKG, "OraBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message"), e);
 			return;
 		}
 
@@ -1550,15 +1552,15 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 			
 			String message="";
 			if (missingSourceFields.length()>0) {
-				message+=Messages.getString("OraBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString())+Const.CR;
+				message+=BaseMessages.getString(PKG, "OraBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString())+Const.CR;
 			}
 			if (missingTargetFields.length()>0) {
-				message+=Messages.getString("OraBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString())+Const.CR;
+				message+=BaseMessages.getString(PKG, "OraBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString())+Const.CR;
 			}
 			message+=Const.CR;
-			message+=Messages.getString("OraBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue")+Const.CR;
+			message+=BaseMessages.getString(PKG, "OraBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue")+Const.CR;
 			MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-			boolean goOn = MessageDialog.openConfirm(shell, Messages.getString("OraBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle"), message);
+			boolean goOn = MessageDialog.openConfirm(shell, BaseMessages.getString(PKG, "OraBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle"), message);
 			if (!goOn) {
 				return;
 			}

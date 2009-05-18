@@ -38,27 +38,27 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.setvalueconstant.SetValueConstantMeta;
-import org.pentaho.di.trans.steps.setvalueconstant.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 
 public class SetValueConstantDialog extends BaseStepDialog implements StepDialogInterface
 {
-	
+	private static Class<?> PKG = SetValueConstantMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private SetValueConstantMeta input;
 	
 	private ModifyListener lsMod ;
@@ -114,11 +114,11 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
 		margin = Const.MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("SetValueConstantDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SetValueConstantDialog.Shell.Title")); //$NON-NLS-1$
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("SetValueConstantDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "SetValueConstantDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -137,7 +137,7 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
 		
 		 // Use variable?
         wluseVars=new Label(shell, SWT.RIGHT);
-        wluseVars.setText(Messages.getString("SetValueConstantDialog.useVars.Label")); //$NON-NLS-1$
+        wluseVars.setText(BaseMessages.getString(PKG, "SetValueConstantDialog.useVars.Label")); //$NON-NLS-1$
         props.setLook(wluseVars);
         FormData fdlUpdate=new FormData();
         fdlUpdate.left   = new FormAttachment(0, 0);
@@ -145,7 +145,7 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
         fdlUpdate.top    = new FormAttachment(wStepname, 2*margin);
         wluseVars.setLayoutData(fdlUpdate);
         wuseVars=new Button(shell, SWT.CHECK);
-        wuseVars.setToolTipText(Messages.getString("SetValueConstantDialog.useVars.Tooltip")); //$NON-NLS-1$
+        wuseVars.setToolTipText(BaseMessages.getString(PKG, "SetValueConstantDialog.useVars.Tooltip")); //$NON-NLS-1$
         props.setLook(wuseVars);
         FormData fdUpdate=new FormData();
         fdUpdate.left = new FormAttachment(middle, 0);
@@ -157,7 +157,7 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
 		
         // Table with fields
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("SetValueConstantDialog.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "SetValueConstantDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -167,9 +167,9 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
 		int FieldsCols=3;
 		final int FieldsRows=input.getFieldName().length;
 		colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("SetValueConstantDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{},false);
-		colinf[1]=new ColumnInfo(Messages.getString("SetValueConstantDialog.Value.Column"), ColumnInfo.COLUMN_TYPE_TEXT , false);
-		colinf[2]=new ColumnInfo(Messages.getString("SetValueConstantDialog.Value.ConversionMask"), ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getDateFormats());
+		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "SetValueConstantDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{},false);
+		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "SetValueConstantDialog.Value.Column"), ColumnInfo.COLUMN_TYPE_TEXT , false);
+		colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "SetValueConstantDialog.Value.ConversionMask"), ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getDateFormats());
 		
 		wFields=new TableView(transMeta,shell, 
 				  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -212,7 +212,7 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -221,11 +221,11 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
       
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(Messages.getString("System.Button.GetFields"));
+		wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
 		
 		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, wFields);
@@ -298,7 +298,7 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("System.Dialog.GetFieldsFailed.Title"), Messages.getString("System.Dialog.GetFieldsFailed.Message"), ke);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Title"), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"), ke);
 		}
 	}
 	

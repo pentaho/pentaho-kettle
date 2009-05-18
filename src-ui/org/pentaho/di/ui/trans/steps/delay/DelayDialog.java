@@ -34,18 +34,19 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
-import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.delay.DelayMeta;
-import org.pentaho.di.trans.steps.delay.Messages;
+import org.pentaho.di.ui.core.widget.LabelTextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class DelayDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = DelayMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private DelayMeta input;
 	private CCombo   wScaleTime;
 	private FormData fdScaleTime;
@@ -82,14 +83,14 @@ public class DelayDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("DelayDialog.Shell.Title"));
+		shell.setText(BaseMessages.getString(PKG, "DelayDialog.Shell.Title"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("DelayDialog.Stepname.Label"));
+		wlStepname.setText(BaseMessages.getString(PKG, "DelayDialog.Stepname.Label"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -107,7 +108,7 @@ public class DelayDialog extends BaseStepDialog implements StepDialogInterface
 		wStepname.setLayoutData(fdStepname);
 		
 		// Timeout line
-		wTimeout = new LabelTextVar(transMeta, shell, Messages.getString("DelayDialog.Timeout.Label"), Messages.getString("DelayDialog.Timeout.Tooltip"));
+		wTimeout = new LabelTextVar(transMeta, shell, BaseMessages.getString(PKG, "DelayDialog.Timeout.Label"), BaseMessages.getString(PKG, "DelayDialog.Timeout.Tooltip"));
 		props.setLook(wTimeout);
 		wTimeout.addModifyListener(lsMod);
 		fdTimeout = new FormData();
@@ -127,10 +128,10 @@ public class DelayDialog extends BaseStepDialog implements StepDialogInterface
 		);
 		
 		wScaleTime = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wScaleTime.add(Messages.getString("DelayDialog.MSScaleTime.Label"));
-		wScaleTime.add(Messages.getString("DelayDialog.SScaleTime.Label"));
-		wScaleTime.add(Messages.getString("DelayDialog.MnScaleTime.Label"));
-		wScaleTime.add(Messages.getString("DelayDialog.HrScaleTime.Label"));
+		wScaleTime.add(BaseMessages.getString(PKG, "DelayDialog.MSScaleTime.Label"));
+		wScaleTime.add(BaseMessages.getString(PKG, "DelayDialog.SScaleTime.Label"));
+		wScaleTime.add(BaseMessages.getString(PKG, "DelayDialog.MnScaleTime.Label"));
+		wScaleTime.add(BaseMessages.getString(PKG, "DelayDialog.HrScaleTime.Label"));
 		wScaleTime.select(0); // +1: starts at -1
 		props.setLook(wScaleTime);
 		fdScaleTime= new FormData();
@@ -142,9 +143,9 @@ public class DelayDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wScaleTime);
 

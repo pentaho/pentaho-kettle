@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.ui.core.database.wizard.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
 
@@ -41,6 +41,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class CreateDatabaseWizardPageOracle extends WizardPage
 {
+	private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label    wlDataTS;
 	private Text     wDataTS;
 	private FormData fdlDataTS, fdDataTS;
@@ -58,8 +60,8 @@ public class CreateDatabaseWizardPageOracle extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle(Messages.getString("CreateDatabaseWizardPageOracle.DialogTitle")); //$NON-NLS-1$
-		setDescription(Messages.getString("CreateDatabaseWizardPageOracle.DialogMessage")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOracle.DialogTitle")); //$NON-NLS-1$
+		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOracle.DialogMessage")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -79,7 +81,7 @@ public class CreateDatabaseWizardPageOracle extends WizardPage
 		composite.setLayout(compLayout);
 
 		wlDataTS = new Label(composite, SWT.RIGHT);
-		wlDataTS.setText(Messages.getString("CreateDatabaseWizardPageOracle.DataTablespace.Label")); //$NON-NLS-1$
+		wlDataTS.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOracle.DataTablespace.Label")); //$NON-NLS-1$
  		props.setLook(wlDataTS);
 		fdlDataTS = new FormData();
 		fdlDataTS.top    = new FormAttachment(0, 0);
@@ -102,7 +104,7 @@ public class CreateDatabaseWizardPageOracle extends WizardPage
 		});
 		
 		wlIndexTS = new Label(composite, SWT.RIGHT);
-		wlIndexTS.setText(Messages.getString("CreateDatabaseWizardPageOracle.IndexTableSpace.Label")); //$NON-NLS-1$
+		wlIndexTS.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOracle.IndexTableSpace.Label")); //$NON-NLS-1$
  		props.setLook(wlIndexTS);
 		fdlIndexTS = new FormData();
 		fdlIndexTS.top    = new FormAttachment(wDataTS, margin);
@@ -132,7 +134,7 @@ public class CreateDatabaseWizardPageOracle extends WizardPage
 	{
 		getDatabaseInfo();
 		setErrorMessage(null);
-		setMessage(Messages.getString("CreateDatabaseWizardPageOracle.Message.Next")); //$NON-NLS-1$
+		setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOracle.Message.Next")); //$NON-NLS-1$
 		return true;
 	}	
 	

@@ -44,25 +44,27 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.getsubfolders.GetSubFoldersMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
-import org.pentaho.di.trans.steps.getsubfolders.GetSubFoldersMeta;
-import org.pentaho.di.trans.steps.getsubfolders.Messages;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = GetSubFoldersMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private CTabFolder wTabFolder;
 
 	private FormData fdTabFolder;
@@ -154,14 +156,14 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("GetSubFoldersDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.DialogTitle"));
 
 		middle = props.getMiddlePct();
 		margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -185,7 +187,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 		// START OF FILE TAB ///
 		// ////////////////////////
 		wFolderTab = new CTabItem(wTabFolder, SWT.NONE);
-		wFolderTab.setText(Messages.getString("GetSubFoldersDialog.FolderTab.TabTitle"));
+		wFolderTab.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.FolderTab.TabTitle"));
 
 		wFolderComp = new Composite(wTabFolder, SWT.NONE);
 		props.setLook(wFolderComp);
@@ -201,7 +203,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 
 		wOriginFolders = new Group(wFolderComp, SWT.SHADOW_NONE);
 		props.setLook(wOriginFolders);
-		wOriginFolders.setText(Messages.getString("GetSubFoldersDialog.wOriginFiles.Label"));
+		wOriginFolders.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.wOriginFiles.Label"));
 		
 		FormLayout OriginFilesgroupLayout = new FormLayout();
 		OriginFilesgroupLayout.marginWidth = 10;
@@ -210,7 +212,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 		
 		//Is Filename defined in a Field		
 		wlFileField = new Label(wOriginFolders, SWT.RIGHT);
-		wlFileField.setText(Messages.getString("GetSubFoldersDialog.FolderField.Label"));
+		wlFileField.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.FolderField.Label"));
 		props.setLook(wlFileField);
 		fdlFileField = new FormData();
 		fdlFileField.left = new FormAttachment(0, -margin);
@@ -221,7 +223,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 		
 		wFolderField = new Button(wOriginFolders, SWT.CHECK);
 		props.setLook(wFolderField);
-		wFolderField.setToolTipText(Messages.getString("GetSubFoldersDialog.FileField.Tooltip"));
+		wFolderField.setToolTipText(BaseMessages.getString(PKG, "GetSubFoldersDialog.FileField.Tooltip"));
 		fdFileField = new FormData();
 		fdFileField.left = new FormAttachment(middle, -margin);
 		fdFileField.top = new FormAttachment(0, margin);
@@ -239,7 +241,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
         
 		// Filename field
 		wlFilenameField=new Label(wOriginFolders, SWT.RIGHT);
-        wlFilenameField.setText(Messages.getString("GetSubFoldersDialog.wlFilenameField.Label"));
+        wlFilenameField.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.wlFilenameField.Label"));
         props.setLook(wlFilenameField);
         fdlFoldernameField=new FormData();
         fdlFoldernameField.left = new FormAttachment(0, -margin);
@@ -288,7 +290,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 
 		// Foldername line
 		wlFoldername = new Label(wFolderComp, SWT.RIGHT);
-		wlFoldername.setText(Messages.getString("GetSubFoldersDialog.Filename.Label"));
+		wlFoldername.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.Filename.Label"));
 		props.setLook(wlFoldername);
 		fdlFoldername = new FormData();
 		fdlFoldername.left = new FormAttachment(0, 0);
@@ -298,8 +300,8 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 
 		wbbFoldername = new Button(wFolderComp, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbbFoldername);
-		wbbFoldername.setText(Messages.getString("System.Button.Browse"));
-		wbbFoldername.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+		wbbFoldername.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+		wbbFoldername.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbFoldername = new FormData();
 		fdbFoldername.right = new FormAttachment(100, 0);
 		fdbFoldername.top = new FormAttachment(wOriginFolders, margin);
@@ -307,8 +309,8 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 
 		wbaFoldername = new Button(wFolderComp, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbaFoldername);
-		wbaFoldername.setText(Messages.getString("GetSubFoldersDialog.FoldernameAdd.Button"));
-		wbaFoldername.setToolTipText(Messages.getString("GetSubFoldersDialog.FoldernameAdd.Tooltip"));
+		wbaFoldername.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.FoldernameAdd.Button"));
+		wbaFoldername.setToolTipText(BaseMessages.getString(PKG, "GetSubFoldersDialog.FoldernameAdd.Tooltip"));
 		fdbaFoldername = new FormData();
 		fdbaFoldername.right = new FormAttachment(wbbFoldername, -margin);
 		fdbaFoldername.top = new FormAttachment(wOriginFolders, margin);
@@ -325,7 +327,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 
 		// Filename list line
 		wlFoldernameList = new Label(wFolderComp, SWT.RIGHT);
-		wlFoldernameList.setText(Messages.getString("GetSubFoldersDialog.FoldernameList.Label"));
+		wlFoldernameList.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.FoldernameList.Label"));
 		props.setLook(wlFoldernameList);
 		fdlFoldernameList = new FormData();
 		fdlFoldernameList.left = new FormAttachment(0, 0);
@@ -336,8 +338,8 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 		// Buttons to the right of the screen...
 		wbdFoldername = new Button(wFolderComp, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbdFoldername);
-		wbdFoldername.setText(Messages.getString("GetSubFoldersDialog.FoldernameDelete.Button"));
-		wbdFoldername.setToolTipText(Messages.getString("GetSubFoldersDialog.FoldernameDelete.Tooltip"));
+		wbdFoldername.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.FoldernameDelete.Button"));
+		wbdFoldername.setToolTipText(BaseMessages.getString(PKG, "GetSubFoldersDialog.FoldernameDelete.Tooltip"));
 		fdbdFoldername = new FormData();
 		fdbdFoldername.right = new FormAttachment(100, 0);
 		fdbdFoldername.top = new FormAttachment(wFoldername, 40);
@@ -345,8 +347,8 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 
 		wbeFoldername = new Button(wFolderComp, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbeFoldername);
-		wbeFoldername.setText(Messages.getString("GetSubFoldersDialog.FilenameEdit.Button"));
-		wbeFoldername.setToolTipText(Messages.getString("GetSubFoldersDialog.FilenameEdit.Tooltip"));
+		wbeFoldername.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.FilenameEdit.Button"));
+		wbeFoldername.setToolTipText(BaseMessages.getString(PKG, "GetSubFoldersDialog.FilenameEdit.Tooltip"));
 		fdbeFoldername = new FormData();
 		fdbeFoldername.right = new FormAttachment(100, 0);
 		fdbeFoldername.left = new FormAttachment(wbdFoldername, 0, SWT.LEFT);
@@ -354,10 +356,10 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 		wbeFoldername.setLayoutData(fdbeFoldername);
 
 		ColumnInfo[] colinfo = new ColumnInfo[2]; 
-		colinfo[0]=	new ColumnInfo(Messages.getString("GetSubFoldersDialog.FileDirColumn.Column"),	ColumnInfo.COLUMN_TYPE_TEXT, false) ;
+		colinfo[0]=	new ColumnInfo(BaseMessages.getString(PKG, "GetSubFoldersDialog.FileDirColumn.Column"),	ColumnInfo.COLUMN_TYPE_TEXT, false) ;
         colinfo[0].setUsingVariables(true);
-		colinfo[1]=new ColumnInfo(Messages.getString("GetSubFoldersDialog.Required.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,  GetSubFoldersMeta.RequiredFoldersDesc);
-		colinfo[1].setToolTip(Messages.getString("GetSubFoldersDialog.Required.Tooltip"));	
+		colinfo[1]=new ColumnInfo(BaseMessages.getString(PKG, "GetSubFoldersDialog.Required.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,  GetSubFoldersMeta.RequiredFoldersDesc);
+		colinfo[1].setToolTip(BaseMessages.getString(PKG, "GetSubFoldersDialog.Required.Tooltip"));	
 
 		wFoldernameList = new TableView(transMeta, wFolderComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo,
 				colinfo.length, lsMod, props);
@@ -394,7 +396,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 		// START OF Filter TAB ///
 		// ////////////////////////
 		wSettingsTab = new CTabItem(wTabFolder, SWT.NONE);
-		wSettingsTab.setText(Messages.getString("GetSubFoldersDialog.SettingsTab.TabTitle"));
+		wSettingsTab.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.SettingsTab.TabTitle"));
 
 		wSettingsComp = new Composite(wTabFolder, SWT.NONE);
 		props.setLook(wSettingsComp);
@@ -410,7 +412,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 
 		wAdditionalGroup = new Group(wSettingsComp, SWT.SHADOW_NONE);
 		props.setLook(wAdditionalGroup);
-		wAdditionalGroup.setText(Messages.getString("GetSubFoldersDialog.Group.AdditionalGroup.Label"));
+		wAdditionalGroup.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.Group.AdditionalGroup.Label"));
 		
 		FormLayout additionalgroupLayout = new FormLayout();
 		additionalgroupLayout.marginWidth = 10;
@@ -418,7 +420,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 		wAdditionalGroup.setLayout(additionalgroupLayout);
 	
 		wlInclRownum=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlInclRownum.setText(Messages.getString("GetSubFoldersDialog.InclRownum.Label"));
+		wlInclRownum.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.InclRownum.Label"));
  		props.setLook(wlInclRownum);
 		fdlInclRownum=new FormData();
 		fdlInclRownum.left = new FormAttachment(0, 0);
@@ -427,7 +429,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 		wlInclRownum.setLayoutData(fdlInclRownum);
 		wInclRownum=new Button(wAdditionalGroup, SWT.CHECK );
  		props.setLook(wInclRownum);
-		wInclRownum.setToolTipText(Messages.getString("GetSubFoldersDialog.InclRownum.Tooltip"));
+		wInclRownum.setToolTipText(BaseMessages.getString(PKG, "GetSubFoldersDialog.InclRownum.Tooltip"));
 		fdRownum=new FormData();
 		fdRownum.left = new FormAttachment(middle, 0);
 		fdRownum.top  = new FormAttachment(0, 2*margin);
@@ -443,7 +445,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
         wInclRownum.addSelectionListener(linclRownum);
 
 		wlInclRownumField=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlInclRownumField.setText(Messages.getString("GetSubFoldersDialog.InclRownumField.Label"));
+		wlInclRownumField.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.InclRownumField.Label"));
  		props.setLook(wlInclRownumField);
 		fdlInclRownumField=new FormData();
 		fdlInclRownumField.left = new FormAttachment(wInclRownum, margin);
@@ -472,7 +474,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 		
 		
 		wlLimit=new Label(wSettingsComp, SWT.RIGHT);
-		wlLimit.setText(Messages.getString("GetSubFoldersDialog.Limit.Label"));
+		wlLimit.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.Limit.Label"));
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -504,13 +506,13 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 		// ///////////////////////////////////////////////////////////
 
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 
 		wPreview = new Button(shell, SWT.PUSH);
-		wPreview.setText(Messages.getString("GetSubFoldersDialog.Preview.Button"));
+		wPreview.setText(BaseMessages.getString(PKG, "GetSubFoldersDialog.Preview.Button"));
 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wCancel , wPreview }, margin, wTabFolder);
 
@@ -746,7 +748,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 		TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname
 				.getText());
 
-		EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("GetSubFoldersDialog.PreviewSize.DialogTitle"), Messages.getString("GetSubFoldersDialog.PreviewSize.DialogMessage"));
+		EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "GetSubFoldersDialog.PreviewSize.DialogTitle"), BaseMessages.getString(PKG, "GetSubFoldersDialog.PreviewSize.DialogMessage"));
 		int previewSize = numberDialog.open();
 		if (previewSize > 0)
 		{
@@ -761,7 +763,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 
 				if (trans.getResult() != null && trans.getResult().getNrErrors() > 0)
 				{
-					EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("GetSubFoldersDialog.ErrorInPreview.DialogMessage"), loggingText, true);
+					EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "GetSubFoldersDialog.ErrorInPreview.DialogMessage"), loggingText, true);
 					etd.setReadOnly();
 					etd.open();
 				}

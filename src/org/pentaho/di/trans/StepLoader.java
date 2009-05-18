@@ -38,6 +38,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.i18n.LoaderInputStreamProvider;
 import org.pentaho.di.trans.step.StepCategory;
@@ -53,6 +54,8 @@ import org.w3c.dom.Node;
  */
 public class StepLoader implements LoaderInputStreamProvider
 {
+	private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private static StepLoader             stepLoader = null;
     private String                        pluginDirectory[];
     private List<StepPlugin>              pluginList;
@@ -218,7 +221,7 @@ public class StepLoader implements LoaderInputStreamProvider
         }
         catch (Exception e)
         {
-            throw new KettleException( Messages.getString("StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001"), e); //$NON-NLS-1$
+            throw new KettleException( BaseMessages.getString(PKG, "StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001"), e); //$NON-NLS-1$
         }
     }
 
@@ -324,7 +327,7 @@ public class StepLoader implements LoaderInputStreamProvider
                 {
                     int idx = pluginList.indexOf(sp);
                     pluginList.set(idx, sp);
-                    // System.out.println(Messages.getString("StepLoader.Log.ReplaceExistingPlugid")+id); //$NON-NLS-1$
+                    // System.out.println(BaseMessages.getString(PKG, "StepLoader.Log.ReplaceExistingPlugid")+id); //$NON-NLS-1$
                 }
             }
             else if( pluginType == PLUGIN_TYPE_PARTIONER ) 
@@ -343,14 +346,14 @@ public class StepLoader implements LoaderInputStreamProvider
             	}
             	catch( Throwable e ) 
             	{
-                    LogWriter.getInstance().logError("StepLoader", Messages.getString("StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001") + e.toString()); //$NON-NLS-1$
+                    LogWriter.getInstance().logError("StepLoader", BaseMessages.getString(PKG, "StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001") + e.toString()); //$NON-NLS-1$
                     LogWriter.getInstance().logError("StepLoader", Const.getStackTracker( e )); //$NON-NLS-1$
             	}
             }
         }
         catch (Throwable e)
         {
-            throw new KettleException( Messages.getString("StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001"), e); //$NON-NLS-1$
+            throw new KettleException( BaseMessages.getString(PKG, "StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001"), e); //$NON-NLS-1$
         }
     }
 
@@ -385,7 +388,7 @@ public class StepLoader implements LoaderInputStreamProvider
 	            File f = new File(pluginDirectory[dirNr]);
 		        if (f.isDirectory() && f.exists())
 		        {
-                    log.logDetailed(Messages.getString("StepLoader.Log.StepLoader.Title"), Messages.getString("StepLoader.Log.StepLoader.Description")+pluginDirectory[dirNr]); //$NON-NLS-1$ //$NON-NLS-2$
+                    log.logDetailed(BaseMessages.getString(PKG, "StepLoader.Log.StepLoader.Title"), BaseMessages.getString(PKG, "StepLoader.Log.StepLoader.Description")+pluginDirectory[dirNr]); //$NON-NLS-1$ //$NON-NLS-2$
 	
 		            String dirs[] = f.list();
 		            for (int i = 0; i < dirs.length; i++)
@@ -408,23 +411,23 @@ public class StepLoader implements LoaderInputStreamProvider
 		                    }
 		                    else
 		                    {
-		    		            log.logDetailed(Messages.getString("StepLoader.Log.StepLoader.Title"), "Plugin file ["+fpixml+"] is not readable."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		    		            log.logDetailed(BaseMessages.getString(PKG, "StepLoader.Log.StepLoader.Title"), "Plugin file ["+fpixml+"] is not readable."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		                    }
 		                }
 		                else
 		                {
-	    		            log.logDetailed(Messages.getString("StepLoader.Log.StepLoader.Title"), "Plugin directory ["+piDir+"] is not a directory."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	    		            log.logDetailed(BaseMessages.getString(PKG, "StepLoader.Log.StepLoader.Title"), "Plugin directory ["+piDir+"] is not a directory."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		                }
 		            }		           
 		        }
 		        else
 		        {
-		            log.logDebug(Messages.getString("StepLoader.Log.StepLoader.Title"), "Plugin directory not found, ignoring this: ["+pluginDirectory[dirNr]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		            log.logDebug(BaseMessages.getString(PKG, "StepLoader.Log.StepLoader.Title"), "Plugin directory not found, ignoring this: ["+pluginDirectory[dirNr]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		        }
             }
             catch(Exception e)
             {
-                throw new KettleException(Messages.getString("StepLoader.RuntimeError.CouldNotFindDirectory.TRANS0002",pluginDirectory[dirNr]), e); //$NON-NLS-1$
+                throw new KettleException(BaseMessages.getString(PKG, "StepLoader.RuntimeError.CouldNotFindDirectory.TRANS0002",pluginDirectory[dirNr]), e); //$NON-NLS-1$
             }
         }
     }
@@ -438,7 +441,7 @@ public class StepLoader implements LoaderInputStreamProvider
         }
         else
         {
-            throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.UnableToLoadClass.TRANS0003",desc+"]."+Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            throw new KettleStepLoaderException(BaseMessages.getString(PKG, "StepLoader.RuntimeError.UnableToLoadClass.TRANS0003",desc+"]."+Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
     }
 
@@ -496,35 +499,35 @@ public class StepLoader implements LoaderInputStreamProvider
                 }
                     break;
                 default:
-                    throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.UnknownPluginType.TRANS0004") + sp.getType()); //$NON-NLS-1$
+                    throw new KettleStepLoaderException(BaseMessages.getString(PKG, "StepLoader.RuntimeError.UnknownPluginType.TRANS0004") + sp.getType()); //$NON-NLS-1$
                 }
 
                 return (StepMetaInterface) cl.newInstance();
             }
             catch (ClassNotFoundException e)
             {
-                throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.ClassNotFound.TRANS0005"), e); //$NON-NLS-1$
+                throw new KettleStepLoaderException(BaseMessages.getString(PKG, "StepLoader.RuntimeError.ClassNotFound.TRANS0005"), e); //$NON-NLS-1$
             }
             catch (InstantiationException e)
             {
-                throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.UnableToInstantiateClass.TRANS0006"), e); //$NON-NLS-1$
+                throw new KettleStepLoaderException(BaseMessages.getString(PKG, "StepLoader.RuntimeError.UnableToInstantiateClass.TRANS0006"), e); //$NON-NLS-1$
             }
             catch (IllegalAccessException e)
             {
-                throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.IllegalAccessToClass.TRANS0007"), e); //$NON-NLS-1$
+                throw new KettleStepLoaderException(BaseMessages.getString(PKG, "StepLoader.RuntimeError.IllegalAccessToClass.TRANS0007"), e); //$NON-NLS-1$
             }
             catch (MalformedURLException e)
             {
-                throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.MalformedURL.TRANS0008"), e); //$NON-NLS-1$
+                throw new KettleStepLoaderException(BaseMessages.getString(PKG, "StepLoader.RuntimeError.MalformedURL.TRANS0008"), e); //$NON-NLS-1$
             }
             catch (Throwable e)
             {
-                throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.UnExpectedErrorLoadingClass.TRANS0009"), e); //$NON-NLS-1$
+                throw new KettleStepLoaderException(BaseMessages.getString(PKG, "StepLoader.RuntimeError.UnExpectedErrorLoadingClass.TRANS0009"), e); //$NON-NLS-1$
             }
         } 
         else
         {
-            throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.NoValidStepOrPlugin.TRANS0010")); //$NON-NLS-1$
+            throw new KettleStepLoaderException(BaseMessages.getString(PKG, "StepLoader.RuntimeError.NoValidStepOrPlugin.TRANS0010")); //$NON-NLS-1$
         }
     }
 

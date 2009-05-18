@@ -13,6 +13,7 @@
 package org.pentaho.di.trans.steps.denormaliser;
 
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Contains the properties of the target field, conversion mask, type, aggregation method, etc.
@@ -22,6 +23,8 @@ import org.pentaho.di.core.row.ValueMeta;
  */
 public class DenormaliserTargetField
 {
+	private static Class<?> PKG = DenormaliserMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private String  fieldName;
     private String  keyValue;
     private String  targetName;
@@ -50,7 +53,7 @@ public class DenormaliserTargetField
 
     public static final String typeAggrLongDesc[] = 
         {
-            "-", Messages.getString("DenormaliserTargetField.TypeAggrLongDesc.Sum"), Messages.getString("DenormaliserTargetField.TypeAggrLongDesc.Average"), Messages.getString("DenormaliserTargetField.TypeAggrLongDesc.Min"), Messages.getString("DenormaliserTargetField.TypeAggrLongDesc.Max"), Messages.getString("DenormaliserTargetField.TypeAggrLongDesc.CountAll"), Messages.getString("DenormaliserTargetField.TypeAggrLongDesc.ConcatComma")    //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+            "-", BaseMessages.getString(PKG, "DenormaliserTargetField.TypeAggrLongDesc.Sum"), BaseMessages.getString(PKG, "DenormaliserTargetField.TypeAggrLongDesc.Average"), BaseMessages.getString(PKG, "DenormaliserTargetField.TypeAggrLongDesc.Min"), BaseMessages.getString(PKG, "DenormaliserTargetField.TypeAggrLongDesc.Max"), BaseMessages.getString(PKG, "DenormaliserTargetField.TypeAggrLongDesc.CountAll"), BaseMessages.getString(PKG, "DenormaliserTargetField.TypeAggrLongDesc.ConcatComma")    //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
         };
 
 

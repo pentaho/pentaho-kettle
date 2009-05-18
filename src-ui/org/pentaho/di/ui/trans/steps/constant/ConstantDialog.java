@@ -38,18 +38,20 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.constant.ConstantMeta;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.trans.steps.constant.ConstantMeta;
-import org.pentaho.di.trans.steps.constant.Messages;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 public class ConstantDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = ConstantMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
@@ -85,14 +87,14 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("ConstantDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "ConstantDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -110,7 +112,7 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 		wStepname.setLayoutData(fdStepname);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("ConstantDialog.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "ConstantDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -121,15 +123,15 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("ConstantDialog.Name.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[1]=new ColumnInfo(Messages.getString("ConstantDialog.Type.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
-		colinf[2]=new ColumnInfo(Messages.getString("ConstantDialog.Format.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,Const.getConversionFormats());
-		colinf[3]=new ColumnInfo(Messages.getString("ConstantDialog.Length.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[4]=new ColumnInfo(Messages.getString("ConstantDialog.Precision.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[5]=new ColumnInfo(Messages.getString("ConstantDialog.Currency.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[6]=new ColumnInfo(Messages.getString("ConstantDialog.Decimal.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[7]=new ColumnInfo(Messages.getString("ConstantDialog.Group.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[8]=new ColumnInfo(Messages.getString("ConstantDialog.Value.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "ConstantDialog.Name.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "ConstantDialog.Type.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
+		colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "ConstantDialog.Format.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,Const.getConversionFormats());
+		colinf[3]=new ColumnInfo(BaseMessages.getString(PKG, "ConstantDialog.Length.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[4]=new ColumnInfo(BaseMessages.getString(PKG, "ConstantDialog.Precision.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[5]=new ColumnInfo(BaseMessages.getString(PKG, "ConstantDialog.Currency.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[6]=new ColumnInfo(BaseMessages.getString(PKG, "ConstantDialog.Decimal.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[7]=new ColumnInfo(BaseMessages.getString(PKG, "ConstantDialog.Group.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[8]=new ColumnInfo(BaseMessages.getString(PKG, "ConstantDialog.Value.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wFields=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -147,9 +149,9 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 		wFields.setLayoutData(fdFields);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
 

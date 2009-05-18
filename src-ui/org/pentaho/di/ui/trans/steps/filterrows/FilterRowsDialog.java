@@ -42,19 +42,21 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.filterrows.FilterRowsMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ConditionEditor;
-import org.pentaho.di.trans.steps.filterrows.FilterRowsMeta;
-import org.pentaho.di.trans.steps.filterrows.Messages;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = FilterRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlTrueTo;
 	private CCombo       wTrueTo;
 	private FormData     fdlTrueTo, fdTrueTo;
@@ -105,14 +107,14 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("FilterRowsDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "FilterRowsDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("FilterRowsDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "FilterRowsDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -131,7 +133,7 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Send 'True' data to...
 		wlTrueTo=new Label(shell, SWT.RIGHT);
-		wlTrueTo.setText(Messages.getString("FilterRowsDialog.SendTrueTo.Label")); //$NON-NLS-1$
+		wlTrueTo.setText(BaseMessages.getString(PKG, "FilterRowsDialog.SendTrueTo.Label")); //$NON-NLS-1$
  		props.setLook(wlTrueTo);
 		fdlTrueTo=new FormData();
 		fdlTrueTo.left = new FormAttachment(0, 0);
@@ -161,7 +163,7 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Send 'False' data to...
 		wlFalseTo=new Label(shell, SWT.RIGHT);
-		wlFalseTo.setText(Messages.getString("FilterRowsDialog.SendFalseTo.Label")); //$NON-NLS-1$
+		wlFalseTo.setText(BaseMessages.getString(PKG, "FilterRowsDialog.SendFalseTo.Label")); //$NON-NLS-1$
  		props.setLook(wlFalseTo);
 		fdlFalseTo=new FormData();
 		fdlFalseTo.left = new FormAttachment(0, 0);
@@ -191,7 +193,7 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 
 		
 		wlCondition=new Label(shell, SWT.NONE);
-		wlCondition.setText(Messages.getString("FilterRowsDialog.Condition.Label")); //$NON-NLS-1$
+		wlCondition.setText(BaseMessages.getString(PKG, "FilterRowsDialog.Condition.Label")); //$NON-NLS-1$
  		props.setLook(wlCondition);
 		fdlCondition=new FormData();
 		fdlCondition.left  = new FormAttachment(0, 0);
@@ -206,14 +208,14 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 		catch(KettleException ke)
 		{
 			inputfields = new RowMeta();
-			new ErrorDialog(shell, Messages.getString("FilterRowsDialog.FailedToGetFields.DialogTitle"), Messages.getString("FilterRowsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "FilterRowsDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "FilterRowsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 

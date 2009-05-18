@@ -28,6 +28,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -48,6 +49,8 @@ import org.w3c.dom.Node;
 
 public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = DenormaliserMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** Fields to group over */
     private String                    groupField[];
 
@@ -164,12 +167,12 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
         if (keyField != null && keyField.length() > 0)
         {
             int idx = row.indexOfValue(keyField);
-            if (idx < 0) { throw new KettleStepException(Messages.getString("DenormaliserMeta.Exception.UnableToLocateKeyField",keyField )); } //$NON-NLS-1$ //$NON-NLS-2$
+            if (idx < 0) { throw new KettleStepException(BaseMessages.getString(PKG, "DenormaliserMeta.Exception.UnableToLocateKeyField",keyField )); } //$NON-NLS-1$ //$NON-NLS-2$
             row.removeValueMeta(idx);
         }
         else
         {
-            throw new KettleStepException(Messages.getString("DenormaliserMeta.Exception.RequiredKeyField")); //$NON-NLS-1$
+            throw new KettleStepException(BaseMessages.getString(PKG, "DenormaliserMeta.Exception.RequiredKeyField")); //$NON-NLS-1$
         }
 
         // Remove all field value(s) (there will be different entries for each output row)
@@ -187,7 +190,7 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
             }
             else
             {
-                throw new KettleStepException(Messages.getString("DenormaliserMeta.Exception.RequiredTargetFieldName", (i + 1) + "")); //$NON-NLS-1$ //$NON-NLS-2$
+                throw new KettleStepException(BaseMessages.getString(PKG, "DenormaliserMeta.Exception.RequiredTargetFieldName", (i + 1) + "")); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
 
@@ -242,7 +245,7 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(Messages.getString("DenormaliserMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "DenormaliserMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
         }
     }
 
@@ -356,7 +359,7 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("DenormaliserMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "DenormaliserMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
         }
     }
     
@@ -365,12 +368,12 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
 
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DenormaliserMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DenormaliserMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("DenormaliserMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "DenormaliserMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
     }

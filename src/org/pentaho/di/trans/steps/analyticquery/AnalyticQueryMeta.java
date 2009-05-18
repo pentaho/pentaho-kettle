@@ -26,6 +26,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -44,6 +45,7 @@ import org.w3c.dom.Node;
 
 public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = AnalyticQuery.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	public static final int TYPE_FUNCT_LEAD               =  0;
 	public static final int TYPE_FUNCT_LAG                =  1;
@@ -57,8 +59,8 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
 	public static final String typeGroupLongDesc[] = 
 		{
                                                
-            Messages.getString("AnalyticQueryMeta.TypeGroupLongDesc.LEAD"),                 //$NON-NLS-1$ 
-            Messages.getString("AnalyticQueryMeta.TypeGroupLongDesc.LAG"), 
+            BaseMessages.getString(PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LEAD"),                 //$NON-NLS-1$ 
+            BaseMessages.getString(PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LAG"), 
 		};
 
 	    
@@ -225,7 +227,7 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("AnalyticQueryMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "AnalyticQueryMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -346,7 +348,7 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("AnalyticQueryMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "AnalyticQueryMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -371,7 +373,7 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("AnalyticQueryMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "AnalyticQueryMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
@@ -382,12 +384,12 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
 
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("AnalyticQueryMeta.CheckResult.ReceivingInfoOK"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AnalyticQueryMeta.CheckResult.ReceivingInfoOK"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("AnalyticQueryMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AnalyticQueryMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

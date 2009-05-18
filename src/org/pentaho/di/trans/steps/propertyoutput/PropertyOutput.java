@@ -14,11 +14,16 @@
 
 package org.pentaho.di.trans.steps.propertyoutput;
 
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
+import java.io.OutputStream;
+import java.util.Properties;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -26,12 +31,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.core.vfs.KettleVFS;
-
-import org.apache.commons.vfs.FileObject;
-
-import java.io.OutputStream;
-import java.util.Properties;;
 
 
 
@@ -44,6 +43,8 @@ import java.util.Properties;;
  
 public class PropertyOutput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = PropertyOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private PropertyOutputMeta meta;
 	private PropertyOutputData data;
 	
@@ -85,8 +86,8 @@ public class PropertyOutput extends BaseStep implements StepInterface
 			if (data.indexOfKeyField<0)
 			{
 				// The field is unreachable !
-				logError(Messages.getString("PropertyOutput.Log.ErrorFindingField", meta.getKeyField()));
-				throw new KettleException(Messages.getString("PropertyOutput.Log.ErrorFindingField",meta.getKeyField()));
+				logError(BaseMessages.getString(PKG, "PropertyOutput.Log.ErrorFindingField", meta.getKeyField()));
+				throw new KettleException(BaseMessages.getString(PKG, "PropertyOutput.Log.ErrorFindingField",meta.getKeyField()));
 			}
             
 			// Let's take the index of Key field ...	
@@ -94,8 +95,8 @@ public class PropertyOutput extends BaseStep implements StepInterface
 			if (data.indexOfValueField<0)
 			{
 				// The field is unreachable !
-				logError(Messages.getString("PropertyOutput.Log.ErrorFindingField", meta.getValueField()));
-				throw new KettleException(Messages.getString("PropertyOutput.Log.ErrorFindingField",meta.getValueField()));
+				logError(BaseMessages.getString(PKG, "PropertyOutput.Log.ErrorFindingField", meta.getValueField()));
+				throw new KettleException(BaseMessages.getString(PKG, "PropertyOutput.Log.ErrorFindingField",meta.getValueField()));
 			}
             
 			// Let's check for filename...
@@ -103,8 +104,8 @@ public class PropertyOutput extends BaseStep implements StepInterface
 			// Check if filename is empty..
 			if(Const.isEmpty(filename))
 			{
-				logError(Messages.getString("PropertyOutput.Log.FilenameEmpty"));
-				throw new KettleException(Messages.getString("PropertyOutput.Log.FilenameEmpty"));	
+				logError(BaseMessages.getString(PKG, "PropertyOutput.Log.FilenameEmpty"));
+				throw new KettleException(BaseMessages.getString(PKG, "PropertyOutput.Log.FilenameEmpty"));	
 			}
 			try{
 				data.file=KettleVFS.getFileObject(filename);
@@ -133,8 +134,8 @@ public class PropertyOutput extends BaseStep implements StepInterface
             {
             	if(log.isDetailed()) 
             	{
-            		log.logDetailed(toString(),Messages.getString("PropertyOutput.Log.Key", propkey));
-            		log.logDetailed(toString(),Messages.getString("PropertyOutput.Log.Value" ,propvalue));
+            		log.logDetailed(toString(),BaseMessages.getString(PKG, "PropertyOutput.Log.Key", propkey));
+            		log.logDetailed(toString(),BaseMessages.getString(PKG, "PropertyOutput.Log.Value" ,propvalue));
             	}
                 // Update property
                 data.pro.setProperty(propkey, propvalue);
@@ -158,7 +159,7 @@ public class PropertyOutput extends BaseStep implements StepInterface
             }
 			else
 			{
-				logError(Messages.getString("PropertyOutputMeta.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "PropertyOutputMeta.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -189,14 +190,14 @@ public class PropertyOutput extends BaseStep implements StepInterface
 	    		parentfolder=data.file.getParent();	    		
 	    		if(!parentfolder.exists())	
 	    		{
-	    			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("PropertyOutput.Log.ParentFolderExists",parentfolder.getName().toString()));
+	    			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "PropertyOutput.Log.ParentFolderExists",parentfolder.getName().toString()));
 	    			parentfolder.createFolder();
-	    			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("PropertyOutput.Log.CanNotCreateParentFolder",parentfolder.getName().toString()));
+	    			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "PropertyOutput.Log.CanNotCreateParentFolder",parentfolder.getName().toString()));
 	    		}		
 			}
 			catch (Exception e) {					
-				logError(Messages.getString("PropertyOutput.Log.CanNotCreateParentFolder", parentfolder.getName().toString()));
-				throw new KettleException(Messages.getString("PropertyOutput.Log.CanNotCreateParentFolder",parentfolder.getName().toString()));
+				logError(BaseMessages.getString(PKG, "PropertyOutput.Log.CanNotCreateParentFolder", parentfolder.getName().toString()));
+				throw new KettleException(BaseMessages.getString(PKG, "PropertyOutput.Log.CanNotCreateParentFolder",parentfolder.getName().toString()));
 			
 			}
 		 finally {
@@ -220,7 +221,7 @@ public class PropertyOutput extends BaseStep implements StepInterface
 			{
 				// Add this to the result file names...
 				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
-				resultFile.setComment(Messages.getString("PropertyOutput.Log.FileAddedResult"));
+				resultFile.setComment(BaseMessages.getString(PKG, "PropertyOutput.Log.FileAddedResult"));
 				addResultFile(resultFile);
 			}   
             

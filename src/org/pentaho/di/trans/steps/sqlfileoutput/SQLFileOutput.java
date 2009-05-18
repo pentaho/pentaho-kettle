@@ -19,13 +19,14 @@ import java.io.BufferedOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.apache.commons.vfs.FileObject;
-import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -45,6 +46,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class SQLFileOutput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = SQLFileOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private SQLFileOutputMeta meta;
 	private SQLFileOutputData data;
 	
@@ -126,7 +129,7 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 		        {
 		            String cr_table = data.db.getDDLCreationTable(schemaTable , data.insertRowMeta);	            
 		            
-		            if (log.isRowLevel()) logRowlevel(Messages.getString("SQLFileOutputLog.OutputSQL",cr_table));
+		            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SQLFileOutputLog.OutputSQL",cr_table));
 			        // Write to file
 		            data.writer.write(cr_table+ Const.CR + Const.CR) ;
 		        }
@@ -154,7 +157,7 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 	        // Do we start a new line for this statement ?
 	        if (meta.StartNewLine())  sql =sql + Const.CR;	
 
-	        if (log.isRowLevel())  logRowlevel(Messages.getString("SQLFileOutputLog.OutputSQL",sql));
+	        if (log.isRowLevel())  logRowlevel(BaseMessages.getString(PKG, "SQLFileOutputLog.OutputSQL",sql));
 	            
 	        try
 	        {
@@ -185,7 +188,7 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 	        else
 	        {
 			
-				logError(Messages.getString("SQLFileOutputMeta.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "SQLFileOutputMeta.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)

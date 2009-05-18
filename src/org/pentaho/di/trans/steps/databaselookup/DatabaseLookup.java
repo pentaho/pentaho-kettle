@@ -30,6 +30,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -46,6 +47,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class DatabaseLookup extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = DatabaseLookupMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private DatabaseLookupMeta meta;
 	private DatabaseLookupData data;
 
@@ -115,7 +118,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		if (add==null)
 		{
 			if (!meta.isLoadingAllDataInCache() || data.hasDBCondition) { // do not go to the database when all rows are in (exception LIKE operator)
-				if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow1")+meta.getStreamKeyField1().length+Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow2")+data.lookupMeta.getString(lookupRow)); //$NON-NLS-1$ //$NON-NLS-2$
+				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DatabaseLookup.Log.AddedValuesToLookupRow1")+meta.getStreamKeyField1().length+BaseMessages.getString(PKG, "DatabaseLookup.Log.AddedValuesToLookupRow2")+data.lookupMeta.getString(lookupRow)); //$NON-NLS-1$ //$NON-NLS-2$
 
 				data.db.setValuesLookup(data.lookupMeta, lookupRow);
 				add = data.db.getLookup(meta.isFailingOnMultipleResults());
@@ -137,7 +140,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
                 return null;
 			}
 			
-			if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.NoResultsFoundAfterLookup")); //$NON-NLS-1$
+			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DatabaseLookup.Log.NoResultsFoundAfterLookup")); //$NON-NLS-1$
             
 			add=new Object[data.returnMeta.size()];
 			for (int i=0;i<meta.getReturnValueField().length;i++)
@@ -154,7 +157,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		}
         else
         {
-        	if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.FoundResultsAfterLookup")+add); //$NON-NLS-1$
+        	if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DatabaseLookup.Log.FoundResultsAfterLookup")+add); //$NON-NLS-1$
 
         	// Only verify the data types if the data comes from the DB, NOT when we have a cache hit
         	// In that case, we already know the data type is OK.
@@ -369,7 +372,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             		          environmentSubstitute(meta.getTablename()), meta.getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta.getReturnValueNewName(), meta.getOrderByClause(), meta.isFailingOnMultipleResults());
 
             // lookup the values!
-            if (log.isDetailed()) logDetailed(Messages.getString("DatabaseLookup.Log.CheckingRow")+getInputRowMeta().getString(r)); //$NON-NLS-1$
+            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DatabaseLookup.Log.CheckingRow")+getInputRowMeta().getString(r)); //$NON-NLS-1$
             
             data.keynrs = new int[meta.getStreamKeyField1().length];
             data.keynrs2= new int[meta.getStreamKeyField1().length];
@@ -382,16 +385,16 @@ public class DatabaseLookup extends BaseStep implements StepInterface
                     !"IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i])  // No field needed! //$NON-NLS-1$
                    )
                 {
-                    throw new KettleStepException(Messages.getString("DatabaseLookup.ERROR0001.FieldRequired1.Exception")+meta.getStreamKeyField1()[i]+Messages.getString("DatabaseLookup.ERROR0001.FieldRequired2.Exception")); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new KettleStepException(BaseMessages.getString(PKG, "DatabaseLookup.ERROR0001.FieldRequired1.Exception")+meta.getStreamKeyField1()[i]+BaseMessages.getString(PKG, "DatabaseLookup.ERROR0001.FieldRequired2.Exception")); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 data.keynrs2[i]=getInputRowMeta().indexOfValue(meta.getStreamKeyField2()[i]);
                 if (data.keynrs2[i]<0 &&  // couldn't find field!
                     "BETWEEN".equalsIgnoreCase(meta.getKeyCondition()[i])   // 2 fields needed! //$NON-NLS-1$
                    )
                 {
-                    throw new KettleStepException(Messages.getString("DatabaseLookup.ERROR0001.FieldRequired3.Exception")+meta.getStreamKeyField2()[i]+Messages.getString("DatabaseLookup.ERROR0001.FieldRequired4.Exception")); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new KettleStepException(BaseMessages.getString(PKG, "DatabaseLookup.ERROR0001.FieldRequired3.Exception")+meta.getStreamKeyField2()[i]+BaseMessages.getString(PKG, "DatabaseLookup.ERROR0001.FieldRequired4.Exception")); //$NON-NLS-1$ //$NON-NLS-2$
                 }
-                if (log.isDebug()) logDebug(Messages.getString("DatabaseLookup.Log.FieldHasIndex1")+meta.getStreamKeyField1()[i]+Messages.getString("DatabaseLookup.Log.FieldHasIndex2")+data.keynrs[i]); //$NON-NLS-1$ //$NON-NLS-2$
+                if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "DatabaseLookup.Log.FieldHasIndex1")+meta.getStreamKeyField1()[i]+BaseMessages.getString(PKG, "DatabaseLookup.Log.FieldHasIndex2")+data.keynrs[i]); //$NON-NLS-1$ //$NON-NLS-2$
             }
 
             data.nullif = new Object[meta.getReturnValueField().length];
@@ -428,13 +431,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface
                     }
                     else
                     {
-                        throw new KettleStepException(Messages.getString("DatabaseLookup.ERROR0001.FieldRequired5.Exception")+meta.getTableKeyField()[i]+Messages.getString("DatabaseLookup.ERROR0001.FieldRequired6.Exception")); //$NON-NLS-1$ //$NON-NLS-2$
+                        throw new KettleStepException(BaseMessages.getString(PKG, "DatabaseLookup.ERROR0001.FieldRequired5.Exception")+meta.getTableKeyField()[i]+BaseMessages.getString(PKG, "DatabaseLookup.ERROR0001.FieldRequired6.Exception")); //$NON-NLS-1$ //$NON-NLS-2$
                     }
                 }
             }
             else
             {
-                throw new KettleStepException(Messages.getString("DatabaseLookup.ERROR0002.UnableToDetermineFieldsOfTable")+schemaTable+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                throw new KettleStepException(BaseMessages.getString(PKG, "DatabaseLookup.ERROR0002.UnableToDetermineFieldsOfTable")+schemaTable+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
             
             // Count the number of values in the lookup as well as the metadata to send along with it.
@@ -482,7 +485,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             
         }
 
-		if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.GotRowFromPreviousStep")+getInputRowMeta().getString(r)); //$NON-NLS-1$
+		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DatabaseLookup.Log.GotRowFromPreviousStep")+getInputRowMeta().getString(r)); //$NON-NLS-1$
 
 		try
 		{
@@ -494,7 +497,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	            // copy row to output rowset(s);
 				putRow(data.outputRowMeta, outputRow);
 	            
-				if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.WroteRowToNextStep")+getInputRowMeta().getString(r)); //$NON-NLS-1$
+				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DatabaseLookup.Log.WroteRowToNextStep")+getInputRowMeta().getString(r)); //$NON-NLS-1$
 	            if (checkFeedback(getLinesRead())) logBasic("linenr "+getLinesRead()); //$NON-NLS-1$
             }
 		}
@@ -507,7 +510,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			}
 			else
 			{
-				logError(Messages.getString("DatabaseLookup.ERROR003.UnexpectedErrorDuringProcessing")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DatabaseLookup.ERROR003.UnexpectedErrorDuringProcessing")+e.getMessage()); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -622,7 +625,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
                 
                 data.db.setCommit(100); // we never get a commit, but it just turns off auto-commit.
                                 
-                if (log.isDetailed()) logDetailed(Messages.getString("DatabaseLookup.Log.ConnectedToDatabase")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DatabaseLookup.Log.ConnectedToDatabase")); //$NON-NLS-1$
                 
                 // See if all the lookup conditions are "equal"
                 // This might speed up things in the case when we load all data in the cache
@@ -644,7 +647,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			}
 			catch(Exception e)
 			{
-				logError(Messages.getString("DatabaseLookup.ERROR0004.UnexpectedErrorDuringInit")+e.toString()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DatabaseLookup.ERROR0004.UnexpectedErrorDuringInit")+e.toString()); //$NON-NLS-1$
 				if (data.db!=null) {
                 	data.db.disconnect();
 				}

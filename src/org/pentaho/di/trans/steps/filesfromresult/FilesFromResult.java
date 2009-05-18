@@ -15,6 +15,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -31,6 +32,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class FilesFromResult extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = FilesFromResult.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private FilesFromResultMeta meta;
 
 	private FilesFromResultData data;
@@ -64,7 +67,7 @@ public class FilesFromResult extends BaseStep implements StepInterface
 										// rowset(s).
 
 		if (checkFeedback(getLinesRead()))
-			logBasic(Messages.getString("FilesFromResult.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+			logBasic(BaseMessages.getString(PKG, "FilesFromResult.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
 
 		return true;
 	}

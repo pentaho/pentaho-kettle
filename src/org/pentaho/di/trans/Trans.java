@@ -49,6 +49,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
@@ -87,6 +88,8 @@ import org.pentaho.di.www.WebResult;
  */
 public class Trans implements VariableSpace, NamedParams
 {
+	private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss"; //$NON-NLS-1$
     
 	private static LogWriter log = LogWriter.getInstance();
@@ -204,8 +207,8 @@ public class Trans implements VariableSpace, NamedParams
 	{
 		this.transMeta=transMeta;
         
-		if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
-		if (log.isDebug()) log.logDebug(toString(), Messages.getString("Trans.Log.NumberOfStepsToRun",String.valueOf(transMeta.nrSteps()) ,String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
+		if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "Trans.Log.NumberOfStepsToRun",String.valueOf(transMeta.nrSteps()) ,String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
 		initializeVariablesFrom(transMeta);
 		copyParametersFrom(transMeta);
 		transMeta.activateParameters();
@@ -239,7 +242,7 @@ public class Trans implements VariableSpace, NamedParams
 				}
 				else
 				{
-					throw new KettleException(Messages.getString("Trans.Exception.UnableToLoadTransformation",name,dirname)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToLoadTransformation",name,dirname)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 			}
 			else
@@ -257,7 +260,7 @@ public class Trans implements VariableSpace, NamedParams
 		}
 		catch(KettleException e)
 		{
-			throw new KettleException(Messages.getString("Trans.Exception.UnableToOpenTransformation",name), e); //$NON-NLS-1$ //$NON-NLS-2$
+			throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToOpenTransformation",name), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		transListeners = new ArrayList<TransListener>();
@@ -300,30 +303,30 @@ public class Trans implements VariableSpace, NamedParams
 		{
 			if (transMeta.getFilename()!=null)
 			{
-				log.logMinimal(toString(), Messages.getString("Trans.Log.DispacthingStartedForFilename",transMeta.getFilename())); //$NON-NLS-1$ //$NON-NLS-2$
+				log.logMinimal(toString(), BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForFilename",transMeta.getFilename())); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		else
 		{
-			log.logMinimal(toString(), Messages.getString("Trans.Log.DispacthingStartedForTransformation",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+			log.logMinimal(toString(), BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForTransformation",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		if (transMeta.getArguments()!=null)
 		{
-		    if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.NumberOfArgumentsDetected", String.valueOf(transMeta.getArguments().length) )); //$NON-NLS-1$
+		    if (log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.NumberOfArgumentsDetected", String.valueOf(transMeta.getArguments().length) )); //$NON-NLS-1$
 		}
 
 		if (isSafeModeEnabled())
 		{
-		    if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.SafeModeIsEnabled",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+		    if (log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.SafeModeIsEnabled",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		if (getReplayDate() != null) {
 			SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
-			log.logBasic(toString(), Messages.getString("Trans.Log.ThisIsAReplayTransformation") //$NON-NLS-1$
+			log.logBasic(toString(), BaseMessages.getString(PKG, "Trans.Log.ThisIsAReplayTransformation") //$NON-NLS-1$
 					+ df.format(getReplayDate()));
 		} else {
-		    if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.ThisIsNotAReplayTransformation")); //$NON-NLS-1$
+		    if (log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.ThisIsNotAReplayTransformation")); //$NON-NLS-1$
 		}
 
 		// setInternalKettleVariables(this);  --> Let's not do this, when running without file, for example remote, it spoils the fun
@@ -345,8 +348,8 @@ public class Trans implements VariableSpace, NamedParams
 
 		if(log.isDetailed()) 
 		{
-			log.logDetailed(toString(), Messages.getString("Trans.Log.FoundDefferentSteps",String.valueOf(hopsteps.size())));	 //$NON-NLS-1$ //$NON-NLS-2$
-			log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatingRowsets")); //$NON-NLS-1$
+			log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.FoundDefferentSteps",String.valueOf(hopsteps.size())));	 //$NON-NLS-1$ //$NON-NLS-2$
+			log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.AllocatingRowsets")); //$NON-NLS-1$
 		}
 		// First allocate all the rowsets required!
 		// Note that a mapping doesn't receive ANY input or output rowsets...
@@ -357,7 +360,7 @@ public class Trans implements VariableSpace, NamedParams
 			if (thisStep.isMapping()) continue; // handled and allocated by the mapping step itself.
 			
 			if(log.isDetailed()) 
-				log.logDetailed(toString(), Messages.getString("Trans.Log.AllocateingRowsetsForStep",String.valueOf(i),thisStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+				log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.AllocateingRowsetsForStep",String.valueOf(i),thisStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 
 			List<StepMeta> nextSteps = transMeta.findNextSteps(thisStep);
 			int nrTargets = nextSteps.size();
@@ -376,7 +379,7 @@ public class Trans implements VariableSpace, NamedParams
                 
                 int nrCopies;
                 if(log.isDetailed()) 
-                	log.logDetailed(toString(), Messages.getString("Trans.Log.copiesInfo",String.valueOf(thisCopies),String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
+                	log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.copiesInfo",String.valueOf(thisCopies),String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
 				int dispatchType;
 				     if (thisCopies==1 && nextCopies==1) { dispatchType=TYPE_DISP_1_1; nrCopies = 1; }
 				else if (thisCopies==1 && nextCopies >1) { dispatchType=TYPE_DISP_1_N; nrCopies = nextCopies; }
@@ -399,7 +402,7 @@ public class Trans implements VariableSpace, NamedParams
     					case TYPE_DISP_N_N: rowSet.setThreadNameFromToCopy(thisStep.getName(), c, nextStep.getName(), c); break;
                         }
     					rowsets.add(rowSet);
-    					if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.TransformationAllocatedNewRowset",rowSet.toString())); //$NON-NLS-1$ //$NON-NLS-2$
+    					if (log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.TransformationAllocatedNewRowset",rowSet.toString())); //$NON-NLS-1$ //$NON-NLS-2$
     				}
                 }
                 else
@@ -415,15 +418,15 @@ public class Trans implements VariableSpace, NamedParams
                             RowSet rowSet=new RowSet(transMeta.getSizeRowset());
                             rowSet.setThreadNameFromToCopy(thisStep.getName(), s, nextStep.getName(), t);
                             rowsets.add(rowSet);
-                            if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.TransformationAllocatedNewRowset",rowSet.toString())); //$NON-NLS-1$ //$NON-NLS-2$
+                            if (log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.TransformationAllocatedNewRowset",rowSet.toString())); //$NON-NLS-1$ //$NON-NLS-2$
                         }
                     }
                 }
 			}
-			log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatedRowsets",String.valueOf(rowsets.size()),String.valueOf(i),thisStep.getName())+" "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.AllocatedRowsets",String.valueOf(rowsets.size()),String.valueOf(i),thisStep.getName())+" "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 
-		if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatingStepsAndStepData")); //$NON-NLS-1$
+		if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.AllocatingStepsAndStepData")); //$NON-NLS-1$
         
 		// Allocate the steps & the data...
 		//
@@ -432,12 +435,12 @@ public class Trans implements VariableSpace, NamedParams
 			StepMeta stepMeta=hopsteps.get(i);
 			String stepid = stepMeta.getStepID();
 
-			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationIsToAllocateStep",stepMeta.getName(),stepid)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.TransformationIsToAllocateStep",stepMeta.getName(),stepid)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 			// How many copies are launched of this step?
 			int nrCopies=stepMeta.getCopies();
 
-            if (log.isDebug()) log.logDebug(toString(), Messages.getString("Trans.Log.StepHasNumberRowCopies",String.valueOf(nrCopies))); //$NON-NLS-1$
+            if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "Trans.Log.StepHasNumberRowCopies",String.valueOf(nrCopies))); //$NON-NLS-1$
 
 			// At least run once...
 			for (int c=0;c<nrCopies;c++)
@@ -486,7 +489,7 @@ public class Trans implements VariableSpace, NamedParams
 					// Add to the bunch...
 					steps.add(combi);
 
-					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationHasAllocatedANewStep",stepMeta.getName(),String.valueOf(c))); //$NON-NLS-1$ //$NON-NLS-2$
+					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.TransformationHasAllocatedANewStep",stepMeta.getName(),String.valueOf(c))); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		}
@@ -573,7 +576,7 @@ public class Trans implements VariableSpace, NamedParams
         preparing=false;
         initializing = true;
 
-        if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.InitialisingSteps", String.valueOf(steps.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        if (log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.InitialisingSteps", String.valueOf(steps.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         StepInitThread initThreads[] = new StepInitThread[steps.size()];
         Thread[] threads = new Thread[steps.size()];
@@ -622,14 +625,14 @@ public class Trans implements VariableSpace, NamedParams
             StepMetaDataCombi combi = initThreads[i].getCombi();
             if (!initThreads[i].isOk()) 
             {
-                log.logError(toString(), Messages.getString("Trans.Log.StepFailedToInit", combi.stepname+"."+combi.copy));
+                log.logError(toString(), BaseMessages.getString(PKG, "Trans.Log.StepFailedToInit", combi.stepname+"."+combi.copy));
                 combi.data.setStatus(StepDataInterface.STATUS_STOPPED);
                 ok=false;
             }
             else
             {
                 combi.data.setStatus(StepDataInterface.STATUS_IDLE);
-                if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.StepInitialized", combi.stepname+"."+combi.copy));
+                if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.StepInitialized", combi.stepname+"."+combi.copy));
             }
         }
         
@@ -672,9 +675,9 @@ public class Trans implements VariableSpace, NamedParams
             // Pass along the log during preview.  Otherwise it becomes hard to see what went wrong.
             //
             if (initAppender!=null) {
-            	throw new KettleException(Messages.getString("Trans.Log.FailToInitializeAtLeastOneStep")+Const.CR+initAppender.getBuffer()); //$NON-NLS-1
+            	throw new KettleException(BaseMessages.getString(PKG, "Trans.Log.FailToInitializeAtLeastOneStep")+Const.CR+initAppender.getBuffer()); //$NON-NLS-1
             } else {
-            	throw new KettleException(Messages.getString("Trans.Log.FailToInitializeAtLeastOneStep")+Const.CR); //$NON-NLS-1
+            	throw new KettleException(BaseMessages.getString(PKG, "Trans.Log.FailToInitializeAtLeastOneStep")+Const.CR); //$NON-NLS-1
             }
 		}
         
@@ -722,8 +725,8 @@ public class Trans implements VariableSpace, NamedParams
 							//
 							if (step.getErrors()>0) {
 	
-								log.logMinimal(getName(), Messages.getString("Trans.Log.TransformationDetectedErrors")); //$NON-NLS-1$ //$NON-NLS-2$
-								log.logMinimal(getName(), Messages.getString("Trans.Log.TransformationIsKillingTheOtherSteps")); //$NON-NLS-1$
+								log.logMinimal(getName(), BaseMessages.getString(PKG, "Trans.Log.TransformationDetectedErrors")); //$NON-NLS-1$ //$NON-NLS-2$
+								log.logMinimal(getName(), BaseMessages.getString(PKG, "Trans.Log.TransformationIsKillingTheOtherSteps")); //$NON-NLS-1$
 	
 								killAllNoWait();
 							}
@@ -779,7 +782,7 @@ public class Trans implements VariableSpace, NamedParams
             steps.get(i).step.start();
         }
         
-        if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationHasAllocated",String.valueOf(steps.size()),String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.TransformationHasAllocated",String.valueOf(steps.size()),String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
     
     /**
@@ -854,7 +857,7 @@ public class Trans implements VariableSpace, NamedParams
 
 	public void logSummary(StepInterface si)
 	{
-		log.logBasic(si.getStepname(), Messages.getString("Trans.Log.FinishedProcessing",String.valueOf(si.getLinesInput()),String.valueOf(si.getLinesOutput()),String.valueOf(si.getLinesRead()))+Messages.getString("Trans.Log.FinishedProcessing2",String.valueOf(si.getLinesWritten()),String.valueOf(si.getLinesUpdated()),String.valueOf(si.getErrors()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+		log.logBasic(si.getStepname(), BaseMessages.getString(PKG, "Trans.Log.FinishedProcessing",String.valueOf(si.getLinesInput()),String.valueOf(si.getLinesOutput()),String.valueOf(si.getLinesRead()))+BaseMessages.getString(PKG, "Trans.Log.FinishedProcessing2",String.valueOf(si.getLinesWritten()),String.valueOf(si.getLinesUpdated()),String.valueOf(si.getErrors()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 	}
 
 	//
@@ -873,7 +876,7 @@ public class Trans implements VariableSpace, NamedParams
 		}
 		catch(Exception e)
 		{
-			log.logError(toString(), Messages.getString("Trans.Log.TransformationError")+e.toString()); //$NON-NLS-1$
+			log.logError(toString(), BaseMessages.getString(PKG, "Trans.Log.TransformationError")+e.toString()); //$NON-NLS-1$
             log.logError(toString(), Const.getStackTracker(e)); //$NON-NLS-1$
 		}
 	}
@@ -889,7 +892,7 @@ public class Trans implements VariableSpace, NamedParams
 			StepMetaDataCombi sid = steps.get(i);
 			if (sid.step.getErrors()!=0L) errors++;
 		}
-		if (errors>0) log.logError(toString(), Messages.getString("Trans.Log.TransformationErrorsDetected")); //$NON-NLS-1$
+		if (errors>0) log.logError(toString(), BaseMessages.getString(PKG, "Trans.Log.TransformationErrorsDetected")); //$NON-NLS-1$
 
 		return errors;
 	}
@@ -937,7 +940,7 @@ public class Trans implements VariableSpace, NamedParams
 			StepMetaDataCombi sid = steps.get(i);
 			BaseStep thr = (BaseStep)sid.step;
 
-			if (log.isDebug()) log.logDebug(toString(), Messages.getString("Trans.Log.LookingAtStep")+thr.getStepname()); //$NON-NLS-1$
+			if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "Trans.Log.LookingAtStep")+thr.getStepname()); //$NON-NLS-1$
 			
 			// If thr is a mapping, this is cause for an endless loop
 			//
@@ -950,7 +953,7 @@ public class Trans implements VariableSpace, NamedParams
 				}
 				catch(Exception e)
 				{
-					log.logError(toString(), Messages.getString("Trans.Log.TransformationErrors")+e.toString()); //$NON-NLS-1$
+					log.logError(toString(), BaseMessages.getString(PKG, "Trans.Log.TransformationErrors")+e.toString()); //$NON-NLS-1$
 					return;
 				}
 			}
@@ -974,7 +977,7 @@ public class Trans implements VariableSpace, NamedParams
 			StepMetaDataCombi sid = steps.get(i);
 			BaseStep thr = (BaseStep)sid.step;
 
-			if (log.isDebug()) log.logDebug(toString(), Messages.getString("Trans.Log.LookingAtStep")+thr.getStepname()); //$NON-NLS-1$
+			if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "Trans.Log.LookingAtStep")+thr.getStepname()); //$NON-NLS-1$
 			
 			thr.stopAll();
 			try
@@ -983,7 +986,7 @@ public class Trans implements VariableSpace, NamedParams
 			}
 			catch(Exception e)
 			{
-				log.logError(toString(), Messages.getString("Trans.Log.TransformationErrors")+e.toString()); //$NON-NLS-1$
+				log.logError(toString(), BaseMessages.getString(PKG, "Trans.Log.TransformationErrors")+e.toString()); //$NON-NLS-1$
 				return;
 			}
 		}
@@ -1007,22 +1010,22 @@ public class Trans implements VariableSpace, NamedParams
 			{
 				if (thr.getErrors()==0)
 				{
-					log.logBasic(toString(), Messages.getString("Trans.Log.ProcessSuccessfullyInfo",thr.getStepname(),"."+thr.getCopy(),String.valueOf(proc),String.valueOf((proc/seconds)))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+					log.logBasic(toString(), BaseMessages.getString(PKG, "Trans.Log.ProcessSuccessfullyInfo",thr.getStepname(),"."+thr.getCopy(),String.valueOf(proc),String.valueOf((proc/seconds)))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 				}
 				else
 				{
-					log.logError(toString(), Messages.getString("Trans.Log.ProcessErrorInfo",thr.getStepname(),"."+thr.getCopy(),String.valueOf(thr.getErrors()),String.valueOf(proc),String.valueOf(proc/seconds))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+					log.logError(toString(), BaseMessages.getString(PKG, "Trans.Log.ProcessErrorInfo",thr.getStepname(),"."+thr.getCopy(),String.valueOf(thr.getErrors()),String.valueOf(proc),String.valueOf(proc/seconds))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 				}
 			}
 			else
 			{
 				if (thr.getErrors()==0)
 				{
-					log.logBasic(toString(), Messages.getString("Trans.Log.ProcessSuccessfullyInfo",thr.getStepname(),"."+thr.getCopy(),String.valueOf(proc),seconds!=0 ? String.valueOf((proc/seconds)) : "-")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+					log.logBasic(toString(), BaseMessages.getString(PKG, "Trans.Log.ProcessSuccessfullyInfo",thr.getStepname(),"."+thr.getCopy(),String.valueOf(proc),seconds!=0 ? String.valueOf((proc/seconds)) : "-")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 				}
 				else
 				{
-					log.logError(toString(), Messages.getString("Trans.Log.ProcessErrorInfo2",thr.getStepname(),"."+thr.getCopy(),String.valueOf(thr.getErrors()),String.valueOf(proc),String.valueOf(seconds))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+					log.logError(toString(), BaseMessages.getString(PKG, "Trans.Log.ProcessErrorInfo2",thr.getStepname(),"."+thr.getCopy(),String.valueOf(thr.getErrors()),String.valueOf(proc),String.valueOf(seconds))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 				}
 			}
 		}
@@ -1190,7 +1193,7 @@ public class Trans implements VariableSpace, NamedParams
 			startDate   = Const.MIN_DATE;
 			endDate     = currentDate;
 			SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
-			log.logBasic(toString(), Messages.getString("Trans.Log.TransformationCanBeReplayed") + df.format(currentDate)); //$NON-NLS-1$
+			log.logBasic(toString(), BaseMessages.getString(PKG, "Trans.Log.TransformationCanBeReplayed") + df.format(currentDate)); //$NON-NLS-1$
 
             Database ldb = null;
             try
@@ -1203,12 +1206,12 @@ public class Trans implements VariableSpace, NamedParams
     				{
     				    // It doesn't make sense to start database logging without a table
     					// to log to.
-    					throw new KettleTransException(Messages.getString("Trans.Exception.NoLogTableDefined")); //$NON-NLS-1$ //$NON-NLS-2$
+    					throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.NoLogTableDefined")); //$NON-NLS-1$ //$NON-NLS-2$
     				}
     				
     			    ldb = new Database(logcon);
     			    ldb.shareVariablesWith(this);
-    			    if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.OpeningLogConnection",""+transMeta.getLogConnection())); //$NON-NLS-1$ //$NON-NLS-2$
+    			    if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.OpeningLogConnection",""+transMeta.getLogConnection())); //$NON-NLS-1$ //$NON-NLS-2$
 					ldb.connect();
 
 					// Use transactions!
@@ -1239,11 +1242,11 @@ public class Trans implements VariableSpace, NamedParams
 					//
 					// Get the date range from the logging table: from the last end_date to now. (currentDate)
 					//
-                    Object[] lastr= ldb.getLastLogDate(transMeta.getLogTable(), transMeta.getName(), false, Messages.getString("Trans.Row.Status.End")); //$NON-NLS-1$
+                    Object[] lastr= ldb.getLastLogDate(transMeta.getLogTable(), transMeta.getName(), false, BaseMessages.getString(PKG, "Trans.Row.Status.End")); //$NON-NLS-1$
 					if (lastr!=null && lastr.length>0)
 					{
                         startDate = (Date) lastr[0]; 
-                        if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.StartDateFound")+startDate); //$NON-NLS-1$
+                        if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.StartDateFound")+startDate); //$NON-NLS-1$
 					}
 
 					//
@@ -1255,7 +1258,7 @@ public class Trans implements VariableSpace, NamedParams
 						transMeta.getMaxDateField()!=null && transMeta.getMaxDateField().length()>0
 						)
 					{
-						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.LookingForMaxdateConnection",""+transMeta.getMaxDateConnection())); //$NON-NLS-1$ //$NON-NLS-2$
+						if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.LookingForMaxdateConnection",""+transMeta.getMaxDateConnection())); //$NON-NLS-1$ //$NON-NLS-2$
 						DatabaseMeta maxcon = transMeta.getMaxDateConnection();
 						if (maxcon!=null)
 						{
@@ -1263,7 +1266,7 @@ public class Trans implements VariableSpace, NamedParams
 							maxdb.shareVariablesWith(this);
 							try
 							{
-								if(log.isDetailed())  log.logDetailed(toString(), Messages.getString("Trans.Log.OpeningMaximumDateConnection")); //$NON-NLS-1$
+								if(log.isDetailed())  log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.OpeningMaximumDateConnection")); //$NON-NLS-1$
 								maxdb.connect();
 
 								//
@@ -1277,18 +1280,18 @@ public class Trans implements VariableSpace, NamedParams
 									Date maxvalue = r1.getRowMeta().getDate(r1.getData(), 0);
 									if (maxvalue!=null)
 									{
-										if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.LastDateFoundOnTheMaxdateConnection")+r1); //$NON-NLS-1$
+										if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.LastDateFoundOnTheMaxdateConnection")+r1); //$NON-NLS-1$
 										endDate.setTime( (long)( maxvalue.getTime() + ( transMeta.getMaxDateOffset()*1000 ) ));
 									}
 								}
 								else
 								{
-									if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.NoLastDateFoundOnTheMaxdateConnection")); //$NON-NLS-1$
+									if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.NoLastDateFoundOnTheMaxdateConnection")); //$NON-NLS-1$
 								}
 							}
 							catch(KettleException e)
 							{
-								throw new KettleTransException(Messages.getString("Trans.Exception.ErrorConnectingToDatabase",""+transMeta.getMaxDateConnection()), e); //$NON-NLS-1$ //$NON-NLS-2$
+								throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ErrorConnectingToDatabase",""+transMeta.getMaxDateConnection()), e); //$NON-NLS-1$ //$NON-NLS-2$
 							}
 							finally
 							{
@@ -1297,7 +1300,7 @@ public class Trans implements VariableSpace, NamedParams
 						}
 						else
 						{
-							throw new KettleTransException(Messages.getString("Trans.Exception.MaximumDateConnectionCouldNotBeFound",""+transMeta.getMaxDateConnection())); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.MaximumDateConnectionCouldNotBeFound",""+transMeta.getMaxDateConnection())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 
@@ -1305,7 +1308,7 @@ public class Trans implements VariableSpace, NamedParams
 					// Get the maximum in depdate...
 					if (transMeta.nrDependencies()>0)
 					{
-						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.CheckingForMaxDependencyDate")); //$NON-NLS-1$
+						if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.CheckingForMaxDependencyDate")); //$NON-NLS-1$
 						//
 						// Maybe one of the tables where this transformation is dependent on has changed?
 						// If so we need to change the start-date!
@@ -1341,7 +1344,7 @@ public class Trans implements VariableSpace, NamedParams
 										Date maxvalue = (Date) r1.getData()[0];
 										if (maxvalue!=null)
 										{
-											if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.FoundDateFromTable",td.getTablename(),"."+td.getFieldname()," = "+maxvalue.toString())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+											if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.FoundDateFromTable",td.getTablename(),"."+td.getFieldname()," = "+maxvalue.toString())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 											if ( maxvalue.getTime() > maxdepdate.getTime() )
 											{
 												maxdepdate=maxvalue;
@@ -1349,17 +1352,17 @@ public class Trans implements VariableSpace, NamedParams
 										}
 										else
 										{
-											throw new KettleTransException(Messages.getString("Trans.Exception.UnableToGetDependencyInfoFromDB",td.getDatabase().getName()+".",td.getTablename()+".",td.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+											throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.UnableToGetDependencyInfoFromDB",td.getDatabase().getName()+".",td.getTablename()+".",td.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 										}
 									}
 									else
 									{
-										throw new KettleTransException(Messages.getString("Trans.Exception.UnableToGetDependencyInfoFromDB",td.getDatabase().getName()+".",td.getTablename()+".",td.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+										throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.UnableToGetDependencyInfoFromDB",td.getDatabase().getName()+".",td.getTablename()+".",td.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 									}
 								}
 								catch(KettleException e)
 								{
-									throw new KettleTransException(Messages.getString("Trans.Exception.ErrorInDatabase",""+td.getDatabase()), e); //$NON-NLS-1$ //$NON-NLS-2$
+									throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ErrorInDatabase",""+td.getDatabase()), e); //$NON-NLS-1$ //$NON-NLS-2$
 								}
 								finally
 								{
@@ -1368,9 +1371,9 @@ public class Trans implements VariableSpace, NamedParams
 							}
 							else
 							{
-								throw new KettleTransException(Messages.getString("Trans.Exception.ConnectionCouldNotBeFound",""+td.getDatabase())); //$NON-NLS-1$ //$NON-NLS-2$
+								throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ConnectionCouldNotBeFound",""+td.getDatabase())); //$NON-NLS-1$ //$NON-NLS-2$
 							}
-							if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.Maxdepdate")+(XMLHandler.date2string(maxdepdate))); //$NON-NLS-1$ //$NON-NLS-2$
+							if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Trans.Log.Maxdepdate")+(XMLHandler.date2string(maxdepdate))); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 
 						// OK, so we now have the maximum depdate;
@@ -1405,7 +1408,7 @@ public class Trans implements VariableSpace, NamedParams
 
                 if (Const.isEmpty(transMeta.getName()) && logcon!=null && transMeta.getLogTable()!=null)
                 {
-                    throw new KettleException(Messages.getString("Trans.Exception.NoTransnameAvailableForLogging"));
+                    throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.NoTransnameAvailableForLogging"));
                 }
 
                 
@@ -1436,7 +1439,7 @@ public class Trans implements VariableSpace, NamedParams
             }
 			catch(KettleException e)
 			{
-				throw new KettleTransException(Messages.getString("Trans.Exception.ErrorWritingLogRecordToTable",transMeta.getLogTable()), e); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ErrorWritingLogRecordToTable",transMeta.getLogTable()), e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			finally
 			{
@@ -1456,12 +1459,12 @@ public class Trans implements VariableSpace, NamedParams
                 stringAppender.setMaxNrLines(Const.toInt(logLimit,0));
                 
                 log.addAppender(stringAppender);
-                stringAppender.setBuffer(new StringBuffer(Messages.getString("Trans.Log.Start")+Const.CR));
+                stringAppender.setBuffer(new StringBuffer(BaseMessages.getString(PKG, "Trans.Log.Start")+Const.CR));
             }
 		}
 		catch(KettleException e)
 		{
-			throw new KettleTransException(Messages.getString("Trans.Exception.UnableToBeginProcessingTransformation"), e); //$NON-NLS-1$
+			throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.UnableToBeginProcessingTransformation"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -1590,7 +1593,7 @@ public class Trans implements VariableSpace, NamedParams
 			}
 			catch(Exception e)
 			{
-				throw new KettleException(Messages.getString("Trans.Exception.ErrorWritingLogRecordToTable")+transMeta.getLogTable()+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.ErrorWritingLogRecordToTable")+transMeta.getLogTable()+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			finally
 			{
@@ -1616,19 +1619,19 @@ public class Trans implements VariableSpace, NamedParams
 	        		if (result.getNrErrors()>0) {
 	        			try {
 	        				database.rollback(true);
-	        				log.logBasic(toString(), Messages.getString("Trans.Exception.TransactionsRolledBackOnConnection", database.toString()));
+	        				log.logBasic(toString(), BaseMessages.getString(PKG, "Trans.Exception.TransactionsRolledBackOnConnection", database.toString()));
 	        			}
 	        			catch(Exception e) {
-	        				throw new KettleDatabaseException(Messages.getString("Trans.Exception.ErrorRollingBackUniqueConnection", database.toString()), e);
+	        				throw new KettleDatabaseException(BaseMessages.getString(PKG, "Trans.Exception.ErrorRollingBackUniqueConnection", database.toString()), e);
 	        			}
 	        		}
 	        		else {
 	        			try {
 	        				database.commit(true);
-	        				log.logBasic(toString(), Messages.getString("Trans.Exception.TransactionsCommittedOnConnection", database.toString()));
+	        				log.logBasic(toString(), BaseMessages.getString(PKG, "Trans.Exception.TransactionsCommittedOnConnection", database.toString()));
 	        			}
 	        			catch(Exception e) {
-	        				throw new KettleDatabaseException(Messages.getString("Trans.Exception.ErrorCommittingUniqueConnection", database.toString()), e);
+	        				throw new KettleDatabaseException(BaseMessages.getString(PKG, "Trans.Exception.ErrorCommittingUniqueConnection", database.toString()), e);
 	        			}
 	        		}
 	        		database.closeConnectionOnly();
@@ -1638,7 +1641,7 @@ public class Trans implements VariableSpace, NamedParams
 	        		map.removeConnection(database.getConnectionGroup(), database.getPartitionId(), database);
         		}
         		catch(Exception e) {
-        			log.logError(toString(), Messages.getString("Trans.Exception.ErrorHandlingTransformationTransaction", database.toString()), e);
+        			log.logError(toString(), BaseMessages.getString(PKG, "Trans.Exception.ErrorHandlingTransformationTransaction", database.toString()), e);
         			result.setNrErrors(result.getNrErrors()+1);
         		}
         	}

@@ -32,18 +32,16 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.ui.core.dialog.EnterTextDialog;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.dialog.Messages;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 /**
@@ -55,6 +53,8 @@ import org.pentaho.di.ui.core.widget.TableView;
  */
 public class SQLStatementsDialog extends Dialog
 {
+	private static Class<?> PKG = SQLStatementsDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private List<SQLStatement>    stats;
 		
 	private TableView    wFields;
@@ -108,7 +108,7 @@ public class SQLStatementsDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("SQLStatementDialog.Title"));
+		shell.setText(BaseMessages.getString(PKG, "SQLStatementDialog.Title"));
 		
 		int margin = Const.MARGIN;
 		
@@ -116,10 +116,10 @@ public class SQLStatementsDialog extends Dialog
 		int FieldsRows=stats.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("SQLStatementDialog.TableCol.Stepname"),     ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
-		colinf[1]=new ColumnInfo(Messages.getString("SQLStatementDialog.TableCol.Connection"),   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
-		colinf[2]=new ColumnInfo(Messages.getString("SQLStatementDialog.TableCol.SQL"),          ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
-		colinf[3]=new ColumnInfo(Messages.getString("SQLStatementDialog.TableCol.Error"),        ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "SQLStatementDialog.TableCol.Stepname"),     ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "SQLStatementDialog.TableCol.Connection"),   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "SQLStatementDialog.TableCol.SQL"),          ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[3]=new ColumnInfo(BaseMessages.getString(PKG, "SQLStatementDialog.TableCol.Error"),        ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
 		
 		wFields=new TableView(variables, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -138,28 +138,28 @@ public class SQLStatementsDialog extends Dialog
 		wFields.setLayoutData(fdFields);
 
 		wClose=new Button(shell, SWT.PUSH);
-		wClose.setText(Messages.getString("System.Button.Close"));
+		wClose.setText(BaseMessages.getString(PKG, "System.Button.Close"));
 		fdClose=new FormData();
 		fdClose.left   =new FormAttachment(25, 0);
 		fdClose.bottom =new FormAttachment(100, 0);
 		wClose.setLayoutData(fdClose);
 
 		wView=new Button(shell, SWT.PUSH);
-		wView.setText(Messages.getString("SQLStatementDialog.Button.ViewSQL"));
+		wView.setText(BaseMessages.getString(PKG, "SQLStatementDialog.Button.ViewSQL"));
 		fdView=new FormData();
 		fdView.left=new FormAttachment(wClose, margin);
 		fdView.bottom =new FormAttachment(100, 0);
 		wView.setLayoutData(fdView);
 
 		wExec=new Button(shell, SWT.PUSH);
-		wExec.setText(Messages.getString("SQLStatementDialog.Button.ExecSQL"));
+		wExec.setText(BaseMessages.getString(PKG, "SQLStatementDialog.Button.ExecSQL"));
 		fdExec=new FormData();
 		fdExec.left=new FormAttachment(wView, margin);
 		fdExec.bottom =new FormAttachment(100, 0);
 		wExec.setLayoutData(fdExec);
 
 		wEdit=new Button(shell, SWT.PUSH);
-		wEdit.setText(Messages.getString("SQLStatementDialog.Button.EditStep"));
+		wEdit.setText(BaseMessages.getString(PKG, "SQLStatementDialog.Button.EditStep"));
 		fdEdit=new FormData();
 		fdEdit.left=new FormAttachment(wExec, margin);
 		fdEdit.bottom =new FormAttachment(100, 0);
@@ -244,8 +244,8 @@ public class SQLStatementsDialog extends Dialog
 			DatabaseMeta di = stat.getDatabase();
 			if (i > 0)
 			    sql.append("-------------------------------------------------------------------------------------------").append(Const.CR);
-			sql.append(Messages.getString("SQLStatementDialog.Log.Step", stat.getStepname()));
-			sql.append(Messages.getString("SQLStatementDialog.Log.Connection", (di != null ? di.getName() : Messages.getString("SQLStatementDialog.Log.Undefined"))));
+			sql.append(BaseMessages.getString(PKG, "SQLStatementDialog.Log.Step", stat.getStepname()));
+			sql.append(BaseMessages.getString(PKG, "SQLStatementDialog.Log.Connection", (di != null ? di.getName() : BaseMessages.getString(PKG, "SQLStatementDialog.Log.Undefined"))));
 			if (stat.hasSQL())
 			{
 				sql.append("-- SQL                  : ");
@@ -253,7 +253,7 @@ public class SQLStatementsDialog extends Dialog
 			}
 			if (stat.hasError())
 			{
-				sql.append(Messages.getString("SQLStatementDialog.Log.Error", stat.getError()));
+				sql.append(BaseMessages.getString(PKG, "SQLStatementDialog.Log.Error", stat.getError()));
 			}
 		}
 
@@ -264,8 +264,8 @@ public class SQLStatementsDialog extends Dialog
 	private void view()
 	{
 		String sql = getSQL();
-		EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("SQLStatementDialog.ViewSQL.Title"),
-		    Messages.getString("SQLStatementDialog.ViewSQL.Message"), sql, true);
+		EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SQLStatementDialog.ViewSQL.Title"),
+		    BaseMessages.getString(PKG, "SQLStatementDialog.ViewSQL.Message"), sql, true);
 		etd.setReadOnly();
 		etd.open();
 	}
@@ -307,14 +307,14 @@ public class SQLStatementsDialog extends Dialog
 						catch(KettleDatabaseException dbe)
 						{
 							errors++;
-							new ErrorDialog(shell, Messages.getString("SQLStatementDialog.Error.Title"),
-							    Messages.getString("SQLStatementDialog.Error.CouldNotExec", stat.getSQL()), dbe);
+							new ErrorDialog(shell, BaseMessages.getString(PKG, "SQLStatementDialog.Error.Title"),
+							    BaseMessages.getString(PKG, "SQLStatementDialog.Error.CouldNotExec", stat.getSQL()), dbe);
 						}
 					}
 					catch(KettleDatabaseException dbe)
 					{
-						new ErrorDialog(shell, Messages.getString("SQLStatementDialog.Error.Title"),
-						    Messages.getString("SQLStatementDialog.Error.CouldNotConnect", (di == null ? "" : di.getName())), dbe);
+						new ErrorDialog(shell, BaseMessages.getString(PKG, "SQLStatementDialog.Error.Title"),
+						    BaseMessages.getString(PKG, "SQLStatementDialog.Error.CouldNotConnect", (di == null ? "" : di.getName())), dbe);
 					}
 					finally
 					{
@@ -325,16 +325,16 @@ public class SQLStatementsDialog extends Dialog
 			if (errors==0)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-				mb.setMessage(Messages.getString("SQLStatementDialog.Success.Message", Integer.toString(idx.length)));
-				mb.setText(Messages.getString("SQLStatementDialog.Success.Title"));
+				mb.setMessage(BaseMessages.getString(PKG, "SQLStatementDialog.Success.Message", Integer.toString(idx.length)));
+				mb.setText(BaseMessages.getString(PKG, "SQLStatementDialog.Success.Title"));
 				mb.open();
 			}
 		}
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("SQLStatementDialog.Error.Message", Integer.toString(errors)));
-			mb.setText(Messages.getString("SQLStatementDialog.Error.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "SQLStatementDialog.Error.Message", Integer.toString(errors)));
+			mb.setText(BaseMessages.getString(PKG, "SQLStatementDialog.Error.Title"));
 			mb.open();
 		}
 	}
@@ -351,8 +351,8 @@ public class SQLStatementsDialog extends Dialog
 		{
 			stepname = null;
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-            mb.setText(Messages.getString("StepFieldsDialog.OriginStep.Title")); //$NON-NLS-1$
-            mb.setMessage(Messages.getString("StepFieldsDialog.OriginStep.Message")); //$NON-NLS-1$
+            mb.setText(BaseMessages.getString(PKG, "StepFieldsDialog.OriginStep.Title")); //$NON-NLS-1$
+            mb.setMessage(BaseMessages.getString(PKG, "StepFieldsDialog.OriginStep.Message")); //$NON-NLS-1$
             mb.open();
 		}
 	}

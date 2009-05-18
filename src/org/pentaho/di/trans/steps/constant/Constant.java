@@ -24,6 +24,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -40,6 +41,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class Constant extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = ConstantMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private ConstantMeta meta;
 	private ConstantData data;
 	
@@ -73,7 +76,7 @@ public class Constant extends BaseStep implements StepInterface
                     
                     if ( value.getType() == ValueMetaInterface.TYPE_NONE )
                     {
-                        String message = Messages.getString("Constant.CheckResult.SpecifyTypeError", value.getName(), stringValue);
+                        String message = BaseMessages.getString(PKG, "Constant.CheckResult.SpecifyTypeError", value.getName(), stringValue);
                         remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));                    
                     }
                 }
@@ -100,7 +103,7 @@ public class Constant extends BaseStep implements StepInterface
                         }
                         catch(Exception e)
                         {
-                            String message = Messages.getString("Constant.BuildRow.Error.Parsing.Number", value.getName(), stringValue, e.toString() );
+                            String message = BaseMessages.getString(PKG, "Constant.BuildRow.Error.Parsing.Number", value.getName(), stringValue, e.toString() );
                             remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
                         }
                         break;
@@ -122,7 +125,7 @@ public class Constant extends BaseStep implements StepInterface
                         }
                         catch(Exception e)
                         {
-                            String message = Messages.getString("Constant.BuildRow.Error.Parsing.Date", value.getName(), stringValue, e.toString() );
+                            String message = BaseMessages.getString(PKG, "Constant.BuildRow.Error.Parsing.Date", value.getName(), stringValue, e.toString() );
                             remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
                         }
                         break;
@@ -134,7 +137,7 @@ public class Constant extends BaseStep implements StepInterface
                         }
                         catch(Exception e)
                         {
-                            String message = Messages.getString("Constant.BuildRow.Error.Parsing.Integer", value.getName(), stringValue, e.toString() );
+                            String message = BaseMessages.getString(PKG, "Constant.BuildRow.Error.Parsing.Integer", value.getName(), stringValue, e.toString() );
                             remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
                         }
                         break;
@@ -146,7 +149,7 @@ public class Constant extends BaseStep implements StepInterface
                         }
                         catch(Exception e)
                         {
-                            String message = Messages.getString("Constant.BuildRow.Error.Parsing.BigNumber", value.getName(), stringValue, e.toString() );
+                            String message = BaseMessages.getString(PKG, "Constant.BuildRow.Error.Parsing.BigNumber", value.getName(), stringValue, e.toString() );
                             remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
                         }
                         break;
@@ -160,7 +163,7 @@ public class Constant extends BaseStep implements StepInterface
                         break;                        
                         
                     default:
-                        String message = Messages.getString("Constant.CheckResult.SpecifyTypeError", value.getName(), stringValue);
+                        String message = BaseMessages.getString(PKG, "Constant.CheckResult.SpecifyTypeError", value.getName(), stringValue);
                         remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
                     }
                 }
@@ -203,12 +206,12 @@ public class Constant extends BaseStep implements StepInterface
 
         if (log.isRowLevel())
         {
-            log.logRowlevel(toString(), Messages.getString("Constant.Log.Wrote.Row", Long.toString(getLinesWritten()), getInputRowMeta().getString(r)) );
+            log.logRowlevel(toString(), BaseMessages.getString(PKG, "Constant.Log.Wrote.Row", Long.toString(getLinesWritten()), getInputRowMeta().getString(r)) );
         }
         
         if (checkFeedback(getLinesWritten())) 
         {
-        	if(log.isBasic()) logBasic( Messages.getString("Constant.Log.LineNr", Long.toString(getLinesWritten()) ));
+        	if(log.isBasic()) logBasic( BaseMessages.getString(PKG, "Constant.Log.LineNr", Long.toString(getLinesWritten()) ));
         }
 		
 		return true;

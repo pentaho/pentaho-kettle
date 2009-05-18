@@ -16,20 +16,22 @@
 package org.pentaho.di.trans.steps.ldapinput;
 
 import java.util.Hashtable;
+
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.InitialDirContext;
-
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -45,6 +47,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class LDAPInput extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private LDAPInputMeta meta;
 	private LDAPInputData data;
 
@@ -101,11 +105,11 @@ public class LDAPInput extends BaseStep implements StepInterface
 		
 			putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 		    
-			if(log.isDebug()) log.logDebug(Messages.getString("LDAPInput.log.ReadRow"), outputRowData.toString());
+			if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "LDAPInput.log.ReadRow"), outputRowData.toString());
 			
 		    if (checkFeedback(getLinesInput()))
 		    {
-		    	if(log.isDetailed()) logDetailed(Messages.getString("LDAPInput.log.LineRow") + getLinesInput());
+		    	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDAPInput.log.LineRow") + getLinesInput());
 		    }
 		    
 		    return true; 
@@ -119,7 +123,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				logError(Messages.getString("LDAPInput.log.Exception", e.getMessage()));
+				logError(BaseMessages.getString(PKG, "LDAPInput.log.Exception", e.getMessage()));
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -224,7 +228,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 		 }
 		 catch (Exception e)
 		 {
-			throw new KettleException(Messages.getString("LDAPInput.Exception.CanNotReadLDAP"), e);
+			throw new KettleException(BaseMessages.getString(PKG, "LDAPInput.Exception.CanNotReadLDAP"), e);
 		 }
 		return outputRowData;
 	}
@@ -274,14 +278,14 @@ public class LDAPInput extends BaseStep implements StepInterface
 		  
 	       if (data.ctx==null)
 		   {
-			   logError(Messages.getString("LDAPInput.Error.UnableToConnectToServer"));
-			   throw new KettleException(Messages.getString("LDAPInput.Error.UnableToConnectToServer"));
+			   logError(BaseMessages.getString(PKG, "LDAPInput.Error.UnableToConnectToServer"));
+			   throw new KettleException(BaseMessages.getString(PKG, "LDAPInput.Error.UnableToConnectToServer"));
 		   }
-	       if(log.isBasic()) logBasic(Messages.getString("LDAPInput.Log.ConnectedToServer",hostname,username));
-		   if (log.isDetailed()) logDetailed(Messages.getString("LDAPInput.ClassUsed.Message",data.ctx.getClass().getName()));
+	       if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "LDAPInput.Log.ConnectedToServer",hostname,username));
+		   if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDAPInput.ClassUsed.Message",data.ctx.getClass().getName()));
 		   // Get the schema tree root
 		   //DirContext schema = data.ctx.getSchema("");  
-		   //if (log.isDetailed()) logDetailed(Messages.getString("LDAPInput.SchemaList.Message",""+schema.list(""))); 
+		   //if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDAPInput.SchemaList.Message",""+schema.list(""))); 
 	       
 		   SearchControls controls = new SearchControls();
 		   controls.setCountLimit(meta.getRowLimit());
@@ -308,7 +312,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 				Attribute attr = attrs.get("namingContexts");
 				  
 				searchbase=attr.get().toString();
-				if(log.isBasic()) logBasic(Messages.getString("LDAPInput.SearchBaseFound",searchbase) );
+				if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "LDAPInput.SearchBaseFound",searchbase) );
 		    } 
 		
 	        controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -317,7 +321,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 	        
 		 }catch (Exception e)
 		 {
-			 throw new KettleException(Messages.getString("LDAPinput.Exception.ErrorConnecting", e.getMessage()));
+			 throw new KettleException(BaseMessages.getString(PKG, "LDAPinput.Exception.ErrorConnecting", e.getMessage()));
 		 }
 	    }
 	
@@ -359,11 +363,11 @@ public class LDAPInput extends BaseStep implements StepInterface
 			{
 				data.ctx.close();
 				if(data.results!=null) data.results=null;
-				if(log.isBasic()) log.logBasic(toString(),Messages.getString("LDAPInput.log.Disconnection.Done"));
+				if(log.isBasic()) log.logBasic(toString(),BaseMessages.getString(PKG, "LDAPInput.log.Disconnection.Done"));
 			}
 			catch (Exception e)
 			{
-	             logError(Messages.getString("LDAPInput.Exception.ErrorDisconecting",e.toString()));
+	             logError(BaseMessages.getString(PKG, "LDAPInput.Exception.ErrorDisconecting",e.toString()));
 	             logError(Const.getStackTracker(e));
 			}
 			

@@ -12,7 +12,6 @@
 package org.pentaho.di.ui.core.dialog;
 
 import org.eclipse.swt.SWT;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -31,11 +30,12 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DescriptionInterface;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.ui.core.dialog.Messages;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.core.PropsUI;
 
 /**
  * Dialog to enter a text. (descriptions etc.)
@@ -45,6 +45,8 @@ import org.pentaho.di.ui.core.PropsUI;
  */
 public class EnterTextDialog extends Dialog
 {
+	private static Class<?> PKG = EnterTextDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private String title, message;
 
     private Label wlDesc;
@@ -163,9 +165,9 @@ public class EnterTextDialog extends Dialog
         if (!readonly)
         {
             wOK = new Button(shell, SWT.PUSH);
-            wOK.setText(Messages.getString("System.Button.OK"));
+            wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
             wCancel = new Button(shell, SWT.PUSH);
-            wCancel.setText(Messages.getString("System.Button.Cancel"));
+            wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
             BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
 
@@ -179,7 +181,7 @@ public class EnterTextDialog extends Dialog
         else
         {
             wOK = new Button(shell, SWT.PUSH);
-            wOK.setText(Messages.getString("System.Button.Close"));
+            wOK.setText(BaseMessages.getString(PKG, "System.Button.Close"));
 
             BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK }, margin, null);
 

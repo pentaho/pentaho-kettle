@@ -36,20 +36,22 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.systemdata.Messages;
 import org.pentaho.di.trans.steps.systemdata.SystemDataMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
 public class SystemDataDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = SystemDataMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Label        wlStepname;
 	private Text         wStepname;
     private FormData     fdlStepname, fdStepname;
@@ -89,14 +91,14 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("SystemDataDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "SystemDataDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("System.Label.StepName"));
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -114,7 +116,7 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 		wStepname.setLayoutData(fdStepname);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("SystemDataDialog.Fields.Label"));
+		wlFields.setText(BaseMessages.getString(PKG, "SystemDataDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -128,14 +130,14 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
         for (int i=1;i<SystemDataMeta.functions.length;i++) functionDesc[i-1]=SystemDataMeta.functions[i].getDescription();
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("SystemDataDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT, false);
-		colinf[1]=new ColumnInfo(Messages.getString("SystemDataDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "SystemDataDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "SystemDataDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT, false);
 		colinf[1].setSelectionAdapter(
 		    new SelectionAdapter()
 	        {
 	            public void widgetSelected(SelectionEvent e)
 	            {
-	                EnterSelectionDialog esd = new EnterSelectionDialog(shell, functionDesc, Messages.getString("SystemDataDialog.SelectInfoType.DialogTitle"), Messages.getString("SystemDataDialog.SelectInfoType.DialogMessage"));
+	                EnterSelectionDialog esd = new EnterSelectionDialog(shell, functionDesc, BaseMessages.getString(PKG, "SystemDataDialog.SelectInfoType.DialogTitle"), BaseMessages.getString(PKG, "SystemDataDialog.SelectInfoType.DialogMessage"));
 	                String string = esd.open();
 	                if (string!=null)
 	                {
@@ -164,9 +166,9 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 				
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
 

@@ -35,18 +35,20 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.PermissionMeta;
 import org.pentaho.di.repository.ProfileMeta;
-import org.pentaho.di.ui.repository.dialog.Messages;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
 public class ProfileDialog extends Dialog 
 {
+	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private ProfileMeta profile;
 	
 	private Shell     shell;
@@ -91,35 +93,35 @@ public class ProfileDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
-		shell.setText(Messages.getString("ProfileDialog.Dialog.Main.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "ProfileDialog.Dialog.Main.Title")); //$NON-NLS-1$
 		shell.setLayout (formLayout);
  		
 		// What's the profile name?
 		wlName = new Label(shell, SWT.RIGHT); 
  		props.setLook(wlName);
-		wlName.setText(Messages.getString("ProfileDialog.Label.Name"));  //$NON-NLS-1$
+		wlName.setText(BaseMessages.getString(PKG, "ProfileDialog.Label.Name"));  //$NON-NLS-1$
 		wName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
  		props.setLook(wName);
 
 		// What's the profile description?
 		wlDesc = new Label(shell, SWT.RIGHT); 
  		props.setLook(wlDesc);
-		wlDesc.setText(Messages.getString("ProfileDialog.Label.Description"));  //$NON-NLS-1$
+		wlDesc.setText(BaseMessages.getString(PKG, "ProfileDialog.Label.Description"));  //$NON-NLS-1$
 		wDesc = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
  		props.setLook(wDesc);
 
 		// What permissions are there?
 		wlPermission = new Label(shell, SWT.RIGHT); 
-		wlPermission.setText(Messages.getString("ProfileDialog.Label.Permissions"));  //$NON-NLS-1$
+		wlPermission.setText(BaseMessages.getString(PKG, "ProfileDialog.Label.Permissions"));  //$NON-NLS-1$
  		props.setLook(wlPermission);
 		wPermission = new List(shell, SWT.BORDER | SWT.READ_ONLY | SWT.MULTI );
  		props.setLook(wPermission);
 
 		// Buttons
 		wOK     = new Button(shell, SWT.PUSH); 
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH); 
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 		
 		FormData fdlName       = new FormData(); 
 		FormData fdName        = new FormData(); 
@@ -264,8 +266,8 @@ public class ProfileDialog extends Dialog
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("ProfileDialog.Dialog.UnexpectedError.Message")); //$NON-NLS-1$
-			mb.setText(Messages.getString("ProfileDialog.Dialog.UnexpectedError.Title")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "ProfileDialog.Dialog.UnexpectedError.Message")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "ProfileDialog.Dialog.UnexpectedError.Title")); //$NON-NLS-1$
 			mb.open(); 
 		}
 		

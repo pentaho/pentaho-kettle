@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.creditcardvalidator;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -35,6 +36,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class CreditCardValidator extends BaseStep implements StepInterface
 {
+	private static Class<?> PKG = CreditCardValidatorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private CreditCardValidatorMeta meta;
     private CreditCardValidatorData data;
     
@@ -76,8 +79,8 @@ public class CreditCardValidator extends BaseStep implements StepInterface
 			
     		// Check if field is provided
 			if (Const.isEmpty(meta.getDynamicField())) {
-				logError(Messages.getString("CreditCardValidator.Error.CardFieldMissing"));
-				throw new KettleException(Messages.getString("CreditCardValidator.Error.CardFieldMissing"));
+				logError(BaseMessages.getString(PKG, "CreditCardValidator.Error.CardFieldMissing"));
+				throw new KettleException(BaseMessages.getString(PKG, "CreditCardValidator.Error.CardFieldMissing"));
 			}
 			
 			// cache the position of the field			
@@ -85,12 +88,12 @@ public class CreditCardValidator extends BaseStep implements StepInterface
 				data.indexOfField =getInputRowMeta().indexOfValue(meta.getDynamicField());
 				if (data.indexOfField<0) {
 					// The field is unreachable !
-					throw new KettleException(Messages.getString("CreditCardValidator.Exception.CouldnotFindField",meta.getDynamicField())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "CreditCardValidator.Exception.CouldnotFindField",meta.getDynamicField())); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 			data.realResultFieldname=environmentSubstitute(meta.getResultFieldName());
 			if(Const.isEmpty(data.realResultFieldname)) {
-				throw new KettleException(Messages.getString("CreditCardValidator.Exception.ResultFieldMissing")); 
+				throw new KettleException(BaseMessages.getString(PKG, "CreditCardValidator.Exception.ResultFieldMissing")); 
 			}
 			data.realCardTypeFieldname=environmentSubstitute(meta.getCardType());
 			data.realNotValidMsgFieldname=environmentSubstitute(meta.getNotValidMsg());
@@ -137,7 +140,7 @@ public class CreditCardValidator extends BaseStep implements StepInterface
 			 //	add new values to the row.
 	        putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
                 
-	        if(log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("CreditCardValidator.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+	        if(log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "CreditCardValidator.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
 	        
         }
         catch(Exception e)
@@ -149,7 +152,7 @@ public class CreditCardValidator extends BaseStep implements StepInterface
         	}
         	else
         	{
-	            logError(Messages.getString("CreditCardValidator.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "CreditCardValidator.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
 	            setErrors(1);
 	            stopAll();
 	            setOutputDone();  // signal end to receiver(s)
@@ -174,7 +177,7 @@ public class CreditCardValidator extends BaseStep implements StepInterface
         {
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), Messages.getString("CreditCardValidator.Error.ResultFieldMissing"));
+        		log.logError(toString(), BaseMessages.getString(PKG, "CreditCardValidator.Error.ResultFieldMissing"));
         		return false;
         	}
             return true;
@@ -193,7 +196,7 @@ public class CreditCardValidator extends BaseStep implements StepInterface
     // Run is were the action happens!
     public void run()
     {
-    	if(log.isBasic()) logBasic(Messages.getString("CreditCardValidator.Log.StartingToRun")); //$NON-NLS-1$
+    	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "CreditCardValidator.Log.StartingToRun")); //$NON-NLS-1$
         
         try
         {
@@ -201,7 +204,7 @@ public class CreditCardValidator extends BaseStep implements StepInterface
         }
         catch(Exception e)
         {
-            logError(Messages.getString("CreditCardValidator.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(BaseMessages.getString(PKG, "CreditCardValidator.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
             stopAll();

@@ -12,7 +12,6 @@
  * the license for the specific language governing your rights and limitations.
 */
 package org.pentaho.di.trans.steps.processfiles;
-import org.w3c.dom.Node;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +24,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
@@ -34,6 +34,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 /*
  * Created on 03-Juin-2008
@@ -42,6 +43,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = ProcessFilesMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private boolean addresultfilenames;
 	private boolean overwritetargetfile;
 	private boolean createparentfolder;
@@ -58,9 +61,9 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface
 	 * The operations description
 	 */
 	public final static String operationTypeDesc[] = {
-			Messages.getString("ProcessFilesMeta.operationType.Copy"),
-			Messages.getString("ProcessFilesMeta.operationType.Move"),
-			Messages.getString("ProcessFilesMeta.operationType.Delete")};
+			BaseMessages.getString(PKG, "ProcessFilesMeta.operationType.Copy"),
+			BaseMessages.getString(PKG, "ProcessFilesMeta.operationType.Move"),
+			BaseMessages.getString(PKG, "ProcessFilesMeta.operationType.Delete")};
 	
 	/**
 	 * The operations type codes
@@ -225,7 +228,7 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	    catch (Exception e)
 	    {
-	        throw new KettleXMLException(Messages.getString("ProcessFilesMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+	        throw new KettleXMLException(BaseMessages.getString(PKG, "ProcessFilesMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
 	    }
     }
     private static int getOperationTypeByCode(String tt) {
@@ -254,7 +257,7 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("ProcessFilesMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "ProcessFilesMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -273,7 +276,7 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("ProcessFilesMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "ProcessFilesMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -285,25 +288,25 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface
         // source filename
         if (Const.isEmpty(sourcefilenamefield))
         {
-            error_message = Messages.getString("ProcessFilesMeta.CheckResult.SourceFileFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ProcessFilesMeta.CheckResult.SourceFileFieldMissing"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = Messages.getString("ProcessFilesMeta.CheckResult.TargetFileFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ProcessFilesMeta.CheckResult.TargetFileFieldOK"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
         if (operationType!=OPERATION_TYPE_DELETE && Const.isEmpty(targetfilenamefield))
         {
-            error_message = Messages.getString("ProcessFilesMeta.CheckResult.TargetFileFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ProcessFilesMeta.CheckResult.TargetFileFieldMissing"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = Messages.getString("ProcessFilesMeta.CheckResult.SourceFileFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ProcessFilesMeta.CheckResult.SourceFileFieldOK"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
@@ -311,12 +314,12 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ProcessFilesMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ProcessFilesMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ProcessFilesMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ProcessFilesMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
 

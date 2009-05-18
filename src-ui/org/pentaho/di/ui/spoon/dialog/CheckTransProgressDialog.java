@@ -26,7 +26,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.ProgressMonitorAdapter;
-import org.pentaho.di.ui.spoon.dialog.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
@@ -39,6 +39,8 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
  */
 public class CheckTransProgressDialog
 {
+	private static Class<?> PKG = CheckTransProgressDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Shell shell;
 	private TransMeta transMeta;
 	private List<CheckResultInterface> remarks;
@@ -69,7 +71,7 @@ public class CheckTransProgressDialog
 				}
 				catch(Exception e)
 				{
-					throw new InvocationTargetException(e, Messages.getString("AnalyseImpactProgressDialog.RuntimeError.ErrorCheckingTransformation.Exception", e.toString())); //Problem encountered checking transformation: {0}
+					throw new InvocationTargetException(e, BaseMessages.getString(PKG, "AnalyseImpactProgressDialog.RuntimeError.ErrorCheckingTransformation.Exception", e.toString())); //Problem encountered checking transformation: {0}
 				}
 			}
 		};
@@ -100,11 +102,11 @@ public class CheckTransProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title"), Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message"), e); // "Error checking transformation","An error occured checking this transformation\!"
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title"), BaseMessages.getString(PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message"), e); // "Error checking transformation","An error occured checking this transformation\!"
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title"), Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message"), e); // "Error checking transformation","An error occured checking this transformation\!"
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title"), BaseMessages.getString(PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message"), e); // "Error checking transformation","An error occured checking this transformation\!"
 		}
 	}
 }

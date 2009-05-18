@@ -37,18 +37,20 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
-import org.pentaho.di.trans.steps.injector.Messages;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 public class InjectorDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = InjectorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private Label        wlFields;
     private TableView    wFields;
     private FormData     fdlFields, fdFields;
@@ -84,14 +86,14 @@ public class InjectorDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("InjectorDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "InjectorDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 		
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("InjectorDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "InjectorDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -110,7 +112,7 @@ public class InjectorDialog extends BaseStepDialog implements StepDialogInterfac
 		
         
         wlFields=new Label(shell, SWT.NONE);
-        wlFields.setText(Messages.getString("InjectorDialog.Fields.Label")); //$NON-NLS-1$
+        wlFields.setText(BaseMessages.getString(PKG, "InjectorDialog.Fields.Label")); //$NON-NLS-1$
         props.setLook(wlFields);
         fdlFields=new FormData();
         fdlFields.left = new FormAttachment(0, 0);
@@ -121,10 +123,10 @@ public class InjectorDialog extends BaseStepDialog implements StepDialogInterfac
         
         ColumnInfo[] colinf=new ColumnInfo[] 
             {
-                new ColumnInfo(Messages.getString("InjectorDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_TEXT,    false ), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("InjectorDialog.ColumnInfo.Type"),      ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.getAllTypes()), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("InjectorDialog.ColumnInfo.Length"),    ColumnInfo.COLUMN_TYPE_TEXT,    false ), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("InjectorDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT,    false ), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "InjectorDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_TEXT,    false ), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "InjectorDialog.ColumnInfo.Type"),      ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.getAllTypes()), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "InjectorDialog.ColumnInfo.Length"),    ColumnInfo.COLUMN_TYPE_TEXT,    false ), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "InjectorDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT,    false ), //$NON-NLS-1$
             };
         
         wFields=new TableView(transMeta, shell, 
@@ -137,9 +139,9 @@ public class InjectorDialog extends BaseStepDialog implements StepDialogInterfac
 
         // Some buttons
         wOK=new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
         wCancel=new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
         
         setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
         
