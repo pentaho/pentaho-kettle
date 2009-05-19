@@ -199,7 +199,7 @@ public class DelayDialog extends BaseStepDialog implements StepDialogInterface
 	{
 		if (Const.isEmpty(wStepname.getText())) return;
 		stepname = wStepname.getText(); // return value
-		input.setTimeOut(Const.toInt(wTimeout.getText(), 0)+"");
+		input.setTimeOut(wTimeout.getText());
 		input.setScaleTimeCode(wScaleTime.getSelectionIndex());
 		dispose();
 	}
