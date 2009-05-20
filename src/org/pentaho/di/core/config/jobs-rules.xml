@@ -11,6 +11,10 @@
     <call-method-rule methodname="set" paramcount="2"  pattern="tooltip"/>
     <object-param-rule type="java.lang.String" paramnumber="0" value="tooltipDesc" param="tooltipDesc" pattern="tooltip"/>
     <call-param-rule paramnumber="1" pattern="tooltip"/>
+    
+    <call-method-rule methodname="set" paramcount="2"  pattern="description"/>
+    <object-param-rule type="java.lang.String" paramnumber="0" value="name" param="name" pattern="description"/>
+    <call-param-rule paramnumber="1" pattern="description"/>
 
     <bean-property-setter-rule pattern="image-uri" propertyname="imageFileName"/>
     <bean-property-setter-rule pattern="class-name" propertyname="className"/>

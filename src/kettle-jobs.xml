@@ -4,16 +4,10 @@
     <!-- NOTE i18n arguments are : i18n package and key separated by colon (:)
     --> 
 
-	<job id="NONE">
-		<description>-</description>
-		<class-name>org.pentaho.di.job.entries.empty.JobEntryEmpty</class-name>
-		<tooltip>-</tooltip>
-		<image-uri>ui/images/BLK.png</image-uri>
-	</job>
+    <!-- Configured via Job annotation 
 	
-	<!-- Configured via Job annotation 
 	<job id="TRANS">
-		<description>i18n:org.pentaho.di.job:JobEntry.Trans.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.Trans.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.trans.JobEntryTrans</class-name>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Trans.Tooltip</tooltip>
 		<image-uri>ui/images/TRN.png</image-uri>
@@ -21,7 +15,7 @@
 	 -->
 	
 	<job id="JOB">
-		<description>i18n:org.pentaho.di.job:JobEntry.Job.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.Job.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.job.JobEntryJob</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Job.Tooltip</tooltip>
@@ -29,7 +23,7 @@
 	</job>
 	
 	<job id="SHELL">
-		<description>i18n:org.pentaho.di.job:JobEntry.Shell.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.Shell.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.shell.JobEntryShell</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Scripting</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Shell.Tooltip</tooltip>
@@ -37,7 +31,7 @@
 	</job>
 	
 	<job id="MAIL">
-		<description>i18n:org.pentaho.di.job:JobEntry.Mail.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.Mail.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.mail.JobEntryMail</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Mail</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Mail.Tooltip</tooltip>
@@ -45,7 +39,7 @@
 	</job>
 	
 	<job id="SQL">
-		<description>i18n:org.pentaho.di.job:JobEntry.SQL.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.SQL.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.sql.JobEntrySQL</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Scripting</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SQL.Tooltip</tooltip>
@@ -53,7 +47,7 @@
 	</job>
 	
 	<job id="FTP">
-		<description>i18n:org.pentaho.di.job:JobEntry.FTP.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.FTP.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.ftp.JobEntryFTP</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FTP.Tooltip</tooltip>
@@ -61,7 +55,7 @@
 	</job>
 	
 	<job id="TABLE_EXISTS">
-		<description>i18n:org.pentaho.di.job:JobEntry.TableExists.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.TableExists.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.tableexists.JobEntryTableExists</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.TableExists.Tooltip</tooltip>
@@ -69,7 +63,7 @@
 	</job>
 	
 	<job id="FILE_EXISTS">
-		<description>i18n:org.pentaho.di.job:JobEntry.FileExists.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.FileExists.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.fileexists.JobEntryFileExists</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FileExists.Tooltip</tooltip>
@@ -77,7 +71,7 @@
 	</job>
 	
 	<job id="EVAL">
-		<description>i18n:org.pentaho.di.job:JobEntry.Evaluation.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.Evaluation.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.eval.JobEntryEval</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Scripting</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Evaluation.Tooltip</tooltip>
@@ -85,7 +79,7 @@
 	</job>
 	
 	<job id="SPECIAL">
-		<description>i18n:org.pentaho.di.job:JobEntry.Special.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.Special.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.special.JobEntrySpecial</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Special.Tooltip</tooltip>
@@ -93,7 +87,7 @@
 	</job>
 	
 	<job id="SFTP">
-		<description>i18n:org.pentaho.di.job:JobEntry.SFTP.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.SFTP.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.sftp.JobEntrySFTP</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SFTP.Tooltip</tooltip>
@@ -101,7 +95,7 @@
 	</job>
 	
 	<job id="HTTP">
-		<description>i18n:org.pentaho.di.job:JobEntry.HTTP.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.HTTP.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.http.JobEntryHTTP</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.HTTP.Tooltip</tooltip>
@@ -109,7 +103,7 @@
 	</job>
 	
 	<job id="CREATE_FILE">
-		<description>i18n:org.pentaho.di.job:JobEntry.CreateFile.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.CreateFile.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.createfile.JobEntryCreateFile</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.CreateFile.Tooltip</tooltip>
@@ -117,7 +111,7 @@
 	</job>
 	
 	<job id="DELETE_FILE">
-		<description>i18n:org.pentaho.di.job:JobEntry.DeleteFile.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.DeleteFile.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.deletefile.JobEntryDeleteFile</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.DeleteFile.Tooltip</tooltip>
@@ -125,7 +119,7 @@
 	</job>
 	
 	<job id="WAIT_FOR_FILE">
-		<description>i18n:org.pentaho.di.job:JobEntry.WaitForFile.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.WaitForFile.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.waitforfile.JobEntryWaitForFile</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.WaitForFile.Tooltip</tooltip>
@@ -133,7 +127,7 @@
 	</job>
 	
 	<job id="SFTPPUT">
-		<description>i18n:org.pentaho.di.job:JobEntry.SFTPPut.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.SFTPPut.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.sftpput.JobEntrySFTPPUT</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SFTPPut.Tooltip</tooltip>
@@ -141,7 +135,7 @@
 	</job>
 	
 	<job id="FILE_COMPARE">
-		<description>i18n:org.pentaho.di.job:JobEntry.FileCompare.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.FileCompare.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.filecompare.JobEntryFileCompare</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FileCompare.Tooltip</tooltip>
@@ -149,7 +143,7 @@
 	</job>
 	
 	<job id="MYSQL_BULK_LOAD">
-		<description>i18n:org.pentaho.di.job:JobEntry.MysqlBulkLoad.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.MysqlBulkLoad.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.mysqlbulkload.JobEntryMysqlBulkLoad</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.BulkLoading</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MysqlBulkLoad.Tooltip</tooltip>
@@ -157,7 +151,7 @@
 	</job>
 	
 	<job id="MSGBOX_INFO">
-		<description>i18n:org.pentaho.di.job:JobEntry.MsgBoxInfo.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.MsgBoxInfo.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.msgboxinfo.JobEntryMsgBoxInfo</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MsgBoxInfo.Tooltip</tooltip>
@@ -165,7 +159,7 @@
 	</job>
 	
 	<job id="DELAY">
-		<description>i18n:org.pentaho.di.job:JobEntry.Delay.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.Delay.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.delay.JobEntryDelay</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Delay.Tooltip</tooltip>
@@ -173,7 +167,7 @@
 	</job>
 	
 	<job id="ZIP_FILE">
-		<description>i18n:org.pentaho.di.job:JobEntry.ZipFile.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.ZipFile.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.zipfile.JobEntryZipFile</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.ZipFile.Tooltip</tooltip>
@@ -181,7 +175,7 @@
 	</job>
 	
 	<job id="XSLT">
-		<description>i18n:org.pentaho.di.job:JobEntry.XSLT.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.XSLT.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.xslt.JobEntryXSLT</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.XML</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.XSLT.Tooltip</tooltip>
@@ -189,7 +183,7 @@
 	</job>
 	
 	<job id="MYSQL_BULK_FILE">
-		<description>i18n:org.pentaho.di.job:JobEntry.MysqlBulkFile.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.MysqlBulkFile.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.mysqlbulkfile.JobEntryMysqlBulkFile</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.BulkLoading</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MysqlBulkFile.Tooltip</tooltip>
@@ -197,7 +191,7 @@
 	</job>
 	
 	<job id="ABORT">
-		<description>i18n:org.pentaho.di.job:JobEntry.Abort.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.Abort.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.abort.JobEntryAbort</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Abort.Tooltip</tooltip>
@@ -205,7 +199,7 @@
 	</job>
 	
 	<job id="GET_POP">
-		<description>i18n:org.pentaho.di.job:JobEntry.GetPOP.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.GetPOP.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.getpop.JobEntryGetPOP</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Mail</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.GetPOP.Tooltip</tooltip>
@@ -213,7 +207,7 @@
 	</job>
 	
 	<job id="PING">
-		<description>i18n:org.pentaho.di.job:JobEntry.Ping.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.Ping.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.ping.JobEntryPing</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Ping.Tooltip</tooltip>
@@ -221,7 +215,7 @@
 	</job>
 	
 	<job id="DELETE_FILES">
-		<description>i18n:org.pentaho.di.job:JobEntry.DeleteFiles.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.DeleteFiles.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.deletefiles.JobEntryDeleteFiles</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.DeleteFiles.Tooltip</tooltip>
@@ -229,7 +223,7 @@
 	</job>
 	
 	<job id="SUCCESS">
-		<description>i18n:org.pentaho.di.job:JobEntry.Success.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.Success.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.success.JobEntrySuccess</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Success.Tooltip</tooltip>
@@ -237,7 +231,7 @@
 	</job>
 	
 	<job id="XSD_VALIDATOR">
-		<description>i18n:org.pentaho.di.job:JobEntry.XSDValidator.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.XSDValidator.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.xsdvalidator.JobEntryXSDValidator</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.XML</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.XSDValidator.Tooltip</tooltip>
@@ -245,7 +239,7 @@
 	</job>
 	
 	<job id="WRITE_TO_LOG">
-		<description>i18n:org.pentaho.di.job:JobEntry.WriteToLog.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.WriteToLog.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.writetolog.JobEntryWriteToLog</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.WriteToLog.Tooltip</tooltip>
@@ -253,7 +247,7 @@
 	</job>
 	
 	<job id="COPY_FILES">
-		<description>i18n:org.pentaho.di.job:JobEntry.CopyFiles.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.CopyFiles.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.copyfiles.JobEntryCopyFiles</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.CopyFiles.Tooltip</tooltip>
@@ -261,7 +255,7 @@
 	</job>
 	
 	<job id="DTD_VALIDATOR">
-		<description>i18n:org.pentaho.di.job:JobEntry.DTDValidator.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.DTDValidator.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.dtdvalidator.JobEntryDTDValidator</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.XML</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.DTDValidator.Tooltip</tooltip>
@@ -269,7 +263,7 @@
 	</job>
 	
 	<job id="FTP_PUT">
-		<description>i18n:org.pentaho.di.job:JobEntry.FTPPUT.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.FTPPUT.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.ftpput.JobEntryFTPPUT</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FTPPUT.Tooltip</tooltip>
@@ -277,7 +271,7 @@
 	</job>
 
 	<job id="UNZIP">
-		<description>i18n:org.pentaho.di.job:JobEntry.UnZip.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.UnZip.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.unzip.JobEntryUnZip</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.UnZip.Tooltip</tooltip>
@@ -285,7 +279,7 @@
 	</job>
 	
 	<job id="CREATE_FOLDER">
-		<description>i18n:org.pentaho.di.job:JobEntry.CreateFolder.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.CreateFolder.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.createfolder.JobEntryCreateFolder</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.CreateFolder.Tooltip</tooltip>
@@ -293,7 +287,7 @@
 	</job>
 	
 	<job id="FOLDER_IS_EMPTY">
-		<description>i18n:org.pentaho.di.job:JobEntry.FolderIsEmpty.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.FolderIsEmpty.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.folderisempty.JobEntryFolderIsEmpty</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FolderIsEmpty.Tooltip</tooltip>
@@ -301,7 +295,7 @@
 	</job>
 
 	<job id="FILES_EXIST">
-		<description>i18n:org.pentaho.di.job:JobEntry.FilesExist.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.FilesExist.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.filesexist.JobEntryFilesExist</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FilesExist.Tooltip</tooltip>
@@ -309,7 +303,7 @@
 	</job>
 	
 	<job id="FOLDERS_COMPARE">
-		<description>i18n:org.pentaho.di.job:JobEntry.FoldersCompare.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.FoldersCompare.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.folderscompare.JobEntryFoldersCompare</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FoldersCompare.Tooltip</tooltip>
@@ -317,7 +311,7 @@
 	</job>
 	
 	<job id="ADD_RESULT_FILENAMES">
-		<description>i18n:org.pentaho.di.job:JobEntry.AddResultFilenames.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.AddResultFilenames.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.addresultfilenames.JobEntryAddResultFilenames</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.AddResultFilenames.Tooltip</tooltip>
@@ -325,7 +319,7 @@
 	</job>
 	
 	<job id="DELETE_RESULT_FILENAMES">
-		<description>i18n:org.pentaho.di.job:JobEntry.DeleteResultFilenames.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.DeleteResultFilenames.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.deleteresultfilenames.JobEntryDeleteResultFilenames</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.DeleteResultFilenames.Tooltip</tooltip>
@@ -333,7 +327,7 @@
 	</job>
 	
 	<job id="MSSQL_BULK_LOAD">
-		<description>i18n:org.pentaho.di.job:JobEntry.MssqlBulkLoad.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.MssqlBulkLoad.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.mssqlbulkload.JobEntryMssqlBulkLoad</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.BulkLoading</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MssqlBulkLoad.Tooltip</tooltip>
@@ -341,7 +335,7 @@
 	</job>
 	
 	<job id="MOVE_FILES">
-		<description>i18n:org.pentaho.di.job:JobEntry.MoveFiles.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.MoveFiles.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.movefiles.JobEntryMoveFiles</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MoveFiles.Tooltip</tooltip>
@@ -349,35 +343,35 @@
 	</job>
 	
 	<job id="COPY_MOVE_RESULT_FILENAMES">
-		<description>i18n:org.pentaho.di.job:JobEntry.CopyMoveResultFilenames.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.CopyMoveResultFilenames.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.copymoveresultfilenames.JobEntryCopyMoveResultFilenames</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.CopyMoveResultFilenames.Tooltip</tooltip>
 		<image-uri>ui/images/CMR.png</image-uri>
 	</job>
 		<job id="JobCategory.Category.XML_WELL_FORMED">
-		<description>i18n:org.pentaho.di.job:JobEntry.XMLWellFormed.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.XMLWellFormed.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.xmlwellformed.JobEntryXMLWellFormed</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.XML</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.XMLWellFormed.Tooltip</tooltip>
 		<image-uri>ui/images/XFC.png</image-uri>
 	</job>
 	<job id="SSH2_GET">
-		<description>i18n:org.pentaho.di.job:JobEntry.SSH2GET.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.SSH2GET.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.ssh2get.JobEntrySSH2GET</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SSH2GET.Tooltip</tooltip>
 		<image-uri>ui/images/SHG.png</image-uri>
 	</job>
 	<job id="SSH2_PUT">
-		<description>i18n:org.pentaho.di.job:JobEntry.SSH2PUT.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.SSH2PUT.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.ssh2put.JobEntrySSH2PUT</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SSH2PUT.Tooltip</tooltip>
 		<image-uri>ui/images/SHP.png</image-uri>
 	</job>
 		<job id="FTP_DELETE">
-		<description>i18n:org.pentaho.di.job:JobEntry.FTPDELETE.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.FTPDELETE.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.ftpdelete.JobEntryFTPDelete</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FTPDELETE.Tooltip</tooltip>
@@ -385,84 +379,84 @@
 	</job>
 	
 		<job id="DELETE_FOLDERS">
-		<description>i18n:org.pentaho.di.job:JobEntry.DeleteFolders.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.DeleteFolders.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.deletefolders.JobEntryDeleteFolders</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.DeleteFolders.Tooltip</tooltip>
 		<image-uri>ui/images/DSF.png</image-uri>
 	</job>
 	<job id="COLUMNS_EXIST">
-		<description>i18n:org.pentaho.di.job:JobEntry.ColumnsExist.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.ColumnsExist.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.columnsexist.JobEntryColumnsExist</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.ColumnsExist.Tooltip</tooltip>
 		<image-uri>ui/images/CEX.png</image-uri>
 	</job>
 	<job id="EXPORT_REPOSITORY">
-		<description>i18n:org.pentaho.di.job:JobEntry.ExportRepository.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.ExportRepository.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.exportrepository.JobEntryExportRepository</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Repository</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.ExportRepository.Tooltip</tooltip>
 		<image-uri>ui/images/EREP.png</image-uri>
 	</job>
 		<job id="CONNECTED_TO_REPOSITORY">
-		<description>i18n:org.pentaho.di.job:JobEntry.ConnectedToRepository.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.ConnectedToRepository.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.connectedtorepository.JobEntryConnectedToRepository</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Repository</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.ConnectedToRepository.Tooltip</tooltip>
 		<image-uri>ui/images/CREP.png</image-uri>
 	</job>
 		<job id="TRUNCATE_TABLES">
-		<description>i18n:org.pentaho.di.job:JobEntry.TruncateTables.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.TruncateTables.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.truncatetables.JobEntryTruncateTables</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.TruncateTables.Tooltip</tooltip>
 		<image-uri>ui/images/TRT.png</image-uri>
 	</job>
 		<job id="SET_VARIABLES">
-		<description>i18n:org.pentaho.di.job:JobEntry.SetVariables.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.SetVariables.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.setvariables.JobEntrySetVariables</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SetVariables.Tooltip</tooltip>
 		<image-uri>ui/images/SVA.png</image-uri>
 	</job>
 		<job id="MS_ACCESS_BULK_LOAD">
-		<description>i18n:org.pentaho.di.job:JobEntry.MSAccessBulkLoad.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.MSAccessBulkLoad.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.msaccessbulkload.JobEntryMSAccessBulkLoad</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.BulkLoading</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MSAccessBulkLoad.Tooltip</tooltip>
 		<image-uri>ui/images/MBL.png</image-uri>
 	</job>
 	<job id="WAIT_FOR_SQL">
-		<description>i18n:org.pentaho.di.job:JobEntry.WaitForSQL.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.WaitForSQL.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.waitforsql.JobEntryWaitForSQL</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.WaitForSQL.Tooltip</tooltip>
 		<image-uri>ui/images/WSQL.png</image-uri>
 	</job>
 		<job id="EVAL_TABLE_CONTENT">
-		<description>i18n:org.pentaho.di.job:JobEntry.EvalTableContent.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.EvalTableContent.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.evaluatetablecontent.JobEntryEvalTableContent</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.EvalTableContent.Tooltip</tooltip>
 		<image-uri>ui/images/ETC.png</image-uri>
 	</job>
 		<job id="SIMPLE_EVAL">
-		<description>i18n:org.pentaho.di.job:JobEntry.SimpleEval.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.SimpleEval.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.simpleeval.JobEntrySimpleEval</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SimpleEval.Tooltip</tooltip>
 		<image-uri>ui/images/SEV.png</image-uri>
 	</job>
 	<job id="SNMP_TRAP">
-		<description>i18n:org.pentaho.di.job:JobEntry.SNMPTrap.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.SNMPTrap.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.snmptrap.JobEntrySNMPTrap</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SNMPTrap.Tooltip</tooltip>
 		<image-uri>ui/images/SNMP.png</image-uri>
 	</job>
 		<job id="JobCategory.Category.Mail_VALIDATOR">
-		<description>i18n:org.pentaho.di.job:JobEntry.MailValidator.TypeDesc</description>
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.MailValidator.TypeDesc</description>
 		<class-name>org.pentaho.di.job.entries.mailvalidator.JobEntryMailValidator</class-name>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Mail</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MailValidator.Tooltip</tooltip>
