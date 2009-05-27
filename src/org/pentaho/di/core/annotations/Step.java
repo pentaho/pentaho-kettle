@@ -45,8 +45,8 @@ public @interface Step
 	@Deprecated
 	int category() default 0;
 	
-	String categoryDescription();
+	String categoryDescription() default "";
 	
-	String i18nPackageName();
+	String i18nPackageName() default "";
 	
 }
