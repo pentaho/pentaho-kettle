@@ -294,9 +294,14 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		try
 		{
 			super.saveRep(rep, id_job);
+		
+			if (connection!=null) 
+			{
+				rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
+				// Also, save the jobentry-database relationship!
+				rep.insertJobEntryDatabase(id_job, getID(), connection.getID());
+			}
 			
-			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
-
 			rep.saveJobEntryAttribute(id_job, getID(), "schemaname", schemaname);
 			rep.saveJobEntryAttribute(id_job, getID(), "tablename", tablename);
 			rep.saveJobEntryAttribute(id_job, getID(),"success_condition", getSuccessConditionCode(successCondition));

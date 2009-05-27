@@ -174,7 +174,12 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 		{
 			super.saveRep(rep, id_job);
 
-			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
+			if (connection!=null) 
+			{
+				rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
+				// Also, save the jobentry-database relationship!
+				rep.insertJobEntryDatabase(id_job, getID(), connection.getID());
+			}
 			rep.saveJobEntryAttribute(id_job, getID(), "sql", sql);
 			rep.saveJobEntryAttribute(id_job, getID(), "useVariableSubstitution", useVariableSubstitution ? "T" : "F" );
 			rep.saveJobEntryAttribute(id_job, getID(), "sqlfromfile", sqlfromfile ? "T" : "F" );

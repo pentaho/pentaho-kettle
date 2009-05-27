@@ -145,7 +145,12 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 			rep.saveJobEntryAttribute(id_job, getID(), "tablename", tablename);
 			rep.saveJobEntryAttribute(id_job, getID(), "schemaname", schemaname);
 			
-			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
+			if (connection!=null) 
+			{
+				rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
+				// Also, save the joebntry-database relationship!
+				rep.insertJobEntryDatabase(id_job, getID(), connection.getID());
+			}
 		}
 		catch(KettleDatabaseException dbe)
 		{

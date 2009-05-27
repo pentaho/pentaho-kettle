@@ -58,6 +58,7 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.TransMeta;
 
 
+
 /**
  * 
  * This class handles interactions with a Kettle repository.
@@ -398,6 +399,13 @@ public class Repository
 	public static final String FIELD_TRANS_SLAVE_ID_TRANS_SLAVE = "ID_TRANS_SLAVE";
 	public static final String FIELD_TRANS_SLAVE_ID_TRANSFORMATION = "ID_TRANSFORMATION";
 	public static final String FIELD_TRANS_SLAVE_ID_SLAVE = "ID_SLAVE";
+	
+	public static final String TABLE_R_JOBENTRY_DATABASE          = "R_JOBENTRY_DATABASE";
+	public static final String FIELD_JOBENTRY_DATABASE_ID_JOB = "ID_JOB";
+	public static final String FIELD_JOBENTRY_DATABASE_ID_JOBENTRY = "ID_JOBENTRY";
+	public static final String FIELD_JOBENTRY_DATABASE_ID_DATABASE = "ID_DATABSE";
+	
+	
 
     public static final String repositoryTableNames[] = new String[] 
          { 
@@ -414,6 +422,7 @@ public class Repository
     		, TABLE_R_JOBENTRY
     		, TABLE_R_JOBENTRY_ATTRIBUTE
     		, TABLE_R_JOBENTRY_COPY
+    		, TABLE_R_JOBENTRY_DATABASE
     		, TABLE_R_JOBENTRY_TYPE
     		, TABLE_R_JOB_HOP
     		, TABLE_R_JOB_NOTE
@@ -448,7 +457,7 @@ public class Repository
     private final static int[] KEY_POSITIONS = new int[] {0, 1, 2};
 
     public static final int REQUIRED_MAJOR_VERSION = 3;
-    public static final int REQUIRED_MINOR_VERSION = 2;
+    public static final int REQUIRED_MINOR_VERSION = 3;
     
 	private RepositoryMeta		repinfo;
 	public  UserInfo			userinfo;
@@ -1519,6 +1528,10 @@ public class Repository
 		database.closeInsert();
 		
         insertJobAttribute(jobMeta.getID(), 0, JOB_ATTRIBUTE_LOG_SIZE_LIMIT, 0, jobMeta.getLogSizeLimit());
+        
+        
+		// Save the logging connection link...
+		if (jobMeta.getLogConnection()!=null) insertJobEntryDatabase(jobMeta.getID(), -1L, jobMeta.getLogConnection().getID());
 	}
 
 	public synchronized long insertNote(String note, long gui_location_x, long gui_location_y, long gui_location_width, long gui_location_height) throws KettleException
@@ -1739,7 +1752,7 @@ public class Repository
     {
     	long id = getNextJobAttributeID();
     	
-    	System.out.println("Insert job attribute : id_job="+id_job+", code="+code+", value_str="+value_str);
+    	//System.out.println("Insert job attribute : id_job="+id_job+", code="+code+", value_str="+value_str);
 
         RowMetaAndData table = new RowMetaAndData();
 
@@ -1773,7 +1786,7 @@ public class Repository
 		// First check if the relationship is already there.
 		// There is no need to store it twice!
 		RowMetaAndData check = getStepDatabase(id_step);
-		if (check == null)
+		if (check.getInteger(0) == null)
 		{
 			RowMetaAndData table = new RowMetaAndData();
 
@@ -1784,7 +1797,25 @@ public class Repository
 			database.insertRow(TABLE_R_STEP_DATABASE, table.getRowMeta(), table.getData());
 		}
 	}
-	
+	public synchronized void insertJobEntryDatabase(long id_job, long id_jobentry, long id_database)
+	throws KettleException
+	{
+		// First check if the relationship is already there.
+		// There is no need to store it twice!
+		RowMetaAndData check = getJobEntryDatabase(id_jobentry);
+		
+		if (check.getInteger(0) == null)
+		{
+			RowMetaAndData table = new RowMetaAndData();
+
+			table.addValue(new ValueMeta(FIELD_JOBENTRY_DATABASE_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
+			table.addValue(new ValueMeta(FIELD_JOBENTRY_DATABASE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry));
+			table.addValue(new ValueMeta(FIELD_JOBENTRY_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database));
+
+			database.insertRow(TABLE_R_JOBENTRY_DATABASE, table.getRowMeta(), table.getData());
+		}
+	}
+
     public synchronized long insertDatabaseAttribute(long id_database, String code, String value_str) throws KettleException
     {
         long id = getNextDatabaseAttributeID();
@@ -2922,7 +2953,11 @@ public class Repository
 		String sql = "SELECT DISTINCT "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" = " + id_database;
         return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
 	}
-    
+	public synchronized String[] getJobsUsingDatabase(long id_database) throws KettleException
+	{
+		String sql = "SELECT DISTINCT "+quote(FIELD_JOBENTRY_DATABASE_ID_JOB)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_DATABASE)+" WHERE "+quote(FIELD_JOBENTRY_DATABASE_ID_DATABASE)+" = " + id_database;
+        return getJobsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
+	}
     public synchronized String[] getClustersUsingSlave(long id_slave) throws KettleException
     {
         String sql = "SELECT DISTINCT "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_SLAVE)+" = " + id_slave;
@@ -2989,7 +3024,28 @@ public class Repository
 
         return transList;
     }
+	private String[] getJobsWithIDList(List<Object[]> list, RowMetaInterface rowMeta) throws KettleException
+    {
+        String[] jobList = new String[list.size()];
+        for (int i=0;i<list.size();i++)
+        {
+            long id_job = rowMeta.getInteger( list.get(i), quote(FIELD_JOB_ID_JOB), -1L); 
+            if (id_job > 0)
+            {
+            	 RowMetaAndData jobRow =  getJob(id_job);
+                 if (jobRow!=null)
+                 {
+                     String jobName = jobRow.getString(quote(FIELD_JOB_NAME), "<name not found>");
+                     long id_directory = jobRow.getInteger(quote(FIELD_JOB_ID_DIRECTORY), -1L);
+                     RepositoryDirectory dir = directoryTree.findDirectory(id_directory);
+                     
+                     jobList[i]=dir.getPathObjectCombination(jobName);
+                 }
+            }            
+        }
 
+        return jobList;
+    }
     public long[] getTransHopIDs(long id_transformation) throws KettleException
 	{
 		return getIDs("SELECT "+quote(FIELD_TRANS_HOP_ID_TRANS_HOP)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = " + id_transformation);
@@ -3176,6 +3232,10 @@ public class Repository
 	public RowMetaAndData getStepDatabase(long id_step) throws KettleException
 	{
 		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE), quote(FIELD_STEP_DATABASE_ID_STEP), id_step);
+	}
+	public RowMetaAndData getJobEntryDatabase(long id_jobentry) throws KettleException
+	{
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_DATABASE), quote(FIELD_JOBENTRY_DATABASE_ID_JOBENTRY), id_jobentry);
 	}
 
 	public RowMetaAndData getTransHop(long id_trans_hop) throws KettleException
@@ -3878,7 +3938,16 @@ public class Repository
 		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
-
+	/**
+	 * Delete the relationships between the job/job entries and the databases.
+	 * @param id_job the job for which we want to delete the databases.
+	 * @throws KettleDatabaseException in case something unexpected happens.
+	 */
+	public synchronized void delJobEntryDatabases(long id_job) throws KettleException
+	{
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_DATABASE)+" WHERE "+quote(FIELD_JOBENTRY_DATABASE_ID_JOB)+" = " + id_job;
+		database.execStatement(sql);
+	}
 	public synchronized void delJobEntries(long id_job) throws KettleException
 	{
 		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = " + id_job;
@@ -4012,25 +4081,32 @@ public class Repository
 		// We look in table R_STEP_DATABASE to see if there are any steps using this database.
 		//
 		String[] transList = getTransformationsUsingDatabase(id_database);
-        
-		// TODO: add check for jobs too.
-		// TODO: add R_JOBENTRY_DATABASE table & lookups.
+		String[] jobList = getJobsUsingDatabase(id_database);
 		
-		if (transList.length==0)
+		if (jobList.length==0 && transList.length==0)
 		{
 			String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE)+" WHERE "+quote(FIELD_DATABASE_ID_DATABASE)+" = " + id_database;
 			database.execStatement(sql);
 		}
 		else
 		{
+			String message=" Database used by the following "+Const.CR;
+			if(jobList.length>0)
+			{
+				message = "jobs :"+Const.CR;
+				for (int i = 0; i < jobList.length; i++)
+				{
+					message+="	 "+jobList[i]+Const.CR;
+				}
+			}
 			
-			String message = "Database used by the following transformations:"+Const.CR;
+			message+= "transformations:"+Const.CR;
 			for (int i = 0; i < transList.length; i++)
 			{
 				message+="	"+transList[i]+Const.CR;
 			}
 			KettleDependencyException e = new KettleDependencyException(message);
-			throw new KettleDependencyException("This database is still in use by one or more transformations ("+transList.length+" references)", e);
+			throw new KettleDependencyException("This database is still in use by " + jobList.length + " jobs and "+transList.length+" transformations references", e);
 		}
 	}
     
@@ -4237,6 +4313,7 @@ public class Repository
 		delJobNotes(id_job);
 		delJobAttributes(id_job);
 		delJobEntryAttributes(id_job);
+		delJobEntryDatabases(id_job);
 		delJobEntries(id_job);
 		delJobEntryCopies(id_job);
 		delJobHops(id_job);

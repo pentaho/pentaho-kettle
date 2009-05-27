@@ -180,8 +180,12 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		try
 		{
 			super.saveRep(rep, id_job);
-			
-			if (this.connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", this.connection.getName());
+			if (this.connection!=null) 
+			{
+				rep.saveJobEntryAttribute(id_job, getID(), "connection", this.connection.getName());
+				// Also, save the jobentry-database relationship!
+				rep.insertJobEntryDatabase(id_job, getID(), this.connection.getID());
+			}
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", this.argFromPrevious);
 		      // save the arguments...
 		      if (this.arguments != null) {

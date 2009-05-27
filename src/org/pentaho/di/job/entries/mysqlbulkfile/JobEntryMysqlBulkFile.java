@@ -217,10 +217,12 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
 
-
-
-
-			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
+			if (connection!=null) 
+			{
+				rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
+				// Also, save the step-database relationship!
+				rep.insertJobEntryDatabase(id_job, getID(), connection.getID());
+			}
 		}
 		catch(KettleDatabaseException dbe)
 		{

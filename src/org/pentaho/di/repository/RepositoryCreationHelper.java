@@ -1471,6 +1471,81 @@ public class RepositoryCreationHelper {
 		}
 		if (monitor!=null) monitor.worked(1);
 
+		
+		//////////////////////////////////////////////////////////////////////////////////
+		//
+		// R_JOBENTRY_DATABASE
+		//
+		// Keeps the links between job entries and databases.
+		// That way investigating dependencies becomes easier to program.
+		//
+		// Create table...
+		table = new RowMeta();
+		tablename = Repository.TABLE_R_JOBENTRY_DATABASE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
+		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_DATABASE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_DATABASE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+	    sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_JOB_ID_JOB, false);
+	    sql = database.getDDL(schemaTable, table, null, false, null, false);
+        
+		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
+		{
+        	statements.add(sql);
+        	if (!dryrun) {
+	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+				database.execStatements(sql);
+	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+        	}
+
+			try
+			{
+				indexname = "IDX_" + schemaTable.substring(2) + "_LU1";
+				keyfield = new String[] { Repository.FIELD_JOBENTRY_DATABASE_ID_JOB, };
+				if (!database.checkIndexExists(schemaTable, keyfield))
+				{
+					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, false, false, false);
+		        	statements.add(sql);
+		        	if (!dryrun) {
+	                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+						database.execStatements(sql);
+	                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
+		        	}
+				}
+			}
+			catch(KettleException kdbe)
+			{
+				// Ignore this one: index is not properly detected, it already exists...
+			}
+
+			try
+			{
+				indexname = "IDX_" + schemaTable.substring(2) + "_LU2";
+				keyfield = new String[] { Repository.FIELD_JOBENTRY_DATABASE_ID_DATABASE, };
+				if (!database.checkIndexExists(schemaTable, keyfield))
+				{
+					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, false, false, false);
+		        	statements.add(sql);
+		        	if (!dryrun) {
+	                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+						database.execStatements(sql);
+	                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
+		        	}
+				}
+			}
+			catch(KettleException kdbe)
+			{
+				// Ignore this one: index is not properly detected, it already exists...
+			}
+		}
+		else
+		{
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+		}
+		if (monitor!=null) monitor.worked(1);
+
+		
 		//////////////////////////////////////////////////////////////////////////////////
 		//
 		// R_JOBENTRY_TYPE

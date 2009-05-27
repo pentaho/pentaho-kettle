@@ -259,7 +259,12 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		{
 			super.saveRep(rep, id_job);
 			
-			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
+			if (connection!=null)
+			{
+				rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
+				// Also, save the step-database relationship!
+				rep.insertJobEntryDatabase(id_job, getID(), connection.getID());	
+			}
 
 			rep.saveJobEntryAttribute(id_job, getID(), "schemaname", schemaname);
 			rep.saveJobEntryAttribute(id_job, getID(), "tablename", tablename);

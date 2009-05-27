@@ -1749,7 +1749,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 			final String baseCategories[] = jobEntryLoader.getCategories(JobPlugin.TYPE_ALL, locale);
 
-			// Sort these base steps by category and then by step name in the given locale
+			// Sort these base job entries by category and then by step name in the given locale
 			//
 			Arrays.sort(baseJobEntries, new Comparator<JobPlugin>() {
 
