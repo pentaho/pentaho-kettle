@@ -43,10 +43,11 @@ public class RepositoryDirectoryUI {
      * @param getJobs Include jobs in the tree or not
      * @throws KettleDatabaseException
      */
-	public static void getTreeWithNames(TreeItem ti, Repository rep, Color dircolor, int sortPosition, boolean ascending, boolean getTransformations, boolean getJobs, RepositoryDirectory dir) throws KettleDatabaseException
+	public static void getTreeWithNames(TreeItem ti, Repository rep, Color dircolor, int sortPosition, boolean ascending, boolean getTransformations, boolean getJobs, RepositoryDirectory dir, String filterString) throws KettleDatabaseException
 	{
 		ti.setText(dir.getDirectoryName());
 		ti.setForeground(dircolor);
+		int nrAdded=0;
 		
 		// First, we draw the directories
 		for (int i=0;i<dir.getNrSubdirectories();i++)
@@ -54,7 +55,7 @@ public class RepositoryDirectoryUI {
 			RepositoryDirectory subdir = dir.getSubdirectory(i);
 			TreeItem subti = new TreeItem(ti, SWT.NONE);
 			subti.setImage(GUIResource.getInstance().getImageArrow());
-			getTreeWithNames(subti, rep, dircolor, sortPosition, ascending, getTransformations, getJobs, subdir);
+			getTreeWithNames(subti, rep, dircolor, sortPosition, ascending, getTransformations, getJobs, subdir, filterString);
 		}
 		
 		try
@@ -85,20 +86,69 @@ public class RepositoryDirectoryUI {
             
             for (int i=0;i<repositoryObjects.size();i++)
             {
-                TreeItem tiObject = new TreeItem(ti, SWT.NONE);
-                RepositoryObject repositoryObject = (RepositoryObject)repositoryObjects.get(i);
-                if(repositoryObject.getObjectType()==RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION)
-                	tiObject.setImage(GUIResource.getInstance().getImageTransGraph());
-                else if(repositoryObject.getObjectType()==RepositoryObject.STRING_OBJECT_TYPE_JOB)
-                	tiObject.setImage(GUIResource.getInstance().getImageJobGraph());
+            	boolean add=false;
+            	RepositoryObject repositoryObject = (RepositoryObject)repositoryObjects.get(i);
                 
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                tiObject.setText(0, Const.NVL(repositoryObject.getName(), ""));
-                tiObject.setText(1, Const.NVL(repositoryObject.getObjectType(), ""));
-                tiObject.setText(2, Const.NVL(repositoryObject.getModifiedUser(), ""));
-                tiObject.setText(3, repositoryObject.getModifiedDate()!=null ? simpleDateFormat.format(repositoryObject.getModifiedDate()) : "");
-                tiObject.setText(4, Const.NVL(repositoryObject.getDescription(), ""));
-
+                if(filterString==null)
+                	add=true;
+                else
+                {
+                	if(repositoryObject.getName()!=null)
+                	{
+                		if (repositoryObject.getName().toUpperCase().indexOf(filterString) >= 0) add=true;
+                	}
+                	if(!add)
+                	{
+                		if(repositoryObject.getDescription()!=null)
+                		{
+                			if (repositoryObject.getDescription().toUpperCase().indexOf(filterString) >= 0)
+                				add=true;
+                		}
+                	}
+                	if(!add)
+                	{
+                		if(repositoryObject.getModifiedUser()!=null)
+                		{
+                			if (repositoryObject.getModifiedUser().toUpperCase().indexOf(filterString) >= 0)
+                				add=true;
+                		}
+                	}
+                 	if(!add)
+                	{
+                		if(repositoryObject.getModifiedDate()!=null)
+                		{
+                			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                			if (simpleDateFormat.format(repositoryObject.getModifiedDate()).indexOf(filterString) >= 0)
+                				add=true;
+                		}
+                	}
+                	if(!add)
+                	{
+                		if(repositoryObject.getObjectType()!=null)
+                		{
+                			if (repositoryObject.getObjectType().toUpperCase().indexOf(filterString) >= 0)
+                				add=true;
+                		}
+                	}
+                }
+                
+            	
+                if(add)
+                {
+                	nrAdded++;
+	                TreeItem tiObject = new TreeItem(ti, SWT.NONE);
+	                if(repositoryObject.getObjectType()==RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION)
+	                	tiObject.setImage(GUIResource.getInstance().getImageTransGraph());
+	                else if(repositoryObject.getObjectType()==RepositoryObject.STRING_OBJECT_TYPE_JOB)
+	                	tiObject.setImage(GUIResource.getInstance().getImageJobGraph());
+	                
+	                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	                tiObject.setText(0, Const.NVL(repositoryObject.getName(), ""));
+	                tiObject.setText(1, Const.NVL(repositoryObject.getObjectType(), ""));
+	                tiObject.setText(2, Const.NVL(repositoryObject.getModifiedUser(), ""));
+	                tiObject.setText(3, repositoryObject.getModifiedDate()!=null ? simpleDateFormat.format(repositoryObject.getModifiedDate()) : "");
+	                tiObject.setText(4, Const.NVL(repositoryObject.getDescription(), ""));
+                }
             }
 
 		}
@@ -106,7 +156,7 @@ public class RepositoryDirectoryUI {
 		{
             throw new KettleDatabaseException("Unable to populate tree with repository objects", dbe);
 		}
-
+		
 		ti.setExpanded(dir.isRoot());
 	}
 	

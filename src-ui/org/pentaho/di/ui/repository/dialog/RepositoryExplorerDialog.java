@@ -1394,7 +1394,7 @@ public class RepositoryExplorerDialog extends Dialog
 				TreeItem newCat = new TreeItem(tiTrans, SWT.NONE);
 				newCat.setImage(GUIResource.getInstance().getImageLogoSmall());
 	    		Color dircolor = GUIResource.getInstance().getColorDirectory();
-				RepositoryDirectoryUI.getTreeWithNames(newCat, rep, dircolor, sortColumn, ascending, true, false, rep.getDirectoryTree());
+				RepositoryDirectoryUI.getTreeWithNames(newCat, rep, dircolor, sortColumn, ascending, true, false, rep.getDirectoryTree(), null);
 			}
 			
 			// The Jobs...				
@@ -1407,7 +1407,7 @@ public class RepositoryExplorerDialog extends Dialog
 				TreeItem newJob = new TreeItem(tiJob, SWT.NONE);
 				newJob.setImage(GUIResource.getInstance().getImageLogoSmall());
 	    		Color dircolor = GUIResource.getInstance().getColorDirectory();
-				RepositoryDirectoryUI.getTreeWithNames(newJob, rep, dircolor, sortColumn, ascending, false, true, rep.getDirectoryTree());
+				RepositoryDirectoryUI.getTreeWithNames(newJob, rep, dircolor, sortColumn, ascending, false, true, rep.getDirectoryTree(), null);
 			}
 	
 			//

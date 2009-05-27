@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
@@ -48,7 +49,6 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-
 
 
 /**
@@ -91,8 +91,11 @@ public class SelectObjectDialog extends Dialog
     private boolean showJobs;
     private TreeColumn descriptionColumn;
 	
-	private ToolItem expandAll, collapseAll;
+	private ToolItem expandAll, collapseAll, goSearch,wfilter;
 
+	private String filterString=null;
+	private Text searchText = null;
+	
     public SelectObjectDialog(Shell parent, Repository rep)
     {
         this(parent, rep, true, true);
@@ -135,6 +138,17 @@ public class SelectObjectDialog extends Dialog
 		int margin = Const.MARGIN;
 		
         ToolBar treeTb = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT);
+        
+		wfilter = new ToolItem(treeTb, SWT.SEPARATOR);
+		searchText = new Text(treeTb, SWT.SEARCH | SWT.CANCEL);
+		searchText.setToolTipText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Search.FilterString.ToolTip"));
+		wfilter.setControl(searchText);
+		wfilter.setWidth(100);
+		
+		goSearch = new ToolItem(treeTb,SWT.PUSH);
+	    goSearch.setImage(GUIResource.getInstance().getImageSearchSmall());
+	    goSearch.setToolTipText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Search.Run"));
+        
         expandAll = new ToolItem(treeTb,SWT.PUSH);
         expandAll.setImage(GUIResource.getInstance().getImageExpandAll());
         collapseAll = new ToolItem(treeTb,SWT.PUSH);
@@ -228,7 +242,13 @@ public class SelectObjectDialog extends Dialog
 		      public void widgetSelected(SelectionEvent event) {
 		    	expandAllItems(wTree.getItems(),false);
 		      }});
+		goSearch.addSelectionListener(new SelectionAdapter() {
+		      public void widgetSelected(SelectionEvent event) {
+		    	  updateFilter();
+		      }});
 		
+		 searchText.addSelectionListener(new SelectionAdapter() {
+			 public void widgetDefaultSelected(SelectionEvent e) { updateFilter(); } });
 		// Detect [X] or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
@@ -260,6 +280,45 @@ public class SelectObjectDialog extends Dialog
 		    if(item.getItemCount()>0)
 		    	expandAllItems(item.getItems(),expand);
 	    }
+	}
+	protected void updateFilter() 
+	{
+		filterString=null;
+		if (searchText != null && !searchText.isDisposed()) {
+			if(!Const.isEmpty(searchText.getText()))
+				filterString=searchText.getText().toUpperCase();
+		}
+		refreshTree();
+		if(filterString!=null)
+		{
+			while(getNrEmptyFolders(wTree.getItems())>0){
+				removeEmptyFolders(wTree.getItems());
+		         try {
+		               Thread.sleep(0,1);
+		          } catch (InterruptedException e) {}
+			}
+			expandAllItems(wTree.getItems(),true);
+		}
+	}
+	private void removeEmptyFolders(TreeItem[] treeitems)
+	{
+	  for (TreeItem item : treeitems) {  
+	    if(item.getImage().equals(GUIResource.getInstance().getImageArrow()) && item.getItemCount()==0)
+	    	item.dispose();
+	    else
+	    	removeEmptyFolders(item.getItems());
+	  }
+	}
+	private int getNrEmptyFolders(TreeItem[] treeitems)
+	{
+	  int retval=0;
+	  for (TreeItem item : treeitems) {  
+	    if(item.getImage().equals(GUIResource.getInstance().getImageArrow()) && item.getItemCount()==0)
+	    	retval++;
+	    else
+	    	retval+=getNrEmptyFolders(item.getItems());
+	  }
+	    return retval;
 	}
     protected void setSort(int i)
     {
@@ -293,7 +352,7 @@ public class SelectObjectDialog extends Dialog
             ti.setImage(GUIResource.getInstance().getImageFolderConnections());
             ti.setExpanded(true);
             
-			RepositoryDirectoryUI.getTreeWithNames(ti, rep, dircolor, sortColumn, ascending, showTrans, showJobs, rep.getDirectoryTree());
+			RepositoryDirectoryUI.getTreeWithNames(ti, rep, dircolor, sortColumn, ascending, showTrans, showJobs, rep.getDirectoryTree(), filterString);
         }
         catch(KettleDatabaseException e)
         {

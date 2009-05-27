@@ -222,6 +222,8 @@ public class GUIResource
     private Image imageViewPanel;
   
     private Image imageExpandAll;
+    
+    private Image imageSearchSmall;
   
     private Image imageCollapseAll;
 
@@ -399,6 +401,7 @@ public class GUIResource
 		    imageInfoHop.dispose();
 		    imageWarning.dispose();
 		    imageExpandAll.dispose();
+		    imageSearchSmall.dispose();
 		    imageViewPanel.dispose();
 		    imageDesignPanel.dispose();
 
@@ -601,6 +604,7 @@ public class GUIResource
     imageDesignPanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("DesignPanel_image")); // , "ui/images/Design.png;
     imageViewPanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ViewPanel_image")); // , "ui/images/View.png;
     
+    imageSearchSmall = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("SearchSmall_image"));
     imageExpandAll = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ExpandAll_image")); // , "ui/images/ExpandAll.png;
     imageCollapseAll = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CollapseAll_image")); // , "ui/images/CollapseAll.png;
     imageStepError = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("StepErrorLines_image")); // , "ui/images/show-error-lines.png;
@@ -1530,6 +1534,10 @@ public class GUIResource
 
   public Image getImageExpandAll(){
     return imageExpandAll;
+  }
+  
+  public Image getImageSearchSmall(){
+	  return imageSearchSmall;
   }
   
   public Image getImageCollapseAll(){
