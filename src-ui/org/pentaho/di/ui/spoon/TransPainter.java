@@ -22,6 +22,7 @@ import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.ScrollBar;
@@ -73,14 +74,14 @@ public class TransPainter
     private Color        background;
     private Color        black;
     private Color        red;
-    private Color        yellow;
+    //private Color        yellow;
     private Color        orange;
     private Color        green;
     private Color        blue;
     // private Color        magenta;
     private Color        gray;
-    // private Color        lightGray;
-    private Color        darkGray;
+    private Color        lightGray;
+    //private Color        darkGray;
 
     private Font         noteFont;
     private Font         graphFont;
@@ -124,14 +125,14 @@ public class TransPainter
         this.background     = GUIResource.getInstance().getColorGraph();
         this.black          = GUIResource.getInstance().getColorBlack();
         this.red            = GUIResource.getInstance().getColorRed();
-        this.yellow         = GUIResource.getInstance().getColorYellow();
+        //this.yellow         = GUIResource.getInstance().getColorYellow();
         this.orange         = GUIResource.getInstance().getColorOrange();
         this.green          = GUIResource.getInstance().getColorGreen();
         this.blue           = GUIResource.getInstance().getColorBlue();
         // this.magenta        = GUIResource.getInstance().getColorMagenta();
         this.gray           = GUIResource.getInstance().getColorGray();
-        // this.lightGray      = GUIResource.getInstance().getColorLightGray();
-        this.darkGray       = GUIResource.getInstance().getColorDarkGray();
+        this.lightGray      = GUIResource.getInstance().getColorLightGray();
+        //this.darkGray       = GUIResource.getInstance().getColorDarkGray();
         
         this.area           = area;
         this.hori           = hori;
@@ -285,9 +286,9 @@ public class TransPainter
     {
         drawHop(gc, hi, false);
     }
-
-    private void drawNote(GC gc, NotePadMeta notePadMeta)
+	protected void drawNote(GC gc, NotePadMeta notePadMeta)
     {
+
         int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT;
 
         if (notePadMeta.isSelected()) gc.setLineWidth(2); else gc.setLineWidth(1);
@@ -299,6 +300,13 @@ public class TransPainter
         }
         else
         {
+            int swt=SWT.NORMAL;
+            if(notePadMeta.isFontBold()) swt=SWT.BOLD;
+            if(notePadMeta.isFontItalic()) swt=swt | SWT.ITALIC;
+
+            gc.setFont(new Font(PropsUI.getDisplay(),Const.NVL(notePadMeta.getFontName(),props.getNoteFont().getName()), 
+            		notePadMeta.getFontSize()==-1?props.getNoteFont().getHeight():notePadMeta.getFontSize(), swt));
+
             ext = gc.textExtent(notePadMeta.getNote(), flags);
         }
         Point p = new Point(ext.x, ext.y);
@@ -321,19 +329,32 @@ public class TransPainter
                 note.x + width, note.y + height + 2 * margin, // bottom right 2
                 note.x, note.y + height + 2 * margin // bottom left
         };
-
-        gc.setForeground(darkGray);
-        gc.setBackground(yellow);
+		
+		// Draw shadow around note?
+		if(notePadMeta.isDrawShadow())
+		{
+			int s = this.props.getShadowSize();
+			int shadowa[] = new int[] { note.x+s, note.y+s, // Top left
+				note.x + width + 2 * margin+s, note.y+s, // Top right
+				note.x + width + 2 * margin+s, note.y + height+s, // bottom right 1
+				note.x + width+s, note.y + height + 2 * margin+s, // bottom right 2
+				note.x+s, note.y + height + 2 * margin+s // bottom left
+			};
+			gc.setBackground(lightGray);
+			gc.fillPolygon(shadowa);
+		}
+        gc.setBackground(new Color(PropsUI.getDisplay(),new RGB(notePadMeta.getBackGroundColorRed(),notePadMeta.getBackGroundColorGreen(),notePadMeta.getBackGroundColorBlue())));
+        gc.setForeground(new Color(PropsUI.getDisplay(),new RGB(notePadMeta.getBorderColorRed(),notePadMeta.getBorderColorGreen(),notePadMeta.getBorderColorBlue())));
 
         gc.fillPolygon(noteshape);
         gc.drawPolygon(noteshape);
-        
-        gc.setForeground(black);
-        if ( !Const.isEmpty(notePadMeta.getNote()) )
+      
+        if (!Const.isEmpty(notePadMeta.getNote()))
         {
-            gc.drawText(notePadMeta.getNote(), note.x + margin, note.y + margin, flags);
+            gc.setForeground(new Color(PropsUI.getDisplay(),new RGB(notePadMeta.getFontColorRed(),notePadMeta.getFontColorGreen(),notePadMeta.getFontColorBlue())));
+        	gc.drawText(notePadMeta.getNote(), note.x + margin, note.y + margin, flags);
         }
-
+   
         notePadMeta.width = width; // Save for the "mouse" later on...
         notePadMeta.height = height;
 

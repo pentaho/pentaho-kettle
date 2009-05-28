@@ -11,6 +11,8 @@
 
 package org.pentaho.di.core;
 
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -2114,5 +2116,13 @@ public class Const
 	    }
 		return counter;
 	}
-
+	public static String[] GetAvailableFontNames() {
+	    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	    Font[] fonts = ge.getAllFonts();
+	    String []FontName= new String[fonts.length];
+	    for (int i=0; i<fonts.length; i++) {
+	    	FontName[i]=fonts[i].getFontName();
+	    }
+	    return FontName;
+	}
 }

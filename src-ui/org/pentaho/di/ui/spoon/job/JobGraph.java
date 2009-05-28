@@ -49,9 +49,11 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.LineAttributes;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.layout.FillLayout;
@@ -115,6 +117,7 @@ import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.TransPainter;
 import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
+import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.xul.menu.XulMenu;
 import org.pentaho.xul.menu.XulMenuChoice;
 import org.pentaho.xul.menu.XulPopupMenu;
@@ -157,7 +160,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
   private Job job;
 
-  // protected Props props;
+  protected PropsUI props;
 
   protected int iconsize;
 
@@ -261,7 +264,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     this.log = LogWriter.getInstance();
     this.spoon = spoon;
     this.jobMeta = jobMeta;
-    // this.props = Props.getInstance();
+    this.props = PropsUI.getInstance();
 
     jobLogDelegate = new JobLogDelegate(spoon, this);
     jobHistoryDelegate = new JobHistoryDelegate(spoon, this);
@@ -1514,15 +1517,22 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
   public void newNote() {
     selrect = null;
     String title = BaseMessages.getString(PKG, "JobGraph.Dialog.EditNote.Title");
-    String message = BaseMessages.getString(PKG, "JobGraph.Dialog.EditNote.Message");
-    EnterTextDialog dd = new EnterTextDialog(shell, title, message, "");
-    String n = dd.open();
-    if (n != null) {
-      NotePadMeta npi = new NotePadMeta(n, lastclick.x, lastclick.y, ConstUI.NOTE_MIN_SIZE, ConstUI.NOTE_MIN_SIZE);
-      jobMeta.addNote(npi);
-      spoon.addUndoNew(jobMeta, new NotePadMeta[] { npi }, new int[] { jobMeta.indexOfNote(npi) });
-      redraw();
-    }
+    
+    NotePadDialog dd = new NotePadDialog(shell, title); //$NON-NLS-1$
+    NotePadMeta n = dd.open();
+    if (n != null)
+    {
+        NotePadMeta npi = new NotePadMeta(n.getNote(), lastclick.x, lastclick.y, ConstUI.NOTE_MIN_SIZE, 
+        		ConstUI.NOTE_MIN_SIZE,n.getFontName(),n.getFontSize(), n.isFontBold(), n.isFontItalic(),
+        		n.getFontColorRed(),n.getFontColorGreen(),n.getFontColorBlue(), 
+        		n.getBackGroundColorRed(), n.getBackGroundColorGreen(),n.getBackGroundColorBlue(),
+        		n.getBorderColorRed(), n.getBorderColorGreen(),n.getBorderColorBlue(),
+        		n.isDrawShadow());
+        jobMeta.addNote(npi);
+        spoon.addUndoNew(jobMeta, new NotePadMeta[] { npi }, new int[] { jobMeta.indexOfNote(npi) });
+        redraw();
+    } 
+    
   }
 
   public void setCurrentNote(NotePadMeta ni) {
@@ -1997,44 +2007,82 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
   }
 
-  protected void drawNote(GC gc, NotePadMeta ni) {
-    int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT;
+  protected void drawNote(GC gc, NotePadMeta notePadMeta)
+    {
 
-    org.eclipse.swt.graphics.Point ext = gc.textExtent(ni.getNote(), flags);
-    Point p = new Point(ext.x, ext.y);
-    Point loc = ni.getLocation();
-    Point note = real2screen(loc.x, loc.y);
-    int margin = Const.NOTE_MARGIN;
-    p.x += 2 * margin;
-    p.y += 2 * margin;
-    int width = ni.width;
-    int height = ni.height;
-    if (p.x > width)
-      width = p.x;
-    if (p.y > height)
-      height = p.y;
+        int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT;
 
-    int noteshape[] = new int[] { note.x, note.y, // Top left
-        note.x + width + 2 * margin, note.y, // Top right
-        note.x + width + 2 * margin, note.y + height, // bottom right 1
-        note.x + width, note.y + height + 2 * margin, // bottom right 2
-        note.x + width, note.y + height, // bottom right 3
-        note.x + width + 2 * margin, note.y + height, // bottom right 1
-        note.x + width, note.y + height + 2 * margin, // bottom right 2
-        note.x, note.y + height + 2 * margin // bottom left
-    };
+        if (notePadMeta.isSelected()) gc.setLineWidth(2); else gc.setLineWidth(1);
+        
+        org.eclipse.swt.graphics.Point ext;
+        if (Const.isEmpty(notePadMeta.getNote()))
+        {
+            ext = new org.eclipse.swt.graphics.Point(10,10); // Empty note
+        }
+        else
+        {
+            int swt=SWT.NORMAL;
+            if(notePadMeta.isFontBold()) swt=SWT.BOLD;
+            if(notePadMeta.isFontItalic()) swt=swt | SWT.ITALIC;
 
-    gc.setForeground(GUIResource.getInstance().getColorDarkGray());
-    gc.setBackground(GUIResource.getInstance().getColorYellow());
+            gc.setFont(new Font(PropsUI.getDisplay(),Const.NVL(notePadMeta.getFontName(),props.getNoteFont().getName()), 
+            		notePadMeta.getFontSize()==-1?props.getNoteFont().getHeight():notePadMeta.getFontSize(), swt));
 
-    gc.fillPolygon(noteshape);
-    gc.drawPolygon(noteshape);
-    gc.setForeground(GUIResource.getInstance().getColorBlack());
-    gc.drawText(ni.getNote(), note.x + margin, note.y + margin, flags);
+            ext = gc.textExtent(notePadMeta.getNote(), flags);
+        }
+        Point p = new Point(ext.x, ext.y);
+        Point loc = notePadMeta.getLocation();
+        Point note = real2screen(loc.x, loc.y);
+        int margin = Const.NOTE_MARGIN;
+        p.x += 2 * margin;
+        p.y += 2 * margin;
+        int width = notePadMeta.width;
+        int height = notePadMeta.height;
+        if (p.x > width)
+          width = p.x;
+        if (p.y > height)
+          height = p.y;
 
-    ni.width = width; // Save for the "mouse" later on...
-    ni.height = height;
-  }
+        int noteshape[] = new int[] { note.x, note.y, // Top left
+                note.x + width + 2 * margin, note.y, // Top right
+                note.x + width + 2 * margin, note.y + height, // bottom right 1
+                note.x + width, note.y + height + 2 * margin, // bottom right 2
+                note.x + width, note.y + height, // bottom right 3
+                note.x + width + 2 * margin, note.y + height, // bottom right 1
+                note.x + width, note.y + height + 2 * margin, // bottom right 2
+                note.x, note.y + height + 2 * margin // bottom left
+        };
+    	// Draw shadow around note?
+		if(notePadMeta.isDrawShadow())
+		{
+			int s = spoon.props.getShadowSize();
+			int shadowa[] = new int[] { note.x+s, note.y+s, // Top left
+				note.x + width + 2 * margin+s, note.y+s, // Top right
+				note.x + width + 2 * margin+s, note.y + height+s, // bottom right 1
+				note.x + width+s, note.y + height + 2 * margin+s, // bottom right 2
+				note.x+s, note.y + height + 2 * margin+s // bottom left
+			};
+			gc.setBackground(GUIResource.getInstance().getColorLightGray());
+			gc.fillPolygon(shadowa);
+		}
+        
+        gc.setBackground(new Color(PropsUI.getDisplay(),new RGB(notePadMeta.getBackGroundColorRed(),notePadMeta.getBackGroundColorGreen(),notePadMeta.getBackGroundColorBlue())));
+        gc.setForeground(new Color(PropsUI.getDisplay(),new RGB(notePadMeta.getBorderColorRed(),notePadMeta.getBorderColorGreen(),notePadMeta.getBorderColorBlue())));
+
+        gc.fillPolygon(noteshape);
+        gc.drawPolygon(noteshape);
+      
+        if (!Const.isEmpty(notePadMeta.getNote()))
+        {
+            gc.setForeground(new Color(PropsUI.getDisplay(),new RGB(notePadMeta.getFontColorRed(),notePadMeta.getFontColorGreen(),notePadMeta.getFontColorBlue())));
+        	gc.drawText(notePadMeta.getNote(), note.x + margin, note.y + margin, flags);
+        }
+   
+        notePadMeta.width = width; // Save for the "mouse" later on...
+        notePadMeta.height = height;
+
+        if (notePadMeta.isSelected()) gc.setLineWidth(1); else gc.setLineWidth(2);
+ }
 
   protected void drawLine(GC gc, JobHopMeta hop, boolean is_candidate) {
     int line[] = getLine(hop.from_entry, hop.to_entry);
@@ -2145,18 +2193,40 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
   protected void editNote(NotePadMeta ni) {
     NotePadMeta before = (NotePadMeta) ni.clone();
     String title = BaseMessages.getString(PKG, "JobGraph.Dialog.EditNote.Title");
-    String message = BaseMessages.getString(PKG, "JobGraph.Dialog.EditNote.Message");
-    EnterTextDialog dd = new EnterTextDialog(shell, title, message, ni.getNote());
-    String n = dd.open();
-    if (n != null) {
-      spoon.addUndoChange(jobMeta, new NotePadMeta[] { before }, new NotePadMeta[] { ni }, new int[] { jobMeta
-          .indexOfNote(ni) });
-      ni.setChanged();
-      ni.setNote(n);
-      ni.width = ConstUI.NOTE_MIN_SIZE;
-      ni.height = ConstUI.NOTE_MIN_SIZE;
-      spoon.refreshGraph();
+    
+    NotePadDialog dd = new NotePadDialog(shell, title, ni);
+    NotePadMeta n = dd.open();
+    if (n != null)
+    {
+        ni.setChanged();
+        ni.setNote(n.getNote());
+        ni.setFontName(n.getFontName());
+        ni.setFontSize(n.getFontSize());
+        ni.setFontBold(n.isFontBold());
+        ni.setFontItalic(n.isFontItalic());
+        // font color
+        ni.setFontColorRed(n.getFontColorRed());
+        ni.setFontColorGreen(n.getFontColorGreen());
+        ni.setFontColorBlue(n.getFontColorBlue());
+        // background color
+        ni.setBackGroundColorRed(n.getBackGroundColorRed());
+        ni.setBackGroundColorGreen(n.getBackGroundColorGreen());
+        ni.setBackGroundColorRed(n.getBackGroundColorRed());
+        // border color
+        ni.setBorderColorRed(n.getBorderColorRed());
+        ni.setBorderColorGreen(n.getBorderColorGreen());
+        ni.setBorderColorBlue(n.getBorderColorBlue());
+        ni.setDrawShadow(n.isDrawShadow());
+
+        spoon.addUndoChange(jobMeta, new NotePadMeta[] { before }, new NotePadMeta[] { ni }, new int[] { jobMeta
+                .indexOfNote(ni) });
+		ni.width = ConstUI.NOTE_MIN_SIZE;
+		ni.height = ConstUI.NOTE_MIN_SIZE;
+		spoon.refreshGraph();
     }
+    
+    
+    
   }
 
   protected void drawArrow(GC gc, int line[]) {

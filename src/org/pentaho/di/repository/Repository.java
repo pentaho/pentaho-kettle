@@ -122,6 +122,20 @@ public class Repository
 	public static final String FIELD_NOTE_GUI_LOCATION_Y      = "GUI_LOCATION_Y";
 	public static final String FIELD_NOTE_GUI_LOCATION_WIDTH  = "GUI_LOCATION_WIDTH";
 	public static final String FIELD_NOTE_GUI_LOCATION_HEIGHT = "GUI_LOCATION_HEIGHT";
+	public static final String FIELD_NOTE_FONT_NAME			  = "FONT_NAME";
+	public static final String FIELD_NOTE_FONT_SIZE			  = "FONT_SIZE";
+	public static final String FIELD_NOTE_FONT_BOLD			  = "FONT_BOLD";
+	public static final String FIELD_NOTE_FONT_ITALIC		  = "FONT_ITALIC";
+	public static final String FIELD_NOTE_COLOR_RED		  	  = "FONT_COLOR_RED";
+	public static final String FIELD_NOTE_COLOR_GREEN		  = "FONT_COLOR_GREEN";
+	public static final String FIELD_NOTE_COLOR_BLUE		  = "FONT_COLOR_BLUE";
+	public static final String FIELD_NOTE_BACK_GROUND_COLOR_RED		  = "FONT_BACK_GROUND_COLOR_RED";
+	public static final String FIELD_NOTE_BACK_GROUND_COLOR_GREEN	  = "FONT_BACK_GROUND_COLOR_GREEN";
+	public static final String FIELD_NOTE_BACK_GROUND_COLOR_BLUE	  = "FONT_BACK_GROUND_COLOR_BLUE";
+	public static final String FIELD_NOTE_BORDER_COLOR_RED		      = "FONT_BORDER_COLOR_RED";
+	public static final String FIELD_NOTE_BORDER_COLOR_GREEN		  = "FONT_BORDER_COLOR_GREEN";
+	public static final String FIELD_NOTE_BORDER_COLOR_BLUE		      = "FONT_BORDER_COLOR_BLUE";
+	public static final String FIELD_NOTE_DRAW_SHADOW		 		  = "DRAW_SHADOW";
 
 	public static final String TABLE_R_TRANSFORMATION         = "R_TRANSFORMATION";
 	public static final String FIELD_TRANSFORMATION_ID_TRANSFORMATION    = "ID_TRANSFORMATION";
@@ -1534,7 +1548,11 @@ public class Repository
 		if (jobMeta.getLogConnection()!=null) insertJobEntryDatabase(jobMeta.getID(), -1L, jobMeta.getLogConnection().getID());
 	}
 
-	public synchronized long insertNote(String note, long gui_location_x, long gui_location_y, long gui_location_width, long gui_location_height) throws KettleException
+	public synchronized long insertNote(String note, long gui_location_x, long gui_location_y, long gui_location_width, long gui_location_height
+			,String fontname, long fontsize,boolean fontbold, boolean fontitalic,
+			long fontcolorred, long fontcolorgreen, long fontcolorblue,
+			long fontbackcolorred, long fontbackcolorgreen, long fontbackcolorblue,
+			long fontbordercolorred, long fontbordercolorgreen, long fontbordercolorblue,boolean drawshadow) throws KettleException
 	{
 		long id = getNextNoteID();
 
@@ -1546,7 +1564,24 @@ public class Repository
 		table.addValue(new ValueMeta(FIELD_NOTE_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_y));
 		table.addValue(new ValueMeta(FIELD_NOTE_GUI_LOCATION_WIDTH, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_width));
 		table.addValue(new ValueMeta(FIELD_NOTE_GUI_LOCATION_HEIGHT, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_height));
-
+		// Font
+		table.addValue(new ValueMeta(FIELD_NOTE_FONT_NAME, ValueMetaInterface.TYPE_STRING), fontname);
+		table.addValue(new ValueMeta(FIELD_NOTE_FONT_SIZE, ValueMetaInterface.TYPE_INTEGER), fontsize);
+		table.addValue(new ValueMeta(FIELD_NOTE_FONT_BOLD, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(fontbold));
+		table.addValue(new ValueMeta(FIELD_NOTE_FONT_ITALIC, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(fontitalic));
+		// Font color
+		table.addValue(new ValueMeta(FIELD_NOTE_COLOR_RED, ValueMetaInterface.TYPE_INTEGER), new Long(fontcolorred));
+		table.addValue(new ValueMeta(FIELD_NOTE_COLOR_GREEN, ValueMetaInterface.TYPE_STRING), new Long(fontcolorgreen));
+		table.addValue(new ValueMeta(FIELD_NOTE_COLOR_BLUE, ValueMetaInterface.TYPE_STRING), new Long(fontcolorblue));
+		// Font background color
+		table.addValue(new ValueMeta(FIELD_NOTE_BACK_GROUND_COLOR_RED, ValueMetaInterface.TYPE_INTEGER), new Long(fontbackcolorred));
+		table.addValue(new ValueMeta(FIELD_NOTE_BACK_GROUND_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER), new Long(fontbackcolorgreen));
+		table.addValue(new ValueMeta(FIELD_NOTE_BACK_GROUND_COLOR_BLUE, ValueMetaInterface.TYPE_INTEGER), new Long(fontbackcolorblue));
+		// Font border color
+		table.addValue(new ValueMeta(FIELD_NOTE_BORDER_COLOR_RED, ValueMetaInterface.TYPE_INTEGER), new Long(fontbordercolorred));
+		table.addValue(new ValueMeta(FIELD_NOTE_BORDER_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER), new Long(fontbordercolorgreen));
+		table.addValue(new ValueMeta(FIELD_NOTE_BORDER_COLOR_BLUE, ValueMetaInterface.TYPE_INTEGER),new Long(fontbordercolorblue));
+		table.addValue(new ValueMeta(FIELD_NOTE_DRAW_SHADOW, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(drawshadow));
 		database.prepareInsert(table.getRowMeta(), TABLE_R_NOTE);
 		database.setValuesInsert(table);
 		database.insertRow();

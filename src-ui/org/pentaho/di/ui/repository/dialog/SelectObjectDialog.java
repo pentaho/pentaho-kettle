@@ -212,6 +212,7 @@ public class SelectObjectDialog extends Dialog
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		wOK.addListener    (SWT.Selection, lsOK     );
+		wOK.setEnabled(false);
 		
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
@@ -232,7 +233,15 @@ public class SelectObjectDialog extends Dialog
 			}
 		);
 		
-
+		wTree.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				wOK.setEnabled(!wTree.getSelection()[0].getForeground().equals(dircolor));
+			}
+		}
+	);
+		
 		expandAll.addSelectionListener(new SelectionAdapter() {
 		      public void widgetSelected(SelectionEvent event) {
 		    	expandAllItems(wTree.getItems(),true);

@@ -361,6 +361,21 @@ public class RepositoryCreationHelper {
 		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER, 6, 0));
 		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_GUI_LOCATION_WIDTH, ValueMetaInterface.TYPE_INTEGER, 6, 0));
 		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_GUI_LOCATION_HEIGHT, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_FONT_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_FONT_SIZE, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_FONT_BOLD, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_FONT_ITALIC, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_COLOR_RED, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_COLOR_BLUE, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_BACK_GROUND_COLOR_RED, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_BACK_GROUND_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_BACK_GROUND_COLOR_BLUE, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_BORDER_COLOR_RED, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_BORDER_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_BORDER_COLOR_BLUE, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_DRAW_SHADOW, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		
 		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_NOTE_ID_NOTE, false);
         
 		if (!Const.isEmpty(sql))

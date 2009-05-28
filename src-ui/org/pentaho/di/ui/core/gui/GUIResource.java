@@ -191,6 +191,10 @@ public class GUIResource
 	private Image imageFolderConnections;
 
 	private Image imageEditOptionButton;
+	
+	private Image imageColor;
+	
+	private Image imageNoteSmall;
 
 	private Image imageResetOptionButton;
 	
@@ -405,6 +409,8 @@ public class GUIResource
 		    imageViewPanel.dispose();
 		    imageDesignPanel.dispose();
 
+		    disposeImage(imageNoteSmall);
+		    disposeImage(imageColor);
 			disposeImage(imageEditOptionButton);
 			disposeImage(imageResetOptionButton);
 
@@ -567,6 +573,8 @@ public class GUIResource
 		imageSchema = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Schema_image")); // , "ui/images/schema.png"
 		imageSynonym = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Synonym_image")); // , "ui/images/synonym.png"
 		imageView = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("View_image")); // , "ui/images/view.png"
+		imageColor = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Color_image")); // , "ui/images/color.png.png"
+		imageNoteSmall = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Note_image")); //, "ui/images/noteSmall.png"
 		
 		imageCluster = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Cluster_image")); // , "ui/images/cluster.png"
 		imageSlave = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Slave_image")), new RGB(255, 255, 255)); // , "ui/images/slave.png"
@@ -979,6 +987,21 @@ public class GUIResource
 	}
 	
 	
+	/**
+	 * @return Returns the imageView.
+	 */
+	public Image getImageNoteSmall()
+	{
+		return imageNoteSmall;
+	}
+	
+	/**
+	 * @return Returns the imageColor.
+	 */
+	public Image getImageColor()
+	{
+		return imageColor;
+	}
 	
 	/**
 	 * @return Returns the imageCredits.

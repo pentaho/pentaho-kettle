@@ -130,6 +130,7 @@ import org.pentaho.di.ui.spoon.TransPainter;
 import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.di.ui.spoon.dialog.EnterPreviewRowsDialog;
+import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.xul.menu.XulMenu;
@@ -1715,15 +1716,20 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   public void newNote() {
     selrect = null;
     String title = BaseMessages.getString(PKG, "TransGraph.Dialog.NoteEditor.Title"); //$NON-NLS-1$
-    String message = BaseMessages.getString(PKG, "TransGraph.Dialog.NoteEditor.Message"); //$NON-NLS-1$
-    EnterTextDialog dd = new EnterTextDialog(shell, title, message, ""); //$NON-NLS-1$
-    String n = dd.open();
-    if (n != null) {
-      NotePadMeta npi = new NotePadMeta(n, lastclick.x, lastclick.y, ConstUI.NOTE_MIN_SIZE, ConstUI.NOTE_MIN_SIZE);
-      transMeta.addNote(npi);
-      spoon.addUndoNew(transMeta, new NotePadMeta[] { npi }, new int[] { transMeta.indexOfNote(npi) });
-      redraw();
-    }
+    NotePadDialog dd = new NotePadDialog(shell, title); //$NON-NLS-1$
+    NotePadMeta n = dd.open();
+    if (n != null)
+    {
+        NotePadMeta npi = new NotePadMeta(n.getNote(), lastclick.x, lastclick.y, ConstUI.NOTE_MIN_SIZE, 
+        		ConstUI.NOTE_MIN_SIZE,n.getFontName(),n.getFontSize(), n.isFontBold(), n.isFontItalic(),
+        		n.getFontColorRed(),n.getFontColorGreen(),n.getFontColorBlue(),
+        		n.getBackGroundColorRed(), n.getBackGroundColorGreen(),n.getBackGroundColorBlue(), 
+        		n.getBorderColorRed(), n.getBorderColorGreen(),n.getBorderColorBlue(), 
+        		n.isDrawShadow());
+        transMeta.addNote(npi);
+        spoon.addUndoNew(transMeta, new NotePadMeta[] { npi }, new int[] { transMeta.indexOfNote(npi) });
+        redraw();
+      }
   }
 
   public void paste() {
@@ -2302,19 +2308,37 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     NotePadMeta before = (NotePadMeta) ni.clone();
 
     String title = BaseMessages.getString(PKG, "TransGraph.Dialog.EditNote.Title"); //$NON-NLS-1$
-    String message = BaseMessages.getString(PKG, "TransGraph.Dialog.EditNote.Message"); //$NON-NLS-1$
-    EnterTextDialog dd = new EnterTextDialog(shell, title, message, ni.getNote());
-    String n = dd.open();
-    if (n != null) {
-      ni.setChanged();
-      ni.setNote(n);
-      ni.width = ConstUI.NOTE_MIN_SIZE;
-      ni.height = ConstUI.NOTE_MIN_SIZE;
+    NotePadDialog dd = new NotePadDialog(shell, title, ni);
+    NotePadMeta n = dd.open();
 
-      NotePadMeta after = (NotePadMeta) ni.clone();
-      spoon.addUndoChange(transMeta, new NotePadMeta[] { before }, new NotePadMeta[] { after }, new int[] { transMeta
-          .indexOfNote(ni) });
-      spoon.refreshGraph();
+    if (n != null)
+    {
+        ni.setChanged();
+        ni.setNote(n.getNote());
+        ni.setFontName(n.getFontName());
+        ni.setFontSize(n.getFontSize());
+        ni.setFontBold(n.isFontBold());
+        ni.setFontItalic(n.isFontItalic());
+        // font color
+        ni.setFontColorRed(n.getFontColorRed());
+        ni.setFontColorGreen(n.getFontColorGreen());
+        ni.setFontColorBlue(n.getFontColorBlue());
+        // background color
+        ni.setBackGroundColorRed(n.getBackGroundColorRed());
+        ni.setBackGroundColorGreen(n.getBackGroundColorGreen());
+        ni.setBackGroundColorBlue(n.getBackGroundColorBlue());
+        // border color
+        ni.setBorderColorRed(n.getBorderColorRed());
+        ni.setBorderColorGreen(n.getBorderColorGreen());
+        ni.setBorderColorBlue(n.getBorderColorBlue());
+        ni.setDrawShadow(n.isDrawShadow());
+        ni.width = ConstUI.NOTE_MIN_SIZE;
+        ni.height = ConstUI.NOTE_MIN_SIZE;
+
+        NotePadMeta after = (NotePadMeta) ni.clone();
+        spoon.addUndoChange(transMeta, new NotePadMeta[] { before }, new NotePadMeta[] { after }, new int[] { transMeta
+                .indexOfNote(ni) });
+        spoon.refreshGraph();
     }
   }
 
