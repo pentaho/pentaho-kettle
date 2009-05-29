@@ -175,7 +175,7 @@ public class RssInput extends BaseStep implements StepInterface
 		// Create new row
 		Object[] outputRowData = buildEmptyRow();
 			
-		if (data.readrow!=null) outputRowData = data.readrow.clone();
+		if (data.readrow!=null) System.arraycopy(data.readrow, 0, outputRowData, 0, data.readrow.length);
 				
 		try{
 			
@@ -264,7 +264,7 @@ public class RssInput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(e.toString());
+			throw new KettleException(e);
 
 		} 
 		return outputRowData;
