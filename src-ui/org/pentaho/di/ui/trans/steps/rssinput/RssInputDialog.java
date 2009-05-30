@@ -703,7 +703,10 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 			wInclUrl.setSelection(false);
 		}
 		wInclUrlField.setEnabled(!wUrlInField.getSelection());
+		wlInclUrlField.setEnabled(!wUrlInField.getSelection());
 		wInclUrl.setEnabled(!wUrlInField.getSelection());
+		wlInclUrl.setEnabled(!wUrlInField.getSelection());
+		setIncludeUrl();
 		
 	}
 	 private void setURLPreviousField()
