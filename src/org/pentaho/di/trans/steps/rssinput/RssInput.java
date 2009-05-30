@@ -36,6 +36,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.ui.database.Messages;
 
 
 /**
@@ -244,11 +245,11 @@ public class RssInput extends BaseStep implements StepInterface
 				int rowIndex = data.nrInputFields;
 				
 				// See if we need to add the url to the row...
-				 if (meta.includeUrl() && meta.geturlField()!=null && meta.geturlField().length()>0) {
+				 if (meta.includeUrl()) {
 					outputRowData[data.totalpreviousfields+rowIndex++] = data.currenturl;
 				}
 				 // See if we need to add the row number to the row...  
-				 if (meta.includeRowNumber() && meta.getRowNumberField()!=null && meta.getRowNumberField().length()>0)
+				if (meta.includeRowNumber())
 		        {
 		            outputRowData[data.totalpreviousfields+rowIndex++] = new Long(data.rownr);
 		        }
@@ -338,6 +339,17 @@ public class RssInput extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
+			if (meta.includeRowNumber() && Const.isEmpty(meta.getRowNumberField()))
+		    {
+				logError(Messages.getString("RssInput.Error.RowNumberFieldMissing"));
+				return false;
+		    }
+			if (meta.includeUrl() && Const.isEmpty(meta.geturlField()))
+		    {
+				logError(Messages.getString("RssInput.Error.UrlFieldMissing"));
+				return false;
+		    }
+			
 			if(!Const.isEmpty(meta.getReadFrom()))
 			{
 				// Let's check validity of the read from date

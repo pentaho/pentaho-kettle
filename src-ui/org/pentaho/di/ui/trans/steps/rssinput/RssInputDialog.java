@@ -702,8 +702,10 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 			wInclUrl.setSelection(false);
 		}
 		wInclUrlField.setEnabled(!wUrlInField.getSelection());
+		wlInclUrlField.setEnabled(!wUrlInField.getSelection());
 		wInclUrl.setEnabled(!wUrlInField.getSelection());
-		
+		wlInclUrl.setEnabled(!wUrlInField.getSelection());
+		setIncludeUrl();
 	}
 	 private void setURLPreviousField()
 	 {
@@ -810,7 +812,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		wLimit.setText(""+in.getRowLimit());
 
-		log.logDebug(toString(), BaseMessages.getString(PKG, "RssInputDialog.Log.GettingFieldsInfo"));
+		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "RssInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
 		    RssInputField field = in.getInputFields()[i];
@@ -848,9 +850,9 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
         wFields.setRowNums();
         wFields.optWidth(true);
 
-		setIncludeRownum();
 		setIncludeUrl();
-
+		setIncludeRownum();
+		
 		wStepname.selectAll();
 	}
 
