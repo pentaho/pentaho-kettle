@@ -1571,8 +1571,8 @@ public class Repository
 		table.addValue(new ValueMeta(FIELD_NOTE_FONT_ITALIC, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(fontitalic));
 		// Font color
 		table.addValue(new ValueMeta(FIELD_NOTE_COLOR_RED, ValueMetaInterface.TYPE_INTEGER), new Long(fontcolorred));
-		table.addValue(new ValueMeta(FIELD_NOTE_COLOR_GREEN, ValueMetaInterface.TYPE_STRING), new Long(fontcolorgreen));
-		table.addValue(new ValueMeta(FIELD_NOTE_COLOR_BLUE, ValueMetaInterface.TYPE_STRING), new Long(fontcolorblue));
+		table.addValue(new ValueMeta(FIELD_NOTE_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER), new Long(fontcolorgreen));
+		table.addValue(new ValueMeta(FIELD_NOTE_COLOR_BLUE, ValueMetaInterface.TYPE_INTEGER), new Long(fontcolorblue));
 		// Font background color
 		table.addValue(new ValueMeta(FIELD_NOTE_BACK_GROUND_COLOR_RED, ValueMetaInterface.TYPE_INTEGER), new Long(fontbackcolorred));
 		table.addValue(new ValueMeta(FIELD_NOTE_BACK_GROUND_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER), new Long(fontbackcolorgreen));
