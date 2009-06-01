@@ -417,7 +417,7 @@ public class Repository
 	public static final String TABLE_R_JOBENTRY_DATABASE          = "R_JOBENTRY_DATABASE";
 	public static final String FIELD_JOBENTRY_DATABASE_ID_JOB = "ID_JOB";
 	public static final String FIELD_JOBENTRY_DATABASE_ID_JOBENTRY = "ID_JOBENTRY";
-	public static final String FIELD_JOBENTRY_DATABASE_ID_DATABASE = "ID_DATABSE";
+	public static final String FIELD_JOBENTRY_DATABASE_ID_DATABASE = "ID_DATABASE";
 	
 	
 
