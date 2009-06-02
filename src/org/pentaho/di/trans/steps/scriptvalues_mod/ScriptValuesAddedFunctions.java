@@ -473,6 +473,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	    			throw Context.reportRuntimeError(er.toString());
 	    		}
 			}catch(Exception e){
+				throw Context.reportRuntimeError(e.toString());
 			}
 		}else{
 			throw Context.reportRuntimeError("The function call fireToDB requires 2 arguments.");	
