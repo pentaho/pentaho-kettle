@@ -445,6 +445,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				String strDBName = Context.toString(ArgList[0]);
 				String strSQL = Context.toString(ArgList[1]);			
 				DatabaseMeta ci = DatabaseMeta.findDatabase(scm.getTransMeta().getDatabases(), strDBName);
+				if(ci==null) throw Context.reportRuntimeError("Database connection not found: "+strDBName);
 				ci.shareVariablesWith(scm);
 			
 				Database db=new Database(ci);
