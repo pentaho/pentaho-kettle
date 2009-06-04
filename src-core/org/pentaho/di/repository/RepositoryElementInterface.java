@@ -1,5 +1,7 @@
 package org.pentaho.di.repository;
 
+import org.pentaho.di.repository.directory.RepositoryDirectory;
+
 
 /**
  * A repository element is an object that can be saved or loaded from the repository.

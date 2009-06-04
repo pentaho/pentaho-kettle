@@ -42,7 +42,7 @@ import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;

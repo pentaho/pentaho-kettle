@@ -55,6 +55,7 @@ import org.pentaho.di.repository.delegates.RepositoryStepDelegate;
 import org.pentaho.di.repository.delegates.RepositoryTransDelegate;
 import org.pentaho.di.repository.delegates.RepositoryUserDelegate;
 import org.pentaho.di.repository.delegates.RepositoryValueDelegate;
+import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepErrorMeta;
@@ -422,17 +423,42 @@ public class Repository extends BaseRepository
 	
 	// Directory stuff
 	
-	public void loadRepositoryDirectoryTree(RepositoryDirectory root) throws KettleException {
-		directoryDelegate.loadRepositoryDirectoryTree(root);
+	public RepositoryDirectory loadRepositoryDirectoryTree() throws KettleException {
+		return directoryDelegate.loadRepositoryDirectoryTree(new RepositoryDirectory());
+	}
+	
+	public RepositoryDirectory loadRepositoryDirectoryTree(RepositoryDirectory root) throws KettleException {
+		return directoryDelegate.loadRepositoryDirectoryTree(root);
 	}
 
-    public synchronized void refreshRepositoryDirectoryTree() throws KettleException {
-    	directoryDelegate.refreshRepositoryDirectoryTree();
+    public synchronized RepositoryDirectory refreshRepositoryDirectoryTree() throws KettleException {
+    	return directoryDelegate.refreshRepositoryDirectoryTree();
     }
 
+	public void saveRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
+		directoryDelegate.saveRepositoryDirectory(dir);
+	}
 
+	public void delRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
+		directoryDelegate.delRepositoryDirectory(dir);
+	}
+
+	public void renameRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
+		directoryDelegate.renameRepositoryDirectory(dir);
+	}
 	
-	
+	/**
+	 * Create a new directory, possibly by creating several sub-directies of / at the same time.
+	 * 
+	 * @param parentDirectory the parent directory
+	 * @param directoryPath The path to the new Repository Directory, to be created.
+	 * @return The created sub-directory
+	 * @throws KettleException In case something goes wrong
+	 */
+	public RepositoryDirectory createRepositoryDirectory(RepositoryDirectory parentDirectory, String directoryPath) throws KettleException {
+		return directoryDelegate.createRepositoryDirectory(parentDirectory, directoryPath);
+	}
+
 	
 	
 	

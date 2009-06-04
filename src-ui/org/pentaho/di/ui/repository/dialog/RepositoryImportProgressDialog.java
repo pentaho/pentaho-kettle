@@ -47,7 +47,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -256,7 +256,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
     		if (makeDirectory)
     		{
     			addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
-    			targetDirectory = baseDirectory.createDirectory(rep, directoryPath);
+    			targetDirectory = rep.createRepositoryDirectory(baseDirectory, directoryPath);
     		}
     		else
     		{
@@ -366,7 +366,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
             if (makeDirectory)
             {
                 addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
-                targetDirectory = baseDirectory.createDirectory(rep, directoryPath);
+                targetDirectory = rep.createRepositoryDirectory(baseDirectory, directoryPath);
             }
             else
             {

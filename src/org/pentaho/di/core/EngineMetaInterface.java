@@ -15,8 +15,8 @@ package org.pentaho.di.core;
 import java.util.Date;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
+import org.pentaho.di.repository.directory.RepositoryDirectory;
 
 public interface EngineMetaInterface extends RepositoryElementInterface {
 

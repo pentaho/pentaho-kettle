@@ -72,8 +72,8 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.UserInfo;
+import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
 import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
@@ -1313,7 +1313,7 @@ public class RepositoryExplorerDialog extends Dialog
 			wTree.removeAll();
 			
 			// Load the directory tree:
-			rep.setDirectoryTree( new RepositoryDirectory(rep) );
+			rep.setDirectoryTree( rep.loadRepositoryDirectoryTree() );
 	
 			TreeItem tiTree = new TreeItem(wTree, SWT.NONE); 
 			tiTree.setImage(GUIResource.getInstance().getImageFolderConnections());
@@ -2580,16 +2580,16 @@ public class RepositoryExplorerDialog extends Dialog
     		if (!name.equals(newname))
     		{
     			repdir.setDirectoryName(newname);
-    			if (!repdir.renameInRep(rep))
-    			{
-    				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-    				mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message1")+name+"]"+Const.CR+BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    				mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Title")); //$NON-NLS-1$
-    				mb.open();
-    			}
-    			else
-    			{
+    			try {
+    				rep.renameRepositoryDirectory(repdir);
     				retval=true;
+    			} catch (Exception exception) {
+    				retval=false;
+    				new ErrorDialog(shell,
+						BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message1")+name+"]"+Const.CR+BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message2"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Title"), //$NON-NLS-1$
+						exception
+					);
     			}
     		}
         }
@@ -2689,16 +2689,15 @@ public class RepositoryExplorerDialog extends Dialog
 			RepositoryDirectory exists = rep.getDirectoryTree().findDirectory( path );
 			if (exists==null)
 			{
-				if (rd.addToRep(rep))
-				{
-					refreshTree();
-				}
-				else
-				{
-					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Create.UnexpectedError.Message1")+newdir+BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Create.UnexpectedError.Message2")+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Create.UnexpectedError.Title")); //$NON-NLS-1$
-					mb.open();
+				try {
+					rep.saveRepositoryDirectory(rd);
+				} catch(Exception exception) {
+					new ErrorDialog(shell, 
+						BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Create.UnexpectedError.Message1")+newdir+BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Create.UnexpectedError.Message2")+repdir.getPath()+"]", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Create.UnexpectedError.Title"), //$NON-NLS-1$
+						exception
+					);
+					
 				}
 			}
 			else
@@ -2715,7 +2714,7 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			repdir.delFromRep(rep);
+			rep.delRepositoryDirectory(repdir);
 			refreshTree();
 		}
 		catch(KettleException e)

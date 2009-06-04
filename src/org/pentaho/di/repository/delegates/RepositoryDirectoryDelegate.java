@@ -1,12 +1,14 @@
 package org.pentaho.di.repository.delegates;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.directory.RepositoryDirectory;
 
 public class RepositoryDirectoryDelegate extends BaseRepositoryDelegate {
 	private static Class<?> PKG = RepositoryDirectory.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -20,7 +22,7 @@ public class RepositoryDirectoryDelegate extends BaseRepositoryDelegate {
 		return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_DIRECTORY), quote(Repository.FIELD_DIRECTORY_ID_DIRECTORY), id_directory);
 	}
 	
-	public void loadRepositoryDirectoryTree(RepositoryDirectory root) throws KettleException
+	public RepositoryDirectory loadRepositoryDirectoryTree(RepositoryDirectory root) throws KettleException
     {
         try
         {
@@ -33,6 +35,8 @@ public class RepositoryDirectoryDelegate extends BaseRepositoryDelegate {
                 loadRepositoryDirectory(subdir, subids[i]);
                 root.addSubdirectory(subdir);
             }
+            
+            return root;
         }
         catch(Exception e)
         {
@@ -72,13 +76,14 @@ public class RepositoryDirectoryDelegate extends BaseRepositoryDelegate {
 	
 
 	
-    public synchronized void refreshRepositoryDirectoryTree() throws KettleException
+    public synchronized RepositoryDirectory refreshRepositoryDirectoryTree() throws KettleException
     {
         try
         {
         	RepositoryDirectory tree = new RepositoryDirectory();
         	loadRepositoryDirectory(tree, tree.getID());
             repository.setDirectoryTree(tree);
+            return tree;
         }
         catch (KettleException e)
         {
@@ -157,6 +162,107 @@ public class RepositoryDirectoryDelegate extends BaseRepositoryDelegate {
 	public synchronized long[] getSubDirectoryIDs(long id_directory) throws KettleException
 	{
 		return repository.connectionDelegate.getIDs("SELECT "+quote(Repository.FIELD_DIRECTORY_ID_DIRECTORY)+" FROM "+quoteTable(Repository.TABLE_R_DIRECTORY)+" WHERE "+quote(Repository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory+" ORDER BY "+quote(Repository.FIELD_DIRECTORY_DIRECTORY_NAME));
+	}
+    
+	public void saveRepositoryDirectory(RepositoryDirectory dir) throws KettleException
+	{
+		try
+		{
+			long id_directory_parent = 0;
+			if (dir.getParent()!=null) id_directory_parent=dir.getParent().getID();
+			
+			dir.setID(insertDirectory(id_directory_parent, dir));
+			
+            LogWriter.getInstance().logDetailed(repository.getName(), "New id of directory = "+dir.getID());
+                        
+			repository.commit();
+            
+            // Reload the complete directory tree from the parent down...
+			//
+            repository.loadRepositoryDirectoryTree(dir.findRoot());
+		}
+		catch(Exception e)
+		{
+			throw new KettleException("Unable to save directory ["+dir+"] in the repository", e);
+		}
+	}
+	
+	public void delRepositoryDirectory(RepositoryDirectory dir) throws KettleException
+	{
+		try
+		{
+			String trans[]   = repository.getTransformationNames(dir.getID());
+			String jobs[]    = repository.getJobNames(dir.getID());
+			long[] subDirectories = repository.getSubDirectoryIDs(dir.getID());
+			if (trans.length==0 && jobs.length==0 && subDirectories.length==0)
+			{
+				repository.directoryDelegate.deleteDirectory(dir.getID());
+			}
+			else
+			{
+                throw new KettleException("This directory is not empty!");
+			}
+		}
+		catch(Exception e)
+		{
+			throw new KettleException("Unexpected error deleting repository directory", e);
+		}
+	}
+
+	public void renameRepositoryDirectory(RepositoryDirectory dir) throws KettleException
+	{
+		try
+		{
+			renameDirectory(dir.getID(), dir.getDirectoryName());
+		}
+		catch(Exception e)
+		{
+			throw new KettleException("Unable to rename the specified repository directory ["+dir+"]", e);
+		}
+	}
+	
+	
+	/**
+	 * Create a new directory, possibly by creating several sub-directies of / at the same time.
+	 * 
+	 * @param parentDirectory the parent directory
+	 * @param directoryPath The path to the new Repository Directory, to be created.
+	 * @return The created sub-directory
+	 * @throws KettleException In case something goes wrong
+	 */
+	public RepositoryDirectory createRepositoryDirectory(RepositoryDirectory parentDirectory, String directoryPath) throws KettleException
+	{
+	    String path[] = Const.splitPath(directoryPath, RepositoryDirectory.DIRECTORY_SEPARATOR);
+	    
+	    RepositoryDirectory parent = parentDirectory;
+	    for (int level=1;level<=path.length;level++)
+	    {
+	        String subPath[] = new String[level];
+	        for (int i=0;i<level;i++)
+	        {
+	            subPath[i] = path[i];
+	        }
+	 
+	        RepositoryDirectory rd = parent.findDirectory(subPath);
+	        if (rd==null)
+	        {
+	            // This directory doesn't exists, let's add it!
+	        	//
+	            rd = new RepositoryDirectory(parent, subPath[level-1]);
+	            saveRepositoryDirectory(rd);
+
+	            // Don't forget to add this directory to the tree!
+	            //
+	            parent.addSubdirectory(rd);
+	            
+		        parent = rd;
+	        }
+	        else
+	        {
+	            parent = rd;   
+	        }
+	    }
+	    return parent;
 	}
 
 

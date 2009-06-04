@@ -36,7 +36,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
@@ -270,20 +270,22 @@ public class SelectDirectoryDialog extends Dialog
                             if (newdir != null)
                             {
                                 RepositoryDirectory subdir = new RepositoryDirectory(dir, newdir);
-                                if (subdir.addToRep(rep))
+                                try
                                 {
+                                	rep.saveRepositoryDirectory(subdir);
                                     dir.addSubdirectory(subdir);
                                     TreeItem tiNew = new TreeItem(ti, SWT.NONE);
                                     tiNew.setText(newdir);
                                     tiNew.setImage(GUIResource.getInstance().getImageArrow());
                                     wTree.setSelection(new TreeItem[] { tiNew });
                                 }
-                                else
+                                catch(Exception exception)
                                 {
-                                    MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-                                    mb.setMessage(BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Message"));
-                                    mb.setText(BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Title"));
-                                    mb.open();
+                                	new ErrorDialog(shell,
+                            			BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Message"),
+                            			BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Title"),
+                            			exception
+                            		);
                                 }
                             }
                         }

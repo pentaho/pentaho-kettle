@@ -23,8 +23,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class RepositoryDirectoryUI {

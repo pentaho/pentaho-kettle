@@ -9,15 +9,12 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.*/
  
-package org.pentaho.di.repository;
+package org.pentaho.di.repository.directory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
 
@@ -415,75 +412,7 @@ public class RepositoryDirectory
 		}
 	}
 
-	/**
-	 * Load the complete directory tree from the repository.
-	 * @param rep Repository
-	 */
-	public RepositoryDirectory(Repository rep) throws KettleException
-	{
-        rep.loadRepositoryDirectoryTree(this);
-	}
-    
-	public boolean addToRep(Repository rep)
-	{
-		try
-		{
-			long id_directory_parent = 0;
-			if (getParent()!=null) id_directory_parent=getParent().getID();
-			
-			setID(rep.directoryDelegate.insertDirectory(id_directory_parent, this));
-			
-            LogWriter.getInstance().logDetailed(rep.getName(), "New id of directory = "+getID());
-                        
-			rep.commit();
-            
-            // Reload the complete directory tree from the parent down...
-			//
-            rep.loadRepositoryDirectoryTree(findRoot());
 
-			return id>0;
-		}
-		catch(Exception e)
-		{
-			return false;
-		}
-	}
-	
-	public void delFromRep(Repository rep) throws KettleException
-	{
-		try
-		{
-			String trans[]   = rep.getTransformationNames(getID());
-			String jobs[]    = rep.getJobNames(getID());
-			long[] subDirectories = rep.getSubDirectoryIDs(getID());
-			if (trans.length==0 && jobs.length==0 && subDirectories.length==0)
-			{
-				rep.directoryDelegate.deleteDirectory(getID());
-			}
-			else
-			{
-                throw new KettleException("This directory is not empty!");
-			}
-		}
-		catch(Exception e)
-		{
-			throw new KettleException("Unexpected error deleting repository directory", e);
-		}
-	}
-
-	public boolean renameInRep(Repository rep)
-	{
-		try
-		{
-			rep.directoryDelegate.renameDirectory(getID(), getDirectoryName());
-			
-			return true;
-		}
-		catch(Exception e)
-		{
-			return false;
-		}
-	}
 
 	/**
 	 * Get all the directory-id in this directory and the subdirectories.
@@ -522,51 +451,6 @@ public class RepositoryDirectory
 		return getParent().findRoot();
 	}
 	
-	/**
-	 * Create a new directory, possibly by creating several subdirecties of / at the same time.
-	 * 
-	 * @param directoryPath The path to the new Repository Directory, to be created.
-	 * @return The created subdirectory
-	 */
-	public RepositoryDirectory createDirectory(Repository rep, String directoryPath) throws KettleDatabaseException
-	{
-	    String path[] = Const.splitPath(directoryPath, DIRECTORY_SEPARATOR);
-
-	    RepositoryDirectory parent = this;
-	    for (int level=1;level<=path.length;level++)
-	    {
-	        String subPath[] = new String[level];
-	        for (int i=0;i<level;i++)
-	        {
-	            subPath[i] = path[i];
-	        }
-	 
-	        RepositoryDirectory rd = findDirectory(subPath);
-	        if (rd==null)
-	        {
-	            // This directory doesn't exists, let's add it!
-	            rd = new RepositoryDirectory(parent, subPath[level-1]);
-	            System.out.println("New directory: ["+rd.getPath()+"]");
-	            if (rd.addToRep(rep))
-	            {
-	                // Don't forget to add this directory to the tree!
-	                parent.addSubdirectory(rd);
-		            System.out.println("Created directory ["+rd.getPath()+"], id = "+rd.getID());
-	                parent = rd;
-	            }
-	            else
-	            {
-	                throw new KettleDatabaseException("Unable to create repository directory ["+subPath[level-1]+"] in directory ["+parent.getPath()+"]");
-	            }
-	        }
-	        else
-	        {
-	            parent = rd;   
-	        }
-	    }
-	    return parent;
-	}
-
 	public String toString()
 	{
 		return getPath();

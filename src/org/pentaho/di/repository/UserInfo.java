@@ -11,6 +11,8 @@
  
 package org.pentaho.di.repository;
 
+import org.pentaho.di.repository.directory.RepositoryDirectory;
+
 
 
 /*
