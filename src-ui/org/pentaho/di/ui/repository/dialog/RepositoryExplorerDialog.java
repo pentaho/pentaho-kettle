@@ -73,7 +73,6 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryUtil;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
@@ -1520,7 +1519,7 @@ public class RepositoryExplorerDialog extends Dialog
 			
 			try
 			{
-				long id = rep.getTransformationID(ti.getText(), repdir.getID());
+				long id = rep.transDelegate.getTransformationID(ti.getText(), repdir.getID());
 		
 				// System.out.println("Deleting transformation ["+name+"] with ID = "+id);
 		
@@ -1642,7 +1641,7 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.getTransformationID(name, repdir.getID());
+				long id = rep.transDelegate.getTransformationID(name, repdir.getID());
 				if (id>0)
 				{
 					// System.out.println("Renaming transformation ["+name+"] with ID = "+id);
@@ -1689,7 +1688,7 @@ public class RepositoryExplorerDialog extends Dialog
     			if (fromdir!=null)
     			{
                     debug = "fromdir found: move transformation!"; //$NON-NLS-1$
-                    long existingTransID = rep.getTransformationID(transname, repdir.getID());
+                    long existingTransID = rep.transDelegate.getTransformationID(transname, repdir.getID());
                     if (existingTransID == -1) {
 	                    rep.moveTransformation(transname, fromdir.getID(), repdir.getID());
 	    				changedInDialog = true;
@@ -1743,7 +1742,7 @@ public class RepositoryExplorerDialog extends Dialog
     			if (fromdir!=null)
     			{
                     debug = "fromdir found: move job!"; //$NON-NLS-1$
-                    long existingjobID = rep.getJobID(jobname, repdir.getID());
+                    long existingjobID = rep.jobDelegate.getJobID(jobname, repdir.getID());
                     if (existingjobID == -1) {
                     	rep.moveJob(jobname, fromdir.getID(), repdir.getID());
                     	changedInDialog = true;
@@ -1854,7 +1853,7 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.getJobID(name, repdir.getID());
+				long id = rep.jobDelegate.getJobID(name, repdir.getID());
 				if (id>0)
 				{
 					System.out.println("Renaming job ["+name+"] with ID = "+id);
@@ -1885,7 +1884,7 @@ public class RepositoryExplorerDialog extends Dialog
 		
 		try
 		{
-			long id = rep.getJobID(name, repdir.getID());
+			long id = rep.jobDelegate.getJobID(name, repdir.getID());
 	
 			// System.out.println("Deleting transformation ["+name+"] with ID = "+id);
 	
@@ -1993,7 +1992,7 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.getJobID(name, repdir.getID());
+				long id = rep.jobDelegate.getJobID(name, repdir.getID());
 				if (id>0)
 				{
 					// System.out.println("Renaming transformation ["+name+"] with ID = "+id);
@@ -2021,14 +2020,14 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			UserInfo uinfo = new UserInfo(rep, login); // Get UserInfo from repository...
+			UserInfo uinfo = rep.loadUserInfo(login); // Get UserInfo from repository...
 			UserDialog ud = new UserDialog(shell, SWT.NONE, rep, uinfo);
 			UserInfo ui = ud.open();
 			if (!userinfo.isReadonly())
 			{
 				if (ui!=null)
 				{
-					ui.saveRep(rep);
+					rep.saveUserInfo(ui);
 			 	}
 			}
 			else
@@ -2080,7 +2079,7 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long isUser = rep.getUserID(login);
+			long isUser = rep.userDelegate.getUserID(login);
 			if (isUser>0)
 			{
 				rep.delUser(isUser);
@@ -2171,7 +2170,7 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.getUserID(name);
+				long id = rep.userDelegate.getUserID(name);
 				if (id>0)
 				{
 					// System.out.println("Renaming user ["+name+"] with ID = "+id);
@@ -2274,7 +2273,7 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.getProfileID(name);
+				long id = rep.profileDelegate.getProfileID(name);
 				if (id>0)
 				{
 					rep.renameProfile(id, newname);
@@ -2302,7 +2301,7 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long idDatabase = rep.getDatabaseID(databasename);
+			long idDatabase = rep.databaseDelegate.getDatabaseID(databasename);
 			DatabaseMeta databaseMeta = rep.loadDatabaseMeta(idDatabase);
 
 			DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
@@ -2313,7 +2312,7 @@ public class RepositoryExplorerDialog extends Dialog
 				{
                     rep.lockRepository();
                     rep.insertLogEntry("Updating database connection '"+databaseMeta.getName()+"'");
-                    RepositoryUtil.saveDatabaseMeta(databaseMeta,rep);
+                    rep.save(databaseMeta);
 				}
 				else
 				{
@@ -2353,12 +2352,12 @@ public class RepositoryExplorerDialog extends Dialog
 			if (name!=null)
 			{
 				// See if this user already exists...
-				long idDatabase = rep.getDatabaseID(name);
+				long idDatabase = rep.databaseDelegate.getDatabaseID(name);
 				if (idDatabase<=0)
 				{
                     rep.lockRepository();
                     rep.insertLogEntry("Creating new database '"+databaseMeta.getName()+"'");
-                    RepositoryUtil.saveDatabaseMeta(databaseMeta,rep);
+                    rep.save(databaseMeta);
 				}
 				else
 				{
@@ -2394,11 +2393,7 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long idDatabase = rep.getDatabaseID(databasename);
-			if (idDatabase>0)
-			{
-				rep.delDatabase(idDatabase);
-			}
+			rep.deleteDatabaseMeta(databasename);
 	
 			refreshTree();
 		}
@@ -2487,7 +2482,7 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.getDatabaseID(name);
+				long id = rep.databaseDelegate.getDatabaseID(name);
 				if (id>0)
 				{
 					// System.out.println("Renaming transformation ["+name+"] with ID = "+id);
@@ -2610,8 +2605,8 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long idProfile = rep.getProfileID(profilename);
-			ProfileMeta profinfo = new ProfileMeta(rep, idProfile);
+			long idProfile = rep.profileDelegate.getProfileID(profilename);
+			ProfileMeta profinfo = rep.loadProfileMeta(idProfile);
 			
 			// System.out.println("editProfile, nrPermissions = "+profinfo.nrPermissions());
 	
@@ -2619,7 +2614,7 @@ public class RepositoryExplorerDialog extends Dialog
 			String name = pd.open();
 			if (name!=null)
 			{
-				profinfo.saveRep(rep);
+				rep.saveProfile(profinfo);
 			}
 				
 			if(!profilename.equalsIgnoreCase(name)) refreshTree();
@@ -2640,10 +2635,10 @@ public class RepositoryExplorerDialog extends Dialog
 			if (name!=null)
 			{
 				// See if this user already exists...
-				long idProfile = rep.getProfileID(name);
+				long idProfile = rep.profileDelegate.getProfileID(name);
 				if (idProfile<=0)
 				{
-					profinfo.saveRep(rep);
+					rep.saveProfile(profinfo);
 				}
 				else
 				{
@@ -2668,7 +2663,7 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long idProfile = rep.getProfileID(profilename);
+			long idProfile = rep.profileDelegate.getProfileID(profilename);
 			if (idProfile>0)
 			{
 				rep.delProfile(idProfile);
@@ -2758,7 +2753,7 @@ public class RepositoryExplorerDialog extends Dialog
 					
 					for (int i=0;i<trans.length;i++)
 					{
-						TransMeta ti = new TransMeta(rep, trans[i], repdir);
+						TransMeta ti = rep.loadTransformation(trans[i], repdir);
 						if(log.isBasic()) log.logBasic("Exporting transformation", "["+trans[i]+"] in directory ["+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 						String xml = XMLHandler.getXMLHeader() + ti.getXML();
@@ -2820,7 +2815,7 @@ public class RepositoryExplorerDialog extends Dialog
 				
 					for (int i=0;i<jobs.length;i++)
 					{
-						JobMeta ji = new JobMeta(log, rep, jobs[i], repdir);
+						JobMeta ji = rep.loadJobMeta(jobs[i], repdir, null);
 						log.logBasic("Exporting Jobs", "["+jobs[i]+"] in directory ["+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 						String xml = XMLHandler.getXMLHeader() + ji.getXML();
@@ -2961,12 +2956,12 @@ public class RepositoryExplorerDialog extends Dialog
             if (dd.open())
             {
                 // See if this slave server already exists...
-                long idSlave = rep.getSlaveID(slaveServer.getName());
+                long idSlave = rep.slaveServerDelegate.getSlaveID(slaveServer.getName());
                 if (idSlave<=0)
                 {
                     rep.lockRepository();
                     rep.insertLogEntry("Creating new slave server '"+slaveServer.getName()+"'");
-                    slaveServer.saveRep(rep);
+                    rep.saveSlaveServer(slaveServer);
                 }
                 else
                 {
@@ -3000,15 +2995,15 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.getSlaveID(slaveName);
-            SlaveServer slaveServer = new SlaveServer(rep, id);
+            long id = rep.slaveServerDelegate.getSlaveID(slaveName);
+            SlaveServer slaveServer = rep.loadSlaveServer(id);
 
             SlaveServerDialog dd = new SlaveServerDialog(shell, slaveServer);
             if (dd.open())
             {
                 rep.lockRepository();
                 rep.insertLogEntry("Updating slave server '"+slaveServer.getName()+"'");
-                slaveServer.saveRep(rep);
+                rep.saveSlaveServer(slaveServer);
                 if(!slaveName.equalsIgnoreCase(slaveServer.getName())) refreshTree();
             }
         }
@@ -3033,7 +3028,7 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.getSlaveID(slaveName);
+            long id = rep.slaveServerDelegate.getSlaveID(slaveName);
             if (id>0)
             {
                 rep.delSlave(id);
@@ -3056,12 +3051,12 @@ public class RepositoryExplorerDialog extends Dialog
             if (dd.open())
             {
                 // See if this slave server already exists...
-                long idPartitionSchema = rep.getPartitionSchemaID(partitionSchema.getName());
+                long idPartitionSchema = rep.partitionSchemaDelegate.getPartitionSchemaID(partitionSchema.getName());
                 if (idPartitionSchema<=0)
                 {
                     rep.lockRepository();
                     rep.insertLogEntry("Creating new partition schema '"+partitionSchema.getName()+"'");
-                    partitionSchema.saveRep(rep);
+                    rep.savePartitionSchema(partitionSchema);
                 }
                 else
                 {
@@ -3096,15 +3091,15 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.getPartitionSchemaID(partitionSchemaName);
-            PartitionSchema partitionSchema = new PartitionSchema(rep, id);
+            long id = rep.partitionSchemaDelegate.getPartitionSchemaID(partitionSchemaName);
+            PartitionSchema partitionSchema = rep.loadPartitionSchema(id);
 
             PartitionSchemaDialog dd = new PartitionSchemaDialog(shell, partitionSchema, rep.getDatabases(), variableSpace);
             if (dd.open())
             {
                 rep.lockRepository();
                 rep.insertLogEntry("Updating partition schema '"+partitionSchema.getName()+"'");
-                partitionSchema.saveRep(rep);
+                rep.savePartitionSchema(partitionSchema);
                 if(!partitionSchemaName.equalsIgnoreCase(partitionSchema.getName())) refreshTree();
             }
         }
@@ -3130,7 +3125,7 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.getPartitionSchemaID(partitionSchemaName);
+            long id = rep.partitionSchemaDelegate.getPartitionSchemaID(partitionSchemaName);
             if (id>0)
             {
                 rep.delPartitionSchema(id);
@@ -3154,12 +3149,12 @@ public class RepositoryExplorerDialog extends Dialog
             if (dd.open())
             {
                 // See if this slave server already exists...
-                long idCluster = rep.getClusterID(cluster.getName());
+                long idCluster = rep.clusterSchemaDelegate.getClusterID(cluster.getName());
                 if (idCluster<=0)
                 {
                     rep.lockRepository();
                     rep.insertLogEntry("Creating new cluster '"+cluster.getName()+"'");
-                    cluster.saveRep(rep);
+                    rep.saveClusterSchema(cluster); 
                 }
                 else
                 {
@@ -3194,7 +3189,7 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.getClusterID(clusterName);
+            long id = rep.clusterSchemaDelegate.getClusterID(clusterName);
             ClusterSchema cluster = rep.loadClusterSchema(id, rep.getSlaveServers());
 
             ClusterSchemaDialog dd = new ClusterSchemaDialog(shell, cluster, rep.getSlaveServers());
@@ -3202,7 +3197,7 @@ public class RepositoryExplorerDialog extends Dialog
             {
                 rep.lockRepository();
                 rep.insertLogEntry("Updating cluster '"+cluster.getName()+"'");
-                cluster.saveRep(rep);
+                rep.saveClusterSchema(cluster); 
                 if(!clusterName.equalsIgnoreCase(cluster.getName())) refreshTree();
             }
         }
@@ -3228,7 +3223,7 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.getClusterID(clusterName);
+            long id = rep.clusterSchemaDelegate.getClusterID(clusterName);
             if (id>0)
             {
                 rep.delClusterSchema(id);

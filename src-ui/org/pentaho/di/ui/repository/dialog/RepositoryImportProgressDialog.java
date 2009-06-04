@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.logging.LogWriter;
@@ -64,7 +65,7 @@ import org.w3c.dom.Node;
  * @author Matt
  * @since 03-jun-2005
  */
-public class RepositoryImportProgressDialog extends Dialog
+public class RepositoryImportProgressDialog extends Dialog implements ProgressMonitorListener
 {
 	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -265,8 +266,8 @@ public class RepositoryImportProgressDialog extends Dialog
 
     	// OK, we loaded the transformation from XML and all went well...
     	// See if the transformation already existed!
-    	long id = rep.getTransformationID(ti.getName(), targetDirectory.getID());
-    	if (id > 0 && askOverwrite)
+    	boolean exists = rep.existsTransformation(ti.getName(), targetDirectory);
+    	if (exists && askOverwrite)
     	{
     		MessageDialogWithToggle md = new MessageDialogWithToggle(shell,
     				BaseMessages.getString(PKG, "RepositoryImportDialog.OverwriteTrans.Title"),
@@ -287,9 +288,9 @@ public class RepositoryImportProgressDialog extends Dialog
     		shell.getDisplay().update();
     	}
 
-    	if (id <= 0 || overwrite)
+    	if (!exists || overwrite)
     	{
-    		ti.setDirectory(targetDirectory);
+    		ti.setRepositoryDirectory(targetDirectory);
 
     		try
     		{
@@ -308,7 +309,7 @@ public class RepositoryImportProgressDialog extends Dialog
     			// Keep info on who & when this transformation was changed...
     			ti.setModifiedDate( new Date() );                 
     			ti.setModifiedUser( rep.getUserInfo().getLogin() );
-    			ti.saveRep(rep);
+    			rep.save(ti, this);
     			addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.TransSaved.Log", Integer.toString(transformationNumber), ti.getName()));
     		}
     		catch (Exception e)
@@ -327,9 +328,10 @@ public class RepositoryImportProgressDialog extends Dialog
 	private boolean importJob(int nrthis, Node jobnode) throws KettleException
 	{
         // Load the job from the XML node.
-                        JobMeta ji = new JobMeta(log, jobnode, rep, SpoonFactory.getInstance());
+        //                
+		JobMeta jobMeta = new JobMeta(log, jobnode, rep, SpoonFactory.getInstance());
 
-        wLabel.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.ImportJob.Label", Integer.toString(nrthis), Integer.toString(nrjobs), ji.getName()));
+        wLabel.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.ImportJob.Label", Integer.toString(nrthis), Integer.toString(nrjobs), jobMeta.getName()));
 
         // What's the directory path?
         String directoryPath = Const.NVL(XMLHandler.getTagValue(jobnode, "directory"), Const.FILE_SEPARATOR);
@@ -374,13 +376,13 @@ public class RepositoryImportProgressDialog extends Dialog
 
         // OK, we loaded the job from XML and all went well...
         // See if the job already exists!
-        long id = rep.getJobID(ji.getName(), targetDirectory.getID());
+        long id = rep.jobDelegate.getJobID(jobMeta.getName(), targetDirectory.getID());
         if (id > 0 && askOverwrite)
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell,
                 BaseMessages.getString(PKG, "RepositoryImportDialog.OverwriteJob.Title"),
                 null,
-                BaseMessages.getString(PKG, "RepositoryImportDialog.OverwriteJob.Message", ji.getName()),
+                BaseMessages.getString(PKG, "RepositoryImportDialog.OverwriteJob.Message", jobMeta.getName()),
                 MessageDialog.QUESTION,
                 new String[] { BaseMessages.getString(PKG, "System.Button.Yes"),
                               BaseMessages.getString(PKG, "System.Button.No") },
@@ -398,13 +400,13 @@ public class RepositoryImportProgressDialog extends Dialog
 
         if (id <= 0 || overwrite)
         {
-            ji.setDirectory(targetDirectory);
-            ji.saveRep(rep);
-            addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.JobSaved.Log", Integer.toString(nrthis), ji.getName()));
+            jobMeta.setRepositoryDirectory(targetDirectory);
+            rep.save(jobMeta);
+            addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.JobSaved.Log", Integer.toString(nrthis), jobMeta.getName()));
         }
         else
         {
-            addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.ErrorSavingJob.Log", ji.getName()));
+            addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.ErrorSavingJob.Log", jobMeta.getName()));
         }
         return true;
     }
@@ -589,5 +591,27 @@ public class RepositoryImportProgressDialog extends Dialog
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryImportDialog.ErrorGeneral.Title"), 
 					BaseMessages.getString(PKG, "RepositoryImportDialog.ErrorGeneral.Message"), e);
 		}
+	}
+
+	public void beginTask(String message, int nrWorks) {
+		addLog(message);
+	}
+
+	public void done() {
+	}
+
+	public boolean isCanceled() {
+		return false;
+	}
+
+	public void setTaskName(String taskName) {
+		addLog(taskName);
+	}
+
+	public void subTask(String message) {
+		addLog(message);
+	}
+
+	public void worked(int nrWorks) {
 	}
 }

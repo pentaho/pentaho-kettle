@@ -499,7 +499,7 @@ public class RepositoriesDialog
                 repinfo = input.getRepository(idx);
 
                 // OK, now try the username and password
-                Repository rep = new Repository(log, repinfo, userinfo);
+                Repository rep = new Repository(repinfo, userinfo);
 
                 try
                 {
@@ -517,7 +517,7 @@ public class RepositoriesDialog
 
                 try
                 {
-                    userinfo = new UserInfo(rep, wUsername.getText(), wPassword.getText());
+                    userinfo = rep.loadUserInfo(wUsername.getText(), wPassword.getText());
                     props.setLastRepository(repinfo.getName());
                     props.setLastRepositoryLogin(wUsername.getText());
                 }

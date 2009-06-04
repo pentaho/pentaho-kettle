@@ -17,7 +17,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.regex.Pattern;
 
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -25,8 +24,6 @@ import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryUtil;
 import org.w3c.dom.Node;
 
 
@@ -796,85 +793,6 @@ public class Condition implements Cloneable, XMLInterface
 	    }
 	}
 
-	/**
-     *  
-	 * Read a condition from the repository.
-	 * @param rep The repository to read from
-	 * @param id_condition The condition id
-	 * @throws KettleException if something goes wrong.
-	 */
-	public Condition(Repository rep, long id_condition) throws KettleException
-	{
-		this();
-		
-		list = new ArrayList<Condition>();
-		try
-		{
-			RowMetaAndData r = rep.getCondition(id_condition);
-            if (r!=null)
-            {
-    			negate          = r.getBoolean("NEGATED", false);
-    			operator        = getOperator( r.getString("OPERATOR", null) );
-    			
-    			id = r.getInteger("ID_CONDITION", -1L);
-    			
-    			long subids[] = rep.getSubConditionIDs(id);
-    			if (subids.length==0)
-    			{
-    				left_valuename  = r.getString("LEFT_NAME", null);
-    				function        = getFunction( r.getString("CONDITION_FUNCTION", null) );
-    				right_valuename = r.getString("RIGHT_NAME", null);
-    				
-    				long id_value = r.getInteger("ID_VALUE_RIGHT", -1L);
-    				if (id_value>0)
-    				{
-    					ValueMetaAndData v = RepositoryUtil.loadValueMetaAndData(rep, id_value);
-    					right_exact = v;
-    				}
-    			}
-    			else
-    			{
-    				for (int i=0;i<subids.length;i++)
-    				{
-    					addCondition( new Condition(rep, subids[i]) );
-    				}
-    			}
-            }
-            else
-            {
-                throw new KettleException("Condition with id_condition="+id_condition+" could not be found in the repository");
-            }
-		}
-		catch(KettleException dbe)
-		{
-			throw new KettleException("Error loading condition from the repository (id_condition="+id_condition+")", dbe);
-		}
-	}
-
-	public long saveRep(Repository rep) throws KettleException
-	{
-		return saveRep(0L, rep);
-	}
-	
-	public long saveRep(long id_condition_parent, Repository rep) throws KettleException
-	{
-		try
-		{
-			id = rep.insertCondition( id_condition_parent, this );
-			for (int i=0;i<nrConditions();i++)
-			{
-				Condition subc = getCondition(i);
-				subc.saveRep(getID(), rep);
-			}
-			
-			return getID();
-		}
-		catch(KettleException dbe)
-		{
-			throw new KettleException("Error saving condition to the repository.", dbe);
-		}
-	}
-	
 	public String[] getUsedFields()
 	{
 		Hashtable<String,String> fields = new Hashtable<String,String>();

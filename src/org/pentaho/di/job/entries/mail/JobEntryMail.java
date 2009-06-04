@@ -891,7 +891,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.Job")).append(Const.CR);
         messageText.append("-----").append(Const.CR);
         messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.JobName")+ "    : ").append(parentJob.getJobMeta().getName()).append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.JobDirectory") + "  : ").append(parentJob.getJobMeta().getDirectory()).append(Const.CR);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.JobDirectory") + "  : ").append(parentJob.getJobMeta().getRepositoryDirectory()).append(Const.CR);
         messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.JobEntry") + "   : ").append(getName()).append(Const.CR);
         messageText.append(Const.CR);
       }

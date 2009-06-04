@@ -35,6 +35,8 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.w3c.dom.Node;
@@ -48,12 +50,16 @@ import org.w3c.dom.Node;
  * @since 18-05-2003
  *
  */
-public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInterface, SharedObjectInterface, VariableSpace
+public class DatabaseMeta 
+	extends SharedObjectBase 
+	implements Cloneable, XMLInterface, SharedObjectInterface, VariableSpace, RepositoryElementInterface
 {
   private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   public static final String XML_TAG = "connection";
-    
+
+  public static final String REPOSITORY_ELEMENT_TYPE = "database";
+
   // Comparator for sorting databases alphabetically by name
   public static final Comparator<DatabaseMeta> comparator = new Comparator<DatabaseMeta>(){
     public int compare(DatabaseMeta dbm1, DatabaseMeta dbm2) {
@@ -2435,5 +2441,20 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	
 	public void setPreferredSchemaName(String preferredSchemaName) {
 		databaseInterface.setPreferredSchemaName(preferredSchemaName);
+	}
+	
+	/**
+	 * Not used in this case, simply return root /
+	 */
+	public RepositoryDirectory getRepositoryDirectory() {
+		return new RepositoryDirectory();
+	}
+	
+	public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
+		throw new RuntimeException("Setting a directory on a database connection is not supported");
+	}
+	
+	public String getRepositoryElementType() {
+		return REPOSITORY_ELEMENT_TYPE;
 	}
 }

@@ -15,10 +15,10 @@ package org.pentaho.di.core;
 import java.util.Date;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryElementInterface;
 
-public interface EngineMetaInterface {
+public interface EngineMetaInterface extends RepositoryElementInterface {
 
 	public void setFilename(String filename);
 	
@@ -56,11 +56,7 @@ public interface EngineMetaInterface {
     
     public String getModifiedUser( );
     
-    public RepositoryDirectory getDirectory();
-    
-    public boolean showReplaceWarning(Repository rep);
-    
-    public void saveRep(Repository rep, ProgressMonitorListener monitor) throws KettleException;
+    public RepositoryDirectory getRepositoryDirectory();
     
     public String getFilename();
     

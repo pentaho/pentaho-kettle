@@ -15,14 +15,12 @@ package org.pentaho.di.trans.step;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Partitioner;
 import org.pentaho.di.trans.StepLoader;
 import org.w3c.dom.Node;
@@ -233,19 +231,11 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     {
         return methodType!=PARTITIONING_METHOD_NONE;
     }
-/*
-    public int getPartitionNr(Long value, int nrPartitions)
-    {
-        int nr = 0;
-        switch(method)
-        {
-        case PARTITIONING_METHOD_MOD:
-            nr = (int)(value.longValue() % nrPartitions);
-            break;
-        }
-        return nr;
-    }
-*/
+
+    public void setPartitionSchemaName(String partitionSchemaName) {
+		this.partitionSchemaName = partitionSchemaName;
+	}
+    
     /**
      * @return the partitionSchema
      */
@@ -292,22 +282,6 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
         }
     }
 
-    /**
-     * Saves partitioning properties in the repository for the given step.
-     * @param rep the repository to save in
-     * @param id_transformation the ID of the transformation
-     * @param id_step the ID of the step
-     * @throws KettleDatabaseException In case anything goes wrong
-     */
-    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
-    {
-        rep.saveStepAttribute(id_transformation, id_step, "PARTITIONING_SCHEMA",    partitionSchema!=null?partitionSchema.getName():""); // selected schema
-        rep.saveStepAttribute(id_transformation, id_step, "PARTITIONING_METHOD",    getMethodCode());          // method of partitioning
-        if( partitioner != null ) {
-        	partitioner.saveRep( rep, id_transformation, id_step);
-        }
-    }
-    
     public void createPartitioner( String method ) {
     	methodType = getMethodType(method);
         switch ( methodType ) {
@@ -324,18 +298,6 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
         }
     }
     
-    public StepPartitioningMeta(Repository rep, long id_step) throws KettleException
-    {
-    	this();
-        partitionSchemaName = rep.getStepAttributeString(id_step, "PARTITIONING_SCHEMA");
-        String methodCode   = rep.getStepAttributeString(id_step, "PARTITIONING_METHOD");
-        setMethod( getMethod(methodCode) );
-        if( partitioner != null ) {
-        	partitioner.loadRep( rep, id_step);
-        }
-        hasChanged = true;
-    }
-
     public boolean isMethodMirror()
     {
         return methodType==PARTITIONING_METHOD_MIRROR;

@@ -25,7 +25,6 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.www.SlaveServerDetection;
 import org.w3c.dom.Node;
@@ -182,43 +181,6 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
             {
                 slaveServers.add(slaveServer);
             }
-        }
-    }
-
-    public void saveRep(Repository rep) throws KettleException
-    {
-        saveRep(rep, -1L, false);
-    }
-
-    public void saveRep(Repository rep, long id_transformation, boolean isUsedByTransformation) throws KettleException
-    {
-        setId(rep.getClusterID(name));
-        if (getId()<0)
-        {
-            // Save the cluster
-            setId(rep.insertCluster(this));
-        }
-        else
-        {
-            rep.delClusterSlaves(getId());
-        }
-        
-        // Also save the used slave server references.
-        for (int i=0;i<slaveServers.size();i++)
-        {
-            SlaveServer slaveServer = slaveServers.get(i);
-            if (slaveServer.getId()<0) // oops, not yet saved!
-            {
-                slaveServer.saveRep(rep, id_transformation, isUsedByTransformation);
-            }
-            rep.insertClusterSlave(this, slaveServer);
-        }
-        
-        // Save a link to the transformation to keep track of the use of this partition schema
-        // Only save it if it's really used by the transformation
-        if (isUsedByTransformation)
-        {
-            rep.insertTransformationCluster(id_transformation, getId());
         }
     }
     

@@ -11,9 +11,6 @@
  
 package org.pentaho.di.repository;
 
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 
 
@@ -58,6 +55,10 @@ public class PermissionMeta
 		 BaseMessages.getString(PKG, "PermissionMeta.Permission.UseSchemas")
 	};
 	
+	public PermissionMeta() {
+		this(TYPE_PERMISSION_NONE);
+	}
+	
 	public PermissionMeta(int type)
 	{
 		this.type = type;
@@ -66,22 +67,6 @@ public class PermissionMeta
 	public PermissionMeta(String stype)
 	{
 		this.type = getType(stype);
-	}
-
-	public PermissionMeta(Repository rep, long id_permission)
-		throws KettleException
-	{
-		try
-		{
-			RowMetaAndData r = rep.getPermission(id_permission);
-			setID(id_permission);
-			String code = r.getString("CODE", null);
-			type = getType(code);
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "PermissionMeta.Error.LoadPermisson", Long.toString(id_permission)), dbe);
-		}
 	}
 	
 	public void setType(int type)

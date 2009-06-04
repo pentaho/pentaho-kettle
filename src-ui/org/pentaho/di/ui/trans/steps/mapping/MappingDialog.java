@@ -556,7 +556,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			{
 				loadRepositoryTrans(transName, repdir);
 				wTransName.setText(mappingTransMeta.getName());
-				wTransDir.setText(mappingTransMeta.getDirectory().getPath());
+				wTransDir.setText(mappingTransMeta.getRepositoryDirectory().getPath());
 				wFilename.setText("");
 				wRepRadio.setSelection(true);
 				wFileRadio.setSelection(false);
@@ -573,7 +573,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	{
 		// Read the transformation...
 		//
-		mappingTransMeta = new TransMeta(repository, transMeta.environmentSubstitute(transName), repdir);
+		mappingTransMeta = repository.loadTransformation(transMeta.environmentSubstitute(transName), repdir);
 		mappingTransMeta.clearChanged();
 	}
 

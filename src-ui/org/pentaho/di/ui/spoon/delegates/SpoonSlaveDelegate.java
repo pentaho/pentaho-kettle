@@ -58,10 +58,10 @@ public class SpoonSlaveDelegate extends SpoonDelegate
 
 		Repository rep = spoon.getRepository();
 
-		if (rep != null && slaveServer.getId() > 0)
+		if (rep != null && slaveServer.getID() > 0)
 		{
 			// remove the slave server from the repository too...
-			rep.delSlave(slaveServer.getId());
+			rep.delSlave(slaveServer.getID());
 		}
 
 		int idx = hasSlaveServersInterface.getSlaveServers().indexOf(slaveServer);

@@ -63,7 +63,7 @@ public class StepSerializationHelper {
           }
           // get the Java classname for the array elements
           String fieldClassName = XMLHandler.getTagAttribute(fieldNode, "class");
-          Class clazz = null;
+          Class<?> clazz = null;
           // primitive types require special handling
           if (fieldClassName.equals("boolean")) {
             clazz = boolean.class;
@@ -105,7 +105,7 @@ public class StepSerializationHelper {
 
             // roll through all of our array elements setting them as encountered
             if (String.class.isAssignableFrom(clazz) || Number.class.isAssignableFrom(clazz)) {
-              Constructor constructor = clazz.getConstructor(String.class);
+              Constructor<?> constructor = clazz.getConstructor(String.class);
               Object instance = constructor.newInstance(XMLHandler.getTagAttribute(child, "value"));
               Array.set(array, arrayIndex++, instance);
             } else if (Boolean.class.isAssignableFrom(clazz) || boolean.class.isAssignableFrom(clazz)) {
@@ -147,10 +147,10 @@ public class StepSerializationHelper {
           }
           // get the Java classname for the array elements
           String fieldClassName = XMLHandler.getTagAttribute(fieldNode, "class");
-          Class clazz = Class.forName(fieldClassName);
+          Class<?> clazz = Class.forName(fieldClassName);
 
           // create a new, appropriately sized array
-          List list = new ArrayList();
+          List<Object> list = new ArrayList<Object>();
           field.set(object, list);
 
           // iterate over all of the array elements and add them one by one as encountered
@@ -163,7 +163,7 @@ public class StepSerializationHelper {
 
             // create an instance of 'fieldClassName'
             if (String.class.isAssignableFrom(clazz) || Number.class.isAssignableFrom(clazz) || Boolean.class.isAssignableFrom(clazz)) {
-              Constructor constructor = clazz.getConstructor(String.class);
+              Constructor<?> constructor = clazz.getConstructor(String.class);
               Object instance = constructor.newInstance(XMLHandler.getTagAttribute(child, "value"));
               list.add(instance);
             } else {
@@ -206,7 +206,7 @@ public class StepSerializationHelper {
               field.set(object, "true".equalsIgnoreCase(value.toString()));
             }
           } else if (String.class.isAssignableFrom(field.getType()) || Number.class.isAssignableFrom(field.getType())) {
-            Constructor constructor = field.getType().getConstructor(String.class);
+            Constructor<?> constructor = field.getType().getConstructor(String.class);
             Object instance = constructor.newInstance(value);
             field.set(object, instance);
           } else {
@@ -218,7 +218,7 @@ public class StepSerializationHelper {
             }
             // get the Java classname for the array elements
             String fieldClassName = XMLHandler.getTagAttribute(fieldNode, "class");
-            Class clazz = Class.forName(fieldClassName);
+            Class<?> clazz = Class.forName(fieldClassName);
             Object instance = clazz.newInstance();
             field.set(object, instance);
             read(instance, fieldNode);
@@ -238,7 +238,8 @@ public class StepSerializationHelper {
    * @param object
    * @param buffer
    */
-  public static void write(Object object, int indentLevel, StringBuffer buffer) {
+  @SuppressWarnings("unchecked")
+public static void write(Object object, int indentLevel, StringBuffer buffer) {
 
     // don't even attempt to persist
     if (object == null) {
@@ -304,11 +305,11 @@ public class StepSerializationHelper {
           buffer.append("    </" + field.getName() + ">").append(Const.CR);
         } else if (List.class.isAssignableFrom(field.getType())) {
           // write list values
-          List list = (List) fieldValue;
+          List<Object> list = (List<Object>) fieldValue;
           if (list.size() == 0) {
             continue;
           }
-          Class listClass = list.get(0).getClass();
+          Class<?> listClass = list.get(0).getClass();
 
           // open node (add class name attribute)
           indent(buffer, indentLevel);

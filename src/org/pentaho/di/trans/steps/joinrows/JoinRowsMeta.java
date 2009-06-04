@@ -255,7 +255,7 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 			long id_condition = rep.getStepAttributeInteger(id_step, 0, "id_condition"); //$NON-NLS-1$
 			if (id_condition>0)
 			{
-				condition = new Condition(rep, id_condition);
+				condition = rep.loadCondition(id_condition);
 			}
 			else
 			{
@@ -280,7 +280,7 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 			
 			if (condition!=null) 
 			{
-				condition.saveRep(rep);
+				rep.saveCondition(condition);
 				rep.saveStepAttribute(id_transformation, id_step, "id_condition",  condition.getID()); //$NON-NLS-1$
                 rep.insertTransStepCondition(id_transformation, id_step, condition.getID());
 			}

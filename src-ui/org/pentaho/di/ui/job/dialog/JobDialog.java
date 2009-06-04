@@ -423,7 +423,7 @@ public class JobDialog extends Dialog
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				RepositoryDirectory directoryFrom = jobMeta.getDirectory();
+				RepositoryDirectory directoryFrom = jobMeta.getRepositoryDirectory();
 				if (directoryFrom==null) directoryFrom = new RepositoryDirectory();
 				long idDirectoryFrom  = directoryFrom.getID();
 				
@@ -835,7 +835,7 @@ public class JobDialog extends Dialog
 		wJobversion.setText( Const.NVL(jobMeta.getJobversion(), "") );
 		wJobstatus.select( jobMeta.getJobstatus() -1);
 		
-		if (jobMeta.getDirectory()!=null)      wDirectory.setText    ( jobMeta.getDirectory().getPath() );
+		if (jobMeta.getRepositoryDirectory()!=null)      wDirectory.setText    ( jobMeta.getRepositoryDirectory().getPath() );
 		
 		if (jobMeta.getCreatedUser()!=null)     wCreateUser.setText          ( jobMeta.getCreatedUser() );
 		if (jobMeta.getCreatedDate()!=null && jobMeta.getCreatedDate()!=null)     						   
@@ -952,20 +952,20 @@ public class JobDialog extends Dialog
         {
 	        if (directoryChangeAllowed) 
 	        {
-				RepositoryDirectory dirFrom = jobMeta.getDirectory();
+				RepositoryDirectory dirFrom = jobMeta.getRepositoryDirectory();
 			    long idDirFrom = dirFrom==null?-1L:dirFrom.getID();
 	
 			    try
 				{
 				    
-					rep.moveJob(jobMeta.getName(), idDirFrom, newDirectory.getID() );
+					rep.jobDelegate.moveJob(jobMeta.getName(), idDirFrom, newDirectory.getID() );
 					log.logDetailed(getClass().getName(), "Moved directory to ["+newDirectory.getPath()+"]");
-					jobMeta.setDirectory( newDirectory );
-					wDirectory.setText(jobMeta.getDirectory().getPath());
+					jobMeta.setRepositoryDirectory( newDirectory );
+					wDirectory.setText(jobMeta.getRepositoryDirectory().getPath());
 				}
 				catch(KettleException dbe)
 				{
-					jobMeta.setDirectory( dirFrom );
+					jobMeta.setRepositoryDirectory( dirFrom );
 			 		
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
 					mb.setText(BaseMessages.getString(PKG, "JobDialog.Dialog.ErrorChangingDirectory.Title"));
@@ -977,7 +977,7 @@ public class JobDialog extends Dialog
 	        {
 	        	// Just update to the new selected directory...
 	        	//
-	        	jobMeta.setDirectory( newDirectory );
+	        	jobMeta.setRepositoryDirectory( newDirectory );
 	        }
         }
         

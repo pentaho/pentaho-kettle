@@ -1000,7 +1000,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	            	//
 	            	// It only makes sense to try to load from the repository when the repository is also filled in.
 	            	//
-	                transMeta = new TransMeta(rep, filename, rep.getDirectoryTree().findDirectory(environmentSubstitute(getDirectory())));
+	                transMeta = rep.loadTransformation(filename, rep.getDirectoryTree().findDirectory(environmentSubstitute(getDirectory())));
 		            transMeta.copyVariablesFrom(this);
 	            }
 	            else

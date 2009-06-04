@@ -15,11 +15,8 @@ import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
@@ -28,7 +25,6 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobEntryLoader;
-import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
@@ -131,129 +127,6 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 			log.logError(toString(), message);
 			log.logError(toString(), Const.getStackTracker(e));
 			throw new KettleXMLException(message, e);
-		}
-	}
-
-	/**
-	 * Load the chef graphical entry from repository We load type, name &
-	 * description if no entry can be found.
-	 * 
-	 * @param log
-	 *            the logging channel
-	 * @param rep
-	 *            the Repository
-	 * @param id_job
-	 *            The job ID
-	 * @param id_jobentry_copy
-	 *            The jobentry copy ID
-	 * @param jobentries
-	 *            A list with all jobentries
-	 * @param databases
-	 *            A list with all defined databases
-	 */
-	public JobEntryCopy(LogWriter log, Repository rep, long id_job, long id_jobentry_copy, List<JobEntryInterface> jobentries, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
-	{
-		try
-		{
-			setID(id_jobentry_copy);
-
-			// Handle GUI information: nr, location, ...
-			RowMetaAndData r = rep.getJobEntryCopy(id_jobentry_copy);
-			if (r != null)
-			{
-				// These are the jobentry_copy fields...
-				//
-				long id_jobentry = r.getInteger("ID_JOBENTRY", 0);
-				long id_jobentry_type = r.getInteger("ID_JOBENTRY_TYPE", 0);
-				setNr((int) r.getInteger("NR", 0));
-				int locx = (int) r.getInteger("GUI_LOCATION_X", 0);
-				int locy = (int) r.getInteger("GUI_LOCATION_Y", 0);
-				boolean isdrawn = r.getBoolean("GUI_DRAW", false);
-				boolean isparallel = r.getBoolean("PARALLEL", false);
-
-				// Do we have the jobentry already?
-				entry = JobMeta.findJobEntry(jobentries, id_jobentry);
-				if (entry == null)
-				{
-					// What type of jobentry do we load now?
-					// Get the jobentry type code
-					RowMetaAndData rt = rep.getJobEntryType(id_jobentry_type);
-					if (rt != null)
-					{
-						String jet_code = rt.getString("CODE", null);
-
-						JobEntryLoader jobLoader = JobEntryLoader.getInstance();
-						JobPlugin jobPlugin = jobLoader.findJobEntriesWithID(jet_code);
-						if (jobPlugin != null)
-						{
-							entry = jobLoader.getJobEntryClass(jobPlugin);
-
-							// Load the attributes for that jobentry
-							entry.loadRep(rep, id_jobentry, databases, slaveServers);
-							entry.setID(id_jobentry);
-							
-							jobentries.add(entry);
-						} else
-						{
-							throw new KettleException(
-									"JobEntryLoader was unable to find Job Entry Plugin with description ["
-											+ jet_code + "].");
-						}
-					} else
-					{
-						throw new KettleException("Unable to find Job Entry Type with id=" + id_jobentry_type
-								+ " in the repository");
-					}
-				}
-
-				setLocation(locx, locy);
-				setDrawn(isdrawn);
-				setLaunchingInParallel(isparallel);
-			}
-		} catch (KettleDatabaseException dbe)
-		{
-			throw new KettleException("Unable to load job entry copy from repository with id_jobentry_copy="
-					+ id_jobentry_copy, dbe);
-		}
-	}
-
-	public void saveRep(Repository rep, long id_job) throws KettleException
-	{
-		try
-		{
-			/*
-			 * --1-- Save the JobEntryCopy details... --2-- If we don't find a
-			 * id_jobentry, save the jobentry (meaning: only once)
-			 */
-
-			// See if an entry with the same name is already available...
-			long id_jobentry = rep.getJobEntryID(getName(), id_job);
-			if (id_jobentry <= 0)
-			{
-				entry.saveRep(rep, id_job);
-				id_jobentry = entry.getID();
-			}
-
-			// OK, the entry is saved.
-			// Get the entry type...
-			long id_jobentry_type = rep.getJobEntryTypeID(entry.getTypeId());
-
-			// Oops, not found: update the repository!
-			if (id_jobentry_type < 0)
-			{
-				rep.updateJobEntryTypes();
-
-				// Try again!
-				id_jobentry_type = rep.getJobEntryTypeID(entry.getTypeId());
-			}
-
-			// Save the entry copy..
-			setID(rep.insertJobEntryCopy(id_job, id_jobentry, id_jobentry_type, getNr(), getLocation().x,
-					getLocation().y, isDrawn(), isLaunchingInParallel()));
-		} catch (KettleDatabaseException dbe)
-		{
-			throw new KettleException("Unable to save job entry copy to the repository, id_job=" + id_job,
-					dbe);
 		}
 	}
 

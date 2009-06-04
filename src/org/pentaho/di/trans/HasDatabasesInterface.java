@@ -15,8 +15,6 @@ package org.pentaho.di.trans;
 import java.util.List;
 
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.repository.Repository;
 
 
 public interface HasDatabasesInterface
@@ -87,13 +85,6 @@ public interface HasDatabasesInterface
      */
     public DatabaseMeta findDatabase(String name);
 
-    /**
-     * Read the database connections in the repository and add them to this transformation if they are not yet present.
-     *
-     * @param rep The repository to load the database connections from.
-     * @param overWriteShared if an object with the same name exists, overwrite
-     */
-    public void readDatabases(Repository rep, boolean overWriteShared) throws KettleException;
 
     /**
      * Find the location of database

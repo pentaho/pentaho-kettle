@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
@@ -53,7 +54,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		tabMap = new ArrayList<TabMapEntry>();
 	}
 
-	public boolean tabClose(TabItem item)
+	public boolean tabClose(TabItem item) throws KettleException
 	{
 		// Try to find the tab-item that's being closed.
 		List<TabMapEntry> collection = new ArrayList<TabMapEntry>();

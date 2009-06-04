@@ -19,6 +19,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobPlugin;
+import org.pentaho.di.repository.delegates.RepositoryConnectionDelegate;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 
@@ -66,7 +67,7 @@ public class RepositoryCreationHelper {
         String message = (upgrade?"Upgrading ":"Creating")+" the Kettle repository...";
 		if (monitor!=null) monitor.beginTask(message, 31);
         
-        repository.setAutoCommit(true);
+        repository.connectionDelegate.setAutoCommit(true);
         
         //////////////////////////////////////////////////////////////////////////////////
         // R_LOG
@@ -154,14 +155,14 @@ public class RepositoryCreationHelper {
         	// if the table doesn't exist, don't try to grab an ID from it...
         	long nextId;
         	if (sql.toUpperCase().indexOf("CREATE TABLE")<0) { 
-        		nextId = repository.getNextID(schemaTable, Repository.FIELD_VERSION_ID_VERSION);
+        		nextId = repository.connectionDelegate.getNextID(schemaTable, Repository.FIELD_VERSION_ID_VERSION);
         	} else {
         		nextId = 1;
         	}
             Object[] data = new Object[] {
                     Long.valueOf(nextId),
-                    Long.valueOf(Repository.REQUIRED_MAJOR_VERSION),
-                    Long.valueOf(Repository.REQUIRED_MINOR_VERSION),
+                    Long.valueOf(RepositoryConnectionDelegate.REQUIRED_MAJOR_VERSION),
+                    Long.valueOf(RepositoryConnectionDelegate.REQUIRED_MINOR_VERSION),
                     new Date(),
                     Boolean.valueOf(upgrade),
                 };
@@ -234,7 +235,7 @@ public class RepositoryCreationHelper {
 				{
 					long nextid = i;
 					if (!create) {
-						nextid = repository.getNextDatabaseTypeID();
+						nextid = repository.connectionDelegate.getNextDatabaseTypeID();
 					}
 
 					Object[] tableData = new Object[] { new Long(nextid), code[i], desc[i], };
@@ -314,7 +315,7 @@ public class RepositoryCreationHelper {
 				{
 					long nextid = i+1;
 					if (!create) {
-						nextid = repository.getNextDatabaseConnectionTypeID();
+						nextid = repository.connectionDelegate.getNextDatabaseConnectionTypeID();
 					}
 
                     Object[] tableData = new Object[] { 
@@ -1376,7 +1377,7 @@ public class RepositoryCreationHelper {
 				if (lookup == null)
 				{
 					long nextid = i;
-					if (!create) nextid = repository.getNextLoglevelID();
+					if (!create) nextid = repository.connectionDelegate.getNextLoglevelID();
 
 					RowMetaAndData tableData = new RowMetaAndData();
                     tableData.addValue(new ValueMeta(Repository.FIELD_LOGLEVEL_ID_LOGLEVEL, ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
@@ -1842,7 +1843,7 @@ public class RepositoryCreationHelper {
 				if (lookup == null)
 				{
 					long nextid = i+1;
-					if (!create) nextid = repository.getNextProfileID();
+					if (!create) nextid = repository.connectionDelegate.getNextProfileID();
 
 					RowMetaAndData tableData = new RowMetaAndData();
                     tableData.addValue(new ValueMeta(Repository.FIELD_PROFILE_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
@@ -1934,7 +1935,7 @@ public class RepositoryCreationHelper {
 				if (lookup == null)
 				{
 					long nextid = i+1;
-					if (!create) nextid = repository.getNextUserID();
+					if (!create) nextid = repository.connectionDelegate.getNextUserID();
 					String password = Encr.encryptPassword(pass[i]);
                     
                     Long profileID = (Long)profiles.get( prof[i] );
@@ -2027,7 +2028,7 @@ public class RepositoryCreationHelper {
 				if (lookup == null)
 				{
 					long nextid = i;
-					if (!create) nextid = repository.getNextPermissionID();
+					if (!create) nextid = repository.connectionDelegate.getNextPermissionID();
 
                     RowMetaAndData tableData = new RowMetaAndData();
                     tableData.addValue(new ValueMeta(Repository.FIELD_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
@@ -2235,12 +2236,12 @@ public class RepositoryCreationHelper {
 			{
 				StepPlugin sp = stepLoader.getStepWithType(StepPlugin.TYPE_ALL, i);
 				long id = -1;
-				if (!create) id = repository.getStepTypeID(sp.getID()[0]);
+				if (!create) id = repository.stepDelegate.getStepTypeID(sp.getID()[0]);
 				if (id < 0) // Not found, we need to add this one...
 				{
 					// We need to add this one ...
 					id = i+1;
-					if (!create) id = repository.getNextStepTypeID();
+					if (!create) id = repository.connectionDelegate.getNextStepTypeID();
 	
 					RowMetaAndData table = new RowMetaAndData();
 					table.addValue(new ValueMeta(Repository.FIELD_STEP_TYPE_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
@@ -2282,12 +2283,12 @@ public class RepositoryCreationHelper {
 	            String type_desc = jobPlugins[i].getID();
 	            String type_desc_long = jobPlugins[i].getDescription();
 	            long id = -1;
-	            if (!create) id = repository.getJobEntryTypeID(type_desc);
+	            if (!create) id = repository.jobEntryDelegate.getJobEntryTypeID(type_desc);
 	            if (id < 0) // Not found, we need to add this one...
 	            {
 	                // We need to add this one ...
 	                id = i+1;
-	                if (!create) id = repository.getNextJobEntryTypeID();
+	                if (!create) id = repository.connectionDelegate.getNextJobEntryTypeID();
 	
 	                RowMetaAndData table = new RowMetaAndData();
 	                table.addValue(new ValueMeta(Repository.FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id));

@@ -111,7 +111,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			if (transMeta.isRepReference() && xform.isRepReference())
 			{
 				// a repository value, check directory
-				same = transMeta.getDirectory().getPath().equals(xform.getDirectory().getPath());
+				same = transMeta.getRepositoryDirectory().getPath().equals(xform.getRepositoryDirectory().getPath());
 			} else if (transMeta.isFileReference() && xform.isFileReference())
 			{
 				// a file system entry, check file path

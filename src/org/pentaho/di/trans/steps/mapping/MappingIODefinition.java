@@ -129,7 +129,7 @@ public class MappingIODefinition implements Cloneable {
 		return xml.toString();
 	}
 
-	public void saveRep(Repository rep, long id_transformation, long id_step, String prefix, long nr) throws KettleException {
+	public void saveRep(Repository rep, long id_transformation, long id_step, String prefix, int nr) throws KettleException {
 		rep.saveStepAttribute(id_transformation, id_step, nr, prefix+"input_step", inputStepname); 
 		rep.saveStepAttribute(id_transformation, id_step, nr, prefix+"output_step", outputStepname); 
 		rep.saveStepAttribute(id_transformation, id_step, nr, prefix+"main_path", mainDataPath); 

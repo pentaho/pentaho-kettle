@@ -217,30 +217,26 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   {
   }
 
-  public void saveRep(Repository rep, long id_job) throws KettleException
-  {
-    try
-    {
-      setID(rep.insertJobEntry(id_job, this));
+  public void saveRep(Repository rep, long id_job) throws KettleException {
+		try {
+			setID(rep.jobEntryDelegate.insertJobEntry(id_job, this));
+		} catch (KettleDatabaseException dbe) {
+			throw new KettleException("Unable to save job entry base information to the repository for id_job=" + id_job, dbe);
 		}
-		catch(KettleDatabaseException dbe)
-    {
-      throw new KettleException("Unable to save job entry base information to the repository for id_job=" + id_job, dbe);
-    }
-  }
+	}
 
   public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
   {
     try
     {
-      RowMetaAndData r = rep.getJobEntry(id_jobentry);
+      RowMetaAndData r = rep.jobEntryDelegate.getJobEntry(id_jobentry);
       if (r != null)
       {
         setName(r.getString("NAME", null));
 
         setDescription(r.getString("DESCRIPTION", null));
         int id_jobentry_type = (int) r.getInteger("ID_JOBENTRY_TYPE", 0);
-        RowMetaAndData jetrow = rep.getJobEntryType(id_jobentry_type);
+        RowMetaAndData jetrow = rep.jobEntryDelegate.getJobEntryType(id_jobentry_type);
         if (jetrow != null)
         {
           configId = jetrow.getString("CODE", null);

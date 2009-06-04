@@ -503,7 +503,7 @@ public class TransDialog extends Dialog
 			{
 				if (rep!=null)
 				{
-					RepositoryDirectory directoryFrom = transMeta.getDirectory();
+					RepositoryDirectory directoryFrom = transMeta.getRepositoryDirectory();
 					if (directoryFrom==null) directoryFrom = new RepositoryDirectory();
 					long idDirectoryFrom  = directoryFrom.getID();
                     
@@ -1742,8 +1742,8 @@ public class TransDialog extends Dialog
         refreshPartitions();
 		
 		// Directory:
-		if (transMeta.getDirectory()!=null && transMeta.getDirectory().getPath()!=null) 
-			wDirectory.setText(transMeta.getDirectory().getPath());
+		if (transMeta.getRepositoryDirectory()!=null && transMeta.getRepositoryDirectory().getPath()!=null) 
+			wDirectory.setText(transMeta.getRepositoryDirectory().getPath());
 		
 		// Performance monitoring tab:
 		//
@@ -1899,15 +1899,15 @@ public class TransDialog extends Dialog
 
 		if (directoryChangeAllowed) {
 			if (newDirectory != null) {
-				RepositoryDirectory dirFrom = transMeta.getDirectory();
+				RepositoryDirectory dirFrom = transMeta.getRepositoryDirectory();
 				long idDirFrom = dirFrom == null ? -1L : dirFrom.getID();
 
 				try {
 					rep.moveTransformation(transMeta.getName(), idDirFrom, newDirectory.getID());
 					log.logDetailed(getClass().getName(), BaseMessages.getString(PKG, "TransDialog.Log.MovedDirectoryTo", newDirectory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
-					transMeta.setDirectory(newDirectory);
+					transMeta.setRepositoryDirectory(newDirectory);
 				} catch (KettleException ke) {
-					transMeta.setDirectory(dirFrom);
+					transMeta.setRepositoryDirectory(dirFrom);
 					OK = false;
 					new ErrorDialog(shell, BaseMessages.getString(PKG, "TransDialog.ErrorMovingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransDialog.ErrorMovingTransformation.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 				}
@@ -1916,7 +1916,7 @@ public class TransDialog extends Dialog
 			// Just update to the new selected directory...
 			//
 			if (newDirectory != null)
-				transMeta.setDirectory(newDirectory);
+				transMeta.setRepositoryDirectory(newDirectory);
 		}
 
 		// Performance monitoring tab:

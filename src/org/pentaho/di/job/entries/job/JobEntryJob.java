@@ -487,14 +487,14 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             if (fromRepository) // load from the repository...
             {
                 if(log.isDetailed()) log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+environmentSubstitute(jobname)+"]");
-                jobMeta = new JobMeta(logwriter, rep, environmentSubstitute(jobname), rep.getDirectoryTree().findDirectory(environmentSubstitute(directory)));
+                jobMeta = rep.loadJobMeta(environmentSubstitute(jobname), rep.getDirectoryTree().findDirectory(environmentSubstitute(directory)), null);
                 jobMeta.setParentVariableSpace(parentJob);
             }
             else // Get it from the XML file
             if (fromXMLFile)
             {
             	if(log.isDetailed()) log.logDetailed(toString(), "Loading job from XML file : ["+environmentSubstitute(filename)+"]");
-                jobMeta = new JobMeta(logwriter, environmentSubstitute(filename), rep, null);
+                jobMeta = new JobMeta(environmentSubstitute(filename), rep, null);
                 jobMeta.setParentVariableSpace(parentJob);
             }
 
@@ -943,9 +943,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		}
 
 		// Different directories: OK
-		if (parentJobMeta.getDirectory()==null && jobMeta.getDirectory()!=null) return; 
-		if (parentJobMeta.getDirectory()!=null && jobMeta.getDirectory()==null) return; 
-		if (jobMeta.getDirectory().getID() != parentJobMeta.getDirectory().getID()) return;
+		if (parentJobMeta.getRepositoryDirectory()==null && jobMeta.getRepositoryDirectory()!=null) return; 
+		if (parentJobMeta.getRepositoryDirectory()!=null && jobMeta.getRepositoryDirectory()==null) return; 
+		if (jobMeta.getRepositoryDirectory().getID() != parentJobMeta.getRepositoryDirectory().getID()) return;
 		
 		// Same names, same directories : loaded from same location in the repository: 
 		// --> recursive loading taking place!
@@ -1005,15 +1005,13 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     	{
 	        if (rep!=null && getDirectory()!=null)
 	        {
-	            return new JobMeta(LogWriter.getInstance(), 
-	            		           rep, 
+	            return rep.loadJobMeta(
 	            		           (space != null ? space.environmentSubstitute(getJobName()): getJobName()), 
-                             rep.getDirectoryTree().findDirectory(environmentSubstitute(getDirectory())));
+                             rep.getDirectoryTree().findDirectory(environmentSubstitute(getDirectory())), null);
 	        }
 	        else
 	        {
-	            return new JobMeta(LogWriter.getInstance(), 
-	            		           (space != null ? space.environmentSubstitute(getFilename()) : getFilename()), 
+	            return new JobMeta((space != null ? space.environmentSubstitute(getFilename()) : getFilename()), 
 	            		           rep, null);
 	        }
     	}

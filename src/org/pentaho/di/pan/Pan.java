@@ -37,6 +37,7 @@ import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryExporter;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.StepLoader;
@@ -228,7 +229,7 @@ public class Pan
 							// Define and connect to the repository...
 							if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.Allocate&ConnectRep"));
 							
-							rep = new Repository(log, repinfo, userinfo);
+							rep = new Repository(repinfo, userinfo);
 							if (rep.connect("Pan commandline"))
 							{
 								RepositoryDirectory directory = rep.getDirectoryTree(); // Default = root
@@ -244,7 +245,7 @@ public class Pan
 									// Check username, password
 									if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.CheckSuppliedUserPass"));
 									
-									userinfo = new UserInfo(rep, optionUsername.toString(), optionPassword.toString());
+									userinfo = rep.loadUserInfo(optionUsername.toString(), optionPassword.toString());
 									if (userinfo.getID()>0)
 									{
 										// Load a transformation
@@ -252,7 +253,7 @@ public class Pan
 										{
 											if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.LoadTransInfo"));
 											
-											transMeta = new TransMeta(rep, optionTransname.toString(), directory);
+											transMeta = rep.loadTransformation(optionTransname.toString(), directory);
 											if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.AllocateTrans"));
 											
 											trans = new Trans(transMeta);
@@ -286,7 +287,7 @@ public class Pan
                                         {
                                             System.out.println(BaseMessages.getString(PKG, "Pan.Log.ExportingObjectsRepToFile",""+optionExprep));
                                             
-                                            rep.exportAllObjects(null, optionExprep.toString(), directory,"all");
+                                            new RepositoryExporter(rep).exportAllObjects(null, optionExprep.toString(), directory,"all");
                                             System.out.println(BaseMessages.getString(PKG, "Pan.Log.FinishedExportObjectsRepToFile",""+optionExprep));
                                         }
 										else

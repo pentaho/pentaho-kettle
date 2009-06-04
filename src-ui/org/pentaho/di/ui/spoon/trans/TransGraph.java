@@ -2537,7 +2537,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     return mb.open();
   }
 
-  public boolean applyChanges() {
+  public boolean applyChanges() throws KettleException {
     return spoon.saveToFile(transMeta);
   }
 
@@ -2602,7 +2602,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     //
     if (tid.isSharedObjectsFileChanged() || ti != null) {
       try {
-        SharedObjects sharedObjects = transMeta.readSharedObjects(rep);
+        SharedObjects sharedObjects = rep!=null ? rep.readTransSharedObjects(transMeta) : transMeta.readSharedObjects();
         spoon.sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
       } catch (KettleException e) {
         new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title"), 
@@ -2629,11 +2629,11 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     spoon.openFile();
   }
 
-  public void saveFile() {
+  public void saveFile() throws KettleException {
     spoon.saveFile();
   }
 
-  public void saveFileAs() {
+  public void saveFileAs() throws KettleException {
     spoon.saveFileAs();
   }
 
@@ -2841,7 +2841,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     }
   }
 
-  public synchronized void start(TransExecutionConfiguration executionConfiguration) {
+  public synchronized void start(TransExecutionConfiguration executionConfiguration) throws KettleException {
     if (!running) // Not running, start the transformation...
     {
       // Auto save feature...
@@ -2896,7 +2896,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             // Important: even though transMeta is passed to the Trans constructor, it is not the same object as is in memory
             // To be able to completely test this, we need to run it as we would normally do in pan
             //
-            trans = new Trans(transMeta, spoon.rep, transMeta.getName(), transMeta.getDirectory().getPath(), transMeta.getFilename());
+            trans = new Trans(transMeta, spoon.rep, transMeta.getName(), transMeta.getRepositoryDirectory().getPath(), transMeta.getFilename());
             trans.setReplayDate(executionConfiguration.getReplayDate());
             trans.setRepository(executionConfiguration.getRepository());
             trans.setMonitored(true);

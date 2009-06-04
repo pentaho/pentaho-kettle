@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
@@ -422,63 +421,9 @@ public class RepositoryDirectory
 	 */
 	public RepositoryDirectory(Repository rep) throws KettleException
 	{
-        loadDirectoryTreeFromRepository(rep);
+        rep.loadRepositoryDirectoryTree(this);
 	}
     
-    private void loadDirectoryTreeFromRepository(Repository rep) throws KettleException
-    {
-        try
-        {
-            clear();
-            
-            long subids[] = rep.getSubDirectoryIDs( getID() );
-            for (int i=0;i<subids.length;i++)
-            {
-                RepositoryDirectory subdir = new RepositoryDirectory();
-                if (subdir.loadRep(rep, subids[i]))
-                {
-                    addSubdirectory(subdir);
-                }
-            }
-        }
-        catch(Exception e)
-        {
-            throw new KettleException("An error occured loading the directory tree from the repository", e);
-        }
-    }
-	
-	public boolean loadRep(Repository rep, long id_directory)
-	{
-		try
-		{
-			RowMetaAndData row = rep.getDirectory(id_directory);
-			if (row!=null)
-			{
-				setID(id_directory);
-				
-				// Content?
-				setDirectoryName( row.getString("DIRECTORY_NAME", null));
-				
-				// The subdirectories?
-				long subids[] = rep.getSubDirectoryIDs( getID() );
-				for (int i=0;i<subids.length;i++)
-				{
-					RepositoryDirectory subdir = new RepositoryDirectory();
-					if (subdir.loadRep(rep, subids[i]))
-					{
-						addSubdirectory(subdir);
-					}
-				}
-			}
-			
-			return true;
-		}
-		catch(Exception e)
-		{
-			return false;
-		}
-	}
-	
 	public boolean addToRep(Repository rep)
 	{
 		try
@@ -486,14 +431,15 @@ public class RepositoryDirectory
 			long id_directory_parent = 0;
 			if (getParent()!=null) id_directory_parent=getParent().getID();
 			
-			setID(rep.insertDirectory(id_directory_parent, this));
+			setID(rep.directoryDelegate.insertDirectory(id_directory_parent, this));
 			
             LogWriter.getInstance().logDetailed(rep.getName(), "New id of directory = "+getID());
                         
 			rep.commit();
             
             // Reload the complete directory tree from the parent down...
-            findRoot().loadDirectoryTreeFromRepository(rep);
+			//
+            rep.loadRepositoryDirectoryTree(findRoot());
 
 			return id>0;
 		}
@@ -512,7 +458,7 @@ public class RepositoryDirectory
 			long[] subDirectories = rep.getSubDirectoryIDs(getID());
 			if (trans.length==0 && jobs.length==0 && subDirectories.length==0)
 			{
-				rep.deleteDirectory(getID());
+				rep.directoryDelegate.deleteDirectory(getID());
 			}
 			else
 			{
@@ -529,7 +475,7 @@ public class RepositoryDirectory
 	{
 		try
 		{
-			rep.renameDirectory(getID(), getDirectoryName());
+			rep.directoryDelegate.renameDirectory(getID(), getDirectoryName());
 			
 			return true;
 		}

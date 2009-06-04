@@ -187,6 +187,7 @@ import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.dialog.ShowBrowserDialog;
+import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.dialog.Splash;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -646,7 +647,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// In case someone dares to press the [X] in the corner ;-)
 		shell.addShellListener(new ShellAdapter() {
 			public void shellClosed(ShellEvent e) {
-				e.doit = quitFile();
+				try {
+					e.doit = quitFile();
+				} catch(Exception ex) {
+					new ErrorDialog(shell, "Error", "Unexpected error quiting (probably cause by saving)!", ex);
+				}
 			}
 		});
 
@@ -1262,7 +1267,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				// Close the previous connection...
 				if (rep != null)
 					rep.disconnect();
-				rep = new Repository(log, rd.getRepository(), rd.getUser());
+				rep = new Repository(rd.getRepository(), rd.getUser());
 				try {
 					rep.connect(APP_NAME);
 				} catch (KettleException ke) {
@@ -2407,7 +2412,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	public boolean tabClose(TabItem item) {
-		return delegates.tabs.tabClose(item);
+		try {
+			return delegates.tabs.tabClose(item);
+		} catch(Exception e) {
+			new ErrorDialog(shell, "Error", "Unexpected error closing tab!" , e);
+			return false;
+		}
 	}
 
 	public TabSet getTabSet() {
@@ -2753,7 +2763,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				rep.disconnect();
 			}
 
-			rep = new Repository(log, rd.getRepository(), rd.getUser());
+			rep = new Repository(rd.getRepository(), rd.getUser());
 			try {
 				rep.connect(APP_NAME);
 			} catch (KettleException ke) {
@@ -2789,7 +2799,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 				// Read them from the new repository.
 				try {
-					SharedObjects sharedObjects = transMeta.readSharedObjects(rep);
+					SharedObjects sharedObjects = rep.readTransSharedObjects(transMeta);
 					sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
 				} catch (KettleException e) {
 					new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", makeTransGraphTabName(transMeta)), e);
@@ -2822,11 +2832,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 				// For the existing transformation, change the directory too:
 				// Try to find the same directory in the new repository...
-				RepositoryDirectory redi = rep.getDirectoryTree().findDirectory(transMeta.getDirectory().getPath());
+				RepositoryDirectory redi = rep.getDirectoryTree().findDirectory(transMeta.getRepositoryDirectory().getPath());
 				if (redi != null) {
-					transMeta.setDirectory(redi);
+					transMeta.setRepositoryDirectory(redi);
 				} else {
-					transMeta.setDirectory(rep.getDirectoryTree()); // the root
+					transMeta.setRepositoryDirectory(rep.getDirectoryTree()); // the root
 					// is the
 					// default!
 				}
@@ -2906,20 +2916,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			if (!userinfo.isReadonly()) {
 				if (ui != null) {
 					try {
-						ui.saveRep(rep);
+						rep.saveUserInfo(ui);
 					} catch (KettleException e) {
 						MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-						mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.UnableChangeUser.Message") + Const.CR + e.getMessage());// Sorry,
-																																// I
-						// was
-						// unable
-						// to
-						// change
-						// this
-						// user
-						// in
-						// the
-						// repository:
+
+						// Sorry, I was unable to change this user in the repository:
+						//
+						mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.UnableChangeUser.Message") + Const.CR + e.getMessage());
 						mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.UnableChangeUser.Title"));// "Edit user"
 						mb.open();
 					}
@@ -3158,7 +3161,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		setTransMetaVariables(transMeta);
 
 		try {
-			SharedObjects sharedObjects = transMeta.readSharedObjects(rep);
+			SharedObjects sharedObjects = rep!=null ? rep.readTransSharedObjects(transMeta) : transMeta.readSharedObjects();
 			sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
 
 			transMeta.clearChanged();
@@ -3186,7 +3189,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public void newJobFile() {
 		try {
-			JobMeta jobMeta = new JobMeta(log);
+			JobMeta jobMeta = new JobMeta();
 			jobMeta.addObserver(this);
 
 			// Set the variables that were previously defined in this session on
@@ -3195,7 +3198,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			setJobMetaVariables(jobMeta);
 
 			try {
-				SharedObjects sharedObjects = jobMeta.readSharedObjects(rep);
+				SharedObjects sharedObjects = rep!=null ? rep.readJobMetaSharedObjects(jobMeta) : jobMeta.readSharedObjects();
 				sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
 			} catch (KettleException e) {
 				new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", delegates.tabs.makeJobGraphTabName(jobMeta)), e);
@@ -3277,7 +3280,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// Load common database info from active repository...
 		if (rep != null) {
 			try {
-				SharedObjects sharedObjects = transMeta.readSharedObjects(rep);
+				SharedObjects sharedObjects = rep!=null ? rep.readTransSharedObjects(transMeta) : transMeta.readSharedObjects();
 				sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
 			} catch (Exception e) {
 				new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Error.UnableToLoadSharedObjects.Title"), BaseMessages.getString(PKG, "Spoon.Error.UnableToLoadSharedObjects.Message"), e);
@@ -3286,7 +3289,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 	}
 
-	public boolean quitFile() {
+	public boolean quitFile() throws KettleException {
 		if (log.isDetailed())
 			log.logDetailed(toString(), BaseMessages.getString(PKG, "Spoon.Log.QuitApplication"));// "Quit application."
 
@@ -3295,14 +3298,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		saveSettings();
 
 		if (props.showExitWarning()) {
+			// Display message: are you sure you want to exit?
+			//
 			MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG, "System.Warning"),// "Warning!"
-					null, BaseMessages.getString(PKG, "Spoon.Message.Warning.PromptExit"), // Are
-					// you
-					// sure
-					// you
-					// want
-					// to
-					// exit?
+					null, BaseMessages.getString(PKG, "Spoon.Message.Warning.PromptExit"), 
+					
 					MessageDialog.WARNING, new String[] { BaseMessages.getString(PKG, "Spoon.Message.Warning.Yes"), BaseMessages.getString(PKG, "Spoon.Message.Warning.No") },// "Yes",
 					// "No"
 					1, BaseMessages.getString(PKG, "Spoon.Message.Warning.NotShowWarning"),// "Please, don't show this warning anymore."
@@ -3316,6 +3316,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 
 		// Check all tabs to see if we can close them...
+		//
 		List<TabMapEntry> list = delegates.tabs.getTabs();
 
 		for (TabMapEntry mapEntry : list) {
@@ -3383,7 +3384,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return exit;
 	}
 
-	public boolean saveFile() {
+	public boolean saveFile() throws KettleException {
 		TransMeta transMeta = getActiveTransformation();
 		if (transMeta != null)
 			return saveToFile(transMeta);
@@ -3395,7 +3396,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return false;
 	}
 
-	public boolean saveToFile(EngineMetaInterface meta) {
+	public boolean saveToFile(EngineMetaInterface meta) throws KettleException {
 		if (meta == null)
 			return false;
 
@@ -3433,11 +3434,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return saved;
 	}
 
-	public boolean saveToRepository(EngineMetaInterface meta) {
+	public boolean saveToRepository(EngineMetaInterface meta) throws KettleException {
 		return saveToRepository(meta, false);
 	}
 
-	public boolean saveToRepository(EngineMetaInterface meta, boolean ask_name) {
+	public boolean saveToRepository(EngineMetaInterface meta, boolean ask_name) throws KettleException {
 		if (log.isDetailed())
 			log.logDetailed(toString(), BaseMessages.getString(PKG, "Spoon.Log.SaveToRepository"));// "Save to repository..."
 		if (rep != null) {
@@ -3462,7 +3463,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			if (answer && !Const.isEmpty(meta.getName())) {
 				if (!rep.getUserInfo().isReadonly()) {
 					int response = SWT.YES;
-					if (meta.showReplaceWarning(rep)) {
+					if (rep.exists(meta)) {
 						MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
 						mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptOverwriteTransformation.Message", meta.getName(), Const.CR));// "There already is a transformation called ["+transMeta.getName()+"] in the repository."+Const.CR+"Do you want to overwrite the transformation?"
 						mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.PromptOverwriteTransformation.Title"));// "Overwrite?"
@@ -3504,7 +3505,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 							}
 
 							// Handle last opened files...
-							props.addLastFile(meta.getFileType(), meta.getName(), meta.getDirectory().getPath(), true, getRepositoryName());
+							props.addLastFile(meta.getFileType(), meta.getName(), meta.getRepositoryDirectory().getPath(), true, getRepositoryName());
 							saveSettings();
 							addMenuLast();
 
@@ -3529,11 +3530,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return false;
 	}
 
-	public boolean saveJobRepository(JobMeta jobMeta) {
+	public boolean saveJobRepository(JobMeta jobMeta) throws KettleException {
 		return saveToRepository(jobMeta, false);
 	}
 
-	public boolean saveJobRepository(JobMeta jobMeta, boolean ask_name) {
+	public boolean saveJobRepository(JobMeta jobMeta, boolean ask_name) throws KettleException {
 		if (log.isDetailed())
 			log.logDetailed(toString(), "Save to repository..."); //$NON-NLS-1$
 		if (rep != null) {
@@ -3554,7 +3555,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				if (!rep.getUserInfo().isReadonly()) {
 					boolean saved = false;
 					int response = SWT.YES;
-					if (jobMeta.showReplaceWarning(rep)) {
+					if (rep.exists(jobMeta)) {
 						MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
 						mb.setMessage("'" + jobMeta.getName() + "'" + Const.CR + Const.CR + BaseMessages.getString(PKG, "Spoon.Dialog.FileExistsOverWrite.Message")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.FileExistsOverWrite.Title")); //$NON-NLS-1$
@@ -3591,7 +3592,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 							}
 
 							// Handle last opened files...
-							props.addLastFile(LastUsedFile.FILE_TYPE_JOB, jobMeta.getName(), jobMeta.getDirectory().getPath(), true, rep.getName());
+							props.addLastFile(LastUsedFile.FILE_TYPE_JOB, jobMeta.getName(), jobMeta.getRepositoryDirectory().getPath(), true, rep.getName());
 							saveSettings();
 							addMenuLast();
 
@@ -3617,7 +3618,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return false;
 	}
 
-	public boolean saveFileAs() {
+	public boolean saveFileAs() throws KettleException {
 		TransMeta transMeta = getActiveTransformation();
 		if (transMeta != null)
 			return saveFileAs(transMeta);
@@ -3629,7 +3630,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return false;
 	}
 
-	public boolean saveFileAs(EngineMetaInterface meta) {
+	public boolean saveFileAs(EngineMetaInterface meta) throws KettleException {
 		boolean saved = false;
 
 		if (log.isBasic())
@@ -4899,7 +4900,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				fileType = LastUsedFile.FILE_TYPE_TRANSFORMATION;
 				TransMeta transMeta = (TransMeta) entry.getObject().getManagedObject();
 				filename = rep != null ? transMeta.getName() : transMeta.getFilename();
-				directory = transMeta.getDirectory().toString();
+				directory = transMeta.getRepositoryDirectory().toString();
 				openType = LastUsedFile.OPENED_ITEM_TYPE_MASK_GRAPH;
 				if (delegates.tabs.findTabItem(delegates.tabs.makeLogTabName(transMeta), TabMapEntry.OBJECT_TYPE_TRANSFORMATION_LOG) != null) {
 					openType |= LastUsedFile.OPENED_ITEM_TYPE_MASK_LOG;
@@ -4911,7 +4912,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				fileType = LastUsedFile.FILE_TYPE_JOB;
 				JobMeta jobMeta = (JobMeta) entry.getObject().getManagedObject();
 				filename = rep != null ? jobMeta.getName() : jobMeta.getFilename();
-				directory = jobMeta.getDirectory().toString();
+				directory = jobMeta.getRepositoryDirectory().toString();
 				openType = LastUsedFile.OPENED_ITEM_TYPE_MASK_GRAPH;
 				if (delegates.tabs.findTabItem(delegates.tabs.makeJobLogTabName(jobMeta), TabMapEntry.OBJECT_TYPE_JOB_LOG) != null) {
 					openType |= LastUsedFile.OPENED_ITEM_TYPE_MASK_LOG;
@@ -5378,7 +5379,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					repositoryMeta = repsinfo.findRepository(repName);
 					if (repositoryMeta != null) {
 						// Define and connect to the repository...
-						setRepository(new Repository(log, repositoryMeta, userinfo));
+						setRepository(new Repository(repositoryMeta, userinfo));
 						return true;
 					} else {
 						log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.NoRepositoryRrovided"));// "No repository provided, can't load transformation."
@@ -5422,7 +5423,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				repositoryMeta = repsinfo.findRepository(optionRepname.toString());
 				if (repositoryMeta != null) {
 					// Define and connect to the repository...
-					setRepository(new Repository(log, repositoryMeta, userinfo));
+					setRepository(new Repository(repositoryMeta, userinfo));
 				} else {
 					String msg = BaseMessages.getString(PKG, "Spoon.Log.NoRepositoriesDefined");
 					log.logError(toString(), msg);// "No repositories defined on this system."
@@ -5460,7 +5461,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 								optionDirname = new StringBuffer(RepositoryDirectory.DIRECTORY_SEPARATOR);
 
 							// Check username, password
-							rep.userinfo = new UserInfo(rep, optionUsername.toString(), optionPassword.toString());
+							rep.userinfo = rep.loadUserInfo(optionUsername.toString(), optionPassword.toString());
 
 							if (rep.userinfo.getID() > 0) {
 								// Options /file, /job and /trans are mutually
@@ -5481,7 +5482,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 											log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.UnableFindDirectory", optionDirname.toString())); // "Can't find directory ["+dirname+"] in the repository."
 										} else {
 											if (!Const.isEmpty(optionTransname)) {
-												TransMeta transMeta = new TransMeta(rep, optionTransname.toString(), repdir);
+												TransMeta transMeta = rep.loadTransformation(optionTransname.toString(), repdir);
 												transMeta.setFilename(optionRepname.toString());
 												transMeta.clearChanged();
 												transMeta.setInternalKettleVariables();
@@ -5489,7 +5490,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 											} else {
 												// Try to load a specified job
 												// if any
-												JobMeta jobMeta = new JobMeta(log, rep, optionJobname.toString(), repdir);
+												JobMeta jobMeta = rep.loadJobMeta(optionJobname.toString(), repdir, null);
 												jobMeta.setFilename(optionRepname.toString());
 												jobMeta.clearChanged();
 												jobMeta.setInternalKettleVariables();
@@ -5543,7 +5544,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	}
 
-	public void start(Splash splash, CommandLineOption[] options) {
+	public void start(Splash splash, CommandLineOption[] options) throws KettleException {
 
 		boolean stop = !selectRep(splash, options);
 		if (stop) {
@@ -5559,10 +5560,23 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				TipsDialog tip = new TipsDialog(shell);
 				tip.open();
 			}
-
+			
 			if (splash != null) {
 				splash.dispose();
 			}
+			
+			
+			// TODO : Remove this dialog before GA
+			//
+			if (Const.VERSION.contains("M") || Const.VERSION.contains("RC")) {
+				MessageBox dialog = new MessageBox(shell, SWT.NONE);
+				dialog.setText(BaseMessages.getString(PKG, "Spoon.Warning.DevelopmentRelease.Title"));
+				dialog.setMessage(BaseMessages.getString(PKG, "Spoon.Warning.DevelopmentRelease.Message", Const.CR, Const.VERSION));
+//				dialog.setTimeOut(10);
+				dialog.open();
+			}
+
+			
 			boolean retryAfterError = false; // Enable the user to retry and
 			// continue after fatal error
 			do {
@@ -5570,6 +5584,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				// it will loop forever after
 				// closing Spoon
 				try {
+					
+					
 					while (!isDisposed()) {
 						if (!readAndDispatch())
 							sleep();

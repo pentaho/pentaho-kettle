@@ -10,18 +10,12 @@
  * the license for the specific language governing your rights and limitations.*/
  
 package org.pentaho.di.job;
-import java.util.List;
-
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entry.JobEntryCopy;
-import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 
@@ -38,7 +32,7 @@ public class JobHopMeta implements Cloneable, XMLInterface
 {
 	private static Class<?> PKG = JobHopMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public JobEntryCopy from_entry, to_entry;
+	private JobEntryCopy from_entry, to_entry;
 	private boolean enabled;
 	private boolean split;
 	private boolean evaluation;
@@ -63,7 +57,9 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		unconditional = false;
 		id            = -1L;
 		
-		if (from.isStart()) setUnconditional();
+		if (from!=null && from.isStart()) {
+			setUnconditional();
+		}
 	}
 	
 	public JobHopMeta(Node hopnode, JobMeta job)
@@ -113,53 +109,6 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		}
 		
 		return retval.toString();
-	}
-
-	public JobHopMeta(Repository rep, long id_job_hop, JobMeta job, List<JobEntryCopy> jobcopies) throws KettleException
-	{
-		try
-		{
-			long id_jobentry_copy_from;
-			long id_jobentry_copy_to;
-			
-			RowMetaAndData r = rep.getJobHop(id_job_hop);
-			if (r!=null)
-			{
-				id_jobentry_copy_from  =  r.getInteger("ID_JOBENTRY_COPY_FROM", -1L);
-				id_jobentry_copy_to    =  r.getInteger("ID_JOBENTRY_COPY_TO", -1L);
-				enabled                =  r.getBoolean("ENABLED", true);
-				evaluation             =  r.getBoolean("EVALUATION", true);
-				unconditional          =  r.getBoolean("UNCONDITIONAL", !evaluation);
-				
-				from_entry = JobMeta.findJobEntryCopy(jobcopies, id_jobentry_copy_from);
-				to_entry = JobMeta.findJobEntryCopy(jobcopies, id_jobentry_copy_to);
-			}
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobHopMeta.Exception.UnableToLoadHopInfoRep",""+id_job_hop) , dbe);
-			
-		}
-	}
-
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
-	{
-		try
-		{
-			long id_jobentry_from=-1, id_jobentry_to=-1;
-			
-			id_jobentry_from = from_entry==null ? -1 : from_entry.getID();
-			id_jobentry_to = to_entry==null ? -1 : to_entry.getID();
-			
-			// Insert new transMeta hop in repository
-			setID( rep.insertJobHop(id_job, id_jobentry_from, id_jobentry_to, enabled, evaluation, unconditional) );
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobHopMeta.Exception.UnableToSaveHopInfoRep",""+id_job), dbe);
-			
-		}
 	}
 	
 	public void setID(long id)
@@ -236,7 +185,7 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		if (!unconditional) setChanged();
 		unconditional=true;
 	}
-	
+		
 	public void setConditional()
 	{
 		if (unconditional) setChanged();
@@ -274,4 +223,20 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		return getDescription();
 		//return from_entry.getName()+"."+from_entry.getNr()+" --> "+to_entry.getName()+"."+to_entry.getNr();
 	}	
+	
+	public JobEntryCopy getFromEntry() {
+		return from_entry;
+	}
+	
+	public void setFromEntry(JobEntryCopy fromEntry) {
+		this.from_entry = fromEntry;
+	}
+	
+	public JobEntryCopy getToEntry() {
+		return to_entry;
+	}
+	
+	public void setToEntry(JobEntryCopy toEntry) {
+		this.to_entry = toEntry;
+	}
 }

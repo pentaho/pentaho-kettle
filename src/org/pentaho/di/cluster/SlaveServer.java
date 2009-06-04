@@ -41,11 +41,8 @@ import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.encryption.Encr;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -53,7 +50,8 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.www.AddExportServlet;
 import org.pentaho.di.www.AllocateServerSocketServlet;
@@ -74,11 +72,15 @@ import org.pentaho.di.www.WebResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace
+public class SlaveServer 
+	extends ChangedFlag 
+	implements Cloneable, SharedObjectInterface, VariableSpace, RepositoryElementInterface
 {
 	private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     public static final String XML_TAG = "slaveserver"; //$NON-NLS-1$
+
+    public static final String REPOSITORY_ELEMENT_TYPE = "slaveserver";
 
     private static LogWriter log = LogWriter.getInstance();    
     
@@ -162,52 +164,6 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         
         return xml.toString();
     }
-
-    public void saveRep(Repository rep) throws KettleException
-    {
-        saveRep(rep, -1L, false);
-    }
-    
-    public void saveRep(Repository rep, long id_transformation, boolean isUsedByTransformation) throws KettleException
-    {
-        setId(rep.getSlaveID(name));
-        
-        if (getId()<0)
-        {
-            setId(rep.insertSlave(this));
-        }
-        else
-        {
-            rep.updateSlave(this);
-        }
-        
-        // Save the trans-slave relationship too.
-        if (id_transformation>=0 && isUsedByTransformation) rep.insertTransformationSlave(id_transformation, getId());
-    }
-    
-    public SlaveServer(Repository rep, long id_slave_server) throws KettleException
-    {
-        this();
-        
-        setId(id_slave_server);
-        
-        RowMetaAndData row = rep.getSlaveServer(id_slave_server);
-        if (row==null)
-        {
-            throw new KettleDatabaseException(BaseMessages.getString(PKG, "SlaveServer.SlaveCouldNotBeFound", Long.toString(id_slave_server))); //$NON-NLS-1$
-        }
-        
-        name          = row.getString(Repository.FIELD_SLAVE_NAME, null); //$NON-NLS-1$
-        hostname      = row.getString(Repository.FIELD_SLAVE_HOST_NAME, null); //$NON-NLS-1$
-        port          = row.getString(Repository.FIELD_SLAVE_PORT, null); //$NON-NLS-1$
-        username      = row.getString(Repository.FIELD_SLAVE_USERNAME, null); //$NON-NLS-1$
-        password      = row.getString(Repository.FIELD_SLAVE_PASSWORD, null); //$NON-NLS-1$
-        proxyHostname = row.getString(Repository.FIELD_SLAVE_PROXY_HOST_NAME, null); //$NON-NLS-1$
-        proxyPort     = row.getString(Repository.FIELD_SLAVE_PROXY_PORT, null); //$NON-NLS-1$
-        nonProxyHosts = row.getString(Repository.FIELD_SLAVE_NON_PROXY_HOSTS, null); //$NON-NLS-1$
-        master        = row.getBoolean(Repository.FIELD_SLAVE_MASTER, false); //$NON-NLS-1$
-    }
-
     
     public Object clone()
     {
@@ -858,16 +814,6 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         this.shared = shared;
     }
 
-    public long getId()
-    {
-        return id;
-    }
-
-    public void setId(long id)
-    {
-        this.id = id;
-    }
-
 	public void copyVariablesFrom(VariableSpace space) 
 	{
 		variables.copyVariablesFrom(space);		
@@ -938,5 +884,28 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
+	}
+
+	public long getID() {
+		return id;
+	}
+	
+	public void setID(long id) {
+		this.id = id;
+	}
+
+	/**
+	 * Not used in this case, simply return root /
+	 */
+	public RepositoryDirectory getRepositoryDirectory() {
+		return new RepositoryDirectory();
+	}
+	
+	public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
+		throw new RuntimeException("Setting a directory on a database connection is not supported");
+	}
+	
+	public String getRepositoryElementType() {
+		return REPOSITORY_ELEMENT_TYPE;
 	}
 }

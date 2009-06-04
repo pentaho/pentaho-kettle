@@ -185,7 +185,7 @@ public class Kitchen
 		if(log.isDebug()) log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.AllocateNewJob"));
 		
 		
-		JobMeta jobMeta = new JobMeta(log);
+		JobMeta jobMeta = new JobMeta();
         
         // In case we use a repository...
         Repository repository = null;
@@ -210,7 +210,7 @@ public class Kitchen
 							// Define and connect to the repository...
 							if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.Alocate&ConnectRep"));
 							 
-							repository = new Repository(log, repinfo, userinfo);
+							repository = new Repository(repinfo, userinfo);
 							if (repository.connect("Kitchen commandline"))
 							{
 								RepositoryDirectory directory = repository.getDirectoryTree(); // Default = root
@@ -226,7 +226,7 @@ public class Kitchen
 									// Check username, password
 									if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.CheckUserPass"));
 									
-									userinfo = new UserInfo(repository, optionUsername.toString(), optionPassword.toString());
+									userinfo = repository.loadUserInfo(optionUsername.toString(), optionPassword.toString());
 									if (userinfo.getID()>0)
 									{
 									    // Load a job
@@ -234,7 +234,7 @@ public class Kitchen
 										{
 											if(log.isDebug())log.logDebug(STRING_KITCHEN,BaseMessages.getString(PKG, "Kitchen.Log.LoadingJobInfo"));
 											
-											jobMeta =  new JobMeta(log, repository, optionJobname.toString(), directory);
+											jobMeta =  repository.loadJobMeta(optionJobname.toString(), directory, null);
 											if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.AllocateJob"));
 											
 											job = new Job(log, stepLoader, repository, jobMeta);
@@ -300,7 +300,7 @@ public class Kitchen
                 // Try to load if from file anyway.
 				if (!Const.isEmpty(optionFilename) && job==null)
 				{
-					jobMeta = new JobMeta(log, optionFilename.toString(), null, null);
+					jobMeta = new JobMeta(optionFilename.toString(), null, null);
 					job = new Job(log, stepLoader, null, jobMeta);
 				}
 			}

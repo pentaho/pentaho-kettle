@@ -76,7 +76,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryUtil;
+import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -102,12 +102,15 @@ import org.w3c.dom.Node;
 public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>, 
 								  Cloneable, UndoInterface, 
 								  HasDatabasesInterface, VariableSpace, EngineMetaInterface, 
-								  ResourceExportInterface, HasSlaveServersInterface, NamedParams
+								  ResourceExportInterface, HasSlaveServersInterface, NamedParams,
+								  RepositoryElementInterface
 {
 	private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     public static final String XML_TAG = "transformation";
         
+	public static final String REPOSITORY_ELEMENT_TYPE = "job";
+
     private static LogWriter         log = LogWriter.getInstance();
 
     // private List                inputFiles;
@@ -129,8 +132,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     private List<PartitionSchema>    partitionSchemas;
 
     private RepositoryDirectory directory;
-
-    private RepositoryDirectory directoryTree;
 
     private String              name;
 
@@ -461,10 +462,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         // LOAD THE DATABASE CACHE!
         dbCache = DBCache.getInstance();
 
-        directoryTree = new RepositoryDirectory();
-
         // Default directory: root
-        directory = directoryTree;
+        directory = new RepositoryDirectory();
         
         resultRows = new ArrayList<RowMetaAndData>();
         resultFiles = new ArrayList<ResultFile>();
@@ -1848,276 +1847,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
         return row;
     }
-
-    /**
-     * Determine if we should put a replace warning or not for the transformation in a certain repository.
-     *
-     * @param rep The repository.
-     * @return True if we should show a replace warning, false if not.
-     */
-    public boolean showReplaceWarning(Repository rep)
-    {
-        if (getID() < 0)
-        {
-            try
-            {
-                if (rep.getTransformationID(getName(), directory.getID()) > 0) return true;
-            }
-            catch (KettleException dbe)
-            {
-                log.logError(toString(), BaseMessages.getString(PKG, "TransMeta.Log.DatabaseError") + dbe.getMessage()); //$NON-NLS-1$
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void saveRep(Repository rep) throws KettleException
-    {
-        saveRep(rep, null);
-    }
-
-    /**  
-     * Saves the transformation to a repository.
-     *
-     * @param rep The repository.
-     * @throws KettleException if an error occurrs.
-     */
-    public void saveRep(Repository rep, ProgressMonitorListener monitor) throws KettleException
-    {
-        try
-        {
-        	if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.LockingRepository")); //$NON-NLS-1$
-
-            rep.lockRepository(); // make sure we're they only one using the repository at the moment
-
-            rep.insertLogEntry("save transformation '"+getName()+"'");
-            
-            // Clear attribute id cache
-            rep.clearNextIDCounters(); // force repository lookup.
-
-            // Do we have a valid directory?
-            if (directory.getID() < 0) { throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Exception.PlsSelectAValidDirectoryBeforeSavingTheTransformation")); } //$NON-NLS-1$
-
-            int nrWorks = 2 + nrDatabases() + nrNotes() + nrSteps() + nrTransHops();
-            if (monitor != null) monitor.beginTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SavingTransformationTask.Title") + getPathAndName(), nrWorks); //$NON-NLS-1$
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingOfTransformationStarted")); //$NON-NLS-1$
-
-            if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException();
-
-            // Before we start, make sure we have a valid transformation ID!
-            // Two possibilities:
-            // 1) We have a ID: keep it
-            // 2) We don't have an ID: look it up.
-            // If we find a transformation with the same name: ask!
-            //
-            if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.HandlingOldVersionTransformationTask.Title")); //$NON-NLS-1$
-            setID(rep.getTransformationID(getName(), directory.getID()));
-
-            // If no valid id is available in the database, assign one...
-            if (getID() <= 0)
-            {
-                setID(rep.getNextTransformationID());
-            }
-            else
-            {
-                // If we have a valid ID, we need to make sure everything is cleared out
-                // of the database for this id_transformation, before we put it back in...
-                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.DeletingOldVersionTransformationTask.Title")); //$NON-NLS-1$
-                if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.DeletingOldVersionTransformation")); //$NON-NLS-1$
-                rep.delAllFromTrans(getID());
-                if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.OldVersionOfTransformationRemoved")); //$NON-NLS-1$
-            }
-            if (monitor != null) monitor.worked(1);
-
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingNotes")); //$NON-NLS-1$
-            for (int i = 0; i < nrNotes(); i++)
-            {
-                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
-
-                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SavingNoteTask.Title") + (i + 1) + "/" + nrNotes()); //$NON-NLS-1$ //$NON-NLS-2$
-                NotePadMeta ni = getNote(i);
-                ni.saveRep(rep, getID());
-                if (ni.getID() > 0) rep.insertTransNote(getID(), ni.getID());
-                if (monitor != null) monitor.worked(1);
-            }
-
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingDatabaseConnections")); //$NON-NLS-1$
-            for (int i = 0; i < nrDatabases(); i++)
-            {
-                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
-
-                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + nrDatabases()); //$NON-NLS-1$ //$NON-NLS-2$
-                DatabaseMeta databaseMeta = getDatabase(i);
-                // ONLY save the database connection if it has changed and nothing was saved in the repository
-                if(databaseMeta.hasChanged() || databaseMeta.getID()<=0)
-                {
-                	RepositoryUtil.saveDatabaseMeta(databaseMeta,rep);
-                }
-                if (monitor != null) monitor.worked(1);
-            }
-
-            // Before saving the steps, make sure we have all the step-types.
-            // It is possible that we received another step through a plugin.
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.CheckingStepTypes")); //$NON-NLS-1$
-            rep.updateStepTypes();
-
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingSteps")); //$NON-NLS-1$
-            for (int i = 0; i < nrSteps(); i++)
-            {
-                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
-
-                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SavingStepTask.Title") + (i + 1) + "/" + nrSteps()); //$NON-NLS-1$ //$NON-NLS-2$
-                StepMeta stepMeta = getStep(i);
-                stepMeta.saveRep(rep, getID());
-
-                if (monitor != null) monitor.worked(1);
-            }
-            rep.closeStepAttributeInsertPreparedStatement();
-
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingHops")); //$NON-NLS-1$
-            for (int i = 0; i < nrTransHops(); i++)
-            {
-                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
-
-                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SavingHopTask.Title") + (i + 1) + "/" + nrTransHops()); //$NON-NLS-1$ //$NON-NLS-2$
-                TransHopMeta hi = getTransHop(i);
-                hi.saveRep(rep, getID());
-                if (monitor != null) monitor.worked(1);
-            }
-
-            if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.FinishingTask.Title")); //$NON-NLS-1$
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingTransformationInfo")); //$NON-NLS-1$
-            
-            rep.insertTransformation(this); // save the top level information for the transformation
-            
-            saveRepParameters(rep);
-            
-            rep.closeTransAttributeInsertPreparedStatement();
-            
-            // Save the partition schemas
-            //
-            for (int i=0;i<partitionSchemas.size();i++)
-            {
-                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
-
-                PartitionSchema partitionSchema = partitionSchemas.get(i);
-                // See if this transformation really is a consumer of this object
-                // It might be simply loaded as a shared object from the repository
-                //
-                boolean isUsedByTransformation = isUsingPartitionSchema(partitionSchema);
-                partitionSchema.saveRep(rep, getID(), isUsedByTransformation);
-            }
-            
-            // Save the slaves
-            //
-            for (int i=0;i<slaveServers.size();i++)
-            {
-                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
-
-                SlaveServer slaveServer = slaveServers.get(i);
-                boolean isUsedByTransformation = isUsingSlaveServer(slaveServer);
-                slaveServer.saveRep(rep, getID(), isUsedByTransformation);
-            }
-            
-            // Save the clustering schemas
-            for (int i=0;i<clusterSchemas.size();i++)
-            {
-                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
-
-                ClusterSchema clusterSchema = clusterSchemas.get(i);
-                boolean isUsedByTransformation = isUsingClusterSchema(clusterSchema);
-                clusterSchema.saveRep(rep, getID(), isUsedByTransformation);
-            }
-            
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingDependencies")); //$NON-NLS-1$
-            for (int i = 0; i < nrDependencies(); i++)
-            {
-                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
-
-                TransDependency td = getDependency(i);
-                td.saveRep(rep, getID());
-            }           
-            
-            // Save the step error handling information as well!
-            for (int i=0;i<nrSteps();i++)
-            {
-                StepMeta stepMeta = getStep(i);
-                StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
-                if (stepErrorMeta!=null)
-                {
-                    stepErrorMeta.saveRep(rep, getId(), stepMeta.getID());
-                }
-            }
-            rep.closeStepAttributeInsertPreparedStatement();
-            
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingFinished")); //$NON-NLS-1$
-
-        	if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.UnlockingRepository")); //$NON-NLS-1$
-            rep.unlockRepository();
-
-            // Perform a commit!
-            rep.commit();
-
-            clearChanged();
-            if (monitor != null) monitor.worked(1);
-            if (monitor != null) monitor.done();
-        }
-        catch (KettleDatabaseException dbe)
-        {
-            // Oops, roll back!
-            rep.rollback();
-
-            log.logError(toString(), BaseMessages.getString(PKG, "TransMeta.Log.ErrorSavingTransformationToRepository") + Const.CR + dbe.getMessage()); //$NON-NLS-1$
-            throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Log.ErrorSavingTransformationToRepository"), dbe); //$NON-NLS-1$
-        }
-        finally
-        {
-            // don't forget to unlock the repository.
-            // Normally this is done by the commit / rollback statement, but hey there are some freaky database out
-            // there...
-            rep.unlockRepository();
-        }
-    }
-    
-    /**
-     * Save the parameters of this transformation to the repository.
-     * 
-     * @param rep The repository to save to.
-     * 
-     * @throws KettleException Upon any error.
-     */
-    private void saveRepParameters(Repository rep) throws KettleException
-    {
-    	String[] paramKeys = listParameters();
-    	for (int idx = 0; idx < paramKeys.length; idx++)  {
-    		String desc = getParameterDescription(paramKeys[idx]);
-    		String defaultValue = getParameterDefault(paramKeys[idx]);
-    		rep.insertTransParameter(getId(), idx, paramKeys[idx], defaultValue, desc);
-    	}
-    }
-    
-    /**
-     * Load the parameters of this transformation from the repository. The current 
-     * ones already loaded will be erased.
-     * 
-     * @param rep The repository to load from.
-     * 
-     * @throws KettleException Upon any error.
-     */
-    private void loadRepParameters(Repository rep) throws KettleException
-    {
-    	eraseParameters();
-
-    	int count = rep.countTransParameter(getId());
-    	for (int idx = 0; idx < count; idx++)  {
-    		String key  = rep.getTransParameterKey(getId(), idx);
-    		String def  = rep.getTransParameterDefault(getId(), idx);
-    		String desc = rep.getTransParameterDescription(getId(), idx);
-    		addParameterDefinition(key, def, desc);
-    	}
-    }    
-
+   
     public boolean isUsingPartitionSchema(PartitionSchema partitionSchema)
     {
         // Loop over all steps and see if the partition schema is used.
@@ -2170,229 +1900,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         }
         return false;
     }
-
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.HasDatabaseInterface#readDatabases(org.pentaho.di.repository.Repository, boolean)
-     */
-    public void readDatabases(Repository rep, boolean overWriteShared) throws KettleException
-    {
-        try
-        {
-            long dbids[] = rep.getDatabaseIDs();
-            for (int i = 0; i < dbids.length; i++)
-            {
-                DatabaseMeta databaseMeta = rep.loadDatabaseMeta(dbids[i]);
-                databaseMeta.shareVariablesWith(this);
-                
-                DatabaseMeta check = findDatabase(databaseMeta.getName()); // Check if there already is one in the transformation
-                if (check==null || overWriteShared) // We only add, never overwrite database connections. 
-                {
-                    if (databaseMeta.getName() != null)
-                    {
-                        addOrReplaceDatabase(databaseMeta);
-                        if (!overWriteShared) databaseMeta.setChanged(false);
-                    }
-                }
-            }
-            changed_databases = false;
-        }
-        catch (KettleDatabaseException dbe)
-        {
-            throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Log.UnableToReadDatabaseIDSFromRepository"), dbe); //$NON-NLS-1$
-        }
-        catch (KettleException ke)
-        {
-            throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Log.UnableToReadDatabasesFromRepository"), ke); //$NON-NLS-1$
-        }
-    }
-
-    /**
-     * Read the partitions in the repository and add them to this transformation if they are not yet present.
-     * @param rep The repository to load from.
-     * @param overWriteShared if an object with the same name exists, overwrite
-     * @throws KettleException 
-     */
-    public void readPartitionSchemas(Repository rep, boolean overWriteShared) throws KettleException
-    {
-        try
-        {
-            long dbids[] = rep.getPartitionSchemaIDs();
-            for (int i = 0; i < dbids.length; i++)
-            {
-                PartitionSchema partitionSchema = new PartitionSchema(rep, dbids[i]);
-                PartitionSchema check = findPartitionSchema(partitionSchema.getName()); // Check if there already is one in the transformation
-                if (check==null || overWriteShared) 
-                {
-                    if (!Const.isEmpty(partitionSchema.getName()))
-                    {
-                        addOrReplacePartitionSchema(partitionSchema);
-                        if (!overWriteShared) partitionSchema.setChanged(false);
-                    }
-                }
-            }
-        }
-        catch (KettleException dbe)
-        {
-            throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Log.UnableToReadPartitionSchemaFromRepository"), dbe); //$NON-NLS-1$
-        }
-    }
-
-     /**
-     * Read the slave servers in the repository and add them to this transformation if they are not yet present.
-     * @param rep The repository to load from.
-     * @param overWriteShared if an object with the same name exists, overwrite
-     * @throws KettleException 
-     */
-    public void readSlaves(Repository rep, boolean overWriteShared) throws KettleException
-    {
-        try
-        {
-            long dbids[] = rep.getSlaveIDs();
-            for (int i = 0; i < dbids.length; i++)
-            {
-                SlaveServer slaveServer = new SlaveServer(rep, dbids[i]);
-                slaveServer.shareVariablesWith(this);
-                SlaveServer check = findSlaveServer(slaveServer.getName()); // Check if there already is one in the transformation
-                if (check==null || overWriteShared) 
-                {
-                    if (!Const.isEmpty(slaveServer.getName()))
-                    {
-                        addOrReplaceSlaveServer(slaveServer);
-                        if (!overWriteShared) slaveServer.setChanged(false);
-                    }
-                }
-            }
-        }
-        catch (KettleDatabaseException dbe)
-        {
-            throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Log.UnableToReadSlaveServersFromRepository"), dbe); //$NON-NLS-1$
-        }
-    }
-    
-    /**
-     * Read the clusters in the repository and add them to this transformation if they are not yet present.
-     * @param rep The repository to load from.
-     * @param overWriteShared if an object with the same name exists, overwrite
-     * @throws KettleException 
-     */
-    public void readClusters(Repository rep, boolean overWriteShared) throws KettleException
-    {
-        try
-        {
-            long dbids[] = rep.getClusterIDs();
-            for (int i = 0; i < dbids.length; i++)
-            {
-                ClusterSchema clusterSchema = rep.loadClusterSchema(dbids[i], slaveServers);
-                clusterSchema.shareVariablesWith(this);
-                ClusterSchema check = findClusterSchema(clusterSchema.getName()); // Check if there already is one in the transformation
-                if (check==null || overWriteShared) 
-                {
-                    if (!Const.isEmpty(clusterSchema.getName()))
-                    {
-                        addOrReplaceClusterSchema(clusterSchema);
-                        if (!overWriteShared) clusterSchema.setChanged(false);
-                    }
-                }
-            }
-        }
-        catch (KettleDatabaseException dbe)
-        {
-            throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Log.UnableToReadClustersFromRepository"), dbe); //$NON-NLS-1$
-        }
-    }
         
-     /**      
-     * Load the transformation name & other details from a repository.
-     *
-     * @param rep The repository to load the details from.
-     */
-    public void loadRepTrans(Repository rep) throws KettleException
-    {
-        try
-        {
-            RowMetaAndData r = rep.getTransformation(getID());
-
-            if (r != null)
-            {
-                setName( r.getString(Repository.FIELD_TRANSFORMATION_NAME, null) ); //$NON-NLS-1$
-
-				// Trans description
-				description = r.getString(Repository.FIELD_TRANSFORMATION_DESCRIPTION, null);
-				extended_description = r.getString(Repository.FIELD_TRANSFORMATION_EXTENDED_DESCRIPTION, null);
-				trans_version = r.getString(Repository.FIELD_TRANSFORMATION_TRANS_VERSION, null);
-				trans_status=(int) r.getInteger(Repository.FIELD_TRANSFORMATION_TRANS_STATUS, -1L);
-
-                readStep = StepMeta.findStep(steps, r.getInteger(Repository.FIELD_TRANSFORMATION_ID_STEP_READ, -1L)); //$NON-NLS-1$
-                writeStep = StepMeta.findStep(steps, r.getInteger(Repository.FIELD_TRANSFORMATION_ID_STEP_WRITE, -1L)); //$NON-NLS-1$
-                inputStep = StepMeta.findStep(steps, r.getInteger(Repository.FIELD_TRANSFORMATION_ID_STEP_INPUT, -1L)); //$NON-NLS-1$
-                outputStep = StepMeta.findStep(steps, r.getInteger(Repository.FIELD_TRANSFORMATION_ID_STEP_OUTPUT, -1L)); //$NON-NLS-1$
-                updateStep = StepMeta.findStep(steps, r.getInteger(Repository.FIELD_TRANSFORMATION_ID_STEP_UPDATE, -1L)); //$NON-NLS-1$
-                
-                long id_rejected = rep.getTransAttributeInteger(getID(), 0, Repository.TRANS_ATTRIBUTE_ID_STEP_REJECTED); // $NON-NLS-1$
-                if (id_rejected>0)
-                {
-                    rejectedStep = StepMeta.findStep(steps, id_rejected); //$NON-NLS-1$
-                }
-
-                logConnection = DatabaseMeta.findDatabase(databases, r.getInteger(Repository.FIELD_TRANSFORMATION_ID_DATABASE_LOG, -1L)); //$NON-NLS-1$
-                logTable = r.getString(Repository.FIELD_TRANSFORMATION_TABLE_NAME_LOG, null); //$NON-NLS-1$
-                useBatchId = r.getBoolean(Repository.FIELD_TRANSFORMATION_USE_BATCHID, false); //$NON-NLS-1$
-                logfieldUsed = r.getBoolean(Repository.FIELD_TRANSFORMATION_USE_LOGFIELD, false); //$NON-NLS-1$
-
-                maxDateConnection = DatabaseMeta.findDatabase(databases, r.getInteger(Repository.FIELD_TRANSFORMATION_ID_DATABASE_MAXDATE, -1L)); //$NON-NLS-1$
-                maxDateTable = r.getString(Repository.FIELD_TRANSFORMATION_TABLE_NAME_MAXDATE, null); //$NON-NLS-1$
-                maxDateField = r.getString(Repository.FIELD_TRANSFORMATION_FIELD_NAME_MAXDATE, null); //$NON-NLS-1$
-                maxDateOffset = r.getNumber(Repository.FIELD_TRANSFORMATION_OFFSET_MAXDATE, 0.0); //$NON-NLS-1$
-                maxDateDifference = r.getNumber(Repository.FIELD_TRANSFORMATION_DIFF_MAXDATE, 0.0); //$NON-NLS-1$
-
-				createdUser = r.getString(Repository.FIELD_TRANSFORMATION_CREATED_USER, null); //$NON-NLS-1$
-				createdDate = r.getDate(Repository.FIELD_TRANSFORMATION_CREATED_DATE, null); //$NON-NLS-1$
-
-                modifiedUser = r.getString(Repository.FIELD_TRANSFORMATION_MODIFIED_USER, null); //$NON-NLS-1$
-                modifiedDate = r.getDate(Repository.FIELD_TRANSFORMATION_MODIFIED_DATE, null); //$NON-NLS-1$
-
-                // Optional:
-                sizeRowset = Const.ROWS_IN_ROWSET;
-                Long val_size_rowset = r.getInteger(Repository.FIELD_TRANSFORMATION_SIZE_ROWSET); //$NON-NLS-1$
-                if (val_size_rowset != null )
-                {
-                    sizeRowset = val_size_rowset.intValue();
-                }
-
-                long id_directory = r.getInteger(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY, -1L); //$NON-NLS-1$
-                if (id_directory >= 0)
-                {
-                	if(log.isDetailed()) log.logDetailed(toString(), "ID_DIRECTORY=" + id_directory); //$NON-NLS-1$
-                    // Set right directory...
-                    directory = directoryTree.findDirectory(id_directory);
-                }
-                
-                usingUniqueConnections = rep.getTransAttributeBoolean(getID(), 0, Repository.TRANS_ATTRIBUTE_UNIQUE_CONNECTIONS);
-                feedbackShown = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, Repository.TRANS_ATTRIBUTE_FEEDBACK_SHOWN) );
-                feedbackSize = (int) rep.getTransAttributeInteger(getID(), 0, Repository.TRANS_ATTRIBUTE_FEEDBACK_SIZE);
-                usingThreadPriorityManagment = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, Repository.TRANS_ATTRIBUTE_USING_THREAD_PRIORITIES) );    
-                
-                // Performance monitoring for steps...
-                //
-                capturingStepPerformanceSnapShots = rep.getTransAttributeBoolean(getID(), 0, Repository.TRANS_ATTRIBUTE_CAPTURE_STEP_PERFORMANCE);
-                stepPerformanceCapturingDelay = rep.getTransAttributeInteger(getID(), 0, Repository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_CAPTURING_DELAY);
-                stepPerformanceLogTable = rep.getTransAttributeString(getID(), 0, Repository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_LOG_TABLE);
-                logSizeLimit = rep.getTransAttributeString(getID(), 0, Repository.TRANS_ATTRIBUTE_LOG_SIZE_LIMIT);
-
-                loadRepParameters(rep);
-            }
-        }
-        catch (KettleDatabaseException dbe)
-        {
-            throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Exception.UnableToLoadTransformationInfoFromRepository"), dbe); //$NON-NLS-1$
-        }
-        finally
-        {
-        	initializeVariablesFrom(null);
-            setInternalKettleVariables();
-        }
-    }
-
     public boolean isRepReference() {
     	return isRepReference(getFilename(), this.getName());
     }
@@ -2409,215 +1917,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		return !isRepReference(exactFilename, exactTransname);
     }
     
-    /** Read a transformation with a certain name from a repository
-     *
-     * @param rep The repository to read from.
-     * @param transname The name of the transformation.
-     * @param repdir the path to the repository directory
-     */
-    public TransMeta(Repository rep, String transname, RepositoryDirectory repdir) throws KettleException
-    {
-        this(rep, transname, repdir, null, true);
-    }
-
-    /** 
-     * Read a transformation with a certain name from a repository
-     *
-     * @param rep The repository to read from.
-     * @param transname The name of the transformation.
-     * @param repdir the path to the repository directory
-     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
-     */
-    public TransMeta(Repository rep, String transname, RepositoryDirectory repdir, boolean setInternalVariables) throws KettleException
-    {
-        this(rep, transname, repdir, null, setInternalVariables);
-    }
-
-    /** Read a transformation with a certain name from a repository
-     *
-     * @param rep The repository to read from.
-     * @param transname The name of the transformation.
-     * @param repdir the path to the repository directory
-     * @param monitor The progress monitor to display the progress of the file-open operation in a dialog
-     */
-    public TransMeta(Repository rep, String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor) throws KettleException
-    {
-        this(rep, transname, repdir, monitor, true);
-    }
-
-    /** Read a transformation with a certain name from a repository
-     *
-     * @param rep The repository to read from.
-     * @param transname The name of the transformation.
-     * @param repdir the path to the repository directory
-     * @param monitor The progress monitor to display the progress of the file-open operation in a dialog
-     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
-     */
-    public TransMeta(Repository rep, String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables) throws KettleException
-    {
-        this();
-        this.repository = rep;
-     
-        synchronized(rep) 
-        {
-	        try
-	        {
-	            String pathAndName = repdir.isRoot() ? repdir + transname : repdir + RepositoryDirectory.DIRECTORY_SEPARATOR + transname;
-	
-	            setName(transname);
-	            directory = repdir;
-	            directoryTree = directory.findRoot();
-	
-	            // Get the transformation id
-	            if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "TransMeta.Log.LookingForTransformation", transname ,directory.getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	
-	            if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.ReadingTransformationInfoTask.Title")); //$NON-NLS-1$
-	            setID(rep.getTransformationID(transname, directory.getID()));
-	            if (monitor != null) monitor.worked(1);
-	
-	            // If no valid id is available in the database, then give error...
-	            if (getID() > 0)
-	            {
-	                long noteids[] = rep.getTransNoteIDs(getID());
-	                long stepids[] = rep.getStepIDs(getID());
-	                long hopids[] = rep.getTransHopIDs(getID());
-	
-	                int nrWork = 3 + noteids.length + stepids.length + hopids.length;
-	
-	                if (monitor != null) monitor.beginTask(BaseMessages.getString(PKG, "TransMeta.Monitor.LoadingTransformationTask.Title") + pathAndName, nrWork); //$NON-NLS-1$
-	
-	                if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "TransMeta.Log.LoadingTransformation", getName() )); //$NON-NLS-1$ //$NON-NLS-2$
-	
-	                // Load the common database connections
-	                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.ReadingTheAvailableSharedObjectsTask.Title")); //$NON-NLS-1$
-	                try
-	                {
-	                    sharedObjects = readSharedObjects(rep);
-	                }
-	                catch(Exception e)
-	                {
-	                    LogWriter.getInstance().logError(toString(), BaseMessages.getString(PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString()));
-	                    LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
-	                }
-	
-	                if (monitor != null) monitor.worked(1);
-	
-	                // Load the notes...
-	                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.ReadingNoteTask.Title")); //$NON-NLS-1$
-	                for (int i = 0; i < noteids.length; i++)
-	                {
-	                    NotePadMeta ni = new NotePadMeta(log, rep, noteids[i]);
-	                    if (indexOfNote(ni) < 0) addNote(ni);
-	                    if (monitor != null) monitor.worked(1);
-	                }
-	
-	                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.ReadingStepsTask.Title")); //$NON-NLS-1$
-	                rep.fillStepAttributesBuffer(getID()); // read all the attributes on one go!
-	                for (int i = 0; i < stepids.length; i++)
-	                {
-	                	if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "TransMeta.Log.LoadingStepWithID") + stepids[i]); //$NON-NLS-1$
-	                    if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.ReadingStepTask.Title") + (i + 1) + "/" + (stepids.length)); //$NON-NLS-1$ //$NON-NLS-2$
-	                    StepMeta stepMeta = new StepMeta(rep, stepids[i], databases, counters, partitionSchemas);
-	                    // In this case, we just add or replace the shared steps.
-	                    // The repository is considered "more central"
-	                    addOrReplaceStep(stepMeta);
-	                    
-	                    if (monitor != null) monitor.worked(1);
-	                }
-	                if (monitor != null) monitor.worked(1);
-	                rep.setStepAttributesBuffer(null); // clear the buffer (should be empty anyway)
-	
-	                // Have all StreamValueLookups, etc. reference the correct source steps...
-	                for (int i = 0; i < nrSteps(); i++)
-	                {
-	                    StepMetaInterface sii = getStep(i).getStepMetaInterface();
-	                    sii.searchInfoAndTargetSteps(steps);
-	                }
-	
-	                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.LoadingTransformationDetailsTask.Title")); //$NON-NLS-1$
-	                loadRepTrans(rep);
-	                if (monitor != null) monitor.worked(1);
-	                                                
-	                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.ReadingHopTask.Title")); //$NON-NLS-1$
-	                for (int i = 0; i < hopids.length; i++)
-	                {
-	                    TransHopMeta hi = new TransHopMeta(rep, hopids[i], steps);
-	                    addTransHop(hi);
-	                    if (monitor != null) monitor.worked(1);
-	                }
-	                
-	                // Have all step partitioning meta-data reference the correct schemas that we just loaded
-	                // 
-	                for (int i = 0; i < nrSteps(); i++)
-	                {
-	                    StepPartitioningMeta stepPartitioningMeta = getStep(i).getStepPartitioningMeta();
-	                    if (stepPartitioningMeta!=null)
-	                    {
-	                        stepPartitioningMeta.setPartitionSchemaAfterLoading(partitionSchemas);
-	                    }
-	                }
-	                
-	                // Have all step clustering schema meta-data reference the correct cluster schemas that we just loaded
-	                // 
-	                for (int i = 0; i < nrSteps(); i++)
-	                {
-	                    getStep(i).setClusterSchemaAfterLoading(clusterSchemas);
-	                }                
-	                
-	                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.ReadingTheDependenciesTask.Title")); //$NON-NLS-1$
-	                long depids[] = rep.getTransDependencyIDs(getID());
-	                for (int i = 0; i < depids.length; i++)
-	                {
-	                    TransDependency td = new TransDependency(rep, depids[i], databases);
-	                    addDependency(td);
-	                }
-	                if (monitor != null) monitor.worked(1);
-	
-	                // Also load the step error handling metadata
-	                //
-	                for (int i=0;i<nrSteps();i++)
-	                {
-	                    StepMeta stepMeta = getStep(i);
-	                    String sourceStep = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_source_step");
-	                    if (sourceStep!=null)
-	                    {
-	                        StepErrorMeta stepErrorMeta = new StepErrorMeta(this, rep, stepMeta, steps);
-	                        stepErrorMeta.getSourceStep().setStepErrorMeta(stepErrorMeta); // a bit of a trick, I know.                        
-	                    }
-	                }
-	                
-	                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SortingStepsTask.Title")); //$NON-NLS-1$
-	                sortSteps();
-	                if (monitor != null) monitor.worked(1);
-	                if (monitor != null) monitor.done();
-	            }
-	            else
-	            {
-	                throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Exception.TransformationDoesNotExist") + name); //$NON-NLS-1$
-	            }
-	            if(log.isDetailed()) 
-	            {
-	            	log.logDetailed(toString(), BaseMessages.getString(PKG, "TransMeta.Log.LoadedTransformation2", transname , String.valueOf(directory == null))); //$NON-NLS-1$ //$NON-NLS-2$
-	            	log.logDetailed(toString(), BaseMessages.getString(PKG, "TransMeta.Log.LoadedTransformation", transname , directory.getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	            }
-	        }
-	        catch (KettleDatabaseException e)
-	        {
-	            log.logError(toString(), BaseMessages.getString(PKG, "TransMeta.Log.DatabaseErrorOccuredReadingTransformation") + Const.CR + e); //$NON-NLS-1$
-	            throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Exception.DatabaseErrorOccuredReadingTransformation"), e); //$NON-NLS-1$
-	        }
-	        catch (Exception e)
-	        {
-	            log.logError(toString(), BaseMessages.getString(PKG, "TransMeta.Log.DatabaseErrorOccuredReadingTransformation") + Const.CR + e); //$NON-NLS-1$
-	            throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Exception.DatabaseErrorOccuredReadingTransformation2"), e); //$NON-NLS-1$
-	        }
-	        finally
-	        {
-	        	initializeVariablesFrom(null);
-	        	if (setInternalVariables) setInternalKettleVariables();
-	        }
-        }
-    }
 
     /**
      * Find the location of hop
@@ -3047,7 +2346,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             try
             {
                 sharedObjectsFile = XMLHandler.getTagValue(transnode, "info", "shared_objects_file"); //$NON-NLS-1$ //$NON-NLS-2$
-                sharedObjects = readSharedObjects(rep);
+                sharedObjects = rep!=null ? rep.readTransSharedObjects(this) : readSharedObjects();
             }
             catch(Exception e)
             {
@@ -3439,13 +2738,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         }
     }
     
-    public SharedObjects readSharedObjects(Repository rep) throws KettleException
+    public SharedObjects readSharedObjects() throws KettleException
     {
-    	if ( rep != null )
-    	{
-            sharedObjectsFile = rep.getTransAttributeString(getId(), 0, "SHARED_FILE");
-    	}
-        
         // Extract the shared steps, connections, etc. using the SharedObjects class
         //
         String soFile = environmentSubstitute(sharedObjectsFile);
@@ -3487,14 +2781,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 clusterSchema.shareVariablesWith(this);
                 addOrReplaceClusterSchema(clusterSchema);
             }
-        }
-
-        if (rep!=null)
-        {
-            readDatabases(rep, true);
-            readPartitionSchemas(rep, true);
-            readSlaves(rep, true);
-            readClusters(rep, true);
         }
         
         return sharedObjects;
@@ -3634,8 +2920,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public void clearChanged()
     {
+    	clearChangedDatabases();
         changed_steps = false;
-        changed_databases = false;
         changed_hops = false;
         changed_notes = false;
 
@@ -3646,10 +2932,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             {
             	getStep(i).getStepPartitioningMeta().hasChanged(false);
             }
-        }
-        for (int i = 0; i < nrDatabases(); i++)
-        {
-            getDatabase(i).setChanged(false);
         }
         for (int i = 0; i < nrTransHops(); i++)
         {
@@ -3669,6 +2951,20 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         }
         
         super.clearChanged();
+    }
+
+    /**
+     * Clears the different changed flags of the transformation.
+     *
+     */
+    public void clearChangedDatabases()
+    {
+        changed_databases = false;
+
+        for (int i = 0; i < nrDatabases(); i++)
+        {
+            getDatabase(i).setChanged(false);
+        }
     }
 
     /* (non-Javadoc)
@@ -4968,7 +4264,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     /**
      * @return Returns the directory.
      */
-    public RepositoryDirectory getDirectory()
+    public RepositoryDirectory getRepositoryDirectory()
     {
         return directory;
     }
@@ -4976,28 +4272,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     /**
      * @param directory The directory to set.
      */
-    public void setDirectory(RepositoryDirectory directory)
+    public void setRepositoryDirectory(RepositoryDirectory directory)
     {
         this.directory = directory;
         setInternalKettleVariables();
-    }
-
-    /**
-     * @return Returns the directoryTree.
-     * @deprecated
-     */
-    public RepositoryDirectory getDirectoryTree()
-    {
-        return directoryTree;
-    }
-
-    /**
-     * @param directoryTree The directoryTree to set.
-     * @deprecated
-     */
-    public void setDirectoryTree(RepositoryDirectory directoryTree)
-    {
-        this.directoryTree = directoryTree;
     }
 
     /**
@@ -5005,10 +4283,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public String getPathAndName()
     {
-        if (getDirectory().isRoot())
-            return getDirectory().getPath() + getName();
+        if (getRepositoryDirectory().isRoot())
+            return getRepositoryDirectory().getPath() + getName();
         else
-            return getDirectory().getPath() + RepositoryDirectory.DIRECTORY_SEPARATOR + getName();
+            return getRepositoryDirectory().getPath() + RepositoryDirectory.DIRECTORY_SEPARATOR + getName();
     }
 
     /**
@@ -5057,22 +4335,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     public void setDependencies(List<TransDependency> dependencies)
     {
         this.dependencies = dependencies;
-    }
-
-    /**
-     * @return Returns the id.
-     */
-    public long getId()
-    {
-        return id;
-    }
-
-    /**
-     * @param id The id to set.
-     */
-    public void setId(long id)
-    {
-        this.id = id;
     }
 
     /**
@@ -6569,5 +5831,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	 */
 	public void setLogSizeLimit(String logSizeLimit) {
 		this.logSizeLimit = logSizeLimit;
+	}
+	
+	public String getRepositoryElementType() {
+		return REPOSITORY_ELEMENT_TYPE;
 	}
 }

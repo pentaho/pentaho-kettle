@@ -66,8 +66,6 @@ public class RepositoryDialog
 {
 	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private LogWriter    log;
-
 	private Label        wlConnection;
 	private Button       wnConnection, weConnection, wdConnection;
 	private CCombo       wConnection;
@@ -100,12 +98,9 @@ public class RepositoryDialog
 		shell = new Shell(display, style | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
 		shell.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Main.Title")); //$NON-NLS-1$
 
-		log=l;
 		props=pr;
 		input=in;
 		repositories=rep;
-		
-		//System.out.println("input.connection = "+input.getConnection());
 	}
 
 	public RepositoryMeta open()
@@ -386,12 +381,12 @@ public class RepositoryDialog
 
             }
 			System.out.println("Allocating repository..."); //$NON-NLS-1$
-			Repository rep = new Repository(log, repinfo, null);
+			Repository rep = new Repository(repinfo, null);
 	
 			System.out.println("Connecting to database for repository creation..."); //$NON-NLS-1$
 			try
 			{
-                rep.connect(true, false, getClass().getName(), true);
+                rep.connectionDelegate.connect(true, false, getClass().getName(), true);
 				boolean upgrade=false;
 				String  cu = BaseMessages.getString(PKG, "RepositoryDialog.Dialog.CreateUpgrade.Create"); //$NON-NLS-1$
 				
@@ -430,7 +425,7 @@ public class RepositoryDialog
 							{
 								// OK, what's the admin password?
 								//
-								UserInfo ui = new UserInfo(rep, "admin"); //$NON-NLS-1$
+								UserInfo ui = rep.loadUserInfo("admin"); //$NON-NLS-1$
 								
 								if (pwd.equalsIgnoreCase( ui.getPassword() ) )
 								{
@@ -506,7 +501,7 @@ public class RepositoryDialog
 		RepositoryMeta repinfo = new RepositoryMeta();
 		getInfo(repinfo);
 		
-		Repository rep = new Repository(log, repinfo, null);
+		Repository rep = new Repository(repinfo, null);
 		try
 		{
             rep.connect(getClass().getName());
@@ -526,7 +521,7 @@ public class RepositoryDialog
 					{
 						// OK, what's the admin password?
 						//
-						UserInfo ui = new UserInfo(rep, "admin"); //$NON-NLS-1$
+						UserInfo ui = rep.loadUserInfo("admin"); //$NON-NLS-1$
 						
 						if (pwd.equalsIgnoreCase( ui.getPassword() ) )
 						{		

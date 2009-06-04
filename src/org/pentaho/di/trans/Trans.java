@@ -238,7 +238,7 @@ public class Trans implements VariableSpace, NamedParams
 				RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(dirname);
 				if (repdir!=null)
 				{
-					this.transMeta = new TransMeta(rep, name, repdir, false);
+					this.transMeta = rep.loadTransformation(name, repdir, false);
 				}
 				else
 				{
@@ -2728,7 +2728,7 @@ public class Trans implements VariableSpace, NamedParams
 
         // TODO PUT THIS INSIDE OF THE "IF"
         // The name of the directory in the repository
-        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, transMeta.getDirectory()!=null?transMeta.getDirectory().getPath():"");
+        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, transMeta.getRepositoryDirectory()!=null?transMeta.getRepositoryDirectory().getPath():"");
         
         // Here we don't clear the definition of the job specific parameters, as they may come in handy.
         // A transformation can be called from a job and may inherit the job internal variables

@@ -1176,14 +1176,14 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				return false;
 			}
 			
-			repos = new Repository(log, rep_info, user_info);
+			repos = new Repository(rep_info, user_info);
 			if (!repos.connect("Export job entry"))
 			{
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnect"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectMsg",wRepositoryname.getText()),true);
 				return false;
 			}	
 			// Check username, password
-			user_info = new UserInfo(repos, jobMeta.environmentSubstitute(wUserName.getText()),jobMeta.environmentSubstitute(wPassword.getText()));
+			user_info = repos.loadUserInfo(jobMeta.environmentSubstitute(wUserName.getText()),jobMeta.environmentSubstitute(wPassword.getText()));
 				
 			if (user_info.getID()>0)
 			{
@@ -1309,7 +1309,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRep"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRepMsg",wRepositoryname.getText()),true);
 			}
 			
-			repos = new Repository(log, rep_info, user_info);
+			repos = new Repository(rep_info, user_info);
 			try{
 			if (!repos.connect("Export job entry"))
 			{

@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
  * An alternative when defining Jobs. Classes annotated with "Job" are
  * automatically recognized and registered as a job.
  * 
- * Important: The XML definitions alienate annoated steps and the two methods of definition are therefore
+ * Important: The XML definitions alienate annotated steps and the two methods of definition are therefore
  * mutually exclusive.
  * 
  * @author Alex Silva

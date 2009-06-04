@@ -32,7 +32,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryUtil;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.TransHopMeta;
@@ -149,36 +148,18 @@ public class SpoonDBDelegate extends SpoonDelegate
 		{
 			if (!rep.getUserInfo().isReadonly())
 			{
-				try
-				{
-					long id_database = rep.getDatabaseID(db.getName());
-					rep.delDatabase(id_database);
-
+				try {
+					rep.deleteDatabaseMeta(db.getName());
 					worked = true;
-				} catch (KettleException dbe)
-				{
-
-					new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingConnection.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingConnection.Message", db.getName()), dbe);// "Error
-					// deleting
-					// connection
-					// ["+db+"]
-					// from
-					// repository!"
+				} catch (KettleException dbe) {
+					new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingConnection.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingConnection.Message", db.getName()), dbe);
 				}
-			} else
+			} 
+			else
 			{
 				new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingConnection.Title"), 
 						BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingConnection.Message", db.getName()), 
-						new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.Exception.ReadOnlyUser")));// "Error
-				// deleting
-				// connection
-				// ["+db+"]
-				// from
-				// repository!"
-				// //This
-				// user
-				// is
-				// read-only!
+						new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.Exception.ReadOnlyUser")));
 			}
 		}
 
@@ -453,7 +434,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 					rep.lockRepository();
 					rep.insertLogEntry("Saving database '" + db.getName() + "'");
 
-					RepositoryUtil.saveDatabaseMeta(db, rep);
+					rep.save(db);
 					spoon.getLog().logDetailed(toString(),
 							BaseMessages.getString(PKG, "Spoon.Log.SavedDatabaseConnection", db.getDatabaseName()));
 
@@ -532,7 +513,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 				{
 					if (!spoon.rep.userinfo.isReadonly())
 					{
-						RepositoryUtil.saveDatabaseMeta(databaseMeta,spoon.rep);
+						spoon.rep.save(databaseMeta);
 					}
 					else
 					{

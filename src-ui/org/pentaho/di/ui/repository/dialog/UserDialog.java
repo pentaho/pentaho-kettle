@@ -299,7 +299,7 @@ public class UserDialog extends Dialog
 	{
 		if (userinfo.getLogin()!=null) wLogin.setText(userinfo.getLogin());
 		if (userinfo.getPassword()!=null) wPassword.setText(userinfo.getPassword());
-		if (userinfo.getName()!=null) wUsername.setText(userinfo.getName());
+		if (userinfo.getUsername()!=null) wUsername.setText(userinfo.getUsername());
 		if (userinfo.getDescription()!=null) wDescription.setText(userinfo.getDescription());
 		//WANTED: Add enabled option from UserInfo here!!!!
 
@@ -332,10 +332,9 @@ public class UserDialog extends Dialog
 				return;			
 			}
 			
-		    long uid = rep.getUserID(login);
-		    if ( getNewUser() )
+		    if ( isNewUser() )
 		    {
-		    	if ( uid > 0 )
+		    	if ( rep.exists(new UserInfo(login)) )
 		    	{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
 					mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.AlreadyExists.Message")); //$NON-NLS-1$
@@ -345,23 +344,19 @@ public class UserDialog extends Dialog
 					// don't dispose
 					return;
 		    	}
-		    	else
-		    	{
-		    	    userinfo.setID(uid);
-		    	}
 		    }						    	
 
 			userinfo.setLogin(login);
 			userinfo.setPassword(wPassword.getText());
-			userinfo.setName(wUsername.getText());
+			userinfo.setUsername(wUsername.getText());
 			userinfo.setDescription(wDescription.getText());
 			String profname = wProfile.getText();
 			
-			long idProfile = rep.getProfileID(profname);
-			ProfileMeta profinfo = new ProfileMeta(rep, idProfile);
+			long idProfile = rep.profileDelegate.getProfileID(profname);
+			ProfileMeta profinfo = rep.loadProfileMeta(idProfile);
 			userinfo.setProfile( profinfo);
             
-            userinfo.saveRep(rep);
+            rep.saveUserInfo(userinfo);
             rep.commit();
 	
 			dispose();
@@ -410,7 +405,7 @@ public class UserDialog extends Dialog
 	 * 
 	 * @return true when used for a new user else false
 	 */
-	private boolean getNewUser()
+	private boolean isNewUser()
 	{
 		return newUser;
 	}

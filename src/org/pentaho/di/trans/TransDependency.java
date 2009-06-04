@@ -12,14 +12,11 @@ package org.pentaho.di.trans;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 
@@ -123,41 +120,5 @@ public class TransDependency implements XMLInterface, Cloneable
 	public String getFieldname()
 	{
 		return fieldname;
-	}
-
-	public TransDependency(Repository rep, long id_dependency, List<DatabaseMeta> databases) throws KettleException
-	{
-		try
-		{
-			setID(id_dependency);
-			
-			RowMetaAndData r = rep.getTransDependency(id_dependency);
-			
-			if (r!=null)
-			{
-				long id_connection = r.getInteger("ID_DATABASE", 0); //$NON-NLS-1$
-				db        = DatabaseMeta.findDatabase(databases, id_connection);
-				tablename = r.getString("TABLE_NAME", null); //$NON-NLS-1$
-				fieldname = r.getString("FIELD_NAME", null); //$NON-NLS-1$
-			}
-		}
-		catch(KettleException dbe)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "TransDependency.Exception.UnableToLoadTransformationDependency")+id_dependency, dbe); //$NON-NLS-1$
-		}
-	}
-
-	public void saveRep(Repository rep, long id_transformation) throws KettleException
-	{
-		try
-		{
-			long id_database = db==null?-1:db.getID();
-			
-			setID( rep.insertDependency(id_transformation, id_database, tablename, fieldname) );
-		}
-		catch(KettleException dbe)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "TransDependency.Exception.UnableToSaveTransformationDepency")+id_transformation, dbe); //$NON-NLS-1$
-		}
 	}
 }

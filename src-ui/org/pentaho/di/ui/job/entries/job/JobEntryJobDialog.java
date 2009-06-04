@@ -82,8 +82,6 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 			BaseMessages.getString(PKG, "JobJob.Fileformat.Kettle"), BaseMessages.getString(PKG, "JobJob.Fileformat.XML"),
 			BaseMessages.getString(PKG, "JobJob.Fileformat.All") };
 
-	private LogWriter log;
-
 	private Label wlName;
 	private Text wName;
 	private FormData fdlName, fdName;
@@ -184,7 +182,6 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 	{
 		super(parent, jobEntryInt, rep, jobMeta);
 		jobEntry = (JobEntryJob) jobEntryInt;
-		this.log = LogWriter.getInstance();
 	}
 
 	public JobEntryInterface open()
@@ -828,7 +825,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 						wFilename.setText(lroot != null ? selected : Const.EMPTY_STRING);
 
-						JobMeta jobMeta = new JobMeta(log, wFilename.getText(), rep, SpoonFactory.getInstance());
+						JobMeta jobMeta = new JobMeta(wFilename.getText(), rep, SpoonFactory.getInstance());
 						if (jobMeta.getName() != null) {
 							wName.setText(jobMeta.getName());
 						} else {

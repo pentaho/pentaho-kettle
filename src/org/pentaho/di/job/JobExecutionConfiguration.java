@@ -476,12 +476,12 @@ public class JobExecutionConfiguration implements Cloneable
         	{
         		throw new KettleException("I couldn't find the repository with name '"+repositoryName+"'");
         	}
-    		Repository rep = new Repository(LogWriter.getInstance(), repositoryMeta, null);
+    		Repository rep = new Repository(repositoryMeta, null);
 			if (!rep.connect("Job execution configuration"))
 			{
 				throw new KettleException("Unable to connect to the repository with name '"+repositoryName+"'");
 			}
-			UserInfo userInfo = new UserInfo(rep, username, password);
+			UserInfo userInfo = rep.loadUserInfo(username, password);
 			if (userInfo.getID()<=0)
 			{
 				rep.disconnect();

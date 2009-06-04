@@ -16,12 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.changed.ChangedFlag;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceHolderInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.w3c.dom.Node;
@@ -168,61 +165,6 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
 	}
 
     
-	public void saveRep(Repository rep) throws KettleException
-	{
-		saveRep(rep, -1L, false);
-	}
-
-	public void saveRep(Repository rep, long id_transformation, boolean isUsedByTransformation) throws KettleException
-	{
-		// see if this partitioning schema is already in the repository...
-		setId( rep.getPartitionSchemaID(name) );
-		if (getId()<0)
-		{
-			setId(rep.insertPartitionSchema(this));
-		}
-		else
-		{
-			rep.updatePartitionSchema(this);
-			rep.delPartitions(getId());
-		}
-        
-		// Save the cluster-partition relationships
-		//
-		for (int i=0;i<partitionIDs.size();i++)
-		{
-			rep.insertPartition(getId(), partitionIDs.get(i));
-		}
-        
-		// Save a link to the transformation to keep track of the use of this partition schema
-		// Otherwise, we shouldn't bother with this
-		//
-		if (isUsedByTransformation)
-		{
-			rep.insertTransformationPartitionSchema(id_transformation, getId());
-		}
-	}
-    
-	public PartitionSchema(Repository rep, long id_partition_schema) throws KettleException
-	{
-		this();
-        
-		setId(id_partition_schema);
-        
-		RowMetaAndData row = rep.getPartitionSchema(id_partition_schema);
-        
-		name = row.getString("NAME", null);
-        
-		long[] pids = rep.getPartitionIDs(id_partition_schema);
-		partitionIDs = new ArrayList<String>();
-			for (int i=0;i<pids.length;i++)
-			{
-				partitionIDs.add( rep.getPartition(pids[i]).getString("PARTITION_ID", null) );
-			}
-        
-		dynamicallyDefined = row.getBoolean("DYNAMIC_DEFINITION", false);
-		numberOfPartitionsPerSlave = row.getString("PARTITIONS_PER_SLAVE", null);
-	}
 
 
 	/**

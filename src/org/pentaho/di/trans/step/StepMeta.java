@@ -21,9 +21,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -34,7 +32,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
@@ -518,6 +515,10 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		return stepMetaInterface;
 	}
 	
+	public void setStepMetaInterface(StepMetaInterface stepMetaInterface) {
+		this.stepMetaInterface = stepMetaInterface;
+	}
+	
 	public String getStepID()
 	{
 		return stepid;
@@ -579,117 +580,6 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         setID(id_step);
     }
 
-    /**
-     * Create a new step by loading the metadata from the specified repository.  
-     * @param rep
-     * @param id_step
-     * @param databases
-     * @param counters
-     * @param partitionSchemas
-     * @throws KettleException
-     */
-	public StepMeta(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters, List<PartitionSchema> partitionSchemas) throws KettleException
-	{
-        this();
-        StepLoader steploader = StepLoader.getInstance();
-
-		try
-		{
-			RowMetaAndData r = rep.getStep(id_step);
-			if (r!=null)
-			{
-				setID(id_step);
-				
-				stepname = r.getString("NAME", null); //$NON-NLS-1$
-				//System.out.println("stepname = "+stepname);
-				description = r.getString("DESCRIPTION", null); //$NON-NLS-1$
-				//System.out.println("description = "+description);
-				
-				long id_step_type = r.getInteger("ID_STEP_TYPE", -1L); //$NON-NLS-1$
-				//System.out.println("id_step_type = "+id_step_type);
-				RowMetaAndData steptyperow = rep.getStepType(id_step_type);
-				
-				stepid     = steptyperow.getString("CODE", null); //$NON-NLS-1$
-				distributes = r.getBoolean("DISTRIBUTE", true); //$NON-NLS-1$
-				copies     = (int)r.getInteger("COPIES", 1); //$NON-NLS-1$
-				int x = (int)r.getInteger("GUI_LOCATION_X", 0); //$NON-NLS-1$
-				int y = (int)r.getInteger("GUI_LOCATION_Y", 0); //$NON-NLS-1$
-				location = new Point(x,y);
-				drawstep = r.getBoolean("GUI_DRAW", false); //$NON-NLS-1$
-				
-				// Generate the appropriate class...
-				StepPlugin sp = steploader.findStepPluginWithID(stepid);
-                if (sp!=null)
-                {
-                    stepMetaInterface = BaseStep.getStepInfo(sp, steploader);
-                }
-                else
-                {
-                    throw new KettleStepLoaderException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadClass",stepid+Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                }
-
-				stepMetaInterface = BaseStep.getStepInfo(sp, steploader);
-				if (stepMetaInterface!=null)
-				{
-					// Read the step info from the repository!
-					stepMetaInterface.readRep(rep, getID(), databases, counters);
-				}
-                
-                // Get the partitioning as well...
-                stepPartitioningMeta = new StepPartitioningMeta(rep, getID());
-                
-                // Get the cluster schema name
-                clusterSchemaName = rep.getStepAttributeString(id_step, "cluster_schema");
-			}
-			else
-			{
-				throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.StepInfoCouldNotBeFound",String.valueOf(id_step))); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.StepCouldNotBeLoaded",String.valueOf(getID())), dbe); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-	}
-
-
-	public void saveRep(Repository rep, long id_transformation)
-		throws KettleException
-	{
-        LogWriter log = LogWriter.getInstance();
-        
-		try
-		{
-			log.logDebug(toString(), BaseMessages.getString(PKG, "StepMeta.Log.SaveNewStep")); //$NON-NLS-1$
-			// Insert new Step in repository
-			setID(rep.insertStep(	id_transformation,
-									getName(), 
-									getDescription(),
-									getStepID(),
-									distributes,
-									copies,
-									getLocation()==null?-1:getLocation().x,
-									getLocation()==null?-1:getLocation().y,
-									isDrawn()
-								)
-					);
-            
-            // Save partitioning selection for the step
-            stepPartitioningMeta.saveRep(rep, id_transformation, getID());
-	
-			// The id_step is known, as well as the id_transformation
-			// This means we can now save the attributes of the step...
-			log.logDebug(toString(), BaseMessages.getString(PKG, "StepMeta.Log.SaveStepDetails")); //$NON-NLS-1$
-			stepMetaInterface.saveRep(rep, id_transformation, getID());
-            
-            // Save the clustering schema that was chosen.
-            rep.saveStepAttribute(id_transformation, getID(), "cluster_schema", clusterSchema==null?"":clusterSchema.getName());
-		}
-		catch(KettleException e)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToSaveStepInfo",String.valueOf(id_transformation)), e); //$NON-NLS-1$
-		}
-	}
 
 	public void setLocation(int x, int y)
 	{
@@ -954,4 +844,17 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   public boolean isClustered() {
 	  return clusterSchema!=null;
   }
+  
+  /**
+   * Set the plugin step id (code)
+   * @param stepid
+   */
+  public void setStepID(String stepid) {
+	this.stepid = stepid;
+  }
+  
+  public void setClusterSchemaName(String clusterSchemaName) {
+	this.clusterSchemaName = clusterSchemaName;
+  }
+
 }

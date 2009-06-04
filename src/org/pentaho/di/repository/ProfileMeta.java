@@ -13,13 +13,6 @@ package org.pentaho.di.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.i18n.BaseMessages;
-
 
 /*
  * Created on 7-apr-2004
@@ -28,7 +21,7 @@ import org.pentaho.di.i18n.BaseMessages;
 
 public class ProfileMeta 
 {
-	private static Class<?> PKG = ProfileMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+//	private static Class<?> PKG = ProfileMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private long id;
 	
@@ -49,115 +42,6 @@ public class ProfileMeta
 		this.name = null;
 		this.description = null;
 		this.permissions = new ArrayList<PermissionMeta>();
-	}
-	
-	public ProfileMeta(Repository rep, long id_profile)
-		throws KettleException
-	{
-		try
-		{
-			RowMetaAndData r = rep.getProfile(id_profile);
-			if (r!=null)
-			{
-				setID(id_profile);
-				name = r.getString("NAME", null);
-				description = r.getString("DESCRIPTION", null);
-				
-				long pid[] = rep.getPermissionIDs(id_profile);
-				
-				// System.out.println("Profile "+name+" has "+pid.length+" permissions.");
-				
-				permissions = new ArrayList<PermissionMeta>();
-			
-				for (int i=0;i<pid.length;i++)
-				{
-					PermissionMeta pi = new PermissionMeta(rep, pid[i]);
-					//System.out.println("Adding permission #"+i+" : "+pi+", id="+pi.getID());
-					if (pi.getID()>0) addPermission(pi);
-				}
-			}
-			else
-			{
-				throw new KettleException(BaseMessages.getString(PKG, "ProfileMeta.Error.NotFound", Long.toString(id_profile)));
-			}
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "ProfileMeta.Error.NotCreated", Long.toString(id_profile)), dbe);
-		}
-	}
-	
-	public boolean saveRep(Repository rep)
-		throws KettleException
-	{
-		try
-		{
-			if (getID()<=0)
-			{
-				setID(rep.getProfileID(getName()));
-			}
-			
-			if (getID()<=0) // Insert...
-			{
-				setID(rep.getNextProfileID());
-				
-				// First save Profile info
-				rep.insertTableRow("R_PROFILE", fillTableRow());
-				
-				// Save permission-profile relations
-				saveProfilePermissions(rep);			
-			}
-			else  // Update
-			{
-				// First save permissions
-				rep.updateTableRow("R_PROFILE", "ID_PROFILE", fillTableRow());
-				
-				// Then save profile_permission relationships
-				rep.delProfilePermissions(getID());
-				
-				// Save permission-profile relations
-				saveProfilePermissions(rep);			
-			}
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "ProfileMeta.Error.NotSaved", Long.toString(getID())), dbe);
-		}
-		return true;
-	}
-	
-	public RowMetaAndData fillTableRow()
-	{
-		RowMetaAndData r = new RowMetaAndData();
-		r.addValue(new ValueMeta("ID_PROFILE", ValueMetaInterface.TYPE_INTEGER), new Long(getID()));
-		r.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), name);
-		r.addValue(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING), description);
-		
-		return r;		
-	}
-	
-	private void saveProfilePermissions(Repository rep)
-		throws KettleException
-	{
-		try
-		{
-			// Then save profile_permission relationships
-			for (int i=0;i<nrPermissions();i++)
-			{
-				PermissionMeta pi = getPermission(i);
-				long id_permission = rep.getPermissionID(pi.getTypeDesc());
-					
-				RowMetaAndData pr = new RowMetaAndData();
-				pr.addValue(new ValueMeta("ID_PROFILE", ValueMetaInterface.TYPE_INTEGER), new Long(getID()));
-				pr.addValue(new ValueMeta("ID_PERMISSION", ValueMetaInterface.TYPE_INTEGER), new Long(id_permission));
-					
-				rep.insertTableRow("R_PROFILE_PERMISSION", pr);
-			}
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "ProfileMeta.Error.PermissionNotSaved", Long.toString(getID())), dbe);
-		}
 	}
 	
 	public void setName(String name)

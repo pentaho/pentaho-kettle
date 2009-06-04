@@ -67,7 +67,7 @@ public class SaveProgressDialog
 			{
 				try
 				{
-					meta.saveRep(rep, new ProgressMonitorAdapter(monitor));
+					rep.save(meta, new ProgressMonitorAdapter(monitor));
 				}
 				catch(KettleException e)
 				{

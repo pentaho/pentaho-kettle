@@ -40,7 +40,7 @@ public class JobSaveProgressDialog
 {
 	private Shell shell;
 	private Repository rep;
-	private JobMeta jobInfo;
+	private JobMeta jobMeta;
     
 	/**
 	 * Creates a new dialog that will handle the wait while saving a job...
@@ -49,7 +49,7 @@ public class JobSaveProgressDialog
 	{
 		this.shell = shell;
 		this.rep = rep;
-		this.jobInfo = jobInfo;
+		this.jobMeta = jobInfo;
    	}
 	
 	public boolean open()
@@ -62,7 +62,7 @@ public class JobSaveProgressDialog
 			{
 				try
 				{
-					jobInfo.saveRep(rep, new ProgressMonitorAdapter(monitor));
+					rep.save(jobMeta, new ProgressMonitorAdapter(monitor));
 				}
 				catch(KettleException e)
 				{

@@ -39,12 +39,9 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
-import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Result;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.ui.core.ConstUI;
@@ -675,11 +672,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
     public EngineMetaInterface getMeta() {
     	return new EngineMetaInterface() {
 		
-			public boolean showReplaceWarning(Repository rep) {
-				return false;
-			}
-		
-			public void setModifiedUser(String user) {
+    		public void setModifiedUser(String user) {
 			}
 		
 			public void setModifiedDate(Date date) {
@@ -702,9 +695,6 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		
 			public boolean saveSharedObjects() {
 				return false;
-			}
-		
-			public void saveRep(Repository rep, ProgressMonitorListener monitor) throws KettleException {
 			}
 		
 			public void nameFromFilename() {
@@ -742,7 +732,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 				return null;
 			}
 		
-			public RepositoryDirectory getDirectory() {
+			public RepositoryDirectory getRepositoryDirectory() {
 				return null;
 			}
 		
@@ -759,6 +749,26 @@ public class SpoonSlave extends Composite implements TabItemInterface
 			}
 		
 			public void clearChanged() {
+			}
+
+			public long getID() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+
+			public String getRepositoryElementType() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public void setName(String name) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
+				// TODO Auto-generated method stub
+				
 			}
 		
 		};

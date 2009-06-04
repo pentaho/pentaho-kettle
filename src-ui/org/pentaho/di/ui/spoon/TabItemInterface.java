@@ -13,6 +13,7 @@
 package org.pentaho.di.ui.spoon;
 
 import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.exception.KettleException;
 
 public interface TabItemInterface
 {
@@ -25,7 +26,7 @@ public interface TabItemInterface
     public Object getManagedObject();
     public boolean hasContentChanged();    
     public int showChangedWarning();
-    public boolean applyChanges();
+    public boolean applyChanges() throws KettleException;
     public EngineMetaInterface getMeta();
     
 }

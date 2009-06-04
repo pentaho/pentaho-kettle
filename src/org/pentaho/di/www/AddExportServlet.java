@@ -127,7 +127,7 @@ public class AddExportServlet extends HttpServlet
             		//
             		KettleVFS.getFileObject(fileUrl);
             		
-            		JobMeta jobMeta = new JobMeta(log, fileUrl, null); // never with a repository
+            		JobMeta jobMeta = new JobMeta(fileUrl, null); // never with a repository
             		Job job = new Job(log, null, jobMeta);
             		
             		// Also read the execution configuration information

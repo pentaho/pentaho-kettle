@@ -129,7 +129,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		
         if (name!=null) setName(name+" ("+super.getName()+")");
         
-		jobMeta = new JobMeta(log);
+		jobMeta = new JobMeta();
 		jobMeta.setName(name);
 		jobMeta.setFilename(file);
 		jobMeta.setArguments(args);
@@ -187,11 +187,11 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		this.rep = rep;
 		if (rep!=null)
 		{
-			jobMeta = new JobMeta(log, rep, jobname, rep.getDirectoryTree().findDirectory(dirname));
+			jobMeta = rep.loadJobMeta(jobname, rep.getDirectoryTree().findDirectory(dirname), null);
 		}
 		else
 		{
-			jobMeta = new JobMeta(log, fname, rep, prompter);
+			jobMeta = new JobMeta(fname, rep, prompter);
 		}
         
         if (jobMeta.getName()!=null) setName(jobMeta.getName()+" ("+super.getName()+")");
@@ -1085,7 +1085,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
         var.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL(jobMeta.getName(), "")); //$NON-NLS-1$
 
         // The name of the directory in the repository
-        var.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, jobMeta.getDirectory() != null ? jobMeta.getDirectory().getPath() : ""); //$NON-NLS-1$
+        var.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, jobMeta.getRepositoryDirectory() != null ? jobMeta.getRepositoryDirectory().getPath() : ""); //$NON-NLS-1$
         
         // Undefine the transformation specific variables
         var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, null);

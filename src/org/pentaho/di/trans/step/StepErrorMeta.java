@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -24,7 +23,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
-import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 /**
@@ -69,7 +67,6 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     
     private VariableSpace variables;
 
-    
     /**
      * Create a new step error handling metadata object
      * @param sourceStep The source step that can send the error rows
@@ -161,36 +158,6 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         maxErrors = Const.toLong(XMLHandler.getTagValue(node, "max_errors"), -1L);
         maxPercentErrors = Const.toInt(XMLHandler.getTagValue(node, "max_pct_errors"), -1);
         minPercentRows = Const.toLong(XMLHandler.getTagValue(node, "min_pct_rows"), -1L);
-    }
-
-    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
-    {
-        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_source_step", sourceStep!=null ? sourceStep.getName() : "");
-        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_target_step", targetStep!=null ? targetStep.getName() : "");
-        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_is_enabled",  enabled);
-        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_nr_valuename",  nrErrorsValuename);
-        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_descriptions_valuename",  errorDescriptionsValuename);
-        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_fields_valuename",  errorFieldsValuename);
-        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_codes_valuename",  errorCodesValuename);
-        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_max_errors",  maxErrors);
-        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_max_pct_errors",  maxPercentErrors);
-        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_min_pct_rows",  minPercentRows);
-    }
-    
-    public StepErrorMeta(VariableSpace variables, Repository rep, StepMeta stepMeta, List<StepMeta> steps) throws KettleException
-    {
-    	this.variables = variables;
-    	
-        sourceStep = stepMeta;
-        targetStep = StepMeta.findStep( steps, rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_target_step") );
-        enabled = rep.getStepAttributeBoolean(stepMeta.getID(), "step_error_handling_is_enabled");
-        nrErrorsValuename = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_nr_valuename");
-        errorDescriptionsValuename = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_descriptions_valuename");
-        errorFieldsValuename = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_fields_valuename");
-        errorCodesValuename = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_codes_valuename");
-        maxErrors = rep.getStepAttributeInteger(stepMeta.getID(), "step_error_handling_max_errors");
-        maxPercentErrors = (int) rep.getStepAttributeInteger(stepMeta.getID(), "step_error_handling_max_pct_errors");
-        minPercentRows = rep.getStepAttributeInteger(stepMeta.getID(), "step_error_handling_min_pct_rows");
     }
     
     /**

@@ -11,16 +11,12 @@
 
 package org.pentaho.di.core;
 
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.GUISizeInterface;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
-import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 /**
@@ -164,84 +160,6 @@ public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterfac
 		}
 	}
 
-	public NotePadMeta(LogWriter log, Repository rep, long id_note)
-		throws KettleException
-	{
-		readRep(log, rep, id_note);
-	}
-	
-	// Load from repository
-	private void readRep(LogWriter log, Repository rep, long id_note) throws KettleException
-	{
-		try
-		{
-			setID(id_note);
-	
-			RowMetaAndData r = rep.getNote(id_note);
-			if (r!=null)
-			{
-				this.note     =      r.getString("VALUE_STR", "");
-				int x    = (int)r.getInteger("GUI_LOCATION_X", 0L);
-				int y    = (int)r.getInteger("GUI_LOCATION_Y", 0L);
-				this.location = new Point(x, y);
-				this.width    = (int)r.getInteger("GUI_LOCATION_WIDTH", 0L);
-				this.height   = (int)r.getInteger("GUI_LOCATION_HEIGHT", 0L);
-				this.selected = false;
-				// Font
-				this.fontname     =      r.getString("FONT_NAME", null);
-				this.fontsize     =  (int)r.getInteger("FONT_SIZE",-1);
-				this.fontbold     =   r.getBoolean("FONT_BOLD", false);
-				this.fontitalic    =   r.getBoolean("FONT_ITALIC", false);
-				// Font color
-				this.fontcolorred=  (int)r.getInteger("FONT_COLOR_RED",COLOR_RGB_BLACK_BLUE);
-				this.fontcolorgreen=  (int)r.getInteger("FONT_COLOR_GREEN",COLOR_RGB_BLACK_GREEN);
-				this.fontcolorblue=  (int)r.getInteger("FONT_COLOR_BLUE",COLOR_RGB_BLACK_BLUE);
-				// Background color
-				this.backgroundcolorred=  (int)r.getInteger("FONT_BACK_GROUND_COLOR_RED", COLOR_RGB_YELLOW_RED);
-				this.backgroundcolorgreen=  (int)r.getInteger("FONT_BACK_GROUND_COLOR_GREEN", COLOR_RGB_YELLOW_GREEN);
-				this.backgroundcolorblue=  (int)r.getInteger("FONT_BACK_GROUND_COLOR_BLUE", COLOR_RGB_YELLOW_BLUE);
-				
-				// Border color
-				this.bordercolorred=  (int)r.getInteger("FONT_BORDER_COLOR_RED", COLOR_RGB_GRAY_RED);
-				this.bordercolorgreen=  (int)r.getInteger("FONT_BORDER_COLOR_GREEN", COLOR_RGB_GRAY_GREEN);
-				this.bordercolorblue=  (int)r.getInteger("FONT_BORDER_COLOR_BLUE", COLOR_RGB_GRAY_BLUE);
-				this.drawshadow     =   r.getBoolean("DRAW_SHADOW", true);
-			}
-			else
-			{
-			    setID(-1L);
-			    throw new KettleException("I couldn't find Notepad with id_note="+id_note+" in the repository.");
-			}
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			setID(-1L);
-			throw new KettleException("Unable to load Notepad from repository (id_note="+id_note+")", dbe);
-		}
-	}
-	
-
-	
-	public void saveRep(Repository rep, long id_transformation)
-		throws KettleException
-	{
-		try
-		{
-			int x = location==null?-1:location.x;
-			int y = location==null?-1:location.y;
-				
-			// Insert new Note in repository
-			setID( rep.insertNote(note, x, y, width, height,fontname,fontsize, fontbold,
-					fontitalic, fontcolorred, fontcolorgreen,fontcolorblue,
-					backgroundcolorred, backgroundcolorgreen,backgroundcolorblue,
-					bordercolorred, bordercolorgreen,bordercolorblue, drawshadow) );
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException("Unable to save notepad in repository (id_transformation="+id_transformation+")", dbe);
-		}
-	}
-	
 	public long getID()
 	{
 		return id;

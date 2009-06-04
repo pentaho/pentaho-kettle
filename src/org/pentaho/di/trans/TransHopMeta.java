@@ -11,21 +11,12 @@
 
 package org.pentaho.di.trans;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
-import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Node;
 
@@ -67,51 +58,6 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 		from_step = from;
 		to_step = to;
 		enabled = true;
-	}
-
-	public TransHopMeta(Repository rep, long id_trans_hop, List<StepMeta> steps) throws KettleException
-	{
-		try
-		{
-			setID(id_trans_hop);
-
-			RowMetaAndData r = rep.getTransHop(id_trans_hop);
-
-			long id_step_from = r.getInteger("ID_STEP_FROM", 0); //$NON-NLS-1$
-			long id_step_to = r.getInteger("ID_STEP_TO", 0); //$NON-NLS-1$
-			enabled = r.getBoolean("ENABLED", false); //$NON-NLS-1$
-
-			from_step = StepMeta.findStep(steps, id_step_from);
-			if (from_step == null && id_step_from > 0) // Links to a shared
-			// objects, try again by
-			// looking up the
-			// name...
-			{
-				// Simply load this, we only want the name, we don't care about
-				// the rest...
-				StepMeta stepMeta = new StepMeta(rep, id_step_from, new ArrayList<DatabaseMeta>(), new Hashtable<String, Counter>(),
-						new ArrayList<PartitionSchema>());
-				from_step = StepMeta.findStep(steps, stepMeta.getName());
-			}
-			from_step.setDraw(true);
-
-			to_step = StepMeta.findStep(steps, id_step_to);
-			if (to_step == null && id_step_to > 0) // Links to a shared
-			// objects, try again by
-			// looking up the name...
-			{
-				// Simply load this, we only want the name, we don't care about
-				// the rest...
-				StepMeta stepMeta = new StepMeta(rep, id_step_to, new ArrayList<DatabaseMeta>(), new Hashtable<String, Counter>(),
-						new ArrayList<PartitionSchema>());
-				to_step = StepMeta.findStep(steps, stepMeta.getName());
-			}
-			to_step.setDraw(true);
-		} catch (KettleDatabaseException dbe)
-		{
-			throw new KettleException(
-					BaseMessages.getString(PKG, "TransHopMeta.Exception.LoadTransformationHopInfo") + id_trans_hop, dbe); //$NON-NLS-1$
-		}
 	}
 
 	public TransHopMeta()
@@ -164,24 +110,6 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 				return stepMeta;
 
 		return null;
-	}
-
-	public void saveRep(Repository rep, long id_transformation) throws KettleException
-	{
-		try
-		{
-			// See if a transformation hop with the same fromstep and tostep is
-			// already available...
-			long id_step_from = from_step == null ? -1 : from_step.getID();
-			long id_step_to = to_step == null ? -1 : to_step.getID();
-
-			// Insert new transMeta hop in repository
-			setID(rep.insertTransHop(id_transformation, id_step_from, id_step_to, enabled));
-		} catch (KettleDatabaseException dbe)
-		{
-			throw new KettleException(
-					BaseMessages.getString(PKG, "TransHopMeta.Exception.UnableToSaveTransformationHopInfo") + id_transformation, dbe); //$NON-NLS-1$
-		}
 	}
 
 	public Object clone()

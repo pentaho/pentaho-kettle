@@ -459,17 +459,17 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         // See if we need to add a hop...
         if (hop_candidate != null) {
           // hop doesn't already exist
-          if (jobMeta.findJobHop(hop_candidate.from_entry, hop_candidate.to_entry) == null) {
-            if (!hop_candidate.from_entry.evaluates() && hop_candidate.from_entry.isUnconditional()) {
+          if (jobMeta.findJobHop(hop_candidate.getFromEntry(), hop_candidate.getToEntry()) == null) {
+            if (!hop_candidate.getFromEntry().evaluates() && hop_candidate.getFromEntry().isUnconditional()) {
               hop_candidate.setUnconditional();
             } else {
               hop_candidate.setConditional();
-              int nr = jobMeta.findNrNextJobEntries(hop_candidate.from_entry);
+              int nr = jobMeta.findNrNextJobEntries(hop_candidate.getFromEntry());
 
               // If there is one green link: make this one red! (or vice-versa)
               if (nr == 1) {
-                JobEntryCopy jge = jobMeta.findNextJobEntry(hop_candidate.from_entry, 0);
-                JobHopMeta other = jobMeta.findJobHop(hop_candidate.from_entry, jge);
+                JobEntryCopy jge = jobMeta.findNextJobEntry(hop_candidate.getFromEntry(), 0);
+                JobHopMeta other = jobMeta.findJobHop(hop_candidate.getFromEntry(), jge);
                 if (other != null) {
                   hop_candidate.setEvaluation(!other.getEvaluation());
                 }
@@ -528,7 +528,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
                 MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
                 	BaseMessages.getString(PKG, "JobGraph.Dialog.SplitHop.Title"), null, 
                 	BaseMessages.getString(PKG, "JobGraph.Dialog.SplitHop.Message")
-                    + Const.CR + hi.from_entry.getName() + " --> " + hi.to_entry.getName(), MessageDialog.QUESTION,
+                    + Const.CR + hi.getFromEntry().getName() + " --> " + hi.getToEntry().getName(), MessageDialog.QUESTION,
                     new String[] { BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") },
                     0, BaseMessages.getString(PKG, "JobGraph.Dialog.SplitHop.Toggle"), spoon.props.getAutoSplit());
                 MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
@@ -537,9 +537,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
               }
 
               if ((id & 0xFF) == 0) {
-                JobHopMeta newhop1 = new JobHopMeta(hi.from_entry, selected_icon);
+                JobHopMeta newhop1 = new JobHopMeta(hi.getFromEntry(), selected_icon);
                 jobMeta.addJobHop(newhop1);
-                JobHopMeta newhop2 = new JobHopMeta(selected_icon, hi.to_entry);
+                JobHopMeta newhop2 = new JobHopMeta(selected_icon, hi.getToEntry());
                 jobMeta.addJobHop(newhop2);
                 if (!selected_icon.evaluates())
                   newhop2.setUnconditional();
@@ -1165,7 +1165,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     for (i = 0; i < jobMeta.nrJobHops(); i++) {
       JobHopMeta hi = jobMeta.getJobHop(i);
 
-      int line[] = getLine(hi.from_entry, hi.to_entry);
+      int line[] = getLine(hi.getFromEntry(), hi.getToEntry());
 
       if (line != null && pointOnLine(x, y, line))
         online = hi;
@@ -1436,13 +1436,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
                 miPopEvalFalse.setChecked(true);
             }
           }
-          if (!hi.from_entry.evaluates()) {
+          if (!hi.getFromEntry().evaluates()) {
             if (miPopEvalTrue != null)
               miPopEvalTrue.setEnabled(false);
             if (miPopEvalFalse != null)
               miPopEvalFalse.setEnabled(false);
           }
-          if (!hi.from_entry.isUnconditional()) {
+          if (!hi.getFromEntry().isUnconditional()) {
             if (miPopEvalUncond != null)
               miPopEvalUncond.setEnabled(false);
           }
@@ -1580,20 +1580,20 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
   public void flipHop() {
     selrect = null;
-    JobEntryCopy dummy = currentHop.from_entry;
-    currentHop.from_entry = currentHop.to_entry;
-    currentHop.to_entry = dummy;
+    JobEntryCopy dummy = currentHop.getFromEntry();
+    currentHop.setFromEntry( currentHop.getToEntry() );
+    currentHop.setToEntry( dummy );
 
-    if (jobMeta.hasLoop(currentHop.from_entry)) {
+    if (jobMeta.hasLoop(currentHop.getFromEntry())) {
       spoon.refreshGraph();
       MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
       mb.setMessage(BaseMessages.getString(PKG, "JobGraph.Dialog.HopFlipCausesLoop.Message"));
       mb.setText(BaseMessages.getString(PKG, "JobGraph.Dialog.HopFlipCausesLoop.Title"));
       mb.open();
 
-      dummy = currentHop.from_entry;
-      currentHop.from_entry = currentHop.to_entry;
-      currentHop.to_entry = dummy;
+      dummy = currentHop.getFromEntry();
+      currentHop.setFromEntry(currentHop.getToEntry());
+      currentHop.setToEntry(dummy);
       spoon.refreshGraph();
     } else {
       currentHop.setChanged();
@@ -1712,15 +1712,16 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     // Load from repository?
     if (TransMeta.isRepReference(exactFilename, exactTransname)) {
       try {
+    	TransMeta newTrans;
+    	
         // New transformation?
         //
-        long id = spoon.rep.getTransformationID(exactTransname, spoon.rep.getDirectoryTree().findDirectory(entry.getDirectory()).getID());
-        TransMeta newTrans;
-        if (id < 0) // New
-        {
+        boolean exists = spoon.rep.existsTransformation(exactTransname, spoon.rep.getDirectoryTree().findDirectory(entry.getDirectory()));
+        if (!exists) {
           newTrans = new TransMeta(null, exactTransname, entry.arguments);
-        } else {
-          newTrans = new TransMeta(spoon.rep, exactTransname, spoon.rep.getDirectoryTree().findDirectory(entry.getDirectory()));
+        } 
+        else {
+          newTrans = spoon.rep.loadTransformation(exactTransname, spoon.rep.getDirectoryTree().findDirectory(entry.getDirectory()));
         }
 
         copyInternalJobVariables(jobMeta, newTrans);
@@ -1780,7 +1781,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     // Load from repository?
     if (Const.isEmpty(exactFilename) && !Const.isEmpty(exactJobname)) {
       try {
-        JobMeta newJobMeta = new JobMeta(log, spoon.rep, exactJobname, spoon.rep.getDirectoryTree().findDirectory(entry.getDirectory()));
+        JobMeta newJobMeta = spoon.rep.loadJobMeta(exactJobname, spoon.rep.getDirectoryTree().findDirectory(entry.getDirectory()), null);
         newJobMeta.clearChanged();
         spoon.setParametersAsVariablesInUI(newJobMeta, newJobMeta);
         spoon.delegates.jobs.addJobGraph(newJobMeta);
@@ -1797,9 +1798,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         JobMeta newJobMeta;
 
         if (KettleVFS.fileExists(exactFilename)) {
-          newJobMeta = new JobMeta(log, exactFilename, spoon.rep, spoon);
+          newJobMeta = new JobMeta(exactFilename, spoon.rep, spoon);
         } else {
-          newJobMeta = new JobMeta(log);
+          newJobMeta = new JobMeta();
         }
         
         spoon.setParametersAsVariablesInUI(newJobMeta, newJobMeta);
@@ -1938,9 +1939,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
   }
 
   protected void drawJobHop(GC gc, JobHopMeta hop, boolean candidate) {
-    if (hop == null || hop.from_entry == null || hop.to_entry == null)
+    if (hop == null || hop.getFromEntry() == null || hop.getToEntry() == null)
       return;
-    if (!hop.from_entry.isDrawn() || !hop.to_entry.isDrawn())
+    if (!hop.getFromEntry().isDrawn() || !hop.getToEntry().isDrawn())
       return;
 
     drawLine(gc, hop, candidate);
@@ -2085,12 +2086,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
  }
 
   protected void drawLine(GC gc, JobHopMeta hop, boolean is_candidate) {
-    int line[] = getLine(hop.from_entry, hop.to_entry);
+    int line[] = getLine(hop.getFromEntry(), hop.getToEntry());
 
     gc.setLineWidth(linewidth);
     Color col;
 
-    if (hop.from_entry.isLaunchingInParallel()) {
+    if (hop.getFromEntry().isLaunchingInParallel()) {
       gc.setLineAttributes(new LineAttributes((float) linewidth, SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_CUSTOM,
           new float[] { 5, 3, }, 0, 10));
     } else {
@@ -2397,8 +2398,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     JobHopMeta hto = jobMeta.findJobHopFrom(je);
 
     if (hfrom != null && hto != null) {
-      if (jobMeta.findJobHop(hfrom.from_entry, hto.to_entry) == null) {
-        JobHopMeta hnew = new JobHopMeta(hfrom.from_entry, hto.to_entry);
+      if (jobMeta.findJobHop(hfrom.getFromEntry(), hto.getToEntry()) == null) {
+        JobHopMeta hnew = new JobHopMeta(hfrom.getFromEntry(), hto.getToEntry());
         jobMeta.addJobHop(hnew);
         spoon.addUndoNew(jobMeta, new JobHopMeta[] { (JobHopMeta) hnew.clone() }, new int[] { jobMeta
             .indexOfJobHop(hnew) });
@@ -2450,7 +2451,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     this.jobMeta = jobMeta;
   }
 
-  public boolean applyChanges() {
+  public boolean applyChanges() throws KettleException {
     return spoon.saveToFile(jobMeta);
   }
 
@@ -2493,7 +2494,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     //
     if (jd.isSharedObjectsFileChanged()) {
       try {
-        SharedObjects sharedObjects = jobMeta.readSharedObjects(rep);
+        SharedObjects sharedObjects = rep!=null ? rep.readJobMetaSharedObjects(jobMeta) : jobMeta.readSharedObjects();
         spoon.sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
       } catch (Exception e) {
         new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title"), 
@@ -2685,11 +2686,11 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     spoon.openFile();
   }
 
-  public void saveFile() {
+  public void saveFile() throws KettleException {
     spoon.saveFile();
   }
 
-  public void saveFileAs() {
+  public void saveFileAs() throws KettleException {
     spoon.saveFileAs();
   }
 
@@ -2713,7 +2714,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     spoon.exploreDatabase();
   }
 
-  public synchronized void startJob(JobExecutionConfiguration executionConfiguration) {
+  public synchronized void startJob(JobExecutionConfiguration executionConfiguration) throws KettleException {
     if (job == null) // Not running, start the transformation...
     {
       // Auto save feature...
@@ -2755,7 +2756,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
             }
         	  
             job = new Job(log, jobMeta.getName(), jobMeta.getFilename(), null);
-            job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getDirectory().getPath(), spoon);
+            job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getRepositoryDirectory().getPath(), spoon);
             job.getJobMeta().setArguments(jobMeta.getArguments());
             job.shareVariablesWith(jobMeta);
             
