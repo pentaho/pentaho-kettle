@@ -89,7 +89,6 @@ import org.pentaho.di.ui.core.widget.TreeItemAccelerator;
 import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
-import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.w3c.dom.Document;
 
@@ -177,9 +176,7 @@ public class RepositoryExplorerDialog extends Dialog
     
 	private Shell     shell;
 	private Tree      wTree;
-	private Button    wCommit;
-	private Button    wRollback;
-	private boolean   changedInDialog;
+	private Button    wOK;
 
 	private LogWriter log;
 	private PropsUI props;
@@ -275,7 +272,7 @@ public class RepositoryExplorerDialog extends Dialog
             //
             MenuItem miFileClose= new MenuItem(msFile, SWT.CASCADE); 
             miFileClose.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Menu.FileClose")); //$NON-NLS-1$
-            miFileClose.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { commit(); } });
+            miFileClose.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { close(); } });
             
             ToolBar treeTb = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT);
             expandAll = new ToolItem(treeTb,SWT.PUSH);
@@ -324,10 +321,8 @@ public class RepositoryExplorerDialog extends Dialog
             TreeMemory.addTreeListener(wTree,STRING_REPOSITORY_EXPLORER_TREE_NAME);
             
      		// Buttons
-    		wCommit = new Button(shell, SWT.PUSH); 
-    		wCommit.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Button.Commit")); //$NON-NLS-1$
-    		wRollback = new Button(shell, SWT.PUSH); 
-    		wRollback.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Button.Rollback")); //$NON-NLS-1$
+    		wOK = new Button(shell, SWT.PUSH); 
+    		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
     				
     		FormData fdTree      = new FormData(); 
     		int margin =  10;
@@ -338,23 +333,14 @@ public class RepositoryExplorerDialog extends Dialog
     		fdTree.bottom = new FormAttachment(100, -50);
     		wTree.setLayoutData(fdTree);
     
-    		BaseStepDialog.positionBottomButtons(shell, new Button[] { wCommit, wRollback }, margin, null );
+    		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, }, margin, null );
     
     		// Add listeners
-    		wCommit.addListener(SWT.Selection, new Listener ()
+    		wOK.addListener(SWT.Selection, new Listener ()
     			{
     				public void handleEvent (Event e) 
     				{
-    					commit();
-    				}
-    			}
-    		);
-    		// Add listeners
-    		wRollback.addListener(SWT.Selection, new Listener ()
-    			{
-    				public void handleEvent (Event e) 
-    				{
-    					rollback();
+    					close();
     				}
     			}
     		);
@@ -592,7 +578,7 @@ public class RepositoryExplorerDialog extends Dialog
     
     
     		// Detect X or ALT-F4 or something that kills this window...
-    		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { checkRollback(e); } } );
+    		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { close(); } } );
             
             debug="set screen size and position"; //$NON-NLS-1$
     
@@ -1259,53 +1245,12 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 	}
 
-	public void rollback()
+	public void close()
 	{
-        rep.rollback();
-
         props.setScreen(new WindowProperty(shell));
 		shell.dispose();
 	}
-	
-	public void checkRollback(ShellEvent e)
-	{
-		if (changedInDialog)
-		{
-			int save = JobGraph.showChangedWarning(shell, "repository");
-			if (save == SWT.CANCEL)
-			{
-				e.doit = false;
-			}
-			else if (save == SWT.YES)
-			{
-				commit();
-			}
-			else
-			{
-				rollback();
-			}
-		}
-		else
-		{
-			rollback();
-		}
-	}
-	
-	public void commit()
-	{
-	    try
-	    {
-	        rep.commit();
-	    }
-	    catch(KettleException e)
-	    {
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Dialog.ErrorCommitingChanges.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Dialog.ErrorCommitingChanges.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
-	    }
-        
-        props.setScreen(new WindowProperty(shell));
-        shell.dispose();
-	}
-	
+		
 	public void refreshTree()
 	{
 		try
@@ -1471,11 +1416,11 @@ public class RepositoryExplorerDialog extends Dialog
 		lastOpened = new RepositoryObjectReference(STRING_TRANSFORMATIONS, repdir, name);
 		if (callback != null) {
 			if (callback.open(lastOpened))			{
-				commit();
+				close();
 			}
 		}
 		else {
-			commit();
+			close();
 		}
 	}
 
@@ -1484,11 +1429,11 @@ public class RepositoryExplorerDialog extends Dialog
 		lastOpened = new RepositoryObjectReference(STRING_JOBS, repdir, name);
 		if (callback != null) {
 			if (callback.open(lastOpened)) {
-				commit();
+				close();
 			}
 		}
 		else {
-			commit();
+			close();
 		}
 	}
 
@@ -1691,7 +1636,6 @@ public class RepositoryExplorerDialog extends Dialog
                     long existingTransID = rep.getTransformationID(transname, repdir);
                     if (existingTransID == -1) {
 	                    rep.moveTransformation(transname, fromdir.getID(), repdir.getID());
-	    				changedInDialog = true;
 	    				retval=true;
                     }
                     else
@@ -1745,7 +1689,6 @@ public class RepositoryExplorerDialog extends Dialog
                     long existingjobID = rep.getJobID(jobname, repdir);
                     if (existingjobID == -1) {
                     	rep.moveJob(jobname, fromdir.getID(), repdir.getID());
-                    	changedInDialog = true;
                     	retval=true;
                     }
                     else 
@@ -1858,7 +1801,6 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					System.out.println("Renaming job ["+name+"] with ID = "+id);
 					rep.renameJob(id, newname);
-    				changedInDialog = true;
 					retval=true;
 				}
 			}
@@ -1899,7 +1841,6 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					// System.out.println("OK, Deleting transformation ["+name+"] with ID = "+id);
 					rep.delAllFromJob(id);
-    				changedInDialog = true;
 				}
 			}
 			else

@@ -357,7 +357,6 @@ public class UserDialog extends Dialog
 			userinfo.setProfile( profinfo);
             
             rep.saveUserInfo(userinfo);
-            rep.commit();
 	
 			dispose();
 		}

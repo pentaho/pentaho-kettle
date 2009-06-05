@@ -438,13 +438,9 @@ public class SpoonDBDelegate extends SpoonDelegate
 					spoon.getLog().logDetailed(toString(),
 							BaseMessages.getString(PKG, "Spoon.Log.SavedDatabaseConnection", db.getDatabaseName()));
 
-					// Put a commit behind it!
-					rep.commit();
-
 					db.setChanged(false);
 				} catch (KettleException ke)
 				{
-					rep.rollback(); // In case of failure: undo changes!
 					new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Message", db.getDatabaseName()), ke);
 				} 
 				finally

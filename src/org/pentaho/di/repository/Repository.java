@@ -40,18 +40,10 @@ public interface Repository extends RepositorySecurityInterface {
 
     public boolean isConnected();
 
-
 	/**
-	 * Commit changes to the repository
+	 * This method locks the repository so that only 
 	 * @throws KettleException
 	 */
-	public void commit() throws KettleException;
-
-	/**
-	 * Roll back changes to the repository
-	 */
-	public void rollback();
-	
     public void lockRepository() throws KettleException;
     
     public void unlockRepository() throws KettleException;

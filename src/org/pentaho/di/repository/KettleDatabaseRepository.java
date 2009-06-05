@@ -255,6 +255,10 @@ public class KettleDatabaseRepository extends BaseRepository implements Reposito
     	} else
 
     	throw new KettleException("We can't save the element with type ["+repositoryElement.getRepositoryElementType()+"] in the repository");
+    	
+		// Automatically commit changes to these elements.
+    	//
+		commit();
     }
     
     // ProfileMeta

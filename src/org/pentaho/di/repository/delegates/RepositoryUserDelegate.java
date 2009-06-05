@@ -115,6 +115,9 @@ public class RepositoryUserDelegate extends BaseRepositoryDelegate {
 			{
 				repository.connectionDelegate.updateTableRow("R_USER", "ID_USER", fillTableRow(userInfo));
 			}
+			
+			// Put a commit behind it!
+			repository.commit();
 		}
 		catch(KettleDatabaseException dbe)
 		{
