@@ -231,12 +231,10 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-	throws KettleException
-  {
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+    {
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			zipFilename = rep.getJobEntryAttributeString(id_jobentry, "zipfilename");
 			afterunzip=(int) rep.getJobEntryAttributeInteger(id_jobentry, "afterunzip");
 			wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
@@ -259,7 +257,6 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			createMoveToDirectory=rep.getJobEntryAttributeBoolean(id_jobentry, "create_move_to_directory");
 		}
 
-
 		catch(KettleException dbe)
 		{
 			throw new KettleException("Unable to load job entry of type 'unzip' from the repository for id_jobentry="+id_jobentry, dbe);
@@ -271,8 +268,6 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "zipfilename", zipFilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "afterunzip", afterunzip);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);

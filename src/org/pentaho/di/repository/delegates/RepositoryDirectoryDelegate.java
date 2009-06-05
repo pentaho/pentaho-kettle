@@ -7,19 +7,19 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.directory.RepositoryDirectory;
 
 public class RepositoryDirectoryDelegate extends BaseRepositoryDelegate {
 	private static Class<?> PKG = RepositoryDirectory.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryDirectoryDelegate(Repository repository) {
+	public RepositoryDirectoryDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	
 	public RowMetaAndData getDirectory(long id_directory) throws KettleException
 	{
-		return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_DIRECTORY), quote(Repository.FIELD_DIRECTORY_ID_DIRECTORY), id_directory);
+		return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY), quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY), id_directory);
 	}
 	
 	public RepositoryDirectory loadRepositoryDirectoryTree(RepositoryDirectory root) throws KettleException
@@ -98,7 +98,7 @@ public class RepositoryDirectoryDelegate extends BaseRepositoryDelegate {
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(Repository.TABLE_R_DIRECTORY)+" WHERE "+quote(Repository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory;
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory;
 		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
 		if (r != null)
 		{
@@ -112,11 +112,11 @@ public class RepositoryDirectoryDelegate extends BaseRepositoryDelegate {
 	{
 		long id = repository.connectionDelegate.getNextDirectoryID();
 
-		String tablename = Repository.TABLE_R_DIRECTORY;
+		String tablename = KettleDatabaseRepository.TABLE_R_DIRECTORY;
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta(Repository.FIELD_DIRECTORY_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta(Repository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_parent));
-		table.addValue(new ValueMeta(Repository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING), dir.getDirectoryName());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_parent));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING), dir.getDirectoryName());
 
 		repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), tablename);
 		repository.connectionDelegate.getDatabase().setValuesInsert(table);
@@ -128,16 +128,16 @@ public class RepositoryDirectoryDelegate extends BaseRepositoryDelegate {
 
 	public synchronized void deleteDirectory(long id_directory) throws KettleException
 	{
-		String sql = "DELETE FROM "+quoteTable(Repository.TABLE_R_DIRECTORY)+" WHERE "+quote(Repository.FIELD_DIRECTORY_ID_DIRECTORY)+" = " + id_directory;
+		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY)+" = " + id_directory;
 		repository.connectionDelegate.getDatabase().execStatement(sql);
 	}
 
 	public synchronized void renameDirectory(long id_directory, String name) throws KettleException
 	{
 		RowMetaAndData r = new RowMetaAndData();
-		r.addValue(new ValueMeta(Repository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING), name);
+		r.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING), name);
 
-		String sql = "UPDATE "+quoteTable(Repository.TABLE_R_DIRECTORY)+" SET "+quote(Repository.FIELD_DIRECTORY_DIRECTORY_NAME)+" = ? WHERE "+quote(Repository.FIELD_DIRECTORY_ID_DIRECTORY)+" = " + id_directory;
+		String sql = "UPDATE "+quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY)+" SET "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME)+" = ? WHERE "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY)+" = " + id_directory;
 
 		log.logBasic(toString(), "sql = [" + sql + "]");
 		log.logBasic(toString(), "row = [" + r + "]");
@@ -149,7 +149,7 @@ public class RepositoryDirectoryDelegate extends BaseRepositoryDelegate {
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(Repository.TABLE_R_DIRECTORY)+" WHERE "+quote(Repository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory;
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory;
 		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
 		if (r != null)
 		{
@@ -161,7 +161,7 @@ public class RepositoryDirectoryDelegate extends BaseRepositoryDelegate {
 	
 	public synchronized long[] getSubDirectoryIDs(long id_directory) throws KettleException
 	{
-		return repository.connectionDelegate.getIDs("SELECT "+quote(Repository.FIELD_DIRECTORY_ID_DIRECTORY)+" FROM "+quoteTable(Repository.TABLE_R_DIRECTORY)+" WHERE "+quote(Repository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory+" ORDER BY "+quote(Repository.FIELD_DIRECTORY_DIRECTORY_NAME));
+		return repository.connectionDelegate.getIDs("SELECT "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory+" ORDER BY "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME));
 	}
     
 	public void saveRepositoryDirectory(RepositoryDirectory dir) throws KettleException

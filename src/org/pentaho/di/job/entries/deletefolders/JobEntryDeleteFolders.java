@@ -142,7 +142,6 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
 
   public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     try {
-      super.loadRep(rep, id_jobentry, databases, slaveServers);
       argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous"); //$NON-NLS-1$
       limit_folders  = rep.getJobEntryAttributeString(id_jobentry, "limit_folders");
 		success_condition  = rep.getJobEntryAttributeString(id_jobentry, "success_condition");
@@ -162,8 +161,6 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
 
   public void saveRep(Repository rep, long id_job) throws KettleException {
     try {
-      super.saveRep(rep, id_job);
-
       rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious); //$NON-NLS-1$
 	  rep.saveJobEntryAttribute(id_job, getID(), "limit_folders",      limit_folders);
 	  rep.saveJobEntryAttribute(id_job, getID(), "success_condition",      success_condition);

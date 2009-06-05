@@ -135,12 +135,10 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-		throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			xmlfilename = rep.getJobEntryAttributeString(id_jobentry, "xmlfilename");
 			xslfilename = rep.getJobEntryAttributeString(id_jobentry, "xslfilename");
 			outputfilename = rep.getJobEntryAttributeString(id_jobentry, "outputfilename");
@@ -160,15 +158,12 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-
 			rep.saveJobEntryAttribute(id_job, getID(), "xmlfilename", xmlfilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "xslfilename", xslfilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "outputfilename", outputfilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "iffileexists", iffileexists);
 			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
 			rep.saveJobEntryAttribute(id_job, getID(), "xsltfactory", xsltfactory);
-			
 		}
 		catch(KettleDatabaseException dbe)
 		{

@@ -17,7 +17,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.step.BaseStep;
@@ -28,38 +28,38 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 public class RepositoryStepDelegate extends BaseRepositoryDelegate {
 	private static Class<?> PKG = StepMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
-	public RepositoryStepDelegate(Repository repository) {
+	public RepositoryStepDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	
 	public synchronized long getStepTypeID(String code) throws KettleException
 	{
-		return repository.connectionDelegate.getIDWithValue(quoteTable(Repository.TABLE_R_STEP_TYPE), quote(Repository.FIELD_STEP_TYPE_ID_STEP_TYPE), quote(Repository.FIELD_STEP_TYPE_CODE), code);
+		return repository.connectionDelegate.getIDWithValue(quoteTable(KettleDatabaseRepository.TABLE_R_STEP_TYPE), quote(KettleDatabaseRepository.FIELD_STEP_TYPE_ID_STEP_TYPE), quote(KettleDatabaseRepository.FIELD_STEP_TYPE_CODE), code);
 	}
 
 	public synchronized long getStepID(String name, long id_transformation) throws KettleException
 	{
-		return repository.connectionDelegate.getIDWithValue(quoteTable(Repository.TABLE_R_STEP), quote(Repository.FIELD_STEP_ID_STEP), quote(Repository.FIELD_STEP_NAME), name, quote(Repository.FIELD_STEP_ID_TRANSFORMATION), id_transformation);
+		return repository.connectionDelegate.getIDWithValue(quoteTable(KettleDatabaseRepository.TABLE_R_STEP), quote(KettleDatabaseRepository.FIELD_STEP_ID_STEP), quote(KettleDatabaseRepository.FIELD_STEP_NAME), name, quote(KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION), id_transformation);
 	}
 
 	public synchronized String getStepTypeCode(long id_database_type) throws KettleException
 	{
-		return repository.connectionDelegate.getStringWithID(quoteTable(Repository.TABLE_R_STEP_TYPE), quote(Repository.FIELD_STEP_TYPE_ID_STEP_TYPE), id_database_type, quote(Repository.FIELD_STEP_TYPE_CODE));
+		return repository.connectionDelegate.getStringWithID(quoteTable(KettleDatabaseRepository.TABLE_R_STEP_TYPE), quote(KettleDatabaseRepository.FIELD_STEP_TYPE_ID_STEP_TYPE), id_database_type, quote(KettleDatabaseRepository.FIELD_STEP_TYPE_CODE));
 	}
 
 	public RowMetaAndData getStep(long id_step) throws KettleException
 	{
-		return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_STEP), quote(Repository.FIELD_STEP_ID_STEP), id_step);
+		return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_STEP), quote(KettleDatabaseRepository.FIELD_STEP_ID_STEP), id_step);
 	}
 
 	public RowMetaAndData getStepType(long id_step_type) throws KettleException
 	{
-		return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_STEP_TYPE), quote(Repository.FIELD_STEP_TYPE_ID_STEP_TYPE), id_step_type);
+		return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_STEP_TYPE), quote(KettleDatabaseRepository.FIELD_STEP_TYPE_ID_STEP_TYPE), id_step_type);
 	}
 
 	public RowMetaAndData getStepAttribute(long id_step_attribute) throws KettleException
 	{
-		return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_STEP_ATTRIBUTE), quote(Repository.FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE), id_step_attribute);
+		return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE), quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE), id_step_attribute);
 	}
 
     /**
@@ -254,18 +254,18 @@ public class RepositoryStepDelegate extends BaseRepositoryDelegate {
 
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta(Repository.FIELD_STEP_ID_STEP, ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta(Repository.FIELD_STEP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-		table.addValue(new ValueMeta(Repository.FIELD_STEP_NAME, ValueMetaInterface.TYPE_STRING), name);
-		table.addValue(new ValueMeta(Repository.FIELD_STEP_DESCRIPTION, ValueMetaInterface.TYPE_STRING), description);
-		table.addValue(new ValueMeta(Repository.FIELD_STEP_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_step_type));
-		table.addValue(new ValueMeta(Repository.FIELD_STEP_DISTRIBUTE, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(distribute));
-		table.addValue(new ValueMeta(Repository.FIELD_STEP_COPIES, ValueMetaInterface.TYPE_INTEGER), new Long(copies));
-		table.addValue(new ValueMeta(Repository.FIELD_STEP_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_x));
-		table.addValue(new ValueMeta(Repository.FIELD_STEP_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_y));
-		table.addValue(new ValueMeta(Repository.FIELD_STEP_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(gui_draw));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_ID_STEP, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_NAME, ValueMetaInterface.TYPE_STRING), name);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_DESCRIPTION, ValueMetaInterface.TYPE_STRING), description);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_step_type));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_DISTRIBUTE, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(distribute));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_COPIES, ValueMetaInterface.TYPE_INTEGER), new Long(copies));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_x));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_y));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(gui_draw));
 
-		repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), Repository.TABLE_R_STEP);
+		repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_STEP);
 		repository.connectionDelegate.getDatabase().setValuesInsert(table);
 		repository.connectionDelegate.getDatabase().insertRow();
 		repository.connectionDelegate.getDatabase().closeInsert();
@@ -278,7 +278,7 @@ public class RepositoryStepDelegate extends BaseRepositoryDelegate {
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(Repository.TABLE_R_STEP)+" WHERE "+quote(Repository.FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation;
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation;
 		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
 		if (r != null)
 		{
@@ -293,7 +293,7 @@ public class RepositoryStepDelegate extends BaseRepositoryDelegate {
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(Repository.TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(Repository.FIELD_STEP_ATTRIBUTE_ID_STEP)+" = " + id_step;
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP)+" = " + id_step;
 		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
 		if (r != null)
 		{
@@ -302,6 +302,4 @@ public class RepositoryStepDelegate extends BaseRepositoryDelegate {
 
 		return retval;
 	}
-
-    
 }

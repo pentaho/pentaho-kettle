@@ -121,13 +121,10 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta>  databases, List<SlaveServer> slaveServers)
-		throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta>  databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
-
 			start = rep.getJobEntryAttributeBoolean(id_jobentry, "start");
 			dummy = rep.getJobEntryAttributeBoolean(id_jobentry, "dummy");
 			repeat = rep.getJobEntryAttributeBoolean(id_jobentry, "repeat");
@@ -147,11 +144,8 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
-		super.saveRep(rep, id_job);
-
 		try
 		{
 			rep.saveJobEntryAttribute(id_job, getID(), "start", start);

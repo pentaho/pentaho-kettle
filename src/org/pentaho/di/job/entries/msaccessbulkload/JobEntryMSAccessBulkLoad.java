@@ -207,7 +207,6 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			include_subfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders");
 			add_result_filenames = rep.getJobEntryAttributeBoolean(id_jobentry, "add_result_filenames");
 			is_args_from_previous = rep.getJobEntryAttributeBoolean(id_jobentry, "is_args_from_previous");
@@ -278,12 +277,10 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 			log.logError(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Error.AddingToFilenameResult"),fileaddentry + ""+e.getMessage());
 		}
    }
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
 			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", include_subfolders);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_result_filenames", add_result_filenames);
 			rep.saveJobEntryAttribute(id_job, getID(), "is_args_from_previous", is_args_from_previous);
@@ -302,7 +299,6 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 					rep.saveJobEntryAttribute(id_job, getID(), i, "target_table", target_table[i]);
 				}
 			}
-
 		}
 		catch(KettleDatabaseException dbe)
 		{

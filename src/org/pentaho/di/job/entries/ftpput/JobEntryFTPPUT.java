@@ -184,7 +184,6 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 	  {
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			serverName      = rep.getJobEntryAttributeString(id_jobentry, "servername");
 			int intServerPort = (int)rep.getJobEntryAttributeInteger(id_jobentry, "serverport");
             serverPort = rep.getJobEntryAttributeString(id_jobentry, "serverport"); // backward compatible.
@@ -219,13 +218,10 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getID(), "serverport",      serverPort);
 			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
@@ -248,8 +244,6 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		catch(KettleDatabaseException dbe)
 		{
 			throw new KettleException(BaseMessages.getString(PKG, "JobFTPPUT.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
-			   
-		
 		}
 	}
 	

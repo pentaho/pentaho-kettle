@@ -32,6 +32,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
@@ -644,7 +645,7 @@ public class TransExecutionConfiguration implements Cloneable
         	{
         		throw new KettleException("I couldn't find the repository with name '"+repositoryName+"'");
         	}
-    		Repository rep = new Repository(repositoryMeta, null);
+    		Repository rep = new KettleDatabaseRepository(repositoryMeta, null);
 			if (!rep.connect("Job execution configuration"))
 			{
 				throw new KettleException("Unable to connect to the repository with name '"+repositoryName+"'");

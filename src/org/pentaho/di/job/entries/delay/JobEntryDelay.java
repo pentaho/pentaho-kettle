@@ -97,8 +97,6 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
   {
     try
     {
-      super.loadRep(rep, id_jobentry, databases, slaveServers);
-
       maximumTimeout = rep.getJobEntryAttributeString(id_jobentry, "maximumTimeout"); //$NON-NLS-1$
       scaleTime = (int) rep.getJobEntryAttributeInteger(id_jobentry, "scaletime"); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe)
@@ -115,8 +113,6 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
   {
     try
     {
-      super.saveRep(rep, id_job);
-
       rep.saveJobEntryAttribute(id_job, getID(), "maximumTimeout", maximumTimeout); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "scaletime", scaleTime); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe)

@@ -117,7 +117,6 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			filename1 = rep.getJobEntryAttributeString(id_jobentry, "filename1"); //$NON-NLS-1$
 			filename2 = rep.getJobEntryAttributeString(id_jobentry, "filename2"); //$NON-NLS-1$
 			addFilenameToResult = rep.getJobEntryAttributeBoolean(id_jobentry, "add_filename_result");
@@ -128,13 +127,10 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-
 			rep.saveJobEntryAttribute(id_job, getID(), "filename1", filename1); //$NON-NLS-1$
 			rep.saveJobEntryAttribute(id_job, getID(), "filename2", filename2); //$NON-NLS-1$
             rep.saveJobEntryAttribute(id_job, getID(), "add_filename_result", addFilenameToResult);

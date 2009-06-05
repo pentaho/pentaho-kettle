@@ -7,24 +7,24 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 
 public class RepositorySlaveServerDelegate extends BaseRepositoryDelegate {
 
 	private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
-	public RepositorySlaveServerDelegate(Repository repository) {
+	public RepositorySlaveServerDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	
     public RowMetaAndData getSlaveServer(long id_slave) throws KettleException
     {
-        return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_SLAVE), quote(Repository.FIELD_SLAVE_ID_SLAVE), id_slave);
+        return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_SLAVE), quote(KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE), id_slave);
     }
 
     public synchronized long getSlaveID(String name) throws KettleException
     {
-        return repository.connectionDelegate.getIDWithValue(quoteTable(Repository.TABLE_R_SLAVE), quote(Repository.FIELD_SLAVE_ID_SLAVE), quote(Repository.FIELD_SLAVE_NAME), name);
+        return repository.connectionDelegate.getIDWithValue(quoteTable(KettleDatabaseRepository.TABLE_R_SLAVE), quote(KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE), quote(KettleDatabaseRepository.FIELD_SLAVE_NAME), name);
     }
 
     public void saveSlaveServer(SlaveServer slaveServer) throws KettleException
@@ -63,15 +63,15 @@ public class RepositorySlaveServerDelegate extends BaseRepositoryDelegate {
             throw new KettleDatabaseException(BaseMessages.getString(PKG, "SlaveServer.SlaveCouldNotBeFound", Long.toString(id_slave_server))); //$NON-NLS-1$
         }
         
-        slaveServer.setName(          row.getString(Repository.FIELD_SLAVE_NAME, null) ); //$NON-NLS-1$
-        slaveServer.setHostname(      row.getString(Repository.FIELD_SLAVE_HOST_NAME, null) ); //$NON-NLS-1$
-        slaveServer.setPort(          row.getString(Repository.FIELD_SLAVE_PORT, null) ); //$NON-NLS-1$
-        slaveServer.setUsername(      row.getString(Repository.FIELD_SLAVE_USERNAME, null) ); //$NON-NLS-1$
-        slaveServer.setPassword(      row.getString(Repository.FIELD_SLAVE_PASSWORD, null) ); //$NON-NLS-1$
-        slaveServer.setProxyHostname( row.getString(Repository.FIELD_SLAVE_PROXY_HOST_NAME, null) ); //$NON-NLS-1$
-        slaveServer.setProxyPort(     row.getString(Repository.FIELD_SLAVE_PROXY_PORT, null) ); //$NON-NLS-1$
-        slaveServer.setNonProxyHosts( row.getString(Repository.FIELD_SLAVE_NON_PROXY_HOSTS, null) ); //$NON-NLS-1$
-        slaveServer.setMaster(        row.getBoolean(Repository.FIELD_SLAVE_MASTER, false) ); //$NON-NLS-1$
+        slaveServer.setName(          row.getString(KettleDatabaseRepository.FIELD_SLAVE_NAME, null) ); //$NON-NLS-1$
+        slaveServer.setHostname(      row.getString(KettleDatabaseRepository.FIELD_SLAVE_HOST_NAME, null) ); //$NON-NLS-1$
+        slaveServer.setPort(          row.getString(KettleDatabaseRepository.FIELD_SLAVE_PORT, null) ); //$NON-NLS-1$
+        slaveServer.setUsername(      row.getString(KettleDatabaseRepository.FIELD_SLAVE_USERNAME, null) ); //$NON-NLS-1$
+        slaveServer.setPassword(      row.getString(KettleDatabaseRepository.FIELD_SLAVE_PASSWORD, null) ); //$NON-NLS-1$
+        slaveServer.setProxyHostname( row.getString(KettleDatabaseRepository.FIELD_SLAVE_PROXY_HOST_NAME, null) ); //$NON-NLS-1$
+        slaveServer.setProxyPort(     row.getString(KettleDatabaseRepository.FIELD_SLAVE_PROXY_PORT, null) ); //$NON-NLS-1$
+        slaveServer.setNonProxyHosts( row.getString(KettleDatabaseRepository.FIELD_SLAVE_NON_PROXY_HOSTS, null) ); //$NON-NLS-1$
+        slaveServer.setMaster(        row.getBoolean(KettleDatabaseRepository.FIELD_SLAVE_MASTER, false) ); //$NON-NLS-1$
         
         return slaveServer;
     }
@@ -83,18 +83,18 @@ public class RepositorySlaveServerDelegate extends BaseRepositoryDelegate {
 
         RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id));
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getName());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getHostname());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getPort());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_USERNAME, ValueMetaInterface.TYPE_STRING), slaveServer.getUsername());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_PASSWORD, ValueMetaInterface.TYPE_STRING), slaveServer.getPassword());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_PROXY_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyHostname());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyPort());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING), slaveServer.getNonProxyHosts());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(slaveServer.isMaster()));
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id));
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getName());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getHostname());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getPort());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_USERNAME, ValueMetaInterface.TYPE_STRING), slaveServer.getUsername());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PASSWORD, ValueMetaInterface.TYPE_STRING), slaveServer.getPassword());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PROXY_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyHostname());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyPort());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING), slaveServer.getNonProxyHosts());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(slaveServer.isMaster()));
 
-        repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), Repository.TABLE_R_SLAVE);
+        repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_SLAVE);
         repository.connectionDelegate.getDatabase().setValuesInsert(table);
         repository.connectionDelegate.getDatabase().insertRow();
         repository.connectionDelegate.getDatabase().closeInsert();
@@ -105,17 +105,17 @@ public class RepositorySlaveServerDelegate extends BaseRepositoryDelegate {
     public synchronized void updateSlave(SlaveServer slaveServer) throws KettleException
     {
         RowMetaAndData table = new RowMetaAndData();
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getName());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getHostname());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getPort());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_USERNAME, ValueMetaInterface.TYPE_STRING), slaveServer.getUsername());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_PASSWORD, ValueMetaInterface.TYPE_STRING), slaveServer.getPassword());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_PROXY_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyHostname());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyPort());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING), slaveServer.getNonProxyHosts());
-        table.addValue(new ValueMeta(Repository.FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(slaveServer.isMaster()));
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getName());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getHostname());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getPort());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_USERNAME, ValueMetaInterface.TYPE_STRING), slaveServer.getUsername());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PASSWORD, ValueMetaInterface.TYPE_STRING), slaveServer.getPassword());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PROXY_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyHostname());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyPort());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING), slaveServer.getNonProxyHosts());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(slaveServer.isMaster()));
 
-        repository.connectionDelegate.updateTableRow(Repository.TABLE_R_SLAVE, Repository.FIELD_SLAVE_ID_SLAVE, table, slaveServer.getID());
+        repository.connectionDelegate.updateTableRow(KettleDatabaseRepository.TABLE_R_SLAVE, KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE, table, slaveServer.getID());
     }
     
 

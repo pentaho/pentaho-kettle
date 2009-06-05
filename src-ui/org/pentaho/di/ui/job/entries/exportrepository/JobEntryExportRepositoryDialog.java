@@ -57,6 +57,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.exportrepository.JobEntryExportRepository;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
@@ -1176,7 +1177,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				return false;
 			}
 			
-			repos = new Repository(rep_info, user_info);
+			repos = new KettleDatabaseRepository(rep_info, user_info);
 			if (!repos.connect("Export job entry"))
 			{
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnect"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectMsg",wRepositoryname.getText()),true);
@@ -1309,7 +1310,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRep"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRepMsg",wRepositoryname.getText()),true);
 			}
 			
-			repos = new Repository(rep_info, user_info);
+			repos = new KettleDatabaseRepository(rep_info, user_info);
 			try{
 			if (!repos.connect("Export job entry"))
 			{

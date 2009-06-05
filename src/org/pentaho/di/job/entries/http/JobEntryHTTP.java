@@ -176,7 +176,6 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   {
     try
     {
-      super.loadRep(rep, id_jobentry, databases, slaveServers);
       url = rep.getJobEntryAttributeString(id_jobentry, "url");
       targetFilename = rep.getJobEntryAttributeString(id_jobentry, "targetfilename");
       fileAppended = rep.getJobEntryAttributeBoolean(id_jobentry, "file_appended");
@@ -209,8 +208,6 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   {
     try
     {
-      super.saveRep(rep, id_job);
-
       rep.saveJobEntryAttribute(id_job, getID(), "url", url);
       rep.saveJobEntryAttribute(id_job, getID(), "targetfilename", targetFilename);
       rep.saveJobEntryAttribute(id_job, getID(), "file_appended", fileAppended);
@@ -228,7 +225,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute(id_job, getID(), "proxy_host", proxyHostname);
       rep.saveJobEntryAttribute(id_job, getID(), "proxy_port", proxyPort);
       rep.saveJobEntryAttribute(id_job, getID(), "non_proxy_hosts", nonProxyHosts);
-    } catch (KettleDatabaseException dbe)
+    } 
+    catch (KettleDatabaseException dbe)
     {
       throw new KettleException("Unable to load job entry of type 'HTTP' to the repository for id_job=" + id_job, dbe);
     }

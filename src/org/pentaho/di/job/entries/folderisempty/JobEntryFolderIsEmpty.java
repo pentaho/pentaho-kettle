@@ -122,7 +122,6 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			foldername = rep.getJobEntryAttributeString(id_jobentry, "foldername");
 			includeSubfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders"); 
 			specifywildcard = rep.getJobEntryAttributeBoolean(id_jobentry, "specify_wildcard");  
@@ -134,12 +133,10 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
 			rep.saveJobEntryAttribute(id_job, getID(), "foldername", foldername);
 			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", includeSubfolders);
 			rep.saveJobEntryAttribute(id_job, getID(), "specify_wildcard", specifywildcard);

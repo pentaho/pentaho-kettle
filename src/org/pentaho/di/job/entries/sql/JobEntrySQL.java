@@ -129,13 +129,10 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-		throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
-
 			sql = rep.getJobEntryAttributeString(id_jobentry, "sql");
 			String sSubs = rep.getJobEntryAttributeString(id_jobentry, "useVariableSubstitution");
 			if (sSubs != null && sSubs.equalsIgnoreCase("T"))
@@ -167,13 +164,10 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-
 			if (connection!=null) 
 			{
 				rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());

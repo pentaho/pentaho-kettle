@@ -7,7 +7,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.UserInfo;
 
@@ -15,18 +15,18 @@ public class RepositoryUserDelegate extends BaseRepositoryDelegate {
 
 	private static Class<?> PKG = UserInfo.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
-	public RepositoryUserDelegate(Repository repository) {
+	public RepositoryUserDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	
 	public RowMetaAndData getUser(long id_user) throws KettleException
 	{
-		return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_USER), quote(Repository.FIELD_USER_ID_USER), id_user);
+		return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_USER), quote(KettleDatabaseRepository.FIELD_USER_ID_USER), id_user);
 	}
 
 	public synchronized long getUserID(String login) throws KettleException
 	{
-		return repository.connectionDelegate.getIDWithValue(quoteTable(Repository.TABLE_R_USER), quote(Repository.FIELD_USER_ID_USER), quote(Repository.FIELD_USER_LOGIN), login);
+		return repository.connectionDelegate.getIDWithValue(quoteTable(KettleDatabaseRepository.TABLE_R_USER), quote(KettleDatabaseRepository.FIELD_USER_ID_USER), quote(KettleDatabaseRepository.FIELD_USER_LOGIN), login);
 	}
 
 	// Load user with login from repository, don't verify password...
@@ -141,7 +141,7 @@ public class RepositoryUserDelegate extends BaseRepositoryDelegate {
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(Repository.TABLE_R_USER);
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_USER);
 		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
 		if (r != null)
 		{
@@ -157,11 +157,11 @@ public class RepositoryUserDelegate extends BaseRepositoryDelegate {
 
 	public synchronized void renameUser(long id_user, String newname) throws KettleException
 	{
-		String sql = "UPDATE "+quoteTable(Repository.TABLE_R_USER)+" SET "+quote(Repository.FIELD_USER_NAME)+" = ? WHERE "+quote(Repository.FIELD_USER_ID_USER)+" = ?";
+		String sql = "UPDATE "+quoteTable(KettleDatabaseRepository.TABLE_R_USER)+" SET "+quote(KettleDatabaseRepository.FIELD_USER_NAME)+" = ? WHERE "+quote(KettleDatabaseRepository.FIELD_USER_ID_USER)+" = ?";
 
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta(Repository.FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING), newname);
-		table.addValue(new ValueMeta(Repository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER), new Long(id_user));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING), newname);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER), new Long(id_user));
 
 		repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
 	}

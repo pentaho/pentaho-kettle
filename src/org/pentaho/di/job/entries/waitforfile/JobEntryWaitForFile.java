@@ -122,12 +122,10 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-		throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			filename = rep.getJobEntryAttributeString(id_jobentry, "filename");
 			maximumTimeout = rep.getJobEntryAttributeString(id_jobentry, "maximum_timeout");
 			checkCycleTime = rep.getJobEntryAttributeString(id_jobentry, "check_cycle_time");
@@ -141,13 +139,10 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-
 			rep.saveJobEntryAttribute(id_job, getID(), "filename", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "maximum_timeout", maximumTimeout);
 			rep.saveJobEntryAttribute(id_job, getID(), "check_cycle_time", checkCycleTime);

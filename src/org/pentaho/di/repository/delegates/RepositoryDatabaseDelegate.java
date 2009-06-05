@@ -19,51 +19,51 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 
 public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
 
 	private static Class<?> PKG = DatabaseMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryDatabaseDelegate(Repository repository) {
+	public RepositoryDatabaseDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	
 	public synchronized long getDatabaseID(String name) throws KettleException
 	{
-		return repository.connectionDelegate.getIDWithValue(quoteTable(Repository.TABLE_R_DATABASE), quote(Repository.FIELD_DATABASE_ID_DATABASE), quote(Repository.FIELD_DATABASE_NAME), name);
+		return repository.connectionDelegate.getIDWithValue(quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE), quote(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE), quote(KettleDatabaseRepository.FIELD_DATABASE_NAME), name);
 	}
     
 	public synchronized String getDatabaseTypeCode(long id_database_type) throws KettleException
 	{
-		return repository.connectionDelegate.getStringWithID(quoteTable(Repository.TABLE_R_DATABASE_TYPE), quote(Repository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE), id_database_type, quote(Repository.FIELD_DATABASE_TYPE_CODE));
+		return repository.connectionDelegate.getStringWithID(quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE_TYPE), quote(KettleDatabaseRepository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE), id_database_type, quote(KettleDatabaseRepository.FIELD_DATABASE_TYPE_CODE));
 	}
 
 	public synchronized String getDatabaseConTypeCode(long id_database_contype) throws KettleException
 	{
-		return repository.connectionDelegate.getStringWithID(quoteTable(Repository.TABLE_R_DATABASE_CONTYPE), quote(Repository.FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE), id_database_contype, quote(Repository.FIELD_DATABASE_CONTYPE_CODE));
+		return repository.connectionDelegate.getStringWithID(quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE_CONTYPE), quote(KettleDatabaseRepository.FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE), id_database_contype, quote(KettleDatabaseRepository.FIELD_DATABASE_CONTYPE_CODE));
 	}
 
 	public RowMetaAndData getDatabase(long id_database) throws KettleException
 	{
-		return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_DATABASE), quote(Repository.FIELD_DATABASE_ID_DATABASE), id_database);
+		return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE), quote(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE), id_database);
 	}
 
 
     public RowMetaAndData getDatabaseAttribute(long id_database_attribute) throws KettleException
     {
-        return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_DATABASE_ATTRIBUTE), quote(Repository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE), id_database_attribute);
+        return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE), quote(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE), id_database_attribute);
     }
     
 
     public Collection<RowMetaAndData> getDatabaseAttributes() throws KettleDatabaseException, KettleValueException
     {
     	List<RowMetaAndData> attrs = new ArrayList<RowMetaAndData>();
-    	List<Object[]> rows = repository.connectionDelegate.getRows("SELECT * FROM " + quoteTable(Repository.TABLE_R_DATABASE_ATTRIBUTE),0);
+    	List<Object[]> rows = repository.connectionDelegate.getRows("SELECT * FROM " + quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE),0);
     	for (Object[] row : rows) 
     	{
     		RowMetaAndData rowWithMeta = new RowMetaAndData(repository.connectionDelegate.getReturnRowMeta(), row);
-    		long id = rowWithMeta.getInteger(quote(Repository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE), 0);
+    		long id = rowWithMeta.getInteger(quote(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE), 0);
     		if (id >0) {
     			attrs.add(rowWithMeta);
     		}
@@ -85,7 +85,7 @@ public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
 			
 			if (r!=null)
 			{
-				long id_database_type = r.getInteger( Repository.FIELD_DATABASE_ID_DATABASE_TYPE, 0); // con_type
+				long id_database_type = r.getInteger( KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_TYPE, 0); // con_type
 				String dbTypeDesc = getDatabaseTypeCode(id_database_type);
 				if (dbTypeDesc!=null)
 				{
@@ -98,26 +98,26 @@ public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
 				}
 
 				databaseMeta.setID(id_database);
-				databaseMeta.setName( r.getString(Repository.FIELD_DATABASE_NAME, "") );
+				databaseMeta.setName( r.getString(KettleDatabaseRepository.FIELD_DATABASE_NAME, "") );
 
-				long id_database_contype = r.getInteger(Repository.FIELD_DATABASE_ID_DATABASE_CONTYPE, 0); // con_access 
+				long id_database_contype = r.getInteger(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_CONTYPE, 0); // con_access 
 				databaseMeta.setAccessType( DatabaseMeta.getAccessType( getDatabaseConTypeCode( id_database_contype)) );
 
-				databaseMeta.setHostname( r.getString(Repository.FIELD_DATABASE_HOST_NAME, "") );
-				databaseMeta.setDBName( r.getString(Repository.FIELD_DATABASE_DATABASE_NAME, "") );
-				databaseMeta.setDBPort( r.getString(Repository.FIELD_DATABASE_PORT, "") );
-				databaseMeta.setUsername( r.getString(Repository.FIELD_DATABASE_USERNAME, "") );
-				databaseMeta.setPassword( Encr.decryptPasswordOptionallyEncrypted( r.getString(Repository.FIELD_DATABASE_PASSWORD, "") ) );
-				databaseMeta.setServername( r.getString(Repository.FIELD_DATABASE_SERVERNAME, "") );
-				databaseMeta.setDataTablespace( r.getString(Repository.FIELD_DATABASE_DATA_TBS, "") );
-				databaseMeta.setIndexTablespace( r.getString(Repository.FIELD_DATABASE_INDEX_TBS, "") );
+				databaseMeta.setHostname( r.getString(KettleDatabaseRepository.FIELD_DATABASE_HOST_NAME, "") );
+				databaseMeta.setDBName( r.getString(KettleDatabaseRepository.FIELD_DATABASE_DATABASE_NAME, "") );
+				databaseMeta.setDBPort( r.getString(KettleDatabaseRepository.FIELD_DATABASE_PORT, "") );
+				databaseMeta.setUsername( r.getString(KettleDatabaseRepository.FIELD_DATABASE_USERNAME, "") );
+				databaseMeta.setPassword( Encr.decryptPasswordOptionallyEncrypted( r.getString(KettleDatabaseRepository.FIELD_DATABASE_PASSWORD, "") ) );
+				databaseMeta.setServername( r.getString(KettleDatabaseRepository.FIELD_DATABASE_SERVERNAME, "") );
+				databaseMeta.setDataTablespace( r.getString(KettleDatabaseRepository.FIELD_DATABASE_DATA_TBS, "") );
+				databaseMeta.setIndexTablespace( r.getString(KettleDatabaseRepository.FIELD_DATABASE_INDEX_TBS, "") );
                 
                 // Also, load all the properties we can find...
 				final Collection<RowMetaAndData> attrs = getDatabaseAttributes(id_database);
                 for (RowMetaAndData row : attrs)
                 {
-                    String code = row.getString(Repository.FIELD_DATABASE_ATTRIBUTE_CODE, "");
-                    String attribute = row.getString(Repository.FIELD_DATABASE_ATTRIBUTE_VALUE_STR, "");
+                    String code = row.getString(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_CODE, "");
+                    String attribute = row.getString(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_VALUE_STR, "");
                     // System.out.println("Attributes: "+(getAttributes()!=null)+", code: "+(code!=null)+", attribute: "+(attribute!=null));
                     databaseMeta.getAttributes().put(code, Const.NVL(attribute, ""));
                 }
@@ -221,12 +221,12 @@ public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
 		{
 			id_database_type = repository.connectionDelegate.getNextDatabaseTypeID();
 
-			String tablename = Repository.TABLE_R_DATABASE_TYPE;
+			String tablename = KettleDatabaseRepository.TABLE_R_DATABASE_TYPE;
 			RowMetaInterface tableMeta = new RowMeta();
             
-            tableMeta.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER, 5, 0));
-            tableMeta.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_TYPE_CODE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-            tableMeta.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
+            tableMeta.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER, 5, 0));
+            tableMeta.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_TYPE_CODE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+            tableMeta.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
 
 			repository.connectionDelegate.getDatabase().prepareInsert(tableMeta, tablename);
 
@@ -245,20 +245,20 @@ public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
 		long id_database_contype = getDatabaseConTypeID(access);
 
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), name);
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database_type));
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database_contype));
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_HOST_NAME, ValueMetaInterface.TYPE_STRING), host);
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), dbname);
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER), new Long(Const.toInt(port, -1)));
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_USERNAME, ValueMetaInterface.TYPE_STRING), user);
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_PASSWORD, ValueMetaInterface.TYPE_STRING), Encr.encryptPasswordIfNotUsingVariables(pass));
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_SERVERNAME, ValueMetaInterface.TYPE_STRING), servername);
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_DATA_TBS, ValueMetaInterface.TYPE_STRING), data_tablespace);
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_INDEX_TBS, ValueMetaInterface.TYPE_STRING), index_tablespace);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), name);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database_type));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database_contype));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_HOST_NAME, ValueMetaInterface.TYPE_STRING), host);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), dbname);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER), new Long(Const.toInt(port, -1)));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_USERNAME, ValueMetaInterface.TYPE_STRING), user);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_PASSWORD, ValueMetaInterface.TYPE_STRING), Encr.encryptPasswordIfNotUsingVariables(pass));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_SERVERNAME, ValueMetaInterface.TYPE_STRING), servername);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_DATA_TBS, ValueMetaInterface.TYPE_STRING), data_tablespace);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_INDEX_TBS, ValueMetaInterface.TYPE_STRING), index_tablespace);
 
-		repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), Repository.TABLE_R_DATABASE);
+		repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_DATABASE);
 		repository.connectionDelegate.getDatabase().setValuesInsert(table);
 		repository.connectionDelegate.getDatabase().insertRow();
 		repository.connectionDelegate.getDatabase().closeInsert();
@@ -274,30 +274,30 @@ public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
 		long id_database_contype = getDatabaseConTypeID(access);
 
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), name);
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database_type));
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database_contype));
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_HOST_NAME, ValueMetaInterface.TYPE_STRING), host);
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), dbname);
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER), new Long(Const.toInt(port, -1)));
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_USERNAME, ValueMetaInterface.TYPE_STRING), user);
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_PASSWORD, ValueMetaInterface.TYPE_STRING), Encr.encryptPasswordIfNotUsingVariables(pass));
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_SERVERNAME, ValueMetaInterface.TYPE_STRING), servername);
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_DATA_TBS, ValueMetaInterface.TYPE_STRING), data_tablespace);
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_INDEX_TBS, ValueMetaInterface.TYPE_STRING), index_tablespace);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), name);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database_type));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database_contype));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_HOST_NAME, ValueMetaInterface.TYPE_STRING), host);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), dbname);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER), new Long(Const.toInt(port, -1)));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_USERNAME, ValueMetaInterface.TYPE_STRING), user);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_PASSWORD, ValueMetaInterface.TYPE_STRING), Encr.encryptPasswordIfNotUsingVariables(pass));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_SERVERNAME, ValueMetaInterface.TYPE_STRING), servername);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_DATA_TBS, ValueMetaInterface.TYPE_STRING), data_tablespace);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_INDEX_TBS, ValueMetaInterface.TYPE_STRING), index_tablespace);
 
-		repository.connectionDelegate.updateTableRow(Repository.TABLE_R_DATABASE, Repository.FIELD_DATABASE_ID_DATABASE, table, id_database);
+		repository.connectionDelegate.updateTableRow(KettleDatabaseRepository.TABLE_R_DATABASE, KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE, table, id_database);
 	}
 
 
 	public synchronized long getDatabaseTypeID(String code) throws KettleException
 	{
-		return repository.connectionDelegate.getIDWithValue(quoteTable(Repository.TABLE_R_DATABASE_TYPE), quote(Repository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE), quote(Repository.FIELD_DATABASE_TYPE_CODE), code);
+		return repository.connectionDelegate.getIDWithValue(quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE_TYPE), quote(KettleDatabaseRepository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE), quote(KettleDatabaseRepository.FIELD_DATABASE_TYPE_CODE), code);
 	}
 
 	public synchronized long getDatabaseConTypeID(String code) throws KettleException
 	{
-		return repository.connectionDelegate.getIDWithValue(quoteTable(Repository.TABLE_R_DATABASE_CONTYPE), quote(Repository.FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE), quote(Repository.FIELD_DATABASE_CONTYPE_CODE), code);
+		return repository.connectionDelegate.getIDWithValue(quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE_CONTYPE), quote(KettleDatabaseRepository.FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE), quote(KettleDatabaseRepository.FIELD_DATABASE_CONTYPE_CODE), code);
 	}
 
 	/**
@@ -331,7 +331,7 @@ public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
 		
 		if (jobList.length==0 && transList.length==0)
 		{
-			String sql = "DELETE FROM "+quoteTable(Repository.TABLE_R_DATABASE)+" WHERE "+quote(Repository.FIELD_DATABASE_ID_DATABASE)+" = " + id_database;
+			String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE)+" = " + id_database;
 			repository.connectionDelegate.getDatabase().execStatement(sql);
 		}
 		else
@@ -358,7 +358,7 @@ public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
     
     public synchronized void delDatabaseAttributes(long id_database) throws KettleException
     {
-        String sql = "DELETE FROM "+quoteTable(Repository.TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(Repository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = " + id_database;
+        String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = " + id_database;
         repository.connectionDelegate.getDatabase().execStatement(sql);
     }
 
@@ -366,7 +366,7 @@ public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(Repository.TABLE_R_DATABASE);
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE);
 		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
 		if (r != null)
 		{
@@ -380,7 +380,7 @@ public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(Repository.TABLE_R_STEP_DATABASE)+" WHERE "+quote(Repository.FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transformation;
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP_DATABASE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transformation;
 		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
 		if (r != null)
 		{
@@ -395,7 +395,7 @@ public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
     {
         int retval = 0;
 
-        String sql = "SELECT COUNT(*) FROM "+quoteTable(Repository.TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(Repository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = "+id_database;
+        String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = "+id_database;
         RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
         if (r != null)
         {
@@ -408,11 +408,11 @@ public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
 	public Collection<RowMetaAndData> getDatabaseAttributes(long id_database) throws KettleDatabaseException, KettleValueException
     {
     	List<RowMetaAndData> attrs = new ArrayList<RowMetaAndData>();
-    	List<Object[]> rows = repository.connectionDelegate.getRows("SELECT * FROM " + quoteTable(Repository.TABLE_R_DATABASE_ATTRIBUTE) + " WHERE "+quote(Repository.FIELD_DATABASE_ID_DATABASE) +" = "+id_database, 0);
+    	List<Object[]> rows = repository.connectionDelegate.getRows("SELECT * FROM " + quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE) + " WHERE "+quote(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE) +" = "+id_database, 0);
     	for (Object[] row : rows) 
     	{
     		RowMetaAndData rowWithMeta = new RowMetaAndData(repository.connectionDelegate.getReturnRowMeta(), row);
-    		long id = rowWithMeta.getInteger(quote(Repository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE), 0);
+    		long id = rowWithMeta.getInteger(quote(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE), 0);
     		if (id >0) {
     			attrs.add(rowWithMeta);
     		}
@@ -426,15 +426,15 @@ public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
 
         RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta(Repository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
-        table.addValue(new ValueMeta(Repository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database));
-        table.addValue(new ValueMeta(Repository.FIELD_DATABASE_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
-        table.addValue(new ValueMeta(Repository.FIELD_DATABASE_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database));
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
 
         /* If we have prepared the insert, we don't do it again.
          * We assume that all the step insert statements come one after the other.
          */
-        repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), Repository.TABLE_R_DATABASE_ATTRIBUTE);
+        repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE);
         repository.connectionDelegate.getDatabase().setValuesInsert(table);
         repository.connectionDelegate.getDatabase().insertRow();
         repository.connectionDelegate.getDatabase().closeInsert();
@@ -446,11 +446,11 @@ public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
 
 	public synchronized void renameDatabase(long id_database, String newname) throws KettleException
 	{
-		String sql = "UPDATE "+quoteTable(Repository.TABLE_R_DATABASE)+" SET "+quote(Repository.FIELD_DATABASE_NAME)+" = ? WHERE "+quote(Repository.FIELD_DATABASE_ID_DATABASE)+" = ?";
+		String sql = "UPDATE "+quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE)+" SET "+quote(KettleDatabaseRepository.FIELD_DATABASE_NAME)+" = ? WHERE "+quote(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE)+" = ?";
 
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), newname);
-		table.addValue(new ValueMeta(Repository.FIELD_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), newname);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database));
 
 		repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
 	}

@@ -5,19 +5,19 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 
 public class RepositoryValueDelegate extends BaseRepositoryDelegate {
 
 //	private static Class<?> PKG = ValueMetaAndData.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryValueDelegate(Repository repository) {
+	public RepositoryValueDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 
 	public RowMetaAndData getValue(long id_value) throws KettleException
 	{
-		return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_VALUE), quote(Repository.FIELD_VALUE_ID_VALUE), id_value);
+		return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_VALUE), quote(KettleDatabaseRepository.FIELD_VALUE_ID_VALUE), id_value);
 	}
 
 	public ValueMetaAndData loadValueMetaAndData(long id_value) throws KettleException
@@ -28,9 +28,9 @@ public class RepositoryValueDelegate extends BaseRepositoryDelegate {
             RowMetaAndData r = getValue(id_value);
             if (r!=null)
             {
-                String name    = r.getString(Repository.FIELD_VALUE_NAME, null);
-                int valtype    = ValueMeta.getType( r.getString(Repository.FIELD_VALUE_VALUE_TYPE, null) );
-                boolean isNull = r.getBoolean(Repository.FIELD_VALUE_IS_NULL, false);
+                String name    = r.getString(KettleDatabaseRepository.FIELD_VALUE_NAME, null);
+                int valtype    = ValueMeta.getType( r.getString(KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE, null) );
+                boolean isNull = r.getBoolean(KettleDatabaseRepository.FIELD_VALUE_IS_NULL, false);
                 valueMetaAndData.setValueMeta(new ValueMeta(name, valtype));
 
                 if (isNull)

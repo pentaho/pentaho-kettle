@@ -16,7 +16,6 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -77,35 +76,14 @@ public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntry
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-		throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
-		try
-		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobEntrySuccess.Meta.UnableToLoadFromRep")+id_jobentry, dbe);
-
-
-		}
 	}
 
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
-		try
-		{
-			super.saveRep(rep, id_job);
-
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobEntrySuccess.Meta.UnableToSaveToRep")+id_job, dbe);
-		}
 	}
 
 

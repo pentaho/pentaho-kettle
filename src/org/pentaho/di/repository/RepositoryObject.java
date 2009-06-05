@@ -21,6 +21,7 @@ import java.util.List;
  * Contains some common object details, extracted from a repository
  *   
  * @author Matt
+ * 
  */
 public class RepositoryObject
 {

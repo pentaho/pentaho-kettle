@@ -184,8 +184,6 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
-
 			setFileName(rep.getJobEntryAttributeString(id_jobentry, "file_name"));
 			setWorkDirectory(rep.getJobEntryAttributeString(id_jobentry, "work_directory"));
 			argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
@@ -224,8 +222,6 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-
 			rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "work_directory", workDirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);

@@ -110,7 +110,6 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			filename = rep.getJobEntryAttributeString(id_jobentry, "filename"); //$NON-NLS-1$
 			failIfFileNotExists = rep.getJobEntryAttributeBoolean(id_jobentry, "fail_if_file_not_exists"); //$NON-NLS-1$
 		}
@@ -120,13 +119,10 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-
 			rep.saveJobEntryAttribute(id_job, getID(), "filename", filename); //$NON-NLS-1$
             rep.saveJobEntryAttribute(id_job, getID(), "fail_if_file_not_exists", failIfFileNotExists); //$NON-NLS-1$
 		}

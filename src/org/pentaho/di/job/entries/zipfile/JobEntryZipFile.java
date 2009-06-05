@@ -178,13 +178,10 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-	throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
     {
-
 	    try
 	    {
-		super.loadRep(rep, id_jobentry, databases, slaveServers);
 			zipFilename = rep.getJobEntryAttributeString(id_jobentry, "zipfilename");
 			compressionrate=(int) rep.getJobEntryAttributeInteger(id_jobentry, "compressionrate");
 			ifzipfileexists=(int) rep.getJobEntryAttributeInteger(id_jobentry, "ifzipfileexists");
@@ -208,13 +205,10 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "zipfilename", zipFilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "compressionrate", compressionrate);
 			rep.saveJobEntryAttribute(id_job, getID(), "ifzipfileexists", ifzipfileexists);

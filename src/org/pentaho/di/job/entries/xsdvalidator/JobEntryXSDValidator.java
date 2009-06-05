@@ -118,15 +118,12 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-		throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			xmlfilename = rep.getJobEntryAttributeString(id_jobentry, "xmlfilename");
 			xsdfilename = rep.getJobEntryAttributeString(id_jobentry, "xsdfilename");
-
 		}
 		catch(KettleException dbe)
 		{
@@ -134,13 +131,10 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-
 			rep.saveJobEntryAttribute(id_job, getID(), "xmlfilename", xmlfilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "xsdfilename", xsdfilename);
 

@@ -272,8 +272,6 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   {
     try
     {
-      super.loadRep(rep, id_jobentry, databases, slaveServers);
-
       // First load the common parts like name & description, then the attributes...
       //
       server = rep.getJobEntryAttributeString(id_jobentry, "server");
@@ -327,8 +325,6 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   {
     try
     {
-      super.saveRep(rep, id_job);
-
       rep.saveJobEntryAttribute(id_job, getID(), "server", server);
       rep.saveJobEntryAttribute(id_job, getID(), "port", port);
       rep.saveJobEntryAttribute(id_job, getID(), "destination", destination);

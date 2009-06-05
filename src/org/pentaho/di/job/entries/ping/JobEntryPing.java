@@ -155,13 +155,11 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		try
 		{
-			String nbrPaquets;
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			hostname   = rep.getJobEntryAttributeString(id_jobentry, "hostname");
 			nbrPackets = rep.getJobEntryAttributeString(id_jobentry, "nbr_packets");
 
 			// TODO: The following lines may be removed 3 versions after 2.5.0
-			nbrPaquets = rep.getJobEntryAttributeString(id_jobentry, "nbrpaquets");
+			String nbrPaquets = rep.getJobEntryAttributeString(id_jobentry, "nbrpaquets");
 			if ( nbrPackets == null && nbrPaquets != null )
 			{
 				// if only nbrpaquets exists this means that the file was
@@ -190,15 +188,13 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-
 			rep.saveJobEntryAttribute(id_job, getID(), "hostname",    hostname);
 			rep.saveJobEntryAttribute(id_job, getID(), "nbr_packets", nbrPackets);
+			
 			// TODO: The following line may be removed 3 versions after 2.5.0
 			rep.saveJobEntryAttribute(id_job, getID(), "nbrpaquets",  nbrPackets);
 			rep.saveJobEntryAttribute(id_job, getID(), "timeout",      timeout);

@@ -94,7 +94,7 @@ public class StartJobServlet extends HttpServlet
             		//
             		// We might need to re-connect to the database
             		//
-            		if (job.getRep()!=null && !job.getRep().getRepositoryInfo().isLocked())
+            		if (job.getRep()!=null && !job.getRep().isConnected())
             		{
             			job.getRep().connect(toString());
             		}

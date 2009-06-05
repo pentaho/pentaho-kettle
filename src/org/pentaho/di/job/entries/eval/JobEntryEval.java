@@ -85,9 +85,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
 
   public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     try {
-      super.loadRep(rep, id_jobentry, databases, slaveServers);
-
-      script = rep.getJobEntryAttributeString(id_jobentry, "script"); //$NON-NLS-1$
+       script = rep.getJobEntryAttributeString(id_jobentry, "script"); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(
           BaseMessages.getString(PKG, "JobEntryEval.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
@@ -98,8 +96,6 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
   //
   public void saveRep(Repository rep, long id_job) throws KettleException {
     try {
-      super.saveRep(rep, id_job);
-
       rep.saveJobEntryAttribute(id_job, getID(), "script", script); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(BaseMessages.getString(PKG, "JobEntryEval.UnableToSaveToRepo", String.valueOf(id_job)), //$NON-NLS-1$

@@ -36,8 +36,8 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.RepositoriesMeta;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.StepLoader;
@@ -381,7 +381,7 @@ public class RepositoryDialog
 
             }
 			System.out.println("Allocating repository..."); //$NON-NLS-1$
-			Repository rep = new Repository(repinfo, null);
+			KettleDatabaseRepository rep = new KettleDatabaseRepository(repinfo, null);
 	
 			System.out.println("Connecting to database for repository creation..."); //$NON-NLS-1$
 			try
@@ -392,7 +392,7 @@ public class RepositoryDialog
 				
 				try
 				{
-					String userTableName = rep.getDatabaseMeta().quoteField( Repository.TABLE_R_USER );
+					String userTableName = rep.getDatabaseMeta().quoteField( KettleDatabaseRepository.TABLE_R_USER );
 					upgrade = rep.getDatabase().checkTableExists( userTableName ); //$NON-NLS-1$
 					if (upgrade) cu=BaseMessages.getString(PKG, "RepositoryDialog.Dialog.CreateUpgrade.Upgrade"); //$NON-NLS-1$
 				}
@@ -501,7 +501,7 @@ public class RepositoryDialog
 		RepositoryMeta repinfo = new RepositoryMeta();
 		getInfo(repinfo);
 		
-		Repository rep = new Repository(repinfo, null);
+		KettleDatabaseRepository rep = new KettleDatabaseRepository(repinfo, null);
 		try
 		{
             rep.connect(getClass().getName());

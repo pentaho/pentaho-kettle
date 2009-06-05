@@ -143,7 +143,7 @@ public class RepositoryExporter {
 	            {
 	                try
 	                {
-	                    TransMeta ti = repository.loadTransformation(trans[i], repdir);
+	                    TransMeta ti = repository.loadTransformation(trans[i], repdir, null, true);
 	                    System.out.println("Loading/Exporting transformation ["+repdir.getPath()+" : "+trans[i]+"]  ("+ti.getRepositoryDirectory().getPath()+")");
 	                    if (monitor!=null) monitor.subTask("Exporting transformation ["+trans[i]+"]");
 	                    

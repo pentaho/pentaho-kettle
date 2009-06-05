@@ -206,13 +206,10 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-	throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
-	try
-	{
-		super.loadRep(rep, id_jobentry, databases, slaveServers);
-			
+		try
+		{
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
 			{
@@ -252,13 +249,10 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		return 0;
 	}
 
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-			
 			if (connection!=null)
 			{
 				rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
@@ -275,9 +269,6 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 			rep.saveJobEntryAttribute(id_job, getID(), "is_usevars", isUseVars);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_rows_result", isAddRowsResult);
 			rep.saveJobEntryAttribute(id_job, getID(), "clear_result_rows", isClearResultList);
-			
-			
-					
 		}
 		catch(KettleDatabaseException dbe)
 		{

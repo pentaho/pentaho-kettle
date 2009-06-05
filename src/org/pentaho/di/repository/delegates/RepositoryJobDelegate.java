@@ -19,7 +19,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.shared.SharedObjects;
@@ -28,25 +28,25 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 
 	private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryJobDelegate(Repository repository) {
+	public RepositoryJobDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	
 	public RowMetaAndData getJob(long id_job) throws KettleException
 	{
-		return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_JOB), quote(Repository.FIELD_JOB_ID_JOB), id_job);
+		return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_JOB), quote(KettleDatabaseRepository.FIELD_JOB_ID_JOB), id_job);
 	}
 
 	public RowMetaAndData getJobHop(long id_job_hop) throws KettleException
 	{
-		return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_JOB_HOP), quote(Repository.FIELD_JOB_HOP_ID_JOB_HOP), id_job_hop);
+		return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_JOB_HOP), quote(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB_HOP), id_job_hop);
 	}
 
 	public synchronized long getJobHopID(long id_job, long id_jobentry_copy_from, long id_jobentry_copy_to) throws KettleException {
-		String lookupkey[] = new String[] { quote(Repository.FIELD_JOB_HOP_ID_JOB), quote(Repository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM), quote(Repository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_TO), };
+		String lookupkey[] = new String[] { quote(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB), quote(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM), quote(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_TO), };
 		long key[] = new long[] { id_job, id_jobentry_copy_from, id_jobentry_copy_to };
 
-		return repository.connectionDelegate.getIDWithValue(quoteTable(Repository.TABLE_R_JOB_HOP), quote(Repository.FIELD_JOB_HOP_ID_JOB_HOP), lookupkey, key);
+		return repository.connectionDelegate.getIDWithValue(quoteTable(KettleDatabaseRepository.TABLE_R_JOB_HOP), quote(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB_HOP), lookupkey, key);
 	}
 
 
@@ -269,33 +269,33 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingJobInformation")); //$NON-NLS-1$
 					RowMetaAndData jobRow = getJob(jobMeta.getID());
 	
-					jobMeta.setName( jobRow.getString(Repository.FIELD_JOB_NAME, null) ); //$NON-NLS-1$
-					jobMeta.setDescription( jobRow.getString(Repository.FIELD_JOB_DESCRIPTION, null) ); //$NON-NLS-1$
-					jobMeta.setExtendedDescription(jobRow.getString(Repository.FIELD_JOB_EXTENDED_DESCRIPTION, null) ); //$NON-NLS-1$
-					jobMeta.setJobversion( jobRow.getString(Repository.FIELD_JOB_JOB_VERSION, null) ); //$NON-NLS-1$
-					jobMeta.setJobstatus( Const.toInt(jobRow.getString(Repository.FIELD_JOB_JOB_STATUS, null), -1) ); //$NON-NLS-1$
-					jobMeta.setLogTable( jobRow.getString(Repository.FIELD_JOB_TABLE_NAME_LOG, null) ); //$NON-NLS-1$
+					jobMeta.setName( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_NAME, null) ); //$NON-NLS-1$
+					jobMeta.setDescription( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_DESCRIPTION, null) ); //$NON-NLS-1$
+					jobMeta.setExtendedDescription(jobRow.getString(KettleDatabaseRepository.FIELD_JOB_EXTENDED_DESCRIPTION, null) ); //$NON-NLS-1$
+					jobMeta.setJobversion( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_JOB_VERSION, null) ); //$NON-NLS-1$
+					jobMeta.setJobstatus( Const.toInt(jobRow.getString(KettleDatabaseRepository.FIELD_JOB_JOB_STATUS, null), -1) ); //$NON-NLS-1$
+					jobMeta.setLogTable( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_TABLE_NAME_LOG, null) ); //$NON-NLS-1$
 	
-					jobMeta.setCreatedUser( jobRow.getString(Repository.FIELD_JOB_CREATED_USER, null) ); //$NON-NLS-1$
-					jobMeta.setCreatedDate( jobRow.getDate(Repository.FIELD_JOB_CREATED_DATE, new Date()) ); //$NON-NLS-1$
+					jobMeta.setCreatedUser( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_CREATED_USER, null) ); //$NON-NLS-1$
+					jobMeta.setCreatedDate( jobRow.getDate(KettleDatabaseRepository.FIELD_JOB_CREATED_DATE, new Date()) ); //$NON-NLS-1$
 	
-					jobMeta.setModifiedUser( jobRow.getString(Repository.FIELD_JOB_MODIFIED_USER, null) ); //$NON-NLS-1$
-					jobMeta.setModifiedDate( jobRow.getDate(Repository.FIELD_JOB_MODIFIED_DATE, new Date()) ); //$NON-NLS-1$
+					jobMeta.setModifiedUser( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_MODIFIED_USER, null) ); //$NON-NLS-1$
+					jobMeta.setModifiedDate( jobRow.getDate(KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE, new Date()) ); //$NON-NLS-1$
 	
-					long id_logdb = jobRow.getInteger(Repository.FIELD_JOB_ID_DATABASE_LOG, 0); //$NON-NLS-1$
+					long id_logdb = jobRow.getInteger(KettleDatabaseRepository.FIELD_JOB_ID_DATABASE_LOG, 0); //$NON-NLS-1$
 					if (id_logdb > 0) {
 						// Get the logconnection
 						//
 						jobMeta.setLogConnection( repository.loadDatabaseMeta(id_logdb) );
 						jobMeta.getLogConnection().shareVariablesWith(jobMeta);
 					}
-					jobMeta.setUseBatchId( jobRow.getBoolean(Repository.FIELD_JOB_USE_BATCH_ID, false) ); //$NON-NLS-1$
-					jobMeta.setBatchIdPassed(  jobRow.getBoolean(Repository.FIELD_JOB_PASS_BATCH_ID, false) ); //$NON-NLS-1$
-					jobMeta.setLogfieldUsed( jobRow.getBoolean(Repository.FIELD_JOB_USE_LOGFIELD, false) ); //$NON-NLS-1$
+					jobMeta.setUseBatchId( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_USE_BATCH_ID, false) ); //$NON-NLS-1$
+					jobMeta.setBatchIdPassed(  jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID, false) ); //$NON-NLS-1$
+					jobMeta.setLogfieldUsed( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_USE_LOGFIELD, false) ); //$NON-NLS-1$
 					
 					// The log size limit is an attribute
 					//
-					jobMeta.setLogSizeLimit( getJobAttributeString(jobMeta.getID(), 0, Repository.JOB_ATTRIBUTE_LOG_SIZE_LIMIT) );
+					jobMeta.setLogSizeLimit( getJobAttributeString(jobMeta.getID(), 0, KettleDatabaseRepository.JOB_ATTRIBUTE_LOG_SIZE_LIMIT) );
 	
 					if (monitor != null)
 						monitor.worked(1);
@@ -306,7 +306,7 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingAvailableDatabasesFromRepository")); //$NON-NLS-1$
 					// Read objects from the shared XML file & the repository
 					try {
-						jobMeta.setSharedObjectsFile( jobRow.getString(Repository.FIELD_JOB_SHARED_FILE, null) );
+						jobMeta.setSharedObjectsFile( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_SHARED_FILE, null) );
 						jobMeta.setSharedObjects( repository!=null ? repository.readJobMetaSharedObjects(jobMeta) : jobMeta.readSharedObjects() );
 					} catch (Exception e) {
 						LogWriter.getInstance().logError(toString(),
@@ -424,7 +424,7 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 	 * @throws KettleException Upon any error.
 	 */
 	public String getJobParameterKey(long id_job, int nr) throws KettleException  {
- 		return repository.connectionDelegate.getJobAttributeString(id_job, nr, Repository.JOB_ATTRIBUTE_PARAM_KEY);		
+ 		return repository.connectionDelegate.getJobAttributeString(id_job, nr, KettleDatabaseRepository.JOB_ATTRIBUTE_PARAM_KEY);		
 	}
 
 	/**
@@ -437,7 +437,7 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 	 * @throws KettleException Upon any error.
 	 */
 	public String getJobParameterDefault(long id_job, int nr) throws KettleException  {
- 		return repository.connectionDelegate.getTransAttributeString(id_job, nr, Repository.JOB_ATTRIBUTE_PARAM_DEFAULT);		
+ 		return repository.connectionDelegate.getTransAttributeString(id_job, nr, KettleDatabaseRepository.JOB_ATTRIBUTE_PARAM_DEFAULT);		
 	}	
 	
 	/**
@@ -450,7 +450,7 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 	 * @throws KettleException Upon any error.
 	 */
 	public String getJobParameterDescription(long id_job, int nr) throws KettleException  {
- 		return repository.connectionDelegate.getTransAttributeString(id_job, nr, Repository.JOB_ATTRIBUTE_PARAM_DESCRIPTION);		
+ 		return repository.connectionDelegate.getTransAttributeString(id_job, nr, KettleDatabaseRepository.JOB_ATTRIBUTE_PARAM_DESCRIPTION);		
 	}
 	
 	/**
@@ -465,9 +465,9 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 	 * @throws KettleException Upon any error.
 	 */
 	public void insertJobParameter(long id_job, long nr, String key, String defValue, String description) throws KettleException {
-		repository.connectionDelegate.insertJobAttribute(id_job, nr, Repository.JOB_ATTRIBUTE_PARAM_KEY, 0, key != null ? key : "");
-		repository.connectionDelegate.insertJobAttribute(id_job, nr, Repository.JOB_ATTRIBUTE_PARAM_DEFAULT, 0, defValue != null ? defValue : "");
-		repository.connectionDelegate.insertJobAttribute(id_job, nr, Repository.JOB_ATTRIBUTE_PARAM_DESCRIPTION, 0, description != null ? description : "");
+		repository.connectionDelegate.insertJobAttribute(id_job, nr, KettleDatabaseRepository.JOB_ATTRIBUTE_PARAM_KEY, 0, key != null ? key : "");
+		repository.connectionDelegate.insertJobAttribute(id_job, nr, KettleDatabaseRepository.JOB_ATTRIBUTE_PARAM_DEFAULT, 0, defValue != null ? defValue : "");
+		repository.connectionDelegate.insertJobAttribute(id_job, nr, KettleDatabaseRepository.JOB_ATTRIBUTE_PARAM_DESCRIPTION, 0, description != null ? description : "");
 	}	
 	
 
@@ -480,7 +480,7 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 	 * @throws KettleException Upon any error.
 	 */
 	public int countJobParameter(long id_job) throws KettleException  {
-		return repository.connectionDelegate.countNrTransAttributes(id_job, Repository.JOB_ATTRIBUTE_PARAM_KEY);
+		return repository.connectionDelegate.countNrTransAttributes(id_job, KettleDatabaseRepository.JOB_ATTRIBUTE_PARAM_KEY);
 	}
 	
     
@@ -634,14 +634,14 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 
 	public synchronized long getJobID(String name, long id_directory) throws KettleException
 	{
-		return repository.connectionDelegate.getIDWithValue(quoteTable(Repository.TABLE_R_JOB), quote(Repository.FIELD_JOB_ID_JOB), quote(Repository.FIELD_JOB_NAME), name, quote(Repository.FIELD_JOB_ID_DIRECTORY), id_directory);
+		return repository.connectionDelegate.getIDWithValue(quoteTable(KettleDatabaseRepository.TABLE_R_JOB), quote(KettleDatabaseRepository.FIELD_JOB_ID_JOB), quote(KettleDatabaseRepository.FIELD_JOB_NAME), name, quote(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY), id_directory);
 	}
 
 	public synchronized int getNrJobs() throws KettleException
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(Repository.TABLE_R_JOB);
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB);
 		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
 		if (r != null)
 		{
@@ -656,7 +656,7 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(Repository.TABLE_R_JOB)+" WHERE "+quote(Repository.FIELD_JOB_ID_DIRECTORY)+" = " + id_directory;
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY)+" = " + id_directory;
 		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
 		if (r != null)
 		{
@@ -671,7 +671,7 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(Repository.TABLE_R_JOB_HOP)+" WHERE "+quote(Repository.FIELD_JOB_HOP_ID_JOB)+" = " + id_job;
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB_HOP)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB)+" = " + id_job;
 		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
 		if (r != null)
 		{
@@ -686,14 +686,14 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
         String[] jobList = new String[list.size()];
         for (int i=0;i<list.size();i++)
         {
-            long id_job = rowMeta.getInteger( list.get(i), quote(Repository.FIELD_JOB_ID_JOB), -1L); 
+            long id_job = rowMeta.getInteger( list.get(i), quote(KettleDatabaseRepository.FIELD_JOB_ID_JOB), -1L); 
             if (id_job > 0)
             {
             	 RowMetaAndData jobRow =  getJob(id_job);
                  if (jobRow!=null)
                  {
-                     String jobName = jobRow.getString(quote(Repository.FIELD_JOB_NAME), "<name not found>");
-                     long id_directory = jobRow.getInteger(quote(Repository.FIELD_JOB_ID_DIRECTORY), -1L);
+                     String jobName = jobRow.getString(quote(KettleDatabaseRepository.FIELD_JOB_NAME), "<name not found>");
+                     long id_directory = jobRow.getInteger(quote(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY), -1L);
                      RepositoryDirectory dir = repository.getDirectoryTree().findDirectory(id_directory);
                      
                      jobList[i]=dir.getPathObjectCombination(jobName);
@@ -708,33 +708,33 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 	{
 		RowMetaAndData table = new RowMetaAndData();
 		
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER), jobMeta.getID());
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), jobMeta.getRepositoryDirectory().getID());
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING), jobMeta.getName());
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_DESCRIPTION, ValueMetaInterface.TYPE_STRING), jobMeta.getDescription());
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_EXTENDED_DESCRIPTION, ValueMetaInterface.TYPE_STRING), jobMeta.getExtendedDescription());
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_JOB_VERSION, ValueMetaInterface.TYPE_STRING), jobMeta.getJobversion());
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_JOB_STATUS, ValueMetaInterface.TYPE_INTEGER), new Long(jobMeta.getJobstatus()  <0 ? -1L : jobMeta.getJobstatus()));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER), jobMeta.getID());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), jobMeta.getRepositoryDirectory().getID());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING), jobMeta.getName());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_DESCRIPTION, ValueMetaInterface.TYPE_STRING), jobMeta.getDescription());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_EXTENDED_DESCRIPTION, ValueMetaInterface.TYPE_STRING), jobMeta.getExtendedDescription());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_JOB_VERSION, ValueMetaInterface.TYPE_STRING), jobMeta.getJobversion());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_JOB_STATUS, ValueMetaInterface.TYPE_INTEGER), new Long(jobMeta.getJobstatus()  <0 ? -1L : jobMeta.getJobstatus()));
 
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER), jobMeta.getLogConnection()!=null ? jobMeta.getLogConnection().getID() : -1L);
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING), jobMeta.getLogTable());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER), jobMeta.getLogConnection()!=null ? jobMeta.getLogConnection().getID() : -1L);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING), jobMeta.getLogTable());
 
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_CREATED_USER, ValueMetaInterface.TYPE_STRING), jobMeta.getCreatedUser());
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_CREATED_DATE, ValueMetaInterface.TYPE_DATE), jobMeta.getCreatedDate());
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_MODIFIED_USER, ValueMetaInterface.TYPE_STRING), jobMeta.getModifiedUser());
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE), jobMeta.getModifiedDate());
-        table.addValue(new ValueMeta(Repository.FIELD_JOB_USE_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isBatchIdUsed());
-        table.addValue(new ValueMeta(Repository.FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isBatchIdPassed());
-        table.addValue(new ValueMeta(Repository.FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isLogfieldUsed());
-        table.addValue(new ValueMeta(Repository.FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING), jobMeta.getSharedObjectsFile());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_CREATED_USER, ValueMetaInterface.TYPE_STRING), jobMeta.getCreatedUser());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_CREATED_DATE, ValueMetaInterface.TYPE_DATE), jobMeta.getCreatedDate());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_MODIFIED_USER, ValueMetaInterface.TYPE_STRING), jobMeta.getModifiedUser());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE), jobMeta.getModifiedDate());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_USE_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isBatchIdUsed());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isBatchIdPassed());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isLogfieldUsed());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING), jobMeta.getSharedObjectsFile());
         
-        repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), Repository.TABLE_R_JOB);
+        repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOB);
 		repository.connectionDelegate.getDatabase().setValuesInsert(table);
 		repository.connectionDelegate.getDatabase().insertRow();
-        if (log.isDebug()) log.logDebug(toString(), "Inserted new record into table "+quoteTable(Repository.TABLE_R_JOB)+" with data : " + table);
+        if (log.isDebug()) log.logDebug(toString(), "Inserted new record into table "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" with data : " + table);
         repository.connectionDelegate.getDatabase().closeInsert();
 		
-        repository.connectionDelegate.insertJobAttribute(jobMeta.getID(), 0, Repository.JOB_ATTRIBUTE_LOG_SIZE_LIMIT, 0, jobMeta.getLogSizeLimit());
+        repository.connectionDelegate.insertJobAttribute(jobMeta.getID(), 0, KettleDatabaseRepository.JOB_ATTRIBUTE_LOG_SIZE_LIMIT, 0, jobMeta.getLogSizeLimit());
         
         
 		// Save the logging connection link...
@@ -748,15 +748,15 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_HOP_ID_JOB_HOP, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id));
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_HOP_ID_JOB, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_job));
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_jobentry_copy_from));
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_TO, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_jobentry_copy_to));
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(enabled));
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_HOP_EVALUATION, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(evaluation));
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_HOP_UNCONDITIONAL, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(unconditional));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB_HOP, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_job));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_jobentry_copy_from));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_TO, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_jobentry_copy_to));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(enabled));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_HOP_EVALUATION, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(evaluation));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_HOP_UNCONDITIONAL, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(unconditional));
 
-		repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), Repository.TABLE_R_JOB_HOP);
+		repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOB_HOP);
 		repository.connectionDelegate.getDatabase().setValuesInsert(table);
 		repository.connectionDelegate.getDatabase().insertRow();
 		repository.connectionDelegate.getDatabase().closeInsert();
@@ -778,23 +778,23 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 	
 	public synchronized void moveJob(String jobname, long id_directory_from, long id_directory_to) throws KettleException
 	{
-		String sql = "UPDATE "+quoteTable(Repository.TABLE_R_JOB)+" SET "+quote(Repository.FIELD_JOB_ID_DIRECTORY)+" = ? WHERE "+quote(Repository.FIELD_JOB_NAME)+" = ? AND "+quote(Repository.FIELD_JOB_ID_DIRECTORY)+" = ?";
+		String sql = "UPDATE "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" SET "+quote(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY)+" = ? WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_NAME)+" = ? AND "+quote(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY)+" = ?";
 
 		RowMetaAndData par = new RowMetaAndData();
-		par.addValue(new ValueMeta(Repository.FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_to));
-		par.addValue(new ValueMeta(Repository.FIELD_JOB_NAME,  ValueMetaInterface.TYPE_STRING), jobname);
-		par.addValue(new ValueMeta(Repository.FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_from));
+		par.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_to));
+		par.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_NAME,  ValueMetaInterface.TYPE_STRING), jobname);
+		par.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_from));
 
 		repository.connectionDelegate.getDatabase().execStatement(sql, par.getRowMeta(), par.getData());
 	}
 
 	public synchronized void renameJob(long id_job, String newname) throws KettleException
 	{
-		String sql = "UPDATE "+quoteTable(Repository.TABLE_R_JOB)+" SET "+quote(Repository.FIELD_JOB_NAME)+" = ? WHERE "+quote(Repository.FIELD_JOB_ID_JOB)+" = ?";
+		String sql = "UPDATE "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" SET "+quote(KettleDatabaseRepository.FIELD_JOB_NAME)+" = ? WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_ID_JOB)+" = ?";
 
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING), newname);
-		table.addValue(new ValueMeta(Repository.FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING), newname);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
 
 		repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
 	}

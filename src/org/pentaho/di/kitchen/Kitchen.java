@@ -37,6 +37,7 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.pan.CommandLineOption;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
@@ -210,7 +211,7 @@ public class Kitchen
 							// Define and connect to the repository...
 							if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.Alocate&ConnectRep"));
 							 
-							repository = new Repository(repinfo, userinfo);
+							repository = new KettleDatabaseRepository(repinfo, userinfo);
 							if (repository.connect("Kitchen commandline"))
 							{
 								RepositoryDirectory directory = repository.getDirectoryTree(); // Default = root

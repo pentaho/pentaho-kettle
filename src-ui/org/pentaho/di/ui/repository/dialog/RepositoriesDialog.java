@@ -48,6 +48,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.PermissionMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
@@ -499,7 +500,7 @@ public class RepositoriesDialog
                 repinfo = input.getRepository(idx);
 
                 // OK, now try the username and password
-                Repository rep = new Repository(repinfo, userinfo);
+                Repository rep = new KettleDatabaseRepository(repinfo, userinfo);
 
                 try
                 {

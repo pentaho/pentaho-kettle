@@ -142,37 +142,32 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
     }
   }
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-	throws KettleException
-	{
-	try
-	{
-		super.loadRep(rep, id_jobentry, databases, slaveServers);
-      replaceVars = rep.getJobEntryAttributeBoolean(id_jobentry, "replacevars"); //$NON-NLS-1$
+  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+  {
+	  try
+	  {
+        replaceVars = rep.getJobEntryAttributeBoolean(id_jobentry, "replacevars"); //$NON-NLS-1$
 
-      // How many variableName?
-      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "variable_name"); //$NON-NLS-1$
-      variableName = new String[argnr];
-      variableValue = new String[argnr];
-      variableType = new int[argnr];
-
-      // Read them all...
-      for (int a = 0; a < argnr; a++) {
+        // How many variableName?
+        int argnr = rep.countNrJobEntryAttributes(id_jobentry, "variable_name"); //$NON-NLS-1$
+        variableName = new String[argnr];
+        variableValue = new String[argnr];
+        variableType = new int[argnr];
+  
+        // Read them all...
+        for (int a = 0; a < argnr; a++) {
     	  variableName[a] = rep.getJobEntryAttributeString(id_jobentry, a, "variable_name"); //$NON-NLS-1$
           variableValue[a] = rep.getJobEntryAttributeString(id_jobentry, a, "variable_value"); //$NON-NLS-1$
           variableType[a] = getVariableType(rep.getJobEntryAttributeString(id_jobentry, a, "variable_type")); 
+        }
+      } catch (KettleException dbe) {
+        throw new KettleException(BaseMessages.getString(PKG, "JobEntrySetVariables.Meta.UnableLoadRep", String.valueOf(id_jobentry),dbe.getMessage()), dbe); //$NON-NLS-1$
       }
-    } catch (KettleException dbe) {
-      throw new KettleException(BaseMessages.getString(PKG, "JobEntrySetVariables.Meta.UnableLoadRep", String.valueOf(id_jobentry),dbe.getMessage()), dbe); //$NON-NLS-1$
-    }
   }
 
   public void saveRep(Repository rep, long id_job) throws KettleException {
     try {
-      super.saveRep(rep, id_job);
-
       rep.saveJobEntryAttribute(id_job, getID(), "replacevars", replaceVars); //$NON-NLS-1$
-      
       
       // save the variableName...
       if (variableName != null) {

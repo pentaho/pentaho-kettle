@@ -108,7 +108,6 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 	  {
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			foldername = rep.getJobEntryAttributeString(id_jobentry, "foldername");
 			failOfFolderExists = rep.getJobEntryAttributeBoolean(id_jobentry, "fail_of_folder_exists");
 		}
@@ -118,13 +117,10 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "foldername", foldername);
             rep.saveJobEntryAttribute(id_job, getID(), "fail_of_folder_exists", failOfFolderExists);
 		}

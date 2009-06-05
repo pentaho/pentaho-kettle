@@ -138,13 +138,10 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-	throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
-	try
-	{
-		super.loadRep(rep, id_jobentry, databases, slaveServers);
-
+		try
+		{
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
 			{
@@ -179,7 +176,6 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
 			if (this.connection!=null) 
 			{
 				rep.saveJobEntryAttribute(id_job, getID(), "connection", this.connection.getName());

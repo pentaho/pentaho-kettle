@@ -47,6 +47,7 @@ import org.pentaho.di.job.entries.sftp.JobEntrySFTP;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryExporter;
@@ -204,7 +205,6 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			repositoryname = rep.getJobEntryAttributeString(id_jobentry, "repositoryname");
 			username = rep.getJobEntryAttributeString(id_jobentry, "username");
 			password        = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "password"));
@@ -230,13 +230,10 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "repositoryname", repositoryname);
 			rep.saveJobEntryAttribute(id_job, getID(), "username", username);
 			rep.saveJobEntryAttribute(id_job, getID(), "password",        Encr.encryptPasswordIfNotUsingVariables(password));
@@ -253,7 +250,6 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 			rep.saveJobEntryAttribute(id_job, getID(), "add_result_filesname", add_result_filesname);
 			rep.saveJobEntryAttribute(id_job, getID(), "nr_errors_less_than", nr_errors_less_than);
 			rep.saveJobEntryAttribute(id_job, getID(), "success_condition", success_condition);	
-			
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -763,7 +759,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 			throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepSystem"));
 		}
 		
-		this.repository = new Repository(this.repinfo, this.userinfo);
+		this.repository = new KettleDatabaseRepository(this.repinfo, this.userinfo);
 		
 		if (!this.repository.connect("Export job entry"))
 		{

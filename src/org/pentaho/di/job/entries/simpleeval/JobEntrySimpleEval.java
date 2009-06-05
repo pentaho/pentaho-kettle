@@ -276,12 +276,10 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-	throws KettleException
+  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
   { 
-	try
-	{
-		super.loadRep(rep, id_jobentry, databases, slaveServers);
+		try
+		{
 			valuetype = getValueTypeByCode(Const.NVL(rep.getJobEntryAttributeString(id_jobentry,"valuetype"), ""));
 			fieldname  = rep.getJobEntryAttributeString(id_jobentry, "fieldname");
 			variablename  = rep.getJobEntryAttributeString(id_jobentry, "variablename");
@@ -299,13 +297,10 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-			
 			rep.saveJobEntryAttribute(id_job, getID(),"valuetype", getValueTypeCode(valuetype));
 			rep.saveJobEntryAttribute(id_job, getID(), "fieldname",  fieldname);
 			rep.saveJobEntryAttribute(id_job, getID(), "variablename",  variablename);
@@ -320,7 +315,6 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			
 			throw new KettleException(BaseMessages.getString(PKG, "JobEntrySimple.Error.Exception.UnableSaveRep")+id_job, dbe);
 		}
 	}

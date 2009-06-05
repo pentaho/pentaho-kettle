@@ -352,7 +352,7 @@ public class UserDialog extends Dialog
 			userinfo.setDescription(wDescription.getText());
 			String profname = wProfile.getText();
 			
-			long idProfile = rep.profileDelegate.getProfileID(profname);
+			long idProfile = rep.getProfileID(profname);
 			ProfileMeta profinfo = rep.loadProfileMeta(idProfile);
 			userinfo.setProfile( profinfo);
             

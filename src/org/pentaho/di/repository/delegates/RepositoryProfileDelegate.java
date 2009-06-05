@@ -6,26 +6,26 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.PermissionMeta;
 import org.pentaho.di.repository.ProfileMeta;
-import org.pentaho.di.repository.Repository;
 
 public class RepositoryProfileDelegate extends BaseRepositoryDelegate {
 
 	private static Class<?>	PKG	= ProfileMeta.class;	// for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-	public RepositoryProfileDelegate(Repository repository) {
+	public RepositoryProfileDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 
 	public RowMetaAndData getProfile(long id_profile) throws KettleException
 	{
-		return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_PROFILE), quote(Repository.FIELD_PROFILE_ID_PROFILE), id_profile);
+		return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_PROFILE), quote(KettleDatabaseRepository.FIELD_PROFILE_ID_PROFILE), id_profile);
 	}
 
 	public synchronized long getProfileID(String profilename) throws KettleException
 	{
-		return repository.connectionDelegate.getIDWithValue(quoteTable(Repository.TABLE_R_PROFILE), quote(Repository.FIELD_PROFILE_ID_PROFILE), quote(Repository.FIELD_PROFILE_NAME), profilename);
+		return repository.connectionDelegate.getIDWithValue(quoteTable(KettleDatabaseRepository.TABLE_R_PROFILE), quote(KettleDatabaseRepository.FIELD_PROFILE_ID_PROFILE), quote(KettleDatabaseRepository.FIELD_PROFILE_NAME), profilename);
 	}
 
 	public ProfileMeta loadProfileMeta(ProfileMeta profileMeta, long id_profile) throws KettleException {
@@ -124,7 +124,7 @@ public class RepositoryProfileDelegate extends BaseRepositoryDelegate {
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(Repository.TABLE_R_PROFILE);
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_PROFILE);
 		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
 		if (r != null)
 		{
@@ -137,11 +137,11 @@ public class RepositoryProfileDelegate extends BaseRepositoryDelegate {
 
 	public synchronized void renameProfile(long id_profile, String newname) throws KettleException
 	{
-		String sql = "UPDATE "+quoteTable(Repository.TABLE_R_PROFILE)+" SET "+quote(Repository.FIELD_PROFILE_NAME)+" = ? WHERE "+quote(Repository.FIELD_PROFILE_ID_PROFILE)+" = ?";
+		String sql = "UPDATE "+quoteTable(KettleDatabaseRepository.TABLE_R_PROFILE)+" SET "+quote(KettleDatabaseRepository.FIELD_PROFILE_NAME)+" = ? WHERE "+quote(KettleDatabaseRepository.FIELD_PROFILE_ID_PROFILE)+" = ?";
 
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta(Repository.FIELD_PROFILE_NAME, ValueMetaInterface.TYPE_STRING), newname);
-		table.addValue(new ValueMeta(Repository.FIELD_PROFILE_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), new Long(id_profile));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_NAME, ValueMetaInterface.TYPE_STRING), newname);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), new Long(id_profile));
 
 		repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
 	}

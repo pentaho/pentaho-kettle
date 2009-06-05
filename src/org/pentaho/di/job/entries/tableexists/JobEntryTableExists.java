@@ -107,13 +107,10 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-		throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
-
 			tablename  = rep.getJobEntryAttributeString(id_jobentry, "tablename");
 			schemaname  = rep.getJobEntryAttributeString(id_jobentry, "schemaname");
 			
@@ -135,13 +132,10 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-
 			rep.saveJobEntryAttribute(id_job, getID(), "tablename", tablename);
 			rep.saveJobEntryAttribute(id_job, getID(), "schemaname", schemaname);
 			

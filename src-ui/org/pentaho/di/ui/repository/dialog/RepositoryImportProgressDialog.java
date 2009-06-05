@@ -47,6 +47,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
@@ -101,8 +102,6 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
         this.fileDirectory = fileDirectory;
         this.filenames = filenames;
         this.baseDirectory = baseDirectory;
-        
-        rep.setImportBaseDirectory(baseDirectory);
     }
 
     public void open()
@@ -266,7 +265,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
     	// OK, we loaded the transformation from XML and all went well...
     	// See if the transformation already existed!
-    	boolean exists = rep.existsTransformation(ti.getName(), targetDirectory);
+    	boolean exists = rep.getTransformationID(ti.getName(), targetDirectory)>0;
     	if (exists && askOverwrite)
     	{
     		MessageDialogWithToggle md = new MessageDialogWithToggle(shell,
@@ -376,7 +375,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
         // OK, we loaded the job from XML and all went well...
         // See if the job already exists!
-        long id = rep.jobDelegate.getJobID(jobMeta.getName(), targetDirectory.getID());
+        long id = rep.getJobID(jobMeta.getName(), targetDirectory);
         if (id > 0 && askOverwrite)
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell,
@@ -414,6 +413,9 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
     private void importAll() {
 		wLabel.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.ImportXML.Label"));
 		try {
+			
+			RepositoryImportLocation.setRepositoryImportLocation(baseDirectory);
+			
 			for (int ii = 0; ii < filenames.length; ++ii) {
 				
 				final String filename = ((fileDirectory != null) && (fileDirectory.length() > 0)) ? fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
@@ -590,6 +592,9 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 		} catch (KettleException e) {
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryImportDialog.ErrorGeneral.Title"), 
 					BaseMessages.getString(PKG, "RepositoryImportDialog.ErrorGeneral.Message"), e);
+		}
+		finally {
+			RepositoryImportLocation.setRepositoryImportLocation(null); // set to null when done!
 		}
 	}
 

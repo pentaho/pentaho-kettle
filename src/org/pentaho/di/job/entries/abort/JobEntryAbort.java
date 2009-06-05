@@ -77,7 +77,6 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
 
   public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     try {
-      super.loadRep(rep, id_jobentry, databases, slaveServers);
       messageAbort = rep.getJobEntryAttributeString(id_jobentry, "message"); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(BaseMessages.getString(PKG, "JobEntryAbort.UnableToLoadFromRepo.Label", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
@@ -88,7 +87,6 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
   //
   public void saveRep(Repository rep, long id_job) throws KettleException {
     try {
-      super.saveRep(rep, id_job);
       rep.saveJobEntryAttribute(id_job, getID(), "message", messageAbort); //$NON-NLS-1$
 
     } catch (KettleDatabaseException dbe) {

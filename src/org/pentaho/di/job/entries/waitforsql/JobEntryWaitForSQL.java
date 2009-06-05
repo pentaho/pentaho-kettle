@@ -241,13 +241,10 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-	throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
-	try
-	{
-		super.loadRep(rep, id_jobentry, databases, slaveServers);
-			
+		try
+		{
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
 			{
@@ -293,8 +290,6 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-		
 			if (connection!=null) 
 			{
 				rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());

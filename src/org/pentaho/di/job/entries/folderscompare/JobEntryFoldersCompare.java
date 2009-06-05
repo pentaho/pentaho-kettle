@@ -155,7 +155,6 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			includesubfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders");
 			comparefilecontent = rep.getJobEntryAttributeBoolean(id_jobentry, "compare_filecontent");
 			comparefilesize = rep.getJobEntryAttributeBoolean(id_jobentry, "compare_filesize");
@@ -171,16 +170,13 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
 			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", includesubfolders);
 			rep.saveJobEntryAttribute(id_job, getID(), "compare_filecontent", comparefilecontent);
 			rep.saveJobEntryAttribute(id_job, getID(), "compare_filesize", comparefilesize);
-			
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "compareonly", compareonly);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
@@ -192,19 +188,23 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 			throw new KettleException(BaseMessages.getString(PKG, "JobFoldersCompare.Meta.UnableSaveRep",""+id_job, dbe.getMessage()));
 		}
 	}
+	
 	public void setIncludeSubfolders(boolean includeSubfolders) 
 	{
 		this.includesubfolders = includeSubfolders;
 	}
-	 public boolean isIncludeSubfolders()
+	
+	public boolean isIncludeSubfolders()
 	{
 	  return includesubfolders;
 	}
+	
 	public void setCompareFileContent(boolean comparefilecontent) 
 	{
 		this.comparefilecontent = comparefilecontent;
 	}
-	 public boolean isCompareFileContent()
+	
+	public boolean isCompareFileContent()
 	{
 	   return comparefilecontent;
 	}
@@ -213,7 +213,8 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 	{
 		this.comparefilesize = comparefilesize;
 	}
-	 public boolean isCompareFileSize()
+	
+	public boolean isCompareFileSize()
 	{
 	   return comparefilesize;
 	}

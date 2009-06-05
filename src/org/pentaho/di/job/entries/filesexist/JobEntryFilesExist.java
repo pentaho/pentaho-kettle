@@ -123,7 +123,6 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			filename = rep.getJobEntryAttributeString(id_jobentry, "filename");
 			
 			 // How many arguments?
@@ -142,21 +141,18 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "filename", filename);
 			
 			   // save the arguments...
-		      if (arguments != null) {
-		        for (int i = 0; i < arguments.length; i++) {
+		    if (arguments != null) {
+		       for (int i = 0; i < arguments.length; i++) {
 		          rep.saveJobEntryAttribute(id_job, getID(), i, "name", arguments[i]);
-		        }
-		      }
+		       }
+		    }
 		}
 		catch(KettleDatabaseException dbe)
 		{

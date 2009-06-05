@@ -140,7 +140,6 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			isspecificrep = rep.getJobEntryAttributeBoolean(id_jobentry, "isspecificrep"); 
 			repname = rep.getJobEntryAttributeString(id_jobentry, "repname"); 
 			isspecificuser = rep.getJobEntryAttributeBoolean(id_jobentry, "isspecificuser"); 
@@ -157,18 +156,14 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
 
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
 			rep.saveJobEntryAttribute(id_job, getID(), "isspecificrep", isspecificrep);
 			rep.saveJobEntryAttribute(id_job, getID(), "repname", repname);
 			rep.saveJobEntryAttribute(id_job, getID(), "isspecificuser", isspecificuser);
 			rep.saveJobEntryAttribute(id_job, getID(), "username", username);
-			
-
 		}
 		catch(KettleDatabaseException dbe)
 		{

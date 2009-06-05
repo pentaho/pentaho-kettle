@@ -169,7 +169,6 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			schemaname      =      rep.getJobEntryAttributeString(id_jobentry,  "schemaname");
 			tablename       =      rep.getJobEntryAttributeString(id_jobentry,  "tablename");
 			filename        =      rep.getJobEntryAttributeString(id_jobentry,  "filename");
@@ -203,12 +202,10 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
 			rep.saveJobEntryAttribute(id_job, getID(), "schemaname",     schemaname);
 			rep.saveJobEntryAttribute(id_job, getID(), "tablename",      tablename);
 			rep.saveJobEntryAttribute(id_job, getID(), "filename",       filename);

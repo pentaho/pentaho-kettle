@@ -48,6 +48,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
@@ -334,8 +335,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	// Load the jobentry from repository
 	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
 		try {
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
-
 			transname = rep.getJobEntryAttributeString(id_jobentry, "name");
 			directory = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
 			filename = rep.getJobEntryAttributeString(id_jobentry, "file_name");
@@ -390,11 +389,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	//
 	public void saveRep(Repository rep, long id_job) throws KettleException {
 		try {
-			super.saveRep(rep, id_job);
-
+			RepositoryDirectory importLocation = RepositoryImportLocation.getRepositoryImportLocation();
 			if (directory == null) {
-				if (rep.getImportBaseDirectory()!=null) {
-					directory = rep.getImportBaseDirectory().getPath();
+				if (importLocation!=null) {
+					directory = importLocation.getPath();
 				} else {
 					directory = new RepositoryDirectory().getPath(); // just pick the root directory
 				}
@@ -1000,7 +998,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	            	//
 	            	// It only makes sense to try to load from the repository when the repository is also filled in.
 	            	//
-	                transMeta = rep.loadTransformation(filename, rep.getDirectoryTree().findDirectory(environmentSubstitute(getDirectory())));
+	                transMeta = rep.loadTransformation(filename, rep.getDirectoryTree().findDirectory(environmentSubstitute(getDirectory())), null, true);
 		            transMeta.copyVariablesFrom(this);
 	            }
 	            else

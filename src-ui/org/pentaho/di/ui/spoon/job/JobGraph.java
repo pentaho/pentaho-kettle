@@ -1716,12 +1716,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     	
         // New transformation?
         //
-        boolean exists = spoon.rep.existsTransformation(exactTransname, spoon.rep.getDirectoryTree().findDirectory(entry.getDirectory()));
+        boolean exists = spoon.rep.getTransformationID(exactTransname, spoon.rep.getDirectoryTree().findDirectory(entry.getDirectory())) > 0;
         if (!exists) {
           newTrans = new TransMeta(null, exactTransname, entry.arguments);
         } 
         else {
-          newTrans = spoon.rep.loadTransformation(exactTransname, spoon.rep.getDirectoryTree().findDirectory(entry.getDirectory()));
+          newTrans = spoon.rep.loadTransformation(exactTransname, spoon.rep.getDirectoryTree().findDirectory(entry.getDirectory()), null, true);
         }
 
         copyInternalJobVariables(jobMeta, newTrans);

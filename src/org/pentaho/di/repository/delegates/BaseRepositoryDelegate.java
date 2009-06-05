@@ -1,14 +1,14 @@
 package org.pentaho.di.repository.delegates;
 
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 
 public class BaseRepositoryDelegate {
 
-	protected Repository repository;
+	protected KettleDatabaseRepository repository;
 	protected LogWriter log;
 	
-	public BaseRepositoryDelegate(Repository repository) {
+	public BaseRepositoryDelegate(KettleDatabaseRepository repository) {
 		this.repository = repository;
 		this.log = repository.log;
 	}

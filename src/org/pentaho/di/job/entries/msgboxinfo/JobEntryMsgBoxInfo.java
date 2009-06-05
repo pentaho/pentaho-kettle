@@ -96,8 +96,6 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
-
 			bodymessage = rep.getJobEntryAttributeString(id_jobentry, "bodymessage");
 			titremessage = rep.getJobEntryAttributeString(id_jobentry, "titremessage");
 		}
@@ -113,11 +111,8 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-
 			rep.saveJobEntryAttribute(id_job, getID(), "bodymessage", bodymessage);
 			rep.saveJobEntryAttribute(id_job, getID(), "titremessage", titremessage);
-
 		}
 		catch(KettleDatabaseException dbe)
 		{

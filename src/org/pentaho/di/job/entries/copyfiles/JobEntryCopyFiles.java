@@ -180,7 +180,6 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 	  {
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			copy_empty_folders      = rep.getJobEntryAttributeBoolean(id_jobentry, "copy_empty_folders");
 			arg_from_previous   = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
 			overwrite_files      = rep.getJobEntryAttributeBoolean(id_jobentry, "overwrite_files");
@@ -212,13 +211,10 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "copy_empty_folders",      copy_empty_folders);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous",  arg_from_previous);
 			rep.saveJobEntryAttribute(id_job, getID(), "overwrite_files",      overwrite_files);
@@ -227,7 +223,6 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 			rep.saveJobEntryAttribute(id_job, getID(), "add_result_filesname", add_result_filesname);
 			rep.saveJobEntryAttribute(id_job, getID(), "destination_is_a_file", destination_is_a_file);
 			rep.saveJobEntryAttribute(id_job, getID(), "create_destination_folder", create_destination_folder);
-
 			
 			// save the arguments...
 			if (source_filefolder!=null)

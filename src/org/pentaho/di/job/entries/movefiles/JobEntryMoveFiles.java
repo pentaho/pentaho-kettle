@@ -252,7 +252,6 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	  {
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			move_empty_folders      = rep.getJobEntryAttributeBoolean(id_jobentry, "move_empty_folders");
 			arg_from_previous   = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
 			include_subfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders");
@@ -305,8 +304,6 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "move_empty_folders",      move_empty_folders);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous",  arg_from_previous);
 			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", include_subfolders);

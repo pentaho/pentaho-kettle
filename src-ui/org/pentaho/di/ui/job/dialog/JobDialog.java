@@ -958,7 +958,7 @@ public class JobDialog extends Dialog
 			    try
 				{
 				    
-					rep.jobDelegate.moveJob(jobMeta.getName(), idDirFrom, newDirectory.getID() );
+					rep.moveJob(jobMeta.getName(), idDirFrom, newDirectory.getID() );
 					log.logDetailed(getClass().getName(), "Moved directory to ["+newDirectory.getPath()+"]");
 					jobMeta.setRepositoryDirectory( newDirectory );
 					wDirectory.setText(jobMeta.getRepositoryDirectory().getPath());

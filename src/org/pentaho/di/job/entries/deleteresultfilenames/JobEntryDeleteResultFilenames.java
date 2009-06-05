@@ -125,14 +125,10 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 	  {
 	    try
 	    {
-	      super.loadRep(rep, id_jobentry, databases, slaveServers);
 			foldername = rep.getJobEntryAttributeString(id_jobentry, "foldername");
 			specifywildcard = rep.getJobEntryAttributeBoolean(id_jobentry, "specify_wildcard");  
 			wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			wildcardexclude = rep.getJobEntryAttributeString(id_jobentry, "wildcardexclude");
-			
-			
-			 
 		}
 		catch(KettleException dbe)
 		{
@@ -140,19 +136,14 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "foldername", foldername);
 			rep.saveJobEntryAttribute(id_job, getID(), "specify_wildcard", specifywildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcardexclude", wildcardexclude);
-			
-	
 		}
 		catch(KettleDatabaseException dbe)
 		{

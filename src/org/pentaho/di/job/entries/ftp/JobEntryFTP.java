@@ -295,7 +295,6 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	  {
 	    try
 	    {
-	      super.loadRep(rep, id_jobentry, databases, slaveServers);
 	      	port          = rep.getJobEntryAttributeString(id_jobentry, "port");
 			serverName          = rep.getJobEntryAttributeString(id_jobentry, "servername");
 			userName            = rep.getJobEntryAttributeString(id_jobentry, "username");
@@ -361,12 +360,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
 			rep.saveJobEntryAttribute(id_job, getID(), "port",      port);
 			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
@@ -401,7 +398,6 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		    
 			rep.saveJobEntryAttribute(id_job, getID(), "nr_limit",  nr_limit);
 			rep.saveJobEntryAttribute(id_job, getID(), "success_condition",    success_condition);
-			
 		}
 		catch(KettleDatabaseException dbe)
 		{

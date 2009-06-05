@@ -1519,7 +1519,7 @@ public class RepositoryExplorerDialog extends Dialog
 			
 			try
 			{
-				long id = rep.transDelegate.getTransformationID(ti.getText(), repdir.getID());
+				long id = rep.getTransformationID(ti.getText(), repdir);
 		
 				// System.out.println("Deleting transformation ["+name+"] with ID = "+id);
 		
@@ -1641,7 +1641,7 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.transDelegate.getTransformationID(name, repdir.getID());
+				long id = rep.getTransformationID(name, repdir);
 				if (id>0)
 				{
 					// System.out.println("Renaming transformation ["+name+"] with ID = "+id);
@@ -1688,7 +1688,7 @@ public class RepositoryExplorerDialog extends Dialog
     			if (fromdir!=null)
     			{
                     debug = "fromdir found: move transformation!"; //$NON-NLS-1$
-                    long existingTransID = rep.transDelegate.getTransformationID(transname, repdir.getID());
+                    long existingTransID = rep.getTransformationID(transname, repdir);
                     if (existingTransID == -1) {
 	                    rep.moveTransformation(transname, fromdir.getID(), repdir.getID());
 	    				changedInDialog = true;
@@ -1742,7 +1742,7 @@ public class RepositoryExplorerDialog extends Dialog
     			if (fromdir!=null)
     			{
                     debug = "fromdir found: move job!"; //$NON-NLS-1$
-                    long existingjobID = rep.jobDelegate.getJobID(jobname, repdir.getID());
+                    long existingjobID = rep.getJobID(jobname, repdir);
                     if (existingjobID == -1) {
                     	rep.moveJob(jobname, fromdir.getID(), repdir.getID());
                     	changedInDialog = true;
@@ -1853,7 +1853,7 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.jobDelegate.getJobID(name, repdir.getID());
+				long id = rep.getJobID(name, repdir);
 				if (id>0)
 				{
 					System.out.println("Renaming job ["+name+"] with ID = "+id);
@@ -1884,7 +1884,7 @@ public class RepositoryExplorerDialog extends Dialog
 		
 		try
 		{
-			long id = rep.jobDelegate.getJobID(name, repdir.getID());
+			long id = rep.getJobID(name, repdir);
 	
 			// System.out.println("Deleting transformation ["+name+"] with ID = "+id);
 	
@@ -1992,7 +1992,7 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.jobDelegate.getJobID(name, repdir.getID());
+				long id = rep.getJobID(name, repdir);
 				if (id>0)
 				{
 					// System.out.println("Renaming transformation ["+name+"] with ID = "+id);
@@ -2079,7 +2079,7 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long isUser = rep.userDelegate.getUserID(login);
+			long isUser = rep.getUserID(login);
 			if (isUser>0)
 			{
 				rep.delUser(isUser);
@@ -2170,7 +2170,7 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.userDelegate.getUserID(name);
+				long id = rep.getUserID(name);
 				if (id>0)
 				{
 					// System.out.println("Renaming user ["+name+"] with ID = "+id);
@@ -2273,7 +2273,7 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.profileDelegate.getProfileID(name);
+				long id = rep.getProfileID(name);
 				if (id>0)
 				{
 					rep.renameProfile(id, newname);
@@ -2301,7 +2301,7 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long idDatabase = rep.databaseDelegate.getDatabaseID(databasename);
+			long idDatabase = rep.getDatabaseID(databasename);
 			DatabaseMeta databaseMeta = rep.loadDatabaseMeta(idDatabase);
 
 			DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
@@ -2352,7 +2352,7 @@ public class RepositoryExplorerDialog extends Dialog
 			if (name!=null)
 			{
 				// See if this user already exists...
-				long idDatabase = rep.databaseDelegate.getDatabaseID(name);
+				long idDatabase = rep.getDatabaseID(name);
 				if (idDatabase<=0)
 				{
                     rep.lockRepository();
@@ -2482,7 +2482,7 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.databaseDelegate.getDatabaseID(name);
+				long id = rep.getDatabaseID(name);
 				if (id>0)
 				{
 					// System.out.println("Renaming transformation ["+name+"] with ID = "+id);
@@ -2605,7 +2605,7 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long idProfile = rep.profileDelegate.getProfileID(profilename);
+			long idProfile = rep.getProfileID(profilename);
 			ProfileMeta profinfo = rep.loadProfileMeta(idProfile);
 			
 			// System.out.println("editProfile, nrPermissions = "+profinfo.nrPermissions());
@@ -2635,7 +2635,7 @@ public class RepositoryExplorerDialog extends Dialog
 			if (name!=null)
 			{
 				// See if this user already exists...
-				long idProfile = rep.profileDelegate.getProfileID(name);
+				long idProfile = rep.getProfileID(name);
 				if (idProfile<=0)
 				{
 					rep.saveProfile(profinfo);
@@ -2663,7 +2663,7 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long idProfile = rep.profileDelegate.getProfileID(profilename);
+			long idProfile = rep.getProfileID(profilename);
 			if (idProfile>0)
 			{
 				rep.delProfile(idProfile);
@@ -2752,7 +2752,7 @@ public class RepositoryExplorerDialog extends Dialog
 					
 					for (int i=0;i<trans.length;i++)
 					{
-						TransMeta ti = rep.loadTransformation(trans[i], repdir);
+						TransMeta ti = rep.loadTransformation(trans[i], repdir, null, true);
 						if(log.isBasic()) log.logBasic("Exporting transformation", "["+trans[i]+"] in directory ["+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 						String xml = XMLHandler.getXMLHeader() + ti.getXML();
@@ -2955,7 +2955,7 @@ public class RepositoryExplorerDialog extends Dialog
             if (dd.open())
             {
                 // See if this slave server already exists...
-                long idSlave = rep.slaveServerDelegate.getSlaveID(slaveServer.getName());
+                long idSlave = rep.getSlaveID(slaveServer.getName());
                 if (idSlave<=0)
                 {
                     rep.lockRepository();
@@ -2994,7 +2994,7 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.slaveServerDelegate.getSlaveID(slaveName);
+            long id = rep.getSlaveID(slaveName);
             SlaveServer slaveServer = rep.loadSlaveServer(id);
 
             SlaveServerDialog dd = new SlaveServerDialog(shell, slaveServer);
@@ -3027,7 +3027,7 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.slaveServerDelegate.getSlaveID(slaveName);
+            long id = rep.getSlaveID(slaveName);
             if (id>0)
             {
                 rep.delSlave(id);
@@ -3046,11 +3046,11 @@ public class RepositoryExplorerDialog extends Dialog
         try
         {
             PartitionSchema partitionSchema = new PartitionSchema();
-            PartitionSchemaDialog dd = new PartitionSchemaDialog(shell, partitionSchema, rep.getDatabases(), variableSpace);
+            PartitionSchemaDialog dd = new PartitionSchemaDialog(shell, partitionSchema, rep.readDatabases(), variableSpace);
             if (dd.open())
             {
                 // See if this slave server already exists...
-                long idPartitionSchema = rep.partitionSchemaDelegate.getPartitionSchemaID(partitionSchema.getName());
+                long idPartitionSchema = rep.getPartitionSchemaID(partitionSchema.getName());
                 if (idPartitionSchema<=0)
                 {
                     rep.lockRepository();
@@ -3090,10 +3090,10 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.partitionSchemaDelegate.getPartitionSchemaID(partitionSchemaName);
+            long id = rep.getPartitionSchemaID(partitionSchemaName);
             PartitionSchema partitionSchema = rep.loadPartitionSchema(id);
 
-            PartitionSchemaDialog dd = new PartitionSchemaDialog(shell, partitionSchema, rep.getDatabases(), variableSpace);
+            PartitionSchemaDialog dd = new PartitionSchemaDialog(shell, partitionSchema, rep.readDatabases(), variableSpace);
             if (dd.open())
             {
                 rep.lockRepository();
@@ -3124,7 +3124,7 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.partitionSchemaDelegate.getPartitionSchemaID(partitionSchemaName);
+            long id = rep.getPartitionSchemaID(partitionSchemaName);
             if (id>0)
             {
                 rep.delPartitionSchema(id);
@@ -3148,7 +3148,7 @@ public class RepositoryExplorerDialog extends Dialog
             if (dd.open())
             {
                 // See if this slave server already exists...
-                long idCluster = rep.clusterSchemaDelegate.getClusterID(cluster.getName());
+                long idCluster = rep.getClusterID(cluster.getName());
                 if (idCluster<=0)
                 {
                     rep.lockRepository();
@@ -3188,7 +3188,7 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.clusterSchemaDelegate.getClusterID(clusterName);
+            long id = rep.getClusterID(clusterName);
             ClusterSchema cluster = rep.loadClusterSchema(id, rep.getSlaveServers());
 
             ClusterSchemaDialog dd = new ClusterSchemaDialog(shell, cluster, rep.getSlaveServers());
@@ -3222,7 +3222,7 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.clusterSchemaDelegate.getClusterID(clusterName);
+            long id = rep.getClusterID(clusterName);
             if (id>0)
             {
                 rep.delClusterSchema(id);

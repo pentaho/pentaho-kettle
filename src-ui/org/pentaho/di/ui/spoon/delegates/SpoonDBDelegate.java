@@ -427,7 +427,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 
 		if (rep != null)
 		{
-			if (!rep.userinfo.isReadonly())
+			if (!rep.getUserInfo().isReadonly())
 			{
 				try
 				{
@@ -511,7 +511,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 				// Save it in the repository...
 				try 
 				{
-					if (!spoon.rep.userinfo.isReadonly())
+					if (!spoon.rep.getUserInfo().isReadonly())
 					{
 						spoon.rep.save(databaseMeta);
 					}

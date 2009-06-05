@@ -176,7 +176,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   {
     try
     {
-      super.loadRep(rep, id_jobentry, databases, slaveServers);
       servername = rep.getJobEntryAttributeString(id_jobentry, "servername"); //$NON-NLS-1$
       username = rep.getJobEntryAttributeString(id_jobentry, "username"); //$NON-NLS-1$
       password = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "password"));
@@ -203,8 +202,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   {
     try
     {
-      super.saveRep(rep, id_job);
-
       rep.saveJobEntryAttribute(id_job, getID(), "servername", servername); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "username", username); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "password", Encr.encryptPasswordIfNotUsingVariables(password)); //$NON-NLS-1$
@@ -215,7 +212,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       rep.saveJobEntryAttribute(id_job, getID(), "retrievemails", retrievemails); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "firstmails", firstmails); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "delete", delete); //$NON-NLS-1$
-    } catch (KettleDatabaseException dbe)
+    } 
+    catch (KettleDatabaseException dbe)
     {
       throw new KettleException(BaseMessages.getString(PKG, "JobEntryGetPOP.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
     }

@@ -110,7 +110,6 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
   {
     try
     {
-      super.loadRep(rep, id_jobentry, databases, slaveServers);
       filename = rep.getJobEntryAttributeString(id_jobentry, "filename");
       failIfFileExists = rep.getJobEntryAttributeBoolean(id_jobentry, "fail_if_file_exists");
       addfilenameresult = rep.getJobEntryAttributeBoolean(id_jobentry, "add_filename_result");
@@ -126,8 +125,6 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
   {
     try
     {
-      super.saveRep(rep, id_job);
-
       rep.saveJobEntryAttribute(id_job, getID(), "filename", filename);
       rep.saveJobEntryAttribute(id_job, getID(), "fail_if_file_exists", failIfFileExists);
       rep.saveJobEntryAttribute(id_job, getID(), "add_filename_result", addfilenameresult);

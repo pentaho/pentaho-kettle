@@ -216,12 +216,10 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-	throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)	throws KettleException
 	{
-	try
-	{
-		super.loadRep(rep, id_jobentry, databases, slaveServers);
+		try
+		{
 			serverName          = rep.getJobEntryAttributeString(id_jobentry, "servername");
 			userName            = rep.getJobEntryAttributeString(id_jobentry, "username");
 			password            = rep.getJobEntryAttributeString(id_jobentry, "password");
@@ -258,13 +256,10 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
 			rep.saveJobEntryAttribute(id_job, getID(), "password",        password);
@@ -280,7 +275,6 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getID(), "httpproxyusername",        httpproxyusername);
 			rep.saveJobEntryAttribute(id_job, getID(), "httpproxypassword",        httpProxyPassword);
 			
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "publicpublickey",        publicpublickey);
 			rep.saveJobEntryAttribute(id_job, getID(), "keyfilename",      keyFilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "keyfilepass",      keyFilePass);
@@ -288,15 +282,12 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getID(), "usebasicauthentication",        useBasicAuthentication);
 			rep.saveJobEntryAttribute(id_job, getID(), "createremotefolder",        createRemoteFolder);
 			
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "afterftpput",        afterFtpPut);
 			rep.saveJobEntryAttribute(id_job, getID(), "destinationfolder",        destinationfolder);
-			
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "createdestinationfolder",        createDestinationFolder);
 			rep.saveJobEntryAttribute(id_job, getID(), "cachehostkey",        cachehostkey);
 			rep.saveJobEntryAttribute(id_job, getID(), "timeout",         timeout);
-			
 		}
 		catch(KettleDatabaseException dbe)
 		{

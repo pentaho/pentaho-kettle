@@ -6,19 +6,19 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 
 public class RepositoryConditionDelegate extends BaseRepositoryDelegate {
 
 //	private static Class<?> PKG = Condition.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryConditionDelegate(Repository repository) {
+	public RepositoryConditionDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	
 	public RowMetaAndData getCondition(long id_condition) throws KettleException
 	{
-		return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_CONDITION), quote(Repository.FIELD_CONDITION_ID_CONDITION), id_condition);
+		return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_CONDITION), quote(KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION), id_condition);
 	}
 
 	/**
@@ -104,15 +104,15 @@ public class RepositoryConditionDelegate extends BaseRepositoryDelegate {
 	{
 		long id = repository.connectionDelegate.getNextConditionID();
 
-		String tablename = Repository.TABLE_R_CONDITION;
+		String tablename = KettleDatabaseRepository.TABLE_R_CONDITION;
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta(Repository.FIELD_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id));
-		table.addValue(new ValueMeta(Repository.FIELD_CONDITION_ID_CONDITION_PARENT, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_condition_parent));
-		table.addValue(new ValueMeta(Repository.FIELD_CONDITION_NEGATED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(condition.isNegated()));
-		table.addValue(new ValueMeta(Repository.FIELD_CONDITION_OPERATOR, ValueMetaInterface.TYPE_STRING), condition.getOperatorDesc());
-		table.addValue(new ValueMeta(Repository.FIELD_CONDITION_LEFT_NAME, ValueMetaInterface.TYPE_STRING), condition.getLeftValuename());
-		table.addValue(new ValueMeta(Repository.FIELD_CONDITION_CONDITION_FUNCTION, ValueMetaInterface.TYPE_STRING), condition.getFunctionDesc());
-		table.addValue(new ValueMeta(Repository.FIELD_CONDITION_RIGHT_NAME, ValueMetaInterface.TYPE_STRING), condition.getRightValuename());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION_PARENT, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_condition_parent));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_NEGATED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(condition.isNegated()));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_OPERATOR, ValueMetaInterface.TYPE_STRING), condition.getOperatorDesc());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_LEFT_NAME, ValueMetaInterface.TYPE_STRING), condition.getLeftValuename());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_CONDITION_FUNCTION, ValueMetaInterface.TYPE_STRING), condition.getFunctionDesc());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_RIGHT_NAME, ValueMetaInterface.TYPE_STRING), condition.getRightValuename());
 
 		long id_value = -1L;
 		ValueMetaAndData v = condition.getRightExact();
@@ -145,7 +145,7 @@ public class RepositoryConditionDelegate extends BaseRepositoryDelegate {
 			id_value = insertValue(valueMeta.getName(), valueMeta.getTypeDesc(), stringValue, valueMeta.isNull(v.getValueData()), condition.getRightExactID());
 			condition.setRightExactID(id_value);
 		}
-		table.addValue(new ValueMeta(Repository.FIELD_CONDITION_ID_VALUE_RIGHT, ValueMetaInterface.TYPE_INTEGER), new Long(id_value));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_ID_VALUE_RIGHT, ValueMetaInterface.TYPE_INTEGER), new Long(id_value));
 
 		repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), tablename);
 		repository.connectionDelegate.getDatabase().setValuesInsert(table);
@@ -166,13 +166,13 @@ public class RepositoryConditionDelegate extends BaseRepositoryDelegate {
 			id_value = repository.connectionDelegate.getNextValueID();
 
 			// Let's see if the same value is not yet available?
-			String tablename = Repository.TABLE_R_VALUE;
+			String tablename = KettleDatabaseRepository.TABLE_R_VALUE;
 			RowMetaAndData table = new RowMetaAndData();
-			table.addValue(new ValueMeta(Repository.FIELD_VALUE_ID_VALUE, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_value));
-			table.addValue(new ValueMeta(Repository.FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING), name);
-			table.addValue(new ValueMeta(Repository.FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING), type);
-			table.addValue(new ValueMeta(Repository.FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
-			table.addValue(new ValueMeta(Repository.FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(isnull));
+			table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_VALUE_ID_VALUE, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_value));
+			table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING), name);
+			table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING), type);
+			table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
+			table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(isnull));
 
 			repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), tablename);
 			repository.connectionDelegate.getDatabase().setValuesInsert(table);
@@ -187,16 +187,16 @@ public class RepositoryConditionDelegate extends BaseRepositoryDelegate {
 	public synchronized long lookupValue(String name, String type, String value_str, boolean isnull) throws KettleException
 	{
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta(Repository.FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING), name);
-		table.addValue(new ValueMeta(Repository.FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING), type);
-		table.addValue(new ValueMeta(Repository.FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
-		table.addValue(new ValueMeta(Repository.FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(isnull));
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING), name);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING), type);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(isnull));
 
-		String sql = "SELECT " + quote(Repository.FIELD_VALUE_ID_VALUE) + " FROM " + quoteTable(Repository.TABLE_R_VALUE) + " ";
-		sql += "WHERE " + quote(Repository.FIELD_VALUE_NAME) + "       = ? ";
-		sql += "AND   " + quote(Repository.FIELD_VALUE_VALUE_TYPE) + " = ? ";
-		sql += "AND   " + quote(Repository.FIELD_VALUE_VALUE_STR) + "  = ? ";
-		sql += "AND   " + quote(Repository.FIELD_VALUE_IS_NULL) + "    = ? ";
+		String sql = "SELECT " + quote(KettleDatabaseRepository.FIELD_VALUE_ID_VALUE) + " FROM " + quoteTable(KettleDatabaseRepository.TABLE_R_VALUE) + " ";
+		sql += "WHERE " + quote(KettleDatabaseRepository.FIELD_VALUE_NAME) + "       = ? ";
+		sql += "AND   " + quote(KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE) + " = ? ";
+		sql += "AND   " + quote(KettleDatabaseRepository.FIELD_VALUE_VALUE_STR) + "  = ? ";
+		sql += "AND   " + quote(KettleDatabaseRepository.FIELD_VALUE_IS_NULL) + "    = ? ";
 
 		RowMetaAndData result = repository.connectionDelegate.getOneRow(sql, table.getRowMeta(), table.getData());
 		if (result != null && result.getData()!=null && result.isNumeric(0))
@@ -210,7 +210,7 @@ public class RepositoryConditionDelegate extends BaseRepositoryDelegate {
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(Repository.TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(Repository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transforamtion;
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transforamtion;
 		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
 		if (r != null)
 		{
@@ -225,7 +225,7 @@ public class RepositoryConditionDelegate extends BaseRepositoryDelegate {
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(Repository.TABLE_R_CONDITION)+" WHERE "+quote(Repository.FIELD_CONDITION_ID_CONDITION_PARENT)+" = " + id_condition;
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_CONDITION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION_PARENT)+" = " + id_condition;
 		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
 		if (r != null)
 		{

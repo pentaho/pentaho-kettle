@@ -19,10 +19,8 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.ValueMeta;
@@ -217,38 +215,12 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   {
   }
 
-  public void saveRep(Repository rep, long id_job) throws KettleException {
-		try {
-			setID(rep.jobEntryDelegate.insertJobEntry(id_job, this));
-		} catch (KettleDatabaseException dbe) {
-			throw new KettleException("Unable to save job entry base information to the repository for id_job=" + id_job, dbe);
-		}
-	}
-
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
-  {
-    try
-    {
-      RowMetaAndData r = rep.jobEntryDelegate.getJobEntry(id_jobentry);
-      if (r != null)
-      {
-        setName(r.getString("NAME", null));
-
-        setDescription(r.getString("DESCRIPTION", null));
-        int id_jobentry_type = (int) r.getInteger("ID_JOBENTRY_TYPE", 0);
-        RowMetaAndData jetrow = rep.jobEntryDelegate.getJobEntryType(id_jobentry_type);
-        if (jetrow != null)
-        {
-          configId = jetrow.getString("CODE", null);
-        }
-      }
-		}
-		catch(KettleDatabaseException dbe)
-    {
-			throw new KettleException("Unable to load base job entry information from the repository for id_jobentry="+id_jobentry, dbe);
-    }
+  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
   }
 
+  public void saveRep(Repository rep, long id_job) throws KettleException {
+  }
+	
   public Object clone()
   {
     JobEntryBase je;

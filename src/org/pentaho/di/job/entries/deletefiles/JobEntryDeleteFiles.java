@@ -134,7 +134,6 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
   public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     try {
-      super.loadRep(rep, id_jobentry, databases, slaveServers);
       argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous"); //$NON-NLS-1$
       includeSubfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders"); //$NON-NLS-1$
 
@@ -155,8 +154,6 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
   public void saveRep(Repository rep, long id_job) throws KettleException {
     try {
-      super.saveRep(rep, id_job);
-
       rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", includeSubfolders); //$NON-NLS-1$
 

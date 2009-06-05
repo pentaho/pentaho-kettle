@@ -185,11 +185,9 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 
 
 	 public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
-	  {
+	 {
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
-			
 			arg_from_previous   = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
 			include_subfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders");
 
@@ -215,13 +213,10 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 			throw new KettleException(BaseMessages.getString(PKG, "JobXMLWellFormed.Error.Exception.UnableLoadRep")+id_jobentry, dbe);
 		}
 	}
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous",  arg_from_previous);
 			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", include_subfolders);
 			rep.saveJobEntryAttribute(id_job, getID(), "nr_errors_less_than",  nr_errors_less_than);

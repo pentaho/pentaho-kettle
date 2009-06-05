@@ -97,13 +97,10 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-		throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
-
 			logmessage = rep.getJobEntryAttributeString(id_jobentry, "logmessage");
 			loglevel = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
 			logsubject = rep.getJobEntryAttributeString(id_jobentry, "logsubject");
@@ -117,17 +114,13 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 	
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "logmessage", logmessage);
 			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
 			rep.saveJobEntryAttribute(id_job, getID(), "logsubject", logsubject);
-
 		}
 		catch(KettleDatabaseException dbe)
 		{

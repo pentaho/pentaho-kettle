@@ -25,14 +25,14 @@ import org.pentaho.di.trans.StepPlugin;
 
 public class RepositoryCreationHelper {
 
-	private Repository repository;
+	private KettleDatabaseRepository repository;
 	private LogWriter log;
 	private DatabaseMeta databaseMeta;
 	private Database database;
 	
 	private StepLoader stepLoader;
 	
-    public RepositoryCreationHelper(Repository repository) {
+    public RepositoryCreationHelper(KettleDatabaseRepository repository) {
 		this.repository = repository;
 		this.databaseMeta = this.repository.getDatabaseMeta();
 		this.database = this.repository.getDatabase();
@@ -75,15 +75,15 @@ public class RepositoryCreationHelper {
         // Log the operations we do in the repository.
         //
         table = new RowMeta();
-        tablename = Repository.TABLE_R_REPOSITORY_LOG;
+        tablename = KettleDatabaseRepository.TABLE_R_REPOSITORY_LOG;
         schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
         if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-        table.addValueMeta(new ValueMeta(Repository.FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_REPOSITORY_LOG_REP_VERSION,    ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_REPOSITORY_LOG_LOG_DATE,       ValueMetaInterface.TYPE_DATE));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_REPOSITORY_LOG_LOG_USER,       ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_REPOSITORY_LOG_OPERATION_DESC, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
-        sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG, false);
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_REPOSITORY_LOG_REP_VERSION,    ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_REPOSITORY_LOG_LOG_DATE,       ValueMetaInterface.TYPE_DATE));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_REPOSITORY_LOG_LOG_USER,       ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_REPOSITORY_LOG_OPERATION_DESC, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+        sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG, false);
         
         if (!Const.isEmpty(sql))
         {
@@ -116,15 +116,15 @@ public class RepositoryCreationHelper {
         // Let's start with the version table
         //
         table = new RowMeta();
-        tablename = Repository.TABLE_R_VERSION;
+        tablename = KettleDatabaseRepository.TABLE_R_VERSION;
         schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
         if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-        table.addValueMeta(new ValueMeta(Repository.FIELD_VERSION_ID_VERSION,       ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_VERSION_MAJOR_VERSION,    ValueMetaInterface.TYPE_INTEGER, 3, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_VERSION_MINOR_VERSION,    ValueMetaInterface.TYPE_INTEGER, 3, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_VERSION_UPGRADE_DATE,     ValueMetaInterface.TYPE_DATE, 0, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_VERSION_IS_UPGRADE,       ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-        sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_VERSION_ID_VERSION, false);
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_VERSION_ID_VERSION,       ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_VERSION_MAJOR_VERSION,    ValueMetaInterface.TYPE_INTEGER, 3, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_VERSION_MINOR_VERSION,    ValueMetaInterface.TYPE_INTEGER, 3, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_VERSION_UPGRADE_DATE,     ValueMetaInterface.TYPE_DATE, 0, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_VERSION_IS_UPGRADE,       ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+        sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_VERSION_ID_VERSION, false);
         boolean create = false;
         if (!Const.isEmpty(sql))
         {
@@ -155,7 +155,7 @@ public class RepositoryCreationHelper {
         	// if the table doesn't exist, don't try to grab an ID from it...
         	long nextId;
         	if (sql.toUpperCase().indexOf("CREATE TABLE")<0) { 
-        		nextId = repository.connectionDelegate.getNextID(schemaTable, Repository.FIELD_VERSION_ID_VERSION);
+        		nextId = repository.connectionDelegate.getNextID(schemaTable, KettleDatabaseRepository.FIELD_VERSION_ID_VERSION);
         	} else {
         		nextId = 1;
         	}
@@ -167,10 +167,10 @@ public class RepositoryCreationHelper {
                     Boolean.valueOf(upgrade),
                 };
             if (dryrun) {
-            	sql = database.getSQLOutput(null, Repository.TABLE_R_VERSION, table, data, null);
+            	sql = database.getSQLOutput(null, KettleDatabaseRepository.TABLE_R_VERSION, table, data, null);
             	statements.add(sql);
             } else {
-            	database.execStatement("INSERT INTO "+databaseMeta.getQuotedSchemaTableCombination(null, Repository.TABLE_R_VERSION)+" VALUES(?, ?, ?, ?, ?)", table, data);
+            	database.execStatement("INSERT INTO "+databaseMeta.getQuotedSchemaTableCombination(null, KettleDatabaseRepository.TABLE_R_VERSION)+" VALUES(?, ?, ?, ?, ?)", table, data);
             }
         }
         catch(KettleException e)
@@ -185,13 +185,13 @@ public class RepositoryCreationHelper {
 		//
 		boolean ok_database_type = true;
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_DATABASE_TYPE;
+		tablename = KettleDatabaseRepository.TABLE_R_DATABASE_TYPE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_TYPE_CODE,             ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_TYPE_DESCRIPTION,      ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_TYPE_CODE,             ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_TYPE_DESCRIPTION,      ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE, false);
 		create = false;
 		if (!Const.isEmpty(sql))
 		{
@@ -230,7 +230,7 @@ public class RepositoryCreationHelper {
 			for (int i = 1; i < code.length; i++)
 			{
 				RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(Repository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE)+" FROM " + schemaTable + " WHERE " + repository.quote(Repository.FIELD_DATABASE_TYPE_CODE) +" = '" + code[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(KettleDatabaseRepository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE)+" FROM " + schemaTable + " WHERE " + repository.quote(KettleDatabaseRepository.FIELD_DATABASE_TYPE_CODE) +" = '" + code[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = i;
@@ -272,13 +272,13 @@ public class RepositoryCreationHelper {
 		// 
 		boolean ok_database_contype = true;
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_DATABASE_CONTYPE;
+		tablename = KettleDatabaseRepository.TABLE_R_DATABASE_CONTYPE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_CONTYPE_CODE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_CONTYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_CONTYPE_CODE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_CONTYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE, false);
 
 		if (!Const.isEmpty(sql))
 		{
@@ -309,8 +309,8 @@ public class RepositoryCreationHelper {
 			for (int i = 0; i < code.length; i++)
 			{
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(Repository.FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE)+" FROM " + schemaTable + " WHERE " 
-                		+ repository.quote(Repository.FIELD_DATABASE_CONTYPE_CODE) + " = '" + code[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(KettleDatabaseRepository.FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE)+" FROM " + schemaTable + " WHERE " 
+                		+ repository.quote(KettleDatabaseRepository.FIELD_DATABASE_CONTYPE_CODE) + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = i+1;
@@ -353,31 +353,31 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_NOTE;
+		tablename = KettleDatabaseRepository.TABLE_R_NOTE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_GUI_LOCATION_WIDTH, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_GUI_LOCATION_HEIGHT, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_FONT_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_FONT_SIZE, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_FONT_BOLD, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_FONT_ITALIC, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_COLOR_RED, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_COLOR_BLUE, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_BACK_GROUND_COLOR_RED, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_BACK_GROUND_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_BACK_GROUND_COLOR_BLUE, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_BORDER_COLOR_RED, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_BORDER_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_BORDER_COLOR_BLUE, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_NOTE_DRAW_SHADOW, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_GUI_LOCATION_WIDTH, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_GUI_LOCATION_HEIGHT, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_FONT_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_FONT_SIZE, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_FONT_BOLD, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_FONT_ITALIC, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_COLOR_RED, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_COLOR_BLUE, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_BACK_GROUND_COLOR_RED, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_BACK_GROUND_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_BACK_GROUND_COLOR_BLUE, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_BORDER_COLOR_RED, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_BORDER_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_BORDER_COLOR_BLUE, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NOTE_DRAW_SHADOW, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
 		
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_NOTE_ID_NOTE, false);
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_NOTE_ID_NOTE, false);
         
 		if (!Const.isEmpty(sql))
 		{
@@ -400,22 +400,22 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_DATABASE;
+		tablename = KettleDatabaseRepository.TABLE_R_DATABASE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_HOST_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_DATABASE_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER, 7, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_USERNAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_PASSWORD, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_SERVERNAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_DATA_TBS, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_INDEX_TBS, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_DATABASE_ID_DATABASE, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_HOST_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_DATABASE_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER, 7, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_USERNAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_PASSWORD, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_SERVERNAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_DATA_TBS, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_INDEX_TBS, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE, false);
         
 		if (!Const.isEmpty(sql))
 		{
@@ -438,14 +438,14 @@ public class RepositoryCreationHelper {
         //
         // Create table...
         table = new RowMeta();
-        tablename = Repository.TABLE_R_DATABASE_ATTRIBUTE;
+        tablename = KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE;
         schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
         if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-        table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_DATABASE_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
-        sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE, false);
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+        sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE, false);
         
         if (!Const.isEmpty(sql))
         {
@@ -458,7 +458,7 @@ public class RepositoryCreationHelper {
             try
             {
                 indexname = "IDX_" + schemaTable.substring(2) + "_AK";
-                keyfield = new String[] { Repository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE, Repository.FIELD_DATABASE_ATTRIBUTE_CODE, };
+                keyfield = new String[] { KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE, KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_CODE, };
                 if (!database.checkIndexExists(schemaTable, keyfield))
                 {
                     sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
@@ -488,13 +488,13 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_DIRECTORY;
+		tablename = KettleDatabaseRepository.TABLE_R_DIRECTORY;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DIRECTORY_ID_DIRECTORY,        ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DIRECTORY_DIRECTORY_NAME,      ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_DIRECTORY_ID_DIRECTORY, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY,        ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME,      ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY, false);
 
 		if (!Const.isEmpty(sql))
 		{
@@ -508,7 +508,7 @@ public class RepositoryCreationHelper {
 			try
 			{
 				indexname = "IDX_" + schemaTable.substring(2) + "_AK";
-				keyfield = new String[] { Repository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, Repository.FIELD_DIRECTORY_DIRECTORY_NAME };
+				keyfield = new String[] { KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME };
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
@@ -538,36 +538,36 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_TRANSFORMATION;
+		tablename = KettleDatabaseRepository.TABLE_R_TRANSFORMATION;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_DESCRIPTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_EXTENDED_DESCRIPTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_TRANS_VERSION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_TRANS_STATUS, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_ID_STEP_READ, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_ID_STEP_WRITE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_ID_STEP_INPUT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_ID_STEP_OUTPUT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_ID_STEP_UPDATE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_USE_BATCHID, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_ID_DATABASE_MAXDATE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_TABLE_NAME_MAXDATE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_FIELD_NAME_MAXDATE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_OFFSET_MAXDATE, ValueMetaInterface.TYPE_NUMBER, 12, 2));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_DIFF_MAXDATE, ValueMetaInterface.TYPE_NUMBER, 12, 2));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_CREATED_USER, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_CREATED_DATE, ValueMetaInterface.TYPE_DATE, 20, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_MODIFIED_USER, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE, 20, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANSFORMATION_SIZE_ROWSET, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_TRANSFORMATION_ID_TRANSFORMATION, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_EXTENDED_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_TRANS_VERSION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_TRANS_STATUS, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_READ, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_WRITE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_INPUT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_OUTPUT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_UPDATE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_USE_BATCHID, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DATABASE_MAXDATE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_TABLE_NAME_MAXDATE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_FIELD_NAME_MAXDATE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_OFFSET_MAXDATE, ValueMetaInterface.TYPE_NUMBER, 12, 2));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_DIFF_MAXDATE, ValueMetaInterface.TYPE_NUMBER, 12, 2));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_CREATED_USER, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_CREATED_DATE, ValueMetaInterface.TYPE_DATE, 20, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_USER, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE, 20, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_SIZE_ROWSET, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION, false);
 
         if (!Const.isEmpty(sql))
 		{
@@ -586,10 +586,10 @@ public class RepositoryCreationHelper {
 		// In case of an update, the added column R_TRANSFORMATION.ID_DIRECTORY == NULL!!!
         //
         if (database.checkTableExists(schemaTable)) {
-	        sql = "SELECT * FROM "+schemaTable+" WHERE "+repository.quote(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" IS NULL";
+	        sql = "SELECT * FROM "+schemaTable+" WHERE "+repository.quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" IS NULL";
 	        List<Object[]> rows = database.getRows(sql, 1);
 	        if (rows!=null && rows.size()>0) {
-		        sql = "UPDATE " + schemaTable + " SET "+repository.quote(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY)+"=0 WHERE "+repository.quote(Repository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" IS NULL";
+		        sql = "UPDATE " + schemaTable + " SET "+repository.quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY)+"=0 WHERE "+repository.quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" IS NULL";
 		        statements.add(sql);
 				if (!dryrun) {
 					database.execStatement(sql);
@@ -605,16 +605,16 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_TRANS_ATTRIBUTE;
+		tablename = KettleDatabaseRepository.TABLE_R_TRANS_ATTRIBUTE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_INTEGER, 18, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_INTEGER, 18, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE, false);
 
 		if (!Const.isEmpty(sql))
 		{
@@ -627,7 +627,7 @@ public class RepositoryCreationHelper {
 			try
 			{
 				indexname = "IDX_TRANS_ATTRIBUTE_LOOKUP";
-				keyfield = new String[] { Repository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, Repository.FIELD_TRANS_ATTRIBUTE_CODE, Repository.FIELD_TRANS_ATTRIBUTE_NR };
+				keyfield = new String[] { KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_CODE, KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_NR };
 
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
@@ -658,16 +658,16 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_JOB_ATTRIBUTE;
+		tablename = KettleDatabaseRepository.TABLE_R_JOB_ATTRIBUTE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_ATTRIBUTE_ID_JOB_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_INTEGER, 18, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_JOB_ATTRIBUTE_ID_JOB_ATTRIBUTE, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_INTEGER, 18, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB_ATTRIBUTE, false);
 
 		if (!Const.isEmpty(sql))
 		{
@@ -680,7 +680,7 @@ public class RepositoryCreationHelper {
 			try
 			{
 				indexname = "IDX_JOB_ATTRIBUTE_LOOKUP";
-				keyfield = new String[] { Repository.FIELD_JOB_ATTRIBUTE_ID_JOB, Repository.FIELD_JOB_ATTRIBUTE_CODE, Repository.FIELD_JOB_ATTRIBUTE_NR };
+				keyfield = new String[] { KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB, KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE, KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_NR };
 
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
@@ -710,15 +710,15 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_DEPENDENCY;
+		tablename = KettleDatabaseRepository.TABLE_R_DEPENDENCY;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DEPENDENCY_ID_DEPENDENCY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DEPENDENCY_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DEPENDENCY_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DEPENDENCY_TABLE_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_DEPENDENCY_FIELD_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_DEPENDENCY_ID_DEPENDENCY, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DEPENDENCY_ID_DEPENDENCY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DEPENDENCY_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DEPENDENCY_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DEPENDENCY_TABLE_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DEPENDENCY_FIELD_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_DEPENDENCY_ID_DEPENDENCY, false);
 
 		if (!Const.isEmpty(sql))
 		{
@@ -741,14 +741,14 @@ public class RepositoryCreationHelper {
         //
         // Create table...
         table = new RowMeta();
-        tablename = Repository.TABLE_R_PARTITION_SCHEMA;
+        tablename = KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA;
         schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
         if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-        table.addValueMeta(new ValueMeta(Repository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_PARTITION_SCHEMA_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, false);
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, false);
 
         if (!Const.isEmpty(sql))
         {
@@ -771,13 +771,13 @@ public class RepositoryCreationHelper {
         //
         // Create table...
         table = new RowMeta();
-        tablename = Repository.TABLE_R_PARTITION;
+        tablename = KettleDatabaseRepository.TABLE_R_PARTITION;
         schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
         if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-        table.addValueMeta(new ValueMeta(Repository.FIELD_PARTITION_ID_PARTITION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_PARTITION_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_PARTITION_PARTITION_ID, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_PARTITION_ID_PARTITION, false);
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PARTITION_PARTITION_ID, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION, false);
 
         if (!Const.isEmpty(sql))
         {
@@ -800,13 +800,13 @@ public class RepositoryCreationHelper {
         //
         // Create table...
         table = new RowMeta();
-        tablename = Repository.TABLE_R_TRANS_PARTITION_SCHEMA;
+        tablename = KettleDatabaseRepository.TABLE_R_TRANS_PARTITION_SCHEMA;
         schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
         if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-        table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA, false);
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA, false);
 
         if (!Const.isEmpty(sql))
         {
@@ -830,17 +830,17 @@ public class RepositoryCreationHelper {
         //
         // Create table...
         table = new RowMeta();
-        tablename = Repository.TABLE_R_CLUSTER;
+        tablename = KettleDatabaseRepository.TABLE_R_CLUSTER;
         schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
         if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-        table.addValueMeta(new ValueMeta(Repository.FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_CLUSTER_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_CLUSTER_BASE_PORT, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_CLUSTER_SOCKETS_COMPRESSED, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_CLUSTER_DYNAMIC, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
-        sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_CLUSTER_ID_CLUSTER, false);
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_BASE_PORT, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_COMPRESSED, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_DYNAMIC, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
+        sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER, false);
 
         if (!Const.isEmpty(sql))
         {
@@ -863,20 +863,20 @@ public class RepositoryCreationHelper {
         //
         // Create table...
         table = new RowMeta();
-        tablename = Repository.TABLE_R_SLAVE;
+        tablename = KettleDatabaseRepository.TABLE_R_SLAVE;
         schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
         if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-        table.addValueMeta(new ValueMeta(Repository.FIELD_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_SLAVE_HOST_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_SLAVE_USERNAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_SLAVE_PASSWORD, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_SLAVE_PROXY_HOST_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN));
-        sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_SLAVE_ID_SLAVE, false);
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_HOST_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_USERNAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PASSWORD, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PROXY_HOST_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN));
+        sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE, false);
 
         if (!Const.isEmpty(sql))
         {
@@ -899,13 +899,13 @@ public class RepositoryCreationHelper {
         //
         // Create table...
         table = new RowMeta();
-        tablename = Repository.TABLE_R_CLUSTER_SLAVE;
+        tablename = KettleDatabaseRepository.TABLE_R_CLUSTER_SLAVE;
         schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
         if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-        table.addValueMeta(new ValueMeta(Repository.FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_CLUSTER_SLAVE_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_CLUSTER_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, false);
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, false);
 
         if (!Const.isEmpty(sql))
         {
@@ -928,13 +928,13 @@ public class RepositoryCreationHelper {
         //
         // Create table...
         table = new RowMeta();
-        tablename = Repository.TABLE_R_TRANS_SLAVE;
+        tablename = KettleDatabaseRepository.TABLE_R_TRANS_SLAVE;
         schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
         if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-        table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_SLAVE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, false);
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, false);
 
         if (!Const.isEmpty(sql))
         {
@@ -958,13 +958,13 @@ public class RepositoryCreationHelper {
         //
         // Create table...
         table = new RowMeta();
-        tablename = Repository.TABLE_R_TRANS_CLUSTER;
+        tablename = KettleDatabaseRepository.TABLE_R_TRANS_CLUSTER;
         schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
         if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-        table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_CLUSTER_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER, false);
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER, false);
 
         if (!Const.isEmpty(sql))
         {
@@ -986,15 +986,15 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_TRANS_HOP;
+		tablename = KettleDatabaseRepository.TABLE_R_TRANS_HOP;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_HOP_ID_TRANS_HOP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_HOP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_HOP_ID_STEP_FROM, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_HOP_ID_STEP_TO, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_TRANS_HOP_ID_TRANS_HOP, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANS_HOP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_HOP_ID_STEP_FROM, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_HOP_ID_STEP_TO, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANS_HOP, false);
 
 		if (!Const.isEmpty(sql))
 		{
@@ -1015,12 +1015,12 @@ public class RepositoryCreationHelper {
 		// R_TRANS_STEP_CONDITION
 		//
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_TRANS_STEP_CONDITION;
+		tablename = KettleDatabaseRepository.TABLE_R_TRANS_STEP_CONDITION;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_STEP_CONDITION_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_STEP_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		sql = database.getDDL(schemaTable, table, null, false, null, false);
 
 		if (!Const.isEmpty(sql)) // Doesn't exists: create the table...
@@ -1042,18 +1042,18 @@ public class RepositoryCreationHelper {
 		// R_CONDITION
 		//
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_CONDITION;
+		tablename = KettleDatabaseRepository.TABLE_R_CONDITION;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_CONDITION_ID_CONDITION_PARENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_CONDITION_NEGATED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_CONDITION_OPERATOR, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_CONDITION_LEFT_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_CONDITION_CONDITION_FUNCTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_CONDITION_RIGHT_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_CONDITION_ID_VALUE_RIGHT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_CONDITION_ID_CONDITION, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION_PARENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_NEGATED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_OPERATOR, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_LEFT_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_CONDITION_FUNCTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_RIGHT_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_CONDITION_ID_VALUE_RIGHT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION, false);
 
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
 		{
@@ -1073,16 +1073,16 @@ public class RepositoryCreationHelper {
 		///////////////////////////////////////////////////////////////////////////////
 		// R_VALUE
 		//
-		tablename = Repository.TABLE_R_VALUE;
+		tablename = KettleDatabaseRepository.TABLE_R_VALUE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table = new RowMeta();
-		table.addValueMeta(new ValueMeta(Repository.FIELD_VALUE_ID_VALUE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_VALUE_ID_VALUE, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_VALUE_ID_VALUE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_VALUE_ID_VALUE, false);
 
 		if (!Const.isEmpty(sql)) // Doesn't exists: create the table...
 		{
@@ -1106,13 +1106,13 @@ public class RepositoryCreationHelper {
 		// Create table...
 		boolean ok_step_type = true;
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_STEP_TYPE;
+		tablename = KettleDatabaseRepository.TABLE_R_STEP_TYPE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_TYPE_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_TYPE_CODE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_TYPE_HELPTEXT, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_TYPE_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_TYPE_CODE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_TYPE_HELPTEXT, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
 		sql = database.getDDL(schemaTable, table, null, false, "ID_STEP_TYPE", false);
 		create = false;
 		if (!Const.isEmpty(sql)) // Doesn't exists: create the table...
@@ -1143,20 +1143,20 @@ public class RepositoryCreationHelper {
 		//
 		// Create table
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_STEP;
+		tablename = KettleDatabaseRepository.TABLE_R_STEP;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_DESCRIPTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_DISTRIBUTE, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_COPIES, ValueMetaInterface.TYPE_INTEGER, 3, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_STEP_ID_STEP, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_DISTRIBUTE, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_COPIES, ValueMetaInterface.TYPE_INTEGER, 3, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_STEP_ID_STEP, false);
 
 		if (!Const.isEmpty(sql)) // Doesn't exists: create the table...
 		{
@@ -1178,18 +1178,18 @@ public class RepositoryCreationHelper {
 		// R_STEP_ATTRIBUTE
 		//
 		// Create table...
-		tablename = Repository.TABLE_R_STEP_ATTRIBUTE;
+		tablename = KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table = new RowMeta();
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_ATTRIBUTE_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_INTEGER, 18, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
-        sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_INTEGER, 18, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+        sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE, false);
         
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
 		{
@@ -1203,7 +1203,7 @@ public class RepositoryCreationHelper {
 			try
 			{
 				indexname = "IDX_" + schemaTable.substring(2) + "_LOOKUP";
-				keyfield = new String[] { Repository.FIELD_STEP_ATTRIBUTE_ID_STEP, Repository.FIELD_STEP_ATTRIBUTE_CODE, Repository.FIELD_STEP_ATTRIBUTE_NR, };
+				keyfield = new String[] { KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP, KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_CODE, KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_NR, };
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
@@ -1234,13 +1234,13 @@ public class RepositoryCreationHelper {
 		// That way investigating dependencies becomes easier to program.
 		//
 		// Create table...
-		tablename = Repository.TABLE_R_STEP_DATABASE;
+		tablename = KettleDatabaseRepository.TABLE_R_STEP_DATABASE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table = new RowMeta();
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_DATABASE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_DATABASE_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_STEP_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		sql = database.getDDL(schemaTable, table, null, false, null, false);
         
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
@@ -1255,7 +1255,7 @@ public class RepositoryCreationHelper {
 			try
 			{
 				indexname = "IDX_" + schemaTable.substring(2) + "_LU1";
-				keyfield = new String[] { Repository.FIELD_STEP_DATABASE_ID_TRANSFORMATION, };
+				keyfield = new String[] { KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION, };
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, false, false, false);
@@ -1275,7 +1275,7 @@ public class RepositoryCreationHelper {
 			try
 			{
 				indexname = "IDX_" + schemaTable.substring(2) + "_LU2";
-				keyfield = new String[] { Repository.FIELD_STEP_DATABASE_ID_DATABASE, };
+				keyfield = new String[] { KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_DATABASE, };
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, false, false, false);
@@ -1304,11 +1304,11 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_TRANS_NOTE;
+		tablename = KettleDatabaseRepository.TABLE_R_TRANS_NOTE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_NOTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_TRANS_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		sql = database.getDDL(schemaTable, table, null, false, null, false);
 
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
@@ -1332,14 +1332,14 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		boolean ok_loglevel = true;
-		tablename = Repository.TABLE_R_LOGLEVEL;
+		tablename = KettleDatabaseRepository.TABLE_R_LOGLEVEL;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table = new RowMeta();
-		table.addValueMeta(new ValueMeta(Repository.FIELD_LOGLEVEL_ID_LOGLEVEL, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_LOGLEVEL_CODE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_LOGLEVEL_DESCRIPTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_LOGLEVEL_ID_LOGLEVEL, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_LOGLEVEL_ID_LOGLEVEL, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_LOGLEVEL_CODE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_LOGLEVEL_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_LOGLEVEL_ID_LOGLEVEL, false);
 
 		create=false;
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
@@ -1372,7 +1372,7 @@ public class RepositoryCreationHelper {
 			for (int i = 1; i < code.length; i++)
 			{
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(Repository.FIELD_LOGLEVEL_ID_LOGLEVEL)+" FROM " + schemaTable + " WHERE " 
+                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(KettleDatabaseRepository.FIELD_LOGLEVEL_ID_LOGLEVEL)+" FROM " + schemaTable + " WHERE " 
                 		+ database.getDatabaseMeta().quoteField("CODE") + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
@@ -1380,9 +1380,9 @@ public class RepositoryCreationHelper {
 					if (!create) nextid = repository.connectionDelegate.getNextLoglevelID();
 
 					RowMetaAndData tableData = new RowMetaAndData();
-                    tableData.addValue(new ValueMeta(Repository.FIELD_LOGLEVEL_ID_LOGLEVEL, ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
-                    tableData.addValue(new ValueMeta(Repository.FIELD_LOGLEVEL_CODE, ValueMetaInterface.TYPE_STRING), code[i]);
-                    tableData.addValue(new ValueMeta(Repository.FIELD_LOGLEVEL_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_LOGLEVEL_ID_LOGLEVEL, ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_LOGLEVEL_CODE, ValueMetaInterface.TYPE_STRING), code[i]);
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_LOGLEVEL_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
 
                     if (dryrun) {
 		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), null);
@@ -1414,20 +1414,20 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_LOG;
+		tablename = KettleDatabaseRepository.TABLE_R_LOG;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_LOG_ID_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_LOG_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_LOG_ID_LOGLEVEL, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_LOG_LOGTYPE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_LOG_FILENAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_LOG_FILEEXTENTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_LOG_ADD_DATE, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_LOG_ADD_TIME, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_LOG_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_LOG_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_LOG_ID_LOG, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_LOG_ID_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_LOG_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_LOG_ID_LOGLEVEL, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_LOG_LOGTYPE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_LOG_FILENAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_LOG_FILEEXTENTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_LOG_ADD_DATE, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_LOG_ADD_TIME, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_LOG_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_LOG_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_LOG_ID_LOG, false);
 
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
 		{
@@ -1450,28 +1450,28 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_JOB;
+		tablename = KettleDatabaseRepository.TABLE_R_JOB;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_DESCRIPTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_EXTENDED_DESCRIPTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_JOB_VERSION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_JOB_STATUS, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_CREATED_USER, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_CREATED_DATE, ValueMetaInterface.TYPE_DATE, 20, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_MODIFIED_USER, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE, 20, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_USE_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
-        table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0)); // 255 max length for now.
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_EXTENDED_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_JOB_VERSION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_JOB_STATUS, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_CREATED_USER, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_CREATED_DATE, ValueMetaInterface.TYPE_DATE, 20, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_MODIFIED_USER, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE, 20, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_USE_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0)); // 255 max length for now.
 
-        sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_JOB_ID_JOB, false);
+        sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOB_ID_JOB, false);
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
 		{
         	statements.add(sql);
@@ -1497,13 +1497,13 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_JOBENTRY_DATABASE;
+		tablename = KettleDatabaseRepository.TABLE_R_JOBENTRY_DATABASE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_DATABASE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_DATABASE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-	    sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_JOB_ID_JOB, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+	    sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOB_ID_JOB, false);
 	    sql = database.getDDL(schemaTable, table, null, false, null, false);
         
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
@@ -1518,7 +1518,7 @@ public class RepositoryCreationHelper {
 			try
 			{
 				indexname = "IDX_" + schemaTable.substring(2) + "_LU1";
-				keyfield = new String[] { Repository.FIELD_JOBENTRY_DATABASE_ID_JOB, };
+				keyfield = new String[] { KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOB, };
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, false, false, false);
@@ -1538,7 +1538,7 @@ public class RepositoryCreationHelper {
 			try
 			{
 				indexname = "IDX_" + schemaTable.substring(2) + "_LU2";
-				keyfield = new String[] { Repository.FIELD_JOBENTRY_DATABASE_ID_DATABASE, };
+				keyfield = new String[] { KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_DATABASE, };
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, false, false, false);
@@ -1569,13 +1569,13 @@ public class RepositoryCreationHelper {
 		// Create table...
 		boolean ok_jobentry_type = true;
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_JOBENTRY_TYPE;
+		tablename = KettleDatabaseRepository.TABLE_R_JOBENTRY_TYPE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_TYPE_CODE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_TYPE_CODE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE, false);
 
 		create = false;
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
@@ -1609,15 +1609,15 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_JOBENTRY;
+		tablename = KettleDatabaseRepository.TABLE_R_JOBENTRY;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_DESCRIPTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_JOBENTRY_ID_JOBENTRY, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOBENTRY, false);
 
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
 		{
@@ -1640,19 +1640,19 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_JOBENTRY_COPY;
+		tablename = KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_COPY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_COPY_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_COPY_NR, ValueMetaInterface.TYPE_INTEGER, 4, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_COPY_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_COPY_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_COPY_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_COPY_PARALLEL, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_NR, ValueMetaInterface.TYPE_INTEGER, 4, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_PARALLEL, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, false);
 
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
 		{
@@ -1675,17 +1675,17 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_JOBENTRY_ATTRIBUTE;
+		tablename = KettleDatabaseRepository.TABLE_R_JOBENTRY_ATTRIBUTE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_NUMBER, 13, 2));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_NUMBER, 13, 2));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, false);
 
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
 		{
@@ -1699,7 +1699,7 @@ public class RepositoryCreationHelper {
 			try
 			{
 				indexname = "IDX_" + schemaTable.substring(2) + "_LOOKUP";
-				keyfield = new String[] { Repository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, Repository.FIELD_JOBENTRY_ATTRIBUTE_CODE, Repository.FIELD_JOBENTRY_ATTRIBUTE_NR, };
+				keyfield = new String[] { KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_CODE, KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_NR, };
 	
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
@@ -1729,17 +1729,17 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_JOB_HOP;
+		tablename = KettleDatabaseRepository.TABLE_R_JOB_HOP;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_HOP_ID_JOB_HOP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_HOP_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_TO, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_HOP_EVALUATION, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_HOP_UNCONDITIONAL, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_JOB_HOP_ID_JOB_HOP, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB_HOP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_TO, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_HOP_EVALUATION, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_HOP_UNCONDITIONAL, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB_HOP, false);
 
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
 		{
@@ -1762,11 +1762,11 @@ public class RepositoryCreationHelper {
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_JOB_NOTE;
+		tablename = KettleDatabaseRepository.TABLE_R_JOB_NOTE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_NOTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_JOB_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_NOTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		sql = database.getDDL(schemaTable, table, null, false, null, false);
 
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
@@ -1798,14 +1798,14 @@ public class RepositoryCreationHelper {
         Map<String, Long> profiles = new Hashtable<String, Long>();
         
 		boolean ok_profile = true;
-		tablename = Repository.TABLE_R_PROFILE;
+		tablename = KettleDatabaseRepository.TABLE_R_PROFILE;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table = new RowMeta();
-		table.addValueMeta(new ValueMeta(Repository.FIELD_PROFILE_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_PROFILE_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_PROFILE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_PROFILE_ID_PROFILE, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_PROFILE_ID_PROFILE, false);
 
 		create = false;
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
@@ -1838,17 +1838,17 @@ public class RepositoryCreationHelper {
 			for (int i = 0; i < code.length; i++)
 			{
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(Repository.FIELD_PROFILE_ID_PROFILE)+" FROM " + schemaTable + " WHERE "
-                		+ repository.quote(Repository.FIELD_PROFILE_NAME) + " = '" + code[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_ID_PROFILE)+" FROM " + schemaTable + " WHERE "
+                		+ repository.quote(KettleDatabaseRepository.FIELD_PROFILE_NAME) + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = i+1;
 					if (!create) nextid = repository.connectionDelegate.getNextProfileID();
 
 					RowMetaAndData tableData = new RowMetaAndData();
-                    tableData.addValue(new ValueMeta(Repository.FIELD_PROFILE_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
-                    tableData.addValue(new ValueMeta(Repository.FIELD_PROFILE_NAME, ValueMetaInterface.TYPE_STRING), code[i]);
-                    tableData.addValue(new ValueMeta(Repository.FIELD_PROFILE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_NAME, ValueMetaInterface.TYPE_STRING), code[i]);
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
 
                     if (dryrun) {
 		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), null);
@@ -1884,17 +1884,17 @@ public class RepositoryCreationHelper {
         Map<String, Long> users = new Hashtable<String, Long>();
 		boolean ok_user = true;
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_USER;
+		tablename = KettleDatabaseRepository.TABLE_R_USER;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_USER_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_USER_LOGIN, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_USER_PASSWORD, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_USER_DESCRIPTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_USER_ENABLED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_USER_ID_USER, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_USER_LOGIN, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_USER_PASSWORD, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_USER_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ENABLED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_USER_ID_USER, false);
 
 		create = false;
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
@@ -1930,8 +1930,8 @@ public class RepositoryCreationHelper {
 			for (int i = 0; i < user.length; i++)
 			{
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(Repository.FIELD_USER_ID_USER)+" FROM " + schemaTable + " WHERE "
-                		+ repository.quote(Repository.FIELD_USER_LOGIN) + " = '" + user[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(KettleDatabaseRepository.FIELD_USER_ID_USER)+" FROM " + schemaTable + " WHERE "
+                		+ repository.quote(KettleDatabaseRepository.FIELD_USER_LOGIN) + " = '" + user[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = i+1;
@@ -1943,13 +1943,13 @@ public class RepositoryCreationHelper {
                     if (profileID!=null) id_profile = profileID.longValue();
                     
 					RowMetaAndData tableData = new RowMetaAndData();
-                    tableData.addValue(new ValueMeta(Repository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(nextid));
-                    tableData.addValue(new ValueMeta(Repository.FIELD_USER_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_profile));
-                    tableData.addValue(new ValueMeta(Repository.FIELD_USER_LOGIN, ValueMetaInterface.TYPE_STRING), user[i]);
-                    tableData.addValue(new ValueMeta(Repository.FIELD_USER_PASSWORD, ValueMetaInterface.TYPE_STRING), password);
-                    tableData.addValue(new ValueMeta(Repository.FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING), code[i]);
-                    tableData.addValue(new ValueMeta(Repository.FIELD_USER_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
-                    tableData.addValue(new ValueMeta(Repository.FIELD_USER_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.TRUE);
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(nextid));
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_profile));
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_LOGIN, ValueMetaInterface.TYPE_STRING), user[i]);
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_PASSWORD, ValueMetaInterface.TYPE_STRING), password);
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING), code[i]);
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.TRUE);
 
                     if (dryrun) {
 		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), null);
@@ -1984,13 +1984,13 @@ public class RepositoryCreationHelper {
         Map<String, Long> permissions = new Hashtable<String, Long>();
 		boolean ok_permission = true;
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_PERMISSION;
+		tablename = KettleDatabaseRepository.TABLE_R_PERMISSION;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_PERMISSION_CODE, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_PERMISSION_DESCRIPTION, ValueMetaInterface.TYPE_STRING, Repository.REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, Repository.FIELD_PERMISSION_ID_PERMISSION, false);
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PERMISSION_CODE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PERMISSION_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_PERMISSION_ID_PERMISSION, false);
 
 		create = false;
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
@@ -2023,17 +2023,17 @@ public class RepositoryCreationHelper {
 			for (int i = 1; i < code.length; i++)
 			{
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(Repository.FIELD_PERMISSION_ID_PERMISSION)+" FROM " + schemaTable + " WHERE " 
-                		+ repository.quote(Repository.FIELD_PERMISSION_CODE) + " = '" + code[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(KettleDatabaseRepository.FIELD_PERMISSION_ID_PERMISSION)+" FROM " + schemaTable + " WHERE " 
+                		+ repository.quote(KettleDatabaseRepository.FIELD_PERMISSION_CODE) + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = i;
 					if (!create) nextid = repository.connectionDelegate.getNextPermissionID();
 
                     RowMetaAndData tableData = new RowMetaAndData();
-                    tableData.addValue(new ValueMeta(Repository.FIELD_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
-                    tableData.addValue(new ValueMeta(Repository.FIELD_PERMISSION_CODE, ValueMetaInterface.TYPE_STRING), code[i]);
-                    tableData.addValue(new ValueMeta(Repository.FIELD_PERMISSION_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PERMISSION_CODE, ValueMetaInterface.TYPE_STRING), code[i]);
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PERMISSION_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
 
                     if (dryrun) {
 		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), null);
@@ -2068,11 +2068,11 @@ public class RepositoryCreationHelper {
 		// Create table...
 		boolean ok_profile_permission = true;
 		table = new RowMeta();
-		tablename = Repository.TABLE_R_PROFILE_PERMISSION;
+		tablename = KettleDatabaseRepository.TABLE_R_PROFILE_PERMISSION;
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(Repository.FIELD_PROFILE_PERMISSION_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(Repository.FIELD_PROFILE_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		sql = database.getDDL(schemaTable, table, null, false, null, false);
 
 		create = false;
@@ -2088,7 +2088,7 @@ public class RepositoryCreationHelper {
 			try
 			{
 				indexname = "IDX_" + schemaTable.substring(2) + "_PK";
-				keyfield = new String[] { Repository.FIELD_PROFILE_PERMISSION_ID_PROFILE, Repository.FIELD_PROFILE_PERMISSION_ID_PERMISSION, };
+				keyfield = new String[] { KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE, KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION, };
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
@@ -2141,15 +2141,15 @@ public class RepositoryCreationHelper {
 				RowMetaAndData lookup = null;
                 if (upgrade) 
                 {
-                    String lookupSQL = "SELECT "+repository.quote(Repository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+
+                    String lookupSQL = "SELECT "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+
                                    " FROM " + schemaTable + 
-                                   " WHERE "+repository.quote(Repository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+"=" + id_profile + " AND +"+repository.quote(Repository.FIELD_PROFILE_PERMISSION_ID_PERMISSION)+"=" + id_permission;
+                                   " WHERE "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+"=" + id_profile + " AND +"+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION)+"=" + id_permission;
                     if (log.isDetailed()) log.logDetailed(toString(), "Executing SQL: "+lookupSQL);
                     lookup = database.getOneRow(lookupSQL);
                 }
 				if (lookup == null) // if the combination is not yet there, insert...
 				{
-                    String insertSQL="INSERT INTO "+schemaTable+"("+repository.quote(Repository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+", "+repository.quote(Repository.FIELD_PROFILE_PERMISSION_ID_PERMISSION)+")"
+                    String insertSQL="INSERT INTO "+schemaTable+"("+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+", "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION)+")"
                     			+" VALUES("+id_profile+","+id_permission+")";
                     statements.add(insertSQL);
                     if (!dryrun) {
@@ -2183,14 +2183,14 @@ public class RepositoryCreationHelper {
                 if (permissionID!=null) id_permission = permissionID.longValue();
 
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(Repository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+
+                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+
                 			" FROM " + schemaTable + 
-                			" WHERE "+repository.quote(Repository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+"=" + id_profile + " AND "+repository.quote(Repository.FIELD_PROFILE_PERMISSION_ID_PERMISSION)+"=" + id_permission);
+                			" WHERE "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+"=" + id_profile + " AND "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION)+"=" + id_permission);
 				if (lookup == null) // if the combination is not yet there, insert...
 				{
 					RowMetaAndData tableData = new RowMetaAndData();
-                    tableData.addValue(new ValueMeta(Repository.FIELD_PROFILE_PERMISSION_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), new Long(id_profile));
-                    tableData.addValue(new ValueMeta(Repository.FIELD_PROFILE_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER), new Long(id_permission));
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), new Long(id_profile));
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER), new Long(id_permission));
 
                     if (dryrun) {
 		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), null);
@@ -2218,7 +2218,7 @@ public class RepositoryCreationHelper {
 		if (monitor!=null) monitor.worked(1);
 		if (monitor!=null) monitor.done();
         
-        log.logBasic(toString(), (upgrade?"Upgraded":"Created")+ " "+Repository.repositoryTableNames.length+" repository tables.");
+        log.logBasic(toString(), (upgrade?"Upgraded":"Created")+ " "+KettleDatabaseRepository.repositoryTableNames.length+" repository tables.");
 
 	}
 
@@ -2244,16 +2244,16 @@ public class RepositoryCreationHelper {
 					if (!create) id = repository.connectionDelegate.getNextStepTypeID();
 	
 					RowMetaAndData table = new RowMetaAndData();
-					table.addValue(new ValueMeta(Repository.FIELD_STEP_TYPE_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
-					table.addValue(new ValueMeta(Repository.FIELD_STEP_TYPE_CODE, ValueMetaInterface.TYPE_STRING), sp.getID()[0]);
-					table.addValue(new ValueMeta(Repository.FIELD_STEP_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), sp.getDescription());
-					table.addValue(new ValueMeta(Repository.FIELD_STEP_TYPE_HELPTEXT, ValueMetaInterface.TYPE_STRING), sp.getTooltip());
+					table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_TYPE_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+					table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_TYPE_CODE, ValueMetaInterface.TYPE_STRING), sp.getID()[0]);
+					table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), sp.getDescription());
+					table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_TYPE_HELPTEXT, ValueMetaInterface.TYPE_STRING), sp.getTooltip());
 	
 					if (dryrun) {
-		            	String sql = database.getSQLOutput(null, Repository.TABLE_R_STEP_TYPE, table.getRowMeta(), table.getData(), null);
+		            	String sql = database.getSQLOutput(null, KettleDatabaseRepository.TABLE_R_STEP_TYPE, table.getRowMeta(), table.getData(), null);
 		            	statements.add(sql);
 					} else {
-						database.prepareInsert(table.getRowMeta(), null, Repository.TABLE_R_STEP_TYPE);
+						database.prepareInsert(table.getRowMeta(), null, KettleDatabaseRepository.TABLE_R_STEP_TYPE);
 						database.setValuesInsert(table);
 						database.insertRow();
 						database.closeInsert();
@@ -2291,15 +2291,15 @@ public class RepositoryCreationHelper {
 	                if (!create) id = repository.connectionDelegate.getNextJobEntryTypeID();
 	
 	                RowMetaAndData table = new RowMetaAndData();
-	                table.addValue(new ValueMeta(Repository.FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
-	                table.addValue(new ValueMeta(Repository.FIELD_JOBENTRY_TYPE_CODE, ValueMetaInterface.TYPE_STRING), type_desc);
-	                table.addValue(new ValueMeta(Repository.FIELD_JOBENTRY_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), type_desc_long);
+	                table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+	                table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_TYPE_CODE, ValueMetaInterface.TYPE_STRING), type_desc);
+	                table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), type_desc_long);
 	
 					if (dryrun) {
-		            	String sql = database.getSQLOutput(null, Repository.TABLE_R_JOBENTRY_TYPE, table.getRowMeta(), table.getData(), null);
+		            	String sql = database.getSQLOutput(null, KettleDatabaseRepository.TABLE_R_JOBENTRY_TYPE, table.getRowMeta(), table.getData(), null);
 		            	statements.add(sql);
 					} else {
-		                database.prepareInsert(table.getRowMeta(), null, Repository.TABLE_R_JOBENTRY_TYPE);
+		                database.prepareInsert(table.getRowMeta(), null, KettleDatabaseRepository.TABLE_R_JOBENTRY_TYPE);
 		                database.setValuesInsert(table);
 		                database.insertRow();
 		                database.closeInsert();

@@ -30,6 +30,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
@@ -271,8 +272,9 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         
 		// Verify import from repository explorer into different directory...
         //
-		if (rep.getImportBaseDirectory()!=null && !rep.getImportBaseDirectory().isRoot()) {
-			directoryPath = rep.getImportBaseDirectory().getPath()+directoryPath;
+        RepositoryDirectory importLocation = RepositoryImportLocation.getRepositoryImportLocation();
+		if (importLocation!=null && !importLocation.isRoot()) {
+			directoryPath = importLocation.getPath()+directoryPath;
 		}
 
 		// Now we can save it with the correct reference...
@@ -507,7 +509,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
                 {
                     try
                     {
-                        mappingTransMeta = rep.loadTransformation(realTransname, repdir);
+                        mappingTransMeta = rep.loadTransformation(realTransname, repdir, null, true);
                         LogWriter.getInstance().logDetailed("Loading Mapping from repository", "Mapping transformation ["+realTransname+"] was loaded from the repository");
                     }
                     catch(Exception e)

@@ -33,7 +33,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 
@@ -50,7 +50,7 @@ public class UpgradeRepositoryProgressDialog
 	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     private Shell shell;
-    private Repository rep;
+    private KettleDatabaseRepository rep;
     private boolean upgrade;
     
     private List<String> generatedStatements;
@@ -60,7 +60,7 @@ public class UpgradeRepositoryProgressDialog
     /**
      * @deprecated Use the constructor version without <i>log</i> or <i>props</i>
      */
-    public UpgradeRepositoryProgressDialog(LogWriter log, Props props, Shell shell, Repository rep, boolean upgrade)
+    public UpgradeRepositoryProgressDialog(LogWriter log, Props props, Shell shell, KettleDatabaseRepository rep, boolean upgrade)
     {
         this(shell, rep, upgrade);
     }
@@ -68,7 +68,7 @@ public class UpgradeRepositoryProgressDialog
     /**
      * Creates a new dialog that will handle the wait while upgrading or creating a repository...
      */
-    public UpgradeRepositoryProgressDialog(Shell shell, Repository rep, boolean upgrade)
+    public UpgradeRepositoryProgressDialog(Shell shell, KettleDatabaseRepository rep, boolean upgrade)
     {
         this.shell = shell;
         this.rep = rep;

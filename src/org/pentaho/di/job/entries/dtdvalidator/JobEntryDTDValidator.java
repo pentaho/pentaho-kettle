@@ -128,7 +128,6 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			xmlfilename = rep.getJobEntryAttributeString(id_jobentry, "xmlfilename");
 			dtdfilename = rep.getJobEntryAttributeString(id_jobentry, "dtdfilename");
 			dtdintern=rep.getJobEntryAttributeBoolean(id_jobentry, "dtdintern");
@@ -144,12 +143,9 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-
 			rep.saveJobEntryAttribute(id_job, getID(), "xmlfilename", xmlfilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "DTDfilename", dtdfilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "dtdintern", dtdintern);
-
 		}
 		catch(KettleDatabaseException dbe)
 		{

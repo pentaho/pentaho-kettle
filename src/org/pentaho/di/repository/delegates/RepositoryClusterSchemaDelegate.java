@@ -10,24 +10,24 @@ import org.pentaho.di.core.exception.KettleDependencyException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 
 public class RepositoryClusterSchemaDelegate extends BaseRepositoryDelegate {
 
 //	private static Class<?> PKG = ClusterSchema.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryClusterSchemaDelegate(Repository repository) {
+	public RepositoryClusterSchemaDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	
     public RowMetaAndData getClusterSchema(long id_cluster_schema) throws KettleException
     {
-        return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_CLUSTER), quote(Repository.FIELD_CLUSTER_ID_CLUSTER), id_cluster_schema);
+        return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_CLUSTER), quote(KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER), id_cluster_schema);
     }
 	
     public synchronized long getClusterID(String name) throws KettleException
     {
-        return repository.connectionDelegate.getIDWithValue(quoteTable(Repository.TABLE_R_CLUSTER), quote(Repository.FIELD_CLUSTER_ID_CLUSTER), quote(Repository.FIELD_CLUSTER_NAME), name);
+        return repository.connectionDelegate.getIDWithValue(quoteTable(KettleDatabaseRepository.TABLE_R_CLUSTER), quote(KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER), quote(KettleDatabaseRepository.FIELD_CLUSTER_NAME), name);
     }
 
     public ClusterSchema loadClusterSchema(long id_cluster_schema, List<SlaveServer> slaveServers) throws KettleException
@@ -35,12 +35,12 @@ public class RepositoryClusterSchemaDelegate extends BaseRepositoryDelegate {
     	ClusterSchema clusterSchema = new ClusterSchema();
         RowMetaAndData row = getClusterSchema(id_cluster_schema);
             
-        clusterSchema.setName( row.getString(Repository.FIELD_CLUSTER_NAME, null) );
-        clusterSchema.setBasePort( row.getString(Repository.FIELD_CLUSTER_BASE_PORT, null) );
-        clusterSchema.setSocketsBufferSize( row.getString(Repository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, null) );
-        clusterSchema.setSocketsFlushInterval( row.getString(Repository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, null) );
-        clusterSchema.setSocketsCompressed( row.getBoolean(Repository.FIELD_CLUSTER_SOCKETS_COMPRESSED, true) );
-        clusterSchema.setDynamic( row.getBoolean(Repository.FIELD_CLUSTER_DYNAMIC, true) );
+        clusterSchema.setName( row.getString(KettleDatabaseRepository.FIELD_CLUSTER_NAME, null) );
+        clusterSchema.setBasePort( row.getString(KettleDatabaseRepository.FIELD_CLUSTER_BASE_PORT, null) );
+        clusterSchema.setSocketsBufferSize( row.getString(KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, null) );
+        clusterSchema.setSocketsFlushInterval( row.getString(KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, null) );
+        clusterSchema.setSocketsCompressed( row.getBoolean(KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_COMPRESSED, true) );
+        clusterSchema.setDynamic( row.getBoolean(KettleDatabaseRepository.FIELD_CLUSTER_DYNAMIC, true) );
             
         long[] pids = repository.getSlaveIDs(id_cluster_schema);
         for (int i=0;i<pids.length;i++)
@@ -99,15 +99,15 @@ public class RepositoryClusterSchemaDelegate extends BaseRepositoryDelegate {
 
         RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta(Repository.FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id));
-        table.addValue(new ValueMeta(Repository.FIELD_CLUSTER_NAME, ValueMetaInterface.TYPE_STRING), clusterSchema.getName());
-        table.addValue(new ValueMeta(Repository.FIELD_CLUSTER_BASE_PORT, ValueMetaInterface.TYPE_STRING), clusterSchema.getBasePort());
-        table.addValue(new ValueMeta(Repository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, ValueMetaInterface.TYPE_STRING), clusterSchema.getSocketsBufferSize());
-        table.addValue(new ValueMeta(Repository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, ValueMetaInterface.TYPE_STRING), clusterSchema.getSocketsFlushInterval());
-        table.addValue(new ValueMeta(Repository.FIELD_CLUSTER_SOCKETS_COMPRESSED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(clusterSchema.isSocketsCompressed()));
-        table.addValue(new ValueMeta(Repository.FIELD_CLUSTER_DYNAMIC, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(clusterSchema.isDynamic()));
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id));
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_NAME, ValueMetaInterface.TYPE_STRING), clusterSchema.getName());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_BASE_PORT, ValueMetaInterface.TYPE_STRING), clusterSchema.getBasePort());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, ValueMetaInterface.TYPE_STRING), clusterSchema.getSocketsBufferSize());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, ValueMetaInterface.TYPE_STRING), clusterSchema.getSocketsFlushInterval());
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_COMPRESSED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(clusterSchema.isSocketsCompressed()));
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_DYNAMIC, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(clusterSchema.isDynamic()));
 
-        repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), Repository.TABLE_R_CLUSTER);
+        repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_CLUSTER);
         repository.connectionDelegate.getDatabase().setValuesInsert(table);
         repository.connectionDelegate.getDatabase().insertRow();
         repository.connectionDelegate.getDatabase().closeInsert();
@@ -125,7 +125,7 @@ public class RepositoryClusterSchemaDelegate extends BaseRepositoryDelegate {
 
         if (transList.length==0)
         {
-            repository.connectionDelegate.getDatabase().execStatement("DELETE FROM "+quoteTable(Repository.TABLE_R_CLUSTER)+" WHERE "+quote(Repository.FIELD_CLUSTER_ID_CLUSTER)+" = " + id_cluster);
+            repository.connectionDelegate.getDatabase().execStatement("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_CLUSTER)+" WHERE "+quote(KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER)+" = " + id_cluster);
         }
         else
         {

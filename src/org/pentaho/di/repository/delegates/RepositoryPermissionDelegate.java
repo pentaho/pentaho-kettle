@@ -4,25 +4,25 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.PermissionMeta;
-import org.pentaho.di.repository.Repository;
 
 public class RepositoryPermissionDelegate extends BaseRepositoryDelegate {
 
 	private static Class<?> PKG = PermissionMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryPermissionDelegate(Repository repository) {
+	public RepositoryPermissionDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	
 	public RowMetaAndData getPermission(long id_permission) throws KettleException
 	{
-		return repository.connectionDelegate.getOneRow(quoteTable(Repository.TABLE_R_PERMISSION), quote(Repository.FIELD_PERMISSION_ID_PERMISSION), id_permission);
+		return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_PERMISSION), quote(KettleDatabaseRepository.FIELD_PERMISSION_ID_PERMISSION), id_permission);
 	}
 	
 	public synchronized long getPermissionID(String code) throws KettleException
 	{
-		return repository.connectionDelegate.getIDWithValue(quoteTable(Repository.TABLE_R_PERMISSION), quote(Repository.FIELD_PERMISSION_ID_PERMISSION), quote(Repository.FIELD_PERMISSION_CODE), code);
+		return repository.connectionDelegate.getIDWithValue(quoteTable(KettleDatabaseRepository.TABLE_R_PERMISSION), quote(KettleDatabaseRepository.FIELD_PERMISSION_ID_PERMISSION), quote(KettleDatabaseRepository.FIELD_PERMISSION_CODE), code);
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class RepositoryPermissionDelegate extends BaseRepositoryDelegate {
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(Repository.TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(Repository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = " + id_profile;
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = " + id_profile;
 		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
 		if (r != null)
 		{

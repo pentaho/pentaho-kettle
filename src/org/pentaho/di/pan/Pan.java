@@ -34,6 +34,7 @@ import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobEntryLoader;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryExporter;
@@ -229,7 +230,7 @@ public class Pan
 							// Define and connect to the repository...
 							if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.Allocate&ConnectRep"));
 							
-							rep = new Repository(repinfo, userinfo);
+							rep = new KettleDatabaseRepository(repinfo, userinfo);
 							if (rep.connect("Pan commandline"))
 							{
 								RepositoryDirectory directory = rep.getDirectoryTree(); // Default = root
@@ -253,7 +254,7 @@ public class Pan
 										{
 											if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.LoadTransInfo"));
 											
-											transMeta = rep.loadTransformation(optionTransname.toString(), directory);
+											transMeta = rep.loadTransformation(optionTransname.toString(), directory, null, true);
 											if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.AllocateTrans"));
 											
 											trans = new Trans(transMeta);

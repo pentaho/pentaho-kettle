@@ -28,15 +28,11 @@ public class RepositoryMeta
 	private String       description;
 	private DatabaseMeta databaseMeta;
 	
-	private boolean      lock;
-
 	public RepositoryMeta(String name, String description, DatabaseMeta connection)
 	{
 		this.name = name;
 		this.description = description;
 		this.databaseMeta = connection;
-		
-		lock = false;
 	}
 
 	public RepositoryMeta()
@@ -91,17 +87,7 @@ public class RepositoryMeta
 	{
 		return databaseMeta;
 	}
-	
-	public boolean isLocked()
-	{
-		return lock;
-	}
-	
-	public void setLock(boolean lock)
-	{
-		this.lock = lock;
-	}
-	
+		
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer(100);

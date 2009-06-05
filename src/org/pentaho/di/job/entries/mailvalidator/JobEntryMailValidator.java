@@ -178,7 +178,6 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
 	  {
 	    try
 	    {
-	    	super.loadRep(rep, id_jobentry, databases, slaveServers);
 			smtpCheck = rep.getJobEntryAttributeBoolean(id_jobentry, "smtpCheck"); 
 			timeout = rep.getJobEntryAttributeString(id_jobentry, "timeout"); 
 			defaultSMTP = rep.getJobEntryAttributeString(id_jobentry, "defaultSMTP"); 
@@ -198,14 +197,11 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
 			rep.saveJobEntryAttribute(id_job, getID(), "smtpCheck", smtpCheck);
 			rep.saveJobEntryAttribute(id_job, getID(), "timeout", timeout);
 			rep.saveJobEntryAttribute(id_job, getID(), "defaultSMTP", defaultSMTP);
 			rep.saveJobEntryAttribute(id_job, getID(), "emailSender", emailSender);
 			rep.saveJobEntryAttribute(id_job, getID(), "emailAddress", emailAddress);
-			
-			
 		}
 		catch(KettleDatabaseException dbe)
 		{

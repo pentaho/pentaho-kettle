@@ -142,6 +142,7 @@ import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.pkg.JarfileGenerator;
+import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.PermissionMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
@@ -1256,7 +1257,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// the one we're connected to, ask for a username/password!
 		//
 		boolean cancelled = false;
-		if (lastUsedFile.isSourceRepository() && (rep == null || !rep.getRepositoryInfo().getName().equalsIgnoreCase(lastUsedFile.getRepositoryName()))) {
+		if (lastUsedFile.isSourceRepository() && (rep == null || !rep.getName().equalsIgnoreCase(lastUsedFile.getRepositoryName()))) {
 			// Ask for a username password to get the required repository access
 			//
 			int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION };
@@ -1266,7 +1267,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				// Close the previous connection...
 				if (rep != null)
 					rep.disconnect();
-				rep = new Repository(rd.getRepository(), rd.getUser());
+				rep = new KettleDatabaseRepository(rd.getRepository(), rd.getUser());
 				try {
 					rep.connect(APP_NAME);
 				} catch (KettleException ke) {
@@ -1280,8 +1281,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		if (!cancelled) {
 			try {
-				RepositoryMeta meta = (rep == null ? null : rep.getRepositoryInfo());
-				loadLastUsedFile(lastUsedFile, meta);
+				loadLastUsedFile(lastUsedFile, rep==null ? null : rep.getName());
 				addMenuLast();
 				refreshHistory();
 			} catch (KettleException ke) {
@@ -2430,7 +2430,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public String getRepositoryName() {
 		if (rep == null)
 			return null;
-		return rep.getRepositoryInfo().getName();
+		return rep.getName();
 	}
 
 	public void pasteXML(TransMeta transMeta, String clipcontent, Point loc) {
@@ -2762,7 +2762,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				rep.disconnect();
 			}
 
-			rep = new Repository(rd.getRepository(), rd.getUser());
+			rep = new KettleDatabaseRepository(rd.getRepository(), rd.getUser());
 			try {
 				rep.connect(APP_NAME);
 			} catch (KettleException ke) {
@@ -5284,7 +5284,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 		if (rep != null) {
 			try {
-				List<DatabaseMeta> repDBs = rep.getDatabases();
+				List<DatabaseMeta> repDBs = rep.readDatabases();
 				for (int i = 0; i < repDBs.size(); i++) {
 					DatabaseMeta databaseMeta = (DatabaseMeta) repDBs.get(i);
 					map.put(databaseMeta.getName(), databaseMeta);
@@ -5378,7 +5378,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					repositoryMeta = repsinfo.findRepository(repName);
 					if (repositoryMeta != null) {
 						// Define and connect to the repository...
-						setRepository(new Repository(repositoryMeta, userinfo));
+						setRepository(new KettleDatabaseRepository(repositoryMeta, userinfo));
 						return true;
 					} else {
 						log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.NoRepositoryRrovided"));// "No repository provided, can't load transformation."
@@ -5422,7 +5422,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				repositoryMeta = repsinfo.findRepository(optionRepname.toString());
 				if (repositoryMeta != null) {
 					// Define and connect to the repository...
-					setRepository(new Repository(repositoryMeta, userinfo));
+					setRepository(new KettleDatabaseRepository(repositoryMeta, userinfo));
 				} else {
 					String msg = BaseMessages.getString(PKG, "Spoon.Log.NoRepositoriesDefined");
 					log.logError(toString(), msg);// "No repositories defined on this system."
@@ -5460,9 +5460,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 								optionDirname = new StringBuffer(RepositoryDirectory.DIRECTORY_SEPARATOR);
 
 							// Check username, password
-							rep.userinfo = rep.loadUserInfo(optionUsername.toString(), optionPassword.toString());
+							rep.setUserInfo( rep.loadUserInfo(optionUsername.toString(), optionPassword.toString()) );
 
-							if (rep.userinfo.getID() > 0) {
+							if (rep.getUserInfo().getID() > 0) {
 								// Options /file, /job and /trans are mutually
 								// exclusive
 								int t = (Const.isEmpty(optionFilename) ? 0 : 1) + (Const.isEmpty(optionJobname) ? 0 : 1) + (Const.isEmpty(optionTransname) ? 0 : 1);
@@ -5481,7 +5481,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 											log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.UnableFindDirectory", optionDirname.toString())); // "Can't find directory ["+dirname+"] in the repository."
 										} else {
 											if (!Const.isEmpty(optionTransname)) {
-												TransMeta transMeta = rep.loadTransformation(optionTransname.toString(), repdir);
+												TransMeta transMeta = rep.loadTransformation(optionTransname.toString(), repdir, null, true);
 												transMeta.setFilename(optionRepname.toString());
 												transMeta.clearChanged();
 												transMeta.setInternalKettleVariables();
@@ -5515,7 +5515,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			} else // Normal operations, nothing on the commandline...
 			{
 				// Can we connect to the repository?
-				if (rep != null && rep.userinfo != null) {
+				if (rep != null && rep.getUserInfo() != null) {
 					if (!rep.connect(BaseMessages.getString(PKG, "Spoon.Application.Name"))) // "Spoon"
 					{
 						setRepository(null);
@@ -5528,8 +5528,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 					List<LastUsedFile> lastUsedFiles = props.getOpenTabFiles();
 					for (LastUsedFile lastUsedFile : lastUsedFiles) {
-						RepositoryMeta repInfo = (rep == null) ? null : rep.getRepositoryInfo();
-						loadLastUsedFile(lastUsedFile, repInfo, false);
+						loadLastUsedFile(lastUsedFile, rep==null ? null : rep.getName(), false);
 					}
 				}
 			}
@@ -5662,18 +5661,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return clOptions;
 	}
 
-	private void loadLastUsedFile(LastUsedFile lastUsedFile, RepositoryMeta repositoryMeta) throws KettleException {
-		loadLastUsedFile(lastUsedFile, repositoryMeta, true);
+	private void loadLastUsedFile(LastUsedFile lastUsedFile, String repositoryName) throws KettleException {
+		loadLastUsedFile(lastUsedFile, repositoryName, true);
 	}
 
-	private void loadLastUsedFile(LastUsedFile lastUsedFile, RepositoryMeta repositoryMeta, boolean trackIt) throws KettleException {
-		boolean useRepository = repositoryMeta != null;
+	private void loadLastUsedFile(LastUsedFile lastUsedFile, String repositoryName, boolean trackIt) throws KettleException {
+		boolean useRepository = repositoryName!= null;
 
 		// Perhaps we need to connect to the repository?
 		// 
 		if (lastUsedFile.isSourceRepository()) {
 			if (!Const.isEmpty(lastUsedFile.getRepositoryName())) {
-				if (useRepository && !lastUsedFile.getRepositoryName().equalsIgnoreCase(repositoryMeta.getName())) {
+				if (useRepository && !lastUsedFile.getRepositoryName().equalsIgnoreCase(repositoryName)) {
 					// We just asked...
 					useRepository = false;
 				}

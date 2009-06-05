@@ -48,6 +48,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
@@ -315,8 +316,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	 */
 	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
 		try {
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
-
 			jobname = rep.getJobEntryAttributeString(id_jobentry, "name");
 			directory = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
 			filename = rep.getJobEntryAttributeString(id_jobentry, "file_name");
@@ -369,15 +368,15 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-
-			if (rep.getImportBaseDirectory()!=null && !rep.getImportBaseDirectory().isRoot()) {
-				directory = rep.getImportBaseDirectory().getPath() + directoryPath;
+			RepositoryDirectory importLocation = RepositoryImportLocation.getRepositoryImportLocation();
+			
+			if (importLocation!=null && !importLocation.isRoot()) {
+				directory = importLocation.getPath() + directoryPath;
 			}
 			
 			if (directory == null) {
-				if (rep.getImportBaseDirectory()!=null) {
-					directory = rep.getImportBaseDirectory().getPath();
+				if (importLocation!=null) {
+					directory = importLocation.getPath();
 				} else {
 					directory = new RepositoryDirectory().getPath(); // just pick the root directory
 				}

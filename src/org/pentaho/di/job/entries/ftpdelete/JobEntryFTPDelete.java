@@ -217,8 +217,6 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 	  {
 	    try
 	    {
-	      super.loadRep(rep, id_jobentry, databases, slaveServers);
-	      
 	      	protocol          = rep.getJobEntryAttributeString(id_jobentry, "protocol");
 	      	port	= rep.getJobEntryAttributeString(id_jobentry, "port");
 	      	serverName          = rep.getJobEntryAttributeString(id_jobentry, "servername");
@@ -252,13 +250,10 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
-			
 			rep.saveJobEntryAttribute(id_job, getID(), "protocol",      protocol);
 			rep.saveJobEntryAttribute(id_job, getID(), "port", port);
 			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
@@ -270,7 +265,6 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
             rep.saveJobEntryAttribute(id_job, getID(), "active",          activeConnection);
             rep.saveJobEntryAttribute(id_job, getID(), "copyprevious",          copyprevious);
-            
             
             rep.saveJobEntryAttribute(id_job, getID(), "useproxy",          useproxy);
             rep.saveJobEntryAttribute(id_job, getID(), "publicpublickey",        publicpublickey);
@@ -284,7 +278,6 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
 			rep.saveJobEntryAttribute(id_job, getID(), "nr_limit_success",  nr_limit_success);
 			rep.saveJobEntryAttribute(id_job, getID(), "success_condition",    success_condition);
-			
 		}
 		catch(KettleDatabaseException dbe)
 		{

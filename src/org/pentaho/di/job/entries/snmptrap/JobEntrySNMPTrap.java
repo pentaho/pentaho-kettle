@@ -190,13 +190,10 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
 	}
 
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-	throws KettleException
-  { 
-	try
-	{
-		super.loadRep(rep, id_jobentry, databases, slaveServers);
-
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+    { 
+		try
+		{
 	      	port          = rep.getJobEntryAttributeString(id_jobentry, "port");
 			serverName    = rep.getJobEntryAttributeString(id_jobentry, "servername");
 			oid           = rep.getJobEntryAttributeString(id_jobentry, "oid");
@@ -216,12 +213,10 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
 			rep.saveJobEntryAttribute(id_job, getID(), "port",      port);
 			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getID(), "oid",      oid);
