@@ -19,6 +19,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.resource.ResourceHolderInterface;
@@ -33,7 +34,7 @@ import org.w3c.dom.Node;
  */
 public class PartitionSchema 
 	extends ChangedFlag 
-	implements Cloneable, SharedObjectInterface, ResourceHolderInterface, RepositoryElementInterface
+	implements Cloneable, SharedObjectInterface, ResourceHolderInterface, RepositoryElementInterface, XMLInterface
 {
 	public static final String XML_TAG = "partitionschema";
 

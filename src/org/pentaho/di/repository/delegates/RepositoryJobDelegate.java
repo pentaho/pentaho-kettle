@@ -624,7 +624,7 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
     }
 
 	public SharedObjects readSharedObjects(JobMeta jobMeta) throws KettleException {
-		jobMeta.readSharedObjects();
+		jobMeta.setSharedObjects( jobMeta.readSharedObjects() );
 
 		readDatabases(jobMeta, true);
         readSlaves(jobMeta, true);

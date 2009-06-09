@@ -1131,7 +1131,7 @@ public class RepositoryTransDelegate extends BaseRepositoryDelegate {
 		
     	transMeta.setSharedObjectsFile( getTransAttributeString(transMeta.getID(), 0, "SHARED_FILE") );
     	
-    	transMeta.readSharedObjects();
+    	transMeta.setSharedObjects( transMeta.readSharedObjects() );
     	
     	// Repository objects take priority so let's overwrite them...
     	//

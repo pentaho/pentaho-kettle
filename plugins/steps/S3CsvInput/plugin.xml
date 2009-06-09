@@ -1,29 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin
-    id = "S3CSVINPUT"
-    iconfile = "S3CIN.png"
-    description = "S3 CSV Input"
-    tooltip = "Is capable of reading CSV data stored on Amazon S3 in parallel"
-    category = "Input"
-    classname = "org.pentaho.di.trans.steps.s3csvinput.S3CsvInputMeta">
-    <libraries>
-        <library name = "s3csvinput.jar"/>
-        <library name = "jets3t-0.7.0.jar"/>
+   id="S3CSVINPUT"
+   iconfile="S3CIN.png"
+   description="S3 CSV Input"
+   tooltip="Is capable of reading CSV data stored on Amazon S3 in parallel"
+   category="Input"
+   classname="org.pentaho.di.trans.steps.s3csvinput.S3CsvInputMeta">
+   <libraries>
+    <library name="s3csvinput.jar"/>
+    <library name="jets3t-0.7.0.jar"/>
     </libraries>
-    <localized_category>
-        <category locale = "en_US">Input</category>
-        <category locale = "nl_NL">Input</category>
-        <category locale = "fr_FR">Extraction</category>
-    </localized_category>
-    <localized_description>
-        <description locale = "en_US">S3 CSV Input</description>
-        <description locale = "nl_NL">S3 CSV Input"</description>
-        <description locale = "fr_FR">Extraction depuis CSV S3</description>
-    </localized_description>
-    <localized_tooltip>
-        <tooltip locale = "en_US">Is capable of reading CSV data stored on Amazon S3 in parallel</tooltip>
-        <tooltip locale = "nl_NL">Is capable of reading CSV data stored on Amazon S3 in parallel</tooltip>
-        <tooltip locale = "fr_FR">Extraction de données depuis Amazon S3 en mode parallèle</tooltip>
-    </localized_tooltip>
 </plugin>

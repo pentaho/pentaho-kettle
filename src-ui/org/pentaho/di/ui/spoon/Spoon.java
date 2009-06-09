@@ -491,6 +491,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 
 		props = PropsUI.getInstance();
+		
+		sharedObjectsFileMap = new Hashtable<String, SharedObjects>();
 
 		shell = new Shell(display);
 		shell.setText(APPL_TITLE);
@@ -528,8 +530,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// If they are needed that often, set them in the kettle.properties file
 		//
 		variables = new RowMetaAndData(new RowMeta(), new Object[] {});
-
-		sharedObjectsFileMap = new Hashtable<String, SharedObjects>();
 
 		// props.setLook(shell);
 
