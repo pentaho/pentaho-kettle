@@ -12,7 +12,6 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.trans.TransMeta;
 
 public class RepositoryExporter {

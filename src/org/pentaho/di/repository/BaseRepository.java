@@ -1,7 +1,6 @@
 package org.pentaho.di.repository;
 
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.repository.directory.RepositoryDirectory;
 
 public class BaseRepository {
 

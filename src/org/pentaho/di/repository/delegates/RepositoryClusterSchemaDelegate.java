@@ -63,15 +63,15 @@ public class RepositoryClusterSchemaDelegate extends BaseRepositoryDelegate {
 
     public void saveClusterSchema(ClusterSchema clusterSchema, long id_transformation, boolean isUsedByTransformation) throws KettleException
     {
-        clusterSchema.setId(getClusterID(clusterSchema.getName()));
-        if (clusterSchema.getId()<0)
+        clusterSchema.setID(getClusterID(clusterSchema.getName()));
+        if (clusterSchema.getID()<0)
         {
             // Save the cluster
-        	clusterSchema.setId(insertCluster(clusterSchema));
+        	clusterSchema.setID(insertCluster(clusterSchema));
         }
         else
         {
-            repository.delClusterSlaves(clusterSchema.getId());
+            repository.delClusterSlaves(clusterSchema.getID());
         }
         
         // Also save the used slave server references.
@@ -89,7 +89,7 @@ public class RepositoryClusterSchemaDelegate extends BaseRepositoryDelegate {
         // Only save it if it's really used by the transformation
         if (isUsedByTransformation)
         {
-            repository.insertTransformationCluster(id_transformation, clusterSchema.getId());
+            repository.insertTransformationCluster(id_transformation, clusterSchema.getID());
         }
     }
 

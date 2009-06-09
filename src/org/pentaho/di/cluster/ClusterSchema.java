@@ -25,6 +25,8 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.www.SlaveServerDetection;
 import org.w3c.dom.Node;
@@ -37,12 +39,16 @@ import org.w3c.dom.Node;
  * @author Matt
  * @since 17-nov-2006
  */
-public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace
+public class ClusterSchema 
+	extends ChangedFlag 
+	implements Cloneable, SharedObjectInterface, VariableSpace, RepositoryElementInterface
 {
 	private static Class<?> PKG = ClusterSchema.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     public static final String XML_TAG = "clusterschema"; //$NON-NLS-1$
     
+    public static final String REPOSITORY_ELEMENT_TYPE = "clusterschema";
+
     /** the name of the cluster schema */
     private String name;
     
@@ -347,12 +353,12 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         return null;
     }
 
-    public long getId()
+    public long getID()
     {
         return id;
     }
 
-    public void setId(long id)
+    public void setID(long id)
     {
         this.id = id;
     }
@@ -478,5 +484,19 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         	return slaveServers;
         }
 	
+	}
+
+	/**
+	 * Not supported for Partition schema, return the root.
+	 */
+	public RepositoryDirectory getRepositoryDirectory() {
+		return new RepositoryDirectory();
+	}
+
+	public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
+	}
+
+	public String getRepositoryElementType() {
+		return REPOSITORY_ELEMENT_TYPE;
 	}
 }

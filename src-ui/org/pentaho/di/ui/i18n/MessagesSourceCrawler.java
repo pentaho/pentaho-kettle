@@ -63,6 +63,11 @@ public class MessagesSourceCrawler {
 	 * The key occurrences, sorted by
 	 */
 	private List<KeyOccurrence> occurrences;
+	
+	/**
+	 * A map between the package name and all the occurrences in there *
+	 */
+	private Map<String, List<KeyOccurrence>> packageOccurrences;
 
 	/**
 	 * The file names to avoid (base names)
@@ -98,11 +103,13 @@ public class MessagesSourceCrawler {
 		this.filesToAvoid = new ArrayList<String>();
 		this.xmlFolders = xmlFolders;
 		
+		this.packageOccurrences = new Hashtable<String, List<KeyOccurrence>>();
+		
 		packagePattern = Pattern.compile("^\\s*package .*;[ \t]*$");
 		importPattern = Pattern.compile("^\\s*import [a-z\\._0-9]*\\.[A-Z].*;[ \t]*$");
 		importMessagesPattern = Pattern.compile("^\\s*import [a-z\\._0-9]*\\.Messages;[ \t]*$");
 		stringPkgPattern = Pattern.compile("^.*private static String PKG.*=.*$");
-		classPkgPattern = Pattern.compile("^.*private static Class\\<\\?\\> PKG.*=.*$");
+		classPkgPattern = Pattern.compile("^.*private static Class.*\\sPKG\\s*=.*$");
 	}
 
 	/**
@@ -161,7 +168,18 @@ public class MessagesSourceCrawler {
 	public void addKeyOccurrence(KeyOccurrence occ) {
 		int index = Collections.binarySearch(occurrences, occ);
 		if (index < 0) {
+			// Add it to the list, keep it sorted...
+			//
 			occurrences.add(-index - 1, occ);
+			
+			// Also add it to the packages occurrences map...
+			//
+			List<KeyOccurrence> list = packageOccurrences.get(occ.getMessagesPackage());
+			if (list==null) {
+				list = new ArrayList<KeyOccurrence>();
+				packageOccurrences.put(occ.getMessagesPackage(), list);
+			}
+			list.add(occ);
 		} else {
 			KeyOccurrence keyOccurrence = occurrences.get(index);
 			keyOccurrence.incrementOccurrences();
@@ -646,6 +664,20 @@ public class MessagesSourceCrawler {
 	 */
 	public void setScanPhrases(String[] scanPhrases) {
 		this.scanPhrases = scanPhrases;
+	}
+
+	/**
+	 * @return the packageOccurrences
+	 */
+	public Map<String, List<KeyOccurrence>> getPackageOccurrences() {
+		return packageOccurrences;
+	}
+
+	/**
+	 * @param packageOccurrences the packageOccurrences to set
+	 */
+	public void setPackageOccurrences(Map<String, List<KeyOccurrence>> packageOccurrences) {
+		this.packageOccurrences = packageOccurrences;
 	}
 
 }

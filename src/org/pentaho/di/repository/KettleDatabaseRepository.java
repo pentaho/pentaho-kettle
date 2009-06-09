@@ -55,7 +55,6 @@ import org.pentaho.di.repository.delegates.RepositoryStepDelegate;
 import org.pentaho.di.repository.delegates.RepositoryTransDelegate;
 import org.pentaho.di.repository.delegates.RepositoryUserDelegate;
 import org.pentaho.di.repository.delegates.RepositoryValueDelegate;
-import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 
@@ -238,27 +237,42 @@ public class KettleDatabaseRepository extends BaseRepository implements Reposito
     }
     	 
     public void save(RepositoryElementInterface repositoryElement, ProgressMonitorListener monitor, long parentId, boolean used) throws KettleException {
-    	if (JobMeta.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
-    		jobDelegate.saveJob((JobMeta)repositoryElement, monitor);
-    	} else
-
-    	if (TransMeta.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
-    		transDelegate.saveTransformation((TransMeta)repositoryElement, monitor);
-    	} else
     	
-    	if (DatabaseMeta.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
-    		databaseDelegate.saveDatabaseMeta((DatabaseMeta)repositoryElement);
-    	} else
+    	try {
+    		lockRepository();
+        
+	    	if (JobMeta.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
+	    		jobDelegate.saveJob((JobMeta)repositoryElement, monitor);
+	    	} else
+	
+	    	if (TransMeta.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
+	    		transDelegate.saveTransformation((TransMeta)repositoryElement, monitor);
+	    	} else
+	    	
+	    	if (DatabaseMeta.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
+	    		databaseDelegate.saveDatabaseMeta((DatabaseMeta)repositoryElement);
+	    	} else
+	
+	    	if (SlaveServer.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
+	    		slaveServerDelegate.saveSlaveServer((SlaveServer)repositoryElement, parentId, used);
+	    	} else
 
-    	if (SlaveServer.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
-    		slaveServerDelegate.saveSlaveServer((SlaveServer)repositoryElement, parentId, used);
-    	} else
+	    	if (PartitionSchema.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
+	    		partitionSchemaDelegate.savePartitionSchema((PartitionSchema)repositoryElement, parentId, used);
+	    	} else
 
-    	throw new KettleException("We can't save the element with type ["+repositoryElement.getRepositoryElementType()+"] in the repository");
-    	
-		// Automatically commit changes to these elements.
-    	//
-		commit();
+	    	if (ClusterSchema.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
+	    		clusterSchemaDelegate.saveClusterSchema((ClusterSchema)repositoryElement, parentId, used);
+	    	} else
+
+	    	throw new KettleException("We can't save the element with type ["+repositoryElement.getRepositoryElementType()+"] in the repository");
+	    	
+			// Automatically commit changes to these elements.
+	    	//
+			commit();
+    	} finally {
+            unlockRepository();
+    	}
     }
     
     // ProfileMeta
@@ -345,10 +359,6 @@ public class KettleDatabaseRepository extends BaseRepository implements Reposito
 	
     public ClusterSchema loadClusterSchema(long id_cluster_schema, List<SlaveServer> slaveServers) throws KettleException {
     	return clusterSchemaDelegate.loadClusterSchema(id_cluster_schema, slaveServers);
-    }
-
-    public void saveClusterSchema(ClusterSchema clusterSchema) throws KettleException {
-        clusterSchemaDelegate.saveClusterSchema(clusterSchema);
     }
 
     public void saveClusterSchema(ClusterSchema clusterSchema, long id_transformation, boolean isUsedByTransformation) throws KettleException {
@@ -567,7 +577,7 @@ public class KettleDatabaseRepository extends BaseRepository implements Reposito
         RowMetaAndData table = new RowMetaAndData();
 
         table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER), new Long(clusterSchema.getId()));
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER), new Long(clusterSchema.getID()));
         table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER), new Long(slaveServer.getID()));
 
         connectionDelegate.insertTableRow(KettleDatabaseRepository.TABLE_R_CLUSTER_SLAVE, table);

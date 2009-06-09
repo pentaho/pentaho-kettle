@@ -12,7 +12,7 @@
 */
 package org.pentaho.di.core;
 
-import org.pentaho.di.repository.directory.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectory;
 
 
 public class LastUsedFile

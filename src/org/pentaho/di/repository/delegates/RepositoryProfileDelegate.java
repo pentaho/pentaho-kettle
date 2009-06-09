@@ -12,7 +12,7 @@ import org.pentaho.di.repository.ProfileMeta;
 
 public class RepositoryProfileDelegate extends BaseRepositoryDelegate {
 
-	private static Class<?>	PKG	= ProfileMeta.class;	// for i18n purposes, needed by Translator2!! $NON-NLS-1$
+    private static Class<?>	PKG	= ProfileMeta.class;  // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
 	public RepositoryProfileDelegate(KettleDatabaseRepository repository) {
 		super(repository);

@@ -431,41 +431,25 @@ public class SpoonDBDelegate extends SpoonDelegate
 			{
 				try
 				{
-					rep.lockRepository();
 					rep.insertLogEntry("Saving database '" + db.getName() + "'");
 
 					rep.save(db);
-					spoon.getLog().logDetailed(toString(),
-							BaseMessages.getString(PKG, "Spoon.Log.SavedDatabaseConnection", db.getDatabaseName()));
+					spoon.getLog().logDetailed(toString(), BaseMessages.getString(PKG, "Spoon.Log.SavedDatabaseConnection", db.getDatabaseName()));
 
 					db.setChanged(false);
 				} catch (KettleException ke)
 				{
 					new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Message", db.getDatabaseName()), ke);
 				} 
-				finally
-				{
-					try
-					{
-						rep.unlockRepository();
-					} catch (KettleException e)
-					{
-						new ErrorDialog(spoon.getShell(), "Error",
-								"Unexpected error unlocking the repository database", e);
-					}
-
-				}
 			} else
 			{
+				// This repository user is read-only!
+				//
 				new ErrorDialog(
 						spoon.getShell(),
 						BaseMessages.getString(PKG, "Spoon.Dialog.UnableSave.Title"),
 						BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Message", db.getDatabaseName()),
-						new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser")));// This
-				// repository
-				// user
-				// is
-				// read-only!
+						new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser")));
 			}
 		}
 	}

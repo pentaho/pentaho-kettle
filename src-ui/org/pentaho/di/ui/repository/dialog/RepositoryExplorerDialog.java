@@ -72,8 +72,8 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
 import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
@@ -2251,7 +2251,6 @@ public class RepositoryExplorerDialog extends Dialog
 			{
 				if (!userinfo.isReadonly())
 				{
-                    rep.lockRepository();
                     rep.insertLogEntry("Updating database connection '"+databaseMeta.getName()+"'");
                     rep.save(databaseMeta);
 				}
@@ -2269,17 +2268,6 @@ public class RepositoryExplorerDialog extends Dialog
 		{
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.UnexpectedError.Message")+databasename+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
-        finally
-        {
-            try
-            {
-                rep.unlockRepository();
-            }
-            catch(KettleException e)
-            {
-                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
-            }
-        }
 	}
 
 	public void newDatabase()
@@ -2296,7 +2284,6 @@ public class RepositoryExplorerDialog extends Dialog
 				long idDatabase = rep.getDatabaseID(name);
 				if (idDatabase<=0)
 				{
-                    rep.lockRepository();
                     rep.insertLogEntry("Creating new database '"+databaseMeta.getName()+"'");
                     rep.save(databaseMeta);
 				}
@@ -2315,17 +2302,6 @@ public class RepositoryExplorerDialog extends Dialog
 		{
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-        finally
-        {
-            try
-            {
-                rep.unlockRepository();
-            }
-            catch(KettleException e)
-            {
-                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
-            }
-        }
 	}
 
 
@@ -2899,9 +2875,8 @@ public class RepositoryExplorerDialog extends Dialog
                 long idSlave = rep.getSlaveID(slaveServer.getName());
                 if (idSlave<=0)
                 {
-                    rep.lockRepository();
                     rep.insertLogEntry("Creating new slave server '"+slaveServer.getName()+"'");
-                    rep.saveSlaveServer(slaveServer);
+                    rep.save(slaveServer);
                 }
                 else
                 {
@@ -2918,17 +2893,6 @@ public class RepositoryExplorerDialog extends Dialog
         {
             new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        finally
-        {
-            try
-            {
-                rep.unlockRepository();
-            }
-            catch(KettleException e)
-            {
-                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
-            }
-        }
     }
     
     public void editSlaveServer(String slaveName)
@@ -2941,26 +2905,14 @@ public class RepositoryExplorerDialog extends Dialog
             SlaveServerDialog dd = new SlaveServerDialog(shell, slaveServer);
             if (dd.open())
             {
-                rep.lockRepository();
                 rep.insertLogEntry("Updating slave server '"+slaveServer.getName()+"'");
-                rep.saveSlaveServer(slaveServer);
+                rep.save(slaveServer);
                 if(!slaveName.equalsIgnoreCase(slaveServer.getName())) refreshTree();
             }
         }
         catch(KettleException e)
         {
             new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.UnexpectedError.Message")+slaveName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        }
-        finally
-        {
-            try
-            {
-                rep.unlockRepository();
-            }
-            catch(KettleException e)
-            {
-                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
-            }
         }
     }
     
@@ -2994,9 +2946,8 @@ public class RepositoryExplorerDialog extends Dialog
                 long idPartitionSchema = rep.getPartitionSchemaID(partitionSchema.getName());
                 if (idPartitionSchema<=0)
                 {
-                    rep.lockRepository();
                     rep.insertLogEntry("Creating new partition schema '"+partitionSchema.getName()+"'");
-                    rep.savePartitionSchema(partitionSchema);
+                    rep.save(partitionSchema);
                 }
                 else
                 {
@@ -3014,17 +2965,6 @@ public class RepositoryExplorerDialog extends Dialog
             new ErrorDialog(shell,BaseMessages.getString(PKG, "RepositoryExplorerDialog.PartitionSchema.Create.UnexpectedError.Title"), 
                     BaseMessages.getString(PKG, "RepositoryExplorerDialog.PartitionSchema.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        finally
-        {
-            try
-            {
-                rep.unlockRepository();
-            }
-            catch(KettleException e)
-            {
-                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
-            }
-        }
     }
     
     public void editPartitionSchema(String partitionSchemaName)
@@ -3037,9 +2977,8 @@ public class RepositoryExplorerDialog extends Dialog
             PartitionSchemaDialog dd = new PartitionSchemaDialog(shell, partitionSchema, rep.readDatabases(), variableSpace);
             if (dd.open())
             {
-                rep.lockRepository();
                 rep.insertLogEntry("Updating partition schema '"+partitionSchema.getName()+"'");
-                rep.savePartitionSchema(partitionSchema);
+                rep.save(partitionSchema);
                 if(!partitionSchemaName.equalsIgnoreCase(partitionSchema.getName())) refreshTree();
             }
         }
@@ -3047,17 +2986,6 @@ public class RepositoryExplorerDialog extends Dialog
         {
             new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.PartitionSchema.Edit.UnexpectedError.Title"), 
                     BaseMessages.getString(PKG, "RepositoryExplorerDialog.PartitionSchema.Edit.UnexpectedError.Message")+partitionSchemaName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        }
-        finally
-        {
-            try
-            {
-                rep.unlockRepository();
-            }
-            catch(KettleException e)
-            {
-                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
-            }
         }
     }
     
@@ -3092,9 +3020,8 @@ public class RepositoryExplorerDialog extends Dialog
                 long idCluster = rep.getClusterID(cluster.getName());
                 if (idCluster<=0)
                 {
-                    rep.lockRepository();
                     rep.insertLogEntry("Creating new cluster '"+cluster.getName()+"'");
-                    rep.saveClusterSchema(cluster); 
+                    rep.save(cluster); 
                 }
                 else
                 {
@@ -3112,17 +3039,6 @@ public class RepositoryExplorerDialog extends Dialog
             new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title"), 
                     BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        finally
-        {
-            try
-            {
-                rep.unlockRepository();
-            }
-            catch(KettleException e)
-            {
-                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
-            }
-        }
     }
     
     public void editCluster(String clusterName)
@@ -3135,9 +3051,8 @@ public class RepositoryExplorerDialog extends Dialog
             ClusterSchemaDialog dd = new ClusterSchemaDialog(shell, cluster, rep.getSlaveServers());
             if (dd.open())
             {
-                rep.lockRepository();
                 rep.insertLogEntry("Updating cluster '"+cluster.getName()+"'");
-                rep.saveClusterSchema(cluster); 
+                rep.save(cluster); 
                 if(!clusterName.equalsIgnoreCase(cluster.getName())) refreshTree();
             }
         }
@@ -3145,17 +3060,6 @@ public class RepositoryExplorerDialog extends Dialog
         {
             new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Title"), 
                     BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Message")+clusterName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        }
-        finally
-        {
-            try
-            {
-                rep.unlockRepository();
-            }
-            catch(KettleException e)
-            {
-                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
-            }
         }
     }
     

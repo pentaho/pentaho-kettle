@@ -146,10 +146,10 @@ import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.PermissionMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
@@ -5976,9 +5976,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private void delPartitionSchema(TransMeta transMeta, PartitionSchema partitionSchema) {
 		try {
-			if (rep != null && partitionSchema.getId() > 0) {
+			if (rep != null && partitionSchema.getID() > 0) {
 				// remove the partition schema from the repository too...
-				rep.delPartitionSchema(partitionSchema.getId());
+				rep.delPartitionSchema(partitionSchema.getID());
 			}
 
 			int idx = transMeta.getPartitionSchemas().indexOf(partitionSchema);
@@ -6013,9 +6013,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private void delClusterSchema(TransMeta transMeta, ClusterSchema clusterSchema) {
 		try {
-			if (rep != null && clusterSchema.getId() > 0) {
+			if (rep != null && clusterSchema.getID() > 0) {
 				// remove the partition schema from the repository too...
-				rep.delClusterSchema(clusterSchema.getId());
+				rep.delClusterSchema(clusterSchema.getID());
 			}
 
 			int idx = transMeta.getClusterSchemas().indexOf(clusterSchema);

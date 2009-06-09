@@ -8,7 +8,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.KettleDatabaseRepository;
-import org.pentaho.di.repository.directory.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectory;
 
 public class RepositoryDirectoryDelegate extends BaseRepositoryDelegate {
 	private static Class<?> PKG = RepositoryDirectory.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$

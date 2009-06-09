@@ -43,15 +43,19 @@ public class MessagesStore extends ChangedFlag {
 	
 	private String filename;
 
+	private Map<String, List<KeyOccurrence>>	packageOccurrences;
+
 	/**
 	 * Create a new messages store
 	 * @param locale
 	 * @param messagesPackage
+	 * @param packageOccurrences 
 	 */
-	public MessagesStore(String locale, String messagesPackage) {
+	public MessagesStore(String locale, String messagesPackage, Map<String, List<KeyOccurrence>> packageOccurrences) {
 		messagesMap = new Hashtable<String, String>();
 		this.locale = locale;
 		this.messagesPackage = messagesPackage;
+		this.packageOccurrences = packageOccurrences;
 	}
 	
 	
@@ -73,7 +77,15 @@ public class MessagesStore extends ChangedFlag {
 			}
 		}
 		catch (Exception e) {
-			throw new KettleException("Unable to read messages file for locale : '"+locale+"' and package '"+messagesPackage+"'", e);
+			String keys = "[";
+			List<KeyOccurrence> keyList = packageOccurrences.get(messagesPackage);
+			boolean first=true;
+			for (KeyOccurrence occ : keyList) {
+				if (first) first=false; else keys+=", ";
+				keys+=occ.getKey()+"/"+occ.getFileObject().toString();
+			}
+			keys+="]";
+			throw new KettleException("Unable to read messages file for locale : '"+locale+"' and package '"+messagesPackage+"', keys="+keys, e);
 		}
 	}
 	
@@ -203,5 +215,21 @@ public class MessagesStore extends ChangedFlag {
 
 	public void setFilename(String filename) {
 		this.filename = filename;
+	}
+
+
+	/**
+	 * @return the packageOccurrences
+	 */
+	public Map<String, List<KeyOccurrence>> getPackageOccurrences() {
+		return packageOccurrences;
+	}
+
+
+	/**
+	 * @param packageOccurrences the packageOccurrences to set
+	 */
+	public void setPackageOccurrences(Map<String, List<KeyOccurrence>> packageOccurrences) {
+		this.packageOccurrences = packageOccurrences;
 	}
 }

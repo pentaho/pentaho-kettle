@@ -22,8 +22,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObject;
-import org.pentaho.di.repository.directory.RepositoryDirectory;
 
 public class RepositoryConnectionDelegate extends BaseRepositoryDelegate {
 	private static Class<?> PKG = Repository.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$

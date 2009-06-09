@@ -59,7 +59,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.directory.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;

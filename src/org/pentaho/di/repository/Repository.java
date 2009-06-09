@@ -12,7 +12,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 
@@ -39,14 +38,6 @@ public interface Repository extends RepositorySecurityInterface {
 	public void disconnect();
 
     public boolean isConnected();
-
-	/**
-	 * This method locks the repository so that only 
-	 * @throws KettleException
-	 */
-    public void lockRepository() throws KettleException;
-    
-    public void unlockRepository() throws KettleException;
 
 	// Common methods...
 
@@ -150,10 +141,6 @@ public interface Repository extends RepositorySecurityInterface {
 	
     public ClusterSchema loadClusterSchema(long id_cluster_schema, List<SlaveServer> slaveServers) throws KettleException;
 
-    public void saveClusterSchema(ClusterSchema clusterSchema) throws KettleException;
-
-    public void saveClusterSchema(ClusterSchema clusterSchema, long id_transformation, boolean isUsedByTransformation) throws KettleException;
-
     public long[] getClusterIDs() throws KettleException;
 
     public String[] getClusterNames() throws KettleException;
@@ -165,10 +152,6 @@ public interface Repository extends RepositorySecurityInterface {
 	/////////////////////////////////////////////////////////////////////////////////////////////////
     // SlaveServer
 	/////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    public void saveSlaveServer(SlaveServer slaveServer) throws KettleException;
-    
-    public void saveSlaveServer(SlaveServer slaveServer, long parent_id, boolean isUsedByTransformation) throws KettleException;
     
     public SlaveServer loadSlaveServer(long id_slave_server) throws KettleException;
 	
@@ -192,10 +175,6 @@ public interface Repository extends RepositorySecurityInterface {
     // PartitionSchema
 	/////////////////////////////////////////////////////////////////////////////////////////////////
     
-	public void savePartitionSchema(PartitionSchema partitionSchema, long id_transformation, boolean isUsedByTransformation) throws KettleException;
-
-	public void savePartitionSchema(PartitionSchema partitionSchema) throws KettleException;
-
 	public PartitionSchema loadPartitionSchema(long id_partition_schema) throws KettleException;
 
     public long[] getPartitionSchemaIDs() throws KettleException;

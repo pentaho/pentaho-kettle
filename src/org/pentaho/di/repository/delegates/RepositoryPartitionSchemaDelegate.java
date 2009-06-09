@@ -40,22 +40,22 @@ public class RepositoryPartitionSchemaDelegate extends BaseRepositoryDelegate {
 	public void savePartitionSchema(PartitionSchema partitionSchema, long id_transformation, boolean isUsedByTransformation) throws KettleException
 	{
 		// see if this partitioning schema is already in the repository...
-		partitionSchema.setId( getPartitionSchemaID(partitionSchema.getName()) );
-		if (partitionSchema.getId()<0)
+		partitionSchema.setID( getPartitionSchemaID(partitionSchema.getName()) );
+		if (partitionSchema.getID()<0)
 		{
-			partitionSchema.setId(insertPartitionSchema(partitionSchema));
+			partitionSchema.setID(insertPartitionSchema(partitionSchema));
 		}
 		else
 		{
 			updatePartitionSchema(partitionSchema);
-			repository.delPartitions(partitionSchema.getId());
+			repository.delPartitions(partitionSchema.getID());
 		}
         
 		// Save the cluster-partition relationships
 		//
 		for (int i=0;i<partitionSchema.getPartitionIDs().size();i++)
 		{
-			insertPartition(partitionSchema.getId(), partitionSchema.getPartitionIDs().get(i));
+			insertPartition(partitionSchema.getID(), partitionSchema.getPartitionIDs().get(i));
 		}
         
 		// Save a link to the transformation to keep track of the use of this partition schema
@@ -63,7 +63,7 @@ public class RepositoryPartitionSchemaDelegate extends BaseRepositoryDelegate {
 		//
 		if (isUsedByTransformation)
 		{
-			repository.insertTransformationPartitionSchema(id_transformation, partitionSchema.getId());
+			repository.insertTransformationPartitionSchema(id_transformation, partitionSchema.getID());
 		}
 	}
     
@@ -71,7 +71,7 @@ public class RepositoryPartitionSchemaDelegate extends BaseRepositoryDelegate {
 	{
 		PartitionSchema partitionSchema = new PartitionSchema();
         
-		partitionSchema.setId(id_partition_schema);
+		partitionSchema.setID(id_partition_schema);
         
 		RowMetaAndData row = getPartitionSchema(id_partition_schema);
         
@@ -116,7 +116,7 @@ public class RepositoryPartitionSchemaDelegate extends BaseRepositoryDelegate {
         table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION, ValueMetaInterface.TYPE_BOOLEAN), partitionSchema.isDynamicallyDefined());
         table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE, ValueMetaInterface.TYPE_STRING), partitionSchema.getNumberOfPartitionsPerSlave());
         
-        repository.connectionDelegate.updateTableRow(KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA, KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, table, partitionSchema.getId());
+        repository.connectionDelegate.updateTableRow(KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA, KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, table, partitionSchema.getID());
     }
 
     public synchronized long insertPartition(long id_partition_schema, String partition_id) throws KettleException

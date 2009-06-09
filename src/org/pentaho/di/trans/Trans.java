@@ -53,7 +53,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.directory.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.cluster.TransSplitter;

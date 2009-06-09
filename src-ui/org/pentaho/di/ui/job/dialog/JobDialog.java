@@ -51,7 +51,7 @@ import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.directory.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;

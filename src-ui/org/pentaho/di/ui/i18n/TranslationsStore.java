@@ -33,16 +33,20 @@ public class TranslationsStore {
 	private Map<String, LocaleStore> translationsMap; 
 	
 	private String mainLocale;
+
+	private Map<String, List<KeyOccurrence>> packageOccurrences;
 	
 	/**
 	 * @param localeList
 	 * @param messagesPackages
+	 * @param map 
 	 */
-	public TranslationsStore(List<String> localeList, List<String> messagesPackages, String mainLocale) {
+	public TranslationsStore(List<String> localeList, List<String> messagesPackages, String mainLocale, Map<String, List<KeyOccurrence>> packageOccurrences) {
 		super();
 		this.localeList = localeList;
 		this.messagesPackages = messagesPackages;
 		this.mainLocale = mainLocale;
+		this.packageOccurrences = packageOccurrences;
 		
 		translationsMap = new Hashtable<String, LocaleStore>();
 	}
@@ -58,7 +62,7 @@ public class TranslationsStore {
 		// The others are optional.
 		
 		for (String locale : localeList) {
-			LocaleStore localeStore = new LocaleStore(locale, messagesPackages, mainLocale);
+			LocaleStore localeStore = new LocaleStore(locale, messagesPackages, mainLocale, packageOccurrences);
 			localeStore.read(directories);
 			
 			translationsMap.put(locale, localeStore);
@@ -153,12 +157,12 @@ public class TranslationsStore {
 	public void storeValue(String locale, String messagesPackage, String key, String value) {
 		LocaleStore localeStore = translationsMap.get(locale);
 		if (localeStore==null) {
-			localeStore = new LocaleStore(locale, messagesPackages, mainLocale);
+			localeStore = new LocaleStore(locale, messagesPackages, mainLocale, packageOccurrences);
 			translationsMap.put(locale, localeStore);
 		}
 		MessagesStore messagesStore = localeStore.getLocaleMap().get(messagesPackage);
 		if (messagesStore==null) {
-			messagesStore=new MessagesStore(locale, messagesPackage);
+			messagesStore=new MessagesStore(locale, messagesPackage, packageOccurrences);
 			localeStore.getLocaleMap().put(messagesPackage, messagesStore);
 		}
 		messagesStore.getMessagesMap().put(key, value);
@@ -208,6 +212,20 @@ public class TranslationsStore {
 	public MessagesStore findMainLocaleMessagesStore(String messagesPackage) {
 		LocaleStore localeStore = translationsMap.get(mainLocale);
 		return localeStore.getLocaleMap().get(messagesPackage);
+	}
+
+	/**
+	 * @return the packageOccurrences
+	 */
+	public Map<String, List<KeyOccurrence>> getPackageOccurrences() {
+		return packageOccurrences;
+	}
+
+	/**
+	 * @param packageOccurrences the packageOccurrences to set
+	 */
+	public void setPackageOccurrences(Map<String, List<KeyOccurrence>> packageOccurrences) {
+		this.packageOccurrences = packageOccurrences;
 	}
 	
 }

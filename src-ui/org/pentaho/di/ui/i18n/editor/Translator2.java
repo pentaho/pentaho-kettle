@@ -164,7 +164,7 @@ public class Translator2
         	// get the packages...
         	//
         	messagesPackages = crawler.getMessagesPackagesList();
-        	store = new TranslationsStore(localeList, messagesPackages, referenceLocale); // en_US : main locale
+        	store = new TranslationsStore(localeList, messagesPackages, referenceLocale, crawler.getPackageOccurrences()); // en_US : main locale
         	store.read(directories);
         	
         	// What are the statistics?

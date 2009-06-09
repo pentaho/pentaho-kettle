@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.directory.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 

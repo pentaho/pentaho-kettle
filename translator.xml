@@ -7,6 +7,7 @@
     <root>src</root>
     <root>src-core</root>
     <root>src-ui</root>
+    <root>src-db</root>
   </source-directories>
   
   <scan-phrases>

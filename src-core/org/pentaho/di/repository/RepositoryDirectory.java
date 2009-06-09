@@ -9,7 +9,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.*/
  
-package org.pentaho.di.repository.directory;
+package org.pentaho.di.repository;
 
 import java.util.ArrayList;
 import java.util.List;

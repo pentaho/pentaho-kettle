@@ -313,10 +313,10 @@ public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
 				delDatabase(id_database);
 
 			}  catch (KettleException dbe) {
-				throw new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingConnection.Message", databaseName), dbe);
+				throw new KettleException(BaseMessages.getString(PKG, "KettleDatabaseRepository.Exception.ErrorDeletingConnection.Message", databaseName), dbe);
 			}
 		} else {
-			throw new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.Exception.ReadOnlyUser"));
+			throw new KettleException(BaseMessages.getString(PKG, "KettleDatabaseRepository.Exception.ReadOnlyUser"));
 		}
 	}
 

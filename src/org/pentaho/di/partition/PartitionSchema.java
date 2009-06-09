@@ -19,6 +19,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.resource.ResourceHolderInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.w3c.dom.Node;
@@ -29,9 +31,13 @@ import org.w3c.dom.Node;
  * 
  * @author Matt
  */
-public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObjectInterface, ResourceHolderInterface
+public class PartitionSchema 
+	extends ChangedFlag 
+	implements Cloneable, SharedObjectInterface, ResourceHolderInterface, RepositoryElementInterface
 {
 	public static final String XML_TAG = "partitionschema";
+
+    public static final String REPOSITORY_ELEMENT_TYPE = "partitionschema";
 
 	private String   name;
 
@@ -53,16 +59,16 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
 	 * @param partitionIDs
 	 */
 	public PartitionSchema(String name, List<String> partitionIDs)
-{
-	this.name = name;
-	this.partitionIDs = partitionIDs;
-}
+	{
+		this.name = name;
+		this.partitionIDs = partitionIDs;
+	}
 
 	public Object clone()
 	{
 		PartitionSchema partitionSchema = new PartitionSchema();
 		partitionSchema.replaceMeta(this);
-		partitionSchema.setId(-1L);
+		partitionSchema.setID(-1L);
 		return partitionSchema;
 	}
 
@@ -76,7 +82,7 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
 		this.numberOfPartitionsPerSlave = partitionSchema.numberOfPartitionsPerSlave;
         
 		// this.shared = partitionSchema.shared;
-		this.setId(partitionSchema.id);
+		this.setID(partitionSchema.id);
 		this.setChanged(true);
 	}
     
@@ -186,26 +192,9 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
 	/**
 	 * @return the id
 	 */
-	public long getId()
-	{
-		return id;
-	}
-
-	/**
-	 * @return the id
-	 */
 	public long getID()
 	{
 		return id;
-	}
-
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(long id)
-	{
-		this.id = id;
 	}
 
 	public String getDescription() 
@@ -302,4 +291,23 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
 		partitionIDs.clear();
 		partitionIDs.addAll(ids);
 	}
+
+	/**
+	 * Not supported for Partition schema, return the root.
+	 */
+	public RepositoryDirectory getRepositoryDirectory() {
+		return new RepositoryDirectory();
+	}
+
+	public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
+	}
+
+	public String getRepositoryElementType() {
+		return REPOSITORY_ELEMENT_TYPE;
+	}
+
+	public void setID(long id) {
+		this.id = id;
+	}
+
 }

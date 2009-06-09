@@ -1,6 +1,5 @@
 package org.pentaho.di.repository;
 
-import org.pentaho.di.repository.directory.RepositoryDirectory;
 
 /**
  * This singleton keeps the location of a repository import.

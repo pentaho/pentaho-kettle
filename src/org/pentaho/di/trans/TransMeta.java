@@ -75,8 +75,8 @@ import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
-import org.pentaho.di.repository.directory.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -109,7 +109,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     public static final String XML_TAG = "transformation";
         
-	public static final String REPOSITORY_ELEMENT_TYPE = "job";
+	public static final String REPOSITORY_ELEMENT_TYPE = "transformation";
 
     private static LogWriter         log = LogWriter.getInstance();
 
