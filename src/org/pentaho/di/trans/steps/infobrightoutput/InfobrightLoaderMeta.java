@@ -5,8 +5,10 @@ import java.util.Map;
 
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -92,6 +94,18 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
     dataFormat = Enum.valueOf(DataFormat.class, XMLHandler.getTagValue(stepnode, "data_format"));
   }
   
+  @Override
+  public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
+	  super.readRep(rep, id_step, databases, counters);
+	  dataFormat = Enum.valueOf(DataFormat.class, rep.getStepAttributeString(id_step, "data_format"));
+  }
+
+  @Override
+  public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException {
+	  super.saveRep(rep, id_transformation, id_step);
+	  rep.saveStepAttribute(id_transformation, id_step, "data_format", dataFormat.toString());
+  }
+    
   /** @return the rejectErrors */
   public boolean isRejectErrors() {
     return rejectErrors;
