@@ -71,6 +71,7 @@ import org.w3c.dom.Node;
 (
 		image="ui/images/TRN.png",
 		id="TRANS",
+		name="JobEntry.Trans.TypeDesc",
 		type=JobEntryType.TRANS,
 		tooltip="JobEntry.Trans.Tooltip",
 		category=JobEntryCategory.CATEGORY_GENERAL
