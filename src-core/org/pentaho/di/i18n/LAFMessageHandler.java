@@ -117,8 +117,10 @@ public class LAFMessageHandler extends GlobalMessages {
         if (string != null) return string;
         
         string = "!"+key+"!";
-        String message = "Message not found in the preferred and failover locale: key=["+key+"], package="+packageName;
-        LogWriter.getInstance().logDetailed("i18n", Const.getStackTracker(new KettleException(message)));
+        if(LogWriter.getInstance().isDetailed()) {
+        	String message = "Message not found in the preferred and failover locale: key=["+key+"], package="+packageName;
+        	LogWriter.getInstance().logDetailed("i18n", Const.getStackTracker(new KettleException(message)));
+        }
 
         return string;
     }
