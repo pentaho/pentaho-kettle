@@ -69,6 +69,9 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 {
 	private static Class<?> PKG = GetFileNamesMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	private static final String[] YES_NO_COMBO = new String[] {BaseMessages.getString(PKG, "System.Combo.No"), BaseMessages.getString(PKG, "System.Combo.Yes") };
+	
+	
 	private CTabFolder wTabFolder;
 
 	private FormData fdTabFolder;
@@ -420,11 +423,16 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 				new ColumnInfo(BaseMessages.getString(PKG, "GetFileNamesDialog.FileDirColumn.Column"),
 						ColumnInfo.COLUMN_TYPE_TEXT, false),
 				new ColumnInfo(BaseMessages.getString(PKG, "GetFileNamesDialog.WildcardColumn.Column"),
-						ColumnInfo.COLUMN_TYPE_TEXT, false), };
+						ColumnInfo.COLUMN_TYPE_TEXT, false),
+				new ColumnInfo(BaseMessages.getString(PKG, "GetFileNamesDialog.Required.Column"),        
+						ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO ),
+				new ColumnInfo(BaseMessages.getString(PKG, "GetFileNamesDialog.IncludeSubDirs.Column"),        
+						ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO )};
 
         colinfo[0].setUsingVariables(true);
         colinfo[1].setUsingVariables(true);
 		colinfo[1].setToolTip(BaseMessages.getString(PKG, "GetFileNamesDialog.RegExpColumn.Column"));
+		colinfo[3].setToolTip(BaseMessages.getString(PKG, "GetFileNamesDialog.IncludeSubDirs.ToolTip"));
 
 		wFilenameList = new TableView(transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo,
 				colinfo.length, lsMod, props);
@@ -881,8 +889,11 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 			wFilenameList.removeAll();
 			for (int i = 0; i < in.getFileName().length; i++)
 			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i],
-						in.getFileRequired()[i] });
+				//wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i],
+					//	in.getFileRequired()[i] });
+				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] ,
+						in.getRequiredFilesDesc(in.getFileRequired()[i]), 
+						in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
 			}
 			wFilenameList.removeEmptyRows();
 			wFilenameList.setRowNums();
@@ -934,6 +945,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		in.setFileName(wFilenameList.getItems(0));
 		in.setFileMask(wFilenameList.getItems(1));
 		in.setFileRequired(wFilenameList.getItems(2));
+		in.setIncludeSubFolders(wFilenameList.getItems(3));
 
 		in.setFilterFileType(wFilterFileType.getSelectionIndex());
 		in.setIncludeRowNumber( wInclRownum.getSelection() );

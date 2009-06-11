@@ -167,75 +167,97 @@ public class FileInputList
             {
                 try
                 {
+                	  FileObject directoryFileObject = KettleVFS.getFileObject(onefile);
+                      boolean processFolder=true;
+                      if(onerequired)
+                      {
+                      	if(!directoryFileObject.exists()) 
+                      	{
+                      		// if we don't find folder..no need to continue
+                      		fileInputList.addNonExistantFile(directoryFileObject);
+                      		processFolder=false;
+                      	}
+                      	else
+                      	{
+                      		if(!directoryFileObject.isReadable())
+                      		{
+                      			fileInputList.addNonAccessibleFile(directoryFileObject);	
+                      			processFolder=false;
+                      		}
+                      	}
+                      }
+                      
                     // Find all file names that match the wildcard in this directory
                     //
-                    FileObject directoryFileObject = KettleVFS.getFileObject(onefile);
-                    if (directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER) // it's a directory
-                    {
-                        FileObject[] fileObjects = directoryFileObject.findFiles(
-                                new AllFileSelector()
-                                {
-                                    public boolean traverseDescendents(FileSelectInfo info)
-                                    {
-                                        return info.getDepth()==0 || subdirs;
-                                    }
-                                    
-                                    public boolean includeFile(FileSelectInfo info)
-                                    {
-                                        // Never return the parent directory of a file list.
-                                        if (info.getDepth() == 0) {
-                                            return false;
-                                        }
-                                        
-                                    	FileObject fileObject = info.getFile();
-                                    	try {
-                                    	    if ( fileObject != null && filter.isFileTypeAllowed(fileObject.getType()))
-                                    	    {
-                                                String name = fileObject.getName().getBaseName();
-                                                boolean matches = Pattern.matches(onemask, name);
-                                                /*
-                                                if (matches)
-                                                {
-                                                    System.out.println("File match: URI: "+info.getFile()+", name="+name+", depth="+info.getDepth());
-                                                }
-                                                */
-                                                return matches;
-                                    	    }
-                                    	    return false;
-                                    	}
-                                    	catch ( FileSystemException ex )
-                                    	{
-                                    		// Upon error don't process the file.
-                                    		return false;
-                                    	}
-                                    }
-                                }
-                            );
-                        if (fileObjects != null) 
-                        {
-                            for (int j = 0; j < fileObjects.length; j++)
-                            {
-                                if (fileObjects[j].exists()) fileInputList.addFile(fileObjects[j]);
-                            }
-                        }
-                        if (Const.isEmpty(fileObjects))
-                        {
-                            if (onerequired) fileInputList.addNonAccessibleFile(directoryFileObject);
-                        }
-                        
-                        // Sort the list: quicksort, only for regular files
-                        fileInputList.sortFiles();
-                    }
-                    else
-                    {
-                        FileObject[] children = directoryFileObject.getChildren();
-                        for (int j = 0; j < children.length; j++)
-                        {
-                            // See if the wildcard (regexp) matches...
-                            String name = children[j].getName().getBaseName();
-                            if (Pattern.matches(onemask, name)) fileInputList.addFile(children[j]);
-                        }
-                        // We don't sort here, keep the order of the files in the archive.
+                      if(processFolder)
+                      {
+	                    if (directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER) // it's a directory
+	                    {
+	                        FileObject[] fileObjects = directoryFileObject.findFiles(
+	                                new AllFileSelector()
+	                                {
+	                                    public boolean traverseDescendents(FileSelectInfo info)
+	                                    {
+	                                        return info.getDepth()==0 || subdirs;
+	                                    }
+	                                    
+	                                    public boolean includeFile(FileSelectInfo info)
+	                                    {
+	                                        // Never return the parent directory of a file list.
+	                                        if (info.getDepth() == 0) {
+	                                            return false;
+	                                        }
+	                                        
+	                                    	FileObject fileObject = info.getFile();
+	                                    	try {
+	                                    	    if ( fileObject != null && filter.isFileTypeAllowed(fileObject.getType()))
+	                                    	    {
+	                                                String name = fileObject.getName().getBaseName();
+	                                                boolean matches = Pattern.matches(onemask, name);
+	                                                /*
+	                                                if (matches)
+	                                                {
+	                                                    System.out.println("File match: URI: "+info.getFile()+", name="+name+", depth="+info.getDepth());
+	                                                }
+	                                                */
+	                                                return matches;
+	                                    	    }
+	                                    	    return false;
+	                                    	}
+	                                    	catch ( FileSystemException ex )
+	                                    	{
+	                                    		// Upon error don't process the file.
+	                                    		return false;
+	                                    	}
+	                                    }
+	                                }
+	                            );
+	                        if (fileObjects != null) 
+	                        {
+	                            for (int j = 0; j < fileObjects.length; j++)
+	                            {
+	                                if (fileObjects[j].exists()) fileInputList.addFile(fileObjects[j]);
+	                            }
+	                        }
+	                        if (Const.isEmpty(fileObjects))
+	                        {
+	                            if (onerequired) fileInputList.addNonAccessibleFile(directoryFileObject);
+	                        }
+	                        
+	                        // Sort the list: quicksort, only for regular files
+	                        fileInputList.sortFiles();
+	                    }
+	                    else
+	                    {
+	                        FileObject[] children = directoryFileObject.getChildren();
+	                        for (int j = 0; j < children.length; j++)
+	                        {
+	                            // See if the wildcard (regexp) matches...
+	                            String name = children[j].getName().getBaseName();
+	                            if (Pattern.matches(onemask, name)) fileInputList.addFile(children[j]);
+	                        }
+	                        // We don't sort here, keep the order of the files in the archive.
+	                    }
                     }
                 }
                 catch (Exception e)
