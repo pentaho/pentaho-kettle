@@ -21,7 +21,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class CheckBoxToolTip extends ToolTip {
@@ -87,7 +86,7 @@ public class CheckBoxToolTip extends ToolTip {
 		line.setLayoutData(fdLine);
 
 		//Text messageLabel = new Text(composite, SWT.LEFT | ( showingScrollBars ? SWT.H_SCROLL | SWT.V_SCROLL : SWT.NONE ) );
-		Text messageLabel = new Text(composite, SWT.SINGLE | SWT.LEFT);
+		/*Text messageLabel = new Text(composite, SWT.SINGLE | SWT.LEFT);
 		messageLabel.setText(message);
 		messageLabel.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 		FormData fdMessageLabel = new FormData();
@@ -97,6 +96,14 @@ public class CheckBoxToolTip extends ToolTip {
 			fdMessageLabel.right = new FormAttachment(imageLabel, 500);
 			fdMessageLabel.bottom= new FormAttachment(line, 400);
 		}
+		messageLabel.setLayoutData(fdMessageLabel);
+		*/
+		Label messageLabel = new Label(composite, SWT.LEFT);
+		messageLabel.setText(message);
+		messageLabel.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+		FormData fdMessageLabel = new FormData();
+		fdMessageLabel.left = new FormAttachment(imageLabel, 20);
+		fdMessageLabel.top = new FormAttachment(line, 5);
 		messageLabel.setLayoutData(fdMessageLabel);
 		
 		final Button disable = new Button(composite, SWT.CHECK);
