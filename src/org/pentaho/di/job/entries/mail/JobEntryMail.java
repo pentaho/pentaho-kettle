@@ -951,7 +951,6 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         {
           part1.setContent(messageText.toString(), "text/html; " + "charset=ISO-8859-1");
         }
-
       }
 
       else

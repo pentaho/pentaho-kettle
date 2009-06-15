@@ -2212,7 +2212,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         // background color
         ni.setBackGroundColorRed(n.getBackGroundColorRed());
         ni.setBackGroundColorGreen(n.getBackGroundColorGreen());
-        ni.setBackGroundColorRed(n.getBackGroundColorRed());
+        ni.setBackGroundColorBlue(n.getBackGroundColorBlue());
         // border color
         ni.setBorderColorRed(n.getBorderColorRed());
         ni.setBorderColorGreen(n.getBorderColorGreen());
