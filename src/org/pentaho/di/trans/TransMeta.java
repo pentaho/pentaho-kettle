@@ -2700,15 +2700,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         for (int idx = 0; idx < parameters.length; idx++)
         {
         	retval.append("        ").append(XMLHandler.openTag("parameter")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-        	retval.append("            ").append(XMLHandler.openTag("name")); //$NON-NLS-1$
-        	retval.append(parameters[idx]);
-        	retval.append(XMLHandler.closeTag("name")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-        	retval.append("            ").append(XMLHandler.openTag("default_value")); //$NON-NLS-1$
-        	retval.append(getParameterDefault(parameters[idx]));
-        	retval.append(XMLHandler.closeTag("default_value")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
-        	retval.append("            ").append(XMLHandler.openTag("description")); //$NON-NLS-1$
-        	retval.append(getParameterDescription(parameters[idx]));
-        	retval.append(XMLHandler.closeTag("description")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+        	retval.append("            ").append(XMLHandler.addTagValue("name", parameters[idx])); //$NON-NLS-1$
+        	retval.append("            ").append(XMLHandler.addTagValue("default_value", getParameterDefault(parameters[idx]))); //$NON-NLS-1$
+        	retval.append("            ").append(XMLHandler.addTagValue("description", getParameterDescription(parameters[idx]))); //$NON-NLS-1$
         	retval.append("        ").append(XMLHandler.closeTag("parameter")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
         }        
         retval.append("    ").append(XMLHandler.closeTag(XML_TAG_PARAMETERS)).append(Const.CR); //$NON-NLS-1$
