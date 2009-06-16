@@ -55,12 +55,18 @@
            <starts-with>JobGraph.</starts-with>  
            <package>org.pentaho.di.ui.spoon.job</package>  
          </package-exception>
+         <package-exception>  
+           <starts-with>repository-login-toolbar</starts-with>  
+           <package>org.pentaho.di.ui.repository.dialog</package>  
+         </package-exception>
        </package-exceptions>
        <elements-to-scan> 
          <element-to-scan> <element>menu</element> <tag></tag> <attribute>label</attribute> </element-to-scan> 
          <element-to-scan> <element>menuitem</element> <tag></tag> <attribute>label</attribute> </element-to-scan>
          <element-to-scan> <element>toolbar</element> <tag></tag> <attribute>label</attribute> </element-to-scan>
+         <element-to-scan> <element>toolbar</element> <tag></tag> <attribute>tooltiptext</attribute> </element-to-scan>
          <element-to-scan> <element>toolbarbutton</element> <tag></tag> <attribute>label</attribute> </element-to-scan>
+         <element-to-scan> <element>toolbarbutton</element> <tag></tag> <attribute>tooltiptext</attribute> </element-to-scan>
        </elements-to-scan>
      </xml-folder-to-scan>
     

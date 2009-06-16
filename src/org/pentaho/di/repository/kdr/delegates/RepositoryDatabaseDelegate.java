@@ -21,8 +21,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.RepositorySecurity;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
-import org.pentaho.di.ui.spoon.RepositorySecurity;
 
 public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
 

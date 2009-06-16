@@ -1,0 +1,11 @@
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical" >
+	 
+	 <toolbox>
+		<toolbar id="nav-toolbar" mode="full">
+			<toolbarbutton value="new-repository" label="%RepositoryDialog.Label.Repository.New" image="ui/images/generic-new.png" tooltiptext="%RepositoryDialog.Tooltip.Repository.New"/>
+			<toolbarbutton value="edit-repository" label="%RepositoryDialog.Label.Repository.Edit" image="ui/images/generic-edit.png" tooltiptext="%RepositoryDialog.Tooltip.Repository.Edit" />
+			<toolbarbutton value="delete-repository" label="%RepositoryDialog.Label.Repository.Delete" image="ui/images/generic-delete.png" tooltiptext="%RepositoryDialog.Tooltip.Repository.Delete" />
+		</toolbar>
+	</toolbox>
+
+</window>

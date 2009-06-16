@@ -1,4 +1,4 @@
-package org.pentaho.di.ui.spoon;
+package org.pentaho.di.ui.repository;
 
 import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.core.Const;
@@ -10,8 +10,7 @@ import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
-public class RepositorySecurity {
-
+public class RepositorySecurityUtil {
 	/**
 	 * See if this user is allowed to perform ALL the specified operation.
 	 * 
@@ -124,34 +123,12 @@ public class RepositorySecurity {
 			UserInfo userInfo = repository.getUserInfo();
 			RepositoryCapabilities capabilities = repositoryMeta.getRepositoryCapabilities();
 			
-			RepositorySecurity.verifyOperation(userInfo, capabilities, operations);
+			RepositorySecurityUtil.verifyOperation(userInfo, capabilities, operations);
 		} catch(KettleException e) {
 			new ErrorDialog(Display.getCurrent().getActiveShell(), "Security error", "There was a security error performing operations:"+Const.CR+operationsDesc, e);
 			return true;
 		}
 		return false;
-	}
-
-	public static boolean isReadOnly(Repository repository) {
-		RepositoryMeta repositoryMeta = repository.getRepositoryMeta();
-		RepositoryCapabilities capabilities = repositoryMeta.getRepositoryCapabilities();
-		UserInfo userInfo = repository.getUserInfo();
-		
-		return capabilities.isReadOnly() || ( !capabilities.supportsUsers() && !userInfo.isReadOnly());
-	}
-
-	public static boolean supportsUsers(Repository repository) {
-		RepositoryMeta repositoryMeta = repository.getRepositoryMeta();
-		RepositoryCapabilities capabilities = repositoryMeta.getRepositoryCapabilities();
-		
-		return capabilities.supportsUsers();
-	}
-	
-	public static boolean supportsRevisions(Repository repository) {
-		RepositoryMeta repositoryMeta = repository.getRepositoryMeta();
-		RepositoryCapabilities capabilities = repositoryMeta.getRepositoryCapabilities();
-		
-		return capabilities.supportsRevisions();
 	}
 
 }

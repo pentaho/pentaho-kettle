@@ -76,6 +76,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.repository.RepositorySecurity;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
@@ -92,7 +93,6 @@ import org.pentaho.di.ui.core.widget.TreeItemAccelerator;
 import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
-import org.pentaho.di.ui.spoon.RepositorySecurity;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.w3c.dom.Document;
 

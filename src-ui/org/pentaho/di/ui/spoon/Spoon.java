@@ -152,6 +152,7 @@ import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryOperation;
+import org.pentaho.di.repository.RepositorySecurity;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
 import org.pentaho.di.resource.ResourceExportInterface;
@@ -201,6 +202,7 @@ import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.job.dialog.JobLoadProgressDialog;
 import org.pentaho.di.ui.job.dialog.JobSaveProgressDialog;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
+import org.pentaho.di.ui.repository.RepositorySecurityUtil;
 import org.pentaho.di.ui.repository.dialog.RepositoriesDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
@@ -1995,7 +1997,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public void editConnection() {
 		
-		if(RepositorySecurity.verifyOperations(rep, RepositoryOperation.MODIFY_DATABASE)) return;
+		if(RepositorySecurityUtil.verifyOperations(rep, RepositoryOperation.MODIFY_DATABASE)) return;
 		
 		final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
 		delegates.db.editConnection(databaseMeta);
@@ -2014,7 +2016,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public void delConnection() {
 		
-		if(RepositorySecurity.verifyOperations(rep, RepositoryOperation.DELETE_DATABASE)) return;
+		if(RepositorySecurityUtil.verifyOperations(rep, RepositoryOperation.DELETE_DATABASE)) return;
 
 		final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
 		final HasDatabasesInterface hasDatabasesInterface = (HasDatabasesInterface) selectionObjectParent;
@@ -2038,7 +2040,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public void exploreDatabase() {
 		
-		if (RepositorySecurity.verifyOperations(rep, RepositoryOperation.EXPLORE_DATABASE)) {
+		if (RepositorySecurityUtil.verifyOperations(rep, RepositoryOperation.EXPLORE_DATABASE)) {
 			return;
 		}
 
@@ -3446,12 +3448,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// Verify repository security first...
 		//
 		if (meta.getFileType().equals(LastUsedFile.FILE_TYPE_TRANSFORMATION)) {
-			if (RepositorySecurity.verifyOperations(rep, RepositoryOperation.MODIFY_TRANSFORMATION)) {
+			if (RepositorySecurityUtil.verifyOperations(rep, RepositoryOperation.MODIFY_TRANSFORMATION)) {
 				return false;
 			}
 		}
 		if (meta.getFileType().equals(LastUsedFile.FILE_TYPE_JOB)) {
-			if (RepositorySecurity.verifyOperations(rep, RepositoryOperation.MODIFY_JOB)) {
+			if (RepositorySecurityUtil.verifyOperations(rep, RepositoryOperation.MODIFY_JOB)) {
 				return false;
 			}
 		}

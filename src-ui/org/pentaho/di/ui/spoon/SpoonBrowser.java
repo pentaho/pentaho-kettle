@@ -128,7 +128,6 @@ public class SpoonBrowser implements TabItemInterface
 
     private void addToolBar()
 	{
-
 		try {
 			toolbar = XulHelper.createToolbar(XUL_FILE_BROWSER_TOOLBAR, composite, SpoonBrowser.this, new XulMessages());
 			
