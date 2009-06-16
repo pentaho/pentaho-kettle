@@ -31,6 +31,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
@@ -194,13 +195,12 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
+	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleException
 	{
 		try
 		{
-			long id_connection = rep.getStepAttributeInteger(id_step, "id_connection"); 
-			databaseMeta = DatabaseMeta.findDatabase( databases, id_connection);
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");
 			
 			sql                       =      rep.getStepAttributeString (id_step, "sql");
 			catalog                   =      rep.getStepAttributeString(id_step, "catalog");
@@ -212,18 +212,18 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_transformation, long id_step)
+	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "id_connection",    databaseMeta==null?-1:databaseMeta.getID());
+			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
 			rep.saveStepAttribute(id_transformation, id_step, "sql",              sql);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",            catalog);
             rep.saveStepAttribute(id_transformation, id_step, "variables_active", variableReplacementActive);
 			
 			// Also, save the step-database relationship!
-			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
+			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getObjectId());
 		}
 		catch(Exception e)
 		{

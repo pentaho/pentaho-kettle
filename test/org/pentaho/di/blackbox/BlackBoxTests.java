@@ -10,20 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import junit.framework.AssertionFailedError;
+import junit.framework.TestCase;
+
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.GlobalMessages;
-import org.pentaho.di.job.JobEntryLoader;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
 
 public class BlackBoxTests extends TestCase {
 
@@ -350,34 +348,11 @@ public class BlackBoxTests extends TestCase {
 	
 	public boolean runTrans(String fileName, LogWriter log) throws KettleException
 	{
-		EnvUtil.environmentInit();
-		
-		Trans trans = null;
-
-		/* Load the plugins etc.*/
-		try 
-		{
-			StepLoader.init();
-		}
-		catch(KettleException e)
-		{
-			addFailure("Error loading steps... halting!" + getPath(fileName));
-			log.logError("BlackBoxTest", "Error loading steps... halting!" + getPath(fileName), e);
-			return false;
-		}
-		
-        /* Load the plugins etc.*/
-		try 
-		{
-			JobEntryLoader.init();
-		}
-		catch(KettleException e)
-        {
-        	addFailure("Error loading job entries & plugins... halting!" + getPath(fileName));
-            log.logError("BlackBoxTest", "Error loading job entries & plugins... halting!" + getPath(fileName), e);
-            return false;
-        }
+    	// Bootstrap the Kettle API...
+    	//
+    	KettleEnvironment.init();
         
+		Trans trans = null;
 		TransMeta transMeta = new TransMeta();
 
 		try

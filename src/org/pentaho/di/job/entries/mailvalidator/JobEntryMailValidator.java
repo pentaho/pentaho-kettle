@@ -36,6 +36,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.trans.steps.mailvalidator.MailValidation;
 import org.pentaho.di.trans.steps.mailvalidator.MailValidationResult;
 import org.w3c.dom.Node;
@@ -174,7 +175,7 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
 		}
 	}
 
-	  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	  {
 	    try
 	    {
@@ -192,16 +193,16 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
 
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job)
+	public void saveRep(Repository rep, ObjectId id_job)
 		throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "smtpCheck", smtpCheck);
-			rep.saveJobEntryAttribute(id_job, getID(), "timeout", timeout);
-			rep.saveJobEntryAttribute(id_job, getID(), "defaultSMTP", defaultSMTP);
-			rep.saveJobEntryAttribute(id_job, getID(), "emailSender", emailSender);
-			rep.saveJobEntryAttribute(id_job, getID(), "emailAddress", emailAddress);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "smtpCheck", smtpCheck);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "timeout", timeout);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "defaultSMTP", defaultSMTP);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "emailSender", emailSender);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "emailAddress", emailAddress);
 		}
 		catch(KettleDatabaseException dbe)
 		{

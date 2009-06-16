@@ -47,6 +47,7 @@ import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryImportLocation;
@@ -55,7 +56,6 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.w3c.dom.Node;
 
@@ -314,7 +314,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	/**
 	 * Load the jobentry from repository
 	 */
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
 		try {
 			jobname = rep.getJobEntryAttributeString(id_jobentry, "name");
 			directory = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
@@ -364,7 +364,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
@@ -386,29 +386,29 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			//	long id_job_attr = rep.getJobID(jobname, directory.getID());
 			// rep.saveJobEntryAttribute(id_job, getID(), "id_job", id_job_attr);
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "name", getJobName());
-      		rep.saveJobEntryAttribute(id_job, getID(), "dir_path", getDirectory()!=null?getDirectory():"");
-      		rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
-			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
-			rep.saveJobEntryAttribute(id_job, getID(), "params_from_previous", paramsFromPrevious);
-			rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
-			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_date", addDate);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
-			rep.saveJobEntryAttribute(id_job, getID(), "logfile", logfile);
-			rep.saveJobEntryAttribute(id_job, getID(), "logext", logext);
-			rep.saveJobEntryAttribute(id_job, getID(), "set_append_logfile", setAppendLogfile);
-			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
-			rep.saveJobEntryAttribute(id_job, getID(), "slave_server_name", remoteSlaveServerName);
-			rep.saveJobEntryAttribute(id_job, getID(), "wait_until_finished", waitingToFinish);
-			rep.saveJobEntryAttribute(id_job, getID(), "follow_abort_remote", followingAbortRemotely);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "name", getJobName());
+      		rep.saveJobEntryAttribute(id_job, getObjectId(), "dir_path", getDirectory()!=null?getDirectory():"");
+      		rep.saveJobEntryAttribute(id_job, getObjectId(), "file_name", filename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "arg_from_previous", argFromPrevious);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "params_from_previous", paramsFromPrevious);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "exec_per_row", execPerRow);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "set_logfile", setLogfile);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_date", addDate);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_time", addTime);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "logfile", logfile);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "logext", logext);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "set_append_logfile", setAppendLogfile);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "slave_server_name", remoteSlaveServerName);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "wait_until_finished", waitingToFinish);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "follow_abort_remote", followingAbortRemotely);
 
 			// save the arguments...
 			if (arguments!=null)
 			{
 				for (int i=0;i<arguments.length;i++)
 				{
-					rep.saveJobEntryAttribute(id_job, getID(), i, "argument", arguments[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "argument", arguments[i]);
 				}
 			}
 			
@@ -417,13 +417,13 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			{
 				for (int i=0;i<parameters.length;i++)
 				{
-					rep.saveJobEntryAttribute(id_job, getID(), i, "parameter_name", parameters[i]);
-					rep.saveJobEntryAttribute(id_job, getID(), i, "parameter_stream_name", Const.NVL(parameterFieldNames[i], ""));
-					rep.saveJobEntryAttribute(id_job, getID(), i, "parameter_value", Const.NVL(parameterValues[i], ""));
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "parameter_name", parameters[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "parameter_stream_name", Const.NVL(parameterFieldNames[i], ""));
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "parameter_value", Const.NVL(parameterValues[i], ""));
 				}
 			}		
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "pass_all_parameters", passingAllParameters);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "pass_all_parameters", passingAllParameters);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -486,7 +486,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             if (fromRepository) // load from the repository...
             {
                 if(log.isDetailed()) log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+environmentSubstitute(jobname)+"]");
-                jobMeta = rep.loadJobMeta(environmentSubstitute(jobname), rep.getDirectoryTree().findDirectory(environmentSubstitute(directory)), null);
+                jobMeta = rep.loadJob(environmentSubstitute(jobname), rep.loadRepositoryDirectoryTree().findDirectory(environmentSubstitute(directory)), null);
                 jobMeta.setParentVariableSpace(parentJob);
             }
             else // Get it from the XML file
@@ -690,7 +690,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 	//
                 	
 	                // Create a new job
-	                Job job = new Job(logwriter, StepLoader.getInstance(), rep, jobMeta);
+	                Job job = new Job(logwriter, rep, jobMeta);
 	
 	                job.shareVariablesWith(this);
 	                job.setInternalKettleVariables(this);
@@ -944,7 +944,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		// Different directories: OK
 		if (parentJobMeta.getRepositoryDirectory()==null && jobMeta.getRepositoryDirectory()!=null) return; 
 		if (parentJobMeta.getRepositoryDirectory()!=null && jobMeta.getRepositoryDirectory()==null) return; 
-		if (jobMeta.getRepositoryDirectory().getID() != parentJobMeta.getRepositoryDirectory().getID()) return;
+		if (jobMeta.getRepositoryDirectory().getObjectId() != parentJobMeta.getRepositoryDirectory().getObjectId()) return;
 		
 		// Same names, same directories : loaded from same location in the repository: 
 		// --> recursive loading taking place!
@@ -1004,9 +1004,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     	{
 	        if (rep!=null && getDirectory()!=null)
 	        {
-	            return rep.loadJobMeta(
+	            return rep.loadJob(
 	            		           (space != null ? space.environmentSubstitute(getJobName()): getJobName()), 
-                             rep.getDirectoryTree().findDirectory(environmentSubstitute(getDirectory())), null);
+                             rep.loadRepositoryDirectoryTree().findDirectory(environmentSubstitute(getDirectory())), null);
 	        }
 	        else
 	        {

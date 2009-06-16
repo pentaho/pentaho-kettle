@@ -40,6 +40,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -180,7 +181,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		}
 	}
 
-	  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	  {
 		try
 		{
@@ -218,28 +219,28 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
-			rep.saveJobEntryAttribute(id_job, getID(), "serverport",      serverPort);
-			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
-			rep.saveJobEntryAttribute(id_job, getID(), "password",        password);
-			rep.saveJobEntryAttribute(id_job, getID(), "remoteDirectory",    remoteDirectory);
-			rep.saveJobEntryAttribute(id_job, getID(), "localDirectory", localDirectory);
-			rep.saveJobEntryAttribute(id_job, getID(), "wildcard",        wildcard);
-			rep.saveJobEntryAttribute(id_job, getID(), "binary",          binaryMode);
-			rep.saveJobEntryAttribute(id_job, getID(), "timeout",         timeout);
-            rep.saveJobEntryAttribute(id_job, getID(), "remove",          remove);
-			rep.saveJobEntryAttribute(id_job, getID(), "only_new",        onlyPuttingNewFiles);
-            rep.saveJobEntryAttribute(id_job, getID(), "active",          activeConnection);
-            rep.saveJobEntryAttribute(id_job, getID(), "control_encoding",controlEncoding);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "servername",      serverName);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "serverport",      serverPort);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "username",        userName);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "password",        password);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "remoteDirectory",    remoteDirectory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "localDirectory", localDirectory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard",        wildcard);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "binary",          binaryMode);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "timeout",         timeout);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "remove",          remove);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "only_new",        onlyPuttingNewFiles);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "active",          activeConnection);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "control_encoding",controlEncoding);
             
-		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_host", proxyHost); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_port", proxyPort); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_username", proxyUsername); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_password", proxyPassword); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHost); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_username", proxyUsername); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_password", proxyPassword); //$NON-NLS-1$
 		}
 		catch(KettleDatabaseException dbe)
 		{

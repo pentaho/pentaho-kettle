@@ -32,6 +32,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
@@ -295,13 +296,11 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
-		throws KettleException
+	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
 	{
 		try
 		{
-			long id_connection = rep.getStepAttributeInteger(id_step, "id_connection"); 
-			databaseMeta = DatabaseMeta.findDatabase( databases, id_connection);
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");  //$NON-NLS-1$
 			
 			sql                       =      rep.getStepAttributeString (id_step, "sql");
 			rowLimit                  = (int)rep.getStepAttributeInteger(id_step, "limit");
@@ -316,12 +315,11 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_transformation, long id_step)
-		throws KettleException
+	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "id_connection",    databaseMeta==null?-1:databaseMeta.getID());
+			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
 			rep.saveStepAttribute(id_transformation, id_step, "sql",              sql);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",            rowLimit);
 			rep.saveStepAttribute(id_transformation, id_step, "lookup",           getLookupStepname());
@@ -330,7 +328,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "lazy_conversion_active", lazyConversionActive);
 			
 			// Also, save the step-database relationship!
-			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
+			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getObjectId());
 		}
 		catch(Exception e)
 		{

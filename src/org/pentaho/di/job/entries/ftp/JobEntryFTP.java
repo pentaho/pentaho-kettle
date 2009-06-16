@@ -46,6 +46,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -291,7 +292,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	}
 
 
-	  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	  {
 	    try
 	    {
@@ -360,44 +361,44 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "port",      port);
-			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
-			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
-			rep.saveJobEntryAttribute(id_job, getID(), "password",        password);
-			rep.saveJobEntryAttribute(id_job, getID(), "ftpdirectory",    ftpDirectory);
-			rep.saveJobEntryAttribute(id_job, getID(), "targetdirectory", targetDirectory);
-			rep.saveJobEntryAttribute(id_job, getID(), "wildcard",        wildcard);
-			rep.saveJobEntryAttribute(id_job, getID(), "binary",          binaryMode);
-			rep.saveJobEntryAttribute(id_job, getID(), "timeout",         timeout);
-            rep.saveJobEntryAttribute(id_job, getID(), "remove",          remove);
-			rep.saveJobEntryAttribute(id_job, getID(), "only_new",        onlyGettingNewFiles);
-            rep.saveJobEntryAttribute(id_job, getID(), "active",          activeConnection);
-            rep.saveJobEntryAttribute(id_job, getID(), "control_encoding",controlEncoding);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "port",      port);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "servername",      serverName);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "username",        userName);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "password",        password);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "ftpdirectory",    ftpDirectory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "targetdirectory", targetDirectory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard",        wildcard);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "binary",          binaryMode);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "timeout",         timeout);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "remove",          remove);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "only_new",        onlyGettingNewFiles);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "active",          activeConnection);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "control_encoding",controlEncoding);
             
-            rep.saveJobEntryAttribute(id_job, getID(), "movefiles",          movefiles);
-            rep.saveJobEntryAttribute(id_job, getID(), "movetodirectory",        movetodirectory);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "movefiles",          movefiles);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "movetodirectory",        movetodirectory);
             
-			rep.saveJobEntryAttribute(id_job, getID(), "addtime", addtime);
-			rep.saveJobEntryAttribute(id_job, getID(), "adddate", adddate);
-			rep.saveJobEntryAttribute(id_job, getID(), "SpecifyFormat", SpecifyFormat);
-			rep.saveJobEntryAttribute(id_job, getID(), "date_time_format", date_time_format);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "addtime", addtime);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "adddate", adddate);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "SpecifyFormat", SpecifyFormat);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "date_time_format", date_time_format);
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "AddDateBeforeExtension", AddDateBeforeExtension);
-			rep.saveJobEntryAttribute(id_job, getID(), "isaddresult", isaddresult);
-			rep.saveJobEntryAttribute(id_job, getID(), "createmovefolder", createmovefolder);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "AddDateBeforeExtension", AddDateBeforeExtension);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "isaddresult", isaddresult);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "createmovefolder", createmovefolder);
 			
-		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_host", proxyHost); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_port", proxyPort); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_username", proxyUsername); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_password", proxyPassword); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getID(), "ifFileExists", SifFileExists);
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHost); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_username", proxyUsername); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_password", proxyPassword); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "ifFileExists", SifFileExists);
 		    
-			rep.saveJobEntryAttribute(id_job, getID(), "nr_limit",  nr_limit);
-			rep.saveJobEntryAttribute(id_job, getID(), "success_condition",    success_condition);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "nr_limit",  nr_limit);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "success_condition",    success_condition);
 		}
 		catch(KettleDatabaseException dbe)
 		{

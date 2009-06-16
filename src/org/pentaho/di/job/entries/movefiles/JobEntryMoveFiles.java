@@ -47,6 +47,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 
@@ -248,7 +249,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		}
 	}
 
-	 public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	 public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	  {
 		try
 		{
@@ -299,43 +300,43 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
+	public void saveRep(Repository rep, ObjectId id_job)
 		throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "move_empty_folders",      move_empty_folders);
-			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous",  arg_from_previous);
-			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", include_subfolders);
-			rep.saveJobEntryAttribute(id_job, getID(), "destination_is_a_file", destination_is_a_file);
-			rep.saveJobEntryAttribute(id_job, getID(), "create_destination_folder", create_destination_folder);
-			rep.saveJobEntryAttribute(id_job, getID(), "nr_errors_less_than",      nr_errors_less_than);
-			rep.saveJobEntryAttribute(id_job, getID(), "success_condition",      success_condition);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_date", add_date);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_time", add_time);
-			rep.saveJobEntryAttribute(id_job, getID(), "SpecifyFormat", SpecifyFormat);
-			rep.saveJobEntryAttribute(id_job, getID(), "date_time_format",      date_time_format);
-			rep.saveJobEntryAttribute(id_job, getID(), "AddDateBeforeExtension", AddDateBeforeExtension);
-			rep.saveJobEntryAttribute(id_job, getID(), "DoNotKeepFolderStructure", DoNotKeepFolderStructure);
-			rep.saveJobEntryAttribute(id_job, getID(), "iffileexists", iffileexists);
-			rep.saveJobEntryAttribute(id_job, getID(), "destinationFolder", destinationFolder);
-			rep.saveJobEntryAttribute(id_job, getID(), "ifmovedfileexists", ifmovedfileexists);
-			rep.saveJobEntryAttribute(id_job, getID(), "moved_date_time_format",      moved_date_time_format);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_moved_date", add_moved_date);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_moved_time", add_moved_time);
-			rep.saveJobEntryAttribute(id_job, getID(), "SpecifyMoveFormat", SpecifyMoveFormat);
-			rep.saveJobEntryAttribute(id_job, getID(), "create_move_to_folder", create_move_to_folder);
-			rep.saveJobEntryAttribute(id_job, getID(), "AddMovedDateBeforeExtension", AddMovedDateBeforeExtension);
-			rep.saveJobEntryAttribute(id_job, getID(), "simulate", simulate);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "move_empty_folders",      move_empty_folders);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "arg_from_previous",  arg_from_previous);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "include_subfolders", include_subfolders);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "destination_is_a_file", destination_is_a_file);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "create_destination_folder", create_destination_folder);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "nr_errors_less_than",      nr_errors_less_than);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "success_condition",      success_condition);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_date", add_date);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_time", add_time);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "SpecifyFormat", SpecifyFormat);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "date_time_format",      date_time_format);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "AddDateBeforeExtension", AddDateBeforeExtension);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "DoNotKeepFolderStructure", DoNotKeepFolderStructure);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "iffileexists", iffileexists);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "destinationFolder", destinationFolder);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "ifmovedfileexists", ifmovedfileexists);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "moved_date_time_format",      moved_date_time_format);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_moved_date", add_moved_date);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_moved_time", add_moved_time);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "SpecifyMoveFormat", SpecifyMoveFormat);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "create_move_to_folder", create_move_to_folder);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "AddMovedDateBeforeExtension", AddMovedDateBeforeExtension);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "simulate", simulate);
 			
 			// save the arguments...
 			if (source_filefolder!=null)
 			{
 				for (int i=0;i<source_filefolder.length;i++) 
 				{
-					rep.saveJobEntryAttribute(id_job, getID(), i, "source_filefolder",     source_filefolder[i]);
-					rep.saveJobEntryAttribute(id_job, getID(), i, "destination_filefolder",     destination_filefolder[i]);
-					rep.saveJobEntryAttribute(id_job, getID(), i, "wildcard", wildcard[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "source_filefolder",     source_filefolder[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "destination_filefolder",     destination_filefolder[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "wildcard", wildcard[i]);
 				}
 			}
 		}

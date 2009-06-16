@@ -48,6 +48,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -220,7 +221,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 		try
@@ -259,19 +260,12 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			truncate=rep.getJobEntryAttributeBoolean(id_jobentry, "truncate");
 			
 			
-			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
-			if (id_db>0)
-			{
-				connection = DatabaseMeta.findDatabase(databases, id_db);
-			}
-			else
+			connection = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "id_database");
+			if (connection==null)
 			{
 				// This is were we end up in normally, the previous lines are for backward compatibility.
 				connection = DatabaseMeta.findDatabase(databases, rep.getJobEntryAttributeString(id_jobentry, "connection"));
 			}
-		
-			
-
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -279,41 +273,41 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "schemaname",     schemaname);
-			rep.saveJobEntryAttribute(id_job, getID(), "tablename",      tablename);
-			rep.saveJobEntryAttribute(id_job, getID(), "filename",       filename);
-			rep.saveJobEntryAttribute(id_job, getID(), "datafiletype",      datafiletype);
-			rep.saveJobEntryAttribute(id_job, getID(), "fieldterminator",      fieldterminator);
-			rep.saveJobEntryAttribute(id_job, getID(), "lineterminated", lineterminated);
-			rep.saveJobEntryAttribute(id_job, getID(), "codepage", codepage);
-			rep.saveJobEntryAttribute(id_job, getID(), "specificcodepage", specificcodepage);
-			rep.saveJobEntryAttribute(id_job, getID(), "formatfilename", formatfilename);
-			rep.saveJobEntryAttribute(id_job, getID(), "firetriggers", firetriggers);
-			rep.saveJobEntryAttribute(id_job, getID(), "checkconstraints", checkconstraints);
-			rep.saveJobEntryAttribute(id_job, getID(), "keepnulls", keepnulls);
-			rep.saveJobEntryAttribute(id_job, getID(), "keepidentity", keepidentity);
-			rep.saveJobEntryAttribute(id_job, getID(), "tablock", tablock);
-			rep.saveJobEntryAttribute(id_job, getID(), "startfile",    startfile);
-			rep.saveJobEntryAttribute(id_job, getID(), "endfile",    endfile);
-			rep.saveJobEntryAttribute(id_job, getID(), "orderby",   orderby);
-			rep.saveJobEntryAttribute(id_job, getID(), "orderdirection",   orderdirection);
-			rep.saveJobEntryAttribute(id_job, getID(), "errorfilename",   errorfilename);
-			rep.saveJobEntryAttribute(id_job, getID(), "maxerrors",         maxerrors);
-			rep.saveJobEntryAttribute(id_job, getID(), "batchsize",         batchsize);
-			rep.saveJobEntryAttribute(id_job, getID(), "rowsperbatch",         rowsperbatch);
-			rep.saveJobEntryAttribute(id_job, getID(), "adddatetime", adddatetime);
-			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
-			rep.saveJobEntryAttribute(id_job, getID(), "truncate", truncate);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "schemaname",     schemaname);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "tablename",      tablename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename",       filename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "datafiletype",      datafiletype);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "fieldterminator",      fieldterminator);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "lineterminated", lineterminated);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "codepage", codepage);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "specificcodepage", specificcodepage);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "formatfilename", formatfilename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "firetriggers", firetriggers);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "checkconstraints", checkconstraints);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "keepnulls", keepnulls);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "keepidentity", keepidentity);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "tablock", tablock);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "startfile",    startfile);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "endfile",    endfile);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "orderby",   orderby);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "orderdirection",   orderdirection);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "errorfilename",   errorfilename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "maxerrors",         maxerrors);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "batchsize",         batchsize);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "rowsperbatch",         rowsperbatch);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "adddatetime", adddatetime);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "addfiletoresult", addfiletoresult);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "truncate", truncate);
 			
 			if (connection!=null) 
 			{
-				rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
+				rep.saveJobEntryAttribute(id_job, getObjectId(), "connection", connection.getName());
 				// Also, save the step-database relationship!
-				rep.insertJobEntryDatabase(id_job, getID(), connection.getID());
+				rep.insertJobEntryDatabase(id_job, getObjectId(), connection.getObjectId());
 			}
 		}
 		catch(KettleDatabaseException dbe)

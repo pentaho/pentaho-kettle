@@ -43,6 +43,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -113,7 +114,7 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
@@ -123,21 +124,21 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0002_Unable_To_Load_Job_From_Repository", Long.toString(id_jobentry)), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0002_Unable_To_Load_Job_From_Repository", id_jobentry), dbe); //$NON-NLS-1$
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "filename1", filename1); //$NON-NLS-1$
-			rep.saveJobEntryAttribute(id_job, getID(), "filename2", filename2); //$NON-NLS-1$
-            rep.saveJobEntryAttribute(id_job, getID(), "add_filename_result", addFilenameToResult);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename1", filename1); //$NON-NLS-1$
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename2", filename2); //$NON-NLS-1$
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "add_filename_result", addFilenameToResult);
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0003_Unable_To_Save_Job", Long.toString(id_job)), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0003_Unable_To_Save_Job", id_job), dbe); //$NON-NLS-1$
 		}
 	}
 

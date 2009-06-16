@@ -35,8 +35,11 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
+import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryRevision;
 import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.w3c.dom.Node;
@@ -70,6 +73,8 @@ public class DatabaseMeta
   private static DatabaseInterface[] allDatabaseInterfaces;
 	
   private VariableSpace variables = new Variables();
+  
+  private RepositoryRevision revision;
 
 	/**
 	 * Indicates that the connections doesn't point to a type of database yet.
@@ -433,21 +438,21 @@ public class DatabaseMeta
 	 * 
 	 * @return the ID of the db connection.
 	 */
-	public long getID()
+	public ObjectId getObjectId()
 	{
-		return databaseInterface.getId();
+		return databaseInterface.getObjectId();
 	}
 	
-	public void setID(long id)
+	public void setObjectId(ObjectId id)
 	{
-		databaseInterface.setId(id);
+		databaseInterface.setObjectId(id);
 	}
 
 	public Object clone()
 	{
         DatabaseMeta databaseMeta = new DatabaseMeta();
         databaseMeta.replaceMeta(this);
-        databaseMeta.setID(-1L);
+        databaseMeta.setObjectId(null);
 		return databaseMeta; 
 	}
 
@@ -464,7 +469,7 @@ public class DatabaseMeta
     
         this.databaseInterface = (DatabaseInterface) databaseMeta.databaseInterface.clone();
         
-        this.setID(databaseMeta.getID());
+        this.setObjectId(databaseMeta.getObjectId());
         this.setChanged();
     }
     
@@ -2274,14 +2279,14 @@ public class DatabaseMeta
      * @param id The id of the database connection
      * @return The database object if one was found, null otherwise.
      */
-    public static final DatabaseMeta findDatabase(List<DatabaseMeta> databases, long id)
+    public static final DatabaseMeta findDatabase(List<DatabaseMeta> databases, ObjectId id)
     {
         if (databases == null)
             return null;
 
         for (DatabaseMeta ci : databases)
         {
-            if (ci.getID() == id) {
+            if (ci.getObjectId()!=null && ci.getObjectId().equals(id)) {
                 return ci;
             }
         }
@@ -2457,4 +2462,24 @@ public class DatabaseMeta
 	public String getRepositoryElementType() {
 		return REPOSITORY_ELEMENT_TYPE;
 	}
+
+	/**
+	 * @return the revision
+	 */
+	public RepositoryRevision getRevision() {
+		return revision;
+	}
+
+	/**
+	 * @param revision the revision to set
+	 */
+	public void setRevision(RepositoryRevision revision) {
+		this.revision = revision;
+	}
+	
+	// databases can't be locked
+	public RepositoryLock getRepositoryLock() {
+		return null;
+	}
+
 }

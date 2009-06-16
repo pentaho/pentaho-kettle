@@ -179,6 +179,7 @@ public interface RowMetaInterface extends Cloneable
     
     public String getString(Object[] dataRow, String valueName, String defaultValue) throws KettleValueException;
     public Long getInteger(Object[] dataRow, String valueName, Long defaultValue) throws KettleValueException;
+    public Date getDate(Object[] dataRow, String valueName, Date defaultValue) throws KettleValueException;
 
     /**
      * Searches for a value with a certain name in the value meta list 

@@ -34,7 +34,6 @@ import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobListener;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.trans.StepLoader;
 
 
 
@@ -121,7 +120,7 @@ public class AddJobServlet extends HttpServlet
 
             // Create the transformation and store in the list...
             //
-            final Job job = new Job(LogWriter.getInstance(), StepLoader.getInstance(), repository, jobMeta);
+            final Job job = new Job(LogWriter.getInstance(), repository, jobMeta);
             
             job.setSocketRepository(socketRepository);
             

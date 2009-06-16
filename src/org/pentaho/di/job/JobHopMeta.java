@@ -16,6 +16,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 
@@ -30,6 +31,8 @@ import org.w3c.dom.Node;
  */
 public class JobHopMeta implements Cloneable, XMLInterface
 {
+	private static final String	XML_TAG	= "hop";
+
 	private static Class<?> PKG = JobHopMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private JobEntryCopy from_entry, to_entry;
@@ -40,7 +43,7 @@ public class JobHopMeta implements Cloneable, XMLInterface
 	
 	private boolean changed;
 	
-	private long id;
+	private ObjectId id;
 
 	public JobHopMeta()
 	{
@@ -55,7 +58,7 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		split         = false;
 		evaluation    = true;
 		unconditional = false;
-		id            = -1L;
+		id            = null;
 		
 		if (from!=null && from.isStart()) {
 			setUnconditional();
@@ -97,7 +100,7 @@ public class JobHopMeta implements Cloneable, XMLInterface
         StringBuffer retval = new StringBuffer(200);
 		if ((null != from_entry) && (null != to_entry))
 		{
-		retval.append("    <hop>").append(Const.CR);
+		retval.append("    ").append(XMLHandler.openTag(XML_TAG)).append(Const.CR);
 		retval.append("      ").append(XMLHandler.addTagValue("from",          from_entry.getName()));
 		retval.append("      ").append(XMLHandler.addTagValue("to",            to_entry.getName()));
 		retval.append("      ").append(XMLHandler.addTagValue("from_nr",       from_entry.getNr()));
@@ -105,18 +108,18 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		retval.append("      ").append(XMLHandler.addTagValue("enabled",       enabled));
 		retval.append("      ").append(XMLHandler.addTagValue("evaluation",    evaluation));
 		retval.append("      ").append(XMLHandler.addTagValue("unconditional", unconditional));
-		retval.append("    </hop>").append(Const.CR);
+		retval.append("    ").append(XMLHandler.closeTag(XML_TAG)).append(Const.CR);
 		}
 		
 		return retval.toString();
 	}
 	
-	public void setID(long id)
+	public void setObjectId(ObjectId id)
 	{
 		this.id = id;
 	}
 	
-	public long getID()
+	public ObjectId getObjectId()
 	{
 		return id;
 	}
@@ -239,4 +242,5 @@ public class JobHopMeta implements Cloneable, XMLInterface
 	public void setToEntry(JobEntryCopy toEntry) {
 		this.to_entry = toEntry;
 	}
+
 }

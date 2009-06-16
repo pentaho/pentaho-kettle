@@ -27,6 +27,7 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
@@ -135,7 +136,7 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 		try
@@ -156,14 +157,14 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
 
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "isspecificrep", isspecificrep);
-			rep.saveJobEntryAttribute(id_job, getID(), "repname", repname);
-			rep.saveJobEntryAttribute(id_job, getID(), "isspecificuser", isspecificuser);
-			rep.saveJobEntryAttribute(id_job, getID(), "username", username);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "isspecificrep", isspecificrep);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "repname", repname);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "isspecificuser", isspecificuser);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "username", username);
 		}
 		catch(KettleDatabaseException dbe)
 		{

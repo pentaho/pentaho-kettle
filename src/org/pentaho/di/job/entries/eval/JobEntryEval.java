@@ -36,6 +36,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 /**
@@ -83,7 +84,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     }
   }
 
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     try {
        script = rep.getJobEntryAttributeString(id_jobentry, "script"); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
@@ -94,9 +95,9 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
 
   // Save the attributes of this job entry
   //
-  public void saveRep(Repository rep, long id_job) throws KettleException {
+  public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
     try {
-      rep.saveJobEntryAttribute(id_job, getID(), "script", script); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "script", script); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(BaseMessages.getString(PKG, "JobEntryEval.UnableToSaveToRepo", String.valueOf(id_job)), //$NON-NLS-1$
           dbe);

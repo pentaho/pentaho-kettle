@@ -32,6 +32,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
@@ -97,7 +98,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	/** These are the remote output steps to write to, one per host:port combination */
 	private List<RemoteStep> remoteOutputSteps;
 	
-	private long id;
+	private ObjectId id;
 
     
     /**
@@ -303,12 +304,12 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         }
     }
 
-	public long getID()
+	public ObjectId getObjectId()
 	{
 		return id;
 	}
 	
-	public void setID(long id)
+	public void setObjectId(ObjectId id)
 	{
 		this.id = id;
 	}
@@ -442,7 +443,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	{
         StepMeta stepMeta = new StepMeta();
         stepMeta.replaceMeta(this);
-        stepMeta.setID(-1L);
+        stepMeta.setObjectId(null);
         return stepMeta;
 	}
     
@@ -506,7 +507,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         }
         
         // this.setShared(stepMeta.isShared());
-        this.id = stepMeta.getID();
+        this.id = stepMeta.getObjectId();
         this.setChanged(true);
     }
 	
@@ -574,10 +575,10 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		return terminator;
 	}
 	    
-    public StepMeta(long id_step)
+    public StepMeta(ObjectId id_step)
     {
         this((String)null, (String)null, (StepMetaInterface)null);
-        setID(id_step);
+        setObjectId(id_step);
     }
 
 
@@ -693,7 +694,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     {
         this.stepErrorMeta = stepErrorMeta;
     }
-    
+
     /**
      * Find a step with the ID in a given ArrayList of steps
      *
@@ -701,13 +702,13 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
      * @param id The ID of the step
      * @return The step if it was found, null if nothing was found
      */
-    public static final StepMeta findStep(List<StepMeta> steps, long id)
+    public static final StepMeta findStep(List<StepMeta> steps, ObjectId id)
     {
         if (steps == null) return null;
 
         for (StepMeta stepMeta : steps)
         {
-            if (stepMeta.getID() == id) { 
+            if (stepMeta.getObjectId()!=null && stepMeta.getObjectId().equals(id)) { 
             	return stepMeta;
             }
         }

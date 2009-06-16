@@ -28,6 +28,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -130,14 +131,14 @@ public class FilesToResultMeta extends BaseStepMeta implements StepMetaInterface
 		fileType = ResultFile.FILE_TYPE_GENERAL;
 	}
 
-	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
+	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleException
 	{
 		filenameField = rep.getStepAttributeString(id_step, "filename_field"); //$NON-NLS-1$
 		fileType = ResultFile.getType( rep.getStepAttributeString(id_step, "file_type") ); //$NON-NLS-1$
 	}
 
-	public void saveRep(Repository rep, long id_transformation, long id_step)
+	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
 		rep.saveStepAttribute(id_transformation, id_step, "filename_field", filenameField); //$NON-NLS-1$

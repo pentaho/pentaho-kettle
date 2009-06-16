@@ -65,6 +65,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -268,7 +269,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     }
   }
 
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
   {
     try
     {
@@ -321,49 +322,49 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
   }
 
-  public void saveRep(Repository rep, long id_job) throws KettleException
+  public void saveRep(Repository rep, ObjectId id_job) throws KettleException
   {
     try
     {
-      rep.saveJobEntryAttribute(id_job, getID(), "server", server);
-      rep.saveJobEntryAttribute(id_job, getID(), "port", port);
-      rep.saveJobEntryAttribute(id_job, getID(), "destination", destination);
-      rep.saveJobEntryAttribute(id_job, getID(), "destinationCc", destinationCc);
-      rep.saveJobEntryAttribute(id_job, getID(), "destinationBCc", destinationBCc);
-      rep.saveJobEntryAttribute(id_job, getID(), "replyto", replyAddress);
-      rep.saveJobEntryAttribute(id_job, getID(), "replytoname", replyName);
-      rep.saveJobEntryAttribute(id_job, getID(), "subject", subject);
-      rep.saveJobEntryAttribute(id_job, getID(), "include_date", includeDate);
-      rep.saveJobEntryAttribute(id_job, getID(), "contact_person", contactPerson);
-      rep.saveJobEntryAttribute(id_job, getID(), "contact_phone", contactPhone);
-      rep.saveJobEntryAttribute(id_job, getID(), "comment", comment);
-      rep.saveJobEntryAttribute(id_job, getID(), "encoding", encoding);
-      rep.saveJobEntryAttribute(id_job, getID(), "priority", priority);
-      rep.saveJobEntryAttribute(id_job, getID(), "importance", importance);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "server", server);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "port", port);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "destination", destination);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "destinationCc", destinationCc);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "destinationBCc", destinationBCc);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "replyto", replyAddress);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "replytoname", replyName);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "subject", subject);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "include_date", includeDate);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "contact_person", contactPerson);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "contact_phone", contactPhone);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "comment", comment);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "encoding", encoding);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "priority", priority);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "importance", importance);
       
       
-      rep.saveJobEntryAttribute(id_job, getID(), "include_files", includingFiles);
-      rep.saveJobEntryAttribute(id_job, getID(), "use_auth", usingAuthentication);
-      rep.saveJobEntryAttribute(id_job, getID(), "use_secure_auth", usingSecureAuthentication);
-      rep.saveJobEntryAttribute(id_job, getID(), "auth_user", authenticationUser);
-      rep.saveJobEntryAttribute(id_job, getID(), "auth_password", Encr.encryptPasswordIfNotUsingVariables(authenticationPassword));
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "include_files", includingFiles);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "use_auth", usingAuthentication);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "use_secure_auth", usingSecureAuthentication);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "auth_user", authenticationUser);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "auth_password", Encr.encryptPasswordIfNotUsingVariables(authenticationPassword));
 
-      rep.saveJobEntryAttribute(id_job, getID(), "only_comment", onlySendComment);
-      rep.saveJobEntryAttribute(id_job, getID(), "use_HTML", useHTML);
-      rep.saveJobEntryAttribute(id_job, getID(), "use_Priority", usePriority);
-      rep.saveJobEntryAttribute(id_job, getID(), "secureconnectiontype", secureConnectionType);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "only_comment", onlySendComment);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "use_HTML", useHTML);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "use_Priority", usePriority);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "secureconnectiontype", secureConnectionType);
 
       if (fileType != null)
       {
         for (int i = 0; i < fileType.length; i++)
         {
-          rep.saveJobEntryAttribute(id_job, getID(), i, "file_type", ResultFile.getTypeCode(fileType[i]));
+          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "file_type", ResultFile.getTypeCode(fileType[i]));
         }
       }
 
-      rep.saveJobEntryAttribute(id_job, getID(), "zip_files", zipFiles);
-      rep.saveJobEntryAttribute(id_job, getID(), "zip_name", zipFilename);
-      rep.saveJobEntryAttribute(id_job, getID(), "replyToAddresses", replyToAddresses);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "zip_files", zipFiles);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "zip_name", zipFilename);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "replyToAddresses", replyToAddresses);
 
     } catch (KettleDatabaseException dbe)
     {

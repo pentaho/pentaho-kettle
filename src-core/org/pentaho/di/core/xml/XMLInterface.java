@@ -22,5 +22,12 @@ import org.pentaho.di.core.exception.KettleException;
  */
 public interface XMLInterface
 {
-	String getXML() throws KettleException;
+	/**
+	 * Describes the Object implementing this interface as XML
+	 * 
+	 * @return the XML string for this object
+	 * @throws KettleException in case there is an encoding problem.
+	 */
+	public String getXML() throws KettleException;
+	
 }

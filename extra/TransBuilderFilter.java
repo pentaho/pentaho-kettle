@@ -1,11 +1,11 @@
 
 import org.pentaho.di.core.Condition;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -151,15 +151,14 @@ public class TransBuilderFilter
      */
     public static void main(String[] args) throws Exception
     {
-    	EnvUtil.environmentInit();
+    	// Bootstrap the Kettle API...
+    	//
+    	KettleEnvironment.init();
         
     	// Init the logging...
     	//
         LogWriter.getInstance("TransBuilderFilter.log", true, LogWriter.LOG_LEVEL_DETAILED);
-        
-        // Load the Kettle steps & plugins
-    	StepLoader.init();
-        
+                
         // The parameters we want, optionally this can be 
         String transformationName = "Filter test Transformation";
        

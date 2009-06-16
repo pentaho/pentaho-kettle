@@ -40,6 +40,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -50,7 +51,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class UserDialog extends Dialog 
 {
-	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = KettleDatabaseRepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private Shell     shell;
 	private Label     wlLogin, wlPassword, wlUsername, wlDescription;
@@ -276,7 +277,7 @@ public class UserDialog extends Dialog
 
 		BaseStepDialog.setSize(shell);
 		
-		if ( userinfo.getID() <= 0 )
+		if ( userinfo.getObjectId() == null )
 		{
 		    setNewUser(true);  
 		}
@@ -334,7 +335,8 @@ public class UserDialog extends Dialog
 			
 		    if ( isNewUser() )
 		    {
-		    	if ( rep.exists(new UserInfo(login)) )
+		    	ObjectId id = rep.getUserID(login);
+		    	if ( id != null )
 		    	{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
 					mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.AlreadyExists.Message")); //$NON-NLS-1$
@@ -352,7 +354,7 @@ public class UserDialog extends Dialog
 			userinfo.setDescription(wDescription.getText());
 			String profname = wProfile.getText();
 			
-			long idProfile = rep.getProfileID(profname);
+			ObjectId idProfile = rep.getProfileID(profname);
 			ProfileMeta profinfo = rep.loadProfileMeta(idProfile);
 			userinfo.setProfile( profinfo);
             

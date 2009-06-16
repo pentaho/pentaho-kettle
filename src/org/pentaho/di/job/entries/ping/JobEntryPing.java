@@ -37,6 +37,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -150,7 +151,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 		try
@@ -188,17 +189,17 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "hostname",    hostname);
-			rep.saveJobEntryAttribute(id_job, getID(), "nbr_packets", nbrPackets);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "hostname",    hostname);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "nbr_packets", nbrPackets);
 			
 			// TODO: The following line may be removed 3 versions after 2.5.0
-			rep.saveJobEntryAttribute(id_job, getID(), "nbrpaquets",  nbrPackets);
-			rep.saveJobEntryAttribute(id_job, getID(), "timeout",      timeout);
-			rep.saveJobEntryAttribute(id_job, getID(), "pingtype",      pingtype);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "nbrpaquets",  nbrPackets);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "timeout",      timeout);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "pingtype",      pingtype);
 		}
 		catch(KettleDatabaseException dbe)
 		{

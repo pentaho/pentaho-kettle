@@ -39,6 +39,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -138,19 +139,15 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
-			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
-			if (id_db>0)
-			{
-				this.connection = DatabaseMeta.findDatabase(databases, id_db);
-			}
-			else
+			connection = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "id_database");
+			if (connection==null)
 			{
 				// This is were we end up in normally, the previous lines are for backward compatibility.
-				this.connection = DatabaseMeta.findDatabase(databases, rep.getJobEntryAttributeString(id_jobentry, "connection"));
+				connection = DatabaseMeta.findDatabase(databases, rep.getJobEntryAttributeString(id_jobentry, "connection"));
 			}
 			this.argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
 			 // How many arguments?
@@ -171,23 +168,23 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
+	public void saveRep(Repository rep, ObjectId id_job)
 		throws KettleException
 	{
 		try
 		{
 			if (this.connection!=null) 
 			{
-				rep.saveJobEntryAttribute(id_job, getID(), "connection", this.connection.getName());
+				rep.saveJobEntryAttribute(id_job, getObjectId(), "connection", this.connection.getName());
 				// Also, save the jobentry-database relationship!
-				rep.insertJobEntryDatabase(id_job, getID(), this.connection.getID());
+				rep.insertJobEntryDatabase(id_job, getObjectId(), this.connection.getObjectId());
 			}
-			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", this.argFromPrevious);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "arg_from_previous", this.argFromPrevious);
 		      // save the arguments...
 		      if (this.arguments != null) {
 		        for (int i = 0; i < this.arguments.length; i++) {
-		          rep.saveJobEntryAttribute(id_job, getID(), i, "name", this.arguments[i]); //$NON-NLS-1$
-		          rep.saveJobEntryAttribute(id_job, getID(), i, "schemaname", this.schemaname[i]); //$NON-NLS-1$
+		          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "name", this.arguments[i]); //$NON-NLS-1$
+		          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "schemaname", this.schemaname[i]); //$NON-NLS-1$
 		        }
 		      }
 		}

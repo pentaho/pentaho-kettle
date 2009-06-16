@@ -10,6 +10,8 @@
  * the license for the specific language governing your rights and limitations.*/
  package org.pentaho.di.core;
 
+import org.pentaho.di.repository.ObjectId;
+
 /**
  * 
  * Implementing classes of this interface can provide more information about
@@ -30,7 +32,7 @@ public interface CheckResultSourceInterface {
   /**
    * @return The ID of the source generating the CheckResult
    */
-  public long getID();
+  public ObjectId getObjectId();
   /**
    * @return The Type ID of the source generating the CheckResult. The Type ID
    * is the system-defined type identifier (like TRANS or SORT).

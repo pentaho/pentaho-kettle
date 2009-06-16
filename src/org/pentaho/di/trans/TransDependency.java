@@ -17,6 +17,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 
@@ -35,7 +36,7 @@ public class TransDependency implements XMLInterface, Cloneable
 	private String tablename;
 	private String fieldname;
 	
-	private long id;
+	private ObjectId id;
 	
 	public TransDependency(DatabaseMeta db, String tablename, String fieldname)
 	{
@@ -82,12 +83,12 @@ public class TransDependency implements XMLInterface, Cloneable
 		return super.clone();
 	}
 
-	public void setID(long id)
+	public void setObjectId(ObjectId id)
 	{
 		this.id = id;
 	}
 	
-	public long getID()
+	public ObjectId getObjectId()
 	{
 		return id;
 	}

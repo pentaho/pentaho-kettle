@@ -47,11 +47,12 @@ import org.pentaho.di.job.entries.sftp.JobEntrySFTP;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
-import org.pentaho.di.repository.KettleDatabaseRepository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryExporter;
+import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.UserInfo;
 import org.w3c.dom.Node;
@@ -201,7 +202,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
@@ -230,26 +231,26 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "repositoryname", repositoryname);
-			rep.saveJobEntryAttribute(id_job, getID(), "username", username);
-			rep.saveJobEntryAttribute(id_job, getID(), "password",        Encr.encryptPasswordIfNotUsingVariables(password));
-			rep.saveJobEntryAttribute(id_job, getID(), "targetfilename", targetfilename);
-			rep.saveJobEntryAttribute(id_job, getID(), "iffileexists", iffileexists);
-			rep.saveJobEntryAttribute(id_job, getID(), "export_type", export_type);
-			rep.saveJobEntryAttribute(id_job, getID(), "directoryPath", directoryPath);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_date", add_date);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_time", add_time);
-			rep.saveJobEntryAttribute(id_job, getID(), "SpecifyFormat", SpecifyFormat);
-			rep.saveJobEntryAttribute(id_job, getID(), "date_time_format",      date_time_format);
-			rep.saveJobEntryAttribute(id_job, getID(), "createfolder", createfolder);
-			rep.saveJobEntryAttribute(id_job, getID(), "newfolder", newfolder);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_result_filesname", add_result_filesname);
-			rep.saveJobEntryAttribute(id_job, getID(), "nr_errors_less_than", nr_errors_less_than);
-			rep.saveJobEntryAttribute(id_job, getID(), "success_condition", success_condition);	
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "repositoryname", repositoryname);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "username", username);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "password",        Encr.encryptPasswordIfNotUsingVariables(password));
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "targetfilename", targetfilename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "iffileexists", iffileexists);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "export_type", export_type);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "directoryPath", directoryPath);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_date", add_date);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_time", add_time);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "SpecifyFormat", SpecifyFormat);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "date_time_format",      date_time_format);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "createfolder", createfolder);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "newfolder", newfolder);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_result_filesname", add_result_filesname);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "nr_errors_less_than", nr_errors_less_than);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "success_condition", success_condition);	
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -580,7 +581,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 			else if(export_type.equals(Export_One_Folder))
 			{
 				RepositoryDirectory directory= new RepositoryDirectory();
-				directory=repository.getDirectoryTree().findDirectory(realfoldername);
+				directory=repository.loadRepositoryDirectoryTree().findDirectory(realfoldername);
 				if(directory!=null)
 				{
 					if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobExportRepository.Log.ExpAllFolderRep",directoryPath,realoutfilename));
@@ -599,9 +600,9 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 				// User must give a destination folder..
 				
 				RepositoryDirectory directory= new RepositoryDirectory();
-				directory=this.repository.getDirectoryTree().findRoot();
+				directory=this.repository.loadRepositoryDirectoryTree().findRoot();
 		        // Loop over all the directory id's
-		        long dirids[] = directory.getDirectoryIDs();
+		        ObjectId dirids[] = directory.getDirectoryIDs();
 		        if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.TotalFolders","" + dirids.length));
 		        for (int d=0;d<dirids.length && !parentJob.isStopped();d++)
 		        {
@@ -746,9 +747,10 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 	}
 	private void connectRep(LogWriter log,String realrepName, String realusername, String realpassword) throws Exception
 	{
-		this.repsinfo = new RepositoriesMeta(log);
-		if (!this.repsinfo.readData())
-		{
+		this.repsinfo = new RepositoriesMeta();
+		try {
+			this.repsinfo.readData();
+		} catch(Exception e)  {
 			log.logError(toString(),BaseMessages.getString(PKG, "JobExportRepository.Error.NoRep"));
 			throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRep"));
 		}
@@ -759,12 +761,13 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 			throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepSystem"));
 		}
 		
-		this.repository = new KettleDatabaseRepository(this.repinfo, this.userinfo);
+		this.repository = RepositoryLoader.createRepository(this.repinfo, this.userinfo);
 		
-		if (!this.repository.connect("Export job entry"))
-		{
+		try {
+			this.repository.connect("Export job entry");
+		} catch(Exception e) {
 			log.logError(toString(),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectRep"));
-			throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectRep"));
+			throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectRep"), e);
 		}
 		
 		// Check username, password
@@ -774,7 +777,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		this.userinfo = this.repository.loadUserInfo(realusername, realpassword);
 		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.CheckingUser",userinfo.getUsername()));
 		
-		if (this.userinfo.getID()<=0)
+		if (this.userinfo.getObjectId()==null)
 		{
 			log.logError(toString(),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotVerifyUserPass"));
 			throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotVerifyUserPass"));

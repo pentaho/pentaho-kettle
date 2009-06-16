@@ -30,6 +30,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 
@@ -97,7 +98,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
@@ -114,13 +115,13 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 	
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "logmessage", logmessage);
-			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
-			rep.saveJobEntryAttribute(id_job, getID(), "logsubject", logsubject);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "logmessage", logmessage);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "logsubject", logsubject);
 		}
 		catch(KettleDatabaseException dbe)
 		{

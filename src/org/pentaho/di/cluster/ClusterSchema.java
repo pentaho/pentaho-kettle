@@ -24,9 +24,13 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
+import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryRevision;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.www.SlaveServerDetection;
 import org.w3c.dom.Node;
@@ -41,7 +45,7 @@ import org.w3c.dom.Node;
  */
 public class ClusterSchema 
 	extends ChangedFlag 
-	implements Cloneable, SharedObjectInterface, VariableSpace, RepositoryElementInterface
+	implements Cloneable, SharedObjectInterface, VariableSpace, RepositoryElementInterface, XMLInterface
 {
 	private static Class<?> PKG = ClusterSchema.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -76,11 +80,13 @@ public class ClusterSchema
     
     private VariableSpace variables = new Variables();
     
-    private long id;
+    private ObjectId id;
+    
+    private RepositoryRevision revision;
     
     public ClusterSchema()
     {
-        id=-1L;
+        id=null;
         slaveServers = new ArrayList<SlaveServer>();
         socketsBufferSize = "2000"; //$NON-NLS-1$
         socketsFlushInterval = "5000"; //$NON-NLS-1$
@@ -353,12 +359,12 @@ public class ClusterSchema
         return null;
     }
 
-    public long getID()
+    public ObjectId getObjectId()
     {
         return id;
     }
 
-    public void setID(long id)
+    public void setObjectId(ObjectId id)
     {
         this.id = id;
     }
@@ -498,5 +504,24 @@ public class ClusterSchema
 
 	public String getRepositoryElementType() {
 		return REPOSITORY_ELEMENT_TYPE;
+	}
+
+	/**
+	 * @return the revision
+	 */
+	public RepositoryRevision getRevision() {
+		return revision;
+	}
+
+	/**
+	 * @param revision the revision to set
+	 */
+	public void setRevision(RepositoryRevision revision) {
+		this.revision = revision;
+	}
+
+	// Clusters can't be locked
+	public RepositoryLock getRepositoryLock() {
+		return null;
 	}
 }

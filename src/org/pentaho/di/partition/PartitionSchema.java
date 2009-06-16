@@ -20,8 +20,11 @@ import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
+import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryRevision;
 import org.pentaho.di.resource.ResourceHolderInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.w3c.dom.Node;
@@ -45,10 +48,12 @@ public class PartitionSchema
 	private List<String> partitionIDs;
 	private boolean shared;
     
-	private long id;
+	private ObjectId id;
     
 	private boolean dynamicallyDefined;
 	private String  numberOfPartitionsPerSlave;
+
+	private RepositoryRevision	revision;
 
 	public PartitionSchema()
 	{
@@ -69,7 +74,7 @@ public class PartitionSchema
 	{
 		PartitionSchema partitionSchema = new PartitionSchema();
 		partitionSchema.replaceMeta(this);
-		partitionSchema.setID(-1L);
+		partitionSchema.setObjectId(null);
 		return partitionSchema;
 	}
 
@@ -83,7 +88,7 @@ public class PartitionSchema
 		this.numberOfPartitionsPerSlave = partitionSchema.numberOfPartitionsPerSlave;
         
 		// this.shared = partitionSchema.shared;
-		this.setID(partitionSchema.id);
+		this.setObjectId(partitionSchema.id);
 		this.setChanged(true);
 	}
     
@@ -193,7 +198,7 @@ public class PartitionSchema
 	/**
 	 * @return the id
 	 */
-	public long getID()
+	public ObjectId getObjectId()
 	{
 		return id;
 	}
@@ -307,8 +312,26 @@ public class PartitionSchema
 		return REPOSITORY_ELEMENT_TYPE;
 	}
 
-	public void setID(long id) {
+	public void setObjectId(ObjectId id) {
 		this.id = id;
 	}
+	
+	/**
+	 * @return the revision
+	 */
+	public RepositoryRevision getRevision() {
+		return revision;
+	}
 
+	/**
+	 * @param revision the revision to set
+	 */
+	public void setRevision(RepositoryRevision revision) {
+		this.revision = revision;
+	}
+	
+	// partition schemas can't be locked
+	public RepositoryLock getRepositoryLock() {
+		return null;
+	}
 }

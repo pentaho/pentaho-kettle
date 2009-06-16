@@ -17,6 +17,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.w3c.dom.Node;
 
@@ -51,8 +52,8 @@ public interface Partitioner {
      * @param id_step the ID of the step
      * @throws KettleDatabaseException In case anything goes wrong
      */
-    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException;
+    public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException;
 
-    public void loadRep(Repository rep, long id_step) throws KettleException;
+    public void loadRep(Repository rep, ObjectId id_step) throws KettleException;
 
 }

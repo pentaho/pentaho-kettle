@@ -31,6 +31,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -299,15 +300,16 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 	
-	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
+	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
 	{
 		try
 		{
 			valuename          =   rep.getStepAttributeString (id_step, "valuename"); //$NON-NLS-1$
 	
 			useDatabase        =   rep.getStepAttributeBoolean(id_step, "use_database");  //$NON-NLS-1$
-			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
-			database           =   DatabaseMeta.findDatabase( databases, id_connection);
+			
+			database = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");
+			
             schemaName         =   rep.getStepAttributeString (id_step, "schema"); //$NON-NLS-1$
 			sequenceName       =   rep.getStepAttributeString (id_step, "seqname"); //$NON-NLS-1$
 	
@@ -343,7 +345,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void saveRep(Repository rep, long id_transformation, long id_step)
+	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
 		try
@@ -351,7 +353,9 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "valuename",       valuename); //$NON-NLS-1$
 			
 			rep.saveStepAttribute(id_transformation, id_step, "use_database",    useDatabase); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "id_connection",   database==null?-1:database.getID()); //$NON-NLS-1$
+			
+			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", database); //$NON-NLS-1$
+			
             rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "seqname",         sequenceName); //$NON-NLS-1$
 					
@@ -362,7 +366,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "max_value",       maxValue); //$NON-NLS-1$
 			
 			// Also, save the step-database relationship!
-			if (database!=null) rep.insertStepDatabase(id_transformation, id_step, database.getID());
+			if (database!=null) rep.insertStepDatabase(id_transformation, id_step, database.getObjectId());
 		}
 		catch(Exception e)
 		{

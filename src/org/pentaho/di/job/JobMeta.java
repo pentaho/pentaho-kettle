@@ -62,9 +62,12 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
+import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryRevision;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -95,7 +98,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	
 	public static final String REPOSITORY_ELEMENT_TYPE = "job";
 
-	protected long id;
+	protected ObjectId objectId;
 
 	protected String name;
 
@@ -189,17 +192,22 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     
     private String logSizeLimit;
 
+	private RepositoryRevision	revision;
+	
+    private RepositoryLock repositoryLock;
+
+
 	public JobMeta() {
 		clear();
 		initializeVariablesFrom(null);
 	}
 
-	public long getID() {
-		return id;
+	public ObjectId getObjectId() {
+		return objectId;
 	}
 
-	public void setID(long id) {
-		this.id = id;
+	public void setObjectId(ObjectId objectId) {
+		this.objectId = objectId;
 	}
 
 	public void clear() {
@@ -255,7 +263,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	public static final JobEntryCopy createStartEntry() {
 		JobEntrySpecial jobEntrySpecial = new JobEntrySpecial(STRING_SPECIAL_START, true, false);
 		JobEntryCopy jobEntry = new JobEntryCopy();
-		jobEntry.setID(-1L);
+		jobEntry.setObjectId(null);
 		jobEntry.setEntry(jobEntrySpecial);
 		jobEntry.setLocation(50, 50);
 		jobEntry.setDrawn(false);
@@ -267,7 +275,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	public static final JobEntryCopy createDummyEntry() {
 		JobEntrySpecial jobEntrySpecial = new JobEntrySpecial(STRING_SPECIAL_DUMMY, false, true);
 		JobEntryCopy jobEntry = new JobEntryCopy();
-		jobEntry.setID(-1L);
+		jobEntry.setObjectId(null);
 		jobEntry.setEntry(jobEntrySpecial);
 		jobEntry.setLocation(50, 50);
 		jobEntry.setDrawn(false);
@@ -565,19 +573,13 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         for (int idx = 0; idx < parameters.length; idx++)
         {
         	retval.append("        ").append(XMLHandler.openTag("parameter")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-        	retval.append("            ").append(XMLHandler.openTag("name")); //$NON-NLS-1$
-        	retval.append(parameters[idx]);
-        	retval.append(XMLHandler.closeTag("name")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-        	retval.append("            ").append(XMLHandler.openTag("default_value")); //$NON-NLS-1$
+        	retval.append("            ").append(XMLHandler.addTagValue("name", parameters[idx])); //$NON-NLS-1$
         	try {
-				retval.append(getParameterDefault(parameters[idx]));
-			} catch (UnknownParamException e) {	}
-        	retval.append(XMLHandler.closeTag("default_value")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
-        	retval.append("            ").append(XMLHandler.openTag("description")); //$NON-NLS-1$
-        	try {
-				retval.append(getParameterDescription(parameters[idx]));
-			} catch (UnknownParamException e) {	}
-        	retval.append(XMLHandler.closeTag("description")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+        		retval.append("            ").append(XMLHandler.addTagValue("default_value", getParameterDefault(parameters[idx]))); //$NON-NLS-1$
+        		retval.append("            ").append(XMLHandler.addTagValue("description", getParameterDescription(parameters[idx]))); //$NON-NLS-1$
+        	} catch (UnknownParamException e) {
+				// skip the default value and/or description.  This exception should never happen because we use listParameters() above.
+			}
         	retval.append("        ").append(XMLHandler.closeTag("parameter")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
         }        
         retval.append("    ").append(XMLHandler.closeTag(XML_TAG_PARAMETERS)).append(Const.CR); //$NON-NLS-1$
@@ -723,7 +725,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			if (rep!=null) {
 				String directoryPath = XMLHandler.getTagValue(jobnode, "directory");
 				if (directoryPath!=null) {
-					directory = rep.getDirectoryTree().findDirectory(directoryPath);
+					directory = rep.loadRepositoryDirectoryTree().findDirectory(directoryPath);
 					if (directory==null) { // not found
 						directory = new RepositoryDirectory(); // The root as default
 					}
@@ -2094,12 +2096,12 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 *            The id of the jobentry
 	 * @return The JobEntry object if one was found, null otherwise.
 	 */
-	public static final JobEntryInterface findJobEntry(List<JobEntryInterface> jobentries, long id_jobentry) {
+	public static final JobEntryInterface findJobEntry(List<JobEntryInterface> jobentries, ObjectId id_jobentry) {
 		if (jobentries == null)
 			return null;
 
 		for (JobEntryInterface je : jobentries) {
-			if (je.getID() == id_jobentry) {
+			if (je.getObjectId()!=null && je.getObjectId().equals(id_jobentry)) {
 				return je;
 			}
 		}
@@ -2115,12 +2117,12 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 *            The id of the jobentry copy
 	 * @return The JobEntryCopy object if one was found, null otherwise.
 	 */
-	public static final JobEntryCopy findJobEntryCopy(List<JobEntryCopy> jobcopies, long id_jobentry_copy) {
+	public static final JobEntryCopy findJobEntryCopy(List<JobEntryCopy> jobcopies, ObjectId id_jobentry_copy) {
 		if (jobcopies == null)
 			return null;
 
 		for (JobEntryCopy jec : jobcopies) {
-			if (jec.getID() == id_jobentry_copy) {
+			if (jec.getObjectId()!=null && jec.getObjectId().equals(id_jobentry_copy)) {
 				return jec;
 			}
 		}
@@ -2591,5 +2593,33 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	
 	public String getRepositoryElementType() {
 		return REPOSITORY_ELEMENT_TYPE;
+	}
+	
+	/**
+	 * @return the revision
+	 */
+	public RepositoryRevision getRevision() {
+		return revision;
+	}
+
+	/**
+	 * @param revision the revision to set
+	 */
+	public void setRevision(RepositoryRevision revision) {
+		this.revision = revision;
+	}
+
+	/**
+	 * @return the repositoryLock
+	 */
+	public RepositoryLock getRepositoryLock() {
+		return repositoryLock;
+	}
+
+	/**
+	 * @param repositoryLock the repositoryLock to set
+	 */
+	public void setRepositoryLock(RepositoryLock repositoryLock) {
+		this.repositoryLock = repositoryLock;
 	}
 }

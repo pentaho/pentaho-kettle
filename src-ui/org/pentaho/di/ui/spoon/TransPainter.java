@@ -30,6 +30,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -267,9 +268,19 @@ public class TransPainter
             Point screen = real2screen(drop_candidate.x, drop_candidate.y, offset);
             gc.drawRectangle(screen.x, screen.y,          iconsize, iconsize);
         }
-
+        
         if (!shadow) {
         	drawRect(gc, selrect);
+        }
+
+        RepositoryLock lock = transMeta.getRepositoryLock();
+        if (lock!=null) {
+        	// This transformation is locked, draw some kind of logo in the right upper corner...
+        	//
+        	Image lockImage = GUIResource.getInstance().getImageLocked();
+        	Rectangle lockBounds = lockImage.getBounds();
+        	gc.drawImage(lockImage, area.x - lockBounds.width, 0);
+        	areaOwners.add(new AreaOwner(area.x - lockBounds.width, 0, lockBounds.width, lockBounds.height, transMeta, lock));
         }
     }
 

@@ -22,6 +22,7 @@ import java.util.Properties;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.repository.ObjectId;
 
 
 
@@ -184,7 +185,7 @@ public abstract class BaseDatabaseMeta implements Cloneable
     
     private Properties attributes;
 	
-	private long id;
+	private ObjectId objectId;
 
 
 	/**
@@ -331,17 +332,17 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	/**
 	 * @return Returns the id.
 	 */
-	public long getId()
+	public ObjectId getObjectId()
 	{
-		return id;
+		return objectId;
 	}
 	
 	/**
 	 * @param id The id to set.
 	 */
-	public void setId(long id)
+	public void setObjectId(ObjectId id)
 	{
-		this.id = id;
+		this.objectId = id;
 	}
 	
 	/**

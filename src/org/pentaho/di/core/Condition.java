@@ -24,6 +24,7 @@ import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 
@@ -81,7 +82,7 @@ public class Condition implements Cloneable, XMLInterface
 	// NOT value = othervalue
 	//
 	
-	private long id;
+	private ObjectId id;
 	
 	private boolean negate;
 	private int operator;
@@ -89,7 +90,7 @@ public class Condition implements Cloneable, XMLInterface
 	private int function;
 	private String right_valuename;
 	private ValueMetaAndData right_exact;
-	private long  id_right_exact;
+	private ObjectId  id_right_exact;
 	
 	private int left_fieldnr;
 	private int right_fieldnr;
@@ -113,7 +114,7 @@ public class Condition implements Cloneable, XMLInterface
 		left_fieldnr = -2;
 		right_fieldnr = -2;
 		
-		id=-1L;
+		id=null;
 	}
 	
 	public Condition(String valuename, int function, String valuename2, ValueMetaAndData exact)
@@ -150,7 +151,7 @@ public class Condition implements Cloneable, XMLInterface
 	 * 
 	 * @return the ID of the db connection.
 	 */
-	public long getID()
+	public ObjectId getObjectId()
 	{
 		return id;
 	}
@@ -160,7 +161,7 @@ public class Condition implements Cloneable, XMLInterface
 	 * @param id The ID to set on this condition.
 	 * 
 	 */
-	public void setID(long id)
+	public void setObjectId(ObjectId id)
 	{
 		this.id = id;
 	}
@@ -309,7 +310,7 @@ public class Condition implements Cloneable, XMLInterface
 	 * Get the id of the RightExact Value in the repository
 	 * @return The id of the RightExact Value in the repository
 	 */
-	public long getRightExactID()
+	public ObjectId getRightExactID()
 	{
 		return id_right_exact;
 	}
@@ -319,7 +320,7 @@ public class Condition implements Cloneable, XMLInterface
 	 * @param id_right_exact The ID to set on this Value.
 	 * 
 	 */
-	public void setRightExactID(long id_right_exact)
+	public void setRightExactID(ObjectId id_right_exact)
 	{
 		this.id_right_exact = id_right_exact;
 	}

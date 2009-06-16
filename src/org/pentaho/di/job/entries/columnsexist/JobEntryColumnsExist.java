@@ -34,6 +34,8 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.LongObjectId;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
@@ -131,7 +133,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
@@ -141,7 +143,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
 			{
-				connection = DatabaseMeta.findDatabase(databases, id_db);
+				connection = DatabaseMeta.findDatabase(databases, new LongObjectId(id_db));
 			}
 			else
 			{
@@ -168,24 +170,24 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "tablename", tablename);
-			rep.saveJobEntryAttribute(id_job, getID(), "schemaname", schemaname);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "tablename", tablename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "schemaname", schemaname);
 			
 			if (connection!=null)
 			{
-				rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
+				rep.saveJobEntryAttribute(id_job, getObjectId(), "connection", connection.getName());
 				// Also, save the step-database relationship!
-				rep.insertJobEntryDatabase(id_job, getID(), connection.getID());
+				rep.insertJobEntryDatabase(id_job, getObjectId(), connection.getObjectId());
 			}
 			
 			   // save the arguments...
 		      if (arguments != null) {
 		        for (int i = 0; i < arguments.length; i++) {
-		          rep.saveJobEntryAttribute(id_job, getID(), i, "name", arguments[i]);
+		          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "name", arguments[i]);
 		        }
 		      }
 		}

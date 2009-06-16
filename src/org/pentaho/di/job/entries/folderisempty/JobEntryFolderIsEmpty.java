@@ -45,6 +45,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 
@@ -118,7 +119,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
@@ -133,14 +134,14 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "foldername", foldername);
-			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", includeSubfolders);
-			rep.saveJobEntryAttribute(id_job, getID(), "specify_wildcard", specifywildcard);
-			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "foldername", foldername);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "include_subfolders", includeSubfolders);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "specify_wildcard", specifywildcard);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard", wildcard);
 		}
 		catch(KettleDatabaseException dbe)
 		{

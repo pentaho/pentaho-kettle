@@ -103,7 +103,7 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
 		retval.append("        ").append(XMLHandler.addTagValue("width", width));
 		retval.append("        ").append(XMLHandler.addTagValue("length", length));
 		retval.append("        ").append(XMLHandler.addTagValue("precision", precision));
-		retval.append("        ").append(XMLHandler.closeTag(XML_TAG)).append(Const.CR);
+		retval.append("      ").append(XMLHandler.closeTag(XML_TAG)).append(Const.CR);
 
 		return retval.toString();
 	}

@@ -69,6 +69,7 @@ public class DragAndDropContainer implements XMLInterface
         "Relationship",
         "Business Model"
     };
+	private static final String	XML_TAG	= "DragAndDrop";
 	
 	private int type;
 	private String data;
@@ -129,13 +130,13 @@ public class DragAndDropContainer implements XMLInterface
 			
 			xml.append(XMLHandler.getXMLHeader()); // UFT-8 XML header
 			
-			xml.append("<DragAndDrop>").append(Const.CR);
+			xml.append(XMLHandler.openTag(XML_TAG)).append(Const.CR);
 			xml.append("  ").append(XMLHandler.addTagValue("DragType", getTypeCode()));
 			xml.append("  ").append(XMLHandler.addTagValue("Data", 
 			    new String( Base64.encodeBase64(data.getBytes(Const.XML_ENCODING)))));
-			xml.append("</DragAndDrop>").append(Const.CR);
+			xml.append(XMLHandler.closeTag(XML_TAG)).append(Const.CR);
 
-      return xml.toString();
+			return xml.toString();
 		}
 		catch(UnsupportedEncodingException e)
 		{
@@ -152,14 +153,16 @@ public class DragAndDropContainer implements XMLInterface
 		try
 		{
 			Document doc = XMLHandler.loadXMLString(xml);
-			Node dnd = XMLHandler.getSubNode(doc, "DragAndDrop"); 
+			Node dnd = XMLHandler.getSubNode(doc, XML_TAG); 
 			
 			type = getType( XMLHandler.getTagValue(dnd, "DragType") );
-      data = new String( Base64.decodeBase64( XMLHandler.getTagValue(dnd, "Data").getBytes() ), Const.XML_ENCODING );
+			data = new String( Base64.decodeBase64( XMLHandler.getTagValue(dnd, "Data").getBytes() ), Const.XML_ENCODING );
 		}
 		catch(Exception e)
 		{
 			throw new KettleXMLException("Unexpected error parsing Drag & Drop XML fragment: "+xml, e);
 		}
 	}
+	
+
 }

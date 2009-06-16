@@ -49,6 +49,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -179,7 +180,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	}
 
 	// Load the jobentry from repository
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases,
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases,
 			List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
@@ -218,30 +219,30 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
-			rep.saveJobEntryAttribute(id_job, getID(), "work_directory", workDirectory);
-			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
-			rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
-			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
-			rep.saveJobEntryAttribute(id_job, getID(), "set_append_logfile", setAppendLogfile);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_date", addDate);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
-			rep.saveJobEntryAttribute(id_job, getID(), "logfile", logfile);
-			rep.saveJobEntryAttribute(id_job, getID(), "logext", logext);
-			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
-			rep.saveJobEntryAttribute(id_job, getID(), "insertScript", insertScript);
-			rep.saveJobEntryAttribute(id_job, getID(), "script", script);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "file_name", filename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "work_directory", workDirectory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "arg_from_previous", argFromPrevious);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "exec_per_row", execPerRow);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "set_logfile", setLogfile);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "set_append_logfile", setAppendLogfile);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_date", addDate);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_time", addTime);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "logfile", logfile);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "logext", logext);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "insertScript", insertScript);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "script", script);
 			
 			// save the arguments...
 			if (arguments != null)
 			{
 				for (int i = 0; i < arguments.length; i++)
 				{
-					rep.saveJobEntryAttribute(id_job, getID(), i, "argument", arguments[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "argument", arguments[i]);
 				}
 			}
 		} catch (KettleDatabaseException dbe)

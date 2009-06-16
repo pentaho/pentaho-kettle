@@ -47,6 +47,7 @@ import org.pentaho.di.ui.core.database.dialog.XulDatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.SQLStatementsDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.spoon.RepositorySecurity;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.dialog.GetJobSQLProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.GetSQLProgressDialog;
@@ -146,7 +147,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 		Repository rep = spoon.getRepository();
 		if (rep != null)
 		{
-			if (!rep.getUserInfo().isReadonly())
+			if (!RepositorySecurity.isReadOnly(rep))
 			{
 				try {
 					rep.deleteDatabaseMeta(db.getName());
@@ -427,7 +428,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 
 		if (rep != null)
 		{
-			if (!rep.getUserInfo().isReadonly())
+			if (!RepositorySecurity.isReadOnly(rep))
 			{
 				try
 				{
@@ -491,7 +492,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 				// Save it in the repository...
 				try 
 				{
-					if (!spoon.rep.getUserInfo().isReadonly())
+					if (!RepositorySecurity.isReadOnly(spoon.rep))
 					{
 						spoon.rep.save(databaseMeta);
 					}

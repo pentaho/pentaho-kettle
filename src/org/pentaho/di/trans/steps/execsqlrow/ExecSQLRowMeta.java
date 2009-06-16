@@ -31,6 +31,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -245,14 +246,13 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
+	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
 	throws KettleException
 	{
 		try
 		{
-			long id_connection    = rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");
 			commitSize     		= (int)rep.getStepAttributeInteger(id_step, "commit");
-			databaseMeta          = DatabaseMeta.findDatabase( databases, id_connection);
             sqlField              = rep.getStepAttributeString (id_step, "sql_field"); //$NON-NLS-1$
 
             insertField           = rep.getStepAttributeString (id_step, "insert_field"); //$NON-NLS-1$
@@ -267,12 +267,12 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_transformation, long id_step)
+	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "id_connection",   databaseMeta==null?-1:databaseMeta.getID()); //$NON-NLS-1$
+			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
 			rep.saveStepAttribute(id_transformation, id_step, "commit",        commitSize);
 			rep.saveStepAttribute(id_transformation, id_step, "sql_field",             sqlField); //$NON-NLS-1$
  
@@ -282,7 +282,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "read_field",   readField); //$NON-NLS-1$
             
 			// Also, save the step-database relationship!
-			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
+			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getObjectId());
 		}
 		catch(Exception e)
 		{

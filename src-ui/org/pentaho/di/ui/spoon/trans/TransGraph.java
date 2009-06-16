@@ -92,10 +92,12 @@ import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.logging.Log4jKettleLayout;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.lineage.TransDataLineage;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.StepLoader;
@@ -2064,7 +2066,14 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 StepMeta to   = ((StepMeta[])(areaOwner.getParent()))[1];
                 tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.InfoStepCopies", from.getName(), to.getName(), Const.CR));
                 tipImage = GUIResource.getInstance().getImageStepError();
-          }
+            }
+            if (areaOwner.getParent() instanceof TransMeta && areaOwner.getOwner() instanceof RepositoryLock) {
+                RepositoryLock lock = (RepositoryLock) areaOwner.getOwner();
+                
+                tip.append(BaseMessages.getString(PKG, "TransGraph.Locked.Tooltip", Const.CR, lock.getLogin(), lock.getUsername(), lock.getMessage(), XMLHandler.date2string(lock.getLockDate())));
+                tipImage = GUIResource.getInstance().getImageLocked();
+            }
+            
             if (hi != null) // We clicked on a HOP!
             {
               // Set the tooltip for the hop:

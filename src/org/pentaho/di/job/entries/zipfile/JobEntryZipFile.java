@@ -57,6 +57,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 /**
@@ -178,7 +179,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
     {
 	    try
 	    {
@@ -205,26 +206,26 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "zipfilename", zipFilename);
-			rep.saveJobEntryAttribute(id_job, getID(), "compressionrate", compressionrate);
-			rep.saveJobEntryAttribute(id_job, getID(), "ifzipfileexists", ifzipfileexists);
-			rep.saveJobEntryAttribute(id_job, getID(), "afterzip", afterzip);
-			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
-			rep.saveJobEntryAttribute(id_job, getID(), "wildcardexclude", wildcardexclude);
-			rep.saveJobEntryAttribute(id_job, getID(), "sourcedirectory", sourcedirectory);
-			rep.saveJobEntryAttribute(id_job, getID(), "movetodirectory", movetodirectory);
-			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
-			rep.saveJobEntryAttribute(id_job, getID(), "isfromprevious", isfromprevious);
-			rep.saveJobEntryAttribute(id_job, getID(), "createparentfolder", createparentfolder);
-			rep.saveJobEntryAttribute(id_job, getID(), "addtime", addtime);
-			rep.saveJobEntryAttribute(id_job, getID(), "adddate", adddate);
-			rep.saveJobEntryAttribute(id_job, getID(), "SpecifyFormat", SpecifyFormat);
-			rep.saveJobEntryAttribute(id_job, getID(), "date_time_format", date_time_format);
-			rep.saveJobEntryAttribute(id_job, getID(), "createMoveToDirectory", createMoveToDirectory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "zipfilename", zipFilename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "compressionrate", compressionrate);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "ifzipfileexists", ifzipfileexists);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "afterzip", afterzip);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard", wildcard);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcardexclude", wildcardexclude);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "sourcedirectory", sourcedirectory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "movetodirectory", movetodirectory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "addfiletoresult", addfiletoresult);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "isfromprevious", isfromprevious);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "createparentfolder", createparentfolder);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "addtime", addtime);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "adddate", adddate);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "SpecifyFormat", SpecifyFormat);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "date_time_format", date_time_format);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "createMoveToDirectory", createMoveToDirectory);
 			
 		}
 		catch(KettleDatabaseException dbe)

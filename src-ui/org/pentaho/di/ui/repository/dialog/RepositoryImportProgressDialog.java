@@ -47,6 +47,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.trans.TransMeta;
@@ -68,7 +69,7 @@ import org.w3c.dom.Node;
  */
 public class RepositoryImportProgressDialog extends Dialog implements ProgressMonitorListener
 {
-	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = KettleDatabaseRepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     private LogWriter log;
     private Shell shell, parent;
@@ -265,7 +266,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
     	// OK, we loaded the transformation from XML and all went well...
     	// See if the transformation already existed!
-    	boolean exists = rep.getTransformationID(ti.getName(), targetDirectory)>0;
+    	boolean exists = rep.getTransformationID(ti.getName(), targetDirectory) != null;
     	if (exists && askOverwrite)
     	{
     		MessageDialogWithToggle md = new MessageDialogWithToggle(shell,
@@ -375,8 +376,8 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
         // OK, we loaded the job from XML and all went well...
         // See if the job already exists!
-        long id = rep.getJobID(jobMeta.getName(), targetDirectory);
-        if (id > 0 && askOverwrite)
+        ObjectId id = rep.getJobId(jobMeta.getName(), targetDirectory);
+        if (id!=null && askOverwrite)
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell,
                 BaseMessages.getString(PKG, "RepositoryImportDialog.OverwriteJob.Title"),
@@ -397,7 +398,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 			shell.getDisplay().update();
 		}
 
-        if (id <= 0 || overwrite)
+        if (id==null || overwrite)
         {
             jobMeta.setRepositoryDirectory(targetDirectory);
             rep.save(jobMeta);

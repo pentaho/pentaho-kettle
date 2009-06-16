@@ -38,6 +38,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -142,7 +143,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
     }
   }
 
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
   {
 	  try
 	  {
@@ -165,16 +166,16 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
       }
   }
 
-  public void saveRep(Repository rep, long id_job) throws KettleException {
+  public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
     try {
-      rep.saveJobEntryAttribute(id_job, getID(), "replacevars", replaceVars); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "replacevars", replaceVars); //$NON-NLS-1$
       
       // save the variableName...
       if (variableName != null) {
         for (int i = 0; i < variableName.length; i++) {
-          rep.saveJobEntryAttribute(id_job, getID(), i, "variable_name", variableName[i]); //$NON-NLS-1$
-          rep.saveJobEntryAttribute(id_job, getID(), i, "variable_value", variableValue[i]); //$NON-NLS-1$
-          rep.saveJobEntryAttribute(id_job, getID(), i, "variable_type",   getVariableTypeCode(variableType[i]));
+          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "variable_name", variableName[i]); //$NON-NLS-1$
+          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "variable_value", variableValue[i]); //$NON-NLS-1$
+          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "variable_type",   getVariableTypeCode(variableType[i]));
         }
       }
     } catch (KettleDatabaseException dbe) {

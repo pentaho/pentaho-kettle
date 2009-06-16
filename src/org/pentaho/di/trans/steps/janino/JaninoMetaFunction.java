@@ -5,6 +5,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 
@@ -95,7 +96,7 @@ public class JaninoMetaFunction implements Cloneable
         replaceField   = XMLHandler.getTagValue(calcnode, "replace_field");
     }
     
-    public void saveRep(Repository rep, long id_transformation, long id_step, int nr) throws KettleException
+    public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step, int nr) throws KettleException
     {
         rep.saveStepAttribute(id_transformation, id_step, nr, "field_name",          fieldName);
         rep.saveStepAttribute(id_transformation, id_step, nr, "formula_string",      formula);
@@ -105,7 +106,7 @@ public class JaninoMetaFunction implements Cloneable
         rep.saveStepAttribute(id_transformation, id_step, nr, "replace_field",       replaceField);
     }
 
-    public JaninoMetaFunction(Repository rep, long id_step, int nr) throws KettleException
+    public JaninoMetaFunction(Repository rep, ObjectId id_step, int nr) throws KettleException
     {
         fieldName      = rep.getStepAttributeString(id_step, nr, "field_name");
         formula        = rep.getStepAttributeString(id_step, nr, "formula_string");

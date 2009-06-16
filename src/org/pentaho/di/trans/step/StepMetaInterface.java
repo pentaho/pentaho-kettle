@@ -24,6 +24,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -83,7 +84,7 @@ public interface StepMetaInterface
 	 * @param id_step The step ID
 	 * @throws KettleException When an unexpected error occurred (database, network, etc)
 	 */
-	public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException;
+	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException;
 
 	/**
 	 * Read the steps information from a Kettle repository
@@ -93,7 +94,7 @@ public interface StepMetaInterface
 	 * @param counters The counters to reference
 	 * @throws KettleException When an unexpected error occurred (database, network, etc)
 	 */
-	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException;
+	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException;
     
 	/**
 	 * Checks the settings of this step and puts the findings in a remarks List.

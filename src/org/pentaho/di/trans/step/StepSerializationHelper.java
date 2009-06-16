@@ -19,6 +19,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -366,7 +367,7 @@ public static void write(Object object, int indentLevel, StringBuffer buffer) {
    * @param id_step
    * @throws KettleException
    */
-  public static void saveRep(Object object, Repository rep, long id_transformation, long id_step) throws KettleException {
+  public static void saveRep(Object object, Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
     StringBuffer sb = new StringBuffer(1024);
     write(object, 0, sb);
     rep.saveStepAttribute(id_transformation, id_step, "step-xml", sb.toString());
@@ -383,7 +384,7 @@ public static void write(Object object, int indentLevel, StringBuffer buffer) {
    * @param counters
    * @throws KettleException
    */
-  public static void readRep(Object object, Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
+  public static void readRep(Object object, Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
     try {
       String stepXML = rep.getStepAttributeString(id_step, "step-xml");
       ByteArrayInputStream bais = new ByteArrayInputStream(stepXML.getBytes());

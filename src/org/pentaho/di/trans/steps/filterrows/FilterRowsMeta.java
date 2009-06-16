@@ -30,6 +30,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -283,7 +284,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		allocate();
 	}
 
-	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
+	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
 	{
 		try
 		{
@@ -292,51 +293,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 			sendTrueStepname  =      rep.getStepAttributeString (id_step, "send_true_to");  //$NON-NLS-1$
 			sendFalseStepname =      rep.getStepAttributeString (id_step, "send_false_to");  //$NON-NLS-1$
 
-			long id_condition = rep.getStepAttributeInteger(id_step, 0, "id_condition"); //$NON-NLS-1$
-			if (id_condition>0)
-			{
-				condition = rep.loadCondition(id_condition);
-			}
-			else
-			{
-				int nrkeys = rep.countNrStepAttributes(id_step, "compare_name"); //$NON-NLS-1$
-				if (nrkeys==1)
-				{
-					String key        = rep.getStepAttributeString(id_step, 0, "compare_name"); //$NON-NLS-1$
-					String comparator = rep.getStepAttributeString(id_step, 0, "compare_condition"); //$NON-NLS-1$
-					String value      = rep.getStepAttributeString(id_step, 0, "compare_value"); //$NON-NLS-1$
-					String field      = rep.getStepAttributeString(id_step, 0, "compare_field"); //$NON-NLS-1$
+			condition = rep.loadConditionFromStepAttribute(id_step, "id_condition");
 
-					condition = new Condition();
-					condition.setOperator( Condition.OPERATOR_NONE );
-					condition.setLeftValuename(key);
-					condition.setFunction( Condition.getFunction(comparator) );
-					condition.setRightValuename(field);
-					condition.setRightExact( new ValueMetaAndData("value", value ) ); //$NON-NLS-1$
-				}
-				else
-				{
-					condition = new Condition();
-					
-					for (int i=0;i<nrkeys;i++)
-					{
-						String key        = rep.getStepAttributeString(id_step, i, "compare_name"); //$NON-NLS-1$
-						String comparator = rep.getStepAttributeString(id_step, i, "compare_condition"); //$NON-NLS-1$
-						String value      = rep.getStepAttributeString(id_step, i, "compare_value"); //$NON-NLS-1$
-						String field      = rep.getStepAttributeString(id_step, i, "compare_field"); //$NON-NLS-1$
-		
-						Condition subc = new Condition();
-						if (i>0) subc.setOperator( Condition.OPERATOR_OR   );
-						else     subc.setOperator( Condition.OPERATOR_NONE );
-						subc.setLeftValuename(key);
-						subc.setFunction( Condition.getFunction(comparator) );
-						subc.setRightValuename(field);
-						subc.setRightExact( new ValueMetaAndData("value", value ) ); //$NON-NLS-1$
-						
-						condition.addCondition(subc);
-					}
-				}
-			}
 		}
 		catch(Exception e)
 		{
@@ -344,15 +302,14 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
 	{
 		try
 		{
 			if (condition!=null) 
 			{
-				rep.saveCondition(condition);
-				rep.saveStepAttribute(id_transformation, id_step, "id_condition", condition.getID()); //$NON-NLS-1$
-				rep.insertTransStepCondition(id_transformation, id_step, condition.getID());
+				rep.saveConditionStepAttribute(id_transformation, id_step, "id_condition", condition);
+				rep.insertTransStepCondition(id_transformation, id_step, condition.getObjectId());
 				rep.saveStepAttribute(id_transformation, id_step, "send_true_to", getSendTrueStepname()); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, "send_false_to", getSendFalseStepname()); //$NON-NLS-1$
 			}

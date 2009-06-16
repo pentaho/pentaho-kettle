@@ -26,6 +26,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -193,7 +194,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
         usevar=false;
 	}
 
-	 public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
+	 public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
 	 {
 	        try
 	        {
@@ -214,7 +215,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
 	        }
 	    }
 	
-	    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
+	    public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
 	    {
 	        try
 	        {

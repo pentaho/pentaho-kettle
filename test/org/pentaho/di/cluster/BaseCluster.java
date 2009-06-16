@@ -5,13 +5,11 @@ import java.util.Arrays;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.job.JobEntryLoader;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 
@@ -67,11 +65,11 @@ public class BaseCluster extends TestCase {
 	
 	
 	protected void init() throws Exception {
-        EnvUtil.environmentInit();
+    	// Bootstrap the Kettle API...
+    	//
+    	KettleEnvironment.init();
+        
         LogWriter.getInstance( LogWriter.LOG_LEVEL_ERROR);
-
-        StepLoader.init();
-        JobEntryLoader.init();
 	}
 
 	protected String loadFileContent(VariableSpace space, String filename) throws Exception {

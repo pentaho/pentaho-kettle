@@ -31,6 +31,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -245,13 +246,11 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
-	throws KettleException
+    public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
 	{
-	try
-	{
-            long id_connection = rep.getStepAttributeInteger(id_step, "id_connection"); //$NON-NLS-1$
-            database = DatabaseMeta.findDatabase(databases, id_connection);
+		try
+		{
+			database = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");
             tablename = rep.getStepAttributeString(id_step, "tablename");
             schemaname = rep.getStepAttributeString(id_step, "schemaname");
             istablenameInfield =  rep.getStepAttributeBoolean(id_step, "istablenameInfield");
@@ -265,11 +264,11 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
+    public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "id_connection", database == null ? -1 : database.getID()); //$NON-NLS-1$
+        	rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", database);
             rep.saveStepAttribute(id_transformation, id_step, "tablename", tablename);
             rep.saveStepAttribute(id_transformation, id_step, "schemaname", schemaname);
             rep.saveStepAttribute(id_transformation, id_step, "istablenameInfield",    istablenameInfield);
@@ -278,7 +277,7 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
 
             // Also, save the step-database relationship!
-            if (database != null) rep.insertStepDatabase(id_transformation, id_step, database.getID());
+            if (database != null) rep.insertStepDatabase(id_transformation, id_step, database.getObjectId());
         }
         catch (Exception e)
         {

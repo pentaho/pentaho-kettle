@@ -33,6 +33,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -189,7 +190,7 @@ public class ReservoirSamplingMeta
    * @exception KettleException if an error occurs
    */
   public void readRep(Repository rep, 
-                      long id_step, 
+                      ObjectId id_step, 
                       List<DatabaseMeta> databases, 
                       Map<String, Counter> counters) 
     throws KettleException {
@@ -206,19 +207,10 @@ public class ReservoirSamplingMeta
    * @param id_step step id
    * @exception KettleException if an error occurs
    */
-  public void saveRep(Repository rep, 
-                      long id_transformation, 
-                      long id_step)
-    throws KettleException {
+  public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
     
-    rep.saveStepAttribute(id_transformation, 
-                          id_step, 0, 
-                          "sample_size",
-                          m_sampleSize);
-    rep.saveStepAttribute(id_transformation,
-                          id_step, 0,
-                          "seed",
-                          m_randomSeed);
+    rep.saveStepAttribute(id_transformation, id_step, 0, "sample_size", m_sampleSize);
+    rep.saveStepAttribute(id_transformation, id_step, 0, "seed", m_randomSeed);
   }
 
   /**

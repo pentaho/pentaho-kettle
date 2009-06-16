@@ -28,6 +28,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 
@@ -121,7 +122,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta>  databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta>  databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
@@ -144,20 +145,20 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "start", start);
-			rep.saveJobEntryAttribute(id_job, getID(), "dummy", dummy);
-			rep.saveJobEntryAttribute(id_job, getID(), "repeat", repeat);
-			rep.saveJobEntryAttribute(id_job, getID(), "schedulerType", schedulerType);
-			rep.saveJobEntryAttribute(id_job, getID(), "intervalSeconds", intervalSeconds);
-			rep.saveJobEntryAttribute(id_job, getID(), "intervalMinutes", intervalMinutes);
-			rep.saveJobEntryAttribute(id_job, getID(), "hour", hour);
-			rep.saveJobEntryAttribute(id_job, getID(), "minutes", minutes);
-			rep.saveJobEntryAttribute(id_job, getID(), "weekDay", weekDay);
-			rep.saveJobEntryAttribute(id_job, getID(), "dayOfMonth", dayOfMonth);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "start", start);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "dummy", dummy);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "repeat", repeat);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "schedulerType", schedulerType);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "intervalSeconds", intervalSeconds);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "intervalMinutes", intervalMinutes);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "hour", hour);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "minutes", minutes);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "weekDay", weekDay);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "dayOfMonth", dayOfMonth);
 		}
 		catch(KettleDatabaseException dbe)
 		{

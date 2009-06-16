@@ -241,6 +241,12 @@ public class GUIResource
     
     private Image imageWarning;
     
+    private Image imageNew;
+    private Image imageEdit;
+    private Image imageDelete;
+    
+    private Image imageLocked;
+    
 
     private Map<String,Image> imageMap;
 
@@ -408,6 +414,10 @@ public class GUIResource
 		    imageSearchSmall.dispose();
 		    imageViewPanel.dispose();
 		    imageDesignPanel.dispose();
+		    imageNew.dispose();
+		    imageEdit.dispose();
+		    imageDelete.dispose();
+		    imageLocked.dispose();
 
 		    disposeImage(imageNoteSmall);
 		    disposeImage(imageColor);
@@ -621,7 +631,13 @@ public class GUIResource
     imageInfoHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("InfoHop_image")); // , "ui/images/info-hop.png;
     imageWarning = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Warning_image")); // , "ui/images/warning.png;
 
-   imageStartSmall = new Image(display, 16, 16);
+    imageNew= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("New_image")); // , "ui/images/generic-new.png;
+    imageEdit= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Edit_image")); // , "ui/images/generic-edit.png;
+    imageDelete = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Delete_image")); // , "ui/images/generic-delete.png;
+
+    imageLocked = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Locked_image")); // , "ui/images/locked.png;
+
+    imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
 		gc.drawImage(imageStart, 0, 0, 32, 32, 0, 0, 16, 16);
 		gc.dispose();
@@ -1587,6 +1603,20 @@ public class GUIResource
 	    return imageWarning;
   }
 
+  public Image getImageNew(){
+	    return imageNew;
+  }
+  public Image getImageEdit(){
+	    return imageEdit;
+  }
+  
+  public Image getImageDelete(){
+	    return imageDelete;
+  }
+
+  public Image getImageLocked(){
+	    return imageLocked;
+  }
   
   /**
    * Loads an image from a location once.  The second time, the image comes from a cache.

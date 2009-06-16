@@ -49,6 +49,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -184,7 +185,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	}
 
 
-	 public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	 public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	 {
 		try
 		{
@@ -213,23 +214,23 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 			throw new KettleException(BaseMessages.getString(PKG, "JobXMLWellFormed.Error.Exception.UnableLoadRep")+id_jobentry, dbe);
 		}
 	}
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous",  arg_from_previous);
-			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", include_subfolders);
-			rep.saveJobEntryAttribute(id_job, getID(), "nr_errors_less_than",  nr_errors_less_than);
-			rep.saveJobEntryAttribute(id_job, getID(), "success_condition",    success_condition);
-			rep.saveJobEntryAttribute(id_job, getID(), "resultfilenames",      resultfilenames);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "arg_from_previous",  arg_from_previous);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "include_subfolders", include_subfolders);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "nr_errors_less_than",  nr_errors_less_than);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "success_condition",    success_condition);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "resultfilenames",      resultfilenames);
 			
 			// save the arguments...
 			if (source_filefolder!=null)
 			{
 				for (int i=0;i<source_filefolder.length;i++) 
 				{
-					rep.saveJobEntryAttribute(id_job, getID(), i, "source_filefolder",     source_filefolder[i]);
-					rep.saveJobEntryAttribute(id_job, getID(), i, "wildcard", wildcard[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "source_filefolder",     source_filefolder[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "wildcard", wildcard[i]);
 				}
 			}
 		}

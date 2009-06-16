@@ -45,6 +45,7 @@ import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -213,7 +214,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		}
 	}
 
-	  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	  {
 	    try
 	    {
@@ -250,34 +251,34 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "protocol",      protocol);
-			rep.saveJobEntryAttribute(id_job, getID(), "port", port);
-			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
-			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
-			rep.saveJobEntryAttribute(id_job, getID(), "password",        password);
-			rep.saveJobEntryAttribute(id_job, getID(), "ftpdirectory",    ftpDirectory);
-			rep.saveJobEntryAttribute(id_job, getID(), "wildcard",        wildcard);
-			rep.saveJobEntryAttribute(id_job, getID(), "timeout",         timeout);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "protocol",      protocol);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "port", port);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "servername",      serverName);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "username",        userName);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "password",        password);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "ftpdirectory",    ftpDirectory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard",        wildcard);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "timeout",         timeout);
 
-            rep.saveJobEntryAttribute(id_job, getID(), "active",          activeConnection);
-            rep.saveJobEntryAttribute(id_job, getID(), "copyprevious",          copyprevious);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "active",          activeConnection);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "copyprevious",          copyprevious);
             
-            rep.saveJobEntryAttribute(id_job, getID(), "useproxy",          useproxy);
-            rep.saveJobEntryAttribute(id_job, getID(), "publicpublickey",        publicpublickey);
-			rep.saveJobEntryAttribute(id_job, getID(), "keyfilename",      keyFilename);
-			rep.saveJobEntryAttribute(id_job, getID(), "keyfilepass",      keyFilePass);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "useproxy",          useproxy);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "publicpublickey",        publicpublickey);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "keyfilename",      keyFilename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "keyfilepass",      keyFilePass);
 			
-		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_host", proxyHost); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_port", proxyPort); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_username", proxyUsername); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_password", proxyPassword); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHost); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_username", proxyUsername); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_password", proxyPassword); //$NON-NLS-1$
 
-			rep.saveJobEntryAttribute(id_job, getID(), "nr_limit_success",  nr_limit_success);
-			rep.saveJobEntryAttribute(id_job, getID(), "success_condition",    success_condition);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "nr_limit_success",  nr_limit_success);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "success_condition",    success_condition);
 		}
 		catch(KettleDatabaseException dbe)
 		{

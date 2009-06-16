@@ -33,6 +33,7 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 
@@ -276,7 +277,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
   { 
 		try
 		{
@@ -297,21 +298,21 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(),"valuetype", getValueTypeCode(valuetype));
-			rep.saveJobEntryAttribute(id_job, getID(), "fieldname",  fieldname);
-			rep.saveJobEntryAttribute(id_job, getID(), "variablename",  variablename);
-			rep.saveJobEntryAttribute(id_job, getID(),"fieldtype", getFieldTypeCode(fieldtype));
-			rep.saveJobEntryAttribute(id_job, getID(), "fieldtype",  fieldtype);
-			rep.saveJobEntryAttribute(id_job, getID(), "mask",  mask);
-			rep.saveJobEntryAttribute(id_job, getID(), "comparevalue",  comparevalue);
-			rep.saveJobEntryAttribute(id_job, getID(), "minvalue",  minvalue);
-			rep.saveJobEntryAttribute(id_job, getID(), "maxvalue",  maxvalue);
-			rep.saveJobEntryAttribute(id_job, getID(),"successcondition", getSuccessConditionCode(successcondition));
-			rep.saveJobEntryAttribute(id_job, getID(),"successnumbercondition", getSuccessNumberConditionCode(successnumbercondition));
+			rep.saveJobEntryAttribute(id_job, getObjectId(),"valuetype", getValueTypeCode(valuetype));
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "fieldname",  fieldname);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "variablename",  variablename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(),"fieldtype", getFieldTypeCode(fieldtype));
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "fieldtype",  fieldtype);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "mask",  mask);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "comparevalue",  comparevalue);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "minvalue",  minvalue);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "maxvalue",  maxvalue);
+			rep.saveJobEntryAttribute(id_job, getObjectId(),"successcondition", getSuccessConditionCode(successcondition));
+			rep.saveJobEntryAttribute(id_job, getObjectId(),"successnumbercondition", getSuccessNumberConditionCode(successnumbercondition));
 		}
 		catch(KettleDatabaseException dbe)
 		{

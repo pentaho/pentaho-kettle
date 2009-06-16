@@ -48,6 +48,7 @@ import org.pentaho.di.job.entries.ssh2get.FTPUtils;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -216,7 +217,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)	throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)	throws KettleException
 	{
 		try
 		{
@@ -256,38 +257,38 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
-			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
-			rep.saveJobEntryAttribute(id_job, getID(), "password",        password);
-			rep.saveJobEntryAttribute(id_job, getID(), "serverport",      serverPort);
-			rep.saveJobEntryAttribute(id_job, getID(), "ftpdirectory",    ftpDirectory);
-			rep.saveJobEntryAttribute(id_job, getID(), "localdirectory", localDirectory);
-			rep.saveJobEntryAttribute(id_job, getID(), "wildcard",        wildcard);
-			rep.saveJobEntryAttribute(id_job, getID(), "only_new",        onlyGettingNewFiles);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "servername",      serverName);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "username",        userName);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "password",        password);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "serverport",      serverPort);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "ftpdirectory",    ftpDirectory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "localdirectory", localDirectory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard",        wildcard);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "only_new",        onlyGettingNewFiles);
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "usehttpproxy",        usehttpproxy);
-			rep.saveJobEntryAttribute(id_job, getID(), "httpproxyhost",      httpproxyhost);
-			rep.saveJobEntryAttribute(id_job, getID(), "httpproxyport",      httpproxyport);
-			rep.saveJobEntryAttribute(id_job, getID(), "httpproxyusername",        httpproxyusername);
-			rep.saveJobEntryAttribute(id_job, getID(), "httpproxypassword",        httpProxyPassword);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "usehttpproxy",        usehttpproxy);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "httpproxyhost",      httpproxyhost);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "httpproxyport",      httpproxyport);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "httpproxyusername",        httpproxyusername);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "httpproxypassword",        httpProxyPassword);
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "publicpublickey",        publicpublickey);
-			rep.saveJobEntryAttribute(id_job, getID(), "keyfilename",      keyFilename);
-			rep.saveJobEntryAttribute(id_job, getID(), "keyfilepass",      keyFilePass);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "publicpublickey",        publicpublickey);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "keyfilename",      keyFilename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "keyfilepass",      keyFilePass);
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "usebasicauthentication",        useBasicAuthentication);
-			rep.saveJobEntryAttribute(id_job, getID(), "createremotefolder",        createRemoteFolder);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "usebasicauthentication",        useBasicAuthentication);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "createremotefolder",        createRemoteFolder);
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "afterftpput",        afterFtpPut);
-			rep.saveJobEntryAttribute(id_job, getID(), "destinationfolder",        destinationfolder);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "afterftpput",        afterFtpPut);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "destinationfolder",        destinationfolder);
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "createdestinationfolder",        createDestinationFolder);
-			rep.saveJobEntryAttribute(id_job, getID(), "cachehostkey",        cachehostkey);
-			rep.saveJobEntryAttribute(id_job, getID(), "timeout",         timeout);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "createdestinationfolder",        createDestinationFolder);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "cachehostkey",        cachehostkey);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "timeout",         timeout);
 		}
 		catch(KettleDatabaseException dbe)
 		{

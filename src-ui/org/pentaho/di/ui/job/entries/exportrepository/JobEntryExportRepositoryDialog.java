@@ -50,17 +50,16 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.exportrepository.JobEntryExportRepository;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
@@ -926,7 +925,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
-		lsTest     = new Listener() { public void handleEvent(Event e) { RepConnect(true); } };
+		lsTest     = new Listener() { public void handleEvent(Event e) { repConnect(true); } };
 
 		wCancel.addListener(SWT.Selection, lsCancel);
 		wOK.addListener    (SWT.Selection, lsOK    );
@@ -1152,10 +1151,9 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		return false;
 	}
 	
-	private boolean RepConnect(boolean displaySuccess)
+	private boolean repConnect(boolean displaySuccess)
 	{
 		boolean retval=false;
-		LogWriter log = LogWriter.getInstance();
 		RepositoriesMeta reps_info =null;
 		RepositoryMeta rep_info  = null;
 		UserInfo       user_info = null;
@@ -1163,9 +1161,10 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		
 		try
 		{
-			reps_info = new RepositoriesMeta(log);
-			if (!reps_info.readData())
-			{
+			reps_info = new RepositoriesMeta();
+			try {
+				reps_info.readData();
+			} catch(Exception e) {
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepsDefined"),BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepsDefinedMsg"),true);
 			}
 			rep_info = reps_info.findRepository( jobMeta.environmentSubstitute(wRepositoryname.getText()));
@@ -1177,16 +1176,17 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				return false;
 			}
 			
-			repos = new KettleDatabaseRepository(rep_info, user_info);
-			if (!repos.connect("Export job entry"))
-			{
+			repos = RepositoryLoader.createRepository(rep_info, user_info);
+			try {
+				repos.connect("Export job entry");
+			} catch(Exception e) {
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnect"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectMsg",wRepositoryname.getText()),true);
 				return false;
 			}	
 			// Check username, password
 			user_info = repos.loadUserInfo(jobMeta.environmentSubstitute(wUserName.getText()),jobMeta.environmentSubstitute(wPassword.getText()));
 				
-			if (user_info.getID()>0)
+			if (user_info.getObjectId()!=null)
 			{
 				repos.disconnect();
 				repos=null;
@@ -1246,40 +1246,36 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		RepositoriesMeta reps_info =null;
 		try
 		{
-			LogWriter log = LogWriter.getInstance();
-			reps_info = new RepositoriesMeta(log);
-			if (!reps_info.readData())
+			reps_info = new RepositoriesMeta();
+			reps_info.readData();
+			
+			int nrRepositories=reps_info.nrRepositories();
+			if(nrRepositories==0)
 			{
-				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepsDefined"),BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepsDefinedMsg"),true);
+				displayMsg(BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "JobExportRepository.Error.NoRep.DialogMessage"), true);
 			}else
 			{
-				int nrRepositories=reps_info.nrRepositories();
-				if(nrRepositories==0)
+				String available[] = new String[nrRepositories];
+                
+				for (int i=0;i<nrRepositories;i++)
 				{
-					displayMsg(BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "JobExportRepository.Error.NoRep.DialogMessage"), true);
-				}else
+					RepositoryMeta ri = reps_info.getRepository(i);
+					available[i]=ri.getName();
+				}
+				
+				String[] source = new String[1];
+				source[0]=wRepositoryname.getText();
+				int idxSource[] = Const.indexsOfStrings(source, available);
+				EnterSelectionDialog dialog = new EnterSelectionDialog(shell, available, BaseMessages.getString(PKG, "JobExportRepository.SelectRepository.Title"), BaseMessages.getString(PKG, "JobExportRepository.SelectRepository.Message"));
+				dialog.setMulti(false);
+				dialog.setSelectedNrs(idxSource);
+				if (dialog.open()!=null)
 				{
-					String available[] = new String[nrRepositories];
-	                
-					for (int i=0;i<nrRepositories;i++)
-					{
-						RepositoryMeta ri = reps_info.getRepository(i);
-						available[i]=ri.getName();
-					}
-					
-					String[] source = new String[1];
-					source[0]=wRepositoryname.getText();
-					int idxSource[] = Const.indexsOfStrings(source, available);
-					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, available, BaseMessages.getString(PKG, "JobExportRepository.SelectRepository.Title"), BaseMessages.getString(PKG, "JobExportRepository.SelectRepository.Message"));
-					dialog.setMulti(false);
-					dialog.setSelectedNrs(idxSource);
-					if (dialog.open()!=null)
-					{
-						int idx[] = dialog.getSelectionIndeces();
-						wRepositoryname.setText(available[idx[0]]);
-					}
+					int idx[] = dialog.getSelectionIndeces();
+					wRepositoryname.setText(available[idx[0]]);
 				}
 			}
+			
 		}
 		catch(Exception e)
 		{
@@ -1291,17 +1287,13 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 	}
 	private void displaydirectoryList()
 	{
-		LogWriter log = LogWriter.getInstance();
 		RepositoriesMeta reps_info =null;
 		RepositoryMeta rep_info  = null;
 		UserInfo       user_info = null;
 		Repository repos		= null;
 		try{
-			reps_info = new RepositoriesMeta(log);
-			if (!reps_info.readData())
-			{
-				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepsDefined"),BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepsDefinedMsg"),true);
-			}
+			reps_info = new RepositoriesMeta();
+			reps_info.readData();
 			rep_info = reps_info.findRepository( jobMeta.environmentSubstitute(wRepositoryname.getText()));
 	
 			if (rep_info==null)
@@ -1310,14 +1302,12 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRep"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRepMsg",wRepositoryname.getText()),true);
 			}
 			
-			repos = new KettleDatabaseRepository(rep_info, user_info);
+			repos = RepositoryLoader.createRepository(rep_info, user_info);
 			try{
-			if (!repos.connect("Export job entry"))
-			{
-				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnect"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectMsg",wRepositoryname.getText()),true);
+				repos.connect("Export job entry");
+			} catch(Exception e) {
+				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnect"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectMsg",wRepositoryname.getText()),true);				
 			}
-			}catch(Exception e){}
-	
 			
 			SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, repos);
 			RepositoryDirectory rd = sdd.open();

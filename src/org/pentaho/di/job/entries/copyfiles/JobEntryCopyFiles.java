@@ -46,6 +46,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
@@ -176,7 +177,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 		}
 	}
 
-	 public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	 public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	  {
 		try
 		{
@@ -211,27 +212,27 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "copy_empty_folders",      copy_empty_folders);
-			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous",  arg_from_previous);
-			rep.saveJobEntryAttribute(id_job, getID(), "overwrite_files",      overwrite_files);
-			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", include_subfolders);
-			rep.saveJobEntryAttribute(id_job, getID(), "remove_source_files", remove_source_files);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_result_filesname", add_result_filesname);
-			rep.saveJobEntryAttribute(id_job, getID(), "destination_is_a_file", destination_is_a_file);
-			rep.saveJobEntryAttribute(id_job, getID(), "create_destination_folder", create_destination_folder);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "copy_empty_folders",      copy_empty_folders);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "arg_from_previous",  arg_from_previous);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "overwrite_files",      overwrite_files);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "include_subfolders", include_subfolders);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "remove_source_files", remove_source_files);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_result_filesname", add_result_filesname);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "destination_is_a_file", destination_is_a_file);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "create_destination_folder", create_destination_folder);
 			
 			// save the arguments...
 			if (source_filefolder!=null)
 			{
 				for (int i=0;i<source_filefolder.length;i++) 
 				{
-					rep.saveJobEntryAttribute(id_job, getID(), i, "source_filefolder",     source_filefolder[i]);
-					rep.saveJobEntryAttribute(id_job, getID(), i, "destination_filefolder",     destination_filefolder[i]);
-					rep.saveJobEntryAttribute(id_job, getID(), i, "wildcard", wildcard[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "source_filefolder",     source_filefolder[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "destination_filefolder",     destination_filefolder[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "wildcard", wildcard[i]);
 				}
 			}
 		}

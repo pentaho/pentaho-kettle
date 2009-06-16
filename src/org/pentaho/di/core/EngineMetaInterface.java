@@ -15,6 +15,7 @@ package org.pentaho.di.core;
 import java.util.Date;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 
@@ -38,7 +39,7 @@ public interface EngineMetaInterface extends RepositoryElementInterface {
     
     public String getDefaultExtension();
     
-    public void setID( long id );
+    public void setObjectId( ObjectId id );
  
     public Date getCreatedDate();
     

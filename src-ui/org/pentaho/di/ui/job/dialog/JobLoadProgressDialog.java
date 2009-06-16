@@ -81,7 +81,7 @@ public class JobLoadProgressDialog
 
 				try
 				{
-					jobInfo = rep.loadJobMeta(jobname, repdir, new ProgressMonitorAdapter(monitor));
+					jobInfo = rep.loadJob(jobname, repdir, new ProgressMonitorAdapter(monitor));
 				}
 				catch(KettleException e)
 				{

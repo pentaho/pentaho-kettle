@@ -23,7 +23,7 @@ public class ProfileMeta
 {
 //	private static Class<?> PKG = ProfileMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private long id;
+	private ObjectId profileId;
 	
 	private String name;        // Long name
 	private String description; // Description
@@ -100,14 +100,14 @@ public class ProfileMeta
 		return permissions.indexOf(permission);
 	}
 	
-	public long getID()
+	public ObjectId getObjectId()
 	{
-		return id;
+		return profileId;
 	}
 	
-	public void setID(long id)
+	public void setObjectId(ObjectId id)
 	{
-		this.id = id;
+		this.profileId = id;
 	}
 	
 	// Helper functions...
@@ -158,6 +158,26 @@ public class ProfileMeta
 		{
 			PermissionMeta pi = getPermission(i);
 			if (pi.useSchemas()) return true;
+		}
+		return false;
+	}
+
+	public boolean useDatabases()
+	{
+		for (int i=0;i<nrPermissions();i++)
+		{
+			PermissionMeta pi = getPermission(i);
+			if (pi.useDatabases()) return true;
+		}
+		return false;
+	}
+
+	public boolean exploreDatabases()
+	{
+		for (int i=0;i<nrPermissions();i++)
+		{
+			PermissionMeta pi = getPermission(i);
+			if (pi.exploreDatabases()) return true;
 		}
 		return false;
 	}

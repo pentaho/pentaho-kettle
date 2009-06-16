@@ -45,6 +45,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 
@@ -121,7 +122,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 		}
 	}
 
-	  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	  {
 	    try
 	    {
@@ -136,14 +137,14 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "foldername", foldername);
-			rep.saveJobEntryAttribute(id_job, getID(), "specify_wildcard", specifywildcard);
-			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
-			rep.saveJobEntryAttribute(id_job, getID(), "wildcardexclude", wildcardexclude);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "foldername", foldername);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "specify_wildcard", specifywildcard);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard", wildcard);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcardexclude", wildcardexclude);
 		}
 		catch(KettleDatabaseException dbe)
 		{

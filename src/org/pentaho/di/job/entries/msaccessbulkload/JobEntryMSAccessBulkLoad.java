@@ -43,6 +43,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 import com.healthmarketscience.jackcess.Database;
@@ -203,7 +204,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
@@ -277,26 +278,26 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 			log.logError(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Error.AddingToFilenameResult"),fileaddentry + ""+e.getMessage());
 		}
    }
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", include_subfolders);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_result_filenames", add_result_filenames);
-			rep.saveJobEntryAttribute(id_job, getID(), "is_args_from_previous", is_args_from_previous);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "include_subfolders", include_subfolders);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_result_filenames", add_result_filenames);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "is_args_from_previous", is_args_from_previous);
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "limit",      limit);
-			rep.saveJobEntryAttribute(id_job, getID(), "success_condition",      success_condition);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "limit",      limit);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "success_condition",      success_condition);
 			// save the arguments...
 			if (source_filefolder!=null)
 			{
 				for (int i=0;i<source_filefolder.length;i++) 
 				{
-					rep.saveJobEntryAttribute(id_job, getID(), i, "source_filefolder",     source_filefolder[i]);
-					rep.saveJobEntryAttribute(id_job, getID(), i, "source_wildcard",     source_wildcard[i]);
-					rep.saveJobEntryAttribute(id_job, getID(), i, "delimiter", delimiter[i]);
-					rep.saveJobEntryAttribute(id_job, getID(), i, "target_Db", target_Db[i]);
-					rep.saveJobEntryAttribute(id_job, getID(), i, "target_table", target_table[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "source_filefolder",     source_filefolder[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "source_wildcard",     source_wildcard[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "delimiter", delimiter[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "target_Db", target_Db[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "target_table", target_table[i]);
 				}
 			}
 		}

@@ -65,6 +65,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -172,7 +173,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     }
   }
 
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
   {
     try
     {
@@ -198,20 +199,20 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     }
   }
 
-  public void saveRep(Repository rep, long id_job) throws KettleException
+  public void saveRep(Repository rep, ObjectId id_job) throws KettleException
   {
     try
     {
-      rep.saveJobEntryAttribute(id_job, getID(), "servername", servername); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getID(), "username", username); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getID(), "password", Encr.encryptPasswordIfNotUsingVariables(password)); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getID(), "usessl", usessl); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getID(), "sslport", sslport); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getID(), "outputdirectory", outputdirectory); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getID(), "filenamepattern", filenamepattern); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getID(), "retrievemails", retrievemails); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getID(), "firstmails", firstmails); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getID(), "delete", delete); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "servername", servername); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "username", username); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables(password)); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "usessl", usessl); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "sslport", sslport); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "outputdirectory", outputdirectory); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "filenamepattern", filenamepattern); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "retrievemails", retrievemails); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "firstmails", firstmails); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "delete", delete); //$NON-NLS-1$
     } 
     catch (KettleDatabaseException dbe)
     {

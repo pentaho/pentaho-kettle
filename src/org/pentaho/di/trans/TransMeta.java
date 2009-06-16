@@ -74,9 +74,12 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
+import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryRevision;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -188,7 +191,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     private DBCache             dbCache;
 
-    private long                id;
+    private ObjectId            id;
 
     private boolean             useBatchId;
 
@@ -244,6 +247,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     private NamedParams namedParams = new NamedParamsDefault();
     
     private String logSizeLimit;
+    
+    private RepositoryLock repositoryLock;
     
     // //////////////////////////////////////////////////////////////////////////
 
@@ -382,7 +387,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      *
      * @return the database ID in the repository for this object.
      */
-    public long getID()
+    public ObjectId getObjectId()
     {
         return id;
     }
@@ -392,7 +397,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      *
      * @param id the database ID for this object in the repository.
      */
-    public void setID(long id)
+    public void setObjectId(ObjectId id)
     {
         this.id = id;
     }
@@ -402,7 +407,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public void clear()
     {
-        setID(-1L);
+        setObjectId(null);
         databases = new ArrayList<DatabaseMeta>();
         steps = new ArrayList<StepMeta>();
         hops = new ArrayList<TransHopMeta>();
@@ -2002,15 +2007,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         for (int idx = 0; idx < parameters.length; idx++)
         {
         	retval.append("        ").append(XMLHandler.openTag("parameter")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-        	retval.append("            ").append(XMLHandler.openTag("name")); //$NON-NLS-1$
-        	retval.append(parameters[idx]);
-        	retval.append(XMLHandler.closeTag("name")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-        	retval.append("            ").append(XMLHandler.openTag("default_value")); //$NON-NLS-1$
-        	retval.append(getParameterDefault(parameters[idx]));
-        	retval.append(XMLHandler.closeTag("default_value")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
-        	retval.append("            ").append(XMLHandler.openTag("description")); //$NON-NLS-1$
-        	retval.append(getParameterDescription(parameters[idx]));
-        	retval.append(XMLHandler.closeTag("description")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+        	retval.append("            ").append(XMLHandler.addTagValue("name", parameters[idx])); //$NON-NLS-1$
+        	retval.append("            ").append(XMLHandler.addTagValue("default_value", getParameterDefault(parameters[idx]))); //$NON-NLS-1$
+        	retval.append("            ").append(XMLHandler.addTagValue("description", getParameterDescription(parameters[idx]))); //$NON-NLS-1$
         	retval.append("        ").append(XMLHandler.closeTag("parameter")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
         }        
         retval.append("    ").append(XMLHandler.closeTag(XML_TAG_PARAMETERS)).append(Const.CR); //$NON-NLS-1$
@@ -2506,7 +2505,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 			if (rep!=null) {
 				String directoryPath = XMLHandler.getTagValue(infonode, "directory");
 				if (directoryPath!=null) {
-					directory = rep.getDirectoryTree().findDirectory(directoryPath);
+					directory = rep.loadRepositoryDirectoryTree().findDirectory(directoryPath);
 					if (directory==null) { // not found
 						directory = new RepositoryDirectory(); // The root as default
 					}
@@ -3680,6 +3679,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     }
     
     private long prevCount;
+
+	private RepositoryRevision	revision;
 
     /**
      * Put the steps in a more natural order: from start to finish. For the moment, we ignore splits and joins. Splits
@@ -5835,5 +5836,33 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	
 	public String getRepositoryElementType() {
 		return REPOSITORY_ELEMENT_TYPE;
+	}
+	
+	/**
+	 * @return the revision
+	 */
+	public RepositoryRevision getRevision() {
+		return revision;
+	}
+
+	/**
+	 * @param revision the revision to set
+	 */
+	public void setRevision(RepositoryRevision revision) {
+		this.revision = revision;
+	}
+
+	/**
+	 * @return the repositoryLock
+	 */
+	public RepositoryLock getRepositoryLock() {
+		return repositoryLock;
+	}
+
+	/**
+	 * @param repositoryLock the repositoryLock to set
+	 */
+	public void setRepositoryLock(RepositoryLock repositoryLock) {
+		this.repositoryLock = repositoryLock;
 	}
 }

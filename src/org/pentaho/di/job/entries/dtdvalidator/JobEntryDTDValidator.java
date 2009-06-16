@@ -46,6 +46,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
@@ -124,7 +125,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
@@ -139,13 +140,13 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "xmlfilename", xmlfilename);
-			rep.saveJobEntryAttribute(id_job, getID(), "DTDfilename", dtdfilename);
-			rep.saveJobEntryAttribute(id_job, getID(), "dtdintern", dtdintern);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "xmlfilename", xmlfilename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "DTDfilename", dtdfilename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "dtdintern", dtdintern);
 		}
 		catch(KettleDatabaseException dbe)
 		{

@@ -29,6 +29,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -156,7 +157,7 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 		addcloneflag=false;
 	}
 
-	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
+	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleException
 	{
 		try{
@@ -173,7 +174,7 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 	
-	public void saveRep(Repository rep, long id_transformation, long id_step)
+	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
 		try{

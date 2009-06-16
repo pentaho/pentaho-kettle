@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.connectedtorepository.JobEntryConnectedToRepository;
@@ -383,6 +382,7 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
     {
         return this.getClass().getName();
     }
+    
 	private void displayMsg(String title, String message, boolean error)
 	{
 		if(error)
@@ -408,13 +408,11 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
 		RepositoriesMeta reps_info =null;
 		try
 		{
-			LogWriter log = LogWriter.getInstance();
-			reps_info = new RepositoriesMeta(log);
-			if (!reps_info.readData())
-			{
-				displayMsg(BaseMessages.getString(PKG, "JobEntryConnectedToRepositoryDialog.Error.NoRepsDefined"),BaseMessages.getString(PKG, "JobEntryConnectedToRepositoryDialog.Error.NoRepsDefinedMsg"),true);
-			}else
-			{
+			reps_info = new RepositoriesMeta();
+			
+			try {
+				reps_info.readData();
+
 				int nrRepositories=reps_info.nrRepositories();
 				if(nrRepositories==0)
 				{
@@ -441,12 +439,15 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
 						wRepName.setText(available[idx[0]]);
 					}
 				}
+			} catch(Exception e) {
+				displayMsg(BaseMessages.getString(PKG, "JobEntryConnectedToRepositoryDialog.Error.NoRepsDefined"),BaseMessages.getString(PKG, "JobEntryConnectedToRepositoryDialog.Error.NoRepsDefinedMsg"),true);
 			}
 		}
 		catch(Exception e)
 		{
 			displayMsg(BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "JobEntryConnectedToRepositoryDialog.ErrorGettingRepositories.DialogMessage")+Const.CR+":"+e.getMessage(), true);
-		}finally
+		}
+		finally
 		{
 			reps_info.clear();
 		}

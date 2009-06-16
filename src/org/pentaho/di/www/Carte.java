@@ -18,17 +18,13 @@ import java.util.List;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.JndiUtil;
-import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.JobEntryLoader;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -152,30 +148,9 @@ public class Carte
 
 	private static void init() throws Exception
     {
-        EnvUtil.environmentInit();
-        JndiUtil.initJNDI();
-        
-        LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
-        
-		try 
-		{
-			StepLoader.init();
-		}
-		catch(KettleException e)
-        {
-            throw new Exception(BaseMessages.getString(PKG, "Carte.Error.UnableLoadSteps"), e);
-        }
-
-		try 
-		{
-			JobEntryLoader.init();
-		}
-		catch(KettleException e)
-        {
-            throw new Exception( BaseMessages.getString(PKG, "Carte.Error.UnableLoadJobEntries"), e);
-           
-        }
-    }
+	    KettleEnvironment.init();
+	    LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
+	}
     
     public static Trans generateTestTransformation()
     {

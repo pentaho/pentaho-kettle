@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.univariatestats;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 
 import org.w3c.dom.Node;
 
@@ -149,7 +150,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
    * @exception KettleException if an error occurs
    */
   public UnivariateStatsMetaFunction(Repository rep,
-                                     long id_step,
+                                     ObjectId id_step,
                                      int nr) throws KettleException {
     m_sourceFieldName = 
       rep.getStepAttributeString(id_step, nr, "source_field_name");
@@ -218,8 +219,8 @@ public class UnivariateStatsMetaFunction implements Cloneable {
    * @param nr the step number
    * @exception KettleException if an error occurs
    */
-  public void saveRep(Repository rep, long id_transformation, 
-                      long id_step,
+  public void saveRep(Repository rep, ObjectId id_transformation, 
+                      ObjectId id_step,
                       int nr) throws KettleException {
 
     rep.saveStepAttribute(id_transformation, id_step, nr, "source_field_name",

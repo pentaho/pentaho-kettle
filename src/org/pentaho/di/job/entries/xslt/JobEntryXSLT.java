@@ -48,6 +48,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -135,7 +136,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
@@ -153,17 +154,17 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job)
+	public void saveRep(Repository rep, ObjectId id_job)
 		throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "xmlfilename", xmlfilename);
-			rep.saveJobEntryAttribute(id_job, getID(), "xslfilename", xslfilename);
-			rep.saveJobEntryAttribute(id_job, getID(), "outputfilename", outputfilename);
-			rep.saveJobEntryAttribute(id_job, getID(), "iffileexists", iffileexists);
-			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
-			rep.saveJobEntryAttribute(id_job, getID(), "xsltfactory", xsltfactory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "xmlfilename", xmlfilename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "xslfilename", xslfilename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "outputfilename", outputfilename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "iffileexists", iffileexists);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "addfiletoresult", addfiletoresult);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "xsltfactory", xsltfactory);
 		}
 		catch(KettleDatabaseException dbe)
 		{

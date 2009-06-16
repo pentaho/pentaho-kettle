@@ -11,15 +11,15 @@
 
 package org.pentaho.di.ui.repository.dialog;
 
+import java.lang.reflect.Constructor;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -28,14 +28,10 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -46,16 +42,17 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.PermissionMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryCapabilities;
+import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.repository.RepositoryPluginMeta;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -72,17 +69,14 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  */
 public class RepositoriesDialog
 {
-	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
-    private LogWriter log;
+	private static Class<?> PKG = KettleDatabaseRepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     private Label wlKettle;
     private FormData fdlKettle;
 
-    private Label wlRepository;
     private Button wnRepository, weRepository, wdRepository;
-    private CCombo wRepository;
-    private FormData fdlRepository, fdRepository, fdnRepository, fdeRepository, fddRepository;
+    private org.eclipse.swt.widgets.List wRepository;
+    private FormData fdRepository, fdnRepository, fdeRepository, fddRepository;
 
     private LabelText wUsername;
     private FormData fdUsername;
@@ -90,9 +84,18 @@ public class RepositoriesDialog
     private LabelText wPassword;
     private FormData fdPassword;
 
-    private Canvas wCanvas;
-    private FormData fdCanvas;
+    
+    private Label     imageLabel;
+    
+    private LabelText wRepName;
+    private FormData fdRepName;
+    private LabelText wRepDesc;
+    private FormData fdRepDesc;
+    private LabelText wRepTypeName;
+    private FormData fdRepType;
 
+    
+    
     private Button wOK, wNorep, wCancel;
     private Listener lsOK, lsNorep, lsCancel;
     
@@ -112,26 +115,27 @@ public class RepositoriesDialog
     private boolean cancelled;
     private String toolName;
     private int toolsPermissions[];
-    private StepLoader steploader;
     
     public RepositoriesDialog(Display disp, int perm[], String toolName)
     {
         display = disp;
         toolsPermissions = perm;
-        steploader = StepLoader.getInstance();
         this.toolName = toolName;
 
         shell = new Shell(disp, SWT.DIALOG_TRIM | SWT.MAX | SWT.MIN | SWT.RESIZE);
         shell.setText(BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.Main.Title"));
 
-        log = LogWriter.getInstance();
         props = PropsUI.getInstance();
-        input = new RepositoriesMeta(log);
+        input = new RepositoriesMeta();
         repinfo = null;
         userinfo = null;
         cancelled = false;
 
-        input.readData();
+        try {
+        	input.readData();
+        } catch(Exception e) {
+        	new ErrorDialog(shell, "Error", "Unexpected error reading repository definitions", e);
+        }
     }
 
     public void setRepositoryName(String repname)
@@ -144,8 +148,8 @@ public class RepositoriesDialog
         props.setLook(shell);
 
         FormLayout formLayout = new FormLayout();
-        formLayout.marginWidth = Const.FORM_MARGIN;
-        formLayout.marginHeight = Const.FORM_MARGIN;
+        formLayout.marginWidth = Const.FORM_MARGIN*2;
+        formLayout.marginHeight = Const.FORM_MARGIN*2;
 
         shell.setLayout(formLayout);
         shell.setText(BaseMessages.getString(PKG, "RepositoriesDialog.Label.SelectRepository"));
@@ -154,45 +158,6 @@ public class RepositoriesDialog
         int middle = 20;
         int margin = Const.MARGIN;
         int right = 30;
-
-        final Image logo = GUIResource.getInstance().getImagePentaho();
-        final Rectangle bounds = logo.getBounds();
-
-        wCanvas = new Canvas(shell, SWT.NO_BACKGROUND);
-        fdCanvas = new FormData();
-        fdCanvas.left = new FormAttachment(0, 0);
-        fdCanvas.right = new FormAttachment(100, 0);
-        fdCanvas.top = new FormAttachment(0, 0);
-        fdCanvas.bottom = new FormAttachment(60, 0);
-        wCanvas.setLayoutData(fdCanvas);
-        wCanvas.setSize(bounds.width, bounds.height);
-
-        wCanvas.addPaintListener(new PaintListener()
-        {
-            public void paintControl(PaintEvent pe)
-            {
-                Rectangle canvasBounds = wCanvas.getBounds();
-                if (canvasBounds.width > 0 && canvasBounds.height > 0)
-                {
-                    Image image = new Image(display, canvasBounds.width, canvasBounds.height);
-                    GC gc = new GC(image);
-                    if (!props.isOSLookShown())
-                        gc.setBackground(GUIResource.getInstance().getColorBackground());
-                    gc.fillRectangle(0, 0, canvasBounds.width, canvasBounds.height);
-                    if (canvasBounds.width > bounds.width && canvasBounds.height > bounds.height)
-                    {
-                        gc.drawImage(logo, 0, 0);
-                    }
-                    else
-                    {
-                        gc.drawImage(logo, 0, 0);
-                    }
-                    pe.gc.drawImage(image, 0, 0); // no flicker anymore!
-                    gc.dispose();
-                    image.dispose();
-                }
-            }
-        });
 
         // Kettle welcome
         wlKettle = new Label(shell, SWT.CENTER);
@@ -210,19 +175,108 @@ public class RepositoriesDialog
         fdlKettle = new FormData();
         fdlKettle.left = new FormAttachment(0, 0);
         fdlKettle.right = new FormAttachment(100, -right);
-        fdlKettle.top = new FormAttachment(wCanvas, margin);
+        fdlKettle.top = new FormAttachment(0, 0);
         wlKettle.setLayoutData(fdlKettle);
+        
+        Label line = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
+        FormData fdLine = new FormData();
+        fdLine.left = new FormAttachment(0,0);
+        fdLine.right = new FormAttachment(100,0);
+        fdLine.top = new FormAttachment(wlKettle,margin);
+        line.setLayoutData(fdLine);
+        
+        // Add the Repository buttons at the top of the screen...
+        wnRepository = new Button(shell, SWT.PUSH);
+        wnRepository.setImage(GUIResource.getInstance().getImageNew());
+        wnRepository.setToolTipText(BaseMessages.getString(PKG, "System.Button.New"));
+        weRepository = new Button(shell, SWT.PUSH);
+        weRepository.setImage(GUIResource.getInstance().getImageEdit());
+        weRepository.setToolTipText(BaseMessages.getString(PKG, "System.Button.Edit"));
+        wdRepository = new Button(shell, SWT.PUSH);
+        wdRepository.setImage(GUIResource.getInstance().getImageDelete());
+        wdRepository.setToolTipText(BaseMessages.getString(PKG, "System.Button.Delete"));
 
-        // First add the buttons at the bottom
+        // Button positions...
+        fdnRepository = new FormData();
+        fdnRepository.left = new FormAttachment(0, 0);
+        fdnRepository.top = new FormAttachment(line, 3*margin);
+        wnRepository.setLayoutData(fdnRepository);
 
-        wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
-        wNorep = new Button(shell, SWT.PUSH);
-        wNorep.setText(BaseMessages.getString(PKG, "RepositoriesDialog.Button.NoRepository"));
-        wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
+        fdeRepository = new FormData();
+        fdeRepository.left = new FormAttachment(wnRepository, margin);
+        fdeRepository.top= new FormAttachment(line, 3*margin);
+        weRepository.setLayoutData(fdeRepository);
 
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel , wNorep}, Const.MARGIN, null);
+        fddRepository = new FormData();
+        fddRepository.left = new FormAttachment(weRepository, margin);
+        fddRepository.top = new FormAttachment(line, 3*margin);
+        wdRepository.setLayoutData(fddRepository);
+
+        wRepository = new org.eclipse.swt.widgets.List(shell, SWT.READ_ONLY | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE);
+        props.setLook(wRepository);
+        fdRepository = new FormData();
+        fdRepository.left = new FormAttachment(0, 0);
+        fdRepository.right = new FormAttachment(middle, -margin);
+        fdRepository.top = new FormAttachment(wnRepository, 3*margin);
+        fdRepository.bottom = new FormAttachment(100, -50);
+        wRepository.setLayoutData(fdRepository);
+        
+        
+        // Repository name
+        wRepName = new LabelText(shell, SWT.SINGLE | SWT.LEFT, BaseMessages.getString(PKG, "RepositoriesDialog.Label.RepName"), BaseMessages.getString(PKG, "RepositoriesDialog.Label.RepName"), middle, margin);
+        props.setLook(wRepName);
+        fdRepName = new FormData();
+        fdRepName.left = new FormAttachment(middle, 2*margin);
+        fdRepName.right = new FormAttachment(100, -right);
+        fdRepName.top = new FormAttachment(line, 3*margin);
+        wRepName.setLayoutData(fdRepName);
+        wRepName.getTextWidget().setEditable(false);
+        
+        // Repository Description
+        wRepDesc = new LabelText(shell, SWT.SINGLE | SWT.LEFT, BaseMessages.getString(PKG, "RepositoriesDialog.Label.RepDesc"), BaseMessages.getString(PKG, "RepositoriesDialog.Label.RepDesc"), middle, margin);
+        props.setLook(wRepDesc);
+        fdRepDesc = new FormData();
+        fdRepDesc.left = new FormAttachment(middle, 2*margin);
+        fdRepDesc.right = new FormAttachment(100, -right);
+        fdRepDesc.top   = new FormAttachment(wRepName, margin);
+        wRepDesc.setLayoutData(fdRepDesc);
+        wRepDesc.getTextWidget().setEditable(false);
+        
+        // Repository type
+        wRepTypeName = new LabelText(shell, SWT.SINGLE | SWT.LEFT, BaseMessages.getString(PKG, "RepositoriesDialog.Label.RepType"), BaseMessages.getString(PKG, "RepositoriesDialog.Label.RepType"), middle, margin);
+        props.setLook(wRepTypeName);
+        fdRepType = new FormData();
+        fdRepType.left = new FormAttachment(middle, 2*margin);
+        fdRepType.right = new FormAttachment(100, -right);
+        fdRepType.top   = new FormAttachment(wRepDesc, margin);
+        wRepTypeName.setLayoutData(fdRepType);
+        wRepTypeName.getTextWidget().setEditable(false);
+        
+        imageLabel = new Label(shell, SWT.NONE);
+        imageLabel.setImage(GUIResource.getInstance().getImagePentaho());
+        FormData fdImageLabel = new FormData();
+        fdImageLabel.left = new FormAttachment(middle, 2*margin);
+        fdImageLabel.top = new FormAttachment(wRepTypeName, margin*3);
+        imageLabel.setLayoutData(fdImageLabel);
+
+        // Username
+        wUsername = new LabelText(shell, BaseMessages.getString(PKG, "RepositoriesDialog.Label.Login"), BaseMessages.getString(PKG, "RepositoriesDialog.Label.Login"), middle, margin);
+        props.setLook(wUsername);
+        fdUsername = new FormData();
+        fdUsername.left = new FormAttachment(middle, margin);
+        fdUsername.right = new FormAttachment(100, -right);
+        fdUsername.top = new FormAttachment(imageLabel, margin*3);
+        wUsername.setLayoutData(fdUsername);
+
+        // Password
+        wPassword = new LabelText(shell, BaseMessages.getString(PKG, "RepositoriesDialog.Label.Password"), BaseMessages.getString(PKG, "RepositoriesDialog.Label.Password"), middle, margin);
+        props.setLook(wPassword);
+        wPassword.getTextWidget().setEchoChar('*');
+        fdPassword = new FormData();
+        fdPassword.left = new FormAttachment(middle, margin);
+        fdPassword.right = new FormAttachment(100, -right);
+        fdPassword.top = new FormAttachment(wUsername, margin);
+        wPassword.setLayoutData(fdPassword);
 
         // Don't show this dialog at startup...
         //
@@ -233,74 +287,20 @@ public class RepositoriesDialog
         fdShow = new FormData();
         // fdHide.left  = new FormAttachment(wOK, 0);
         fdShow.right = new FormAttachment(100, -right);
-        fdShow.bottom = new FormAttachment(wOK, -margin*3);
+        fdShow.top = new FormAttachment(wPassword, margin*3);
         wShow.setLayoutData(fdShow);
 
+        wOK = new Button(shell, SWT.PUSH);
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
+        wNorep = new Button(shell, SWT.PUSH);
+        wNorep.setText(BaseMessages.getString(PKG, "RepositoriesDialog.Button.NoRepository"));
+        wCancel = new Button(shell, SWT.PUSH);
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
-        // Password
-        wPassword = new LabelText(shell, BaseMessages.getString(PKG, "RepositoriesDialog.Label.Password"), BaseMessages.getString(PKG, "RepositoriesDialog.Label.Password"), middle, margin);
-        props.setLook(wPassword);
-        wPassword.getTextWidget().setEchoChar('*');
-        fdPassword = new FormData();
-        fdPassword.left = new FormAttachment(0, 0);
-        fdPassword.right = new FormAttachment(100, -right);
-        fdPassword.bottom = new FormAttachment(wShow, -margin);
-        wPassword.setLayoutData(fdPassword);
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel , wNorep}, Const.MARGIN, wShow);
 
-        // Username
-        wUsername = new LabelText(shell, BaseMessages.getString(PKG, "RepositoriesDialog.Label.Login"), BaseMessages.getString(PKG, "RepositoriesDialog.Label.Login"), middle, margin);
-        props.setLook(wUsername);
-        fdUsername = new FormData();
-        fdUsername.left = new FormAttachment(0, 0);
-        fdUsername.right = new FormAttachment(100, -right);
-        fdUsername.bottom = new FormAttachment(wPassword, -margin);
-        wUsername.setLayoutData(fdUsername);
 
-        wRepository = new CCombo(shell, SWT.READ_ONLY | SWT.BORDER);
 
-        // Add the Repository buttons :
-        wnRepository = new Button(shell, SWT.PUSH);
-        wnRepository.setText(BaseMessages.getString(PKG, "System.Button.New"));
-        weRepository = new Button(shell, SWT.PUSH);
-        weRepository.setText(BaseMessages.getString(PKG, "System.Button.Edit"));
-        wdRepository = new Button(shell, SWT.PUSH);
-        wdRepository.setText(BaseMessages.getString(PKG, "System.Button.Delete"));
-
-        int repMargin = -margin; // -margin*3
-
-        // Button positions...
-        fddRepository = new FormData();
-        fddRepository.right = new FormAttachment(100, -right);
-        fddRepository.bottom = new FormAttachment(wUsername, repMargin);
-        wdRepository.setLayoutData(fddRepository);
-
-        fdeRepository = new FormData();
-        fdeRepository.right = new FormAttachment(wdRepository, -margin);
-        fdeRepository.bottom = new FormAttachment(wUsername, repMargin);
-        weRepository.setLayoutData(fdeRepository);
-
-        fdnRepository = new FormData();
-        fdnRepository.right = new FormAttachment(weRepository, -margin);
-        fdnRepository.bottom = new FormAttachment(wUsername, repMargin);
-        wnRepository.setLayoutData(fdnRepository);
-
-        props.setLook(wRepository);
-        fdRepository = new FormData();
-        fdRepository.left = new FormAttachment(middle, -margin+2);
-        fdRepository.right = new FormAttachment(wnRepository, -margin);
-        fdRepository.top = new FormAttachment(wnRepository, 0, SWT.TOP);
-        fdRepository.bottom = new FormAttachment(wnRepository, 0, SWT.BOTTOM);
-        wRepository.setLayoutData(fdRepository);
-
-        // Repository selector
-        wlRepository = new Label(shell, SWT.RIGHT);
-        wlRepository.setText(BaseMessages.getString(PKG, "RepositoriesDialog.Label.Repository"));
-        props.setLook(wlRepository);
-        fdlRepository = new FormData();
-        fdlRepository.left = new FormAttachment(0, 0);
-        fdlRepository.right = new FormAttachment(middle, -margin);
-        fdlRepository.bottom = new FormAttachment(wnRepository, 0, SWT.CENTER);
-        wlRepository.setLayoutData(fdlRepository);
 
         // Add the listeners
         // New repository
@@ -308,15 +308,39 @@ public class RepositoriesDialog
         {
             public void widgetSelected(SelectionEvent arg0)
             {
-                RepositoryMeta ri = new RepositoryMeta();
-                RepositoryDialog dd = new RepositoryDialog(shell, SWT.NONE, log, props, ri, input, steploader);
-                if (dd.open() != null)
-                {
-                    input.addRepository(ri);
-                    fillRepositories();
-                    int idx = input.indexOfRepository(ri);
-                    wRepository.select(idx);
-                }
+            	List<RepositoryPluginMeta> pluginMetaList = RepositoryLoader.getInstance().getPluginMetaList();
+            	String[] names = new String[pluginMetaList.size()];
+            	for (int i=0;i<names.length;i++) { 
+            		RepositoryPluginMeta meta = pluginMetaList.get(i);
+            		names[i] = meta.getName() + " : " + meta.getDescription(); 
+            	}
+            	
+            	// TODO: make this a bit fancier!
+            	//
+            	EnterSelectionDialog selectRepositoryType = new EnterSelectionDialog(shell, names, "Select the repository type", "Select the repository type to create");
+            	String choice = selectRepositoryType.open();
+            	if (choice!=null) {
+            		int index = selectRepositoryType.getSelectionNr();
+            		RepositoryPluginMeta pluginMeta = pluginMetaList.get(index);
+            		String id = pluginMeta.getId();
+            		
+            		try {
+	            		// With this ID we can create a new Repository object...
+	            		//
+	            		RepositoryMeta repositoryMeta = RepositoryLoader.createRepositoryMeta(id);
+	            		RepositoryDialogInterface dialog = getRepositoryDialog(pluginMeta, repositoryMeta, input);
+	            		RepositoryMeta meta = dialog.open();
+	            		if (meta!=null) {
+		                    input.addRepository(meta);
+		                    fillRepositories();
+		                    int idx = input.indexOfRepository(meta);
+		                    wRepository.select(idx);
+		                }
+            		}
+            		catch(Exception e) {
+            			new ErrorDialog(shell, "Error", "Error creating new repository", e);
+            		}
+            	}
             }
         });
 
@@ -325,18 +349,28 @@ public class RepositoriesDialog
         {
             public void widgetSelected(SelectionEvent arg0)
             {
-                RepositoryMeta ri = input.searchRepository(wRepository.getText());
-                if (ri != null)
-                {
-                    RepositoryDialog dd = new RepositoryDialog(shell, SWT.NONE, log, props, ri, input, steploader);
-                    if (dd.open() != null)
-                    {
-                        fillRepositories();
-                        int idx = input.indexOfRepository(ri);
-                        wRepository.select(idx);
-                    }
-                }
-            }
+            	try {
+            		int index = wRepository.getSelectionIndex();
+            		if (index>=0) {
+            			String name = wRepository.getItem(index);
+		                RepositoryMeta ri = input.searchRepository(name);
+		                if (ri != null)
+		                {
+		                	RepositoryPluginMeta pluginMeta = RepositoryLoader.getInstance().findPluginMeta(ri.getId());
+		            		RepositoryDialogInterface dd = getRepositoryDialog(pluginMeta, ri, input);
+		                    if (dd.open() != null)
+		                    {
+		                        fillRepositories();
+		                        int idx = input.indexOfRepository(ri);
+		                        wRepository.select(idx);
+		                    }
+		                }
+            		}
+            	}
+	        	catch(Exception e) {
+	    			new ErrorDialog(shell, "Error", "Error editing repository", e);
+	    		}
+    	    }
         });
 
         // Delete connection
@@ -344,13 +378,17 @@ public class RepositoriesDialog
         {
             public void widgetSelected(SelectionEvent arg0)
             {
-                RepositoryMeta ri = input.searchRepository(wRepository.getText());
-                if (ri != null)
-                {
-                    int idx = input.indexOfRepository(ri);
-                    input.removeRepository(idx);
-                    fillRepositories();
-                }
+        		int index = wRepository.getSelectionIndex();
+        		if (index>=0) {
+        			String name = wRepository.getItem(index);
+	                RepositoryMeta ri = input.searchRepository(name);
+	                if (ri != null)
+	                {
+	                    int idx = input.indexOfRepository(ri);
+	                    input.removeRepository(idx);
+	                    fillRepositories();
+	                }
+        		}
             }
         });
 
@@ -362,6 +400,16 @@ public class RepositoriesDialog
                 e.doit = false;
             }
         });
+        
+        wRepository.addSelectionListener(new SelectionAdapter() {
+        	public void widgetSelected(SelectionEvent event) {
+        		// Someone clicked on a repository name. 
+        		// Show the selected details to the right...
+        		//
+        		showSelectedRepository();
+        		wUsername.setFocus();
+        	}
+		});
 
         // Add listeners
         lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
@@ -399,22 +447,26 @@ public class RepositoriesDialog
         wRepository.addKeyListener(lsRepo);
         wUsername.getTextWidget().addKeyListener(lsJmp);
         wPassword.getTextWidget().addSelectionListener(lsDef);
+        wRepository.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); }});
 
         getData();
 
         shell.layout();
+        shell.pack();
 
-        BaseStepDialog.setMinimalShellHeight(shell, new Control[] { wCanvas, wlKettle, wRepository, wUsername, wPassword, wOK }, margin, 3 * margin);
+        /*
+        BaseStepDialog.setMinimalShellHeight(shell, new Control[] { wlKettle, imageLabel, weRepository, wRepository, wUsername, wPassword, wOK }, margin, 3 * margin);
         Rectangle dialogBounds = shell.getBounds();
 
         if (!Const.isOSX())
         {
-        	shell.setSize(bounds.width + 18, dialogBounds.height+40);
+        	shell.setSize(dialogBounds.width + 18, dialogBounds.height+40);
         }
         else
         {
-        	shell.setSize(bounds.width + 20, dialogBounds.height+50);
+        	shell.setSize(dialogBounds.width + 20, dialogBounds.height+50);
         }
+        */
         
         shell.setTabList(new Control[] { wUsername, wPassword, wOK, wCancel, wNorep, wRepository, });
 
@@ -431,7 +483,36 @@ public class RepositoriesDialog
         return repinfo != null;
     }
 
-    public void dispose()
+    protected void showSelectedRepository() {
+
+		wRepName.setText("");
+		wRepDesc.setText("");
+		wRepTypeName.setText("");
+
+		String[] selection = wRepository.getSelection();
+		if (!Const.isEmpty(selection) && selection.length==1) {
+			String name = selection[0];
+			RepositoryMeta meta = input.findRepository(name);
+			if (meta!=null) {
+				RepositoryPluginMeta pluginMeta = RepositoryLoader.getInstance().findPluginMeta(meta.getId());
+				wRepName.setText(name);
+				wRepDesc.setText(Const.NVL(meta.getDescription(), ""));
+				wRepTypeName.setText(pluginMeta.getName());
+				
+				RepositoryCapabilities capabilities = meta.getRepositoryCapabilities();
+				wUsername.setEnabled(capabilities.supportsUsers());
+				wPassword.setEnabled(capabilities.supportsUsers());
+			}
+		}
+	}
+
+	protected RepositoryDialogInterface getRepositoryDialog(RepositoryPluginMeta pluginMeta, RepositoryMeta repositoryMeta, RepositoriesMeta input2) throws Exception {
+		Class<?> dialogClass = Class.forName(pluginMeta.getDialogClassName(), false, ClassLoader.getSystemClassLoader());
+		Constructor<?> constructor = dialogClass.getConstructor(Shell.class, Integer.TYPE, RepositoryMeta.class, RepositoriesMeta.class);
+		return (RepositoryDialogInterface) constructor.newInstance(new Object[] { shell, Integer.valueOf(SWT.NONE), repositoryMeta, input, });
+	}
+
+	public void dispose()
     {
         props.setRepositoriesDialogAtStartupShown(wShow.getSelection());
         props.setScreen(new WindowProperty(shell));
@@ -474,6 +555,8 @@ public class RepositoriesDialog
         }
         
         wShow.setSelection(props.showRepositoriesDialogAtStartup());
+        
+        showSelectedRepository();
     }
 
     private void norep()
@@ -498,12 +581,13 @@ public class RepositoriesDialog
             if (idx >= 0)
             {
                 repinfo = input.getRepository(idx);
-
-                // OK, now try the username and password
-                Repository rep = new KettleDatabaseRepository(repinfo, userinfo);
-
+                Repository rep = null;
                 try
                 {
+                	// OK, now try the username and password
+                	//
+                	rep = RepositoryLoader.getInstance().createRepositoryObject(repinfo.getId());
+                	rep.init(repinfo, userinfo);
                     rep.connect(getClass().getName());
                 }
                 catch (KettleException ke)
@@ -548,8 +632,19 @@ public class RepositoriesDialog
             }
         }
 
-        input.writeData(); // Save changes to disk!
+        try {
+        	input.writeData(); // Save changes to disk!
+        } catch(Exception e) {
+        	new ErrorDialog(shell, "Error", "Unexpected error writing repository definitions to file", e);
+        }
+        
+        RepositoryCapabilities capabilities = repinfo.getRepositoryCapabilities();
 
+        if (!capabilities.supportsUsers()) {
+        	dispose(); // no users support : go right ahead
+        	return;
+        }
+        
         if (userinfo == null)
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
@@ -559,8 +654,8 @@ public class RepositoriesDialog
         }
         else
         {
-            // Check the permissions of the user
             boolean ok = true;
+            // Check the permissions of the user
             String mess = "";
             for (int i = 0; i < toolsPermissions.length; i++)
             {
@@ -619,7 +714,7 @@ public class RepositoriesDialog
         }
     }
 
-    public RepositoryMeta getRepository()
+    public RepositoryMeta getRepositoryMeta()
     {
         return repinfo;
     }

@@ -3,23 +3,18 @@ package org.pentaho.di.resource;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.job.JobEntryLoader;
-import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.trans.StepLoader;
-
 import junit.framework.TestCase;
+
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.job.JobMeta;
 
 public class ResourceExportTest extends TestCase {
 
 	public void testJobExport() throws Exception {
-        EnvUtil.environmentInit();
+	    KettleEnvironment.init();
         LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
-        
-        StepLoader.init();
-        JobEntryLoader.init();
-        
+                
         // Load the job metadata
         //
         String filename = "test/org/pentaho/di/resource/top-job.kjb";

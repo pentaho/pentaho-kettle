@@ -34,6 +34,7 @@ public class RepositoryObject
     private Date   modifiedDate;
     private String objectType; 
     private String description;
+    private String lockMessage;
     
     public RepositoryObject()
     {
@@ -44,7 +45,7 @@ public class RepositoryObject
      * @param modifiedUser
      * @param modifiedDate
      */
-    public RepositoryObject(String name, String modifiedUser, Date modifiedDate, String objectType, String description)
+    public RepositoryObject(String name, String modifiedUser, Date modifiedDate, String objectType, String description, String lockMessage)
     {
         this();
         this.name = name;
@@ -52,6 +53,7 @@ public class RepositoryObject
         this.modifiedDate = modifiedDate;
         this.objectType = objectType;
         this.description = description;
+        this.lockMessage = lockMessage;
     }
 
     /**
@@ -174,5 +176,19 @@ public class RepositoryObject
     {
         this.description = description;
     }
+
+	/**
+	 * @return the lockMessage
+	 */
+	public String getLockMessage() {
+		return lockMessage;
+	}
+
+	/**
+	 * @param lockMessage the lockMessage to set
+	 */
+	public void setLockMessage(String lockMessage) {
+		this.lockMessage = lockMessage;
+	}
     
 }

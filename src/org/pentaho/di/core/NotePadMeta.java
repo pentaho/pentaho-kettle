@@ -17,6 +17,7 @@ import org.pentaho.di.core.gui.GUISizeInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 /**
@@ -68,7 +69,7 @@ public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterfac
 	
 	private boolean changed;
 	
-	private long id;
+	private ObjectId id;
 
 	public NotePadMeta()
 	{
@@ -160,12 +161,12 @@ public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterfac
 		}
 	}
 
-	public long getID()
+	public ObjectId getObjectId()
 	{
 		return id;
 	}
 	
-	public void setID(long id)
+	public void setObjectId(ObjectId id)
 	{
 		this.id = id;
 	}
@@ -535,6 +536,7 @@ public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterfac
     {
         this.fontsize = fontsize;
     }
+    
 	private void setDefaultFont()
 	{
 		this.fontname=null;

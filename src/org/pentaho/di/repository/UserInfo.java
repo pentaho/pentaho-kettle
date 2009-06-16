@@ -14,18 +14,19 @@ package org.pentaho.di.repository;
 
 
 
+
 /*
  * Created on 7-apr-2004
  *
  */
 
-public class UserInfo implements RepositoryElementInterface
+public class UserInfo
 {
 //	private static Class<?> PKG = UserInfo.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	public static final String REPOSITORY_ELEMENT_TYPE = "user";
 
-	private long id;
+	private ObjectId id;
 	
 	private String login;       // Login ID
 	private String password;    // Password
@@ -124,20 +125,20 @@ public class UserInfo implements RepositoryElementInterface
 	{
 		return profile;
 	}
-		
-	public long getID()
+
+	public ObjectId getObjectId()
 	{
 		return id;
 	}
 	
-	public void setID(long id)
+	public void setObjectId(ObjectId id)
 	{
 		this.id = id;
 	}
 	
 	// Helper functions...
 	
-	public boolean isReadonly()
+	public boolean isReadOnly()
 	{
 		if (profile==null) return true;
 		return profile.isReadonly();
@@ -165,6 +166,19 @@ public class UserInfo implements RepositoryElementInterface
 	{
 		if (profile==null) return false;
 		return profile.useSchemas();
+	}
+	
+	public boolean useDatabases()
+	{
+		if (profile==null) return false;
+		return profile.useDatabases();
+	}
+
+	
+	public boolean exploreDatabases()
+	{
+		if (profile==null) return false;
+		return profile.exploreDatabases();
 	}
 
 	/**

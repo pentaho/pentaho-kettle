@@ -51,6 +51,7 @@ import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
@@ -425,13 +426,13 @@ public class JobDialog extends Dialog
 			{
 				RepositoryDirectory directoryFrom = jobMeta.getRepositoryDirectory();
 				if (directoryFrom==null) directoryFrom = new RepositoryDirectory();
-				long idDirectoryFrom  = directoryFrom.getID();
+				ObjectId idDirectoryFrom  = directoryFrom.getObjectId();
 				
 				SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
 				RepositoryDirectory rd = sdd.open();
 				if (rd!=null)
 				{
-					if (idDirectoryFrom!=rd.getID())
+					if (idDirectoryFrom!=rd.getObjectId())
 					{
                         // We need to change this in the repository as well!!
                         // We do this when the user pressed OK
@@ -953,12 +954,11 @@ public class JobDialog extends Dialog
 	        if (directoryChangeAllowed) 
 	        {
 				RepositoryDirectory dirFrom = jobMeta.getRepositoryDirectory();
-			    long idDirFrom = dirFrom==null?-1L:dirFrom.getID();
 	
 			    try
 				{
-				    
-					rep.moveJob(jobMeta.getName(), idDirFrom, newDirectory.getID() );
+					ObjectId newId = rep.renameJob(jobMeta.getObjectId(), newDirectory, jobMeta.getName() );
+					jobMeta.setObjectId(newId);
 					log.logDetailed(getClass().getName(), "Moved directory to ["+newDirectory.getPath()+"]");
 					jobMeta.setRepositoryDirectory( newDirectory );
 					wDirectory.setText(jobMeta.getRepositoryDirectory().getPath());

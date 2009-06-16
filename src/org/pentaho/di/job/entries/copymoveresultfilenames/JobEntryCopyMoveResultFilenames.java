@@ -48,6 +48,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
@@ -196,7 +197,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		}
 	}
 
-	  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	  {
 	    try
 	    {
@@ -229,29 +230,29 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "foldername", foldername);
-			rep.saveJobEntryAttribute(id_job, getID(), "specify_wildcard", specifywildcard);
-			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
-			rep.saveJobEntryAttribute(id_job, getID(), "wildcardexclude", wildcardexclude);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "foldername", foldername);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "specify_wildcard", specifywildcard);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard", wildcard);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcardexclude", wildcardexclude);
 
-			rep.saveJobEntryAttribute(id_job, getID(), "destination_folder", destination_folder);
-			rep.saveJobEntryAttribute(id_job, getID(), "nr_errors_less_than",      nr_errors_less_than);
-			rep.saveJobEntryAttribute(id_job, getID(), "success_condition",      success_condition);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_date", add_date);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_time", add_time);
-			rep.saveJobEntryAttribute(id_job, getID(), "SpecifyFormat", SpecifyFormat);
-			rep.saveJobEntryAttribute(id_job, getID(), "date_time_format",      date_time_format);
-			rep.saveJobEntryAttribute(id_job, getID(), "AddDateBeforeExtension", AddDateBeforeExtension);
-			rep.saveJobEntryAttribute(id_job, getID(), "action", action);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "destination_folder", destination_folder);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "nr_errors_less_than",      nr_errors_less_than);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "success_condition",      success_condition);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_date", add_date);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_time", add_time);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "SpecifyFormat", SpecifyFormat);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "date_time_format",      date_time_format);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "AddDateBeforeExtension", AddDateBeforeExtension);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "action", action);
 		
-			rep.saveJobEntryAttribute(id_job, getID(), "OverwriteFile", OverwriteFile);
-			rep.saveJobEntryAttribute(id_job, getID(), "CreateDestinationFolder", CreateDestinationFolder);
-			rep.saveJobEntryAttribute(id_job, getID(), "RemovedSourceFilename", RemovedSourceFilename);
-			rep.saveJobEntryAttribute(id_job, getID(), "AddDestinationFilename", AddDestinationFilename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "OverwriteFile", OverwriteFile);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "CreateDestinationFolder", CreateDestinationFolder);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "RemovedSourceFilename", RemovedSourceFilename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "AddDestinationFilename", AddDestinationFilename);
 			
 				
 	

@@ -235,7 +235,7 @@ public class Trans implements VariableSpace, NamedParams
 		{
 			if (rep!=null)
 			{
-				RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(dirname);
+				RepositoryDirectory repdir = rep.loadRepositoryDirectoryTree().findDirectory(dirname);
 				if (repdir!=null)
 				{
 					this.transMeta = rep.loadTransformation(name, repdir, null, false);

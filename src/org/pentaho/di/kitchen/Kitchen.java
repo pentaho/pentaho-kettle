@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.JndiUtil;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
@@ -31,21 +31,18 @@ import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.pan.CommandLineOption;
-import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.version.BuildVersion;
 
 public class Kitchen
@@ -56,8 +53,7 @@ public class Kitchen
 	
 	public static void main(String[] a) throws KettleException
 	{
-		EnvUtil.environmentInit();
-		JndiUtil.initJNDI();
+		KettleEnvironment.init();
 		
 	    List<String> args = new ArrayList<String>();
 	    for (int i=0;i<a.length;i++)
@@ -151,31 +147,6 @@ public class Kitchen
         }
 
 		log.logMinimal(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.Starting"));
-		
-		
-		/* Load the plugins etc.*/
-		try {
-			StepLoader.init();
-		}
-		catch(KettleException e)
-		{
-			log.logError(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Error.LoadingSteps"), e);
-			
-			exitJVM(8);
-		}
-		StepLoader stepLoader = StepLoader.getInstance();
-        
-        /* Load the plugins etc.*/
-		try 
-		{
-			JobEntryLoader.init();
-		}
-		catch(KettleException e)
-        {
-            log.logError(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Error.LoadingJobEntries"), e);
-            
-            return;
-        }
 
 		Date start, stop;
 		Calendar cal;
@@ -201,99 +172,91 @@ public class Kitchen
 				{
 					if(log.isDebug()) log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.LoadingRep"));
 					
-					RepositoriesMeta repsinfo = new RepositoriesMeta(log);
-					if (repsinfo.readData())
+					RepositoriesMeta repsinfo = new RepositoriesMeta();
+					try {
+						repsinfo.readData();
+					} catch(Exception e) {
+						throw new KettleException(BaseMessages.getString(PKG, "Kitchen.Error.NoRepDefinied"), e);
+					}
+
+					if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.FindingRep",""+optionRepname));
+					repinfo = repsinfo.findRepository(optionRepname.toString());
+					if (repinfo!=null)
 					{
-						if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.FindingRep",""+optionRepname));
-						repinfo = repsinfo.findRepository(optionRepname.toString());
-						if (repinfo!=null)
+						// Define and connect to the repository...
+						if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.Alocate&ConnectRep"));
+						 
+						repository = RepositoryLoader.createRepository(repinfo, userinfo);
+						repository.connect("Kitchen commandline");
+
+						RepositoryDirectory directory = repository.loadRepositoryDirectoryTree(); // Default = root
+						
+						// Find the directory name if one is specified...
+						if (!Const.isEmpty(optionDirname))
 						{
-							// Define and connect to the repository...
-							if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.Alocate&ConnectRep"));
-							 
-							repository = new KettleDatabaseRepository(repinfo, userinfo);
-							if (repository.connect("Kitchen commandline"))
+							directory = directory.findDirectory(optionDirname.toString());
+						}
+						
+						if (directory!=null)
+						{
+							// Check username, password
+							if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.CheckUserPass"));
+							
+							userinfo = repository.loadUserInfo(optionUsername.toString(), optionPassword.toString());
+							if (userinfo.getObjectId()!=null)
 							{
-								RepositoryDirectory directory = repository.getDirectoryTree(); // Default = root
-								
-								// Find the directory name if one is specified...
-								if (!Const.isEmpty(optionDirname))
+							    // Load a job
+								if (!Const.isEmpty(optionJobname))
 								{
-									directory = repository.getDirectoryTree().findDirectory(optionDirname.toString());
-								}
-								
-								if (directory!=null)
-								{
-									// Check username, password
-									if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.CheckUserPass"));
+									if(log.isDebug())log.logDebug(STRING_KITCHEN,BaseMessages.getString(PKG, "Kitchen.Log.LoadingJobInfo"));
 									
-									userinfo = repository.loadUserInfo(optionUsername.toString(), optionPassword.toString());
-									if (userinfo.getID()>0)
+									jobMeta =  repository.loadJob(optionJobname.toString(), directory, null);
+									if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.AllocateJob"));
+									
+									job = new Job(log, repository, jobMeta);
+								}
+								else
+								// List the jobs in the repository
+								if ("Y".equalsIgnoreCase(optionListjobs.toString()))
+								{
+									if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.GettingLostJobsInDirectory",""+directory));
+									
+									String jobnames[] = repository.getJobNames(directory.getObjectId());
+									for (int i=0;i<jobnames.length;i++)
 									{
-									    // Load a job
-										if (!Const.isEmpty(optionJobname))
-										{
-											if(log.isDebug())log.logDebug(STRING_KITCHEN,BaseMessages.getString(PKG, "Kitchen.Log.LoadingJobInfo"));
-											
-											jobMeta =  repository.loadJobMeta(optionJobname.toString(), directory, null);
-											if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.AllocateJob"));
-											
-											job = new Job(log, stepLoader, repository, jobMeta);
-										}
-										else
-										// List the jobs in the repository
-										if ("Y".equalsIgnoreCase(optionListjobs.toString()))
-										{
-											if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.GettingLostJobsInDirectory",""+directory));
-											
-											String jobnames[] = repository.getJobNames(directory.getID());
-											for (int i=0;i<jobnames.length;i++)
-											{
-												System.out.println(jobnames[i]);
-											}
-										}
-										else
-										// List the directories in the repository
-										if ("Y".equalsIgnoreCase(optionListdir.toString()))
-										{
-											String dirnames[] = repository.getDirectoryNames(directory.getID());
-											for (int i=0;i<dirnames.length;i++)
-											{
-												System.out.println(dirnames[i]);
-											}
-										}
-									}
-									else
-									{
-										System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.CanNotVerifyUserPass"));
-										
-										userinfo=null;
-										repinfo=null;
+										System.out.println(jobnames[i]);
 									}
 								}
 								else
+								// List the directories in the repository
+								if ("Y".equalsIgnoreCase(optionListdir.toString()))
 								{
-									System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.CanNotFindSuppliedDirectory",optionDirname+""));
-									
-									userinfo=null;
-									repinfo=null;
+									String dirnames[] = repository.getDirectoryNames(directory.getObjectId());
+									for (int i=0;i<dirnames.length;i++)
+									{
+										System.out.println(dirnames[i]);
+									}
 								}
 							}
 							else
 							{
-								System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.CanNotConnectRep"));
+								System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.CanNotVerifyUserPass"));
 								
+								userinfo=null;
+								repinfo=null;
 							}
 						}
 						else
 						{
-							System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.NoRepProvided"));
+							System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.CanNotFindSuppliedDirectory",optionDirname+""));
 							
+							userinfo=null;
+							repinfo=null;
 						}
 					}
 					else
 					{
-						System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.NoRepDefinied"));
+						System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.NoRepProvided"));
 						
 					}
 				}
@@ -302,27 +265,21 @@ public class Kitchen
 				if (!Const.isEmpty(optionFilename) && job==null)
 				{
 					jobMeta = new JobMeta(optionFilename.toString(), null, null);
-					job = new Job(log, stepLoader, null, jobMeta);
+					job = new Job(log, null, jobMeta);
 				}
 			}
 			else
 			if ("Y".equalsIgnoreCase(optionListrep.toString()))
 			{
-				RepositoriesMeta ri = new RepositoriesMeta(log);
-				if (ri.readData())
+				RepositoriesMeta ri = new RepositoriesMeta();
+				ri.readData();
+
+				System.out.println(BaseMessages.getString(PKG, "Kitchen.Log.ListRep"));
+				
+				for (int i=0;i<ri.nrRepositories();i++)
 				{
-					System.out.println(BaseMessages.getString(PKG, "Kitchen.Log.ListRep"));
-					
-					for (int i=0;i<ri.nrRepositories();i++)
-					{
-						RepositoryMeta rinfo = ri.getRepository(i);
-						System.out.println("#"+(i+1)+" : "+rinfo.getName()+" ["+rinfo.getDescription()+"] ");
-					}
-				}
-				else
-				{
-					System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.UnableToReadXMLFile"));
-					
+					RepositoryMeta rinfo = ri.getRepository(i);
+					System.out.println("#"+(i+1)+" : "+rinfo.getName()+" ["+rinfo.getDescription()+"]  id="+rinfo.getId());
 				}
 			}
 		}

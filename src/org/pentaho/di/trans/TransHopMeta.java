@@ -17,6 +17,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Node;
 
@@ -44,7 +45,7 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 
 	private boolean changed;
 
-	private long id;
+	private ObjectId id;
 
 	public TransHopMeta(StepMeta from, StepMeta to, boolean en)
 	{
@@ -140,12 +141,12 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 		return toString().compareTo(obj.toString());
 	}
 
-	public long getID()
+	public ObjectId getObjectId()
 	{
 		return id;
 	}
 
-	public void setID(long id)
+	public void setObjectId(ObjectId id)
 	{
 		this.id = id;
 	}

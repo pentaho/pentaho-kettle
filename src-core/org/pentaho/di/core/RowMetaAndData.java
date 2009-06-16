@@ -21,6 +21,8 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.repository.LongObjectId;
+import org.pentaho.di.repository.ObjectId;
 
 public class RowMetaAndData implements Cloneable
 {
@@ -126,6 +128,9 @@ public class RowMetaAndData implements Cloneable
 
     public void addValue(ValueMeta valueMeta, Object valueData)
     {
+    	if (valueMeta.isInteger() && (valueData instanceof ObjectId)) {
+    		valueData = new LongObjectId((ObjectId)valueData).longValue();
+    	}
         data = RowDataUtil.addValueData(data, rowMeta.size(), valueData);
         rowMeta.addValueMeta(valueMeta);
     }

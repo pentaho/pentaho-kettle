@@ -3,12 +3,12 @@ package org.pentaho.di.run;
 import java.text.DecimalFormat;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -76,7 +76,7 @@ public class TimedTransRunner
     {
     	System.gc();
     	
-        if (StepLoader.getInstance().getPluginList().size()==0) StepLoader.init();
+        KettleEnvironment.init();
 
         transMeta = new TransMeta(filename);
         transMeta.setVariable("NR_OF_ROWS", Long.toString(records));

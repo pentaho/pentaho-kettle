@@ -53,6 +53,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -172,7 +173,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     }
   }
 
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
   {
     try
     {
@@ -204,27 +205,27 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     }
   }
 
-  public void saveRep(Repository rep, long id_job) throws KettleException
+  public void saveRep(Repository rep, ObjectId id_job) throws KettleException
   {
     try
     {
-      rep.saveJobEntryAttribute(id_job, getID(), "url", url);
-      rep.saveJobEntryAttribute(id_job, getID(), "targetfilename", targetFilename);
-      rep.saveJobEntryAttribute(id_job, getID(), "file_appended", fileAppended);
-      rep.saveJobEntryAttribute(id_job, getID(), "date_time_added", dateTimeAdded);
-      rep.saveJobEntryAttribute(id_job, getID(), "targetfilename_extention", targetFilenameExtention);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "url", url);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "targetfilename", targetFilename);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "file_appended", fileAppended);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "date_time_added", dateTimeAdded);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "targetfilename_extention", targetFilenameExtention);
 
-      rep.saveJobEntryAttribute(id_job, getID(), "uploadfilename", uploadFilename);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "uploadfilename", uploadFilename);
 
-      rep.saveJobEntryAttribute(id_job, getID(), "url_fieldname", urlFieldname);
-      rep.saveJobEntryAttribute(id_job, getID(), "run_every_row", runForEveryRow);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "url_fieldname", urlFieldname);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "run_every_row", runForEveryRow);
 
-      rep.saveJobEntryAttribute(id_job, getID(), "username", username);
-      rep.saveJobEntryAttribute(id_job, getID(), "password", Encr.encryptPasswordIfNotUsingVariables(password));
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "username", username);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables(password));
 
-      rep.saveJobEntryAttribute(id_job, getID(), "proxy_host", proxyHostname);
-      rep.saveJobEntryAttribute(id_job, getID(), "proxy_port", proxyPort);
-      rep.saveJobEntryAttribute(id_job, getID(), "non_proxy_hosts", nonProxyHosts);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHostname);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "non_proxy_hosts", nonProxyHosts);
     } 
     catch (KettleDatabaseException dbe)
     {

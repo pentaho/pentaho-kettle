@@ -34,6 +34,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -107,24 +108,19 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
 			tablename  = rep.getJobEntryAttributeString(id_jobentry, "tablename");
 			schemaname  = rep.getJobEntryAttributeString(id_jobentry, "schemaname");
 			
-			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
-			if (id_db>0)
-			{
-				connection = DatabaseMeta.findDatabase(databases, id_db);
-			}
-			else
+			connection = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "id_database");
+			if (connection==null)
 			{
 				// This is were we end up in normally, the previous lines are for backward compatibility.
 				connection = DatabaseMeta.findDatabase(databases, rep.getJobEntryAttributeString(id_jobentry, "connection"));
 			}
-
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -132,18 +128,18 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "tablename", tablename);
-			rep.saveJobEntryAttribute(id_job, getID(), "schemaname", schemaname);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "tablename", tablename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "schemaname", schemaname);
 			
 			if (connection!=null) 
 			{
-				rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
+				rep.saveJobEntryAttribute(id_job, getObjectId(), "connection", connection.getName());
 				// Also, save the joebntry-database relationship!
-				rep.insertJobEntryDatabase(id_job, getID(), connection.getID());
+				rep.insertJobEntryDatabase(id_job, getObjectId(), connection.getObjectId());
 			}
 		}
 		catch(KettleDatabaseException dbe)

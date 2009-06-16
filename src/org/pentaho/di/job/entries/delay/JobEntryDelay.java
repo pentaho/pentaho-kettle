@@ -33,6 +33,7 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
@@ -93,7 +94,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     }
   }
 
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
   {
     try
     {
@@ -109,12 +110,12 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
   //
   // Save the attributes of this job entry
   //
-  public void saveRep(Repository rep, long id_job) throws KettleException
+  public void saveRep(Repository rep, ObjectId id_job) throws KettleException
   {
     try
     {
-      rep.saveJobEntryAttribute(id_job, getID(), "maximumTimeout", maximumTimeout); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getID(), "scaletime", scaleTime); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "maximumTimeout", maximumTimeout); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "scaletime", scaleTime); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe)
     {
       throw new KettleException(BaseMessages.getString(PKG, "JobEntryDelay.UnableToSaveToRepo.Label") + id_job, dbe); //$NON-NLS-1$

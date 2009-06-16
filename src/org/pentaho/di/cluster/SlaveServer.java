@@ -49,9 +49,13 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
+import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryRevision;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.www.AddExportServlet;
 import org.pentaho.di.www.AllocateServerSocketServlet;
@@ -74,7 +78,7 @@ import org.w3c.dom.Node;
 
 public class SlaveServer 
 	extends ChangedFlag 
-	implements Cloneable, SharedObjectInterface, VariableSpace, RepositoryElementInterface
+	implements Cloneable, SharedObjectInterface, VariableSpace, RepositoryElementInterface, XMLInterface
 {
 	private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -97,14 +101,16 @@ public class SlaveServer
     private boolean master;
     
     private boolean shared;
-    private long id;
+    private ObjectId id;
     
     private VariableSpace variables = new Variables();
+
+	private RepositoryRevision	revision;
     
     public SlaveServer()
     {
     	initializeVariablesFrom(null);
-        id=-1L;
+        id=null;
     }
     
     public SlaveServer(String name, String hostname, String port, String username, String password)
@@ -886,11 +892,11 @@ public class SlaveServer
 		variables.injectVariables(prop);		
 	}
 
-	public long getID() {
+	public ObjectId getObjectId() {
 		return id;
 	}
 	
-	public void setID(long id) {
+	public void setObjectId(ObjectId id) {
 		this.id = id;
 	}
 
@@ -907,5 +913,24 @@ public class SlaveServer
 	
 	public String getRepositoryElementType() {
 		return REPOSITORY_ELEMENT_TYPE;
+	}
+	
+	/**
+	 * @return the revision
+	 */
+	public RepositoryRevision getRevision() {
+		return revision;
+	}
+
+	/**
+	 * @param revision the revision to set
+	 */
+	public void setRevision(RepositoryRevision revision) {
+		this.revision = revision;
+	}
+	
+	// slave servers can't be locked
+	public RepositoryLock getRepositoryLock() {
+		return null;
 	}
 }

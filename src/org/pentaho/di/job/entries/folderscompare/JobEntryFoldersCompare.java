@@ -54,6 +54,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 
@@ -151,7 +152,7 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
@@ -170,18 +171,18 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", includesubfolders);
-			rep.saveJobEntryAttribute(id_job, getID(), "compare_filecontent", comparefilecontent);
-			rep.saveJobEntryAttribute(id_job, getID(), "compare_filesize", comparefilesize);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "include_subfolders", includesubfolders);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "compare_filecontent", comparefilecontent);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "compare_filesize", comparefilesize);
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "compareonly", compareonly);
-			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
-			rep.saveJobEntryAttribute(id_job, getID(), "filename1", filename1);
-			rep.saveJobEntryAttribute(id_job, getID(), "filename2", filename2);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "compareonly", compareonly);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard", wildcard);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename1", filename1);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename2", filename2);
 		}
 		catch(KettleDatabaseException dbe)
 		{

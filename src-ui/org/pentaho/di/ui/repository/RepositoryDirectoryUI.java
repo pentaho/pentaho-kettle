@@ -65,7 +65,7 @@ public class RepositoryDirectoryUI {
 			// Then show the transformations & jobs in that directory...
             if (getTransformations)
             {
-                List<RepositoryObject> repositoryTransformations = rep.getTransformationObjects(dir.getID());
+                List<RepositoryObject> repositoryTransformations = rep.getTransformationObjects(dir.getObjectId());
                 if (repositoryTransformations!=null)
                 {
                     repositoryObjects.addAll(repositoryTransformations);
@@ -73,7 +73,7 @@ public class RepositoryDirectoryUI {
             }
             if (getJobs)
             {
-                List<RepositoryObject> repositoryJobs = rep.getJobObjects(dir.getID());
+                List<RepositoryObject> repositoryJobs = rep.getJobObjects(dir.getObjectId());
                 if (repositoryJobs!=null)
                 {
                     repositoryObjects.addAll(repositoryJobs);
@@ -148,6 +148,7 @@ public class RepositoryDirectoryUI {
 	                tiObject.setText(2, Const.NVL(repositoryObject.getModifiedUser(), ""));
 	                tiObject.setText(3, repositoryObject.getModifiedDate()!=null ? simpleDateFormat.format(repositoryObject.getModifiedDate()) : "");
 	                tiObject.setText(4, Const.NVL(repositoryObject.getDescription(), ""));
+	                tiObject.setText(5, Const.NVL(repositoryObject.getLockMessage(), ""));
                 }
             }
 

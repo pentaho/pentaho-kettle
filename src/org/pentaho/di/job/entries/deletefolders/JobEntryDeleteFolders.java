@@ -43,6 +43,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -140,7 +141,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     }
   }
 
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     try {
       argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous"); //$NON-NLS-1$
       limit_folders  = rep.getJobEntryAttributeString(id_jobentry, "limit_folders");
@@ -159,16 +160,16 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     }
   }
 
-  public void saveRep(Repository rep, long id_job) throws KettleException {
+  public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
     try {
-      rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious); //$NON-NLS-1$
-	  rep.saveJobEntryAttribute(id_job, getID(), "limit_folders",      limit_folders);
-	  rep.saveJobEntryAttribute(id_job, getID(), "success_condition",      success_condition);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "arg_from_previous", argFromPrevious); //$NON-NLS-1$
+	  rep.saveJobEntryAttribute(id_job, getObjectId(), "limit_folders",      limit_folders);
+	  rep.saveJobEntryAttribute(id_job, getObjectId(), "success_condition",      success_condition);
 
       // save the arguments...
       if (arguments != null) {
         for (int i = 0; i < arguments.length; i++) {
-          rep.saveJobEntryAttribute(id_job, getID(), i, "name", arguments[i]); //$NON-NLS-1$
+          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "name", arguments[i]); //$NON-NLS-1$
         }
       }
     } catch (KettleDatabaseException dbe) {

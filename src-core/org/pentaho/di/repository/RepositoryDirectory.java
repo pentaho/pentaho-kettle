@@ -37,11 +37,11 @@ public class RepositoryDirectory
 	
 	private String directoryname;
 	
-	private long id;
+	private ObjectId id;
     
 	/**
-	 * Create a new subdirectory in a certain other directory.
-	 * @param parent The directory to create the subdirectory in
+	 * Create a new sub-directory in a certain other directory.
+	 * @param parent The directory to create the sub-directory in
 	 * @param directoryname The name of the new directory.
 	 */
 	public RepositoryDirectory(RepositoryDirectory parent, String directoryname)
@@ -49,7 +49,7 @@ public class RepositoryDirectory
 		this.parent        = parent;
 		this.directoryname = directoryname;
 		this.children      = new ArrayList<RepositoryDirectory>(); // default: no subdirectories...
-		this.id            = 0L;              // The root directory!
+		this.id            = null;              // The root directory!
 	}
 	
 	/**
@@ -67,14 +67,13 @@ public class RepositoryDirectory
 		this.parent        = null;
 		this.directoryname = null;
 		this.children      = new ArrayList<RepositoryDirectory>(); // default: no subdirectories...
-		this.id            = 0L;              // The root directory!
 	}
 	
 	/**
 	 * Get the database ID in the repository for this object.
 	 * @return the database ID in the repository for this object.
 	 */
-	public long getID()
+	public ObjectId getObjectId()
 	{
 		return id;
 	}
@@ -83,7 +82,7 @@ public class RepositoryDirectory
 	 * Set the database ID for this object in the repository.
 	 * @param id the database ID for this object in the repository.
 	 */
-	public void setID(long id)
+	public void setObjectId(ObjectId id)
 	{
 		this.id = id;
 	}
@@ -326,9 +325,11 @@ public class RepositoryDirectory
 	 * @param id_directory the directory ID to look for.
 	 * @return The RepositoryDirectory if the ID was found, null if nothing could be found.
 	 */
-	public RepositoryDirectory findDirectory(long id_directory)
+	public RepositoryDirectory findDirectory(ObjectId id_directory)
 	{
-		if (getID()==id_directory) return this;
+		if (getObjectId()!=null && getObjectId().equals(id_directory)) {
+			return this;
+		}
 		
 		for (int i=0;i<getNrSubdirectories();i++)
 		{
@@ -418,14 +419,12 @@ public class RepositoryDirectory
 	 * Get all the directory-id in this directory and the subdirectories.
 	 * @return an array of all the directory id's (this directory & subdirectories) 
 	 */
-	public long[] getDirectoryIDs()
+	public ObjectId[] getDirectoryIDs()
 	{
-		List<Long> ids = new ArrayList<Long>();
+		List<ObjectId> ids = new ArrayList<ObjectId>();
 		getDirectoryIDs(ids);
-		long retval[] = new long[ids.size()];
-		for (int i=0;i<retval.length;i++) retval[i] = ((Long)ids.get(i)).longValue();
 		
-		return retval;
+		return ids.toArray(new ObjectId[ids.size()]);
 	}
 	
 	/**
@@ -433,12 +432,15 @@ public class RepositoryDirectory
 	 *  
 	 * @param ids The arraylist that will contain the directory IDs.
 	 */
-	private void getDirectoryIDs(List<Long> ids)
+	private void getDirectoryIDs(List<ObjectId> ids)
 	{
-		Long lid = new Long(getID());
-		ids.add(lid);
+		if (getObjectId()!=null) {
+			ids.add(getObjectId());
+		}
 		
-		for (int i=0;i<getNrSubdirectories();i++) getSubdirectory(i).getDirectoryIDs(ids);
+		for (int i=0;i<getNrSubdirectories();i++) {
+			getSubdirectory(i).getDirectoryIDs(ids);
+		}
 	}
 	
 	/**

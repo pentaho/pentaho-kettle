@@ -57,6 +57,7 @@ import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -170,7 +171,7 @@ public class ClassicDatabaseDialog extends Dialog
 
     private int            margin;
 
-    private long           database_id;
+    private ObjectId       database_id;
 
     // Advanced
     private Label          wlQuoteAllFields;
@@ -197,7 +198,7 @@ public class ClassicDatabaseDialog extends Dialog
         this.props = PropsUI.getInstance();
         this.databases = null;
         this.extraOptions = databaseMeta.getExtraOptions();
-        this.database_id = databaseMeta.getID();
+        this.database_id = databaseMeta.getObjectId();
     }
 
     public String open()
@@ -1879,7 +1880,7 @@ public class ClassicDatabaseDialog extends Dialog
         {
             getInfo(databaseMeta);
             databaseName = databaseMeta.getName();
-            databaseMeta.setID(database_id);
+            databaseMeta.setObjectId(database_id);
             dispose();
         }
         catch (KettleException e)

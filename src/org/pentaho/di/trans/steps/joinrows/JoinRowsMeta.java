@@ -30,6 +30,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -242,7 +243,7 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();	
 	}
 
-	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
+	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
 	{
 		try
 		{
@@ -252,13 +253,8 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 	
 			mainStepname     =  rep.getStepAttributeString (id_step, "main"); //$NON-NLS-1$
 
-			long id_condition = rep.getStepAttributeInteger(id_step, 0, "id_condition"); //$NON-NLS-1$
-			if (id_condition>0)
-			{
-				condition = rep.loadCondition(id_condition);
-			}
-			else
-			{
+			condition = rep.loadConditionFromStepAttribute(id_step, "id_condition");
+			if (condition==null) {
 				condition = new Condition();
 			}
 		}
@@ -268,7 +264,7 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
 	{
 		try
 		{
@@ -281,8 +277,8 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 			if (condition!=null) 
 			{
 				rep.saveCondition(condition);
-				rep.saveStepAttribute(id_transformation, id_step, "id_condition",  condition.getID()); //$NON-NLS-1$
-                rep.insertTransStepCondition(id_transformation, id_step, condition.getID());
+				rep.saveConditionStepAttribute(id_transformation, id_step, "id_condition", condition);
+                rep.insertTransStepCondition(id_transformation, id_step, condition.getObjectId());
 			}
 		}
 		catch(Exception e)

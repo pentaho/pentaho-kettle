@@ -91,6 +91,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.JndiUtil;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ObjectUsageCount;
@@ -123,7 +124,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.undo.TransAction;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -142,14 +142,18 @@ import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.pkg.JarfileGenerator;
-import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.PermissionMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryLoader;
+import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.UserInfo;
+import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
@@ -183,6 +187,7 @@ import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.EnterOptionsDialog;
 import org.pentaho.di.ui.core.dialog.EnterSearchDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.EnterStringsDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -296,6 +301,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public PropsUI							props;
 
 	public Repository						rep;
+	public RepositoryCapabilities           capabilities;
 
 	/**
 	 * This contains a map with all the unnamed transformation (just a filename)
@@ -373,8 +379,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 */
 	public static void main(String[] a) throws KettleException {
 		try {
-			// Do some initialization of environment variables
-			EnvUtil.environmentInit();
+			// Bootstrap Kettle
+			//
+		    KettleEnvironment.init();
 
 			List<String> args = new ArrayList<String>(java.util.Arrays.asList(a));
 
@@ -385,9 +392,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			CommandLineOption[] commandLineOptions = getCommandLineArgs(args);
 
 			initLogging(commandLineOptions);
-			initPlugins();
 
 			PropsUI.init(display, Props.TYPE_PROPERTIES_SPOON); // things to //
+
 			// remember...
 
 			staticSpoon = new Spoon(display);
@@ -425,22 +432,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		// Kill all remaining things in this VM!
 		System.exit(0);
-	}
-
-	private static void initPlugins() throws KettleException {
-		/* Load the plugins etc. */
-		try {
-			StepLoader.init();
-		} catch (KettleException e) {
-			throw new KettleException(BaseMessages.getString(PKG, "Spoon.Log.ErrorLoadingAndHaltSystem"), e);
-		}
-
-		/* Load the plugins etc. we need to load jobentry */
-		try {
-			JobEntryLoader.init();
-		} catch (KettleException e) {
-			throw new KettleException("Error loading job entries & plugins... halting Spoon!", e);
-		}
 	}
 
 	private static void initLogging(CommandLineOption[] options) throws KettleException {
@@ -1267,8 +1258,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				// Close the previous connection...
 				if (rep != null)
 					rep.disconnect();
-				rep = new KettleDatabaseRepository(rd.getRepository(), rd.getUser());
 				try {
+					rep = RepositoryLoader.createRepository(rd.getRepositoryMeta(), rd.getUser());
 					rep.connect(APP_NAME);
 				} catch (KettleException ke) {
 					rep = null;
@@ -2003,6 +1994,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	public void editConnection() {
+		
+		if(RepositorySecurity.verifyOperations(rep, RepositoryOperation.MODIFY_DATABASE)) return;
+		
 		final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
 		delegates.db.editConnection(databaseMeta);
 	}
@@ -2019,6 +2013,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	public void delConnection() {
+		
+		if(RepositorySecurity.verifyOperations(rep, RepositoryOperation.DELETE_DATABASE)) return;
+
 		final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
 		final HasDatabasesInterface hasDatabasesInterface = (HasDatabasesInterface) selectionObjectParent;
 		delegates.db.delConnection(hasDatabasesInterface, databaseMeta);
@@ -2040,6 +2037,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	public void exploreDatabase() {
+		
+		if (RepositorySecurity.verifyOperations(rep, RepositoryOperation.EXPLORE_DATABASE)) {
+			return;
+		}
+
 		// Show a minimal window to allow you to quickly select the database connection to explore
 		//
 		List<DatabaseMeta> databases = new ArrayList<DatabaseMeta>();
@@ -2762,9 +2764,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				rep.disconnect();
 			}
 
-			rep = new KettleDatabaseRepository(rd.getRepository(), rd.getUser());
+			RepositoryDirectory directoryTree = null;
+
 			try {
+				rep = RepositoryLoader.createRepository(rd.getRepositoryMeta(), rd.getUser());
+				capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
 				rep.connect(APP_NAME);
+				directoryTree = rep.loadRepositoryDirectoryTree();
 			} catch (KettleException ke) {
 				rep = null;
 				new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Message", Const.CR), ke); //$NON-NLS-1$ //$NON-NLS-2$
@@ -2775,11 +2781,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				TransMeta transMeta = transMetas[t];
 
 				for (int i = 0; i < transMeta.nrDatabases(); i++) {
-					transMeta.getDatabase(i).setID(-1L);
+					transMeta.getDatabase(i).setObjectId(null);
 				}
 
 				// Set for the existing transformation the ID at -1!
-				transMeta.setID(-1L);
+				transMeta.setObjectId(null);
 
 				// Keep track of the old databases for now.
 				List<DatabaseMeta> oldDatabases = transMeta.getDatabases();
@@ -2831,13 +2837,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 				// For the existing transformation, change the directory too:
 				// Try to find the same directory in the new repository...
-				RepositoryDirectory redi = rep.getDirectoryTree().findDirectory(transMeta.getRepositoryDirectory().getPath());
+				RepositoryDirectory redi = directoryTree.findDirectory(transMeta.getRepositoryDirectory().getPath());
 				if (redi != null) {
 					transMeta.setRepositoryDirectory(redi);
 				} else {
-					transMeta.setRepositoryDirectory(rep.getDirectoryTree()); // the root
-					// is the
-					// default!
+					transMeta.setRepositoryDirectory(directoryTree); // the root is the default!
 				}
 			}
 
@@ -2912,7 +2916,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			UserInfo userinfo = rep.getUserInfo();
 			UserDialog ud = new UserDialog(shell, SWT.NONE, rep, userinfo);
 			UserInfo ui = ud.open();
-			if (!userinfo.isReadonly()) {
+			if (!RepositorySecurity.isReadOnly(rep)) {
 				if (ui != null) {
 					try {
 						rep.saveUserInfo(ui);
@@ -3438,6 +3442,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	public boolean saveToRepository(EngineMetaInterface meta, boolean ask_name) throws KettleException {
+
+		// Verify repository security first...
+		//
+		if (meta.getFileType().equals(LastUsedFile.FILE_TYPE_TRANSFORMATION)) {
+			if (RepositorySecurity.verifyOperations(rep, RepositoryOperation.MODIFY_TRANSFORMATION)) {
+				return false;
+			}
+		}
+		if (meta.getFileType().equals(LastUsedFile.FILE_TYPE_JOB)) {
+			if (RepositorySecurity.verifyOperations(rep, RepositoryOperation.MODIFY_JOB)) {
+				return false;
+			}
+		}
+		
+		
 		if (log.isDetailed())
 			log.logDetailed(toString(), BaseMessages.getString(PKG, "Spoon.Log.SaveToRepository"));// "Save to repository..."
 		if (rep != null) {
@@ -3460,65 +3479,55 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			}
 
 			if (answer && !Const.isEmpty(meta.getName())) {
-				if (!rep.getUserInfo().isReadonly()) {
-					int response = SWT.YES;
-					if (rep.exists(meta)) {
-						MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-						mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptOverwriteTransformation.Message", meta.getName(), Const.CR));// "There already is a transformation called ["+transMeta.getName()+"] in the repository."+Const.CR+"Do you want to overwrite the transformation?"
-						mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.PromptOverwriteTransformation.Title"));// "Overwrite?"
-						response = mb.open();
-					}
 
-					boolean saved = false;
-					if (response == SWT.YES) {
-						shell.setCursor(cursor_hourglass);
-
-						// Keep info on who & when this transformation was
-						// created...
-						if (meta.getCreatedUser() == null || meta.getCreatedUser().equals("-")) {
-							meta.setCreatedDate(new Date());
-							meta.setCreatedUser(rep.getUserInfo().getLogin());
-						} else {
-
-							meta.setCreatedDate(meta.getCreatedDate());
-							meta.setCreatedUser(meta.getCreatedUser());
-						}
-
-						// Keep info on who & when this transformation was
-						// changed...
-						meta.setModifiedDate(new Date());
-						meta.setModifiedUser(rep.getUserInfo().getLogin());
-
-						SaveProgressDialog tspd = new SaveProgressDialog(shell, rep, meta);
-						if (tspd.open()) {
-							saved = true;
-							if (!props.getSaveConfirmation()) {
-								MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG, "Spoon.Message.Warning.SaveOK"), // "Save OK!"
-										null, BaseMessages.getString(PKG, "Spoon.Message.Warning.TransformationWasStored"),// "This transformation was stored in repository"
-										MessageDialog.QUESTION, new String[] { BaseMessages.getString(PKG, "Spoon.Message.Warning.OK") },// "OK!"
-										0, BaseMessages.getString(PKG, "Spoon.Message.Warning.NotShowThisMessage"),// "Don't show this message again."
-										props.getSaveConfirmation());
-								MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-								md.open();
-								props.setSaveConfirmation(md.getToggleState());
-							}
-
-							// Handle last opened files...
-							props.addLastFile(meta.getFileType(), meta.getName(), meta.getRepositoryDirectory().getPath(), true, getRepositoryName());
-							saveSettings();
-							addMenuLast();
-
-							setShellText();
-						}
-						shell.setCursor(null);
-					}
-					return saved;
-				} else {
-					MessageBox mb = new MessageBox(shell, SWT.CLOSE | SWT.ICON_ERROR);
-					mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.OnlyreadRepository.Message"));// "Sorry, the user you're logged on with, can only read from the repository"
-					mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.OnlyreadRepository.Title"));// "Transformation not saved!"
-					mb.open();
+				int response = SWT.YES;
+				if (rep.exists(meta)) {
+					MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
+					mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptOverwriteTransformation.Message", meta.getName(), Const.CR));// "There already is a transformation called ["+transMeta.getName()+"] in the repository."+Const.CR+"Do you want to overwrite the transformation?"
+					mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.PromptOverwriteTransformation.Title"));// "Overwrite?"
+					response = mb.open();
 				}
+
+				boolean saved = false;
+				if (response == SWT.YES) {
+					shell.setCursor(cursor_hourglass);
+
+					// Keep info on who & when this transformation was
+					// created and or modified...
+					if (meta.getCreatedDate() == null) {
+						meta.setCreatedDate(new Date());
+						if (RepositorySecurity.supportsUsers(rep)) meta.setCreatedUser(rep.getUserInfo().getLogin());
+					}
+
+					// Keep info on who & when this transformation was
+					// changed...
+					meta.setModifiedDate(new Date());
+					if (RepositorySecurity.supportsUsers(rep)) meta.setModifiedUser(rep.getUserInfo().getLogin());
+
+					SaveProgressDialog tspd = new SaveProgressDialog(shell, rep, meta);
+					if (tspd.open()) {
+						saved = true;
+						if (!props.getSaveConfirmation()) {
+							MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG, "Spoon.Message.Warning.SaveOK"), // "Save OK!"
+									null, BaseMessages.getString(PKG, "Spoon.Message.Warning.TransformationWasStored"),// "This transformation was stored in repository"
+									MessageDialog.QUESTION, new String[] { BaseMessages.getString(PKG, "Spoon.Message.Warning.OK") },// "OK!"
+									0, BaseMessages.getString(PKG, "Spoon.Message.Warning.NotShowThisMessage"),// "Don't show this message again."
+									props.getSaveConfirmation());
+							MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
+							md.open();
+							props.setSaveConfirmation(md.getToggleState());
+						}
+
+						// Handle last opened files...
+						props.addLastFile(meta.getFileType(), meta.getName(), meta.getRepositoryDirectory().getPath(), true, getRepositoryName());
+						saveSettings();
+						addMenuLast();
+
+						setShellText();
+					}
+					shell.setCursor(null);
+				}
+				return saved;
 			}
 		} else {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
@@ -3551,7 +3560,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			}
 
 			if (answer && jobMeta.getName() != null && jobMeta.getName().length() > 0) {
-				if (!rep.getUserInfo().isReadonly()) {
+				if (!RepositorySecurity.isReadOnly(rep)) {
 					boolean saved = false;
 					int response = SWT.YES;
 					if (rep.exists(jobMeta)) {
@@ -3636,7 +3645,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			log.logBasic(toString(), BaseMessages.getString(PKG, "Spoon.Log.SaveAs"));// "Save as..."
 
 		if (rep != null) {
-			meta.setID(-1L);
+			meta.setObjectId(null);
 			saved = saveToRepository(meta, true);
 
 		} else {
@@ -3670,6 +3679,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		//
 		try {
 			String zipFilename = null;
+			String baseFileName = null;
 			while (Const.isEmpty(zipFilename)) {
 				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 				dialog.setText(BaseMessages.getString(PKG, "Spoon.ExportResourceSelectZipFile"));
@@ -3679,6 +3689,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				if (dialog.open()!=null)
 				{
 					lastDirOpened = dialog.getFilterPath();
+					baseFileName = dialog.getFileName();
 					zipFilename = dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName();
 					FileObject zipFileObject = KettleVFS.getFileObject(zipFilename);
 					if (zipFileObject.exists()) {
@@ -3698,7 +3709,26 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			//
 			TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface(zipFilename, resourceExportInterface, (VariableSpace)resourceExportInterface, rep);
 			String message = ResourceUtil.getExplanation(zipFilename, topLevelResource.getResourceName(), resourceExportInterface);
-							
+			
+			// Add the ZIP file as a repository to the repository list...
+			//
+			RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
+			repositoriesMeta.readData();
+			
+			KettleFileRepositoryMeta fileRepositoryMeta = new KettleFileRepositoryMeta(KettleFileRepositoryMeta.REPOSITORY_TYPE_ID, "Export "+baseFileName, "Export to file : "+zipFilename, "zip://"+zipFilename+"!");
+			fileRepositoryMeta.setReadOnly(true); // A ZIP file is read-only
+			int nr=2;
+			String baseName = fileRepositoryMeta.getName();
+			while (repositoriesMeta.findRepository(fileRepositoryMeta.getName())!=null) {
+				fileRepositoryMeta.setName(baseName+" "+nr);
+				nr++;
+			}
+			
+			repositoriesMeta.addRepository(fileRepositoryMeta);
+			repositoriesMeta.writeData();
+				
+			// Show some information concerning all this work...
+			//
 			EnterTextDialog enterTextDialog = new EnterTextDialog(shell, "Resource serialized", "This resource was serialized succesfully!", message);
 			enterTextDialog.setReadOnly();
 			enterTextDialog.open();
@@ -4655,6 +4685,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 			disablePreviewButton = transGraph.isRunning() && !transGraph.isHalting();
 		}
+		
+		EngineMetaInterface activeMeta = getActiveMeta();
 
 		design.setEnabled(enableTransMenu || enableJobMenu);
 
@@ -4706,7 +4738,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		menuBar.setEnableById("repository-disconnect", enableRepositoryMenu);
 		menuBar.setEnableById("repository-explore", enableRepositoryMenu);
 		menuBar.setEnableById("repository-edit-user", enableRepositoryMenu);
-
+		
+		// See if the file is locked or not.
+		//
+		boolean fileHasLock = rep!=null && activeMeta!=null && activeMeta.getRepositoryLock()!=null;
+		String lockLogin = fileHasLock ? activeMeta.getRepositoryLock().getLogin() : "";
+		boolean sameUser = fileHasLock && rep.getUserInfo().getLogin().equals( lockLogin );
+		boolean isAdmin = rep!=null && rep.getUserInfo().isAdministrator();
+		
+		menuBar.setEnableById("repository-lock-file", enableRepositoryMenu && activeMeta!=null && !fileHasLock);
+		menuBar.setEnableById("repository-unlock-file", enableRepositoryMenu && activeMeta!=null && fileHasLock && ( sameUser || isAdmin) );
+				
 		menuBar.setEnableById("trans-last-preview", enableLastPreviewMenu);
 
 		// What steps & plugins to show?
@@ -5359,37 +5401,31 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	// Added this method to avoid code pasting... SEMINOLE-69
 	private boolean openRepositoryDialog(RepositoriesDialog rd, RepositoryMeta repositoryMeta, UserInfo userinfo) {
 		if (rd.open()) {
-			repositoryMeta = rd.getRepository();
+			repositoryMeta = rd.getRepositoryMeta();
+			
 			userinfo = rd.getUser();
-			if (!userinfo.useTransformations()) {
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-				mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.RepositoryUserCannotWork.Message"));// "Sorry, this repository user can't work with transformations from the repository."
-				mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.RepositoryUserCannotWork.Title"));// "Error!"
-				mb.open();
-
-				userinfo = null;
-				repositoryMeta = null;
-
-				return false;
-			} else {
-				String repName = repositoryMeta.getName();
-				RepositoriesMeta repsinfo = new RepositoriesMeta(log);
-				if (repsinfo.readData()) {
-					repositoryMeta = repsinfo.findRepository(repName);
-					if (repositoryMeta != null) {
-						// Define and connect to the repository...
-						setRepository(new KettleDatabaseRepository(repositoryMeta, userinfo));
-						return true;
-					} else {
-						log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.NoRepositoryRrovided"));// "No repository provided, can't load transformation."
-					}
+			
+			String repName = repositoryMeta.getName();
+			RepositoriesMeta repsinfo = new RepositoriesMeta();
+			try {
+				repsinfo.readData();
+				repositoryMeta = repsinfo.findRepository(repName);
+				if (repositoryMeta != null) {
+					// Define and connect to the repository...
+					//
+					setRepository(RepositoryLoader.createRepository(repositoryMeta, userinfo));
+					return true;
 				} else {
-					log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.NoRepositoriesDefined"));// "No repositories defined on this system."
+					log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.NoRepositoryRrovided"));// "No repository provided, can't load transformation."
 				}
-
-				return false;
-
 			}
+			catch(Exception e) {
+				log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.NoRepositoriesDefined"));// "No repositories defined on this system."
+			}					
+
+			return false;
+
+			
 		} else {
 			// Exit point: user pressed CANCEL!
 			if (rd.isCancelled()) {
@@ -5417,12 +5453,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 			return openRepositoryDialog(rd, repositoryMeta, userinfo);
 		} else if (!Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename)) {
-			RepositoriesMeta repsinfo = new RepositoriesMeta(log);
-			if (repsinfo.readData()) {
+			RepositoriesMeta repsinfo = new RepositoriesMeta();
+			try {
+				repsinfo.readData();
 				repositoryMeta = repsinfo.findRepository(optionRepname.toString());
 				if (repositoryMeta != null) {
 					// Define and connect to the repository...
-					setRepository(new KettleDatabaseRepository(repositoryMeta, userinfo));
+					setRepository(RepositoryLoader.createRepository(repositoryMeta, userinfo));
 				} else {
 					String msg = BaseMessages.getString(PKG, "Spoon.Log.NoRepositoriesDefined");
 					log.logError(toString(), msg);// "No repositories defined on this system."
@@ -5434,6 +5471,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 					return openRepositoryDialog(rd, repositoryMeta, userinfo);
 				}
+			}
+			catch(Exception e) {
+				// Eat the exception but log it...
+				log.logError(toString(), "Error reading repositories xml file", e);
 			}
 		}
 		return true;
@@ -5454,57 +5495,55 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename)) {
 				if (!Const.isEmpty(optionRepname)) {
 					if (rep != null) {
-						if (rep.connect(BaseMessages.getString(PKG, "Spoon.Application.Name")))// "Spoon"
-						{
-							if (Const.isEmpty(optionDirname))
-								optionDirname = new StringBuffer(RepositoryDirectory.DIRECTORY_SEPARATOR);
+						rep.connect(BaseMessages.getString(PKG, "Spoon.Application.Name")); // "Spoon"
 
-							// Check username, password
-							rep.setUserInfo( rep.loadUserInfo(optionUsername.toString(), optionPassword.toString()) );
+						if (Const.isEmpty(optionDirname)) {
+							optionDirname = new StringBuffer(RepositoryDirectory.DIRECTORY_SEPARATOR);
+						}
 
-							if (rep.getUserInfo().getID() > 0) {
-								// Options /file, /job and /trans are mutually
-								// exclusive
-								int t = (Const.isEmpty(optionFilename) ? 0 : 1) + (Const.isEmpty(optionJobname) ? 0 : 1) + (Const.isEmpty(optionTransname) ? 0 : 1);
-								if (t > 1) {
-									log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.MutuallyExcusive")); // "More then one mutually exclusive options /file, /job and /trans are specified."
-								} else if (t == 1) {
-									if (!Const.isEmpty(optionFilename)) {
-										openFile(optionFilename.toString(), false);
+						// Check username, password
+						rep.setUserInfo( rep.loadUserInfo(optionUsername.toString(), optionPassword.toString()) );
+
+						if (rep.getUserInfo().getObjectId() != null) {
+							// Options /file, /job and /trans are mutually
+							// exclusive
+							int t = (Const.isEmpty(optionFilename) ? 0 : 1) + (Const.isEmpty(optionJobname) ? 0 : 1) + (Const.isEmpty(optionTransname) ? 0 : 1);
+							if (t > 1) {
+								log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.MutuallyExcusive")); // "More then one mutually exclusive options /file, /job and /trans are specified."
+							} else if (t == 1) {
+								if (!Const.isEmpty(optionFilename)) {
+									openFile(optionFilename.toString(), false);
+								} else {
+									// OK, if we have a specified job or
+									// transformation, try to load it...
+									// If not, keep the repository logged
+									// in.
+									RepositoryDirectory repdir = rep.loadRepositoryDirectoryTree().findDirectory(optionDirname.toString());
+									if (repdir == null) {
+										log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.UnableFindDirectory", optionDirname.toString())); // "Can't find directory ["+dirname+"] in the repository."
 									} else {
-										// OK, if we have a specified job or
-										// transformation, try to load it...
-										// If not, keep the repository logged
-										// in.
-										RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(optionDirname.toString());
-										if (repdir == null) {
-											log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.UnableFindDirectory", optionDirname.toString())); // "Can't find directory ["+dirname+"] in the repository."
+										if (!Const.isEmpty(optionTransname)) {
+											TransMeta transMeta = rep.loadTransformation(optionTransname.toString(), repdir, null, true);
+											transMeta.setFilename(optionRepname.toString());
+											transMeta.clearChanged();
+											transMeta.setInternalKettleVariables();
+											addTransGraph(transMeta);
 										} else {
-											if (!Const.isEmpty(optionTransname)) {
-												TransMeta transMeta = rep.loadTransformation(optionTransname.toString(), repdir, null, true);
-												transMeta.setFilename(optionRepname.toString());
-												transMeta.clearChanged();
-												transMeta.setInternalKettleVariables();
-												addTransGraph(transMeta);
-											} else {
-												// Try to load a specified job
-												// if any
-												JobMeta jobMeta = rep.loadJobMeta(optionJobname.toString(), repdir, null);
-												jobMeta.setFilename(optionRepname.toString());
-												jobMeta.clearChanged();
-												jobMeta.setInternalKettleVariables();
-												delegates.jobs.addJobGraph(jobMeta);
-											}
+											// Try to load a specified job
+											// if any
+											JobMeta jobMeta = rep.loadJob(optionJobname.toString(), repdir, null);
+											jobMeta.setFilename(optionRepname.toString());
+											jobMeta.clearChanged();
+											jobMeta.setInternalKettleVariables();
+											delegates.jobs.addJobGraph(jobMeta);
 										}
 									}
 								}
-							} else {
-								log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.UnableVerifyUser"));// "Can't verify username and password."
-								rep.disconnect();
-								rep = null;
 							}
 						} else {
-							log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.UnableConnectToRepository"));// "Can't connect to the repository."
+							log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.UnableVerifyUser"));// "Can't verify username and password."
+							rep.disconnect();
+							rep = null;
 						}
 					} else {
 						log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.NoRepositoriesDefined"));// "No repositories defined on this system."
@@ -5516,8 +5555,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			{
 				// Can we connect to the repository?
 				if (rep != null && rep.getUserInfo() != null) {
-					if (!rep.connect(BaseMessages.getString(PKG, "Spoon.Application.Name"))) // "Spoon"
-					{
+					try {
+						rep.connect(BaseMessages.getString(PKG, "Spoon.Application.Name")); // "Spoon"
+					} catch(Exception e) {
+						log.logError(toString(), "Unable to connect to repository ["+rep.getName()+"]", e);
 						setRepository(null);
 					}
 				}
@@ -5564,13 +5605,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			}
 			
 			
-			// TODO : Remove this dialog before GA
-			//
 			if (Const.VERSION.contains("M") || Const.VERSION.contains("RC")) {
-				MessageBox dialog = new MessageBox(shell, SWT.NONE);
+				MessageBox dialog = new MessageBox(shell, SWT.ICON_WARNING);
 				dialog.setText(BaseMessages.getString(PKG, "Spoon.Warning.DevelopmentRelease.Title"));
 				dialog.setMessage(BaseMessages.getString(PKG, "Spoon.Warning.DevelopmentRelease.Message", Const.CR, Const.VERSION));
-//				dialog.setTimeOut(10);
 				dialog.open();
 			}
 
@@ -5683,7 +5721,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			if (rep != null) // load from this repository...
 			{
 				if (rep.getName().equalsIgnoreCase(lastUsedFile.getRepositoryName())) {
-					RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(lastUsedFile.getDirectory());
+					RepositoryDirectory repdir = rep.loadRepositoryDirectoryTree().findDirectory(lastUsedFile.getDirectory());
 					if (repdir != null) {
 						// Are we loading a transformation or a job?
 						if (lastUsedFile.isTransformation()) {
@@ -5702,10 +5740,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						} else if (lastUsedFile.isJob()) {
 							JobLoadProgressDialog progressDialog = new JobLoadProgressDialog(shell, rep, lastUsedFile.getFilename(), repdir);
 							JobMeta jobMeta = progressDialog.open();
-							if (trackIt)
-								props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), repdir.getPath(), true, rep.getName());
-							jobMeta.clearChanged();
-							delegates.jobs.addJobGraph(jobMeta);
+							if (jobMeta!=null) {
+								if (trackIt)
+									props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), repdir.getPath(), true, rep.getName());
+								jobMeta.clearChanged();
+								delegates.jobs.addJobGraph(jobMeta);
+							}
 						}
 						refreshTree();
 					}
@@ -5976,9 +6016,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private void delPartitionSchema(TransMeta transMeta, PartitionSchema partitionSchema) {
 		try {
-			if (rep != null && partitionSchema.getID() > 0) {
+			if (rep != null && partitionSchema.getObjectId() != null) {
 				// remove the partition schema from the repository too...
-				rep.delPartitionSchema(partitionSchema.getID());
+				rep.delPartitionSchema(partitionSchema.getObjectId());
 			}
 
 			int idx = transMeta.getPartitionSchemas().indexOf(partitionSchema);
@@ -6013,9 +6053,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private void delClusterSchema(TransMeta transMeta, ClusterSchema clusterSchema) {
 		try {
-			if (rep != null && clusterSchema.getID() > 0) {
+			if (rep != null && clusterSchema.getObjectId() != null) {
 				// remove the partition schema from the repository too...
-				rep.delClusterSchema(clusterSchema.getID());
+				rep.delClusterSchema(clusterSchema.getObjectId());
 			}
 
 			int idx = transMeta.getClusterSchemas().indexOf(clusterSchema);
@@ -6491,6 +6531,68 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	    		  // ignore this
 	    	  }
 	      }
+	}
+	
+	public void lockRepositoryFile() {
+		try {
+			if (rep==null) return;
+			
+			TransMeta transMeta = getActiveTransformation();
+			if (transMeta!=null) {
+				if (transMeta.getObjectId()!=null) {
+					EnterStringDialog dialog = new EnterStringDialog(shell, "Transformation locked by "+rep.getUserInfo().getName(), "Lock message", "Enter lock message");
+					String message = dialog.open();
+					rep.lockTransformation(transMeta.getObjectId(), message);
+					transMeta.setRepositoryLock(new RepositoryLock(transMeta.getObjectId(), message, rep.getUserInfo().getLogin(), rep.getUserInfo().getName()));
+					enableMenus();
+					refreshGraph();
+				}
+			}
+			
+			JobMeta jobMeta = getActiveJob();
+			if (jobMeta!=null) {
+				if (jobMeta.getObjectId()!=null) {
+					EnterStringDialog dialog = new EnterStringDialog(shell, "Job locked by "+rep.getUserInfo().getName(), "Lock message", "Enter lock message");
+					String message = dialog.open();
+					rep.lockJob(jobMeta.getObjectId(), message);
+					jobMeta.setRepositoryLock(new RepositoryLock(jobMeta.getObjectId(), message, rep.getUserInfo().getLogin(), rep.getUserInfo().getName()));
+					enableMenus();
+					refreshGraph();
+				}
+			}
+		}
+		catch(Exception e){
+			new ErrorDialog(shell, "Error locking file", "There was an unexpected error locking a file", e);
+		}
+	}
+
+	public void unlockRepositoryFile() {
+		try {
+			if (rep==null) return;
+			
+			TransMeta transMeta = getActiveTransformation();
+			if (transMeta!=null) {
+				if (transMeta.getObjectId()!=null) {
+					rep.unlockTransformation(transMeta.getObjectId());
+					transMeta.setRepositoryLock(null);
+					enableMenus();
+					refreshGraph();
+				}
+			}
+			
+			JobMeta jobMeta = getActiveJob();
+			if (jobMeta!=null) {
+				if (jobMeta.getObjectId()!=null) {
+					rep.unlockJob(jobMeta.getObjectId());
+					jobMeta.setRepositoryLock(null);
+					enableMenus();
+					refreshGraph();
+				}
+			}
+		}
+		catch(Exception e){
+			new ErrorDialog(shell, "Error unlocking file", "There was an unexpected error unlocking a file", e);
+		}
 	}
 
 }

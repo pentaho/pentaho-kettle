@@ -20,6 +20,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 public class ModPartitioner extends BasePartitioner {
@@ -112,12 +113,12 @@ public class ModPartitioner extends BasePartitioner {
 	        fieldName = XMLHandler.getTagValue(partitioningMethodNode, "field_name");
 		}
 
-	    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
+	    public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
 	    {
 	        rep.saveStepAttribute(id_transformation, id_step, "PARTITIONING_FIELDNAME", fieldName);               // The fieldname to partition on 
 	    }
 
-	    public void loadRep(Repository rep, long id_step) throws KettleException
+	    public void loadRep(Repository rep, ObjectId id_step) throws KettleException
 	    {
 	        fieldName = rep.getStepAttributeString(id_step, "PARTITIONING_FIELDNAME");
 	    }

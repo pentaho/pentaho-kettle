@@ -49,7 +49,6 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.www.AddExportServlet;
 import org.pentaho.di.www.AddJobServlet;
@@ -143,17 +142,10 @@ public class Job extends Thread implements VariableSpace, NamedParams
         result = null;
 	}
 
-	public Job(LogWriter lw, StepLoader steploader, Repository rep, JobMeta ti)
-	{
-		this();
-        open(lw, steploader, rep, ti);
-        if (ti.getName()!=null) setName(ti.getName()+" ("+super.getName()+")");
-	}
-
 	public Job(LogWriter lw, Repository rep, JobMeta ti)
 	{
 		this();
-        open(lw, null, rep, ti);
+        open(lw, rep, ti);
         if (ti.getName()!=null) setName(ti.getName()+" ("+super.getName()+")");
 	}
 
@@ -163,13 +155,8 @@ public class Job extends Thread implements VariableSpace, NamedParams
     	jobListeners = new ArrayList<JobListener>();
     	this.log = LogWriter.getInstance();
     }
-
-    public void open(LogWriter lw, Repository rep, JobMeta ti)
-    {
-    	open(lw, null, rep, ti);
-    }
     
-    public void open(LogWriter lw, StepLoader steploader, Repository rep, JobMeta ti)
+    public void open(LogWriter lw, Repository rep, JobMeta ti)
     {
         this.log        = lw;
         this.rep        = rep;
@@ -187,7 +174,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		this.rep = rep;
 		if (rep!=null)
 		{
-			jobMeta = rep.loadJobMeta(jobname, rep.getDirectoryTree().findDirectory(dirname), null);
+			jobMeta = rep.loadJob(jobname, rep.loadRepositoryDirectoryTree().findDirectory(dirname), null);
 		}
 		else
 		{

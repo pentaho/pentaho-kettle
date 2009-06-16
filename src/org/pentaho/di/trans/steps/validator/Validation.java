@@ -9,6 +9,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Node;
 
@@ -177,7 +178,7 @@ public class Validation implements Cloneable {
 		}
 	}
 	
-	public Validation(Repository rep, long id_step, int i) throws KettleException {
+	public Validation(Repository rep, ObjectId id_step, int i) throws KettleException {
 		fieldName = rep.getStepAttributeString(id_step, i, "validator_field_name");
 		name = rep.getStepAttributeString(id_step, i, "validator_field_validation_name");
 		if (Const.isEmpty(name)) name = fieldName; // remain backward compatible
@@ -225,7 +226,7 @@ public class Validation implements Cloneable {
 		allowedValues = allowed.toArray(new String[allowed.size()]);
 	}
 
-	public void saveRep(Repository rep, long id_transformation, long id_step, int i) throws KettleException {
+	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step, int i) throws KettleException {
 		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_name", fieldName);
 		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_validation_name", name);
 

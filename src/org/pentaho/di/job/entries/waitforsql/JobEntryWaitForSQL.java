@@ -39,6 +39,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -241,16 +242,12 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
-			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
-			if (id_db>0)
-			{
-				connection = DatabaseMeta.findDatabase(databases, id_db);
-			}
-			else
+			connection = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "id_database");
+			if (connection==null)
 			{
 				// This is were we end up in normally, the previous lines are for backward compatibility.
 				connection = DatabaseMeta.findDatabase(databases, rep.getJobEntryAttributeString(id_jobentry, "connection"));
@@ -285,30 +282,30 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		return 0;
 	}
 
-	public void saveRep(Repository rep, long id_job)
+	public void saveRep(Repository rep, ObjectId id_job)
 		throws KettleException
 	{
 		try
 		{
 			if (connection!=null) 
 			{
-				rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
+				rep.saveJobEntryAttribute(id_job, getObjectId(), "connection", connection.getName());
 				// Also, save the jobentry-database relationship!
-				rep.insertJobEntryDatabase(id_job, getID(), connection.getID());
+				rep.insertJobEntryDatabase(id_job, getObjectId(), connection.getObjectId());
 			}
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "schemaname", schemaname);
-			rep.saveJobEntryAttribute(id_job, getID(), "tablename", tablename);
-			rep.saveJobEntryAttribute(id_job, getID(),"success_condition", getSuccessConditionCode(successCondition));
-			rep.saveJobEntryAttribute(id_job, getID(), "rows_count_value", rowsCountValue); 
-			rep.saveJobEntryAttribute(id_job, getID(), "custom_sql", customSQL);
-			rep.saveJobEntryAttribute(id_job, getID(), "is_custom_sql", iscustomSQL);
-			rep.saveJobEntryAttribute(id_job, getID(), "is_usevars", isUseVars);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_rows_result", isAddRowsResult);
-			rep.saveJobEntryAttribute(id_job, getID(), "maximum_timeout", maximumTimeout);
-			rep.saveJobEntryAttribute(id_job, getID(), "check_cycle_time", checkCycleTime);
-            rep.saveJobEntryAttribute(id_job, getID(), "success_on_timeout", successOnTimeout);
-            rep.saveJobEntryAttribute(id_job, getID(), "clear_result_rows", isClearResultList);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "schemaname", schemaname);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "tablename", tablename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(),"success_condition", getSuccessConditionCode(successCondition));
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "rows_count_value", rowsCountValue); 
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "custom_sql", customSQL);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "is_custom_sql", iscustomSQL);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "is_usevars", isUseVars);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_rows_result", isAddRowsResult);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "maximum_timeout", maximumTimeout);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "check_cycle_time", checkCycleTime);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "success_on_timeout", successOnTimeout);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "clear_result_rows", isClearResultList);
 					
 		}
 		catch(KettleDatabaseException dbe)

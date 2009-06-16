@@ -47,7 +47,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ProfileDialog extends Dialog 
 {
-	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = KettleDatabaseRepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private ProfileMeta profile;
 	

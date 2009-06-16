@@ -38,7 +38,7 @@ public class RepositoryExporter {
             
 	        if (monitor!=null) monitor.beginTask("Exporting the repository to XML...", 3);
 	        
-	        root = ((null == root) ? repository.getDirectoryTree() : root);
+	        root = ((null == root) ? repository.loadRepositoryDirectoryTree() : root);
 	        
 	        writer.write(XMLHandler.getXMLHeader()); 
 	        writer.write("<repository>"+Const.CR+Const.CR);
@@ -90,7 +90,7 @@ public class RepositoryExporter {
     {
     	try {
 	        // Loop over all the directory id's
-	        long dirids[] = dirTree.getDirectoryIDs();
+	        ObjectId dirids[] = dirTree.getDirectoryIDs();
 	        System.out.println("Going through "+dirids.length+" directories in directory ["+dirTree.getPath()+"]");
 	 
 	        if (monitor!=null) monitor.subTask("Exporting the jobs...");
@@ -104,7 +104,7 @@ public class RepositoryExporter {
 	            {
 	                try
 	                {
-	                    JobMeta ji = repository.loadJobMeta(jobs[i], repdir, null);
+	                    JobMeta ji = repository.loadJob(jobs[i], repdir, null);
 	                    System.out.println("Loading/Exporting job ["+repdir.getPath()+" : "+jobs[i]+"]");
 	                    if (monitor!=null) monitor.subTask("Exporting job ["+jobs[i]+"]");
 	                    
@@ -128,7 +128,7 @@ public class RepositoryExporter {
 	        if (monitor!=null) monitor.subTask("Exporting the transformations...");
 	
 	        // Loop over all the directory id's
-	        long dirids[] = dirTree.getDirectoryIDs();
+	        ObjectId dirids[] = dirTree.getDirectoryIDs();
 	        System.out.println("Going through "+dirids.length+" directories in directory ["+dirTree.getPath()+"]");
 	        
 	        for (int d=0;d<dirids.length && (monitor==null || (monitor!=null && !monitor.isCanceled()) );d++)

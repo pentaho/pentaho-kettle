@@ -25,7 +25,7 @@ public class PermissionMeta
 {
 	private static Class<?> PKG = PermissionMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private long id;
+	private ObjectId id;
 	private int  type;
 	
 	public static final int TYPE_PERMISSION_NONE             = 0;
@@ -34,6 +34,8 @@ public class PermissionMeta
 	public static final int TYPE_PERMISSION_TRANSFORMATION   = 3;
 	public static final int TYPE_PERMISSION_JOB              = 4;
 	public static final int TYPE_PERMISSION_SCHEMA           = 5;
+	public static final int TYPE_PERMISSION_DATABASE         = 6;
+	public static final int TYPE_PERMISSION_EXPLORE_DATABASE = 7;
 	
 	public static final String permissionTypeCode[] =
 		{
@@ -42,7 +44,9 @@ public class PermissionMeta
 			"ADMIN",
 			"TRANS",
 			"JOB",
-			"SCHEMA"
+			"SCHEMA",
+			"DB",
+			"EXPLORE_DB",
 		};
 
 	public static final String permissionTypeDesc[] =
@@ -105,12 +109,12 @@ public class PermissionMeta
 		return TYPE_PERMISSION_NONE;
 	}
 	
-	public long getID()
+	public ObjectId getObjectId()
 	{
 		return id;
 	}
 	
-	public void setID(long id)
+	public void setObjectId(ObjectId id)
 	{
 		this.id = id;
 	}
@@ -138,6 +142,16 @@ public class PermissionMeta
 	public boolean useSchemas()
 	{
 		return type == TYPE_PERMISSION_SCHEMA;
+	}
+
+	public boolean useDatabases() 
+	{
+		return type == TYPE_PERMISSION_DATABASE;
+	}
+
+	public boolean exploreDatabases() 
+	{
+		return type == TYPE_PERMISSION_EXPLORE_DATABASE;
 	}
 	
 	public String toString()

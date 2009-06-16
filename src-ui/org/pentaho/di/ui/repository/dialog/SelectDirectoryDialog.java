@@ -33,7 +33,6 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -44,6 +43,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
+import org.pentaho.di.ui.spoon.RepositorySecurity;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
@@ -58,7 +58,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  */
 public class SelectDirectoryDialog extends Dialog
 {
-	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = KettleDatabaseRepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     private PropsUI props;
     private Repository rep;
@@ -72,15 +72,10 @@ public class SelectDirectoryDialog extends Dialog
     private RepositoryDirectory selection;
     private Color dircolor;
 
-    /**
-     * @deprecated Use CT without <i>log</i> and <i>props</i> parameters
-     */
-    public SelectDirectoryDialog(Shell parent, PropsUI props, int style, LogWriter log, Repository rep)
-    {
-        this(parent, style, rep);
-        this.props = props;
-    }
-    
+	private RepositoryDirectory	repositoryTree;
+
+	private boolean readOnly;
+;
     public SelectDirectoryDialog(Shell parent, int style, Repository rep)
     {
         super(parent, style);
@@ -88,6 +83,8 @@ public class SelectDirectoryDialog extends Dialog
         this.rep = rep;
 
         selection = null;
+        
+        readOnly = RepositorySecurity.isReadOnly(rep);
     }
 
     public RepositoryDirectory open()
@@ -112,7 +109,7 @@ public class SelectDirectoryDialog extends Dialog
 
         try
         {
-            rep.refreshRepositoryDirectoryTree();
+            repositoryTree = rep.loadRepositoryDirectoryTree();
         }
         catch (KettleException e)
         {
@@ -225,7 +222,7 @@ public class SelectDirectoryDialog extends Dialog
 
         tiTree = new TreeItem(wTree, SWT.NONE);
         tiTree.setImage(GUIResource.getInstance().getImageFolderConnections());
-        RepositoryDirectoryUI.getDirectoryTree(tiTree, dircolor, rep.getDirectoryTree());
+        RepositoryDirectoryUI.getDirectoryTree(tiTree, dircolor, repositoryTree);
         tiTree.setExpanded(true);
 
         return true;
@@ -249,14 +246,14 @@ public class SelectDirectoryDialog extends Dialog
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    if (!rep.getUserInfo().isReadonly())
+                    if (!readOnly)
                     {
                         TreeItem ti = wTree.getSelection()[0];
                         String str[] = ConstUI.getTreeStrings(ti);
                         //
                         // In which directory do we want create a subdirectory?
                         //
-                        RepositoryDirectory dir = rep.getDirectoryTree().findDirectory(str);
+                        RepositoryDirectory dir = repositoryTree.findDirectory(str);
                         if (dir != null)
                         {
                             //
@@ -330,7 +327,7 @@ public class SelectDirectoryDialog extends Dialog
         if (ti.length == 1)
         {
             String tree[] = ConstUI.getTreeStrings(ti[0]);
-            selection = rep.getDirectoryTree().findDirectory(tree);
+            selection = repositoryTree.findDirectory(tree);
             dispose();
         }
     }

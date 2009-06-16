@@ -332,6 +332,13 @@ public class RowMeta implements RowMetaInterface
         return getInteger(dataRow, index);
     }
 
+    public Date getDate(Object[] dataRow, String valueName, Date defaultValue) throws KettleValueException
+    {
+        int index = indexOfValue(valueName);
+        if (index<0) return defaultValue;
+        return getDate(dataRow, index);
+    }
+
     /**
      * Searches the index of a value meta with a given name
      * @param valueName the name of the value metadata to look for

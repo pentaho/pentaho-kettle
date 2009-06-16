@@ -33,6 +33,7 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
@@ -190,7 +191,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
 	}
 
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
     { 
 		try
 		{
@@ -213,21 +214,21 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "port",      port);
-			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
-			rep.saveJobEntryAttribute(id_job, getID(), "oid",      oid);
-			rep.saveJobEntryAttribute(id_job, getID(), "message",      message);
-			rep.saveJobEntryAttribute(id_job, getID(), "comstring",      comString);
-			rep.saveJobEntryAttribute(id_job, getID(), "timeout",         timeout);
-			rep.saveJobEntryAttribute(id_job, getID(), "nrretry",         nrretry);
-			rep.saveJobEntryAttribute(id_job, getID(), "targettype",         targettype);
-			rep.saveJobEntryAttribute(id_job, getID(), "user",         user);
-			rep.saveJobEntryAttribute(id_job, getID(), "passphrase",         passphrase);
-			rep.saveJobEntryAttribute(id_job, getID(), "engineid",         engineid);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "port",      port);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "servername",      serverName);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "oid",      oid);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "message",      message);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "comstring",      comString);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "timeout",         timeout);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "nrretry",         nrretry);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "targettype",         targettype);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "user",         user);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "passphrase",         passphrase);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "engineid",         engineid);
            
 		}
 		catch(KettleDatabaseException dbe)

@@ -1,0 +1,1024 @@
+package org.pentaho.di.repository.filerep;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileType;
+import org.pentaho.di.cluster.ClusterSchema;
+import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.Condition;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ProgressMonitorListener;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.row.ValueMetaAndData;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.PermissionMeta;
+import org.pentaho.di.repository.ProfileMeta;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryElementInterface;
+import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.StringObjectId;
+import org.pentaho.di.repository.UserInfo;
+import org.pentaho.di.shared.SharedObjects;
+import org.pentaho.di.trans.TransMeta;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+public class KettleFileRepository implements Repository {
+
+	private static final String	EXT_TRANSFORMATION		= ".ktr";
+	private static final String EXT_JOB					= ".kjb";
+	private static final String	EXT_DATABASE			= ".kdb";
+	private static final String	EXT_SLAVE_SERVER 		= ".ksl";
+	private static final String	EXT_CLUSTER_SCHEMA 		= ".kcs";
+	private static final String	EXT_PARTITION_SCHEMA	= ".kps";
+	
+	private static final String LOG_FILE = "repository.log";
+	
+	private KettleFileRepositoryMeta repositoryMeta;
+
+	public void connect(String locksource) throws KettleException {}
+
+	public void disconnect() {}
+
+	public void init(RepositoryMeta repositoryMeta, UserInfo userInfo) {
+		this.repositoryMeta = (KettleFileRepositoryMeta) repositoryMeta;
+	}
+
+	public boolean isConnected() {
+		return true;
+	}	
+	
+	private String calcDirectoryName(RepositoryDirectory dir) {
+		StringBuilder directory = new StringBuilder();
+		String baseDir = repositoryMeta.getBaseDirectory();
+		baseDir = Const.replace(baseDir, "\\", "/");
+		directory.append(baseDir);
+		if (!baseDir.endsWith("/")) {
+			directory.append("/");
+		}
+
+		if (dir!=null) {
+			String path = calcRelativeElementDirectory(dir);
+			directory.append(path);
+			if (!path.endsWith("/")) {
+				directory.append("/");
+			}
+		}
+		return directory.toString();
+	}
+	
+	private String calcRelativeElementDirectory(RepositoryDirectory dir) {
+		if (dir!=null) {
+			return dir.getPath();
+		} else {
+			return "/";
+		}
+	}
+	
+	public String calcObjectId(RepositoryDirectory dir) {
+		StringBuilder id = new StringBuilder();
+		
+		String path = calcRelativeElementDirectory(dir);
+		id.append(path);
+		if (!path.endsWith("/")) {
+			id.append("/");
+		}
+		
+		return id.toString();		
+	}
+		
+	public String calcObjectId(RepositoryDirectory directory, String name, String extension) {
+		StringBuilder id = new StringBuilder();
+		
+		String path = calcRelativeElementDirectory(directory);
+		id.append(path);
+		if (!path.endsWith("/")) {
+			id.append("/");
+		}
+		
+		id.append(name+extension);
+		
+		return id.toString();
+	}
+	
+	private String calcExtension(RepositoryElementInterface element) {
+		if (TransMeta.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
+			return EXT_TRANSFORMATION;
+		} else
+		if (JobMeta.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
+			return EXT_JOB;
+		} else
+		if (DatabaseMeta.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
+			return EXT_DATABASE;
+		} else
+		if (SlaveServer.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
+			return EXT_SLAVE_SERVER;
+		} else
+		if (ClusterSchema.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
+			return EXT_CLUSTER_SCHEMA;
+		} else
+		if (PartitionSchema.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
+			return EXT_PARTITION_SCHEMA;
+		} else {
+			return ".xml";
+		}
+	}
+
+	public String calcFilename(RepositoryElementInterface element) {
+		return calcFilename(element.getRepositoryDirectory(), element.getName(), calcExtension(element));
+	}
+	
+	public String calcFilename(RepositoryDirectory dir, String name, String extension) {
+		StringBuilder filename = new StringBuilder();
+		filename.append(calcDirectoryName(dir));
+		
+		String objectName = name+extension;
+		filename.append(objectName);
+		
+		return filename.toString();
+	}
+	
+	private FileObject getFileObject(RepositoryElementInterface element) throws IOException {
+		return KettleVFS.getFileObject(calcFilename(element));
+	}
+
+	public boolean exists(RepositoryElementInterface repositoryElement) throws KettleException {
+		try {
+			FileObject fileObject = getFileObject(repositoryElement);
+			return fileObject.exists();
+		} catch(Exception e) {
+			throw new KettleException(e);
+		}
+	}
+
+	// Common objects 
+	
+	public void save(RepositoryElementInterface repositoryElement) throws KettleException {
+		save(repositoryElement, null);
+	}
+
+	public void save(RepositoryElementInterface repositoryElement, ProgressMonitorListener monitor) throws KettleException {
+		save(repositoryElement, monitor, null, false);
+	}
+
+	public void save(RepositoryElementInterface repositoryElement, ProgressMonitorListener monitor, ObjectId parentId, boolean used) throws KettleException {
+		try {
+			if (!(repositoryElement instanceof XMLInterface)) {
+				throw new KettleException("Class ["+repositoryElement.getClass().getName()+"] needs to implement the XML Interface in order to save it to disk");
+			}
+			FileObject fileObject = getFileObject(repositoryElement);
+			
+			String xml = ((XMLInterface)repositoryElement).getXML();
+			
+			OutputStream os = KettleVFS.getOutputStream(fileObject, false);
+			os.write(xml.getBytes(Const.XML_ENCODING));
+			os.close();
+		} catch(Exception e) {
+			throw new KettleException("Unable to save repository element ["+repositoryElement+"] to XML file : "+calcFilename(repositoryElement), e);
+		}
+	}
+
+
+	
+	
+	public RepositoryDirectory createRepositoryDirectory(RepositoryDirectory parentDirectory, String directoryPath) throws KettleException {
+		
+		return null;
+	}
+
+	public void saveRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
+		try
+		{
+			String filename = calcDirectoryName(dir);
+			ObjectId objectId = new StringObjectId(calcRelativeElementDirectory(dir));
+			
+			FileObject fileObject = KettleVFS.getFileObject(filename);
+			fileObject.createFolder(); // also create parents
+			
+			dir.setObjectId(objectId);
+			
+            LogWriter.getInstance().logDetailed(getName(), "New id of directory = "+dir.getObjectId());
+		}
+		catch(Exception e)
+		{
+			throw new KettleException("Unable to save directory ["+dir+"] in the repository", e);
+		}
+	}
+
+	
+	
+	public void delAllFromJob(ObjectId id_job) throws KettleException {
+		// TODO
+
+	}
+
+	public void delAllFromTrans(ObjectId id_transformation) throws KettleException {
+		// TODO
+	
+	}
+
+	public void delClusterSchema(ObjectId id_cluster) throws KettleException {
+		// ID and filename are the same
+		deleteRootFile(id_cluster.getId());
+	}
+
+	public void delCondition(ObjectId id_condition) throws KettleException {
+		
+
+	}
+
+	public void delPartitionSchema(ObjectId id_partition_schema) throws KettleException {
+		// ID and filename are the same
+		deleteRootFile(id_partition_schema.getId());
+	}
+
+	public void delRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
+		
+
+	}
+
+	public void delSlave(ObjectId id_slave) throws KettleException {
+		// ID and filename are the same
+		deleteRootFile(id_slave.getId());
+	}
+	
+	public void deleteDatabaseMeta(String databaseName) throws KettleException {
+		deleteRootObject(databaseName, EXT_DATABASE);
+	}
+
+	public void deleteRootObject(String name, String extension) throws KettleException {
+		try {
+			String filename = calcDirectoryName(null)+name+extension;
+			FileObject fileObject = KettleVFS.getFileObject(filename);
+			fileObject.delete();
+		}
+		catch(Exception e) {
+			throw new KettleException("Unable to delete database with name ["+name+"] and extension ["+extension+"]", e);
+		}
+	}
+	
+	public void deleteRootFile(String filename) throws KettleException {
+		try {
+			FileObject fileObject = KettleVFS.getFileObject(filename);
+			fileObject.delete();
+		}
+		catch(Exception e) {
+			throw new KettleException("Unable to delete file with name ["+filename+"]", e);
+		}
+	}
+
+
+	public ObjectId findStepAttributeID(ObjectId id_step, int nr, String code) throws KettleException { return null; }
+
+	public ObjectId getClusterID(String name) throws KettleException {
+		// The ID is the filename relative to the base directory, including the file extension
+		//
+		return new StringObjectId( calcObjectId((RepositoryDirectory)null)+name+EXT_SLAVE_SERVER);
+	}
+
+	public ObjectId[] getClusterIDs() throws KettleException {
+		return getRootObjectIDs(EXT_CLUSTER_SCHEMA);
+	}
+
+	public String[] getClusterNames() throws KettleException {
+		return convertRootIDsToNames(getClusterIDs());
+	}
+
+	private String[] convertRootIDsToNames(ObjectId[] ids) {
+		String[] names = new String[ids.length];
+		for (int i=0;i<names.length;i++) {
+			String id = ids[i].getId(); 
+			names[i] = id.substring(0, id.length()-4); // get rid of the extension
+		}
+		return names;
+	}
+
+	public String[] getClustersUsingSlave(ObjectId id_slave) throws KettleException { return new String[] {}; }
+
+	public ObjectId[] getTransformationConditionIDs(ObjectId id_transformation) throws KettleException { return new ObjectId[] {}; }
+
+	public ObjectId[] getDatabaseAttributeIDs(ObjectId id_database) throws KettleException { return new ObjectId[] {}; }
+
+	private ObjectId getObjectId(RepositoryDirectory repositoryDirectory, String name, String extension) throws KettleException {
+		try {
+			String filename = calcFilename(repositoryDirectory, name, EXT_JOB);
+			if (!KettleVFS.getFileObject(filename).exists()) {
+				return null;
+			}
+			
+			// The ID is the filename relative to the base directory, including the file extension
+			//
+			return new StringObjectId( calcObjectId(repositoryDirectory, name, EXT_JOB) );
+		} catch (Exception e) {
+			throw new KettleException("Error finding ID for directory ["+repositoryDirectory+"] and name ["+name+"]", e);
+		}
+	}
+	
+	public ObjectId getDatabaseID(String name) throws KettleException {
+		return getObjectId(null, name, EXT_DATABASE);
+	}
+
+	public ObjectId[] getTransformationDatabaseIDs(ObjectId id_transformation) throws KettleException { return new ObjectId[] {}; }
+
+	public ObjectId[] getDatabaseIDs() throws KettleException {
+		return getRootObjectIDs(EXT_DATABASE);
+	}
+
+	public String[] getDatabaseNames() throws KettleException {
+		return convertRootIDsToNames(getDatabaseIDs());
+	}
+
+	public String[] getDirectoryNames(ObjectId id_directory) throws KettleException {
+		RepositoryDirectory tree = loadRepositoryDirectoryTree();
+		RepositoryDirectory directory = tree.findDirectory(id_directory);
+		String[] names = new String[directory.getNrSubdirectories()];
+		for (int i=0;i<names.length;i++) {
+			names[i] = directory.getSubdirectory(i).getDirectoryName();
+		}
+		return names;
+	}
+
+	public ObjectId getJobId(String name, RepositoryDirectory repositoryDirectory) throws KettleException {
+		return getObjectId(repositoryDirectory, name, EXT_JOB);
+	}
+
+	public String[] getJobNames(ObjectId id_directory) throws KettleException {
+		try {
+			List<String> list = new ArrayList<String>();
+			
+			RepositoryDirectory tree = loadRepositoryDirectoryTree();
+			RepositoryDirectory directory = tree.findDirectory(id_directory);
+			
+			String folderName = calcDirectoryName(directory);
+			FileObject folder = KettleVFS.getFileObject(folderName);
+			
+			for (FileObject child : folder.getChildren()) {
+				if (child.getType().equals(FileType.FILE)) {
+					String name = child.getName().getBaseName();
+					
+					if (name.endsWith(EXT_JOB)) {
+						
+						String jobName = name.substring(0, name.length()-4);
+						list.add( jobName );
+					}
+				}
+			}
+			
+			return list.toArray(new String[list.size()]);
+		}
+		catch(Exception e) {
+			throw new KettleException("Unable to get list of transformations names in folder with id : "+id_directory, e);
+		}
+	}
+
+	public ObjectId[] getJobNoteIDs(ObjectId id_job) throws KettleException { return new ObjectId[] {}; }
+	public String[] getJobsUsingDatabase(ObjectId id_database) throws KettleException { return new String[] {}; }
+
+	public int getMajorVersion() {
+		return 0;
+	}
+
+	public int getMinorVersion() {
+		return 0;
+	}
+
+	public String getName() {
+		
+		return repositoryMeta.getName();
+	}
+
+	public ObjectId getPartitionSchemaID(String name) throws KettleException {
+		// The ID is the filename relative to the base directory, including the file extension
+		//
+		return new StringObjectId( calcObjectId((RepositoryDirectory)null)+name+EXT_SLAVE_SERVER);
+	}
+
+	public ObjectId[] getPartitionSchemaIDs() throws KettleException {
+		return getRootObjectIDs(EXT_PARTITION_SCHEMA);
+	}
+
+	public String[] getPartitionSchemaNames() throws KettleException {
+		return convertRootIDsToNames(getPartitionSchemaIDs());
+	}
+
+	public ObjectId getRootDirectoryID() throws KettleException {
+		
+		return null;
+	}
+
+	public ObjectId getSlaveID(String name) throws KettleException {
+		// The ID is the filename relative to the base directory, including the file extension
+		//
+		return new StringObjectId( calcObjectId((RepositoryDirectory)null)+name+EXT_SLAVE_SERVER);
+	}
+
+	private ObjectId[] getRootObjectIDs(String extension) throws KettleException {
+		try {
+			// Get all the files in the root directory with a certain extension... 
+			//
+			List<ObjectId> list = new ArrayList<ObjectId>();
+					
+			String folderName = repositoryMeta.getBaseDirectory();
+			FileObject folder = KettleVFS.getFileObject(folderName);
+			
+			for (FileObject child : folder.getChildren()) {
+				if (child.getType().equals(FileType.FILE)) {
+					String name = child.getName().getBaseName();
+					
+					if (name.endsWith(extension)) {
+						list.add(new StringObjectId(name));
+					}
+				}
+			}
+			
+			return list.toArray(new ObjectId[list.size()]);
+		}
+		catch(Exception e) {
+			throw new KettleException("Unable to get root object ids for extension ["+extension+"]", e);
+		}
+	}
+
+	public ObjectId[] getSlaveIDs() throws KettleException {
+		return getRootObjectIDs(EXT_SLAVE_SERVER);
+	}
+
+	public ObjectId[] getClusterSlaveIDs(ObjectId id_cluster_schema) throws KettleException { return new ObjectId[] {}; }
+
+	public String[] getSlaveNames() throws KettleException {
+		return convertRootIDsToNames(getSlaveIDs());
+	}
+
+	public List<SlaveServer> getSlaveServers() throws KettleException {
+		List<SlaveServer> list = new ArrayList<SlaveServer>();
+		for (ObjectId id : getSlaveIDs()) {
+			list.add(loadSlaveServer(id));
+		}
+		return list;
+	}
+
+	public boolean getStepAttributeBoolean(ObjectId id_step, int nr, String code, boolean def) throws KettleException { return false; }
+	public boolean getStepAttributeBoolean(ObjectId id_step, int nr, String code) throws KettleException { return false; }
+	public boolean getStepAttributeBoolean(ObjectId id_step, String code) throws KettleException { return false; }
+	public long getStepAttributeInteger(ObjectId id_step, int nr, String code) throws KettleException { return 0; }
+	public long getStepAttributeInteger(ObjectId id_step, String code) throws KettleException { return 0; }
+	public String getStepAttributeString(ObjectId id_step, int nr, String code) throws KettleException { return null; }
+	public String getStepAttributeString(ObjectId id_step, String code) throws KettleException { return null; }
+	
+	public boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, String code) throws KettleException { return false; }
+	public boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, int nr, String code) throws KettleException { return false; }
+	public boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, String code, boolean def) throws KettleException { return false; }
+	public long getJobEntryAttributeInteger(ObjectId id_jobentry, String code) throws KettleException { return 0; }
+	public long getJobEntryAttributeInteger(ObjectId id_jobentry, int nr, String code) throws KettleException { return 0; }
+	public String getJobEntryAttributeString(ObjectId id_jobentry, String code) throws KettleException { return null; }
+	public String getJobEntryAttributeString(ObjectId id_jobentry, int nr, String code) throws KettleException { return null; }
+
+
+	public ObjectId[] getSubConditionIDs(ObjectId id_condition) throws KettleException {
+		
+		return null;
+	}
+
+	public ObjectId[] getSubDirectoryIDs(ObjectId id_directory) throws KettleException {
+		RepositoryDirectory tree = loadRepositoryDirectoryTree();
+		RepositoryDirectory directory = tree.findDirectory(id_directory);
+		ObjectId[] objectIds = new ObjectId[directory.getNrSubdirectories()];
+		for (int i=0;i<objectIds.length;i++) {
+			objectIds[i] = directory.getSubdirectory(i).getObjectId();
+		}
+		return objectIds;
+	}
+
+	public ObjectId[] getTransNoteIDs(ObjectId id_transformation) throws KettleException { return new ObjectId[] {}; }
+	public ObjectId[] getTransformationClusterSchemaIDs(ObjectId id_transformation) throws KettleException { return new ObjectId[] {}; }
+
+	public ObjectId getTransformationID(String name, RepositoryDirectory repositoryDirectory) throws KettleException {
+		return getObjectId(repositoryDirectory, name, EXT_TRANSFORMATION);
+	}
+
+	public String[] getTransformationNames(ObjectId id_directory) throws KettleException {
+		try {
+			List<String> list = new ArrayList<String>();
+			
+			RepositoryDirectory tree = loadRepositoryDirectoryTree();
+			RepositoryDirectory directory = tree.findDirectory(id_directory);
+			
+			String folderName = calcDirectoryName(directory);
+			FileObject folder = KettleVFS.getFileObject(folderName);
+			
+			for (FileObject child : folder.getChildren()) {
+				if (child.getType().equals(FileType.FILE)) {
+					String name = child.getName().getBaseName();
+					
+					if (name.endsWith(EXT_TRANSFORMATION)) {
+						
+						String transName = name.substring(0, name.length()-4);
+						list.add( transName );
+					}
+				}
+			}
+			
+			return list.toArray(new String[list.size()]);
+		}
+		catch(Exception e) {
+			throw new KettleException("Unable to get list of transformations names in folder with id : "+id_directory, e);
+		}
+	}
+
+	public ObjectId[] getTransformationPartitionSchemaIDs(ObjectId id_transformation) throws KettleException {return new ObjectId[] {}; };
+	public String[] getTransformationsUsingCluster(ObjectId id_cluster) throws KettleException { return new String[] {}; }
+	public String[] getTransformationsUsingDatabase(ObjectId id_database) throws KettleException { return new String[] {}; }
+	public String[] getTransformationsUsingPartitionSchema(ObjectId id_partition_schema) throws KettleException { return new String[] {}; }
+	public String[] getTransformationsUsingSlave(ObjectId id_slave) throws KettleException { return new String[] {}; }
+
+	public String getVersion() {
+		// TODO save the version in a local XML file
+		return null;
+	}
+
+	public ObjectId insertClusterSlave(ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException { return null; }
+	public void insertJobEntryDatabase(ObjectId id_job, ObjectId id_jobentry, ObjectId id_database) throws KettleException { }
+	public void insertJobNote(ObjectId id_job, ObjectId id_note) throws KettleException { }
+
+	public ObjectId insertLogEntry(String description) throws KettleException {
+		String logfile = calcDirectoryName(null)+LOG_FILE;
+		try {
+			OutputStream outputStream = KettleVFS.getOutputStream(logfile, true);
+			outputStream.write(description.getBytes());
+			outputStream.close();
+			
+			return new StringObjectId(logfile);
+		} catch (IOException e) {
+			throw new KettleException("Unable to write log entry to file ["+logfile+"]");
+		}
+	}
+
+	public void insertStepDatabase(ObjectId id_transformation, ObjectId id_step, ObjectId id_database) throws KettleException {
+		
+
+	}
+
+	public void insertTransNote(ObjectId id_transformation, ObjectId id_note) throws KettleException {
+		
+
+	}
+
+	public void insertTransStepCondition(ObjectId id_transformation, ObjectId id_step, ObjectId id_condition) throws KettleException {
+		
+
+	}
+
+	public ObjectId insertTransformationCluster(ObjectId id_transformation, ObjectId id_cluster) throws KettleException {
+		
+		return null;
+	}
+
+	public ObjectId insertTransformationPartitionSchema(ObjectId id_transformation, ObjectId id_partition_schema) throws KettleException {
+		
+		return null;
+	}
+
+	public ObjectId insertTransformationSlave(ObjectId id_transformation, ObjectId id_slave) throws KettleException {
+		
+		return null;
+	}
+
+	public ClusterSchema loadClusterSchema(ObjectId id_cluster_schema, List<SlaveServer> slaveServers) throws KettleException {
+		try {
+			return new ClusterSchema(loadNodeFromXML(id_cluster_schema, ClusterSchema.XML_TAG), slaveServers);
+		}
+		catch(Exception e) {
+			throw new KettleException("Unable to load cluster schema from the file repository", e);
+		}
+	}
+
+	public Condition loadCondition(ObjectId id_condition) throws KettleException {
+		
+		return null;
+	}
+
+	public Condition loadConditionFromStepAttribute(ObjectId id_step, String code) throws KettleException {
+		
+		return null;
+	}
+
+	public Node loadNodeFromXML(ObjectId id, String tag) throws KettleException {
+		try {
+			// The object ID is the base name of the file in the Base directory folder
+			//
+			String filename = calcDirectoryName(null)+id.getId();
+			FileObject fileObject = KettleVFS.getFileObject(filename);
+			Document document = XMLHandler.loadXMLFile(fileObject);
+			Node node = XMLHandler.getSubNode(document, tag);
+			
+			return node;
+		}
+		catch(Exception e) {
+			throw new KettleException("Unable to load XML object from object with ID ["+id+"] and tag ["+tag+"]", e);
+		}
+	}
+
+	public DatabaseMeta loadDatabaseMeta(ObjectId id_database) throws KettleException {
+		try {
+			return new DatabaseMeta(loadNodeFromXML(id_database, DatabaseMeta.XML_TAG));
+		}
+		catch(Exception e) {
+			throw new KettleException("Unable to load database connection from the file repository", e);
+		}
+	}
+
+	public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String code) throws KettleException { return null; }
+	public DatabaseMeta loadDatabaseMetaFromStepAttribute(ObjectId id_step, String code) throws KettleException { return null; }
+
+	public JobMeta loadJob(String jobname, RepositoryDirectory repdir, ProgressMonitorListener monitor) throws KettleException {
+		
+		// This is a standard load of a transformation serialized in XML...
+		//
+		String filename = calcDirectoryName(repdir)+jobname+EXT_JOB;
+		JobMeta jobMeta = new JobMeta(filename, this);
+		jobMeta.setFilename(null);
+		jobMeta.setName(jobname);
+		jobMeta.setObjectId(new StringObjectId(calcObjectId(repdir, jobname, EXT_JOB)));
+		
+		return jobMeta;
+
+	}
+
+	public PartitionSchema loadPartitionSchema(ObjectId id_partition_schema) throws KettleException {
+		try {
+			return new PartitionSchema(loadNodeFromXML(id_partition_schema, PartitionSchema.XML_TAG));
+		}
+		catch(Exception e) {
+			throw new KettleException("Unable to load partition schema from the file repository", e);
+		}
+	}
+
+	public RepositoryDirectory loadRepositoryDirectoryTree() throws KettleException {
+		RepositoryDirectory root = new RepositoryDirectory();
+		root.setObjectId(null);
+		return loadRepositoryDirectoryTree(root);
+	}
+
+	public RepositoryDirectory loadRepositoryDirectoryTree(RepositoryDirectory dir) throws KettleException {
+		try {
+			String folderName = calcDirectoryName(dir);
+			FileObject folder = KettleVFS.getFileObject(folderName);
+			
+			for (FileObject child : folder.getChildren()) {
+				if (child.getType().equals(FileType.FOLDER)) {
+					RepositoryDirectory subDir = new RepositoryDirectory(dir, child.getName().getBaseName());
+					subDir.setObjectId(new StringObjectId(calcObjectId(subDir)));
+					dir.addSubdirectory(subDir);
+					
+					loadRepositoryDirectoryTree(subDir);
+				}
+			}
+			
+			return dir;
+		}
+		catch(Exception e) {
+			throw new KettleException("Unable to load the directory tree from this file repository", e);
+		}
+	}
+	
+
+	public List<RepositoryObject> getTransformationObjects(ObjectId id_directory) throws KettleException {
+		
+		try {
+			List<RepositoryObject> list = new ArrayList<RepositoryObject>();
+			
+			RepositoryDirectory tree = loadRepositoryDirectoryTree();
+			RepositoryDirectory directory = tree.findDirectory(id_directory);
+			
+			String folderName = calcDirectoryName(directory);
+			FileObject folder = KettleVFS.getFileObject(folderName);
+			
+			for (FileObject child : folder.getChildren()) {
+				if (child.getType().equals(FileType.FILE)) {
+					String name = child.getName().getBaseName();
+					
+					if (name.endsWith(EXT_TRANSFORMATION)) {
+						
+						String transName = name.substring(0, name.length()-4);
+						Date date = new Date(child.getContent().getLastModifiedTime());
+						list.add( new RepositoryObject(transName, "-", date, "Transformation", "", "") );
+					}
+				}
+			}
+			
+			return list;
+		}
+		catch(Exception e) {
+			throw new KettleException("Unable to get list of transformations in folder with id : "+id_directory, e);
+		}
+	}
+	
+	public List<RepositoryObject> getJobObjects(ObjectId id_directory) throws KettleException {
+		
+		try {
+			List<RepositoryObject> list = new ArrayList<RepositoryObject>();
+			
+			RepositoryDirectory tree = loadRepositoryDirectoryTree();
+			RepositoryDirectory directory = tree.findDirectory(id_directory);
+			
+			String folderName = calcDirectoryName(directory);
+			FileObject folder = KettleVFS.getFileObject(folderName);
+			
+			for (FileObject child : folder.getChildren()) {
+				if (child.getType().equals(FileType.FILE)) {
+					String name = child.getName().getBaseName();
+					
+					if (name.endsWith(EXT_JOB)) {
+						
+						String transName = name.substring(0, name.length()-4);
+						Date date = new Date(child.getContent().getLastModifiedTime());
+						list.add( new RepositoryObject(transName, "-", date, "Job", "", "") );
+					}
+				}
+			}
+			
+			return list;
+		}
+		catch(Exception e) {
+			throw new KettleException("Unable to get list of jobs in folder with id : "+id_directory, e);
+		}
+	}
+
+
+
+	public int getNrSubDirectories(ObjectId id_directory) throws KettleException {
+		
+		return 0;
+	}
+
+	public SlaveServer loadSlaveServer(ObjectId id_slave_server) throws KettleException {
+		try {
+			return new SlaveServer(loadNodeFromXML(id_slave_server, SlaveServer.XML_TAG));
+		}
+		catch(Exception e) {
+			throw new KettleException("Unable to load slave server from the file repository", e);
+		}
+	}
+
+	public TransMeta loadTransformation(String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables) throws KettleException {
+		
+		// This is a standard load of a transformation serialized in XML...
+		//
+		String filename = calcDirectoryName(repdir)+transname+".ktr";
+		TransMeta transMeta = new TransMeta(filename, this, setInternalVariables);
+		transMeta.setFilename(null);
+		transMeta.setName(transname);
+		transMeta.setObjectId(new StringObjectId(calcObjectId(repdir, transname, EXT_JOB)));
+		
+		return transMeta;
+		
+	}
+
+	public ValueMetaAndData loadValueMetaAndData(ObjectId id_value) throws KettleException {
+		
+		return null;
+	}
+
+	public void moveJob(String jobname, ObjectId id_directory_from, ObjectId id_directory_to) throws KettleException {
+		
+
+	}
+
+	public void moveTransformation(String transname, ObjectId id_directory_from, ObjectId id_directory_to) throws KettleException {
+		
+
+	}
+
+	public List<DatabaseMeta> readDatabases() throws KettleException {
+		
+		return null;
+	}
+
+	public SharedObjects readJobMetaSharedObjects(JobMeta jobMeta) throws KettleException {
+		
+		// First the normal shared objects...
+		//
+		SharedObjects sharedObjects = jobMeta.readSharedObjects();
+		
+		// Then we read the databases etc...
+		//
+		for (ObjectId id : getDatabaseIDs()) {
+			DatabaseMeta databaseMeta = loadDatabaseMeta(id);
+			jobMeta.addOrReplaceDatabase(databaseMeta);
+		}
+		
+		for (ObjectId id : getSlaveIDs()) {
+			SlaveServer slaveServer = loadSlaveServer(id);
+			jobMeta.addOrReplaceSlaveServer(slaveServer);
+		}
+
+		return sharedObjects;
+	}
+
+	public SharedObjects readTransSharedObjects(TransMeta transMeta) throws KettleException {
+		
+		// First the normal shared objects...
+		//
+		SharedObjects sharedObjects = transMeta.readSharedObjects();
+		
+		// Then we read the databases etc...
+		//
+		for (ObjectId id : getDatabaseIDs()) {
+			DatabaseMeta databaseMeta = loadDatabaseMeta(id);
+			transMeta.addOrReplaceDatabase(databaseMeta);
+		}
+		
+		for (ObjectId id : getSlaveIDs()) {
+			SlaveServer slaveServer = loadSlaveServer(id);
+			transMeta.addOrReplaceSlaveServer(slaveServer);
+		}
+
+		for (ObjectId id : getClusterIDs()) {
+			ClusterSchema clusterSchema = loadClusterSchema(id, transMeta.getSlaveServers());
+			transMeta.addOrReplaceClusterSchema(clusterSchema);
+		}
+
+		for (ObjectId id : getPartitionSchemaIDs()) {
+			PartitionSchema partitionSchema = loadPartitionSchema(id);
+			transMeta.addOrReplacePartitionSchema(partitionSchema);
+		}
+		
+		return sharedObjects;
+	}
+
+	private ObjectId renameObject(ObjectId id, RepositoryDirectory newDirectory, String newName, String extension) throws KettleException {
+		try {
+			// In case of a root object, the ID is the same as the relative filename...
+			//
+			FileObject fileObject = KettleVFS.getFileObject(calcDirectoryName(null)+id.getId());
+			
+			// The new filename can be anywhere so we re-calculate a new ID...
+			//
+			String newFilename = calcDirectoryName(newDirectory)+newName+extension;
+			
+			FileObject newObject = KettleVFS.getFileObject(newFilename);
+			fileObject.moveTo(newObject);
+			
+			return new StringObjectId(calcObjectId(newDirectory, newName, extension));
+		}
+		catch (Exception e) {
+			throw new KettleException("Unable to rename object with ID ["+id+"] to ["+newName+"]");
+		}
+		
+	}
+
+	public ObjectId renameDatabase(ObjectId id_database, String newname) throws KettleException {
+		return renameObject(id_database, null, newname, EXT_DATABASE); // root directory...
+	}
+
+
+	public ObjectId renameJob(ObjectId id_job, RepositoryDirectory newDir, String newName) throws KettleException {
+		return renameObject(id_job, newDir, newName, EXT_JOB);
+
+	}
+
+	public ObjectId renameRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
+		try {
+			// In case of a root object, the ID is the same as the relative filename...
+			//
+			ObjectId dirId = dir.getObjectId();
+			String folderName = calcDirectoryName(null)+dirId.getId();
+			FileObject folder = KettleVFS.getFileObject(folderName);
+			
+			String newFolderName = folder.getParent().toString()+"/"+dir.getDirectoryName();
+			FileObject newFolder = KettleVFS.getFileObject(newFolderName);
+			folder.moveTo(newFolder);
+			
+			return new StringObjectId(dir.getPath());
+		}
+		catch (Exception e) {
+			throw new KettleException("Unable to rename directory folder to ["+dir+"]");
+		}
+	}
+
+	public ObjectId renameTransformation(ObjectId id_transformation, RepositoryDirectory newDir, String newName) throws KettleException {
+		return renameObject(id_transformation, newDir, newName, EXT_TRANSFORMATION);
+	}
+
+	public ObjectId saveCondition(Condition condition) throws KettleException { return null; }
+	public ObjectId saveCondition(Condition condition, ObjectId id_condition_parent) throws KettleException { return null; }
+
+	public void saveConditionStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, Condition condition) throws KettleException {}
+	public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String code, DatabaseMeta database) throws KettleException {}
+	public void saveDatabaseMetaStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, DatabaseMeta database) throws KettleException {}
+
+	public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, int nr, String code, String value) throws KettleException {}
+	public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String code, String value) throws KettleException {}
+	public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, int nr, String code, boolean value) throws KettleException {}
+	public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String code, boolean value) throws KettleException {}
+	public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, int nr, String code, long value) throws KettleException {}
+	public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String code, long value) throws KettleException { }
+
+	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, int nr, String code, String value) throws KettleException {}
+	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, String value) throws KettleException {}
+	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, int nr, String code, boolean value) throws KettleException {}
+	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, boolean value) throws KettleException { }
+	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, int nr, String code, long value) throws KettleException {}
+	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, long value) throws KettleException {}
+	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, int nr, String code, double value) throws KettleException {}
+	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, double value) throws KettleException {}
+	public void delProfile(ObjectId id_profile) throws KettleException { }
+	public void delUser(ObjectId id_user) throws KettleException { }
+	public ObjectId[] getPermissionIDs(ObjectId id_profile) throws KettleException { return new ObjectId[] {}; }
+	public ObjectId getProfileID(String profilename) throws KettleException { return null; }
+	public String[] getProfiles() throws KettleException { return null; }
+	public ObjectId getUserID(String login) throws KettleException { return null; }
+	public ObjectId[] getUserIDs() throws KettleException { return new ObjectId[] {}; }
+	public UserInfo getUserInfo() { return null; }
+	public String[] getUserLogins() throws KettleException { return new String[] {}; }
+
+	public PermissionMeta loadPermissionMeta(ObjectId id_permission) throws KettleException { return null; }
+	public ProfileMeta loadProfileMeta(ObjectId id_profile) throws KettleException { return null; }
+	public UserInfo loadUserInfo(String login) throws KettleException { return null; }
+	public UserInfo loadUserInfo(String login, String password) throws KettleException { return null; }
+	public void renameProfile(ObjectId id_profile, String newname) throws KettleException {}
+	public void renameUser(ObjectId id_user, String newname) throws KettleException {}
+	public void saveProfile(ProfileMeta profileMeta) throws KettleException {}
+	public void saveUserInfo(UserInfo userInfo) throws KettleException {}
+	public void setUserInfo(UserInfo userinfo) {}
+	
+	// Not used...
+	public int countNrJobEntryAttributes(ObjectId id_jobentry, String code) throws KettleException { return 0; }
+	public int countNrStepAttributes(ObjectId id_step, String code) throws KettleException { return 0; }
+
+
+	/**
+	 * @return the repositoryMeta
+	 */
+	public KettleFileRepositoryMeta getRepositoryMeta() {
+		return repositoryMeta;
+	}
+
+	/**
+	 * @param repositoryMeta the repositoryMeta to set
+	 */
+	public void setRepositoryMeta(KettleFileRepositoryMeta repositoryMeta) {
+		this.repositoryMeta = repositoryMeta;
+	}
+
+	// TODO implement rudimentary locking
+	public void lockJob(ObjectId id_job) throws KettleException {
+	}
+
+	// TODO implement rudimentary locking
+	public void lockTransformation(ObjectId id_transformation) throws KettleException {
+	}
+
+	public List<RepositoryLock> getTransformationLocks() throws KettleException {
+		return new ArrayList<RepositoryLock>();
+	}
+	
+	public List<RepositoryLock> getJobLocks() throws KettleException {
+		return new ArrayList<RepositoryLock>();
+	}
+
+	public RepositoryLock getJobLock(ObjectId id_job) throws KettleDatabaseException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public RepositoryLock getTransformationLock(ObjectId id_transformation) throws KettleDatabaseException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void lockJob(ObjectId id_job, String message) throws KettleException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void lockTransformation(ObjectId id_transformation, String message) throws KettleException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void unlockJob(ObjectId id_job) throws KettleException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void unlockTransformation(ObjectId id_transformation) throws KettleException {
+		// TODO Auto-generated method stub
+		
+	}
+}

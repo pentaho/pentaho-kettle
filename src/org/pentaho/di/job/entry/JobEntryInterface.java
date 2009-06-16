@@ -23,6 +23,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -45,8 +46,8 @@ public interface JobEntryInterface
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
 	
 	public void    clear();
-	public long    getID();
-	public void    setID(long id);
+	public ObjectId getObjectId();
+	public void     setID(ObjectId id);
 	public String  getName();
 	public void    setName(String name);
 
@@ -65,8 +66,8 @@ public interface JobEntryInterface
 
 	public void    loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException;
 	public String  getXML();
-	public void    loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException;
-	public void    saveRep(Repository rep, long id_job) throws KettleException;
+	public void    loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException;
+	public void    saveRep(Repository rep, ObjectId id_job) throws KettleException;
 
 	public boolean isStart();
 	public boolean isDummy();

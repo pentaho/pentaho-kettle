@@ -30,6 +30,8 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
+import org.pentaho.di.repository.LongObjectId;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceHolderInterface;
@@ -57,7 +59,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   private boolean changed;
 
-  private long id;
+  private ObjectId id;
   
   protected VariableSpace variables = new Variables();
  
@@ -71,7 +73,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   {
     setName(name);
     setDescription(description);
-    setID(-1L);
+    setID(null);
   }
 
   public void clear()
@@ -81,12 +83,16 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     changed = false;
   }
 
-  public void setID(long id)
+  public void setID(ObjectId id)
   {
     this.id = id;
   }
+  
+  public void setID(long id) {
+	  this.id = new LongObjectId(id);
+  }
 
-  public long getID()
+  public ObjectId getObjectId()
   {
     return id;
   }
@@ -215,10 +221,10 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   {
   }
 
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
   }
 
-  public void saveRep(Repository rep, long id_job) throws KettleException {
+  public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
   }
 	
   public Object clone()

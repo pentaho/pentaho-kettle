@@ -42,7 +42,10 @@ import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryRevision;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
@@ -681,7 +684,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 			public void setInternalKettleVariables() {
 			}
 		
-			public void setID(long id) {
+			public void setObjectId(ObjectId id) {
 			}
 		
 			public void setFilename(String filename) {
@@ -751,26 +754,27 @@ public class SpoonSlave extends Composite implements TabItemInterface
 			public void clearChanged() {
 			}
 
-			public long getID() {
-				// TODO Auto-generated method stub
-				return 0;
+			public ObjectId getObjectId() {
+				return null;
 			}
 
 			public String getRepositoryElementType() {
-				// TODO Auto-generated method stub
 				return null;
 			}
 
 			public void setName(String name) {
-				// TODO Auto-generated method stub
-				
 			}
 
 			public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
-				// TODO Auto-generated method stub
-				
 			}
-		
+
+			public RepositoryRevision getRevision() {
+				return null;
+			}
+
+			public RepositoryLock getRepositoryLock() {
+				return null;
+			}
 		};
     }
 

@@ -24,24 +24,21 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.JndiUtil;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.JobEntryLoader;
-import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryExporter;
+import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.version.BuildVersion;
@@ -54,8 +51,7 @@ public class Pan
 
 	public static void main(String[] a) throws KettleException
 	{
-		EnvUtil.environmentInit();
-		JndiUtil.initJNDI();
+		KettleEnvironment.init();
 
 	    List<String> args = new ArrayList<String>();
 	    for (int i=0;i<a.length;i++) 
@@ -166,34 +162,11 @@ public class Pan
 		    }
 		    System.out.println("");
         }
-        /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////
 
         log.logMinimal("Pan", BaseMessages.getString(PKG, "Pan.Log.StartingToRun"));       
 		
-		/* Load the plugins etc.*/
-		try {
-			StepLoader.init();
-		}
-		catch(KettleException e)
-		{
-			log.logError("Pan", BaseMessages.getString(PKG, "Pan.Error.LoadingStepsHaltPan"));
-			
-			exitJVM(8);
-		}
-		
-        /* Load the plugins etc.*/
-		try 
-		{
-			JobEntryLoader.init();
-		}
-		catch(KettleException e)
-        {
-            log.logError("Pan", BaseMessages.getString(PKG, "Pan.Error.LoadingJobEntriesHaltPan"), e);
-            
-            exitJVM(8);
-        }
-        
 		Date start, stop;
 		Calendar cal;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
@@ -219,112 +192,106 @@ public class Pan
 				{
 					if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.LoadingAvailableRep"));
 					
-					RepositoriesMeta repsinfo = new RepositoriesMeta(log);
-					if (repsinfo.readData())
+					RepositoriesMeta repsinfo = new RepositoriesMeta();
+					
+					try { repsinfo.readData(); }
+					catch(Exception e) {
+						throw new KettleException(BaseMessages.getString(PKG, "Pan.Error.NoRepsDefined"), e);
+					}
+					
+					if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.FindingRep",""+optionRepname));
+					
+					repinfo = repsinfo.findRepository(optionRepname.toString());
+					if (repinfo!=null)
 					{
-						if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.FindingRep",""+optionRepname));
+						// Define and connect to the repository...
+						if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.Allocate&ConnectRep"));
 						
-						repinfo = repsinfo.findRepository(optionRepname.toString());
-						if (repinfo!=null)
+						rep = RepositoryLoader.createRepository(repinfo, userinfo);
+						rep.connect("Pan commandline");
+						
+						RepositoryDirectory directory = rep.loadRepositoryDirectoryTree(); // Default = root
+						
+						// Find the directory name if one is specified...
+						if (!Const.isEmpty(optionDirname))
 						{
-							// Define and connect to the repository...
-							if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.Allocate&ConnectRep"));
+							directory = directory.findDirectory(optionDirname.toString());
+						}
+						
+						if (directory!=null)
+						{
+							// Check username, password
+							if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.CheckSuppliedUserPass"));
 							
-							rep = new KettleDatabaseRepository(repinfo, userinfo);
-							if (rep.connect("Pan commandline"))
+							userinfo = rep.loadUserInfo(optionUsername.toString(), optionPassword.toString());
+							if (userinfo.getObjectId()!=null)
 							{
-								RepositoryDirectory directory = rep.getDirectoryTree(); // Default = root
-								
-								// Find the directory name if one is specified...
-								if (!Const.isEmpty(optionDirname))
+								// Load a transformation
+								if (!Const.isEmpty(optionTransname))
 								{
-									directory = rep.getDirectoryTree().findDirectory(optionDirname.toString());
-								}
-								
-								if (directory!=null)
-								{
-									// Check username, password
-									if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.CheckSuppliedUserPass"));
+									if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.LoadTransInfo"));
 									
-									userinfo = rep.loadUserInfo(optionUsername.toString(), optionPassword.toString());
-									if (userinfo.getID()>0)
+									transMeta = rep.loadTransformation(optionTransname.toString(), directory, null, true);
+									if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.AllocateTrans"));
+									
+									trans = new Trans(transMeta);
+									trans.setRepository(rep);
+								}
+								else
+								// List the transformations in the repository
+								if ("Y".equalsIgnoreCase(optionListtrans.toString()))
+								{
+									if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.GettingListTransDirectory",""+directory));
+									
+									String transnames[] = rep.getTransformationNames(directory.getObjectId());
+									for (int i=0;i<transnames.length;i++)
 									{
-										// Load a transformation
-										if (!Const.isEmpty(optionTransname))
-										{
-											if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.LoadTransInfo"));
-											
-											transMeta = rep.loadTransformation(optionTransname.toString(), directory, null, true);
-											if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.AllocateTrans"));
-											
-											trans = new Trans(transMeta);
-											trans.setRepository(rep);
-										}
-										else
-										// List the transformations in the repository
-										if ("Y".equalsIgnoreCase(optionListtrans.toString()))
-										{
-											if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.GettingListTransDirectory",""+directory));
-											
-											String transnames[] = rep.getTransformationNames(directory.getID());
-											for (int i=0;i<transnames.length;i++)
-											{
-												System.out.println(transnames[i]);
-											}
-										}
-										else
-										// List the directories in the repository
-										if ("Y".equalsIgnoreCase(optionListdir.toString()))
-										{
-											String dirnames[] = rep.getDirectoryNames(directory.getID());
-											for (int i=0;i<dirnames.length;i++)
-											{
-												System.out.println(dirnames[i]);
-											}
-										}
-                                        else
-                                        // Export the repository
-                                        if (!Const.isEmpty(optionExprep))
-                                        {
-                                            System.out.println(BaseMessages.getString(PKG, "Pan.Log.ExportingObjectsRepToFile",""+optionExprep));
-                                            
-                                            new RepositoryExporter(rep).exportAllObjects(null, optionExprep.toString(), directory,"all");
-                                            System.out.println(BaseMessages.getString(PKG, "Pan.Log.FinishedExportObjectsRepToFile",""+optionExprep));
-                                        }
-										else
-										{
-											System.out.println(BaseMessages.getString(PKG, "Pan.Error.NoTransNameSupplied"));
-										}
-									}
-									else
-									{
-										System.out.println(BaseMessages.getString(PKG, "Pan.Error.CanNotVerifyUserPass"));
-										userinfo=null;
-										repinfo=null;
+										System.out.println(transnames[i]);
 									}
 								}
 								else
+								// List the directories in the repository
+								if ("Y".equalsIgnoreCase(optionListdir.toString()))
 								{
-									System.out.println(BaseMessages.getString(PKG, "Pan.Error.CanNotFindSpecifiedDirectory",""+optionDirname));
-									userinfo=null;
-									repinfo=null;
+									String dirnames[] = rep.getDirectoryNames(directory.getObjectId());
+									for (int i=0;i<dirnames.length;i++)
+									{
+										System.out.println(dirnames[i]);
+									}
+								}
+                                else
+                                // Export the repository
+                                if (!Const.isEmpty(optionExprep))
+                                {
+                                    System.out.println(BaseMessages.getString(PKG, "Pan.Log.ExportingObjectsRepToFile",""+optionExprep));
+                                    
+                                    new RepositoryExporter(rep).exportAllObjects(null, optionExprep.toString(), directory,"all");
+                                    System.out.println(BaseMessages.getString(PKG, "Pan.Log.FinishedExportObjectsRepToFile",""+optionExprep));
+                                }
+								else
+								{
+									System.out.println(BaseMessages.getString(PKG, "Pan.Error.NoTransNameSupplied"));
 								}
 							}
 							else
 							{
-								System.out.println(BaseMessages.getString(PKG, "Pan.Error.CanNotConnectRep"));
+								System.out.println(BaseMessages.getString(PKG, "Pan.Error.CanNotVerifyUserPass"));
+								userinfo=null;
+								repinfo=null;
 							}
 						}
 						else
 						{
-							System.out.println(BaseMessages.getString(PKG, "Pan.Error.NoRepProvided"));
+							System.out.println(BaseMessages.getString(PKG, "Pan.Error.CanNotFindSpecifiedDirectory",""+optionDirname));
+							userinfo=null;
+							repinfo=null;
 						}
 					}
 					else
 					{
-						System.out.println(BaseMessages.getString(PKG, "Pan.Error.NoRepsDefined"));
+						System.out.println(BaseMessages.getString(PKG, "Pan.Error.NoRepProvided"));
 					}
-				}
+				}			
 
 				// Try to load the transformation from file, even if it failed to load from the repository
                 // You could implement some fail-over mechanism this way.
@@ -368,20 +335,18 @@ public class Pan
 			{
 				if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.GettingListReps"));
 				
-				RepositoriesMeta ri = new RepositoriesMeta(log);
-				if (ri.readData())
-				{
-					System.out.println(BaseMessages.getString(PKG, "Pan.Log.ListReps"));
-					
-					for (int i=0;i<ri.nrRepositories();i++)
-					{
-						RepositoryMeta rinfo = ri.getRepository(i);
-						System.out.println(BaseMessages.getString(PKG, "Pan.Log.RepNameDesc",""+(i+1),rinfo.getName(),rinfo.getDescription()));					
-					}
+				RepositoriesMeta ri = new RepositoriesMeta();
+				try { ri.readData(); }
+				catch(Exception e) {
+					throw new KettleException(BaseMessages.getString(PKG, "Pan.Error.UnableReadXML"), e);
 				}
-				else
+
+				System.out.println(BaseMessages.getString(PKG, "Pan.Log.ListReps"));
+					
+				for (int i=0;i<ri.nrRepositories();i++)
 				{
-					System.out.println(BaseMessages.getString(PKG, "Pan.Error.UnableReadXML"));					
+					RepositoryMeta rinfo = ri.getRepository(i);
+					System.out.println(BaseMessages.getString(PKG, "Pan.Log.RepNameDesc",""+(i+1),rinfo.getName(),rinfo.getDescription()));					
 				}
 			}
 		}

@@ -22,6 +22,19 @@
 			value="org/pentaho/di/core/config/steps-rules.xml" />
 		<property name="setNext" value="steps/step" />
 	</config>
+
+	<!--  This reads the repository types from the XML File defined below (configURL) -->
+	<config id="repositories-xml-config">
+		<config-class>
+			org.pentaho.di.core.config.DigesterConfigManager
+		</config-class>
+
+		<!-- Properties are automatically injected into fields/methods of the above class annotated with @Inject -->
+		<property name="configURL" value="kettle-repositories.xml" />
+		<property name="rulesURL"
+			value="org/pentaho/di/core/config/repositories-rules.xml" />
+		<property name="setNext" value="repositories/repository" />
+	</config>
 	
 	<!--  This reads the jobs from the XML File defined below (configURL) We can use the same classes and rules; they are very similar-->
 	<config id="jobs-xml-config">

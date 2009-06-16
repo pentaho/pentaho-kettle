@@ -32,6 +32,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
@@ -537,14 +538,13 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
+	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
 	throws KettleException
 	{
 
 		try
 		{
-			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
-			databaseMeta = DatabaseMeta.findDatabase( databases, id_connection);
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");  //$NON-NLS-1$
 			
 			commitSize     = (int)rep.getStepAttributeInteger(id_step, "commit"); //$NON-NLS-1$
             schemaName     =      rep.getStepAttributeString(id_step, "schema"); //$NON-NLS-1$
@@ -586,12 +586,12 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 		}
 	}
 
-	public void saveRep(Repository rep, long id_transformation, long id_step)
+	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "id_connection", databaseMeta==null?-1:databaseMeta.getID()); //$NON-NLS-1$
+			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
 			rep.saveStepAttribute(id_transformation, id_step, "commit",        commitSize); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "schema",        schemaName); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "table",         tableName); //$NON-NLS-1$
@@ -623,7 +623,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 			}
 			
 			// Also, save the step-database relationship!
-			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
+			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getObjectId());
 		}
 		catch(Exception e)
 		{

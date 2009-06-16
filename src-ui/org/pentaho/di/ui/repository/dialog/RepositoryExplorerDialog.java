@@ -72,7 +72,10 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
@@ -89,6 +92,7 @@ import org.pentaho.di.ui.core.widget.TreeItemAccelerator;
 import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
+import org.pentaho.di.ui.spoon.RepositorySecurity;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.w3c.dom.Document;
 
@@ -103,7 +107,7 @@ import org.w3c.dom.Document;
  */
 public class RepositoryExplorerDialog extends Dialog 
 {
-	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = KettleDatabaseRepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     public interface RepositoryExplorerCallback {
     	/**
@@ -192,6 +196,7 @@ public class RepositoryExplorerDialog extends Dialog
     private TreeColumn userColumn;
     private TreeColumn changedColumn;
     private TreeColumn descriptionColumn;
+    private TreeColumn lockColumn;
     
     private RepositoryExplorerCallback callback;
     
@@ -201,6 +206,10 @@ public class RepositoryExplorerDialog extends Dialog
 	private ToolItem expandAll, collapseAll;
     
     private FormData     fdexpandAll;
+	private RepositoryDirectory	directoryTree;
+	private RepositoryMeta	repositoryMeta;
+	private RepositoryCapabilities	capabilities;
+	private boolean	readonly;
     
 	private RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, VariableSpace variableSpace)
 	{
@@ -213,6 +222,11 @@ public class RepositoryExplorerDialog extends Dialog
 
         sortColumn = 0;
         ascending = false;
+        
+        repositoryMeta = rep.getRepositoryMeta();
+        capabilities = repositoryMeta.getRepositoryCapabilities();
+        
+        readonly = RepositorySecurity.isReadOnly(rep);
 	}
     
 	public RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, RepositoryExplorerCallback callback, VariableSpace variableSpace)
@@ -317,6 +331,11 @@ public class RepositoryExplorerDialog extends Dialog
             descriptionColumn.setWidth(120);
             descriptionColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(4); } });
 
+            lockColumn = new TreeColumn(wTree, SWT.LEFT);
+            lockColumn.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Column.LockMessage")); //$NON-NLS-1$
+            lockColumn.setWidth(120);
+            lockColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(5); } });
+
             // Add a memory to the tree.
             TreeMemory.addTreeListener(wTree,STRING_REPOSITORY_EXPLORER_TREE_NAME);
             
@@ -370,7 +389,7 @@ public class RepositoryExplorerDialog extends Dialog
     				public void keyPressed(KeyEvent e) 
     				{
     					// F2 --> rename...
-    					if (e.keyCode == SWT.F2)    { if (!userinfo.isReadonly()) renameInTree(); }
+    					if (e.keyCode == SWT.F2)    { if (!readonly) renameInTree(); }
     					// F5 --> refresh...
     					if (e.keyCode == SWT.F5)    { refreshTree(); }
     				}
@@ -647,7 +666,7 @@ public class RepositoryExplorerDialog extends Dialog
 					String realpath[] = new String[level-2];
 					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
 					
-					repdir = rep.getDirectoryTree().findDirectory(realpath);
+					repdir = directoryTree.findDirectory(realpath);
 				}
 				break;
 			case ITEM_CATEGORY_JOB_DIRECTORY:
@@ -657,7 +676,7 @@ public class RepositoryExplorerDialog extends Dialog
 					String realpath[] = new String[level-1];
 					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
 					
-					repdir = rep.getDirectoryTree().findDirectory(realpath);
+					repdir = directoryTree.findDirectory(realpath);
 				}
 				break;
 			default: break;
@@ -710,12 +729,12 @@ public class RepositoryExplorerDialog extends Dialog
 					realpath[i] = path[i + 2];
 				}
 				// Find the directory in the directory tree...
-				final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
+				final RepositoryDirectory repdir = directoryTree.findDirectory(realpath);
 
 				switch (cat) {
 				case ITEM_CATEGORY_JOB_DIRECTORY:
 				case ITEM_CATEGORY_TRANSFORMATION_DIRECTORY: {
-					if (!userinfo.isReadonly())	createDirectory(ti, repdir);
+					if (!readonly)	createDirectory(ti, repdir);
 					break;
 				}
 				case ITEM_CATEGORY_TRANSFORMATION: {
@@ -754,7 +773,7 @@ public class RepositoryExplorerDialog extends Dialog
 					// Export all
 					MenuItem miExp  = new MenuItem(mTree, SWT.PUSH); 
 					miExp.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Objects.ExportAll")); //$NON-NLS-1$
-					SelectionAdapter lsExp = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportAll(rep.getDirectoryTree()); } };
+					SelectionAdapter lsExp = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportAll(directoryTree); } };
 					miExp.addSelectionListener( lsExp );
 
 					// Import all
@@ -762,18 +781,18 @@ public class RepositoryExplorerDialog extends Dialog
 					miImp.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Objects.ImportAll")); //$NON-NLS-1$
 					SelectionAdapter lsImp = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { importAll(); } };
 					miImp.addSelectionListener( lsImp );
-					miImp.setEnabled(!userinfo.isReadonly());
+					miImp.setEnabled(!readonly);
 
 					// Export transMeta
 					MenuItem miTrans  = new MenuItem(mTree, SWT.PUSH); 
 					miTrans.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Objects.ExportTrans")); //$NON-NLS-1$
-					SelectionAdapter lsTrans = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportTransformations(rep.getDirectoryTree()); } };
+					SelectionAdapter lsTrans = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportTransformations(directoryTree); } };
 					miTrans.addSelectionListener( lsTrans );
 
 					// Export jobs
 					MenuItem miJobs  = new MenuItem(mTree, SWT.PUSH); 
 					miJobs.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Objects.ExportJob")); //$NON-NLS-1$
-					SelectionAdapter lsJobs = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportJobs(rep.getDirectoryTree()); } };
+					SelectionAdapter lsJobs = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportJobs(directoryTree); } };
 					miJobs.addSelectionListener( lsJobs );
 				}
 				break;
@@ -785,7 +804,7 @@ public class RepositoryExplorerDialog extends Dialog
 					miNew.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.ConnectionsRoot.New")); //$NON-NLS-1$
 					SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newDatabase(); } };
 					miNew.addSelectionListener( lsNew );
-					miNew.setEnabled(!userinfo.isReadonly());
+					miNew.setEnabled(!readonly);
 				}
 				break;
 				
@@ -796,19 +815,19 @@ public class RepositoryExplorerDialog extends Dialog
 					miNew.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Connections.New")); //$NON-NLS-1$
 					SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newDatabase(); } };
 					miNew.addSelectionListener( lsNew );
-					miNew.setEnabled(!userinfo.isReadonly());
+					miNew.setEnabled(!readonly);
 					// Edit database info
 					MenuItem miEdit  = new MenuItem(mTree, SWT.PUSH); 
 					miEdit.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Connections.Edit")); //$NON-NLS-1$
 					SelectionAdapter lsEdit = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editDatabase(item); } };
 					miEdit.addSelectionListener( lsEdit );
-					miEdit.setEnabled(!userinfo.isReadonly());
+					miEdit.setEnabled(!readonly);
 					// Delete database info
 					MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
 					miDel.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Connections.Delete")); //$NON-NLS-1$
 					SelectionAdapter lsDel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delDatabase(item); } };
 					miDel.addSelectionListener( lsDel );
-					miDel.setEnabled(!userinfo.isReadonly());
+					miDel.setEnabled(!readonly);
 				}
 				break;
 
@@ -819,7 +838,7 @@ public class RepositoryExplorerDialog extends Dialog
                     miNew.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Slave.New")); //$NON-NLS-1$
                     SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newSlaveServer(); } };
                     miNew.addSelectionListener( lsNew );
-                    miNew.setEnabled(!userinfo.isReadonly());
+                    miNew.setEnabled(!readonly);
                 }
                 break;
 				
@@ -830,19 +849,19 @@ public class RepositoryExplorerDialog extends Dialog
                     miNew.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Slave.New")); //$NON-NLS-1$
                     SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newSlaveServer(); } };
                     miNew.addSelectionListener( lsNew );
-                    miNew.setEnabled(!userinfo.isReadonly());
+                    miNew.setEnabled(!readonly);
                     // Edit slave
                     MenuItem miEdit  = new MenuItem(mTree, SWT.PUSH); 
                     miEdit.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Slave.Edit")); //$NON-NLS-1$
                     SelectionAdapter lsEdit = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editSlaveServer(item); } };
                     miEdit.addSelectionListener( lsEdit );
-                    miEdit.setEnabled(!userinfo.isReadonly());
+                    miEdit.setEnabled(!readonly);
                     // Delete slave
                     MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
                     miDel.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Slave.Delete")); //$NON-NLS-1$
                     SelectionAdapter lsDel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delSlaveServer(item); } };
                     miDel.addSelectionListener( lsDel );
-                    miDel.setEnabled(!userinfo.isReadonly());
+                    miDel.setEnabled(!readonly);
                 }
                 break;
 
@@ -854,7 +873,7 @@ public class RepositoryExplorerDialog extends Dialog
                     miNew.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.PartitionSchema.New")); //$NON-NLS-1$
                     SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newPartitionSchema(); } };
                     miNew.addSelectionListener( lsNew );
-                    miNew.setEnabled(!userinfo.isReadonly());
+                    miNew.setEnabled(!readonly);
                 }
                 break;
 
@@ -865,19 +884,19 @@ public class RepositoryExplorerDialog extends Dialog
                     miNew.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.PartitionSchema.New")); //$NON-NLS-1$
                     SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newPartitionSchema(); } };
                     miNew.addSelectionListener( lsNew );
-                    miNew.setEnabled(!userinfo.isReadonly());
+                    miNew.setEnabled(!readonly);
                     // Edit partition schema
                     MenuItem miEdit  = new MenuItem(mTree, SWT.PUSH); 
                     miEdit.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.PartitionSchema.Edit")); //$NON-NLS-1$
                     SelectionAdapter lsEdit = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editPartitionSchema(item); } };
                     miEdit.addSelectionListener( lsEdit );
-                    miEdit.setEnabled(!userinfo.isReadonly());
+                    miEdit.setEnabled(!readonly);
                     // Delete partition schema
                     MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
                     miDel.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.PartitionSchema.Delete")); //$NON-NLS-1$
                     SelectionAdapter lsDel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delPartitionSchema(item); } };
                     miDel.addSelectionListener( lsDel );
-                    miDel.setEnabled(!userinfo.isReadonly());
+                    miDel.setEnabled(!readonly);
                 }
                 break;
 
@@ -888,7 +907,7 @@ public class RepositoryExplorerDialog extends Dialog
                     miNew.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Cluster.New")); //$NON-NLS-1$
                     SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newCluster(); } };
                     miNew.addSelectionListener( lsNew );
-                    miNew.setEnabled(!userinfo.isReadonly());
+                    miNew.setEnabled(!readonly);
                 }
                 break;
 
@@ -899,19 +918,19 @@ public class RepositoryExplorerDialog extends Dialog
                     miNew.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Cluster.New")); //$NON-NLS-1$
                     SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newCluster(); } };
                     miNew.addSelectionListener( lsNew );
-                    miNew.setEnabled(!userinfo.isReadonly());
+                    miNew.setEnabled(!readonly);
                     // Edit cluster
                     MenuItem miEdit  = new MenuItem(mTree, SWT.PUSH); 
                     miEdit.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Cluster.Edit")); //$NON-NLS-1$
                     SelectionAdapter lsEdit = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editCluster(item); } };
                     miEdit.addSelectionListener( lsEdit );
-                    miEdit.setEnabled(!userinfo.isReadonly());
+                    miEdit.setEnabled(!readonly);
                     // Delete cluster
                     MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
                     miDel.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Cluster.Delete")); //$NON-NLS-1$
                     SelectionAdapter lsDel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delCluster(item); } };
                     miDel.addSelectionListener( lsDel );
-                    miDel.setEnabled(!userinfo.isReadonly());
+                    miDel.setEnabled(!readonly);
                 }
                 break;
 			case ITEM_CATEGORY_TRANSFORMATIONS_ROOT        :
@@ -924,7 +943,7 @@ public class RepositoryExplorerDialog extends Dialog
 					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
 					
 					// Find the directory in the directory tree...
-					final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
+					final RepositoryDirectory repdir = directoryTree.findDirectory(realpath);
 
 					// Open transformation...
 					MenuItem miOpen  = new MenuItem(mTree, SWT.PUSH); 
@@ -951,7 +970,7 @@ public class RepositoryExplorerDialog extends Dialog
 						}
 					);
 					// Rename transformation
-					miDel.setEnabled(!userinfo.isReadonly());
+					miDel.setEnabled(!readonly);
 					MenuItem miRen  = new MenuItem(mTree, SWT.PUSH); 
 					miRen.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Rename")); //$NON-NLS-1$
 					miRen.addSelectionListener( 
@@ -963,7 +982,7 @@ public class RepositoryExplorerDialog extends Dialog
 							}
 						}
 					);
-					miRen.setEnabled(!userinfo.isReadonly());
+					miRen.setEnabled(!readonly);
 				}
 				break;
 				
@@ -976,14 +995,14 @@ public class RepositoryExplorerDialog extends Dialog
 					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
 					
 					// Find the directory in the directory tree...
-					final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
+					final RepositoryDirectory repdir = directoryTree.findDirectory(realpath);
 
 					// Export xforms and jobs from directory
 					MenuItem miExp  = new MenuItem(mTree, SWT.PUSH); 
 					miExp.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Objects.ExportAll")); //$NON-NLS-1$
 					SelectionAdapter lsExp = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportAll(repdir); } };
 					miExp.addSelectionListener( lsExp );
-					miExp.setEnabled(!userinfo.isReadonly());
+					miExp.setEnabled(!readonly);
 					
 					if (cat == ITEM_CATEGORY_TRANSFORMATION_DIRECTORY)
 					{
@@ -1055,7 +1074,7 @@ public class RepositoryExplorerDialog extends Dialog
 					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
 					
 					// Find the directory in the directory tree...
-					final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
+					final RepositoryDirectory repdir = directoryTree.findDirectory(realpath);
 	
                     // Open job...
                     MenuItem miOpen  = new MenuItem(mTree, SWT.PUSH); 
@@ -1082,7 +1101,7 @@ public class RepositoryExplorerDialog extends Dialog
 						}
 					);
 					// Rename job
-					miDel.setEnabled(!userinfo.isReadonly());
+					miDel.setEnabled(!readonly);
 					MenuItem miRen  = new MenuItem(mTree, SWT.PUSH); 
 					miRen.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.Rename")); //$NON-NLS-1$
 					miRen.addSelectionListener( 
@@ -1094,7 +1113,7 @@ public class RepositoryExplorerDialog extends Dialog
 							}
 						}
 					);
-					miRen.setEnabled(!userinfo.isReadonly());
+					miRen.setEnabled(!readonly);
 				}
 				break;
 				
@@ -1106,7 +1125,7 @@ public class RepositoryExplorerDialog extends Dialog
 					miNew.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.UsersRoot.New")); //$NON-NLS-1$
 					SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newUser(); } };
 					miNew.addSelectionListener( lsNew );
-					miNew.setEnabled(!userinfo.isReadonly());
+					miNew.setEnabled(!readonly);
 				}
 				break;
 				
@@ -1117,25 +1136,25 @@ public class RepositoryExplorerDialog extends Dialog
 					miNew.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Users.New")); //$NON-NLS-1$
 					SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newUser(); } };
 					miNew.addSelectionListener( lsNew );
-					miNew.setEnabled(!userinfo.isReadonly());
+					miNew.setEnabled(!readonly);
 					// Edit user info
 					MenuItem miEdit  = new MenuItem(mTree, SWT.PUSH); 
 					miEdit.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Users.Edit")); //$NON-NLS-1$
 					SelectionAdapter lsEdit = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editUser(item); } };
 					miEdit.addSelectionListener( lsEdit );
-					miEdit.setEnabled(!userinfo.isReadonly());
+					miEdit.setEnabled(!readonly);
 					// Rename user
 					MenuItem miRen = new MenuItem(mTree, SWT.PUSH); 
 					miRen.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Users.Rename")); //$NON-NLS-1$
 					SelectionAdapter lsRen = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { renameUser(); } };
 					miRen.addSelectionListener( lsRen );
-					miRen.setEnabled(!userinfo.isReadonly());
+					miRen.setEnabled(!readonly);
 					// Delete user info
 					MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
 					miDel.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Users.Delete")); //$NON-NLS-1$
 					SelectionAdapter lsDel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delUser(item); } };
 					miDel.addSelectionListener( lsDel );
-					miDel.setEnabled(!userinfo.isReadonly());
+					miDel.setEnabled(!readonly);
 				}
 				break;
 				
@@ -1145,7 +1164,7 @@ public class RepositoryExplorerDialog extends Dialog
 					miNew.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.ProfilesRoot.New")); //$NON-NLS-1$
 					SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newProfile(); } };
 					miNew.addSelectionListener( lsNew );
-					miNew.setEnabled(!userinfo.isReadonly());
+					miNew.setEnabled(!readonly);
 				}
 				break;
 				
@@ -1156,25 +1175,25 @@ public class RepositoryExplorerDialog extends Dialog
 					miNew.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Profiles.New")); //$NON-NLS-1$
 					SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newProfile(); } };
 					miNew.addSelectionListener( lsNew );
-					miNew.setEnabled(!userinfo.isReadonly());
+					miNew.setEnabled(!readonly);
 					// Edit profile info
 					MenuItem miEdit  = new MenuItem(mTree, SWT.PUSH); 
 					miEdit.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.ProfilesRoot.Edit")); //$NON-NLS-1$
 					SelectionAdapter lsEdit = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editProfile(item); } };
 					miEdit.addSelectionListener( lsEdit );
-					miEdit.setEnabled(!userinfo.isReadonly());
+					miEdit.setEnabled(!readonly);
 					// Rename profile
 					MenuItem miRen = new MenuItem(mTree, SWT.PUSH); 
 					miRen.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.ProfilesRoot.Rename")); //$NON-NLS-1$
 					SelectionAdapter lsRen = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { renameProfile(); } };
 					miRen.addSelectionListener( lsRen );
-					miRen.setEnabled(!userinfo.isReadonly());
+					miRen.setEnabled(!readonly);
 					// Delete profile info
 					MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
 					miDel.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.ProfilesRoot.Delete")); //$NON-NLS-1$
 					SelectionAdapter lsDel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delProfile(item); } };
 					miDel.addSelectionListener( lsDel );
-					miDel.setEnabled(!userinfo.isReadonly());
+					miDel.setEnabled(!readonly);
 				}
 				break;
 				
@@ -1213,7 +1232,7 @@ public class RepositoryExplorerDialog extends Dialog
 					for (int i=0;i<path.length;i++) path[i] = text[i+2];
 					
 					// Find the directory in the directory tree...
-					RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(path);
+					RepositoryDirectory repdir = directoryTree.findDirectory(path);
 	
 					if (repdir!=null) renameTransformation(name, repdir); 
 				}
@@ -1227,7 +1246,7 @@ public class RepositoryExplorerDialog extends Dialog
 					for (int i=0;i<path.length;i++) path[i] = text[i+2];
 					
 					// Find the directory in the directory tree...
-					RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(path);
+					RepositoryDirectory repdir = directoryTree.findDirectory(path);
 	
 					if (repdir!=null) renameJob(name, repdir); 
 				}
@@ -1258,7 +1277,7 @@ public class RepositoryExplorerDialog extends Dialog
 			wTree.removeAll();
 			
 			// Load the directory tree:
-			rep.setDirectoryTree( rep.loadRepositoryDirectoryTree() );
+			directoryTree = rep.loadRepositoryDirectoryTree();
 	
 			TreeItem tiTree = new TreeItem(wTree, SWT.NONE); 
 			tiTree.setImage(GUIResource.getInstance().getImageFolderConnections());
@@ -1268,7 +1287,8 @@ public class RepositoryExplorerDialog extends Dialog
 			TreeItem tiParent = new TreeItem(tiTree, SWT.NONE); 
 			tiParent.setImage(GUIResource.getInstance().getImageBol());
 			tiParent.setText(STRING_DATABASES);
-            if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiParent, new DoubleClickInterface() { public void action(TreeItem treeItem) { newDatabase(); } });
+			
+            if (!!readonly) TreeItemAccelerator.addDoubleClick(tiParent, new DoubleClickInterface() { public void action(TreeItem treeItem) { newDatabase(); } });
 	
 			String names[] = rep.getDatabaseNames();			
 			for (int i=0;i<names.length;i++)
@@ -1276,14 +1296,14 @@ public class RepositoryExplorerDialog extends Dialog
 				TreeItem newDB = new TreeItem(tiParent, SWT.NONE);
 				newDB.setImage(GUIResource.getInstance().getImageConnection());
 				newDB.setText(Const.NVL(names[i], ""));
-                if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newDB, new DoubleClickInterface() { public void action(TreeItem treeItem) { editDatabase(treeItem.getText()); } });
+                if (!readonly) TreeItemAccelerator.addDoubleClick(newDB, new DoubleClickInterface() { public void action(TreeItem treeItem) { editDatabase(treeItem.getText()); } });
 			}
 	
             // The partition schemas...             
             tiParent = new TreeItem(tiTree, SWT.NONE); 
             tiParent.setImage(GUIResource.getInstance().getImageBol());
             tiParent.setText(STRING_PARTITIONS);
-            if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiParent, 
+            if (!readonly) TreeItemAccelerator.addDoubleClick(tiParent, 
             		new DoubleClickInterface() { public void action(TreeItem treeItem) { newPartitionSchema(); } });            
     
             names = rep.getPartitionSchemaNames();          
@@ -1292,7 +1312,7 @@ public class RepositoryExplorerDialog extends Dialog
                 TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
                 newItem.setImage(GUIResource.getInstance().getImageFolderConnections());
                 newItem.setText(Const.NVL(names[i], ""));
-                if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newItem, 
+                if (!readonly) TreeItemAccelerator.addDoubleClick(newItem, 
                 		new DoubleClickInterface() { public void action(TreeItem treeItem) { editPartitionSchema(treeItem.getText()); } });                            
             }
             
@@ -1300,7 +1320,7 @@ public class RepositoryExplorerDialog extends Dialog
             tiParent = new TreeItem(tiTree, SWT.NONE); 
             tiParent.setImage(GUIResource.getInstance().getImageBol());
             tiParent.setText(STRING_SLAVES);
-            if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiParent, new DoubleClickInterface() { public void action(TreeItem treeItem) { newSlaveServer(); } });
+            if (!readonly) TreeItemAccelerator.addDoubleClick(tiParent, new DoubleClickInterface() { public void action(TreeItem treeItem) { newSlaveServer(); } });
 
             names = rep.getSlaveNames();          
             for (int i=0;i<names.length;i++)
@@ -1308,14 +1328,14 @@ public class RepositoryExplorerDialog extends Dialog
                 TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
                 newItem.setImage(GUIResource.getInstance().getImageSlave());
                 newItem.setText(Const.NVL(names[i], ""));
-                if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newItem, new DoubleClickInterface() { public void action(TreeItem treeItem) { editSlaveServer(treeItem.getText()); } });
+                if (!readonly) TreeItemAccelerator.addDoubleClick(newItem, new DoubleClickInterface() { public void action(TreeItem treeItem) { editSlaveServer(treeItem.getText()); } });
             }
             
             // The clusters ...
             tiParent = new TreeItem(tiTree, SWT.NONE); 
             tiParent.setImage(GUIResource.getInstance().getImageBol());
             tiParent.setText(STRING_CLUSTERS);
-            if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiParent, 
+            if (!readonly) TreeItemAccelerator.addDoubleClick(tiParent, 
             		new DoubleClickInterface() { public void action(TreeItem treeItem) { newCluster(); } });            
     
             names = rep.getClusterNames();          
@@ -1324,12 +1344,12 @@ public class RepositoryExplorerDialog extends Dialog
                 TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
                 newItem.setImage(GUIResource.getInstance().getImageCluster());
                 newItem.setText(Const.NVL(names[i], ""));
-                if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newItem, 
+                if (!readonly) TreeItemAccelerator.addDoubleClick(newItem, 
                 		new DoubleClickInterface() { public void action(TreeItem treeItem) { editCluster(treeItem.getText()); } });                            
             }
     
 			// The transformations...				
-			if (userinfo.useTransformations())
+			if (!capabilities.supportsUsers() || userinfo.useTransformations())
 			{
 				TreeItem tiTrans = new TreeItem(tiTree, SWT.NONE); 
 				tiTrans.setImage(GUIResource.getInstance().getImageTransGraph());
@@ -1338,11 +1358,11 @@ public class RepositoryExplorerDialog extends Dialog
 				TreeItem newCat = new TreeItem(tiTrans, SWT.NONE);
 				newCat.setImage(GUIResource.getInstance().getImageLogoSmall());
 	    		Color dircolor = GUIResource.getInstance().getColorDirectory();
-				RepositoryDirectoryUI.getTreeWithNames(newCat, rep, dircolor, sortColumn, ascending, true, false, rep.getDirectoryTree(), null);
+				RepositoryDirectoryUI.getTreeWithNames(newCat, rep, dircolor, sortColumn, ascending, true, false, directoryTree, null);
 			}
 			
 			// The Jobs...				
-			if (userinfo.useJobs())
+			if (!capabilities.supportsUsers() || userinfo.useJobs())
 			{
 				TreeItem tiJob = new TreeItem(tiTree, SWT.NONE); 
 				tiJob.setImage(GUIResource.getInstance().getImageJobGraph());
@@ -1351,51 +1371,53 @@ public class RepositoryExplorerDialog extends Dialog
 				TreeItem newJob = new TreeItem(tiJob, SWT.NONE);
 				newJob.setImage(GUIResource.getInstance().getImageLogoSmall());
 	    		Color dircolor = GUIResource.getInstance().getColorDirectory();
-				RepositoryDirectoryUI.getTreeWithNames(newJob, rep, dircolor, sortColumn, ascending, false, true, rep.getDirectoryTree(), null);
+				RepositoryDirectoryUI.getTreeWithNames(newJob, rep, dircolor, sortColumn, ascending, false, true, directoryTree, null);
 			}
 	
 			//
 			// Add the users or only yourself
 			//
-			TreeItem tiUser = new TreeItem(tiTree, SWT.NONE);
-			tiUser.setImage(GUIResource.getInstance().getImageBol());
-			tiUser.setText(STRING_USERS);
-            if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiUser, new DoubleClickInterface() { public void action(TreeItem treeItem) { newUser(); } });
-			
-			String users[] = rep.getUserLogins();
-			for (int i=0;i<users.length;i++)
-			{
-				if (userinfo.isAdministrator() || userinfo.getLogin().equalsIgnoreCase(users[i]))
+			if (capabilities.supportsUsers()) {
+				TreeItem tiUser = new TreeItem(tiTree, SWT.NONE);
+				tiUser.setImage(GUIResource.getInstance().getImageBol());
+				tiUser.setText(STRING_USERS);
+	            if (!readonly) TreeItemAccelerator.addDoubleClick(tiUser, new DoubleClickInterface() { public void action(TreeItem treeItem) { newUser(); } });
+				
+				String users[] = rep.getUserLogins();
+				for (int i=0;i<users.length;i++)
 				{
-					if ( users[i] != null )
+					if (userinfo.isAdministrator() || userinfo.getLogin().equalsIgnoreCase(users[i]))
 					{
-						// If users[i] is null TreeWidget will throw exceptions.
-						// The solution is to verify on saving a user.
-					    TreeItem newUser = new TreeItem(tiUser, SWT.NONE);
-					    newUser.setImage(GUIResource.getInstance().getImageUser());
-					    newUser.setText(users[i]);
-                        if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newUser, new DoubleClickInterface() { public void action(TreeItem treeItem) { editUser(treeItem.getText()); } });
+						if ( users[i] != null )
+						{
+							// If users[i] is null TreeWidget will throw exceptions.
+							// The solution is to verify on saving a user.
+						    TreeItem newUser = new TreeItem(tiUser, SWT.NONE);
+						    newUser.setImage(GUIResource.getInstance().getImageUser());
+						    newUser.setText(users[i]);
+	                        if (!readonly) TreeItemAccelerator.addDoubleClick(newUser, new DoubleClickInterface() { public void action(TreeItem treeItem) { editUser(treeItem.getText()); } });
+						}
 					}
 				}
-			}
-	
-			//
-			// Add the profiles if you're admin...
-			//
-			if (userinfo.isAdministrator())
-			{
-				TreeItem tiProf = new TreeItem(tiTree, SWT.NONE);
-				tiProf.setImage(GUIResource.getInstance().getImageBol());
-				tiProf.setText(STRING_PROFILES);
-                TreeItemAccelerator.addDoubleClick(tiProf, new DoubleClickInterface() { public void action(TreeItem treeItem) { newProfile(); } });
-
-				String prof[] = rep.getProfiles();
-				for (int i=0;i<prof.length;i++)
+		
+				//
+				// Add the profiles if you're admin...
+				//
+				if (userinfo.isAdministrator())
 				{
-					TreeItem newProf = new TreeItem(tiProf, SWT.NONE);
-					newProf.setImage(GUIResource.getInstance().getImageProfil());
-					newProf.setText(prof[i]);
-                    TreeItemAccelerator.addDoubleClick(newProf, new DoubleClickInterface() { public void action(TreeItem treeItem) { editProfile(treeItem.getText()); } });
+					TreeItem tiProf = new TreeItem(tiTree, SWT.NONE);
+					tiProf.setImage(GUIResource.getInstance().getImageBol());
+					tiProf.setText(STRING_PROFILES);
+	                TreeItemAccelerator.addDoubleClick(tiProf, new DoubleClickInterface() { public void action(TreeItem treeItem) { newProfile(); } });
+	
+					String prof[] = rep.getProfiles();
+					for (int i=0;i<prof.length;i++)
+					{
+						TreeItem newProf = new TreeItem(tiProf, SWT.NONE);
+						newProf.setImage(GUIResource.getInstance().getImageProfil());
+						newProf.setText(prof[i]);
+	                    TreeItemAccelerator.addDoubleClick(newProf, new DoubleClickInterface() { public void action(TreeItem treeItem) { editProfile(treeItem.getText()); } });
+					}
 				}
 			}
             
@@ -1464,11 +1486,11 @@ public class RepositoryExplorerDialog extends Dialog
 			
 			try
 			{
-				long id = rep.getTransformationID(ti.getText(), repdir);
+				ObjectId id = rep.getTransformationID(ti.getText(), repdir);
 		
 				// System.out.println("Deleting transformation ["+name+"] with ID = "+id);
 		
-				if (id>0)
+				if (id!=null)
 				{
 					// System.out.println("OK, Deleting transformation ["+name+"] with ID = "+id);
 					
@@ -1586,11 +1608,11 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.getTransformationID(name, repdir);
-				if (id>0)
+				ObjectId id = rep.getTransformationID(name, repdir);
+				if (id!=null)
 				{
 					// System.out.println("Renaming transformation ["+name+"] with ID = "+id);
-					rep.renameTransformation(id, newname);
+					rep.renameTransformation(id, repdir, newname);
 					retval=true;
 				}
 			}
@@ -1629,13 +1651,14 @@ public class RepositoryExplorerDialog extends Dialog
                 debug = "dirname="+dirname+", transname="+transname; //$NON-NLS-1$ //$NON-NLS-2$
     
     			// OK, find this transformation...
-    			RepositoryDirectory fromdir = rep.getDirectoryTree().findDirectory(dirname);
+    			RepositoryDirectory fromdir = directoryTree.findDirectory(dirname);
     			if (fromdir!=null)
     			{
                     debug = "fromdir found: move transformation!"; //$NON-NLS-1$
-                    long existingTransID = rep.getTransformationID(transname, repdir);
-                    if (existingTransID == -1) {
-	                    rep.moveTransformation(transname, fromdir.getID(), repdir.getID());
+                    ObjectId existingTransID = rep.getTransformationID(transname, repdir);
+                    if (existingTransID == null) {
+                    	ObjectId id = rep.getTransformationID(transname, fromdir);
+                    	rep.renameTransformation(id, repdir, transname);
 	    				retval=true;
                     }
                     else
@@ -1682,13 +1705,14 @@ public class RepositoryExplorerDialog extends Dialog
                 debug = "dirname="+dirname+", jobname="+jobname; //$NON-NLS-1$ //$NON-NLS-2$
     
     			// OK, find this transformation...
-    			RepositoryDirectory fromdir = rep.getDirectoryTree().findDirectory(dirname);
+    			RepositoryDirectory fromdir = directoryTree.findDirectory(dirname);
     			if (fromdir!=null)
     			{
                     debug = "fromdir found: move job!"; //$NON-NLS-1$
-                    long existingjobID = rep.getJobID(jobname, repdir);
-                    if (existingjobID == -1) {
-                    	rep.moveJob(jobname, fromdir.getID(), repdir.getID());
+                    ObjectId existingjobID = rep.getJobId(jobname, repdir);
+                    if (existingjobID == null) {
+                    	ObjectId id = rep.getJobId(jobname, fromdir);
+                    	rep.renameJob(id, repdir, jobname);
                     	retval=true;
                     }
                     else 
@@ -1796,11 +1820,11 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.getJobID(name, repdir);
-				if (id>0)
+				ObjectId id = rep.getJobId(name, repdir);
+				if (id!=null)
 				{
 					System.out.println("Renaming job ["+name+"] with ID = "+id);
-					rep.renameJob(id, newname);
+					rep.renameJob(id, repdir, newname);
 					retval=true;
 				}
 			}
@@ -1826,11 +1850,11 @@ public class RepositoryExplorerDialog extends Dialog
 		
 		try
 		{
-			long id = rep.getJobID(name, repdir);
+			ObjectId id = rep.getJobId(name, repdir);
 	
 			// System.out.println("Deleting transformation ["+name+"] with ID = "+id);
 	
-			if (id>0)
+			if (id!=null)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
 				mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Job.Delete.Confirmation.Message")); //$NON-NLS-1$
@@ -1933,11 +1957,11 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.getJobID(name, repdir);
-				if (id>0)
+				ObjectId id = rep.getJobId(name, repdir);
+				if (id!=null)
 				{
 					// System.out.println("Renaming transformation ["+name+"] with ID = "+id);
-					rep.renameJob(id, newname);
+					rep.renameJob(id, repdir, newname);
 					retval=true;
 				}
 				else
@@ -1964,7 +1988,7 @@ public class RepositoryExplorerDialog extends Dialog
 			UserInfo uinfo = rep.loadUserInfo(login); // Get UserInfo from repository...
 			UserDialog ud = new UserDialog(shell, SWT.NONE, rep, uinfo);
 			UserInfo ui = ud.open();
-			if (!userinfo.isReadonly())
+			if (!readonly)
 			{
 				if (ui!=null)
 				{
@@ -2020,10 +2044,10 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long isUser = rep.getUserID(login);
-			if (isUser>0)
+			ObjectId idUser = rep.getUserID(login);
+			if (idUser!=null)
 			{
-				rep.delUser(isUser);
+				rep.delUser(idUser);
 			}
 		}
 		catch(KettleException e)
@@ -2111,8 +2135,8 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.getUserID(name);
-				if (id>0)
+				ObjectId id = rep.getUserID(name);
+				if (id!=null)
 				{
 					// System.out.println("Renaming user ["+name+"] with ID = "+id);
 					rep.renameUser(id, newname);
@@ -2214,8 +2238,8 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.getProfileID(name);
-				if (id>0)
+				ObjectId id = rep.getProfileID(name);
+				if (id!=null)
 				{
 					rep.renameProfile(id, newname);
 					retval=true;
@@ -2242,14 +2266,14 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long idDatabase = rep.getDatabaseID(databasename);
+			ObjectId idDatabase = rep.getDatabaseID(databasename);
 			DatabaseMeta databaseMeta = rep.loadDatabaseMeta(idDatabase);
 
 			DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
 			String name = dd.open();
 			if (name!=null)
 			{
-				if (!userinfo.isReadonly())
+				if (!readonly)
 				{
                     rep.insertLogEntry("Updating database connection '"+databaseMeta.getName()+"'");
                     rep.save(databaseMeta);
@@ -2281,8 +2305,8 @@ public class RepositoryExplorerDialog extends Dialog
 			if (name!=null)
 			{
 				// See if this user already exists...
-				long idDatabase = rep.getDatabaseID(name);
-				if (idDatabase<=0)
+				ObjectId idDatabase = rep.getDatabaseID(name);
+				if (idDatabase==null)
 				{
                     rep.insertLogEntry("Creating new database '"+databaseMeta.getName()+"'");
                     rep.save(databaseMeta);
@@ -2399,8 +2423,8 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				long id = rep.getDatabaseID(name);
-				if (id>0)
+				ObjectId id = rep.getDatabaseID(name);
+				if (id!=null)
 				{
 					// System.out.println("Renaming transformation ["+name+"] with ID = "+id);
 					rep.renameDatabase(id, newname);
@@ -2522,7 +2546,7 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long idProfile = rep.getProfileID(profilename);
+			ObjectId idProfile = rep.getProfileID(profilename);
 			ProfileMeta profinfo = rep.loadProfileMeta(idProfile);
 			
 			// System.out.println("editProfile, nrPermissions = "+profinfo.nrPermissions());
@@ -2552,8 +2576,8 @@ public class RepositoryExplorerDialog extends Dialog
 			if (name!=null)
 			{
 				// See if this user already exists...
-				long idProfile = rep.getProfileID(name);
-				if (idProfile<=0)
+				ObjectId idProfile = rep.getProfileID(name);
+				if (idProfile==null)
 				{
 					rep.saveProfile(profinfo);
 				}
@@ -2580,8 +2604,8 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long idProfile = rep.getProfileID(profilename);
-			if (idProfile>0)
+			ObjectId idProfile = rep.getProfileID(profilename);
+			if (idProfile!=null)
 			{
 				rep.delProfile(idProfile);
 			}
@@ -2603,7 +2627,7 @@ public class RepositoryExplorerDialog extends Dialog
 			RepositoryDirectory rd = new RepositoryDirectory(repdir, newdir);
 			String path[] = rd.getPathArray();
 			
-			RepositoryDirectory exists = rep.getDirectoryTree().findDirectory( path );
+			RepositoryDirectory exists = directoryTree.findDirectory( path );
 			if (exists==null)
 			{
 				try {
@@ -2653,10 +2677,10 @@ public class RepositoryExplorerDialog extends Dialog
 			{
 				String directory = dialog.getFilterPath();
 				
-				long dirids[] = ((null == root)? rep.getDirectoryTree() : root).getDirectoryIDs();
+				ObjectId dirids[] = ((root == null ) ? directoryTree : root).getDirectoryIDs();
 				for (int d=0;d<dirids.length;d++)
 				{
-					RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(dirids[d]);				
+					RepositoryDirectory repdir = directoryTree.findDirectory(dirids[d]);				
 					String trans[] = rep.getTransformationNames(dirids[d]);
 				
 					// See if the directory exists...
@@ -2715,10 +2739,10 @@ public class RepositoryExplorerDialog extends Dialog
 			{
 				String directory = dialog.getFilterPath();
 	
-				long dirids[] = ((null == root)? rep.getDirectoryTree() : root).getDirectoryIDs();
+				ObjectId dirids[] = ((null == root)? directoryTree : root).getDirectoryIDs();
 				for (int d=0;d<dirids.length;d++)
 				{
-					RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(dirids[d]);				
+					RepositoryDirectory repdir = directoryTree.findDirectory(dirids[d]);				
 					String jobs[] = rep.getJobNames(dirids[d]);
 
 					// See if the directory exists...
@@ -2731,7 +2755,7 @@ public class RepositoryExplorerDialog extends Dialog
 				
 					for (int i=0;i<jobs.length;i++)
 					{
-						JobMeta ji = rep.loadJobMeta(jobs[i], repdir, null);
+						JobMeta ji = rep.loadJob(jobs[i], repdir, null);
 						log.logBasic("Exporting Jobs", "["+jobs[i]+"] in directory ["+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 						String xml = XMLHandler.getXMLHeader() + ji.getXML();
@@ -2872,8 +2896,8 @@ public class RepositoryExplorerDialog extends Dialog
             if (dd.open())
             {
                 // See if this slave server already exists...
-                long idSlave = rep.getSlaveID(slaveServer.getName());
-                if (idSlave<=0)
+                ObjectId idSlave = rep.getSlaveID(slaveServer.getName());
+                if (idSlave==null)
                 {
                     rep.insertLogEntry("Creating new slave server '"+slaveServer.getName()+"'");
                     rep.save(slaveServer);
@@ -2899,7 +2923,7 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.getSlaveID(slaveName);
+            ObjectId id = rep.getSlaveID(slaveName);
             SlaveServer slaveServer = rep.loadSlaveServer(id);
 
             SlaveServerDialog dd = new SlaveServerDialog(shell, slaveServer);
@@ -2920,8 +2944,8 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.getSlaveID(slaveName);
-            if (id>0)
+            ObjectId id = rep.getSlaveID(slaveName);
+            if (id!=null)
             {
                 rep.delSlave(id);
             }
@@ -2943,8 +2967,8 @@ public class RepositoryExplorerDialog extends Dialog
             if (dd.open())
             {
                 // See if this slave server already exists...
-                long idPartitionSchema = rep.getPartitionSchemaID(partitionSchema.getName());
-                if (idPartitionSchema<=0)
+                ObjectId idPartitionSchema = rep.getPartitionSchemaID(partitionSchema.getName());
+                if (idPartitionSchema==null)
                 {
                     rep.insertLogEntry("Creating new partition schema '"+partitionSchema.getName()+"'");
                     rep.save(partitionSchema);
@@ -2971,7 +2995,7 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.getPartitionSchemaID(partitionSchemaName);
+            ObjectId id = rep.getPartitionSchemaID(partitionSchemaName);
             PartitionSchema partitionSchema = rep.loadPartitionSchema(id);
 
             PartitionSchemaDialog dd = new PartitionSchemaDialog(shell, partitionSchema, rep.readDatabases(), variableSpace);
@@ -2993,8 +3017,8 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.getPartitionSchemaID(partitionSchemaName);
-            if (id>0)
+            ObjectId id = rep.getPartitionSchemaID(partitionSchemaName);
+            if (id!=null)
             {
                 rep.delPartitionSchema(id);
             }
@@ -3017,8 +3041,8 @@ public class RepositoryExplorerDialog extends Dialog
             if (dd.open())
             {
                 // See if this slave server already exists...
-                long idCluster = rep.getClusterID(cluster.getName());
-                if (idCluster<=0)
+                ObjectId idCluster = rep.getClusterID(cluster.getName());
+                if (idCluster==null)
                 {
                     rep.insertLogEntry("Creating new cluster '"+cluster.getName()+"'");
                     rep.save(cluster); 
@@ -3045,7 +3069,7 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.getClusterID(clusterName);
+            ObjectId id = rep.getClusterID(clusterName);
             ClusterSchema cluster = rep.loadClusterSchema(id, rep.getSlaveServers());
 
             ClusterSchemaDialog dd = new ClusterSchemaDialog(shell, cluster, rep.getSlaveServers());
@@ -3067,8 +3091,8 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.getClusterID(clusterName);
-            if (id>0)
+            ObjectId id = rep.getClusterID(clusterName);
+            if (id!=null)
             {
                 rep.delClusterSchema(id);
             }

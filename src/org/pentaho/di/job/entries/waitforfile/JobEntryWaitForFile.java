@@ -39,6 +39,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -122,7 +123,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
@@ -139,16 +140,16 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "filename", filename);
-			rep.saveJobEntryAttribute(id_job, getID(), "maximum_timeout", maximumTimeout);
-			rep.saveJobEntryAttribute(id_job, getID(), "check_cycle_time", checkCycleTime);
-            rep.saveJobEntryAttribute(id_job, getID(), "success_on_timeout", successOnTimeout);
-            rep.saveJobEntryAttribute(id_job, getID(), "file_size_check", fileSizeCheck);
-            rep.saveJobEntryAttribute(id_job, getID(), "add_filename_result", addFilenameToResult);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename", filename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "maximum_timeout", maximumTimeout);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "check_cycle_time", checkCycleTime);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "success_on_timeout", successOnTimeout);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "file_size_check", fileSizeCheck);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "add_filename_result", addFilenameToResult);
 		}
 		catch(KettleDatabaseException dbe)
 		{

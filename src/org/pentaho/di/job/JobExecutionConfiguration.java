@@ -31,9 +31,9 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.repository.KettleDatabaseRepository;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.UserInfo;
 import org.w3c.dom.Node;
@@ -467,9 +467,10 @@ public class JobExecutionConfiguration implements Cloneable
             
             // Verify that the repository exists on the slave server...
             //
-            RepositoriesMeta repositoriesMeta = new RepositoriesMeta(LogWriter.getInstance());
-            if (!repositoriesMeta.readData())
-            {
+            RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
+            try {
+            	repositoriesMeta.readData();
+            } catch(Exception e) {
             	throw new KettleException("Unable to get a list of repositories to locate repository '"+repositoryName+"'");
             }
         	RepositoryMeta repositoryMeta = repositoriesMeta.findRepository(repositoryName);
@@ -477,13 +478,15 @@ public class JobExecutionConfiguration implements Cloneable
         	{
         		throw new KettleException("I couldn't find the repository with name '"+repositoryName+"'");
         	}
-    		Repository rep = new KettleDatabaseRepository(repositoryMeta, null);
-			if (!rep.connect("Job execution configuration"))
-			{
+    		Repository rep = RepositoryLoader.createRepository(repositoryMeta, null);
+    		
+			try {
+				rep.connect("Job execution configuration");
+			} catch(Exception e) {
 				throw new KettleException("Unable to connect to the repository with name '"+repositoryName+"'");
 			}
 			UserInfo userInfo = rep.loadUserInfo(username, password);
-			if (userInfo.getID()<=0)
+			if (userInfo.getObjectId()==null)
 			{
 				rep.disconnect();
 				throw new KettleException("Unable to verify username '"+username+"' credentials for the repository with name '"+repositoryName+"'");

@@ -43,6 +43,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -164,7 +165,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 		try
@@ -184,17 +185,12 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			prorityvalue    =(int) rep.getJobEntryAttributeInteger(id_jobentry, "prorityvalue");
 			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
 
-			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
-			if (id_db>0)
-			{
-				connection = DatabaseMeta.findDatabase(databases, id_db);
-			}
-			else
+			connection = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "id_database");
+			if (connection==null)
 			{
 				// This is were we end up in normally, the previous lines are for backward compatibility.
 				connection = DatabaseMeta.findDatabase(databases, rep.getJobEntryAttributeString(id_jobentry, "connection"));
 			}
-
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -202,30 +198,30 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "schemaname",     schemaname);
-			rep.saveJobEntryAttribute(id_job, getID(), "tablename",      tablename);
-			rep.saveJobEntryAttribute(id_job, getID(), "filename",       filename);
-			rep.saveJobEntryAttribute(id_job, getID(), "separator",      separator);
-			rep.saveJobEntryAttribute(id_job, getID(), "enclosed",       enclosed);
-			rep.saveJobEntryAttribute(id_job, getID(), "escaped",       escaped);
-			rep.saveJobEntryAttribute(id_job, getID(), "linestarted",    linestarted);
-			rep.saveJobEntryAttribute(id_job, getID(), "lineterminated", lineterminated);
-			rep.saveJobEntryAttribute(id_job, getID(), "replacedata",    replacedata);
-			rep.saveJobEntryAttribute(id_job, getID(), "ignorelines",    ignorelines);
-			rep.saveJobEntryAttribute(id_job, getID(), "listattribut",   listattribut);
-			rep.saveJobEntryAttribute(id_job, getID(), "localinfile",    localinfile);
-			rep.saveJobEntryAttribute(id_job, getID(), "prorityvalue",   prorityvalue);
-			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "schemaname",     schemaname);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "tablename",      tablename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename",       filename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "separator",      separator);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "enclosed",       enclosed);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "escaped",       escaped);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "linestarted",    linestarted);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "lineterminated", lineterminated);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "replacedata",    replacedata);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "ignorelines",    ignorelines);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "listattribut",   listattribut);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "localinfile",    localinfile);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "prorityvalue",   prorityvalue);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "addfiletoresult", addfiletoresult);
 
 			if (connection!=null) 
 			{
-				rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
+				rep.saveJobEntryAttribute(id_job, getObjectId(), "connection", connection.getName());
 				// Also, save the jobentry-database relationship!
-				rep.insertJobEntryDatabase(id_job, getID(), connection.getID());
+				rep.insertJobEntryDatabase(id_job, getObjectId(), connection.getObjectId());
 			}
 		}
 		catch(KettleDatabaseException dbe)

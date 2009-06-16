@@ -985,4 +985,5 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 	public void setUsedValueListeners(List<ValueUsedListener> usedValueListeners) {
 		this.usedValueListeners = usedValueListeners;
 	}
+
 }

@@ -43,6 +43,7 @@ import org.pentaho.di.job.entries.createfile.JobEntryCreateFile;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
@@ -104,7 +105,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 		}
 	}
 
-	  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	  {
 		try
 		{
@@ -117,12 +118,12 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "foldername", foldername);
-            rep.saveJobEntryAttribute(id_job, getID(), "fail_of_folder_exists", failOfFolderExists);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "foldername", foldername);
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "fail_of_folder_exists", failOfFolderExists);
 		}
 		catch(KettleDatabaseException dbe)
 		{

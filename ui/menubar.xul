@@ -61,6 +61,9 @@ align="vertical" >
                     <menuitem value="repository-disconnect" acceltext="CTRL-D"  accesskey="ctrl-d" disabled="true" label="%Spoon.Menu.Repository.DisconnectRepository"/>
                     <menuitem value="repository-explore" acceltext="CTRL-E"  accesskey="ctrl-e" disabled="true" label="%Spoon.Menu.Repository.ExploreRepository"/>
 					<menuseparator/>
+                    <menuitem value="repository-lock-file" disabled="true" label="%Spoon.Menu.Repository.LockFile"/>
+                    <menuitem value="repository-unlock-file" label="%Spoon.Menu.Repository.UnlockFile"/>
+					<menuseparator/>
                     <menuitem value="repository-edit-user" acceltext="CTRL-U"  accesskey="ctrl-u" disabled="true" label="%Spoon.Menu.Repository.EditCurrentUser"/>
                </menupopup>
 		</menu>

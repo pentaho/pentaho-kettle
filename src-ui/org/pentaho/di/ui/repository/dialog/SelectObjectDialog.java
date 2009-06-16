@@ -37,10 +37,10 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
@@ -59,7 +59,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  */
 public class SelectObjectDialog extends Dialog
 {
-	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = KettleDatabaseRepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private Label        wlTree;
 	private Tree         wTree;
@@ -95,6 +95,10 @@ public class SelectObjectDialog extends Dialog
 
 	private String filterString=null;
 	private Text searchText = null;
+
+	private RepositoryDirectory	directoryTree;
+
+	private RepositoryCapabilities	capabilities;
 	
     public SelectObjectDialog(Shell parent, Repository rep)
     {
@@ -117,6 +121,15 @@ public class SelectObjectDialog extends Dialog
         
         sortColumn = 0;
         ascending = false;
+        
+        // Security enhancements: don't show transformations if the user can't see it.
+        //
+        this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
+        if (capabilities.supportsUsers()) {
+	        this.showTrans = showTransformations && rep.getUserInfo().useTransformations();
+	        this.showJobs = showJobs && rep.getUserInfo().useJobs();
+        }
+        
 	}
 	
 	public String open()
@@ -263,7 +276,7 @@ public class SelectObjectDialog extends Dialog
 
         try
         {
-            rep.refreshRepositoryDirectoryTree();
+            directoryTree = rep.loadRepositoryDirectoryTree();
         }
         catch(KettleException e)
         {
@@ -361,9 +374,9 @@ public class SelectObjectDialog extends Dialog
             ti.setImage(GUIResource.getInstance().getImageFolderConnections());
             ti.setExpanded(true);
             
-			RepositoryDirectoryUI.getTreeWithNames(ti, rep, dircolor, sortColumn, ascending, showTrans, showJobs, rep.getDirectoryTree(), filterString);
+			RepositoryDirectoryUI.getTreeWithNames(ti, rep, dircolor, sortColumn, ascending, showTrans, showJobs, directoryTree, filterString);
         }
-        catch(KettleDatabaseException e)
+        catch(KettleException e)
         {
             new ErrorDialog(shell, BaseMessages.getString(PKG, "SelectObjectDialog.Dialog.UnexpectedError.Title"), BaseMessages.getString(PKG, "SelectObjectDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
@@ -402,7 +415,7 @@ public class SelectObjectDialog extends Dialog
 					String path[] = ConstUI.getTreeStrings(ti.getParentItem());
 					objectName = ti.getText(0);
                     objectType = ti.getText(1);
-					objectDirectory = rep.getDirectoryTree().findDirectory(path);
+					objectDirectory = directoryTree.findDirectory(path);
 					
 					if (objectDirectory!=null)
 					{

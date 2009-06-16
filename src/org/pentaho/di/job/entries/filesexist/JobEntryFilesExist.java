@@ -36,6 +36,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 /**
@@ -119,7 +120,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
@@ -141,16 +142,16 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "filename", filename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename", filename);
 			
 			   // save the arguments...
 		    if (arguments != null) {
 		       for (int i = 0; i < arguments.length; i++) {
-		          rep.saveJobEntryAttribute(id_job, getID(), i, "name", arguments[i]);
+		          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "name", arguments[i]);
 		       }
 		    }
 		}

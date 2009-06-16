@@ -9,6 +9,8 @@ package org.pentaho.di.repository;
  * 
  * We also need to identify the type of the element.
  *   
+ * Finally, we need to be able to optionally identify the revision of the element. 
+ * 
  * @author matt
  *
  */
@@ -19,10 +21,12 @@ public interface RepositoryElementInterface {
 	public void setName(String name);
 	public String getName();
 	
-	public void setID(long id);
-	public long getID();
+	public void setObjectId(ObjectId id);
+	public ObjectId getObjectId();
 	
 	public String getRepositoryElementType();
 	
-	// public void saveInRepository(Repository repository, ProgressMonitorListener monitor) throws KettleException;
+	public RepositoryRevision getRevision();
+	
+	public RepositoryLock getRepositoryLock();
 }

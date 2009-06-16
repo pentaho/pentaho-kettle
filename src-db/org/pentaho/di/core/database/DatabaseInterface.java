@@ -17,6 +17,7 @@ import java.util.Properties;
 
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.repository.ObjectId;
 
 /**
  * This interface describes the methods that a database connection needs to have in order to describe it properly.
@@ -147,12 +148,12 @@ public interface DatabaseInterface extends Cloneable
 	/**
 	 * @return Returns the id.
 	 */
-	public long getId();
+	public ObjectId getObjectId();
 	
 	/**
 	 * @param id The id to set.
 	 */
-	public void setId(long id);
+	public void setObjectId(ObjectId id);
 	
 	/**
 	 * @return the username to log onto the database

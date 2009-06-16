@@ -19,6 +19,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 public class CalculatorMetaFunction implements Cloneable
@@ -336,7 +337,7 @@ public class CalculatorMetaFunction implements Cloneable
         }
 	}
 
-	public void saveRep(Repository rep, long id_transformation, long id_step, int nr) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step, int nr) throws KettleException
     {
         rep.saveStepAttribute(id_transformation, id_step, nr, "field_name",          fieldName);
         rep.saveStepAttribute(id_transformation, id_step, nr, "calc_type",           getCalcTypeDesc());
@@ -353,7 +354,7 @@ public class CalculatorMetaFunction implements Cloneable
         rep.saveStepAttribute(id_transformation, id_step, nr, "currency_symbol",     currencySymbol);
     }
 
-    public CalculatorMetaFunction(Repository rep, long id_step, int nr) throws KettleException
+    public CalculatorMetaFunction(Repository rep, ObjectId id_step, int nr) throws KettleException
     {
         fieldName         = rep.getStepAttributeString(id_step, nr, "field_name");
         calcType          = getCalcFunctionType( rep.getStepAttributeString(id_step, nr, "calc_type") );
@@ -373,7 +374,7 @@ public class CalculatorMetaFunction implements Cloneable
         // The conversion mask was added in a certain revision.
         // Anything that we load from before then should get masks set to retain backward compatibility
         //
-        if (rep.findStepAttributeID(id_step, nr, "conversion_mask")<0) {
+        if (rep.findStepAttributeID(id_step, nr, "conversion_mask") != null) {
         	fixBackwardCompatibility();
         }
     }

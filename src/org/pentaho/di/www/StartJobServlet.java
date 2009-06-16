@@ -28,7 +28,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
-import org.pentaho.di.trans.StepLoader;
 
 
 public class StartJobServlet extends HttpServlet
@@ -103,7 +102,7 @@ public class StartJobServlet extends HttpServlet
             		//
             		synchronized(jobMap) {
 	            		JobConfiguration jobConfiguration = jobMap.getConfiguration(jobName);
-	            		Job newJob = new Job(LogWriter.getInstance(), StepLoader.getInstance(), job.getRep(), job.getJobMeta());
+	            		Job newJob = new Job(LogWriter.getInstance(), job.getRep(), job.getJobMeta());
 	            		jobMap.removeJob(jobName);
 	            		jobMap.addJob(jobName, newJob, jobConfiguration);
 	            		job=newJob;

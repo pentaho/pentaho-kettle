@@ -26,6 +26,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobPlugin;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
@@ -41,6 +42,8 @@ import org.w3c.dom.Node;
 
 public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterface, ChangedFlagInterface
 {
+	private static final String	XML_TAG	= "entry";
+
 	private JobEntryInterface entry;
 
 	private int nr; // Copy nr. 0 is the base copy...
@@ -56,7 +59,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 	private boolean draw;
 
-	private long id;
+	private ObjectId id;
 
 	public JobEntryCopy()
 	{
@@ -81,7 +84,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	{
 		StringBuffer retval = new StringBuffer();
 
-		retval.append("    <entry>").append(Const.CR);
+		retval.append("    ").append(XMLHandler.openTag(XML_TAG)).append(Const.CR);
 		retval.append(entry.getXML());
 
 		retval.append("      ").append(XMLHandler.addTagValue("parallel", launchingInParallel));
@@ -90,7 +93,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		retval.append("      ").append(XMLHandler.addTagValue("xloc", location.x));
 		retval.append("      ").append(XMLHandler.addTagValue("yloc", location.y));
 
-		retval.append("      </entry>").append(Const.CR);
+		retval.append("      ").append(XMLHandler.closeTag(XML_TAG)).append(Const.CR);
 		return retval.toString();
 	}
 
@@ -136,14 +139,14 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		entry = null;
 		nr = 0;
 		launchingInParallel = false;
-		setID(-1L);
+		setObjectId(null);
 	}
 
 	public Object clone()
 	{
 		JobEntryCopy ge = new JobEntryCopy();
 		ge.replaceMeta(this);
-		ge.setID(-1L);
+		ge.setObjectId(null);
 		return ge;
 	}
 
@@ -171,7 +174,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		return ge;
 	}
 
-	public void setID(long id)
+	public void setObjectId(ObjectId id)
 	{
 		this.id = id;
 	}
@@ -183,7 +186,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		return je.entry.getName().equalsIgnoreCase(entry.getName()) && je.getNr() == getNr();
 	}
 
-	public long getID()
+	public ObjectId getObjectId()
 	{
 		return id;
 	}

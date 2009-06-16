@@ -12,6 +12,8 @@
 */
 package org.pentaho.di.resource;
 
+import org.pentaho.di.repository.ObjectId;
+
 public interface ResourceHolderInterface {
   
   /**
@@ -25,7 +27,7 @@ public interface ResourceHolderInterface {
   /**
    * @return The ID of the holder of the resource
    */
-  public long getID();
+  public ObjectId getObjectId();
   /**
    * @return The Type ID of the resource holder. The Type ID
    * is the system-defined type identifier (like TRANS or SORT).

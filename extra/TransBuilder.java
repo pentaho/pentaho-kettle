@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -192,15 +193,12 @@ public class TransBuilder
      */
     public static void main(String[] args) throws Exception
     {
-    	EnvUtil.environmentInit();
+    	KettleEnvironment.init();
         
     	// Init the logging...
     	//
         LogWriter.getInstance("TransBuilder.log", true, LogWriter.LOG_LEVEL_DETAILED);
-        
-        // Load the Kettle steps & plugins
-    	StepLoader.init();
-        
+                
         // The parameters we want, optionally this can be 
         String fileName = "NewTrans.xml";
         String transformationName = "Test Transformation";

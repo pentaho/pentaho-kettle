@@ -40,6 +40,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -198,7 +199,7 @@ public class UnivariateStatsMeta
   }
 
   public void readRep(Repository rep, 
-                      long id_step, 
+                      ObjectId id_step, 
                       List<DatabaseMeta> databases, 
                       Map<String, Counter> counters) 
     throws KettleException {
@@ -220,8 +221,8 @@ public class UnivariateStatsMeta
    * @exception KettleException if an error occurs
    */
   public void saveRep(Repository rep, 
-                      long id_transformation, 
-                      long id_step)
+                      ObjectId id_transformation, 
+                      ObjectId id_step)
     throws KettleException {
 
     for (int i = 0; i < m_stats.length; i++) {

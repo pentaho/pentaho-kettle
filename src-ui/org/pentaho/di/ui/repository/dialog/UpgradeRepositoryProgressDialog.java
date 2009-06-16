@@ -33,7 +33,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.KettleDatabaseRepository;
+import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 
@@ -47,7 +47,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
  */
 public class UpgradeRepositoryProgressDialog
 {
-	private static Class<?> PKG = RepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = KettleDatabaseRepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     private Shell shell;
     private KettleDatabaseRepository rep;

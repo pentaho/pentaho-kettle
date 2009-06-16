@@ -30,6 +30,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.resource.ResourceDefinition;
@@ -208,7 +209,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         return retval.toString();
     }
     
-    public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
+    public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
 	{
         transName        = rep.getStepAttributeString(id_step, "trans_name"); //$NON-NLS-1$
         fileName         = rep.getStepAttributeString(id_step, "filename"); //$NON-NLS-1$
@@ -265,7 +266,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         
 	}
     
-    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
+    public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
     {
         rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); //$NON-NLS-1$
         rep.saveStepAttribute(id_transformation, id_step, "trans_name", transName); //$NON-NLS-1$
@@ -504,7 +505,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             // OK, load the meta-data from the repository...
             if (!Const.isEmpty(realTransname) && directoryPath!=null && rep!=null)
             {
-                RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(directoryPath);
+                RepositoryDirectory repdir = rep.loadRepositoryDirectoryTree().findDirectory(directoryPath);
                 if (repdir!=null)
                 {
                     try

@@ -48,6 +48,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.resource.ResourceDefinition;
@@ -333,7 +334,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	}
 
 	// Load the jobentry from repository
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
 		try {
 			transname = rep.getJobEntryAttributeString(id_jobentry, "name");
 			directory = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
@@ -387,7 +388,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job) throws KettleException {
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
 		try {
 			RepositoryDirectory importLocation = RepositoryImportLocation.getRepositoryImportLocation();
 			if (directory == null) {
@@ -401,29 +402,29 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			// Removed id_transformation as we do not know what it is if we are using variables in the path
 			// long id_transformation = rep.getTransformationID(transname, directory.getID());
 			// rep.saveJobEntryAttribute(id_job, getID(), "id_transformation", id_transformation);
-			rep.saveJobEntryAttribute(id_job, getID(), "name", getTransname());
-			rep.saveJobEntryAttribute(id_job, getID(), "dir_path", getDirectory() != null ? getDirectory() : "");
-			rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
-			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
-			rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
-			rep.saveJobEntryAttribute(id_job, getID(), "clear_rows", clearResultRows);
-			rep.saveJobEntryAttribute(id_job, getID(), "clear_files", clearResultFiles);
-			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_date", addDate);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
-			rep.saveJobEntryAttribute(id_job, getID(), "logfile", logfile);
-			rep.saveJobEntryAttribute(id_job, getID(), "logext", logext);
-			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
-			rep.saveJobEntryAttribute(id_job, getID(), "cluster", clustering);
-			rep.saveJobEntryAttribute(id_job, getID(), "slave_server_name", remoteSlaveServerName);
-			rep.saveJobEntryAttribute(id_job, getID(), "set_append_logfile", setAppendLogfile);
-			rep.saveJobEntryAttribute(id_job, getID(), "wait_until_finished", waitingToFinish);
-			rep.saveJobEntryAttribute(id_job, getID(), "follow_abort_remote", followingAbortRemotely);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "name", getTransname());
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "dir_path", getDirectory() != null ? getDirectory() : "");
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "file_name", filename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "arg_from_previous", argFromPrevious);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "exec_per_row", execPerRow);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "clear_rows", clearResultRows);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "clear_files", clearResultFiles);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "set_logfile", setLogfile);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_date", addDate);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_time", addTime);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "logfile", logfile);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "logext", logext);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "cluster", clustering);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "slave_server_name", remoteSlaveServerName);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "set_append_logfile", setAppendLogfile);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "wait_until_finished", waitingToFinish);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "follow_abort_remote", followingAbortRemotely);
 
 			// Save the arguments...
 			if (arguments != null) {
 				for (int i = 0; i < arguments.length; i++) {
-					rep.saveJobEntryAttribute(id_job, getID(), i, "argument", arguments[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "argument", arguments[i]);
 				}
 			}
 			
@@ -432,13 +433,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			{
 				for (int i=0;i<parameters.length;i++)
 				{
-					rep.saveJobEntryAttribute(id_job, getID(), i, "parameter_name", parameters[i]);
-					rep.saveJobEntryAttribute(id_job, getID(), i, "parameter_stream_name", Const.NVL(parameterFieldNames[i], ""));
-					rep.saveJobEntryAttribute(id_job, getID(), i, "parameter_value", Const.NVL(parameterValues[i], ""));
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "parameter_name", parameters[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "parameter_stream_name", Const.NVL(parameterFieldNames[i], ""));
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "parameter_value", Const.NVL(parameterValues[i], ""));
 				}
 			}			
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "pass_all_parameters", passingAllParameters);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "pass_all_parameters", passingAllParameters);
 			
 		} catch (KettleDatabaseException dbe) {
 			throw new KettleException("Unable to save job entry of type 'trans' to the repository for id_job=" + id_job, dbe);
@@ -998,7 +999,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	            	//
 	            	// It only makes sense to try to load from the repository when the repository is also filled in.
 	            	//
-	                transMeta = rep.loadTransformation(filename, rep.getDirectoryTree().findDirectory(environmentSubstitute(getDirectory())), null, true);
+	                transMeta = rep.loadTransformation(filename, rep.loadRepositoryDirectoryTree().findDirectory(environmentSubstitute(getDirectory())), null, true);
 		            transMeta.copyVariablesFrom(this);
 	            }
 	            else

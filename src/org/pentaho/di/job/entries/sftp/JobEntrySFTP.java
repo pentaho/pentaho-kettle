@@ -48,6 +48,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -153,7 +154,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 		try
@@ -187,21 +188,21 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
-			rep.saveJobEntryAttribute(id_job, getID(), "serverport",      serverPort);
-			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
-			rep.saveJobEntryAttribute(id_job, getID(), "password",        Encr.encryptPasswordIfNotUsingVariables(password)); //$NON-NLS-1$
-			rep.saveJobEntryAttribute(id_job, getID(), "sftpdirectory",    sftpDirectory);
-			rep.saveJobEntryAttribute(id_job, getID(), "targetdirectory", targetDirectory);
-			rep.saveJobEntryAttribute(id_job, getID(), "wildcard",        wildcard);
-			rep.saveJobEntryAttribute(id_job, getID(), "remove",          remove);
-			rep.saveJobEntryAttribute(id_job, getID(), "isaddresult",          isaddresult);
-			rep.saveJobEntryAttribute(id_job, getID(), "createtargetfolder",          createtargetfolder);
-			rep.saveJobEntryAttribute(id_job, getID(), "copyprevious",          copyprevious);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "servername",      serverName);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "serverport",      serverPort);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "username",        userName);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "password",        Encr.encryptPasswordIfNotUsingVariables(password)); //$NON-NLS-1$
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "sftpdirectory",    sftpDirectory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "targetdirectory", targetDirectory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard",        wildcard);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "remove",          remove);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "isaddresult",          isaddresult);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "createtargetfolder",          createtargetfolder);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "copyprevious",          copyprevious);
 		}
 		catch(KettleDatabaseException dbe)
 		{

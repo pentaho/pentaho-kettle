@@ -26,6 +26,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -94,7 +95,7 @@ public class SocketWriterMeta extends BaseStepMeta implements StepMetaInterface
         compressed = true;
 	}
 
-	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
+	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
 	{
         port          = rep.getStepAttributeString (id_step, "port");
         bufferSize    = rep.getStepAttributeString (id_step, "buffer_size");
@@ -102,7 +103,7 @@ public class SocketWriterMeta extends BaseStepMeta implements StepMetaInterface
         compressed    = rep.getStepAttributeBoolean(id_step, "compressed");
 	}
 	
-	public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
+	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
 	{
         rep.saveStepAttribute(id_transformation, id_step, "port", port);
         rep.saveStepAttribute(id_transformation, id_step, "buffer_size", bufferSize);

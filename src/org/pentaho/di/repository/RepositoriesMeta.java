@@ -14,7 +14,6 @@ package org.pentaho.di.repository;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +23,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -42,20 +43,15 @@ import org.w3c.dom.Node;
 
 public class RepositoriesMeta 
 {
-	private LogWriter log;
-
 	private List<DatabaseMeta>   databases;    // Repository connections
 	private List<RepositoryMeta> repositories;   // List of repositories
 
-	public RepositoriesMeta(LogWriter log)
+	public RepositoriesMeta()
 	{
-		this.log = log;
-		
 		clear();
 	}
 	
-	public void clear()
-	{
+	public void clear() {
 		databases = new ArrayList<DatabaseMeta>();
 		repositories = new ArrayList<RepositoryMeta>();
 	}		
@@ -82,9 +78,10 @@ public class RepositoriesMeta
 	{
 		return (DatabaseMeta)databases.get(i);
 	}
+	
 	public RepositoryMeta getRepository(int i)
 	{
-		return (RepositoryMeta)repositories.get(i);
+		return repositories.get(i);
 	}
 
 	public void removeDatabase(int i)
@@ -92,6 +89,7 @@ public class RepositoriesMeta
 		if (i<0 || i>=databases.size()) return;
 		databases.remove(i);
 	}
+	
 	public void removeRepository(int i)
 	{
 		if (i<0 || i>=repositories.size()) return;
@@ -124,11 +122,11 @@ public class RepositoriesMeta
 	{
 		return databases.indexOf(di);
 	}
+	
 	public int indexOfRepository(RepositoryMeta ri)
 	{
 		return repositories.indexOf(ri);
 	}
-	
 	
 	public RepositoryMeta findRepository(String name)
 	{
@@ -142,8 +140,10 @@ public class RepositoriesMeta
 	
 	// We read the repositories from the file:
 	// 
-	public boolean readData()
+	public void readData() throws KettleException
 	{
+		LogWriter log = LogWriter.getInstance();
+		
 		File file = new File(Const.getKettleLocalRepositoriesFile());
 		if (!file.exists() || !file.isFile())
 		{
@@ -175,8 +175,7 @@ public class RepositoriesMeta
 				}
 				else
 				{
-					log.logError(toString(), "Error opening file: "+file.getAbsoluteFile()+" : "+ef.toString());
-					return false;
+					throw new KettleException("Error opening file: "+file.getAbsoluteFile(), ef);
 				}
 			}
 			// InfoHandler sir  = new InfoHandler(doc);
@@ -207,23 +206,24 @@ public class RepositoriesMeta
 				Node repnode = XMLHandler.getSubNodeByNr(repsnode, "repository", i);
 				log.logDebug(toString(), "Looking at repository #"+i);
 				
-				RepositoryMeta repinfo = new RepositoryMeta();
-				if (repinfo.loadXML(repnode, databases))
-				{
-					addRepository(repinfo);
-					log.logDebug(toString(), "Read repository : "+repinfo.getName());
+				String id = XMLHandler.getTagValue(repnode, "id");
+				if (Const.isEmpty(id)) {
+			    	// Backward compatibility : if the id is not defined, it's the database repository!
+					//
+		    		id=KettleDatabaseRepositoryMeta.REPOSITORY_TYPE_ID;
 				}
+				RepositoryMeta repositoryMeta = RepositoryLoader.createRepositoryMeta(id);
+				repositoryMeta.loadXML(repnode, databases);
+
+				addRepository(repositoryMeta);
+				log.logDebug(toString(), "Read repository : "+repositoryMeta.getName());
 			}
 		}
 		catch(Exception e)
 		{
-			log.logError(toString(), "Error reading information from file : "+e.toString());
-            log.logError(toString(), Const.getStackTracker(e));
 			clear();
-			return false;
+			throw new KettleException("Error reading information from file : ", e);
 		}
-		return true;
-
 	}
 	
 	public String getXML()
@@ -249,26 +249,18 @@ public class RepositoriesMeta
 		return retval;
 	}
 	
-	public boolean writeData()
+	public void writeData() throws KettleException
 	{
 		try
 		{
-			//TODO fix default repository creation to use LAF parameters
 			FileOutputStream fos = new FileOutputStream(new File(Const.getKettleUserRepositoriesFile()));
 			fos.write(getXML().getBytes());
 			fos.close();
 		}
-		catch(FileNotFoundException e)
+		catch(Exception e)
 		{
-			log.logError("Repository", "Writing repository we got error : "+e.toString());
-			return false;
+			throw new KettleException("Error writing repositories metadata", e);
 		}
-		catch(IOException ie)
-		{
-			log.logError("Repository", "Writing repository we got IO error : "+ie.toString());
-			return false;
-		}
-		return true;
 	}
 	
 	public String toString()

@@ -83,7 +83,6 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
 	    assert prefix != null;
 	    assert extension != null;
 	    
-	    String uniqueId = this.getFileNameUniqueIdentifier();
 	    String lookup = (originalFilePath != null ? originalFilePath : "") + "/" + prefix + "." + extension;  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	    String rtn = namedResources.get(lookup);
 	    if (rtn == null) {
@@ -92,11 +91,17 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
 	      if (useOriginalPathInTargetName) {
 	        fixedPath = fixPath(originalFilePath);
 	      }
+	      
 	      rtn = (fileSystemPrefix != null ? fileSystemPrefix : "") + //$NON-NLS-1$ 
 	          (fixedPath != null ? fixedPath + (fixedPath.endsWith("/") ? "" : "/")  : "") + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-	          fixFileName(prefix, extension) + 
-	          (uniqueId != null ? "_" + uniqueId : ""); //$NON-NLS-1$ //$NON-NLS-2$
-	      rtn += (extension.charAt(0) == '.' ? extension : "." + extension); //$NON-NLS-1$ //$NON-NLS-2$
+	          fixFileName(prefix, extension)
+	          ;
+	      
+	      String ext = (extension.charAt(0) == '.' ? extension : "." + extension);
+	      
+	      String uniqueId = this.getFileNameUniqueIdentifier(rtn, extension);
+	      rtn += (uniqueId != null ? "_" + uniqueId : ""); //$NON-NLS-1$ //$NON-NLS-2$
+	      rtn += ext; //$NON-NLS-1$ //$NON-NLS-2$
 	      
 	      namedResources.put(lookup, rtn); // Keep track of already generated object names...
 	    }
@@ -155,7 +160,7 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
 		return "DATA_PATH_" + parameterNr;
 	}
 
-	protected String getFileNameUniqueIdentifier() {
+	protected String getFileNameUniqueIdentifier(String filename, String extension) {
 		//
 		// This implementation assumes that the file name will be sufficiently
 		// unique.
@@ -215,10 +220,14 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
     char ch;
     for (int i=0; i<length; i++) {
       ch = name.charAt(i);
-      if ( (ch <='/') || (ch>=':' && ch<='?') || (ch>='[' && ch<='`') || (ch>='{' && ch<='~') ) {
-        buff.append('_');
+      if (ch == ' ') {
+    	  buff.append(ch);
       } else {
-        buff.append(ch);
+	      if ( (ch <='/') || (ch>=':' && ch<='?') || (ch>='[' && ch<='`') || (ch>='{' && ch<='~') ) {
+	        buff.append('_');
+	      } else {
+	        buff.append(ch);
+	      }
       }
     }
     return buff.toString();
