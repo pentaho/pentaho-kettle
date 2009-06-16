@@ -26,6 +26,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransDependency;
@@ -107,6 +108,21 @@ public class RepositoryTransDelegate extends BaseRepositoryDelegate {
     {
         try
         {
+			// Before saving the job, see if it's not locked by someone else...
+			//
+			UserInfo userInfo = repository.getUserInfo();
+			if (!userInfo.isAdministrator()) {
+				ObjectId objectId = getTransformationID(transMeta.getName(), transMeta.getRepositoryDirectory().getObjectId());
+				if (objectId!=null) {
+					RepositoryLock lock = getTransformationLock(objectId);
+					if (!lock.getLogin().equals(userInfo.getLogin())) {
+						// This object is locked by someone else
+						//
+						throw new KettleDatabaseException("Unable to save this transformation since it's locked by user ["+lock.getLogin()+"] with message : "+lock.getMessage());
+					}
+				}
+			}
+
         	if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.LockingRepository")); //$NON-NLS-1$
 
         	repository.lockRepository(); // make sure we're they only one using the repository at the moment

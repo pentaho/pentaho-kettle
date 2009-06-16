@@ -25,6 +25,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.shared.SharedObjects;
 
@@ -62,6 +63,22 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
      */
     public void saveJob(JobMeta jobMeta, ProgressMonitorListener monitor) throws KettleException {
 		try {
+			
+			// Before saving the job, see if it's not locked by someone else...
+			//
+			UserInfo userInfo = repository.getUserInfo();
+			if (!userInfo.isAdministrator()) {
+				ObjectId objectId = getJobID(jobMeta.getName(), jobMeta.getRepositoryDirectory().getObjectId());
+				if (objectId!=null) {
+					RepositoryLock lock = getJobLock(objectId);
+					if (!lock.getLogin().equals(userInfo.getLogin())) {
+						// This object is locked by someone else
+						//
+						throw new KettleDatabaseException("Unable to save this job since it's locked by user ["+lock.getLogin()+"] with message : "+lock.getMessage());
+					}
+				}
+			}
+			
 			int nrWorks = 2 + jobMeta.nrDatabases() + jobMeta.nrNotes() + jobMeta.nrJobEntries() + jobMeta.nrJobHops();
 			if (monitor != null)
 				monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingTransformation") + jobMeta.getRepositoryDirectory() + Const.FILE_SEPARATOR + jobMeta.getName(), nrWorks); //$NON-NLS-1$
