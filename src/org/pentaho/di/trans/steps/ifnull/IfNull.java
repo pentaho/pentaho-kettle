@@ -137,7 +137,7 @@ public class IfNull extends BaseStep implements StepInterface
 					data.fieldnrs=new int[fieldsSelectedIndex.size()];
 			        List<Integer> entries = new ArrayList<Integer>(fieldsSelectedIndex);
 			        Integer fieldnr[] = (Integer[]) entries.toArray(new Integer[entries.size()]);
-					for(int i=0;i<fieldnr.length;i++)
+			        for(int i=0;i<fieldnr.length;i++)
 					{
 						data.fieldnrs[i]=fieldnr[i];
 					}	
@@ -160,7 +160,7 @@ public class IfNull extends BaseStep implements StepInterface
 
 		try
 		{
-			 updateField(r);
+			updateFields(r);
 		
 			 putRow(data.outputRowMeta, r);  // copy row to output rowset(s);
 		 
@@ -191,39 +191,34 @@ public class IfNull extends BaseStep implements StepInterface
         }
 		return true;
 	}
-	private void updateField(Object[] r) throws Exception
+	private void updateFields(Object[] r) throws Exception
 	{
 		// Loop through fields
-		for(int i=0;i<data.fieldnr;i++){		
-			
-			 if(meta.isSelectValuesType()){
-				 ValueMetaInterface fieldMeta= data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
-				 int pos=data.ListTypes.get(fieldMeta.getTypeDesc());
-				 data.realReplaceByValue=data.defaultValues[pos];	
-				 data.realconversionMask=data.defaultMasks[pos];
-			 }else{
-				 if(meta.isSelectFields()) 
-				 {
-					 data.realReplaceByValue=data.defaultValues[i];//meta.getReplaceValue()[i];
-					 data.realconversionMask=data.defaultMasks[i];//meta.getReplaceMask()[i];
+		for(int i=0;i<data.fieldnr;i++){	
+			if(r[data.fieldnrs[i]]==null)
+			{
+				 if(meta.isSelectValuesType()){
+					 ValueMetaInterface fieldMeta= data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
+					 int pos=data.ListTypes.get(fieldMeta.getTypeDesc());
+					 data.realReplaceByValue=data.defaultValues[pos];	
+					 data.realconversionMask=data.defaultMasks[pos];
+				 }else if(meta.isSelectFields()) {
+						 data.realReplaceByValue=data.defaultValues[i];
+						 data.realconversionMask=data.defaultMasks[i];
 				 }
-				
-			 }
-			 replaceNull(r,data.fieldnrs[i]);
+				 replaceNull(r,data.fieldnrs[i]);
+			}
 		}
 	}
 		
 	public void replaceNull(Object[] row, int i) throws Exception
 	{
-		if(row[i]==null) 
-		{
-			// DO CONVERSION OF THE DEFAULT VALUE ...
-			// Entered by user
-			ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(i);
-			ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(i);
-			if(!Const.isEmpty(data.realconversionMask)) sourceValueMeta.setConversionMask(data.realconversionMask);
-			row[i] = targetValueMeta.convertData(sourceValueMeta, data.realReplaceByValue);
-		 }
+		// DO CONVERSION OF THE DEFAULT VALUE ...
+		// Entered by user
+		ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(i);
+		ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(i);
+		if(!Const.isEmpty(data.realconversionMask)) sourceValueMeta.setConversionMask(data.realconversionMask);
+		row[i] = targetValueMeta.convertData(sourceValueMeta, data.realReplaceByValue);
 	}
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
