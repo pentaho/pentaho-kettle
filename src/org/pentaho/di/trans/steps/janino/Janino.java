@@ -201,16 +201,20 @@ public class Janino extends BaseStep implements StepInterface
                 }
 
                 Object value;
-                switch(data.returnType[i]) {
-                case JaninoData.RETURN_TYPE_STRING  : value = formulaResult.toString(); break;
-                case JaninoData.RETURN_TYPE_NUMBER  : value = new Double(((Number)formulaResult).doubleValue()); break;
-                case JaninoData.RETURN_TYPE_INTEGER : value = new Long( ((Integer)formulaResult).intValue() ); break;
-                case JaninoData.RETURN_TYPE_LONG : value = (Long)formulaResult; break;
-                case JaninoData.RETURN_TYPE_DATE : value = (Date)formulaResult; break;
-                case JaninoData.RETURN_TYPE_BIGDECIMAL : value = (BigDecimal)formulaResult; break;
-                case JaninoData.RETURN_TYPE_BYTE_ARRAY : value = (byte[])formulaResult; break;
-                case JaninoData.RETURN_TYPE_BOOLEAN : value = (Boolean)formulaResult; break;
-                default: value = null;
+                if (formulaResult==null) {
+                	value=null;
+                } else {
+	                switch(data.returnType[i]) {
+	                case JaninoData.RETURN_TYPE_STRING  : value = formulaResult.toString(); break;
+	                case JaninoData.RETURN_TYPE_NUMBER  : value = new Double(((Number)formulaResult).doubleValue()); break;
+	                case JaninoData.RETURN_TYPE_INTEGER : value = new Long( ((Integer)formulaResult).intValue() ); break;
+	                case JaninoData.RETURN_TYPE_LONG : value = (Long)formulaResult; break;
+	                case JaninoData.RETURN_TYPE_DATE : value = (Date)formulaResult; break;
+	                case JaninoData.RETURN_TYPE_BIGDECIMAL : value = (BigDecimal)formulaResult; break;
+	                case JaninoData.RETURN_TYPE_BYTE_ARRAY : value = (byte[])formulaResult; break;
+	                case JaninoData.RETURN_TYPE_BOOLEAN : value = (Boolean)formulaResult; break;
+	                default: value = null;
+	                }
                 }
                     
                 // We're done, store it in the row with all the data, including the temporary data...
