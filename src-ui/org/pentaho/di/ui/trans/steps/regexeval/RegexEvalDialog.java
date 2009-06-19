@@ -57,8 +57,6 @@ import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-
-
 public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static Class<?> PKG = RegexEvalMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -70,9 +68,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 	private LabelTextVar wResultField;
 	
     private CCombo       wfieldevaluate;
-    
-    
-	
+
 	private Label wlfieldevaluate;
     
 	private RegexEvalMeta input;
@@ -103,6 +99,9 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
 	
+	private Button wbTestRegExScript;
+	private FormData fdbTestRegExScript;
+	private Listener lsbTestRegExScript;
 
 	public RegexEvalDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -290,13 +289,23 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlScript.left = new FormAttachment(0, 0);
 		fdlScript.top  = new FormAttachment(wStepSettings, margin);
 		wlScript.setLayoutData(fdlScript);
+		
+		wbTestRegExScript=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbTestRegExScript);
+		wbTestRegExScript.setText(BaseMessages.getString(PKG, "RegexEvalDialog.TestScript.Label")); 
+		fdbTestRegExScript=new FormData();
+		fdbTestRegExScript.right = new FormAttachment(100, -margin);
+		fdbTestRegExScript.top   = new FormAttachment(wStepSettings, margin);
+		wbTestRegExScript.setLayoutData(fdbTestRegExScript);
+		
+		
 		wScript=new Text(wGeneralComp, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		wScript.setText(BaseMessages.getString(PKG, "RegexEvalDialog.Script.Label")); //$NON-NLS-1$
  		props.setLook(wScript, Props.WIDGET_STYLE_FIXED);
 		wScript.addModifyListener(lsMod);
 		fdScript=new FormData();
 		fdScript.left   = new FormAttachment(0, 0);
-		fdScript.top    = new FormAttachment(wlScript, margin);
+		fdScript.top    = new FormAttachment(wbTestRegExScript, margin);
 		fdScript.right  = new FormAttachment(100, -5);
 		fdScript.bottom = new FormAttachment(100, -25);
 		wScript.setLayoutData(fdScript);
@@ -609,6 +618,9 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
+		lsbTestRegExScript   = new Listener() { public void handleEvent(Event e) {testRegExScript();  } };
+		wbTestRegExScript.addListener  (SWT.Selection, lsbTestRegExScript);
+		
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
 
@@ -733,8 +745,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		input.setMultilineFlag(wMultiline.getSelection());
 		input.setUnicodeFlag(wUnicode.getSelection());
 		input.setUnixLineEndingsFlag(wUnix.getSelection());
-						
-		//Table table = wFields.table;
+
 		int nrfields = wFields.nrNonEmpty();
 		
 		input.allocate(nrfields);
@@ -771,4 +782,9 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
         wlFields.setEnabled(wAllowCaptureGroups.getSelection());
         wFields.setEnabled(wAllowCaptureGroups.getSelection());
     }
+    private void testRegExScript()
+	{
+		RegexEvalHelperDialog d = new RegexEvalHelperDialog(shell,transMeta, wScript.getText());
+		wScript.setText(d.open());
+	}
 }
