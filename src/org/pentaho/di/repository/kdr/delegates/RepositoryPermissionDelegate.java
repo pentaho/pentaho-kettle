@@ -5,12 +5,13 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.PermissionMeta;
+import org.pentaho.di.repository.ProfileMeta;
+import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 public class RepositoryPermissionDelegate extends BaseRepositoryDelegate {
 
-	private static Class<?> PKG = PermissionMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = ProfileMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	public RepositoryPermissionDelegate(KettleDatabaseRepository repository) {
 		super(repository);
@@ -32,18 +33,13 @@ public class RepositoryPermissionDelegate extends BaseRepositoryDelegate {
 	 * @param id_permission The id of the permission to load
 	 * @throws KettleException
 	 */
-	public PermissionMeta loadPermissionMeta(ObjectId id_permission) throws KettleException
+	public Permission loadPermissionMeta(ObjectId id_permission) throws KettleException
 	{
-		PermissionMeta permissionMeta = new PermissionMeta();
-		
 		try
 		{
 			RowMetaAndData r = getPermission(id_permission);
-			permissionMeta.setObjectId(id_permission);
 			String code = r.getString("CODE", null);
-			permissionMeta.setType( PermissionMeta.getType(code) );
-			
-			return permissionMeta;
+			return Permission.getPermissionWithCode(code);
 		}
 		catch(KettleDatabaseException dbe)
 		{

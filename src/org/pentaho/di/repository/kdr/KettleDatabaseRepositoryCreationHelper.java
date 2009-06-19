@@ -21,7 +21,7 @@ import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.PermissionMeta;
+import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.repository.kdr.delegates.RepositoryConnectionDelegate;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
@@ -1859,8 +1859,12 @@ public class KettleDatabaseRepositoryCreationHelper {
 		//
 		// R_PROFILE
 		//
+		
+		// Keep a mapping between a profile name and it's ObjectId in the repository
+		//
+		Map<String, ObjectId> profiles = new Hashtable<String, ObjectId>();
+		
 		// Create table...
-        Map<String, Long> profiles = new Hashtable<String, Long>();
         
 		boolean ok_profile = true;
 		tablename = KettleDatabaseRepository.TABLE_R_PROFILE;
@@ -1923,7 +1927,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 						database.insertRow();
 	                    if (log.isDetailed()) log.logDetailed(toString(), "Inserted new row into table "+schemaTable+" : "+table);
                     }
-                    profiles.put(code[i], new LongObjectId(nextid).longValue());
+                    profiles.put(code[i], nextid);
 				}
 			}
 
@@ -1945,8 +1949,13 @@ public class KettleDatabaseRepositoryCreationHelper {
 		//
 		// R_USER
 		//
+		
+		// Keep a mapping between the user login and the object id
+		//
+		Map<String, ObjectId> users = new Hashtable<String, ObjectId>();
+		
 		// Create table...
-        Map<String, Long> users = new Hashtable<String, Long>();
+		//
 		boolean ok_user = true;
 		table = new RowMeta();
 		tablename = KettleDatabaseRepository.TABLE_R_USER;
@@ -2003,13 +2012,11 @@ public class KettleDatabaseRepositoryCreationHelper {
 					if (!create) nextid = repository.connectionDelegate.getNextUserID();
 					String password = Encr.encryptPassword(pass[i]);
                     
-                    Long profileID = (Long)profiles.get( prof[i] );
-                    long id_profile = -1L;
-                    if (profileID!=null) id_profile = profileID.longValue();
+                    ObjectId profileID = profiles.get( prof[i] );
                     
 					RowMetaAndData tableData = new RowMetaAndData();
                     tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER), nextid);
-                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_profile));
+                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), profileID);
                     tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_LOGIN, ValueMetaInterface.TYPE_STRING), user[i]);
                     tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_PASSWORD, ValueMetaInterface.TYPE_STRING), password);
                     tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING), code[i]);
@@ -2023,7 +2030,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 						database.setValuesInsert(tableData);
 						database.insertRow();
                     }
-                    users.put(user[i], new LongObjectId(nextid).longValue());
+                    users.put(user[i], nextid);
 				}
 			}
             
@@ -2046,7 +2053,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		// R_PERMISSION
 		//
 		// Create table...
-        Map<String, Long> permissions = new Hashtable<String, Long>();
+        Map<String, ObjectId> permissions = new Hashtable<String, ObjectId>();
 		boolean ok_permission = true;
 		table = new RowMeta();
 		tablename = KettleDatabaseRepository.TABLE_R_PERMISSION;
@@ -2078,8 +2085,13 @@ public class KettleDatabaseRepositoryCreationHelper {
 			//
 			// Populate with data...
 			//
-			code = PermissionMeta.permissionTypeCode;
-			desc = PermissionMeta.permissionTypeDesc;
+			Permission[] perms = Permission.values();
+			code = new String[perms.length];
+			desc = new String[perms.length];
+			for (int i=0;i<perms.length;i++) {
+				code[i] = perms[i].getCode();
+				desc[i] = perms[i].getCode();
+			}
 
 			if (!dryrun) {
 				database.prepareInsert(table, null, tablename);
@@ -2108,7 +2120,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 						database.insertRow();
 	                    if (log.isDetailed()) log.logDetailed(toString(), "Inserted new row into table "+schemaTable+" : "+table);
                     }
-                    permissions.put(code[i], new LongObjectId(nextid).longValue());
+                    permissions.put(code[i], nextid);
 				}
 			}
 
@@ -2180,90 +2192,81 @@ public class KettleDatabaseRepositoryCreationHelper {
 			if (!dryrun) {
 				database.prepareInsert(table, null, tablename);
 			}
-
-			// Administrator default:
-            Long profileID = (Long)profiles.get( "Administrator");
-            long id_profile = -1L;
-            if (profileID!=null) id_profile = profileID.longValue();
 			
-            if (log.isDetailed()) log.logDetailed(toString(), "Administrator profile id = "+id_profile);
-            String perms[] = new String[]
-				{ 
-                    PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_ADMIN],
-                    PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_TRANSFORMATION],
-                    PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_JOB],
-                    PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_SCHEMA] 
+			String[] userCodes = new String[] { "Administrator", "User", "Read-only", };
+			Permission[] userPermissions[] = new Permission[][] {
+					// The administrator profile can do it all...  It mostly need the ADMIN permission
+					//
+					new Permission[] { 
+		            		Permission.ADMIN,
+		            		Permission.TRANSFORMATION,
+		            		Permission.JOB,
+		            		Permission.SCHEMA,
+		            		Permission.DATABASE,
+		            		Permission.EXPLORE_DATABASE,
+		            		Permission.DATABASE,
+		            		Permission.LOCK_FILE,
+							},
+					// A normal user do it all too, doesn't have administration rights: can't manage users, can't unlock files from another user, etc.   
+					// 
+					new Permission[] { 
+		            		Permission.TRANSFORMATION,
+		            		Permission.JOB,
+		            		Permission.SCHEMA,
+		            		Permission.DATABASE,
+		            		Permission.EXPLORE_DATABASE,
+		            		Permission.DATABASE,
+		            		Permission.LOCK_FILE,
+				            },
+					// A read-only user can do a lot too.  However, it can't save, rename, delete files, create directories, etc   
+					// 
+					new Permission[] { 
+		            		Permission.READ_ONLY,
+		            		Permission.TRANSFORMATION,
+		            		Permission.JOB,
+		            		Permission.SCHEMA,
+		            		Permission.DATABASE,
+		            		Permission.EXPLORE_DATABASE,
+		            		Permission.DATABASE,
+				            },
 				};
 			
-			for (int i=0;i < perms.length ; i++)
-			{
-                Long permissionID = (Long) permissions.get(perms[i]);
-                long id_permission = -1L;
-                if (permissionID!=null) id_permission = permissionID.longValue();
-                
-                if (log.isDetailed()) log.logDetailed(toString(), "Permission id for '"+perms[i]+"' = "+id_permission);
-
-				RowMetaAndData lookup = null;
-                if (upgrade) 
-                {
-                    String lookupSQL = "SELECT "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+
-                                   " FROM " + schemaTable + 
-                                   " WHERE "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+"=" + id_profile + " AND +"+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION)+"=" + id_permission;
-                    if (log.isDetailed()) log.logDetailed(toString(), "Executing SQL: "+lookupSQL);
-                    lookup = database.getOneRow(lookupSQL);
-                }
-				if (lookup == null) // if the combination is not yet there, insert...
+			for (int x=0;x<userCodes.length;x++) {
+	            ObjectId profileID = profiles.get(userCodes[x]);
+				
+	            if (log.isDetailed()) log.logDetailed(toString(), userCodes[x]+" profile id = "+profileID);
+	            
+	            Permission userPerms[] = userPermissions[x];
+	            
+				for (int i=0;i < userPerms.length ; i++)
 				{
-                    String insertSQL="INSERT INTO "+schemaTable+"("+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+", "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION)+")"
-                    			+" VALUES("+id_profile+","+id_permission+")";
-                    statements.add(insertSQL);
-                    if (!dryrun) {
-                    	database.execStatement(insertSQL);
-                    }
-                    if (log.isDetailed()) log.logDetailed(toString(), "insertSQL = ["+insertSQL+"]");
-				}
-				else
-				{
-                    if (log.isDetailed()) log.logDetailed(toString(), "Found id_profile="+id_profile+", id_permission="+id_permission);
-				}
-			}
-
-			// User profile
-            profileID = (Long)profiles.get( "User" );
-            id_profile = -1L;
-            if (profileID!=null) id_profile = profileID.longValue();
-            
-            if (log.isDetailed()) log.logDetailed(toString(), "User profile id = "+id_profile);
-            perms = new String[]
-                { 
-                      PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_TRANSFORMATION],
-                      PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_JOB],
-                      PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_SCHEMA] 
-                };
-
-            for (int i = 0; i < perms.length; i++)
-			{
-                Long permissionID = (Long) permissions.get(perms[i]);
-                long id_permission = -1L;
-                if (permissionID!=null) id_permission = permissionID.longValue();
-
-                RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+
-                			" FROM " + schemaTable + 
-                			" WHERE "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+"=" + id_profile + " AND "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION)+"=" + id_permission);
-				if (lookup == null) // if the combination is not yet there, insert...
-				{
-					RowMetaAndData tableData = new RowMetaAndData();
-                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), new Long(id_profile));
-                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER), new Long(id_permission));
-
-                    if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), null);
-		            	statements.add(sql);	
-                    } else {
-						database.setValuesInsert(tableData);
-						database.insertRow();
-                    }
+	                ObjectId permissionID = permissions.get(userPerms[i].getCode());
+	                
+	                if (log.isDetailed()) log.logDetailed(toString(), "Permission id for '"+userCodes[i]+"' = "+permissionID);
+	
+					RowMetaAndData lookup = null;
+	                if (upgrade) 
+	                {
+	                    String lookupSQL = "SELECT "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+
+	                                   " FROM " + schemaTable + 
+	                                   " WHERE "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+"=" + profileID + " AND +"+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION)+"=" + permissionID;
+	                    if (log.isDetailed()) log.logDetailed(toString(), "Executing SQL: "+lookupSQL);
+	                    lookup = database.getOneRow(lookupSQL);
+	                }
+					if (lookup == null) // if the combination is not yet there, insert...
+					{
+	                    String insertSQL="INSERT INTO "+schemaTable+"("+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+", "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION)+")"
+	                    			+" VALUES("+profileID+","+permissionID+")";
+	                    statements.add(insertSQL);
+	                    if (!dryrun) {
+	                    	database.execStatement(insertSQL);
+	                    }
+	                    if (log.isDetailed()) log.logDetailed(toString(), "insertSQL = ["+insertSQL+"]");
+					}
+					else
+					{
+	                    if (log.isDetailed()) log.logDetailed(toString(), "Found id_profile="+profileID+", id_permission="+permissionID);
+					}
 				}
 			}
 

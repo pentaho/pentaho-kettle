@@ -95,7 +95,7 @@ public class StartJobServlet extends HttpServlet
             		//
             		if (job.getRep()!=null && !job.getRep().isConnected())
             		{
-            			job.getRep().connect(toString());
+            			job.getRep().connect();
             		}
 
             		// Create a new job object to start from a sane state.  Then replace the new job in the job map

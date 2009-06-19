@@ -49,7 +49,7 @@ public class RepositoryUserDelegate extends BaseRepositoryDelegate {
 					userInfo.setEnabled( r.getBoolean("ENABLED", false) );
 					
 					long id_profile  = r.getInteger("ID_PROFILE", 0);
-					userInfo.setProfile( repository.loadProfileMeta(new LongObjectId(id_profile)) );
+					userInfo.setProfile( repository.getSecurityProvider().loadProfileMeta(new LongObjectId(id_profile)) );
 					
 					return userInfo;
 				}

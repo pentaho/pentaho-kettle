@@ -217,5 +217,10 @@ public class UserInfo
 	public void setName(String name) {
 		this.login = name;
 	}
+
+	public boolean supportsLocking() {
+		if (profile==null) return false;
+		return profile.supportsLocking();
+	}
 }
 

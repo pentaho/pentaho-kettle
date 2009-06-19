@@ -750,6 +750,10 @@ public class DatabaseMeta
 		return databaseInterface.isChanged();
 	}
 	
+	public void clearChanged() {
+		databaseInterface.setChanged(false);
+	}
+	
 	public String toString()
 	{
 		return getName();
@@ -2481,5 +2485,6 @@ public class DatabaseMeta
 	public RepositoryLock getRepositoryLock() {
 		return null;
 	}
+	
 
 }

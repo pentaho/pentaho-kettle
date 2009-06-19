@@ -1178,13 +1178,13 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 			
 			repos = RepositoryLoader.createRepository(rep_info, user_info);
 			try {
-				repos.connect("Export job entry");
+				repos.connect();
 			} catch(Exception e) {
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnect"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectMsg",wRepositoryname.getText()),true);
 				return false;
 			}	
 			// Check username, password
-			user_info = repos.loadUserInfo(jobMeta.environmentSubstitute(wUserName.getText()),jobMeta.environmentSubstitute(wPassword.getText()));
+			user_info = repos.getSecurityProvider().loadUserInfo(jobMeta.environmentSubstitute(wUserName.getText()),jobMeta.environmentSubstitute(wPassword.getText()));
 				
 			if (user_info.getObjectId()!=null)
 			{
@@ -1304,7 +1304,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 			
 			repos = RepositoryLoader.createRepository(rep_info, user_info);
 			try{
-				repos.connect("Export job entry");
+				repos.connect();
 			} catch(Exception e) {
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnect"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectMsg",wRepositoryname.getText()),true);				
 			}

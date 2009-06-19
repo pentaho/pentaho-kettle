@@ -36,7 +36,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositorySecurity;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
@@ -84,7 +83,7 @@ public class SelectDirectoryDialog extends Dialog
 
         selection = null;
         
-        readOnly = RepositorySecurity.isReadOnly(rep);
+        readOnly = rep.getSecurityProvider().isReadOnly();
     }
 
     public RepositoryDirectory open()

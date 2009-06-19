@@ -46,7 +46,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.PermissionMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
@@ -54,6 +53,7 @@ import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryPluginMeta;
 import org.pentaho.di.repository.UserInfo;
+import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -122,16 +122,16 @@ public class RepositoriesDialog
     private String prefRepositoryName;
     private boolean cancelled;
     private String toolName;
-    private int toolsPermissions[];
+    private Permission[] toolsPermissions;
 
 	private Toolbar	toolbar;
 
 	private ToolBar	swtToolBar;
     
-    public RepositoriesDialog(Display disp, int perm[], String toolName)
+    public RepositoriesDialog(Display disp, String toolName, Permission...permissions)
     {
         display = disp;
-        toolsPermissions = perm;
+        toolsPermissions = permissions;
         this.toolName = toolName;
 
         shell = new Shell(disp, SWT.DIALOG_TRIM | SWT.MAX | SWT.MIN | SWT.RESIZE);
@@ -612,7 +612,7 @@ public class RepositoriesDialog
                 	//
                 	rep = RepositoryLoader.getInstance().createRepositoryObject(repinfo.getId());
                 	rep.init(repinfo, userinfo);
-                    rep.connect(getClass().getName());
+                    rep.connect();
                 }
                 catch (KettleException ke)
                 {
@@ -626,7 +626,7 @@ public class RepositoriesDialog
 
                 try
                 {
-                    userinfo = rep.loadUserInfo(wUsername.getText(), wPassword.getText());
+                    userinfo = rep.getSecurityProvider().loadUserInfo(wUsername.getText(), wPassword.getText());
                     props.setLastRepository(repinfo.getName());
                     props.setLastRepositoryLogin(wUsername.getText());
                 }
@@ -685,17 +685,17 @@ public class RepositoriesDialog
             {
                 switch (toolsPermissions[i])
                 {
-                    case PermissionMeta.TYPE_PERMISSION_TRANSFORMATION:
+                    case TRANSFORMATION:
                         ok = ok && userinfo.useTransformations();
                         mess += mess.length() > 0 ? ", " : "";
                         mess += "Spoon";
                         break;
-                    case PermissionMeta.TYPE_PERMISSION_SCHEMA:
+                    case SCHEMA:
                         ok = ok && userinfo.useSchemas();
                         mess += mess.length() > 0 ? ", " : "";
                         mess += "Menu";
                         break;
-                    case PermissionMeta.TYPE_PERMISSION_JOB:
+                    case JOB:
                         ok = ok && userinfo.useJobs();
                         mess += mess.length() > 0 ? ", " : "";
                         mess += "Chef";

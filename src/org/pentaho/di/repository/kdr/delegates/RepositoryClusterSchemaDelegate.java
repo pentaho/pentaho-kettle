@@ -81,7 +81,7 @@ public class RepositoryClusterSchemaDelegate extends BaseRepositoryDelegate {
             SlaveServer slaveServer = clusterSchema.getSlaveServers().get(i);
             if (slaveServer.getObjectId()==null) // oops, not yet saved!
             {
-            	repository.saveSlaveServer(slaveServer, id_transformation, isUsedByTransformation);
+            	repository.save(slaveServer, null, id_transformation, isUsedByTransformation);
             }
             repository.insertClusterSlave(clusterSchema, slaveServer);
         }

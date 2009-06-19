@@ -214,7 +214,7 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
 			}
 			String Username=environmentSubstitute(username);
 			
-			if(!Username.equals(rep.getUserInfo().getLogin()))
+			if(!Username.equals(rep.getSecurityProvider().getUserInfo().getLogin()))
 			{
 				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryConnectedToRepository.Error.DiffUser",rep.getUserInfo().getLogin(),Username));
 				return result;

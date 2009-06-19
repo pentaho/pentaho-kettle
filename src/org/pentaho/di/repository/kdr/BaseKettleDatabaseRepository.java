@@ -450,7 +450,7 @@ public class BaseKettleDatabaseRepository {
 
 	public    LogWriter			log;
 
-	protected String				locksource;
+	protected boolean			connected;
    
     
     protected KettleDatabaseRepositoryCreationHelper creationHelper;
@@ -485,19 +485,12 @@ public class BaseKettleDatabaseRepository {
 	}
 
     /**
-     * @return The source specified at connect() time.
+     * @return If the repository is in a connected state.
      */
-    public String getLocksource()
+    public boolean isConnected()
     {
-        return locksource;
+        return connected;
     }
-
-    /**
-     * @param locksource the lock source at connect time!
-     */
-    public void setLocksource(String locksource) {
-		this.locksource = locksource;
-	}
 
     // Utility classes
     
@@ -508,6 +501,13 @@ public class BaseKettleDatabaseRepository {
     public String quoteTable(String table) {
     	return repositoryMeta.getConnection().getQuotedSchemaTableCombination(null, table);
     }
+
+	/**
+	 * @param connected the connected to set
+	 */
+	public void setConnected(boolean connected) {
+		this.connected = connected;
+	}
 
 
 }

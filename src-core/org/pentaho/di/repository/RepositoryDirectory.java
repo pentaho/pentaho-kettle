@@ -327,6 +327,12 @@ public class RepositoryDirectory
 	 */
 	public RepositoryDirectory findDirectory(ObjectId id_directory)
 	{
+		// Check for the root directory...
+		//
+		if (getObjectId()==null && id_directory==null) {
+			return this; 
+		}
+		
 		if (getObjectId()!=null && getObjectId().equals(id_directory)) {
 			return this;
 		}

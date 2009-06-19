@@ -143,7 +143,7 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 			//
 			for (int i = 0; i < jobMeta.getSlaveServers().size(); i++) {
 				SlaveServer slaveServer = jobMeta.getSlaveServers().get(i);
-				repository.saveSlaveServer(slaveServer, jobMeta.getObjectId(), false);
+				repository.save(slaveServer, null, jobMeta.getObjectId(), false);
 			}
 
 			//

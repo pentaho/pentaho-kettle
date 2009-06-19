@@ -1,13 +1,14 @@
 package org.pentaho.di.repository;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.ProfileMeta.Permission;
 
-public interface RepositorySecurityInterface {
+public interface RepositoryUserInterface {
 
     public void saveProfile(ProfileMeta profileMeta) throws KettleException;
     public ProfileMeta loadProfileMeta(ObjectId id_profile) throws KettleException;
     
-	public PermissionMeta loadPermissionMeta(ObjectId id_permission) throws KettleException;
+	public Permission loadPermission(ObjectId id_permission) throws KettleException;
 
 	public ObjectId[] getPermissionIDs(ObjectId id_profile) throws KettleException;
 

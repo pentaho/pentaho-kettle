@@ -88,24 +88,22 @@ public class RepositoryConnectionDelegate extends BaseRepositoryDelegate {
 
 	/**
 	 * Connect to the repository 
-	 * @param locksource
-	 * @return true if the connection went well, false if we couldn't connect.
 	 */
-	public synchronized void connect(String locksource) throws KettleException
+	public synchronized void connect() throws KettleException
 	{
-		connect(false, true, locksource, false);
+		connect(false, false);
 	}
 
-    public synchronized void connect(boolean no_lookup, boolean readDirectory, String locksource) throws KettleException
+    public synchronized void connect(boolean no_lookup) throws KettleException
     {
-        connect(no_lookup, readDirectory, locksource, false);
+        connect(no_lookup, false);
     }
 
-	public synchronized void connect(boolean no_lookup, boolean readDirectory, String locksource, boolean ignoreVersion) throws KettleException
+	public synchronized void connect(boolean no_lookup, boolean ignoreVersion) throws KettleException
 	{
 		if (repository.isConnected())
 		{
-			throw new KettleException("Repository is already by class " + repository.getLocksource());
+			throw new KettleException("Repository is already by class " + repository.isConnected());
 		}
 		try
 		{
@@ -115,7 +113,7 @@ public class RepositoryConnectionDelegate extends BaseRepositoryDelegate {
             	verifyVersion();
             }
 			setAutoCommit(false);
-			repository.setLocksource( locksource );
+			repository.setConnected(true);
 			if (!no_lookup)
 			{
 				try
@@ -222,7 +220,7 @@ public class RepositoryConnectionDelegate extends BaseRepositoryDelegate {
 				repository.connectionDelegate.closeLookupJobEntryAttribute();
 	            
 	            if (!database.isAutoCommit()) commit();
-	            repository.setLocksource(null);	
+	            repository.setConnected(false);	
 			}
 			catch (KettleException dbe)
 			{

@@ -187,7 +187,7 @@ public class Kitchen
 						if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.Alocate&ConnectRep"));
 						 
 						repository = RepositoryLoader.createRepository(repinfo, userinfo);
-						repository.connect("Kitchen commandline");
+						repository.connect();
 
 						RepositoryDirectory directory = repository.loadRepositoryDirectoryTree(); // Default = root
 						
@@ -202,8 +202,8 @@ public class Kitchen
 							// Check username, password
 							if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.CheckUserPass"));
 							
-							userinfo = repository.loadUserInfo(optionUsername.toString(), optionPassword.toString());
-							if (userinfo.getObjectId()!=null)
+							userinfo = repository.getSecurityProvider().loadUserInfo(optionUsername.toString(), optionPassword.toString());
+							if (!repository.getSecurityProvider().supportsUsers() || userinfo.getObjectId()!=null)
 							{
 							    // Load a job
 								if (!Const.isEmpty(optionJobname))

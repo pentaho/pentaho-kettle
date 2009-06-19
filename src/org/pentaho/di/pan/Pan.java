@@ -208,7 +208,7 @@ public class Pan
 						if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.Allocate&ConnectRep"));
 						
 						rep = RepositoryLoader.createRepository(repinfo, userinfo);
-						rep.connect("Pan commandline");
+						rep.connect();
 						
 						RepositoryDirectory directory = rep.loadRepositoryDirectoryTree(); // Default = root
 						
@@ -223,8 +223,8 @@ public class Pan
 							// Check username, password
 							if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.CheckSuppliedUserPass"));
 							
-							userinfo = rep.loadUserInfo(optionUsername.toString(), optionPassword.toString());
-							if (userinfo.getObjectId()!=null)
+							userinfo = rep.getSecurityProvider().loadUserInfo(optionUsername.toString(), optionPassword.toString());
+							if (!rep.getSecurityProvider().supportsUsers() || userinfo.getObjectId()!=null)
 							{
 								// Load a transformation
 								if (!Const.isEmpty(optionTransname))

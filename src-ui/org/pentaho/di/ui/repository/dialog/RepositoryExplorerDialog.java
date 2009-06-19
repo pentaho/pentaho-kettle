@@ -70,13 +70,13 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.repository.RepositorySecurity;
+import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
@@ -107,7 +107,7 @@ import org.w3c.dom.Document;
  */
 public class RepositoryExplorerDialog extends Dialog 
 {
-	private static Class<?> PKG = KettleDatabaseRepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     public interface RepositoryExplorerCallback {
     	/**
@@ -210,6 +210,7 @@ public class RepositoryExplorerDialog extends Dialog
 	private RepositoryMeta	repositoryMeta;
 	private RepositoryCapabilities	capabilities;
 	private boolean	readonly;
+	private RepositorySecurityProvider	securityProvider;
     
 	private RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, VariableSpace variableSpace)
 	{
@@ -226,7 +227,8 @@ public class RepositoryExplorerDialog extends Dialog
         repositoryMeta = rep.getRepositoryMeta();
         capabilities = repositoryMeta.getRepositoryCapabilities();
         
-        readonly = RepositorySecurity.isReadOnly(rep);
+        securityProvider = rep.getSecurityProvider();
+        readonly = securityProvider.isReadOnly();
 	}
     
 	public RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, RepositoryExplorerCallback callback, VariableSpace variableSpace)
@@ -1383,7 +1385,7 @@ public class RepositoryExplorerDialog extends Dialog
 				tiUser.setText(STRING_USERS);
 	            if (!readonly) TreeItemAccelerator.addDoubleClick(tiUser, new DoubleClickInterface() { public void action(TreeItem treeItem) { newUser(); } });
 				
-				String users[] = rep.getUserLogins();
+				String users[] = securityProvider.getUserLogins();
 				for (int i=0;i<users.length;i++)
 				{
 					if (userinfo.isAdministrator() || userinfo.getLogin().equalsIgnoreCase(users[i]))
@@ -1410,7 +1412,7 @@ public class RepositoryExplorerDialog extends Dialog
 					tiProf.setText(STRING_PROFILES);
 	                TreeItemAccelerator.addDoubleClick(tiProf, new DoubleClickInterface() { public void action(TreeItem treeItem) { newProfile(); } });
 	
-					String prof[] = rep.getProfiles();
+					String prof[] = securityProvider.getProfiles();
 					for (int i=0;i<prof.length;i++)
 					{
 						TreeItem newProf = new TreeItem(tiProf, SWT.NONE);
@@ -1985,14 +1987,14 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			UserInfo uinfo = rep.loadUserInfo(login); // Get UserInfo from repository...
-			UserDialog ud = new UserDialog(shell, SWT.NONE, rep, uinfo);
+			UserInfo uinfo = securityProvider.loadUserInfo(login); // Get UserInfo from repository...
+			UserDialog ud = new UserDialog(shell, SWT.NONE, rep.getSecurityProvider(), uinfo);
 			UserInfo ui = ud.open();
 			if (!readonly)
 			{
 				if (ui!=null)
 				{
-					rep.saveUserInfo(ui);
+					securityProvider.saveUserInfo(ui);
 			 	}
 			}
 			else
@@ -2013,7 +2015,7 @@ public class RepositoryExplorerDialog extends Dialog
 
 	public void newUser()
 	{
-		UserDialog ud = new UserDialog(shell, SWT.NONE, rep, new UserInfo());
+		UserDialog ud = new UserDialog(shell, SWT.NONE, rep.getSecurityProvider(), new UserInfo());
 		UserInfo ui = ud.open();
 		if (ui!=null)
 		{
@@ -2044,10 +2046,10 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			ObjectId idUser = rep.getUserID(login);
+			ObjectId idUser = securityProvider.getUserID(login);
 			if (idUser!=null)
 			{
-				rep.delUser(idUser);
+				securityProvider.delUser(idUser);
 			}
 		}
 		catch(KettleException e)
@@ -2135,11 +2137,11 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				ObjectId id = rep.getUserID(name);
+				ObjectId id = securityProvider.getUserID(name);
 				if (id!=null)
 				{
 					// System.out.println("Renaming user ["+name+"] with ID = "+id);
-					rep.renameUser(id, newname);
+					securityProvider.renameUser(id, newname);
 					retval=true;
 				}
 				else
@@ -2238,10 +2240,10 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				ObjectId id = rep.getProfileID(name);
+				ObjectId id = securityProvider.getProfileID(name);
 				if (id!=null)
 				{
-					rep.renameProfile(id, newname);
+					securityProvider.renameProfile(id, newname);
 					retval=true;
 				}
 				else
@@ -2546,8 +2548,8 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			ObjectId idProfile = rep.getProfileID(profilename);
-			ProfileMeta profinfo = rep.loadProfileMeta(idProfile);
+			ObjectId idProfile = securityProvider.getProfileID(profilename);
+			ProfileMeta profinfo = securityProvider.loadProfileMeta(idProfile);
 			
 			// System.out.println("editProfile, nrPermissions = "+profinfo.nrPermissions());
 	
@@ -2555,7 +2557,7 @@ public class RepositoryExplorerDialog extends Dialog
 			String name = pd.open();
 			if (name!=null)
 			{
-				rep.saveProfile(profinfo);
+				securityProvider.saveProfile(profinfo);
 			}
 				
 			if(!profilename.equalsIgnoreCase(name)) refreshTree();
@@ -2576,10 +2578,10 @@ public class RepositoryExplorerDialog extends Dialog
 			if (name!=null)
 			{
 				// See if this user already exists...
-				ObjectId idProfile = rep.getProfileID(name);
+				ObjectId idProfile = securityProvider.getProfileID(name);
 				if (idProfile==null)
 				{
-					rep.saveProfile(profinfo);
+					securityProvider.saveProfile(profinfo);
 				}
 				else
 				{
@@ -2604,10 +2606,10 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			ObjectId idProfile = rep.getProfileID(profilename);
+			ObjectId idProfile = securityProvider.getProfileID(profilename);
 			if (idProfile!=null)
 			{
-				rep.delProfile(idProfile);
+				securityProvider.delProfile(idProfile);
 			}
 	
 			refreshTree();

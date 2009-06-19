@@ -36,8 +36,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.PermissionMeta;
 import org.pentaho.di.repository.ProfileMeta;
+import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -222,20 +222,16 @@ public class ProfileDialog extends Dialog
 		if (profile.getName()!=null) wName.setText(profile.getName());
 		if (profile.getDescription()!=null) wDesc.setText(profile.getDescription());
 		
-		for (int i=1;i<PermissionMeta.permissionTypeDesc.length;i++)
-		{
-			wPermission.add(PermissionMeta.permissionTypeDesc[i]);
+		for (Permission permission : Permission.values()) {
+			wPermission.add(permission.getDescription());
 		}
 		
-		int sel[] = new int[profile.nrPermissions()];
+		String selection[] = new String[profile.nrPermissions()];
 		for (int i=0;i<profile.nrPermissions();i++)
 		{
-			PermissionMeta pi = profile.getPermission(i);
-			// System.out.println("Permission: "+pi);
-			sel[i]=pi.getType()-1;
+			selection[i] = profile.getPermission(i).getDescription();
 		}
-		
-		wPermission.setSelection(sel);
+		wPermission.setSelection(selection);
 	}
 
 	private void cancel()
@@ -254,13 +250,12 @@ public class ProfileDialog extends Dialog
 			
 			profile.removeAllPermissions();
 			
-			int sel[] = wPermission.getSelectionIndices();
-			for (int i=0;i<sel.length;i++)
-			{
-				String perm = wPermission.getItem(sel[i]);
-				PermissionMeta perminfo = new PermissionMeta(perm);
-				profile.addPermission(perminfo);
+			String[] selection = wPermission.getSelection();
+			for (String permissionDescription : selection) {
+				Permission permission = Permission.getPermissionWithDescription(permissionDescription);
+				profile.addPermission(permission);
 			}
+			
 			dispose();
 		}
 		else

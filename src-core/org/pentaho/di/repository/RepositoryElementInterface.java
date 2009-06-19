@@ -29,4 +29,9 @@ public interface RepositoryElementInterface {
 	public RepositoryRevision getRevision();
 	
 	public RepositoryLock getRepositoryLock();
+	
+	/**
+	 * Clears the changed flag
+	 */
+	public void clearChanged();
 }

@@ -24,7 +24,6 @@ import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.PermissionMeta;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -32,8 +31,10 @@ import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.UserInfo;
+import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Document;
@@ -51,18 +52,24 @@ public class KettleFileRepository implements Repository {
 	private static final String LOG_FILE = "repository.log";
 	
 	private KettleFileRepositoryMeta repositoryMeta;
+	private KettleFileRepositorySecurityProvider	securityProvider;
 
-	public void connect(String locksource) throws KettleException {}
+	public void connect() throws KettleException {}
 
 	public void disconnect() {}
 
 	public void init(RepositoryMeta repositoryMeta, UserInfo userInfo) {
 		this.repositoryMeta = (KettleFileRepositoryMeta) repositoryMeta;
+		this.securityProvider = new KettleFileRepositorySecurityProvider(repositoryMeta);
 	}
 
 	public boolean isConnected() {
 		return true;
-	}	
+	}
+	
+	public RepositorySecurityProvider getSecurityProvider() {
+		return securityProvider;
+	}
 	
 	private String calcDirectoryName(RepositoryDirectory dir) {
 		StringBuilder directory = new StringBuilder();
@@ -154,6 +161,12 @@ public class KettleFileRepository implements Repository {
 		return filename.toString();
 	}
 	
+	// The filename of the object is the object id with the base folder before it...
+	//
+	public String calcFilename(ObjectId id) {
+		return calcDirectoryName(null)+id.toString();
+	}
+	
 	private FileObject getFileObject(RepositoryElementInterface element) throws IOException {
 		return KettleVFS.getFileObject(calcFilename(element));
 	}
@@ -189,12 +202,12 @@ public class KettleFileRepository implements Repository {
 			OutputStream os = KettleVFS.getOutputStream(fileObject, false);
 			os.write(xml.getBytes(Const.XML_ENCODING));
 			os.close();
+			
+			repositoryElement.clearChanged();
 		} catch(Exception e) {
 			throw new KettleException("Unable to save repository element ["+repositoryElement+"] to XML file : "+calcFilename(repositoryElement), e);
 		}
 	}
-
-
 	
 	
 	public RepositoryDirectory createRepositoryDirectory(RepositoryDirectory parentDirectory, String directoryPath) throws KettleException {
@@ -229,13 +242,14 @@ public class KettleFileRepository implements Repository {
 	}
 
 	public void delAllFromTrans(ObjectId id_transformation) throws KettleException {
-		// TODO
+		String filename = calcFilename(id_transformation);
+		deleteFile(filename);
 	
 	}
 
 	public void delClusterSchema(ObjectId id_cluster) throws KettleException {
 		// ID and filename are the same
-		deleteRootFile(id_cluster.getId());
+		deleteFile(id_cluster.getId());
 	}
 
 	public void delCondition(ObjectId id_condition) throws KettleException {
@@ -245,7 +259,7 @@ public class KettleFileRepository implements Repository {
 
 	public void delPartitionSchema(ObjectId id_partition_schema) throws KettleException {
 		// ID and filename are the same
-		deleteRootFile(id_partition_schema.getId());
+		deleteFile(id_partition_schema.getId());
 	}
 
 	public void delRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
@@ -255,7 +269,7 @@ public class KettleFileRepository implements Repository {
 
 	public void delSlave(ObjectId id_slave) throws KettleException {
 		// ID and filename are the same
-		deleteRootFile(id_slave.getId());
+		deleteFile(id_slave.getId());
 	}
 	
 	public void deleteDatabaseMeta(String databaseName) throws KettleException {
@@ -273,7 +287,7 @@ public class KettleFileRepository implements Repository {
 		}
 	}
 	
-	public void deleteRootFile(String filename) throws KettleException {
+	public void deleteFile(String filename) throws KettleException {
 		try {
 			FileObject fileObject = KettleVFS.getFileObject(filename);
 			fileObject.delete();
@@ -947,7 +961,7 @@ public class KettleFileRepository implements Repository {
 	public UserInfo getUserInfo() { return null; }
 	public String[] getUserLogins() throws KettleException { return new String[] {}; }
 
-	public PermissionMeta loadPermissionMeta(ObjectId id_permission) throws KettleException { return null; }
+	public Permission loadPermissionMeta(ObjectId id_permission) throws KettleException { return null; }
 	public ProfileMeta loadProfileMeta(ObjectId id_profile) throws KettleException { return null; }
 	public UserInfo loadUserInfo(String login) throws KettleException { return null; }
 	public UserInfo loadUserInfo(String login, String password) throws KettleException { return null; }

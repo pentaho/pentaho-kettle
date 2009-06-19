@@ -36,11 +36,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.ProfileMeta;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ProfileMeta;
+import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -65,29 +64,22 @@ public class UserDialog extends Dialog
 	private Button    wOK, wCancel;
 	
 	private PropsUI      props;
-	private Repository rep;
 	private UserInfo   userinfo;
 	
 	private boolean    newUser = false;
 
-    /**
-     * @deprecated Use the CT without <i>props</i> and <i>log</i> parameters
-     */
-    public UserDialog(Shell parent, int style, LogWriter log, PropsUI props, Repository rep, UserInfo userInfo)
-    {
-        this(parent, style, rep, userInfo);
-        this.props = props;
-    }
-    
+	private RepositorySecurityProvider	securityProvider;
+   
 	/**
      * This dialog grabs a UserMeta structure, valid for the specified repository.
      */
-	public UserDialog(Shell parent, int style, Repository rep, UserInfo userInfo)
+	public UserDialog(Shell parent, int style, RepositorySecurityProvider securityProvider, UserInfo userInfo)
 	{
 		super(parent, style);
-		props=PropsUI.getInstance();
-		this.rep = rep;
-		userinfo=userInfo;
+		this.securityProvider = securityProvider;
+		this.userinfo=userInfo;
+
+		this.props=PropsUI.getInstance();
 	}
 	
 	public UserInfo open() 
@@ -217,7 +209,7 @@ public class UserDialog extends Dialog
         
         // If the repository user is not an administrator, changing the users' profile is not allowed...
         //
-        if (!rep.getUserInfo().isAdministrator() || userinfo.isAdministrator())
+        if (!securityProvider.getUserInfo().isAdministrator() || userinfo.isAdministrator())
         {
             wlProfile.setEnabled(false);
             wProfile.setEnabled(false);
@@ -335,7 +327,7 @@ public class UserDialog extends Dialog
 			
 		    if ( isNewUser() )
 		    {
-		    	ObjectId id = rep.getUserID(login);
+		    	ObjectId id = securityProvider.getUserID(login);
 		    	if ( id != null )
 		    	{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -354,11 +346,11 @@ public class UserDialog extends Dialog
 			userinfo.setDescription(wDescription.getText());
 			String profname = wProfile.getText();
 			
-			ObjectId idProfile = rep.getProfileID(profname);
-			ProfileMeta profinfo = rep.loadProfileMeta(idProfile);
+			ObjectId idProfile = securityProvider.getProfileID(profname);
+			ProfileMeta profinfo = securityProvider.loadProfileMeta(idProfile);
 			userinfo.setProfile( profinfo);
             
-            rep.saveUserInfo(userinfo);
+			securityProvider.saveUserInfo(userinfo);
 	
 			dispose();
 		}
@@ -376,7 +368,7 @@ public class UserDialog extends Dialog
 		try
 		{
 			wProfile.removeAll();
-			String prof[] = rep.getProfiles();
+			String prof[] = securityProvider.getProfiles();
 			for (int i=0;i<prof.length;i++)
 			{
 				wProfile.add(prof[i]);

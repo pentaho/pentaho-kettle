@@ -9,13 +9,14 @@ import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 
-public interface Repository extends RepositorySecurityInterface {
+public interface Repository {
 	
 	/**
 	 * @return The name of the repository
@@ -28,19 +29,22 @@ public interface Repository extends RepositorySecurityInterface {
 	public RepositoryMeta getRepositoryMeta();
 	
 	/**
-	 * @return The user that is currently using this repository.
+	 * @return the currently logged on user. (also available through the repository security provider)
 	 */
 	public UserInfo getUserInfo();
+	
+	/**
+	 * @return The security provider for this repository.
+	 */
+	public RepositorySecurityProvider getSecurityProvider();
 		
 	/**
-	 * Connect to the repository 
-	 * @param locksource the name of the process or program that has a lock on the repository.  
-	 * Only one can connect to the repository at the same time.
-	 * If more try to connect simultaneously, an error will be given.
+	 * Connect to the repository.  Make sure you don't connect more than once to the same repository with this repository object. 
 	 * 
-	 * @throws KettleException in case we couldn't connect to the repository.
+	 * @throws KettleSecurityException in case the supplied user or password is incorrect.
+	 * @throws KettleException in case there is a general unexpected error OR if we're already connected to the repository.
 	 */
-	public void connect(String locksource) throws KettleException;
+	public void connect() throws KettleException, KettleSecurityException;
 	
 	/**
 	 * Disconnect from the repository.

@@ -246,7 +246,7 @@ public class RepositoryTransDelegate extends BaseRepositoryDelegate {
                 // It might be simply loaded as a shared object from the repository
                 //
                 boolean isUsedByTransformation = transMeta.isUsingPartitionSchema(partitionSchema);
-                repository.savePartitionSchema(partitionSchema, transMeta.getObjectId(), isUsedByTransformation);
+                repository.save(partitionSchema, null, transMeta.getObjectId(), isUsedByTransformation);
             }
             
             // Save the slaves
@@ -257,7 +257,7 @@ public class RepositoryTransDelegate extends BaseRepositoryDelegate {
 
                 SlaveServer slaveServer = transMeta.getSlaveServers().get(i);
                 boolean isUsedByTransformation = transMeta.isUsingSlaveServer(slaveServer);
-                repository.saveSlaveServer(slaveServer, transMeta.getObjectId(), isUsedByTransformation);
+                repository.save(slaveServer, null, transMeta.getObjectId(), isUsedByTransformation);
             }
             
             // Save the clustering schemas
@@ -267,7 +267,7 @@ public class RepositoryTransDelegate extends BaseRepositoryDelegate {
 
                 ClusterSchema clusterSchema = transMeta.getClusterSchemas().get(i);
                 boolean isUsedByTransformation = transMeta.isUsingClusterSchema(clusterSchema);
-                repository.saveClusterSchema(clusterSchema, transMeta.getObjectId(), isUsedByTransformation);
+                repository.save(clusterSchema, null, transMeta.getObjectId(), isUsedByTransformation);
             }
             
             if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingDependencies")); //$NON-NLS-1$

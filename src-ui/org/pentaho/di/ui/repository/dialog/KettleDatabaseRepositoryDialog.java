@@ -386,7 +386,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 				KettleDatabaseRepository rep = (KettleDatabaseRepository) RepositoryLoader.createRepository(repositoryMeta, null);
 				
 				System.out.println("Connecting to database for repository creation..."); //$NON-NLS-1$
-                rep.connectionDelegate.connect(true, false, getClass().getName(), true);
+                rep.connectionDelegate.connect(true, true);
 				boolean upgrade=false;
 				String  cu = BaseMessages.getString(PKG, "RepositoryDialog.Dialog.CreateUpgrade.Create"); //$NON-NLS-1$
 				
@@ -425,7 +425,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 							{
 								// OK, what's the admin password?
 								//
-								UserInfo ui = rep.loadUserInfo("admin"); //$NON-NLS-1$
+								UserInfo ui = rep.getSecurityProvider().loadUserInfo("admin"); //$NON-NLS-1$
 								
 								if (pwd.equalsIgnoreCase( ui.getPassword() ) )
 								{
@@ -504,7 +504,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 		try
 		{
 			KettleDatabaseRepository rep = (KettleDatabaseRepository) RepositoryLoader.createRepository(repinfo, null);
-            rep.connect(getClass().getName());
+            rep.connect();
             
 			MessageBox qmb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
 			qmb.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ConfirmRemovalOfRepository.Message")); //$NON-NLS-1$
@@ -521,7 +521,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 					{
 						// OK, what's the admin password?
 						//
-						UserInfo ui = rep.loadUserInfo("admin"); //$NON-NLS-1$
+						UserInfo ui = rep.getSecurityProvider().loadUserInfo("admin"); //$NON-NLS-1$
 						
 						if (pwd.equalsIgnoreCase( ui.getPassword() ) )
 						{		

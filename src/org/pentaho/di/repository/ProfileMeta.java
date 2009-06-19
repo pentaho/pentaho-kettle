@@ -13,6 +13,8 @@ package org.pentaho.di.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.i18n.BaseMessages;
+
 
 /*
  * Created on 7-apr-2004
@@ -21,27 +23,75 @@ import java.util.List;
 
 public class ProfileMeta 
 {
-//	private static Class<?> PKG = ProfileMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = ProfileMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+	/**
+	 * These are the permissions for the various repositories around.
+	 * Over time we will refine these but for now we'll keep the onese we have.
+	 * 
+	 * @author matt
+	 */
+	public enum Permission {
+		
+		READ_ONLY( "READONLY", BaseMessages.getString(PKG, "PermissionMeta.Permission.ReadOnly")),
+		ADMIN( "ADMIN", BaseMessages.getString(PKG, "PermissionMeta.Permission.Administrator")),
+		TRANSFORMATION( "TRANS", BaseMessages.getString(PKG, "PermissionMeta.Permission.UseTransformations")),
+		JOB( "JOB", BaseMessages.getString(PKG, "PermissionMeta.Permission.UseJobs")),
+		SCHEMA( "SCHEMA", BaseMessages.getString(PKG, "PermissionMeta.Permission.UseSchemas")),
+		DATABASE( "DB", BaseMessages.getString(PKG, "PermissionMeta.Permission.UseDatabases")),
+		EXPLORE_DATABASE( "EXPLORE_DB", BaseMessages.getString(PKG, "PermissionMeta.Permission.ExploreDatabases")),
+		LOCK_FILE( "LOCK_FILE", BaseMessages.getString(PKG, "PermissionMeta.Permission.LockFiles")),
+		;
+		
+		private String code;
+		private String description;
+		
+		Permission(String code, String description) {
+			this.code = code;
+			this.description=description;
+		}
+		
+		public String getCode() {
+			return code;
+		}
+		
+		public String getDescription() {
+			return description;
+		}
+		
+		public static Permission getPermissionWithCode(String code)
+		{
+			for (Permission permission : Permission.values()) {
+				if (permission.getCode().equals(code)) return permission;
+			}
+			return null;
+		}
+
+		public static Permission getPermissionWithDescription(String permissionDescription) {
+			for (Permission permission : Permission.values()) {
+				if (permission.getDescription().equals(permissionDescription)) return permission;
+			}
+			return null;
+		}
+	};
 
 	private ObjectId profileId;
 	
 	private String name;        // Long name
 	private String description; // Description
 	
-	private List<PermissionMeta> permissions; // List of permissions in this profile...
+	private List<Permission> permissions; // List of permissions in this profile...
 
 	public ProfileMeta(String name, String description)
 	{
 		this.name = name;
 		this.description = description;
-		this.permissions = new ArrayList<PermissionMeta>();
+		this.permissions = new ArrayList<Permission>();
 	}
 
 	public ProfileMeta()
 	{
-		this.name = null;
-		this.description = null;
-		this.permissions = new ArrayList<PermissionMeta>();
+		this(null, null);
 	}
 	
 	public void setName(String name)
@@ -64,21 +114,16 @@ public class ProfileMeta
 		return description;
 	}
 	
-	public void addPermission(PermissionMeta permission)
+	public void addPermission(Permission permission)
 	{
 		permissions.add(permission);
 	}
 
-	public void addPermission(int p, PermissionMeta permission)
+	public void addPermission(int p, Permission permission)
 	{
 		permissions.add(p, permission);
 	}
 
-	public PermissionMeta getPermission(int i)
-	{
-		return (PermissionMeta)permissions.get(i);
-	}
-	
 	public int nrPermissions()
 	{
 		if (permissions==null) return 0;
@@ -90,12 +135,17 @@ public class ProfileMeta
 		permissions.remove(i);
 	}
 	
+	public Permission getPermission(int i)
+	{
+		return permissions.get(i);
+	}
+	
 	public void removeAllPermissions()
 	{
 		permissions.clear();
 	}
 
-	public int indexOfPermission(PermissionMeta permission)
+	public int indexOfPermission(Permission permission)
 	{
 		return permissions.indexOf(permission);
 	}
@@ -112,73 +162,43 @@ public class ProfileMeta
 	
 	// Helper functions...
 	
-	public boolean isReadonly()
-	{
-		for (int i=0;i<nrPermissions();i++)
-		{
-			PermissionMeta pi = getPermission(i);
-			if (pi.isReadonly()) return true;
+	public boolean isReadonly() {
+		return checkPermission(Permission.READ_ONLY);
+	}
+
+	public boolean isAdministrator() {
+		return checkPermission(Permission.ADMIN);
+	}
+
+	public boolean useTransformations() {
+		return checkPermission(Permission.TRANSFORMATION);
+	}
+
+	public boolean useJobs() {
+		return checkPermission(Permission.JOB);
+	}
+
+	public boolean useSchemas() {
+		return checkPermission(Permission.SCHEMA);
+	}
+
+	public boolean useDatabases() {
+		return checkPermission(Permission.DATABASE);
+	}
+
+	public boolean exploreDatabases() {
+		return checkPermission(Permission.EXPLORE_DATABASE);
+	}
+
+	public boolean supportsLocking() {
+		return checkPermission(Permission.LOCK_FILE);
+	}
+
+	private boolean checkPermission(Permission lookup) {
+		for (Permission permission : Permission.values()) {
+			if (permission.getCode().equals(lookup.getCode())) return true;
 		}
 		return false;
 	}
 
-	public boolean isAdministrator()
-	{
-		for (int i=0;i<nrPermissions();i++)
-		{
-			PermissionMeta pi = getPermission(i);
-			if (pi.isAdministrator()) return true;
-		}
-		return false;
-	}
-
-	public boolean useTransformations()
-	{
-		for (int i=0;i<nrPermissions();i++)
-		{
-			PermissionMeta pi = getPermission(i);
-			if (pi.useTransformations()) return true;
-		}
-		return false;
-	}
-
-	public boolean useJobs()
-	{
-		for (int i=0;i<nrPermissions();i++)
-		{
-			PermissionMeta pi = getPermission(i);
-			if (pi.useJobs()) return true;
-		}
-		return false;
-	}
-
-	public boolean useSchemas()
-	{
-		for (int i=0;i<nrPermissions();i++)
-		{
-			PermissionMeta pi = getPermission(i);
-			if (pi.useSchemas()) return true;
-		}
-		return false;
-	}
-
-	public boolean useDatabases()
-	{
-		for (int i=0;i<nrPermissions();i++)
-		{
-			PermissionMeta pi = getPermission(i);
-			if (pi.useDatabases()) return true;
-		}
-		return false;
-	}
-
-	public boolean exploreDatabases()
-	{
-		for (int i=0;i<nrPermissions();i++)
-		{
-			PermissionMeta pi = getPermission(i);
-			if (pi.exploreDatabases()) return true;
-		}
-		return false;
-	}
 }

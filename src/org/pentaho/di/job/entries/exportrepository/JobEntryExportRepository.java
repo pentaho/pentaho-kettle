@@ -764,7 +764,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		this.repository = RepositoryLoader.createRepository(this.repinfo, this.userinfo);
 		
 		try {
-			this.repository.connect("Export job entry");
+			this.repository.connect();
 		} catch(Exception e) {
 			log.logError(toString(),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectRep"));
 			throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectRep"), e);
@@ -774,7 +774,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		// Just for Job entry security
 		// We don't need it at all to export
 		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.CheckSuppliedUserPass"));
-		this.userinfo = this.repository.loadUserInfo(realusername, realpassword);
+		this.userinfo = this.repository.getSecurityProvider().loadUserInfo(realusername, realpassword);
 		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.CheckingUser",userinfo.getUsername()));
 		
 		if (this.userinfo.getObjectId()==null)

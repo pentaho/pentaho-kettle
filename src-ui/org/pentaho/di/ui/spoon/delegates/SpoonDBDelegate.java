@@ -32,7 +32,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositorySecurity;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.TransHopMeta;
@@ -147,7 +146,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 		Repository rep = spoon.getRepository();
 		if (rep != null)
 		{
-			if (!RepositorySecurity.isReadOnly(rep))
+			if (!rep.getSecurityProvider().isReadOnly())
 			{
 				try {
 					rep.deleteDatabaseMeta(db.getName());
@@ -428,7 +427,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 
 		if (rep != null)
 		{
-			if (!RepositorySecurity.isReadOnly(rep))
+			if (!rep.getSecurityProvider().isReadOnly())
 			{
 				try
 				{
@@ -492,7 +491,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 				// Save it in the repository...
 				try 
 				{
-					if (!RepositorySecurity.isReadOnly(spoon.rep))
+					if (!spoon.rep.getSecurityProvider().isReadOnly())
 					{
 						spoon.rep.save(databaseMeta);
 					}

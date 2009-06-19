@@ -21,7 +21,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.RepositorySecurity;
+import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
@@ -309,22 +309,22 @@ public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
 	 * @throws KettleException In case something went wrong: database error, insufficient permissions, depending objects, etc.
 	 */
 	public void deleteDatabaseMeta(String databaseName) throws KettleException {
-		if (!RepositorySecurity.isReadOnly(repository) )
-		{
-			try {
-				ObjectId id_database = getDatabaseID(databaseName);
-				delDatabase(id_database);
 
-			}  catch (KettleException dbe) {
-				throw new KettleException(BaseMessages.getString(PKG, "KettleDatabaseRepository.Exception.ErrorDeletingConnection.Message", databaseName), dbe);
-			}
-		} else {
-			throw new KettleException(BaseMessages.getString(PKG, "KettleDatabaseRepository.Exception.ReadOnlyUser"));
+		repository.getSecurityProvider().validateAction(RepositoryOperation.DELETE_DATABASE);
+		
+		try {
+			ObjectId id_database = getDatabaseID(databaseName);
+			delDatabase(id_database);
+
+		}  catch (KettleException dbe) {
+			throw new KettleException(BaseMessages.getString(PKG, "KettleDatabaseRepository.Exception.ErrorDeletingConnection.Message", databaseName), dbe);
 		}
 	}
 
 	public synchronized void delDatabase(ObjectId id_database) throws KettleException
 	{
+		repository.getSecurityProvider().validateAction(RepositoryOperation.DELETE_DATABASE);
+
 		// First, see if the database connection is still used by other connections...
 		// If so, generate an error!!
 		// We look in table R_STEP_DATABASE to see if there are any steps using this database.

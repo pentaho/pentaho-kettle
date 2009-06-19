@@ -7,8 +7,8 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.PermissionMeta;
 import org.pentaho.di.repository.ProfileMeta;
+import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 public class RepositoryProfileDelegate extends BaseRepositoryDelegate {
@@ -37,12 +37,12 @@ public class RepositoryProfileDelegate extends BaseRepositoryDelegate {
 				profileMeta.setName(r.getString("NAME", null));
 				profileMeta.setDescription(r.getString("DESCRIPTION", null));
 
-				ObjectId pid[] = repository.getPermissionIDs(id_profile);
+				ObjectId pid[] = repository.getSecurityProvider().getPermissionIDs(id_profile);
 				profileMeta.removeAllPermissions();
 
 				for (int i = 0; i < pid.length; i++) {
-					PermissionMeta pi = repository.loadPermissionMeta(pid[i]);
-					if (pi.getObjectId() != null) {
+					Permission pi = repository.getSecurityProvider().loadPermission(pid[i]);
+					if (pi != null) {
 						profileMeta.addPermission(pi);
 					}
 				}
@@ -81,7 +81,7 @@ public class RepositoryProfileDelegate extends BaseRepositoryDelegate {
 
 				// Then save profile_permission relationships
 				//
-				repository.delProfilePermissions(profileMeta.getObjectId());
+				repository.getSecurityProvider().delProfilePermissions(profileMeta.getObjectId());
 
 				// Save permission-profile relations
 				//
@@ -97,8 +97,8 @@ public class RepositoryProfileDelegate extends BaseRepositoryDelegate {
 		try {
 			// Then save profile_permission relationships
 			for (int i = 0; i < profileMeta.nrPermissions(); i++) {
-				PermissionMeta pi = profileMeta.getPermission(i);
-				ObjectId id_permission = repository.permissionDelegate.getPermissionID(pi.getTypeDesc());
+				Permission pi = profileMeta.getPermission(i);
+				ObjectId id_permission = repository.permissionDelegate.getPermissionID(pi.getCode());
 
 				RowMetaAndData pr = new RowMetaAndData();
 				pr.addValue(new ValueMeta("ID_PROFILE", ValueMetaInterface.TYPE_INTEGER), profileMeta.getObjectId());
