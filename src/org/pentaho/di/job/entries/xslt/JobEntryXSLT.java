@@ -33,6 +33,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -76,7 +77,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 	public int iffileexists;
 	private boolean addfiletoresult;
 	private String xsltfactory;
-
+	private boolean filenamesfromprevious;
 
 	public JobEntryXSLT(String n)
 	{
@@ -86,6 +87,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		outputfilename=null;
 		iffileexists=1;
 		addfiletoresult = false;
+		filenamesfromprevious=false;
 		xsltfactory=FACTORY_JAXP;
 		setID(-1L);
 	}
@@ -111,6 +113,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		retval.append("      ").append(XMLHandler.addTagValue("outputfilename", outputfilename));
 		retval.append("      ").append(XMLHandler.addTagValue("iffileexists",  iffileexists));
 		retval.append("      ").append(XMLHandler.addTagValue("addfiletoresult",  addfiletoresult));
+		retval.append("      ").append(XMLHandler.addTagValue("filenamesfromprevious",  filenamesfromprevious));
 		retval.append("      ").append(XMLHandler.addTagValue("xsltfactory", xsltfactory));
 		
 		return retval.toString();
@@ -126,6 +129,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			outputfilename = XMLHandler.getTagValue(entrynode, "outputfilename");
 			iffileexists = Const.toInt(XMLHandler.getTagValue(entrynode, "iffileexists"), -1);
 			addfiletoresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addfiletoresult"));
+			filenamesfromprevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "filenamesfromprevious"));
 			xsltfactory = XMLHandler.getTagValue(entrynode, "xsltfactory");
 			if(xsltfactory==null) xsltfactory=FACTORY_JAXP;
 
@@ -145,6 +149,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			outputfilename = rep.getJobEntryAttributeString(id_jobentry, "outputfilename");
 			iffileexists=(int) rep.getJobEntryAttributeInteger(id_jobentry, "iffileexists");
 			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
+			filenamesfromprevious=rep.getJobEntryAttributeBoolean(id_jobentry, "filenamesfromprevious");
 			xsltfactory = rep.getJobEntryAttributeString(id_jobentry, "xsltfactory");
 			if(xsltfactory==null) xsltfactory=FACTORY_JAXP;
 		}
@@ -164,6 +169,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "outputfilename", outputfilename);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "iffileexists", iffileexists);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "addfiletoresult", addfiletoresult);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "filenamesfromprevious", filenamesfromprevious);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "xsltfactory", xsltfactory);
 		}
 		catch(KettleDatabaseException dbe)
@@ -187,164 +193,216 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
         return environmentSubstitute(getxmlFilename());
     }
 
-	public String getRealoutputfilename()
+	public String getoutputfilename()
 	{
 		return environmentSubstitute(getoutputFilename());
 	}
-
+    public boolean isFilenamesFromPrevious()
+    {
+    	return filenamesfromprevious;
+    }
+    public void setFilenamesFromPrevious(boolean filenamesfromprevious)
+    {
+    	this.filenamesfromprevious= filenamesfromprevious;
+    }
 
     public String getRealxslfilename()
     {
         return environmentSubstitute(getxslFilename());
     }
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)  throws KettleException
 	{
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
-		result.setResult( false );
-
-		String realxmlfilename = getRealxmlfilename();
-		String realxslfilename = getRealxslfilename();
-		String realoutputfilename = getRealoutputfilename();
+		int NrErrors=0;
+		int NrSuccess=0;
 		
-		FileObject xmlfile = null;
+		List<RowMetaAndData> rows = result.getRows();
+		if (isFilenamesFromPrevious())
+		{
+			if(log.isDetailed())	
+				log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryXSLT.Log.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));
+		}
+
+		if (isFilenamesFromPrevious() && rows!=null) // Copy the input row to the (command line) arguments
+		{
+			RowMetaAndData resultRow = null;
+			for (int iteration=0;iteration<rows.size() && !parentJob.isStopped();iteration++) 
+			{
+				resultRow = rows.get(iteration);
+	
+				// Get filenames (xml, xsl, output filename)
+				String xmlfilename_previous = resultRow.getString(0,null);
+				String xslfilename_previous = resultRow.getString(1,null);
+				String ouputfilename_previous = resultRow.getString(2,null);
+				
+				if (!Const.isEmpty(xmlfilename_previous) && !Const.isEmpty(xslfilename_previous) && !Const.isEmpty(ouputfilename_previous))
+				{
+					if(processOneXMLFile(xmlfilename_previous,  xslfilename_previous, ouputfilename_previous, log, result, parentJob))
+						NrSuccess++;
+					else
+						NrErrors++;		
+				}else
+				{
+					// We failed!
+					log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryXSLT.AllFilesNotNull.Label"));
+					NrErrors++;
+				}
+				
+			}
+		}else
+		{
+			String realxmlfilename = getRealxmlfilename();
+			String realxslfilename = getRealxslfilename();
+			String realoutputfilename = getoutputfilename();
+			if (!Const.isEmpty(realxmlfilename) && !Const.isEmpty(realxslfilename) && !Const.isEmpty(realoutputfilename))
+			{
+				if(processOneXMLFile(realxmlfilename,  realxslfilename, realoutputfilename, log, result, parentJob))
+					NrSuccess++;
+				else
+			    	NrErrors++;
+			}
+			else
+			{
+				// We failed!
+				log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryXSLT.AllFilesNotNull.Label"));
+				NrErrors++;
+			}
+		}
+		
+
+		result.setResult(NrErrors==0);
+		result.setNrErrors(NrErrors);
+		result.setNrLinesWritten(NrSuccess);
+		
+		return result;
+	}
+    private boolean processOneXMLFile(String xmlfilename, String xslfilename, String outputfilename, 
+    		LogWriter log, Result result, Job parentJob)
+    {
+    	boolean retval=false;
+    	FileObject xmlfile = null;
 		FileObject xslfile = null;
 		FileObject outputfile = null;
 
 		try
-
 		{
+			xmlfile = KettleVFS.getFileObject(xmlfilename);
+			xslfile = KettleVFS.getFileObject(xslfilename);
+			outputfile = KettleVFS.getFileObject(outputfilename);
 
-			if (xmlfilename!=null && xslfilename!=null && outputfilename!=null)
+			if ( xmlfile.exists() && xslfile.exists() )
 			{
-				xmlfile = KettleVFS.getFileObject(realxmlfilename);
-				xslfile = KettleVFS.getFileObject(realxslfilename);
-				outputfile = KettleVFS.getFileObject(realoutputfilename);
-
-				if ( xmlfile.exists() && xslfile.exists() )
+				if (outputfile.exists() && iffileexists==2)
 				{
-					if (outputfile.exists() && iffileexists==2)
-					{
-						//Output file exists
-						// User want to fail
-						log.logError(toString(), BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists1.Label")
-										+ realoutputfilename + BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists2.Label"));
-						result.setResult( false );
-						result.setNrErrors(1);
-					}
+					//Output file exists
+					// User want to fail
+					log.logError(toString(), BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists1.Label")
+									+ outputfilename + BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists2.Label"));
+					return retval;
+				}
 
-					else if (outputfile.exists() && iffileexists==1)
-					{
-						// Do nothing
-						if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists1.Label")
-								+ realoutputfilename + BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists2.Label"));
-						result.setResult( true );
-					}
-					else
-					{
-						 if (outputfile.exists() && iffileexists==0)
-							{
-								// the output file exists and user want to create new one with unique name
-								//Format Date
-
-								// Try to clean filename (without wildcard)
-								String wildcard = realoutputfilename.substring(realoutputfilename.length()-4,realoutputfilename.length());
-								if(wildcard.substring(0,1).equals("."))
-								{
-									// Find wildcard
-									realoutputfilename=realoutputfilename.substring(0,realoutputfilename.length()-4) +
-										"_" + StringUtil.getFormattedDateTimeNow(true) + wildcard;
-								}
-								else
-								{
-									// did not find wildcard
-									realoutputfilename=realoutputfilename + "_" + StringUtil.getFormattedDateTimeNow(true);
-								}
-							    if(log.isDebug())
-							    {
-							    	log.logDebug(toString(),  BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists1.Label") +
-							    	realoutputfilename +  BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists2.Label"));
-							    	log.logDebug(toString(), BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileNameChange1.Label") + realoutputfilename +
-							    				BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileNameChange2.Label"));
-							    }
-							}
-
-						
-						// Create transformer factory
-						TransformerFactory factory = TransformerFactory.newInstance();	
-						
-						if (xsltfactory.equals(FACTORY_SAXON))
-						{
-							// Set the TransformerFactory to the SAXON implementation.
-							factory = new net.sf.saxon.TransformerFactoryImpl(); 
-						}
-						
-						if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerFactoryInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerFactory",factory.getClass().getName()));
-				
-								
-						// Use the factory to create a template containing the xsl file
-						Templates template = factory.newTemplates(new StreamSource(	KettleVFS.getInputStream(xslfile))); 
-
-						// Use the template to create a transformer
-						Transformer xformer = template.newTransformer();
-						
-						if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClassInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClass",xformer.getClass().getName()));
-											
-						
-						// Prepare the input and output files
-						Source source = new StreamSource(KettleVFS.getInputStream(xmlfile));
-						StreamResult resultat = new StreamResult(KettleVFS.getOutputStream(outputfile, false));
-
-						// Apply the xsl file to the source file and write the result to the output file
-						xformer.transform(source, resultat);
-						
-						if (isAddFileToResult())
-						{
-							// Add output filename to output files
-		                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realoutputfilename), parentJob.getJobname(), toString());
-		                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-						}
-						
-
-						// Everything is OK
-						result.setResult( true );
-					}
+				else if (outputfile.exists() && iffileexists==1)
+				{
+					// Do nothing
+					if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists1.Label")
+							+ outputfilename + BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists2.Label"));
+					retval=true;
+					return retval;
 				}
 				else
 				{
+					 if (outputfile.exists() && iffileexists==0)
+						{
+							// the output file exists and user want to create new one with unique name
+							//Format Date
 
-					if(	!xmlfile.exists())
+							// Try to clean filename (without wildcard)
+							String wildcard = outputfilename.substring(outputfilename.length()-4,outputfilename.length());
+							if(wildcard.substring(0,1).equals("."))
+							{
+								// Find wildcard
+								outputfilename=outputfilename.substring(0,outputfilename.length()-4) +
+									"_" + StringUtil.getFormattedDateTimeNow(true) + wildcard;
+							}
+							else
+							{
+								// did not find wildcard
+								outputfilename=outputfilename + "_" + StringUtil.getFormattedDateTimeNow(true);
+							}
+						    if(log.isDebug())
+						    {
+						    	log.logDebug(toString(),  BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists1.Label") +
+						    	outputfilename +  BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileExists2.Label"));
+						    	log.logDebug(toString(), BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileNameChange1.Label") + outputfilename +
+						    				BaseMessages.getString(PKG, "JobEntryXSLT.OuputFileNameChange2.Label"));
+						    }
+						}
+
+					
+					// Create transformer factory
+					TransformerFactory factory = TransformerFactory.newInstance();	
+					
+					if (xsltfactory.equals(FACTORY_SAXON))
 					{
-						log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryXSLT.FileDoesNotExist1.Label") +
-							realxmlfilename +  BaseMessages.getString(PKG, "JobEntryXSLT.FileDoesNotExist2.Label"));
+						// Set the TransformerFactory to the SAXON implementation.
+						factory = new net.sf.saxon.TransformerFactoryImpl(); 
 					}
-					if(!xslfile.exists())
+					
+					if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerFactoryInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerFactory",factory.getClass().getName()));
+			
+							
+					// Use the factory to create a template containing the xsl file
+					Templates template = factory.newTemplates(new StreamSource(	KettleVFS.getInputStream(xslfile))); 
+
+					// Use the template to create a transformer
+					Transformer xformer = template.newTransformer();
+					
+					if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClassInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClass",xformer.getClass().getName()));
+										
+					
+					// Prepare the input and output files
+					Source source = new StreamSource(KettleVFS.getInputStream(xmlfile));
+					StreamResult resultat = new StreamResult(KettleVFS.getOutputStream(outputfile, false));
+
+					// Apply the xsl file to the source file and write the result to the output file
+					xformer.transform(source, resultat);
+					
+					if (isAddFileToResult())
 					{
-						log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryXSLT.FileDoesNotExist1.Label") +
-							realxslfilename +  BaseMessages.getString(PKG, "JobEntryXSLT.FileDoesNotExist2.Label"));
+						// Add output filename to output files
+	                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(outputfilename), parentJob.getJobname(), toString());
+	                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 					}
-					result.setResult( false );
-					result.setNrErrors(1);
+					
+
+					// Everything is OK
+					retval=true;
 				}
-
 			}
 			else
 			{
-				log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryXSLT.AllFilesNotNull.Label"));
-				result.setResult( false );
-				result.setNrErrors(1);
+
+				if(	!xmlfile.exists())
+				{
+					log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryXSLT.FileDoesNotExist1.Label") +
+						xmlfilename +  BaseMessages.getString(PKG, "JobEntryXSLT.FileDoesNotExist2.Label"));
+				}
+				if(!xslfile.exists())
+				{
+					log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryXSLT.FileDoesNotExist1.Label") +
+							xmlfilename +  BaseMessages.getString(PKG, "JobEntryXSLT.FileDoesNotExist2.Label"));
+				}
 			}
 		}
 		catch ( Exception e )
 		{
 			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryXSLT.ErrorXLST.Label") +
-				BaseMessages.getString(PKG, "JobEntryXSLT.ErrorXLSTXML1.Label") + realxmlfilename +
+				BaseMessages.getString(PKG, "JobEntryXSLT.ErrorXLSTXML1.Label") + xmlfilename +
 				BaseMessages.getString(PKG, "JobEntryXSLT.ErrorXLSTXML2.Label") +
-				BaseMessages.getString(PKG, "JobEntryXSLT.ErrorXLSTXSL1.Label") + realxslfilename +
+				BaseMessages.getString(PKG, "JobEntryXSLT.ErrorXLSTXSL1.Label") + xslfilename +
 				BaseMessages.getString(PKG, "JobEntryXSLT.ErrorXLSTXSL2.Label") + e.getMessage());
-			result.setResult( false );
-			result.setNrErrors(1);
 		}
 		finally
 		{
@@ -357,18 +415,15 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			    	xslfile.close();
 				if ( outputfile != null )
 					outputfile.close();
-				
 				// file object is not properly garbaged collected and thus the file cannot
 				// be deleted anymore. This is a known problem in the JVM.
-
 				System.gc();
 		    }
 			catch ( IOException e ) { }
 		}
-
-		return result;
-	}
-
+    	
+    	return retval;
+    }
 	public boolean evaluates()
 	{
 		return true;
