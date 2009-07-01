@@ -31,6 +31,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class DetectLastRow extends BaseStep implements StepInterface
 {
+
     private DetectLastRowMeta meta;
     private DetectLastRowData data;
     private Object[] previousRow;
@@ -46,10 +47,11 @@ public class DetectLastRow extends BaseStep implements StepInterface
         data=(DetectLastRowData)sdi;
         
         Object[] r = getRow();      // Get row from input rowset & set row busy!        
-        
+
         if(first)
         {
         	if (getInputRowMeta() == null)  {
+        		setOutputDone();
         		return false;
         	}
         	
@@ -60,7 +62,7 @@ public class DetectLastRow extends BaseStep implements StepInterface
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
         }
 		Object[] outputRow=null;
-		
+
 		if (r==null)  // no more input to be expected...
 		{
 			if(previousRow != null) 
@@ -79,6 +81,7 @@ public class DetectLastRow extends BaseStep implements StepInterface
 		        	logBasic(Messages.getString("DetectLastRow.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 		        }				
 			}
+
 			setOutputDone();
 			return false;
 		}
