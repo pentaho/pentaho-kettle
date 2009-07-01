@@ -477,7 +477,7 @@ public class RssOutput extends BaseStep implements StepInterface
 				// add namespaces here ...
 				for(int i=0;i<meta.getNameSpaces().length;i++)
 				{
-					data.rssElement.addAttribute(environmentSubstitute(meta.getNameSpacesTitle()[i]),
+					data.rssElement.addNamespace(environmentSubstitute(meta.getNameSpacesTitle()[i]),
 							environmentSubstitute(meta.getNameSpaces()[i]));
 				}
 
@@ -547,8 +547,8 @@ public class RssOutput extends BaseStep implements StepInterface
 					itemtagsub.setText(itemvalue);
 				}else{
 					// display item at channel level
-					data.channel.addElement(itemname);
-					data.channel.setText(itemvalue);
+					Element temp = data.channel.addElement(itemname);
+					temp.setText(itemvalue); 
 				}
 			}
 		}
