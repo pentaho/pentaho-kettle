@@ -1474,7 +1474,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 					
 
 					String[] tablenames = (String[]) settables.toArray(new String[settables.size()]);
-
+					Const.sortStrings(tablenames);
 					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, tablenames, BaseMessages.getString(PKG, "AccessInputDialog.Dialog.SelectATable.Title"), BaseMessages.getString(PKG, "AccessInputDialog.Dialog.SelectATable.Message"));
 					String tablename = dialog.open();
 					if (tablename != null) {
