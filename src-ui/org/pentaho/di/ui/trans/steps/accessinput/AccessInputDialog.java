@@ -1247,7 +1247,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wResetRownum.setSelection(in.resetRowNumber());
 		wLimit.setText(""+in.getRowLimit());
 
-		log.logDebug(toString(), Messages.getString("AccessInputDialog.Log.GettingFieldsInfo"));
+		if(log.isDebug()) log.logDebug(toString(), Messages.getString("AccessInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
 		    AccessInputField field = in.getInputFields()[i];
@@ -1472,7 +1472,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 					
 
 					String[] tablenames = (String[]) settables.toArray(new String[settables.size()]);
-
+					Const.sortStrings(tablenames);
 					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, tablenames, Messages.getString("AccessInputDialog.Dialog.SelectATable.Title"), Messages.getString("AccessInputDialog.Dialog.SelectATable.Message"));
 					String tablename = dialog.open();
 					if (tablename != null) {
