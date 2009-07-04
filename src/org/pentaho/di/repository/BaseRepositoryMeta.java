@@ -2,6 +2,7 @@ package org.pentaho.di.repository;
 
 import java.util.List;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -35,7 +36,8 @@ public class BaseRepositoryMeta {
 	{
 		try
 		{
-			id 			= XMLHandler.getTagValue(repnode, "id") ;
+                          // Fix for PDI-2508: migrating from 3.2 to 4.0 causes NPE on startup.
+			id          = Const.NVL(XMLHandler.getTagValue(repnode, "id"), id) ;
 			name        = XMLHandler.getTagValue(repnode, "name") ;
 			description = XMLHandler.getTagValue(repnode, "description");
 		}
