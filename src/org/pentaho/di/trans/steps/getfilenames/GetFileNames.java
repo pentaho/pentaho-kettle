@@ -156,8 +156,9 @@ public class GetFileNames extends BaseStep implements StepInterface
     	    		String[] filesname={filename};
     		      	String[] filesmask={wildcard};
     		      	String[] filesrequired={"N"};
+    		      	boolean[] includesubfolders={meta.isDynamicIncludeSubFolders()};
     		      	// Get files list
-    		      	data.files = meta.getDynamicFileList(getTransMeta(), filesname, filesmask, filesrequired);
+    		      	data.files = meta.getDynamicFileList(getTransMeta(), filesname, filesmask, filesrequired,includesubfolders);
     		      	data.filessize=data.files.nrOfFiles();
     		      	data.filenr=0;
     		     }

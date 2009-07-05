@@ -137,6 +137,11 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
     private CCombo wWildcardField;
     private FormData fdlWildcardField,fdWildcardField;
     
+    private Label wlIncludeSubFolder;
+    private FormData fdlIncludeSubFolder ;
+    private Button wIncludeSubFolder ;
+    private FormData fdIncludeSubFolder;
+    
 	private Group wAdditionalGroup;
 	private FormData fdAdditionalGroup,fdlAddResult;
 	private Group wAddFileResult;
@@ -315,6 +320,24 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
          fdWildcardField.top  = new FormAttachment(wFilenameField, margin);
          fdWildcardField.right= new FormAttachment(100, -margin);
          wWildcardField.setLayoutData(fdWildcardField);
+         
+         //Is includeSubFoldername defined in a Field		
+  		wlIncludeSubFolder = new Label(wOriginFiles, SWT.RIGHT);
+  		wlIncludeSubFolder .setText(BaseMessages.getString(PKG, "GetFileNamesDialog.includeSubFolder.Label"));
+  		props.setLook(wlIncludeSubFolder );
+  		fdlIncludeSubFolder = new FormData();
+  		fdlIncludeSubFolder.left = new FormAttachment(0, -margin);
+  		fdlIncludeSubFolder.top = new FormAttachment(wWildcardField, margin);
+  		fdlIncludeSubFolder.right = new FormAttachment(middle, -2*margin);
+  		wlIncludeSubFolder .setLayoutData(fdlIncludeSubFolder);
+  		
+  		wIncludeSubFolder = new Button(wOriginFiles, SWT.CHECK);
+  		props.setLook(wIncludeSubFolder );
+  		wIncludeSubFolder.setToolTipText(BaseMessages.getString(PKG, "GetFileNamesDialog.includeSubFolder.Tooltip"));
+  		fdIncludeSubFolder = new FormData();
+  		fdIncludeSubFolder.left = new FormAttachment(middle, -margin);
+  		fdIncludeSubFolder.top = new FormAttachment(wWildcardField, margin);
+  		wIncludeSubFolder .setLayoutData(fdIncludeSubFolder);		
         	  
 		fdOriginFiles = new FormData();
 		fdOriginFiles.left = new FormAttachment(0, margin);
@@ -871,6 +894,8 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		wPreview.setEnabled(!wFileField.getSelection());
 		wlLimit.setEnabled(!wFileField.getSelection());
 		wLimit.setEnabled(!wFileField.getSelection());
+		wlIncludeSubFolder.setEnabled(wFileField.getSelection());
+		wIncludeSubFolder.setEnabled(wFileField.getSelection());
 
 	}
 	/**
@@ -915,7 +940,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 			if (in.getDynamicFilenameField()!=null) wFilenameField.setText(in.getDynamicFilenameField());
 			if (in.getDynamicWildcardField()!=null) wWildcardField.setText(in.getDynamicWildcardField());
 			wLimit.setText(""+in.getRowLimit());
-
+			wIncludeSubFolder.setSelection(in.isDynamicIncludeSubFolders());
 		}
 		wStepname.selectAll();
 	}
@@ -955,6 +980,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		in.setFileField(wFileField.getSelection() );
 		in.setRowNumberField( wInclRownumField.getText() );
 		in.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
+		in.setDynamicIncludeSubFolders(wIncludeSubFolder.getSelection());
 
 	}
 
