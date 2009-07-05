@@ -469,7 +469,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	    retval.append("    ").append(XMLHandler.addTagValue("rownum_field",    rowNumberField));
         retval.append("    ").append(XMLHandler.addTagValue("filename_Field",  dynamicFilenameField));
         retval.append("    ").append(XMLHandler.addTagValue("wildcard_Field",  dynamicWildcardField));  
-        retval.append("    ").append(XMLHandler.addTagValue("include_subfolders",     dynamicIncludeSubFolders));
+        retval.append("    ").append(XMLHandler.addTagValue("dynamic_include_subfolders",     dynamicIncludeSubFolders));
         retval.append("    ").append(XMLHandler.addTagValue("limit", rowLimit));
         
 		retval.append("    <file>").append(Const.CR);
@@ -500,7 +500,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 			dynamicFilenameField    = XMLHandler.getTagValue(stepnode, "filename_Field");
 			dynamicWildcardField    = XMLHandler.getTagValue(stepnode, "wildcard_Field");
-			dynamicIncludeSubFolders    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_subfolders"));
+			dynamicIncludeSubFolders    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "dynamic_include_subfolders"));
 			
 			// Is there a limit on the number of rows we process?
 			rowLimit = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0L);
@@ -537,7 +537,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			
 			dynamicFilenameField  = rep.getStepAttributeString(id_step, "filename_Field");
 			dynamicWildcardField  = rep.getStepAttributeString(id_step, "wildcard_Field");
-			dynamicIncludeSubFolders  = rep.getStepAttributeBoolean(id_step, "include_subfolders");
+			dynamicIncludeSubFolders  = rep.getStepAttributeBoolean(id_step, "dynamic_include_subfolders");
 			
 			includeRowNumber  = rep.getStepAttributeBoolean(id_step, "rownum");
 			isaddresult  = rep.getStepAttributeBoolean(id_step, rep.getStepAttributeString(id_step, "isaddresult"));
@@ -574,7 +574,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "filefield",          filefield);
 			rep.saveStepAttribute(id_transformation, id_step, "filename_Field",    dynamicFilenameField);
 			rep.saveStepAttribute(id_transformation, id_step, "wildcard_Field",    dynamicWildcardField);
-			rep.saveStepAttribute(id_transformation, id_step, "include_subfolders",    dynamicIncludeSubFolders);
+			rep.saveStepAttribute(id_transformation, id_step, "dynamic_include_subfolders",    dynamicIncludeSubFolders);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
