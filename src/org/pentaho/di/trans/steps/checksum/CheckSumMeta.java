@@ -40,6 +40,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
+
 /*
  * Created on 30-06-2008
  * 
@@ -61,6 +62,28 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     public static String checksumtypeCodes[] = {TYPE_CRC32,TYPE_ADLER32,TYPE_MD5,TYPE_SHA1};
 	
 	private String checksumtype;
+	
+
+    
+	/** result type */
+	private int resultType;
+	
+	/**
+	 * The result type description
+	 */
+	public final static String resultTypeDesc[] = {
+		BaseMessages.getString(PKG, "CheckSumDialog.ResultType.String"),
+		BaseMessages.getString(PKG, "CheckSumDialog.ResultType.Hexadecimal"),
+		BaseMessages.getString(PKG, "CheckSumDialog.ResultType.Binary")};
+	
+	/**
+	 * The result type codes
+	 */
+	public final static String resultTypeCode[] = { "string", "hexadecimal", "binay" };
+	public final static int result_TYPE_STRING = 0;
+	public final static int result_TYPE_HEXADECIMAL = 1;
+	public final static int result_TYPE_BINARY = 2;
+    
 
 	public CheckSumMeta() {
 		super(); // allocate BaseStepMeta
@@ -88,7 +111,39 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 	public String getCheckSumType() {
 		return checksumtype;
 	}
+	  public int getResultType() {
+			return resultType;
+		}
+	public static String getResultTypeDesc(int i) {
+		if (i < 0 || i >= resultTypeDesc.length)
+			return resultTypeDesc[0];
+		return resultTypeDesc[i];
+	}
+	public static int getResultTypeByDesc(String tt) {
+		if (tt == null)
+			return 0;
 
+		for (int i = 0; i < resultTypeDesc.length; i++) {
+			if (resultTypeDesc[i].equalsIgnoreCase(tt))
+				return i;
+		}
+		// If this fails, try to match using the code.
+		return getResultTypeByCode(tt);
+	}
+	   
+    private static int getResultTypeByCode(String tt) {
+		if (tt == null)
+			return 0;
+
+		for (int i = 0; i < resultTypeCode.length; i++) {
+			if (resultTypeCode[i].equalsIgnoreCase(tt))
+				return i;
+		}
+		return 0;
+	}
+	public void setResultType(int resultType) {
+		this.resultType = resultType;
+	}
 	/**
 	 * @return Returns the resultfieldName.
 	 */
@@ -144,8 +199,8 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 	private void readData(Node stepnode) throws KettleXMLException {
 		try {
 			checksumtype = XMLHandler.getTagValue(stepnode, "checksumtype");
-			resultfieldName = XMLHandler.getTagValue(stepnode,
-					"resultfieldName");
+			resultfieldName = XMLHandler.getTagValue(stepnode,"resultfieldName");
+			resultType = getResultTypeByCode(Const.NVL(XMLHandler.getTagValue(stepnode,"resultType"), ""));
 
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
 			int nrfields = XMLHandler.countNodes(fields, "field");
@@ -160,11 +215,17 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 			throw new KettleXMLException("Unable to load step info from XML", e);
 		}
 	}
-
+	private static String getResultTypeCode(int i) {
+		if (i < 0 || i >= resultTypeCode.length)
+			return resultTypeCode[0];
+		return resultTypeCode[i];
+	}
+	
 	public String getXML() {
 		StringBuffer retval = new StringBuffer(200);
 		retval.append("      ").append(XMLHandler.addTagValue("checksumtype", checksumtype));
 		retval.append("      ").append(XMLHandler.addTagValue("resultfieldName", resultfieldName));
+		retval.append("      ").append(XMLHandler.addTagValue("resultType",getResultTypeCode(resultType)));
 
 		retval.append("    <fields>").append(Const.CR);
 		for (int i = 0; i < fieldName.length; i++) {
@@ -180,6 +241,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 	public void setDefault() {
 		resultfieldName = null;
 		checksumtype = checksumtypeCodes[0];
+		resultType=result_TYPE_HEXADECIMAL;
 		int nrfields = 0;
 
 		allocate(nrfields);
@@ -195,8 +257,9 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 		try {
 			checksumtype = rep.getStepAttributeString(id_step, "checksumtype");
 
-			resultfieldName = rep.getStepAttributeString(id_step,
-					"resultfieldName");
+			resultfieldName = rep.getStepAttributeString(id_step,"resultfieldName");
+			resultType = getResultTypeByCode(Const.NVL(rep.getStepAttributeString(id_step, "resultType"), ""));
+			
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 
 			allocate(nrfields);
@@ -215,11 +278,11 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
 			throws KettleException {
 		try {
-			rep.saveStepAttribute(id_transformation, id_step, "checksumtype",
-					checksumtype);
+			rep.saveStepAttribute(id_transformation, id_step, "checksumtype",checksumtype);
 
-			rep.saveStepAttribute(id_transformation, id_step,
-					"resultfieldName", resultfieldName);
+			rep.saveStepAttribute(id_transformation, id_step,"resultfieldName", resultfieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "resultType", getResultTypeCode(resultType));
+			
 			for (int i = 0; i < fieldName.length; i++) {
 				rep.saveStepAttribute(id_transformation, id_step, i,
 						"field_name", fieldName[i]);

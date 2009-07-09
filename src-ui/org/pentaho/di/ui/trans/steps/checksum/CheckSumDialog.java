@@ -81,6 +81,10 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 	private ColumnInfo[] colinf;
 	
     private Map<String, Integer> inputFields;
+    
+	private Label wlResultType;
+    private CCombo wResultType;
+    private FormData fdlResultType, fdResultType;
 	
 	public CheckSumDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -157,6 +161,34 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
         fdType.top = new FormAttachment(wStepname, margin);
         fdType.right = new FormAttachment(100, 0);
         wType.setLayoutData(fdType);
+        wType.addSelectionListener(new SelectionAdapter()
+        {
+        
+            public void widgetSelected(SelectionEvent e)
+            {
+                activeResultType();
+            }
+        }
+        );  
+        
+		 // ResultType
+        wlResultType = new Label(shell, SWT.RIGHT);
+        wlResultType.setText(BaseMessages.getString(PKG, "CheckSumDialog.ResultType.Label"));
+        props.setLook(wlResultType);
+        fdlResultType = new FormData();
+        fdlResultType.left = new FormAttachment(0, 0);
+        fdlResultType.right = new FormAttachment(middle, -margin);
+        fdlResultType.top = new FormAttachment(wType, 2*margin);
+        wlResultType.setLayoutData(fdlResultType);
+        wResultType = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+        wResultType.setItems(CheckSumMeta.resultTypeDesc);
+        wResultType.select(0); 
+        props.setLook(wResultType);
+        fdResultType = new FormData();
+        fdResultType.left = new FormAttachment(middle, 0);
+        fdResultType.top = new FormAttachment(wType, 2*margin);
+        fdResultType.right = new FormAttachment(100, 0);
+        wResultType.setLayoutData(fdResultType);
         
         // Result line...
 		wlResult=new Label(shell, SWT.RIGHT);
@@ -165,14 +197,14 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
 		fdlResult.right= new FormAttachment(middle, -margin);
-		fdlResult.top  = new FormAttachment(wType, margin*2);
+		fdlResult.top  = new FormAttachment(wResultType, margin*2);
 		wlResult.setLayoutData(fdlResult);
 		wResult=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wResult);
 		wResult.addModifyListener(lsMod);
 		fdResult=new FormData();
 		fdResult.left = new FormAttachment(middle, 0);
-		fdResult.top  = new FormAttachment(wType, margin*2);
+		fdResult.top  = new FormAttachment(wResultType, margin*2);
 		fdResult.right= new FormAttachment(100, 0);
 		wResult.setLayoutData(fdResult);
         
@@ -269,6 +301,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 		setSize();
 		
 		getData();
+		activeResultType();
 		input.setChanged(changed);
 	
 		shell.open();
@@ -277,6 +310,12 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 				if (!display.readAndDispatch()) display.sleep();
 		}
 		return stepname;
+	}
+	private void activeResultType()
+	{
+		boolean active=wType.getSelectionIndex()==2 ||wType.getSelectionIndex()==3;
+		wlResultType.setEnabled(active);
+		wResultType.setEnabled(active);
 	}
 	protected void setComboBoxes()
     {
@@ -327,6 +366,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 	{
 		wType.select(input.getTypeByDesc());
 		if (input.getResultFieldName()!=null) wResult.setText(input.getResultFieldName());
+		wResultType.setText(CheckSumMeta.getResultTypeDesc(input.getResultType()));
 		
 		Table table = wFields.table;
 		if (input.getFieldName().length>0) table.removeAll();
@@ -361,6 +401,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 			input.setCheckSumType(wType.getSelectionIndex());
 		
 		input.setResultFieldName( wResult.getText() );
+		input.setResultType(CheckSumMeta.getResultTypeByDesc(wResultType.getText()));
 		
 		int nrfields = wFields.nrNonEmpty();
 		input.allocate(nrfields);

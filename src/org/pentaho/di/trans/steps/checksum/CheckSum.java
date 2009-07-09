@@ -94,14 +94,24 @@ public class CheckSum extends BaseStep implements StepInterface {
 			if (meta.getCheckSumType().equals(CheckSumMeta.TYPE_ADLER32)
 					|| meta.getCheckSumType().equals(CheckSumMeta.TYPE_CRC32)) {
 				// get checksum
-				Long checksum = calculCheckSum(r);
-				outputRowData = RowDataUtil.addValueData(r, getInputRowMeta()
-						.size(), checksum);
+				Long checksum=calculCheckSum(r);
+				outputRowData = RowDataUtil.addValueData(r, getInputRowMeta().size(), checksum);
 			} else {
 				// get checksum
-				String checksumCode = createCheckSum(r);
-				outputRowData = RowDataUtil.addValueData(r, getInputRowMeta()
-						.size(), checksumCode);
+				
+				byte[] o= createCheckSum(r);
+				switch(meta.getResultType())
+				{
+					case CheckSumMeta.result_TYPE_BINARY  : 
+						outputRowData = RowDataUtil.addValueData(r, getInputRowMeta().size(), o);
+						break;
+					case CheckSumMeta.result_TYPE_HEXADECIMAL : 
+						outputRowData = RowDataUtil.addValueData(r, getInputRowMeta().size(), byteToHexEncode(o));
+						break;
+					default: 
+						outputRowData = RowDataUtil.addValueData(r, getInputRowMeta().size(), getStringFromBytes(o));
+					break;
+				}
 			}
 
 			if (checkFeedback(getLinesRead())) {
@@ -132,8 +142,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 		return true;
 	}
 
-	private String createCheckSum(Object[] r) throws Exception {
-		String retval = null;
+	private byte[] createCheckSum(Object[] r) throws Exception {
 		StringBuffer Buff = new StringBuffer();
 
 		// Loop through fields
@@ -151,12 +160,10 @@ public class CheckSum extends BaseStep implements StepInterface {
 		digest.update(Buff.toString().getBytes());
 		byte[] hash = digest.digest();
 
-		retval = getString(hash);
-
-		return retval;
+		return hash;
 	}
 
-	private static String getString(byte[] bytes) {
+	private static String getStringFromBytes(byte[] bytes) {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < bytes.length; i++) {
 			byte b = bytes[i];
@@ -167,7 +174,24 @@ public class CheckSum extends BaseStep implements StepInterface {
 		}
 		return sb.toString();
 	}
-
+	 public String byteToHexEncode(byte[] in)
+	 {
+		 	if(in==null) return null;
+	        final char hexDigits[] ={ '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F' };
+			
+			String hex = new String(in);
+			
+			char[] s = hex.toCharArray();
+			StringBuffer hexString = new StringBuffer(2 * s.length);
+			
+			for (int i = 0; i < s.length; i++)
+			{
+				hexString.append(hexDigits[(s[i] & 0x00F0) >> 4]); // hi nibble
+				hexString.append(hexDigits[s[i] & 0x000F]);        // lo nibble
+			}
+			
+			return hexString.toString();
+		}
 	private Long calculCheckSum(Object[] r) throws Exception {
 		Long retval;
 		StringBuffer Buff = new StringBuffer();
