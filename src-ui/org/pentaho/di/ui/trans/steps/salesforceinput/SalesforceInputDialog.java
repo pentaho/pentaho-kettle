@@ -135,7 +135,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
     private ComboVar  wModule;
 
-    private boolean  gotModule = false; 
+    private boolean  gotModule = false;
+    
+    private boolean  getModulesListError = false;     /* True if error getting modules list */
 	
 	private Group wAdditionalFields;
 	
@@ -291,10 +293,18 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
             {
                 public void focusLost(org.eclipse.swt.events.FocusEvent e)
                 {
+                	getModulesListError = false;
                 }
             
                 public void focusGained(org.eclipse.swt.events.FocusEvent e)
                 {
+                    // check if the URL and login credentials passed and not just had error 
+                	if (Const.isEmpty(wURL.getText()) || 
+                   		Const.isEmpty(wUserName.getText()) ||
+                		Const.isEmpty(wPassword.getText()) ||
+                		(getModulesListError )) return; 
+
+
                     Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
                     shell.setCursor(busy);
                     getModulesList();
@@ -930,11 +940,13 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 			  if(!Const.isEmpty(selectedField)) wModule.setText(selectedField);
 			  
 		      gotModule = true;
+        	  getModulesListError = false;
 			  
 		  }catch(Exception e)
 		  {
 				new ErrorDialog(shell,BaseMessages.getString(PKG, "SalesforceInputDialog.ErrorRetrieveModules.DialogTitle"),
 						BaseMessages.getString(PKG, "SalesforceInputDialog.ErrorRetrieveData.ErrorRetrieveModules"),e);
+				getModulesListError = true;
 		  }
 	   }
   }
@@ -1244,7 +1256,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         
         return true;
 	}
-	// check if module, username is given
+	// check if username is given
 	private boolean checkUser(){
 
         if (Const.isEmpty(wUserName.getText()))
