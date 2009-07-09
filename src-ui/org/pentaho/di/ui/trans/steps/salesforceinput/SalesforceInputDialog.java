@@ -44,39 +44,38 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransPreviewFactory;
+import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputField;
+import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta;
+import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
+import org.pentaho.di.ui.core.dialog.EnterTextDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ComboVar;
+import org.pentaho.di.ui.core.widget.LabelTextVar;
+import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.trans.steps.salesforceinput.Messages;
 
-import com.sforce.soap.partner.DescribeSObjectResult;
 import com.sforce.soap.partner.DescribeGlobalResult;
+import com.sforce.soap.partner.DescribeSObjectResult;
 import com.sforce.soap.partner.Field;
 import com.sforce.soap.partner.LoginResult;
 import com.sforce.soap.partner.SessionHeader;
 import com.sforce.soap.partner.SforceServiceLocator;
 import com.sforce.soap.partner.SoapBindingStub;
-
-import org.pentaho.di.core.Props;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.TransPreviewFactory;
-import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta;
-import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputField;
-import org.pentaho.di.trans.steps.salesforceinput.Messages;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.core.widget.ComboVar;
-import org.pentaho.di.ui.core.widget.LabelTextVar;
-import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
-import org.pentaho.di.ui.core.dialog.EnterTextDialog;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
-import org.pentaho.di.core.util.StringUtil;
 
 public class SalesforceInputDialog extends BaseStepDialog implements StepDialogInterface {
 	
@@ -134,7 +133,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
     private ComboVar  wModule;
 
-    private boolean  gotModule = false; 
+    private boolean  gotModule = false;
+    
+    private boolean  getModulesListError = false;     /* True if error getting modules list */
 	
 	private Group wAdditionalFields;
 	
@@ -214,8 +215,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		wFileComp.setLayout(fileLayout);
 		
 	      // Webservice URL
-        wURL = new LabelTextVar(transMeta,wFileComp, Messages.getString("SalesforceInputDialog.URL.Label"), Messages
-            .getString("SalesforceInputDialog.URL.Tooltip"));
+        wURL = new LabelTextVar(transMeta,wFileComp, Messages.getString("SalesforceInputDialog.URL.Label"), 
+        		Messages.getString("SalesforceInputDialog.URL.Tooltip"));
         props.setLook(wURL);
         wURL.addModifyListener(lsMod);
         fdURL = new FormData();
@@ -226,8 +227,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         
 
 	      // UserName line
-        wUserName = new LabelTextVar(transMeta,wFileComp, Messages.getString("SalesforceInputDialog.User.Label"), Messages
-            .getString("SalesforceInputDialog.User.Tooltip"));
+        wUserName = new LabelTextVar(transMeta,wFileComp, Messages.getString("SalesforceInputDialog.User.Label"), 
+        		Messages.getString("SalesforceInputDialog.User.Tooltip"));
         props.setLook(wUserName);
         wUserName.addModifyListener(lsMod);
         fdUserName = new FormData();
@@ -237,8 +238,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         wUserName.setLayoutData(fdUserName);
 		
         // Password line
-        wPassword = new LabelTextVar(transMeta,wFileComp, Messages.getString("SalesforceInputDialog.Password.Label"), Messages
-            .getString("SalesforceInputDialog.Password.Tooltip"));
+        wPassword = new LabelTextVar(transMeta,wFileComp, Messages.getString("SalesforceInputDialog.Password.Label"), 
+        		Messages.getString("SalesforceInputDialog.Password.Tooltip"));
         props.setLook(wPassword);
         wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
@@ -290,10 +291,18 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
             {
                 public void focusLost(org.eclipse.swt.events.FocusEvent e)
                 {
+                	getModulesListError = false;
                 }
             
                 public void focusGained(org.eclipse.swt.events.FocusEvent e)
                 {
+                    // check if the URL and login credentials passed and not just had error 
+                	if (Const.isEmpty(wURL.getText()) || 
+                   		Const.isEmpty(wUserName.getText()) ||
+                		Const.isEmpty(wPassword.getText()) ||
+                		(getModulesListError )) return; 
+
+
                     Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
                     shell.setCursor(busy);
                     getModulesList();
@@ -368,8 +377,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		
 		// Add Salesforce URL in the output stream ?
 		wlInclURL = new Label(wAdditionalFields, SWT.RIGHT);
-		wlInclURL.setText(Messages
-				.getString("SalesforceInputDialog.InclURL.Label"));
+		wlInclURL.setText(Messages.getString("SalesforceInputDialog.InclURL.Label"));
 		props.setLook(wlInclURL);
 		fdlInclURL = new FormData();
 		fdlInclURL.left = new FormAttachment(0, 0);
@@ -378,8 +386,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		wlInclURL.setLayoutData(fdlInclURL);
 		wInclURL = new Button(wAdditionalFields, SWT.CHECK);
 		props.setLook(wInclURL);
-		wInclURL.setToolTipText(Messages
-				.getString("SalesforceInputDialog.InclURL.Tooltip"));
+		wInclURL.setToolTipText(Messages.getString("SalesforceInputDialog.InclURL.Tooltip"));
 		fdInclURL = new FormData();
 		fdInclURL.left = new FormAttachment(middle, 0);
 		fdInclURL.top = new FormAttachment(0, 3*margin);
@@ -394,8 +401,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	);
 
 		wlInclURLField = new Label(wAdditionalFields, SWT.LEFT);
-		wlInclURLField.setText(Messages
-				.getString("SalesforceInputDialog.InclURLField.Label"));
+		wlInclURLField.setText(Messages.getString("SalesforceInputDialog.InclURLField.Label"));
 		props.setLook(wlInclURLField);
 		fdlInclURLField = new FormData();
 		fdlInclURLField.left = new FormAttachment(wInclURL, margin);
@@ -438,8 +444,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	);
 		
 		wlInclModuleField = new Label(wAdditionalFields, SWT.RIGHT);
-		wlInclModuleField.setText(Messages
-				.getString("SalesforceInputDialog.InclModuleField.Label"));
+		wlInclModuleField.setText(Messages.getString("SalesforceInputDialog.InclModuleField.Label"));
 		props.setLook(wlInclModuleField);
 		fdlInclModuleField = new FormData();
 		fdlInclModuleField.left = new FormAttachment(wInclModule, margin);
@@ -666,47 +671,36 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		final int FieldsRows = input.getInputFields().length;
 
 		ColumnInfo[] colinf = new ColumnInfo[] {
-				new ColumnInfo(Messages
-						.getString("SalesforceInputDialog.FieldsTable.Name.Column"),
+				new ColumnInfo(Messages.getString("SalesforceInputDialog.FieldsTable.Name.Column"),
 						ColumnInfo.COLUMN_TYPE_TEXT, false),
 				new ColumnInfo(
-						Messages
-								.getString("SalesforceInputDialog.FieldsTable.Field.Column"),
+						Messages.getString("SalesforceInputDialog.FieldsTable.Field.Column"),
 						ColumnInfo.COLUMN_TYPE_TEXT, false),
-				new ColumnInfo(Messages
-						.getString("SalesforceInputDialog.FieldsTable.Type.Column"),
+				new ColumnInfo(Messages.getString("SalesforceInputDialog.FieldsTable.Type.Column"),
 						ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true),
 				new ColumnInfo(
-						Messages
-								.getString("SalesforceInputDialog.FieldsTable.Format.Column"),
+						Messages.getString("SalesforceInputDialog.FieldsTable.Format.Column"),
 						ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats()),
 				new ColumnInfo(
-						Messages
-								.getString("SalesforceInputDialog.FieldsTable.Length.Column"),
+						Messages.getString("SalesforceInputDialog.FieldsTable.Length.Column"),
 						ColumnInfo.COLUMN_TYPE_TEXT, false),
 				new ColumnInfo(
-						Messages
-								.getString("SalesforceInputDialog.FieldsTable.Precision.Column"),
+						Messages.getString("SalesforceInputDialog.FieldsTable.Precision.Column"),
 						ColumnInfo.COLUMN_TYPE_TEXT, false),
 				new ColumnInfo(
-						Messages
-								.getString("SalesforceInputDialog.FieldsTable.Currency.Column"),
+						Messages.getString("SalesforceInputDialog.FieldsTable.Currency.Column"),
 						ColumnInfo.COLUMN_TYPE_TEXT, false),
 				new ColumnInfo(
-						Messages
-								.getString("SalesforceInputDialog.FieldsTable.Decimal.Column"),
+						Messages.getString("SalesforceInputDialog.FieldsTable.Decimal.Column"),
 						ColumnInfo.COLUMN_TYPE_TEXT, false),
-				new ColumnInfo(Messages
-						.getString("SalesforceInputDialog.FieldsTable.Group.Column"),
+				new ColumnInfo(Messages.getString("SalesforceInputDialog.FieldsTable.Group.Column"),
 						ColumnInfo.COLUMN_TYPE_TEXT, false),
 				new ColumnInfo(
-						Messages
-								.getString("SalesforceInputDialog.FieldsTable.TrimType.Column"),
+						Messages.getString("SalesforceInputDialog.FieldsTable.TrimType.Column"),
 						ColumnInfo.COLUMN_TYPE_CCOMBO,
 						SalesforceInputField.trimTypeDesc, true),
 				new ColumnInfo(
-						Messages
-								.getString("SalesforceInputDialog.FieldsTable.Repeat.Column"),
+						Messages.getString("SalesforceInputDialog.FieldsTable.Repeat.Column"),
 						ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
 								Messages.getString("System.Combo.Yes"),
 								Messages.getString("System.Combo.No") }, true),
@@ -714,12 +708,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		};
 
 		colinf[0].setUsingVariables(true);
-		colinf[0].setToolTip(Messages
-				.getString("SalesforceInputDialog.FieldsTable.Name.Column.Tooltip"));
+		colinf[0].setToolTip(Messages.getString("SalesforceInputDialog.FieldsTable.Name.Column.Tooltip"));
 		colinf[1].setUsingVariables(true);
-		colinf[1]
-				.setToolTip(Messages
-						.getString("SalesforceInputDialog.FieldsTable.Field.Column.Tooltip"));
+		colinf[1].setToolTip(Messages.getString("SalesforceInputDialog.FieldsTable.Field.Column.Tooltip"));
 
 		wFields = new TableView(transMeta,wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI,
 				colinf, FieldsRows, lsMod, props);
@@ -752,8 +743,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		wOK.setText(Messages.getString("System.Button.OK"));
 
 		wPreview = new Button(shell, SWT.PUSH);
-		wPreview.setText(Messages
-				.getString("SalesforceInputDialog.Button.PreviewRows"));
+		wPreview.setText(Messages.getString("SalesforceInputDialog.Button.PreviewRows"));
 
 		wCancel = new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
@@ -948,11 +938,13 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 			  if(!Const.isEmpty(selectedField)) wModule.setText(selectedField);
 			  
 		      gotModule = true;
+        	  getModulesListError = false;
 			  
 		  }catch(Exception e)
 		  {
 				new ErrorDialog(shell,Messages.getString("SalesforceInputDialog.ErrorRetrieveModules.DialogTitle"),
 						Messages.getString("SalesforceInputDialog.ErrorRetrieveData.ErrorRetrieveModules"),e);
+				getModulesListError = true;
 		  }
 	   }
   }
@@ -1085,9 +1077,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 				String group = field.getGroupSymbol();
 				String decim = field.getDecimalSymbol();
 				String trim = field.getTrimTypeDesc();
-				String rep = field.isRepeated() ? Messages
-						.getString("System.Combo.Yes") : Messages
-						.getString("System.Combo.No");
+				String rep = field.isRepeated() ? 
+						Messages.getString("System.Combo.Yes") : 
+						Messages.getString("System.Combo.No");
 
 				if (name != null)
 					item.setText(1, name);
@@ -1236,10 +1228,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		} catch (KettleException e) {
 			new ErrorDialog(
 					shell,
-					Messages
-							.getString("SalesforceInputDialog.ErrorPreviewingData.DialogTitle"),
-					Messages
-							.getString("SalesforceInputDialog.ErrorPreviewingData.DialogMessage"),
+					Messages.getString("SalesforceInputDialog.ErrorPreviewingData.DialogTitle"),
+					Messages.getString("SalesforceInputDialog.ErrorPreviewingData.DialogMessage"),
 					e);
 		}
 	}
@@ -1264,7 +1254,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         
         return true;
 	}
-	// check if module, username is given
+	// check if username is given
 	private boolean checkUser(){
 
         if (Const.isEmpty(wUserName.getText()))
