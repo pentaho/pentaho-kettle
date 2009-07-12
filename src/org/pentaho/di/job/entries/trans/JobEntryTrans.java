@@ -221,6 +221,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             retval.append("      ").append(XMLHandler.addTagValue("directory",         directoryPath)); // don't loose this info (backup/recovery)
         }
 		retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
+        retval.append("      ").append(XMLHandler.addTagValue("params_from_previous", paramsFromPrevious));
         retval.append("      ").append(XMLHandler.addTagValue("exec_per_row",      execPerRow));
         retval.append("      ").append(XMLHandler.addTagValue("clear_rows",        clearResultRows));
         retval.append("      ").append(XMLHandler.addTagValue("clear_files",       clearResultFiles));
@@ -277,6 +278,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             directory = XMLHandler.getTagValue(entrynode, "directory");
 
             argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
+            paramsFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "params_from_previous") );
             execPerRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "exec_per_row") );
             clearResultRows = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "clear_rows") );
             clearResultFiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "clear_files") );
@@ -342,6 +344,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			directory = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
 			filename = rep.getJobEntryAttributeString(id_jobentry, "file_name");
 			argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
+            paramsFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "params_from_previous");
 			execPerRow = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
 			clearResultRows = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_rows", true);
 			clearResultFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_files", true);
@@ -793,12 +796,18 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 	//
                 	TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
                 	transExecutionConfiguration.setPreviousResult(transMeta.getPreviousResult().clone());
+                	transExecutionConfiguration.setVariables(transMeta);
                 	transExecutionConfiguration.setArgumentStrings(args);
-                	transExecutionConfiguration.setVariables(this);
                 	transExecutionConfiguration.setRemoteServer(remoteSlaveServer);
                 	transExecutionConfiguration.setLogLevel(log.getLogLevel());
                 	
-                	// Send the XML over to the slave server
+                    Map<String, String> params = transExecutionConfiguration.getParams();
+                    for (String param : transMeta.listParameters()) {
+                    	String value = Const.NVL(transMeta.getParameterValue(param), Const.NVL(transMeta.getParameterDefault(param), transMeta.getVariable(param)));
+                    	params.put(param, value);
+                    }
+
+                    // Send the XML over to the slave server
                 	// Also start the transformation over there...
                 	//
                 	Trans.sendToSlaveServer(transMeta, transExecutionConfiguration, rep);
