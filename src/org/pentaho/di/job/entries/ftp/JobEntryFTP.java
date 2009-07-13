@@ -37,10 +37,10 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -48,14 +48,13 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
-import org.pentaho.di.core.util.StringUtil;
 import org.w3c.dom.Node;
 
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPException;
-import com.enterprisedt.net.ftp.FTPTransferType;
 import com.enterprisedt.net.ftp.FTPFile;
+import com.enterprisedt.net.ftp.FTPTransferType;
 /**
  * This defines an FTP job entry.
  *
@@ -160,18 +159,12 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		createmovefolder=false;
 		
 		setID(-1L);
-	    setJobEntryType(JobEntryType.FTP);
 		setControlEncoding(DEFAULT_CONTROL_ENCODING);
 	}
 
 	public JobEntryFTP()
 	{
 		this("");
-	}
-
-	public JobEntryFTP(JobEntryBase jeb)
-	{
-		super(jeb);
 	}
 
     public Object clone()
@@ -299,7 +292,6 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	  {
 	    try
 	    {
-	      super.loadRep(rep, id_jobentry, databases, slaveServers);
 	      	port          = rep.getJobEntryAttributeString(id_jobentry, "port");
 			serverName          = rep.getJobEntryAttributeString(id_jobentry, "servername");
 			userName            = rep.getJobEntryAttributeString(id_jobentry, "username");
@@ -365,12 +357,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
 			rep.saveJobEntryAttribute(id_job, getID(), "port",      port);
 			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
@@ -405,7 +395,6 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		    
 			rep.saveJobEntryAttribute(id_job, getID(), "nr_limit",  nr_limit);
 			rep.saveJobEntryAttribute(id_job, getID(), "success_condition",    success_condition);
-			
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -991,24 +980,25 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 					if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobEntryFTP.AnalysingFile",filename));
 					
 					// We get only files
-					if(ftpFile.isDir() || ftpFile.isLink()) getIt=false;
-
-					try
+					if(ftpFile.isDir() || ftpFile.isLink())
 					{
-						// See if the file matches the regular expression!
-						if(getIt){
+						// not a file..so let's skip it!
+						getIt=false;
+						if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobEntryFTP.SkippingNotAFile",filename));
+					}
+					if(getIt)	{
+						try{
+							// See if the file matches the regular expression!
 							if (pattern!=null){
 								Matcher matcher = pattern.matcher(filename);
 								getIt = matcher.matches();
 							}
+							if (getIt)	downloadFile(ftpclient,filename,realMoveToFolder,log, parentJob ,result) ;
+						}catch (Exception e){
+							// Update errors number
+							updateErrors();
+							log.logError(toString(),Messages.getString("JobFTP.UnexpectedError",e.toString()));
 						}
-						
-						if (getIt)	downloadFile(ftpclient,filename,realMoveToFolder,log, parentJob ,result) ;
-						
-					}catch (Exception e){
-						// Update errors number
-						updateErrors();
-						log.logError(toString(),Messages.getString("JobFTP.UnexpectedError",e.getMessage()));
 					}
 				} // end for
 			}
@@ -1039,10 +1029,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			LogWriter log, Job parentJob,Result result) throws Exception
 	{
 		String localFilename=filename;
-		targetFilename = getTargetFilename(localFilename);
+		targetFilename = returnTargetFilename(localFilename);
 		
         if ((!onlyGettingNewFiles) ||
-        	(onlyGettingNewFiles && needsDownload(targetFilename)))
+        	(onlyGettingNewFiles && needsDownload(targetFilename, log)))
         {
         	if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.GettingFile",filename, environmentSubstitute(targetDirectory)));  //$NON-NLS-1$
 			ftpclient.get(targetFilename, filename);
@@ -1163,7 +1153,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
      * 
      * @return the calculated target filename
      */
-	private String getTargetFilename(String filename)
+	private String returnTargetFilename(String filename)
     {
         String retval=null;
 		// Replace possible environment variables...
@@ -1222,21 +1212,20 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
      * @param remoteFileSize The size of the remote file
      * @return true if the file needs downloading
      */
-    protected boolean needsDownload(String filename)
+    protected boolean needsDownload(String filename, LogWriter log)
     {
     	boolean retval=false;
 
         File file = new File(filename);
-        //return !file.exists();
-        if(!file.exists())
-        {
+   
+        if(!file.exists()){
         	// Local file not exists!
+        	if(log.isDebug()) log.logDebug(toString() , Messages.getString("JobEntryFTP.LocalFileNotExists"), filename);
         	return true;
-        }else
-        {
+        }else{
+        	if(log.isDebug()) log.logDebug(toString() , Messages.getString("JobEntryFTP.LocalFileExists"), filename);
         	// Local file exists!
-        	if(ifFileExists==ifFileExistsCreateUniq)
-        	{
+        	if(ifFileExists==ifFileExistsCreateUniq){
         		// Create file with unique name
         		
         		int lenstring=targetFilename.length();
@@ -1249,8 +1238,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
         		
         		return true;
         	}
-        	else if(ifFileExists==ifFileExistsFail)
-        	{
+        	else if(ifFileExists==ifFileExistsFail){
         		updateErrors();
         	}
         }
