@@ -984,24 +984,25 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 					if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobEntryFTP.AnalysingFile",filename));
 					
 					// We get only files
-					if(ftpFile.isDir() || ftpFile.isLink()) getIt=false;
-
-					try
+					if(ftpFile.isDir() || ftpFile.isLink())
 					{
-						// See if the file matches the regular expression!
-						if(getIt){
+						// not a file..so let's skip it!
+						getIt=false;
+						if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobEntryFTP.SkippingNotAFile",filename));
+					}
+					if(getIt)	{
+						try{
+							// See if the file matches the regular expression!
 							if (pattern!=null){
 								Matcher matcher = pattern.matcher(filename);
 								getIt = matcher.matches();
 							}
+							if (getIt)	downloadFile(ftpclient,filename,realMoveToFolder,log, parentJob ,result) ;
+						}catch (Exception e){
+							// Update errors number
+							updateErrors();
+							log.logError(toString(),BaseMessages.getString(PKG, "JobFTP.UnexpectedError",e.toString()));
 						}
-						
-						if (getIt)	downloadFile(ftpclient,filename,realMoveToFolder,log, parentJob ,result) ;
-						
-					}catch (Exception e){
-						// Update errors number
-						updateErrors();
-						log.logError(toString(),BaseMessages.getString(PKG, "JobFTP.UnexpectedError",e.getMessage()));
 					}
 				} // end for
 			}
@@ -1032,10 +1033,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			LogWriter log, Job parentJob,Result result) throws Exception
 	{
 		String localFilename=filename;
-		targetFilename = getTargetFilename(localFilename);
+		targetFilename = returnTargetFilename(localFilename);
 		
         if ((!onlyGettingNewFiles) ||
-        	(onlyGettingNewFiles && needsDownload(targetFilename)))
+        	(onlyGettingNewFiles && needsDownload(targetFilename, log)))
         {
         	if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.GettingFile",filename, environmentSubstitute(targetDirectory)));  //$NON-NLS-1$
 			ftpclient.get(targetFilename, filename);
@@ -1156,7 +1157,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
      * 
      * @return the calculated target filename
      */
-	private String getTargetFilename(String filename)
+	private String returnTargetFilename(String filename)
     {
         String retval=null;
 		// Replace possible environment variables...
@@ -1215,21 +1216,20 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
      * @param remoteFileSize The size of the remote file
      * @return true if the file needs downloading
      */
-    protected boolean needsDownload(String filename)
+    protected boolean needsDownload(String filename, LogWriter log)
     {
     	boolean retval=false;
 
         File file = new File(filename);
-        //return !file.exists();
-        if(!file.exists())
-        {
+   
+        if(!file.exists()){
         	// Local file not exists!
+        	if(log.isDebug()) log.logDebug(toString() , BaseMessages.getString(PKG, "JobEntryFTP.LocalFileNotExists"), filename);
         	return true;
-        }else
-        {
+        }else{
+        	if(log.isDebug()) log.logDebug(toString() , BaseMessages.getString(PKG, "JobEntryFTP.LocalFileExists"), filename);
         	// Local file exists!
-        	if(ifFileExists==ifFileExistsCreateUniq)
-        	{
+        	if(ifFileExists==ifFileExistsCreateUniq){
         		// Create file with unique name
         		
         		int lenstring=targetFilename.length();
@@ -1242,8 +1242,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
         		
         		return true;
         	}
-        	else if(ifFileExists==ifFileExistsFail)
-        	{
+        	else if(ifFileExists==ifFileExistsFail){
         		updateErrors();
         	}
         }
