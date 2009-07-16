@@ -30,6 +30,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
@@ -70,6 +73,11 @@ public class EnterSelectionDialog extends Dialog
     private boolean multi;
     private int[] indices;
     private boolean fixed;
+    
+	private ToolItem goSearch,wfilter;
+	
+	private String filterString=null;
+	private Text searchText = null;
     
     /**
      * @deprecated Use CT without <i>props</i> parameter
@@ -138,6 +146,37 @@ public class EnterSelectionDialog extends Dialog
 		shell.setImage(GUIResource.getInstance().getImageSpoon());
 		
 		int margin = Const.MARGIN;
+		
+		ToolBar treeTb = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT);
+
+		ToolItem wtfilter = new ToolItem(treeTb, SWT.SEPARATOR);
+		Label wlfilter = new Label(treeTb, SWT.SEARCH);
+		wlfilter.setText(BaseMessages.getString(PKG, "EnterSelectionDialog.FilterString.Label"));
+		wtfilter.setControl(wlfilter);
+		wtfilter.setWidth(60);
+		
+		wfilter = new ToolItem(treeTb, SWT.SEPARATOR);
+		searchText = new Text(treeTb, SWT.SEARCH | SWT.CANCEL);
+		searchText.setToolTipText(BaseMessages.getString(PKG, "EnterSelectionDialog.FilterString.ToolTip"));
+		wfilter.setControl(searchText);
+		wfilter.setWidth(120);
+		
+		goSearch = new ToolItem(treeTb,SWT.PUSH);
+	    goSearch.setImage(GUIResource.getInstance().getImageSearchSmall());
+	    goSearch.setToolTipText(BaseMessages.getString(PKG, "EnterSelectionDialog.refresh.Label"));
+        FormData fd=new FormData();
+        fd.right = new FormAttachment(100, -margin);
+        fd.top  = new FormAttachment(0, margin);
+		treeTb.setLayoutData(fd);
+		
+		goSearch.addSelectionListener(new SelectionAdapter() {
+		      public void widgetSelected(SelectionEvent event) {
+		    	  updateFilter();
+		      }});
+		
+		 searchText.addSelectionListener(new SelectionAdapter() {
+			 public void widgetDefaultSelected(SelectionEvent e) { updateFilter(); } });
+
 
 		// From step line
 		wlSelection=new Label(shell, SWT.NONE);
@@ -145,7 +184,7 @@ public class EnterSelectionDialog extends Dialog
  		props.setLook(wlSelection);
 		fdlSelection=new FormData();
 		fdlSelection.left = new FormAttachment(0, 0);
-		fdlSelection.top  = new FormAttachment(0, margin);
+		fdlSelection.top  = new FormAttachment(treeTb, margin);
 		wlSelection.setLayoutData(fdlSelection);
         
         int options = SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL;
@@ -323,4 +362,30 @@ public class EnterSelectionDialog extends Dialog
     {
         this.selectedNrs = selectedNrs;
     }
+    protected void updateFilter() 
+	{
+		filterString=null;
+		if (searchText != null && !searchText.isDisposed()) {
+			if(!Const.isEmpty(searchText.getText()))
+				filterString=searchText.getText().toUpperCase();
+		}
+		refresh();
+	}
+	private void refresh()
+	{
+		wSelection.removeAll();
+		for (int i=0;i<choices.length;i++){
+			if(filterString!=null){
+				if(choices[i].toUpperCase().contains(filterString))
+						wSelection.add(choices[i]);
+			}else{
+				wSelection.add(choices[i]);
+			}
+		}
+		wSelection.redraw();
+		if (selectedNrs!=null){
+			wSelection.select(selectedNrs);
+			wSelection.showSelection();
+		}
+	}
 }
