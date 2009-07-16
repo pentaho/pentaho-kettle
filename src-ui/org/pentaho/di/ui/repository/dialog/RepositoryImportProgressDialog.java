@@ -92,7 +92,9 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
     private int nrtrans;
     private int nrjobs;
 
-    public RepositoryImportProgressDialog(Shell parent, int style, Repository rep, String fileDirectory, String[] filenames, RepositoryDirectory baseDirectory)
+	private String	versionComment;
+
+    public RepositoryImportProgressDialog(Shell parent, int style, Repository rep, String fileDirectory, String[] filenames, RepositoryDirectory baseDirectory, String versionComment)
     {
         super(parent, style);
 
@@ -103,6 +105,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
         this.fileDirectory = fileDirectory;
         this.filenames = filenames;
         this.baseDirectory = baseDirectory;
+        this.versionComment = versionComment;
     }
 
     public void open()
@@ -309,7 +312,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
     			// Keep info on who & when this transformation was changed...
     			ti.setModifiedDate( new Date() );                 
     			ti.setModifiedUser( rep.getUserInfo().getLogin() );
-    			rep.save(ti, this);
+    			rep.save(ti, versionComment, this);
     			addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.TransSaved.Log", Integer.toString(transformationNumber), ti.getName()));
     		}
     		catch (Exception e)
@@ -401,7 +404,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
         if (id==null || overwrite)
         {
             jobMeta.setRepositoryDirectory(targetDirectory);
-            rep.save(jobMeta);
+            rep.save(jobMeta, versionComment, null);
             addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.JobSaved.Log", Integer.toString(nrthis), jobMeta.getName()));
         }
         else

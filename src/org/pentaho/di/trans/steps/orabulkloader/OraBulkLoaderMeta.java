@@ -468,7 +468,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");  //$NON-NLS-1$
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  //$NON-NLS-1$
 
 			commitSize     = (int)rep.getStepAttributeInteger(id_step, "commit");         //$NON-NLS-1$
 			bindSize       = (int)rep.getStepAttributeInteger(id_step, "bind_size");      //$NON-NLS-1$

@@ -486,7 +486,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             if (fromRepository) // load from the repository...
             {
                 if(log.isDetailed()) log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+environmentSubstitute(jobname)+"]");
-                jobMeta = rep.loadJob(environmentSubstitute(jobname), rep.loadRepositoryDirectoryTree().findDirectory(environmentSubstitute(directory)), null);
+                jobMeta = rep.loadJob(environmentSubstitute(jobname), rep.loadRepositoryDirectoryTree().findDirectory(environmentSubstitute(directory)), null, null); // reads last version
                 jobMeta.setParentVariableSpace(parentJob);
             }
             else // Get it from the XML file
@@ -1006,7 +1006,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	        {
 	            return rep.loadJob(
 	            		           (space != null ? space.environmentSubstitute(getJobName()): getJobName()), 
-                             rep.loadRepositoryDirectoryTree().findDirectory(environmentSubstitute(getDirectory())), null);
+                             rep.loadRepositoryDirectoryTree().findDirectory(environmentSubstitute(getDirectory())), null, null); // reads last version
 	        }
 	        else
 	        {

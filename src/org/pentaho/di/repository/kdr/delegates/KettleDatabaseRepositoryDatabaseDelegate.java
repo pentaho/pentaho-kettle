@@ -24,11 +24,11 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
-public class RepositoryDatabaseDelegate extends BaseRepositoryDelegate {
+public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
 	private static Class<?> PKG = DatabaseMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryDatabaseDelegate(KettleDatabaseRepository repository) {
+	public KettleDatabaseRepositoryDatabaseDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	

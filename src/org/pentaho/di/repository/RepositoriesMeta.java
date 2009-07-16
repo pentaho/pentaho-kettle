@@ -199,11 +199,11 @@ public class RepositoriesMeta
 			}
 
 			// Handle repositories...
-			int nrreps = XMLHandler.countNodes(repsnode, "repository");
+			int nrreps = XMLHandler.countNodes(repsnode, RepositoryMeta.XML_TAG);
 			log.logDebug(toString(), "We have "+nrreps+" repositories...");
 			for (int i=0;i<nrreps;i++)
 			{
-				Node repnode = XMLHandler.getSubNodeByNr(repsnode, "repository", i);
+				Node repnode = XMLHandler.getSubNodeByNr(repsnode, RepositoryMeta.XML_TAG, i);
 				log.logDebug(toString(), "Looking at repository #"+i);
 				
 				String id = XMLHandler.getTagValue(repnode, "id");

@@ -148,6 +148,11 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
 	public String getXML() throws KettleException
 	{
+		return getXML(true);
+	}
+	
+	public String getXML(boolean includeInterface) throws KettleException
+	{
 		StringBuffer retval=new StringBuffer(200); //$NON-NLS-1$
 		
 		retval.append("  <").append(XML_TAG).append('>').append(Const.CR); //$NON-NLS-1$
@@ -162,7 +167,10 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         	retval.append( XMLHandler.openTag("target_step_partitioning")).append(targetStepPartitioningMeta.getXML()).append( XMLHandler.closeTag("target_step_partitioning"));
         }
 
-        retval.append( stepMetaInterface.getXML() );
+        if (includeInterface) {
+        	retval.append( stepMetaInterface.getXML() );
+        }
+        
         retval.append("     ").append(XMLHandler.addTagValue("cluster_schema", clusterSchema==null?"":clusterSchema.getName()));
         
         retval.append(" <remotesteps>");

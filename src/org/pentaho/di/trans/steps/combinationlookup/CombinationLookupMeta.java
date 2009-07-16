@@ -491,7 +491,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	{
 		try
 		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
 
             schemaName       =      rep.getStepAttributeString (id_step, "schema"); //$NON-NLS-1$
 			tablename        =      rep.getStepAttributeString (id_step, "table"); //$NON-NLS-1$

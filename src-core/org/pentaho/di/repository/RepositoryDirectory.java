@@ -268,6 +268,15 @@ public class RepositoryDirectory
 	    // A direct subdirectory?
 	    if (directoryPath.length>=1) 
 	    {
+	    	RepositoryDirectory follow = this;
+	    	for (int i=0;i<directoryPath.length;i++) {
+	    		RepositoryDirectory directory = follow.findChild(directoryPath[i]);
+	    		if (directory==null) return null;
+	    		follow=directory;
+	    	}
+	    	return follow;
+	    	
+	    	/*
 	        for (int i=0;i<getNrSubdirectories();i++)
 	        {
 	            RepositoryDirectory subdir = getSubdirectory(i);
@@ -284,6 +293,7 @@ public class RepositoryDirectory
 	    	    	if (look!=null) return look;
 	            }
 	        }
+	        */
 	    }
 
 		return null;
@@ -318,6 +328,13 @@ public class RepositoryDirectory
 		}
 
 		return findDirectory(p);
+	}
+	
+	public RepositoryDirectory findChild(String name) {
+		for (RepositoryDirectory child : children) {
+			if (child.getDirectoryName().equalsIgnoreCase(name)) return child;
+		}
+		return null;
 	}
 	
 	/**

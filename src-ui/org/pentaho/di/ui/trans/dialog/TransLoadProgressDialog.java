@@ -77,7 +77,7 @@ public class TransLoadProgressDialog
 				
 				try
 				{
-					transInfo = rep.loadTransformation(transname, repdir, new ProgressMonitorAdapter(monitor), true);
+					transInfo = rep.loadTransformation(transname, repdir, new ProgressMonitorAdapter(monitor), true, null); // reads last version
 				}
 				catch(KettleException e)
 				{

@@ -93,6 +93,7 @@ import org.pentaho.di.ui.core.widget.TreeItemAccelerator;
 import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
+import org.pentaho.di.ui.repository.RepositorySecurityUI;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.w3c.dom.Document;
 
@@ -211,6 +212,7 @@ public class RepositoryExplorerDialog extends Dialog
 	private RepositoryCapabilities	capabilities;
 	private boolean	readonly;
 	private RepositorySecurityProvider	securityProvider;
+	private boolean	includeDeleted;
     
 	private RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, VariableSpace variableSpace)
 	{
@@ -229,6 +231,8 @@ public class RepositoryExplorerDialog extends Dialog
         
         securityProvider = rep.getSecurityProvider();
         readonly = securityProvider.isReadOnly();
+        
+        includeDeleted = false; // TODO make this a configuration!
 	}
     
 	public RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, RepositoryExplorerCallback callback, VariableSpace variableSpace)
@@ -1360,7 +1364,7 @@ public class RepositoryExplorerDialog extends Dialog
 				TreeItem newCat = new TreeItem(tiTrans, SWT.NONE);
 				newCat.setImage(GUIResource.getInstance().getImageLogoSmall());
 	    		Color dircolor = GUIResource.getInstance().getColorDirectory();
-				RepositoryDirectoryUI.getTreeWithNames(newCat, rep, dircolor, sortColumn, ascending, true, false, directoryTree, null);
+				RepositoryDirectoryUI.getTreeWithNames(newCat, rep, dircolor, sortColumn, includeDeleted, ascending, true, false, directoryTree, null);
 			}
 			
 			// The Jobs...				
@@ -1373,13 +1377,13 @@ public class RepositoryExplorerDialog extends Dialog
 				TreeItem newJob = new TreeItem(tiJob, SWT.NONE);
 				newJob.setImage(GUIResource.getInstance().getImageLogoSmall());
 	    		Color dircolor = GUIResource.getInstance().getColorDirectory();
-				RepositoryDirectoryUI.getTreeWithNames(newJob, rep, dircolor, sortColumn, ascending, false, true, directoryTree, null);
+				RepositoryDirectoryUI.getTreeWithNames(newJob, rep, dircolor, sortColumn, includeDeleted, ascending, false, true, directoryTree, null);
 			}
 	
 			//
 			// Add the users or only yourself
 			//
-			if (capabilities.supportsUsers()) {
+			if (capabilities.supportsUsers() && capabilities.managesUsers()) {
 				TreeItem tiUser = new TreeItem(tiTree, SWT.NONE);
 				tiUser.setImage(GUIResource.getInstance().getImageBol());
 				tiUser.setText(STRING_USERS);
@@ -1498,7 +1502,7 @@ public class RepositoryExplorerDialog extends Dialog
 					
 					try
 					{
-						rep.delAllFromTrans(id);
+						rep.deleteTransformation(id);
 						done=true;
 					}
 					catch(KettleException dbe)
@@ -1866,7 +1870,7 @@ public class RepositoryExplorerDialog extends Dialog
 				if (answer==SWT.YES)
 				{
 					// System.out.println("OK, Deleting transformation ["+name+"] with ID = "+id);
-					rep.delAllFromJob(id);
+					rep.deleteJob(id);
 				}
 			}
 			else
@@ -2269,7 +2273,7 @@ public class RepositoryExplorerDialog extends Dialog
 		try
 		{
 			ObjectId idDatabase = rep.getDatabaseID(databasename);
-			DatabaseMeta databaseMeta = rep.loadDatabaseMeta(idDatabase);
+			DatabaseMeta databaseMeta = rep.loadDatabaseMeta(idDatabase, null);  // reads last version
 
 			DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
 			String name = dd.open();
@@ -2278,7 +2282,7 @@ public class RepositoryExplorerDialog extends Dialog
 				if (!readonly)
 				{
                     rep.insertLogEntry("Updating database connection '"+databaseMeta.getName()+"'");
-                    rep.save(databaseMeta);
+                    rep.save(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null);
 				}
 				else
 				{
@@ -2311,7 +2315,7 @@ public class RepositoryExplorerDialog extends Dialog
 				if (idDatabase==null)
 				{
                     rep.insertLogEntry("Creating new database '"+databaseMeta.getName()+"'");
-                    rep.save(databaseMeta);
+                    rep.save(databaseMeta, Const.VERSION_COMMENT_INITIAL_VERSION, null);
 				}
 				else
 				{
@@ -2657,7 +2661,7 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			rep.delRepositoryDirectory(repdir);
+			rep.deleteRepositoryDirectory(repdir);
 			refreshTree();
 		}
 		catch(KettleException e)
@@ -2695,7 +2699,7 @@ public class RepositoryExplorerDialog extends Dialog
 					
 					for (int i=0;i<trans.length;i++)
 					{
-						TransMeta ti = rep.loadTransformation(trans[i], repdir, null, true);
+						TransMeta ti = rep.loadTransformation(trans[i], repdir, null, true, null);  // reads last version
 						if(log.isBasic()) log.logBasic("Exporting transformation", "["+trans[i]+"] in directory ["+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 						String xml = XMLHandler.getXMLHeader() + ti.getXML();
@@ -2757,7 +2761,7 @@ public class RepositoryExplorerDialog extends Dialog
 				
 					for (int i=0;i<jobs.length;i++)
 					{
-						JobMeta ji = rep.loadJob(jobs[i], repdir, null);
+						JobMeta ji = rep.loadJob(jobs[i], repdir, null, null); // reads last version
 						log.logBasic("Exporting Jobs", "["+jobs[i]+"] in directory ["+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 						String xml = XMLHandler.getXMLHeader() + ji.getXML();
@@ -2802,19 +2806,38 @@ public class RepositoryExplorerDialog extends Dialog
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
 		if (dialog.open()!=null)
 		{
-			String[] filenames = dialog.getFileNames();
-			if (filenames.length > 0)
-			{
+			// Ask for a destination in the repository...
+			//
 			SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
 			RepositoryDirectory baseDirectory = sdd.open();
 			if (baseDirectory!=null)
 			{
-						RepositoryImportProgressDialog ripd = new RepositoryImportProgressDialog(shell, SWT.NONE, rep, dialog.getFilterPath(), filenames, baseDirectory);
-				ripd.open();
-				
-				refreshTree();
+				// Finally before importing, ask for a version comment (if applicable)
+				//
+				String versionComment = null;
+				boolean versionOk = false;
+				while (!versionOk) {
+					versionComment = RepositorySecurityUI.getVersionComment(shell, rep, "Import of files into ["+baseDirectory.getPath()+"]");
+					if (Const.isEmpty(versionComment) && rep.getSecurityProvider().isVersionCommentMandatory()) {
+						if (!RepositorySecurityUI.showVersionCommentMandatoryDialog(shell)) {
+							versionOk = true;
+						}
+					} else {
+						versionOk = true;
+					}
 				}
-			}
+	
+				
+				String[] filenames = dialog.getFileNames();
+				if (filenames.length > 0)
+				{
+					RepositoryImportProgressDialog ripd = new RepositoryImportProgressDialog(shell, SWT.NONE, rep, dialog.getFilterPath(), filenames, baseDirectory, versionComment);
+					ripd.open();
+						
+					refreshTree();
+				}
+				
+			}		
 		}
 	}
 	
@@ -2902,7 +2925,7 @@ public class RepositoryExplorerDialog extends Dialog
                 if (idSlave==null)
                 {
                     rep.insertLogEntry("Creating new slave server '"+slaveServer.getName()+"'");
-                    rep.save(slaveServer);
+                    rep.save(slaveServer, Const.VERSION_COMMENT_INITIAL_VERSION, null);
                 }
                 else
                 {
@@ -2926,13 +2949,13 @@ public class RepositoryExplorerDialog extends Dialog
         try
         {
             ObjectId id = rep.getSlaveID(slaveName);
-            SlaveServer slaveServer = rep.loadSlaveServer(id);
+            SlaveServer slaveServer = rep.loadSlaveServer(id, null); // Load the last version
 
             SlaveServerDialog dd = new SlaveServerDialog(shell, slaveServer);
             if (dd.open())
             {
                 rep.insertLogEntry("Updating slave server '"+slaveServer.getName()+"'");
-                rep.save(slaveServer);
+                rep.save(slaveServer, Const.VERSION_COMMENT_EDIT_VERSION, null);
                 if(!slaveName.equalsIgnoreCase(slaveServer.getName())) refreshTree();
             }
         }
@@ -2949,7 +2972,7 @@ public class RepositoryExplorerDialog extends Dialog
             ObjectId id = rep.getSlaveID(slaveName);
             if (id!=null)
             {
-                rep.delSlave(id);
+                rep.deleteSlave(id);
             }
     
             refreshTree();
@@ -2973,7 +2996,7 @@ public class RepositoryExplorerDialog extends Dialog
                 if (idPartitionSchema==null)
                 {
                     rep.insertLogEntry("Creating new partition schema '"+partitionSchema.getName()+"'");
-                    rep.save(partitionSchema);
+                    rep.save(partitionSchema, Const.VERSION_COMMENT_INITIAL_VERSION, null);
                 }
                 else
                 {
@@ -2998,13 +3021,13 @@ public class RepositoryExplorerDialog extends Dialog
         try
         {
             ObjectId id = rep.getPartitionSchemaID(partitionSchemaName);
-            PartitionSchema partitionSchema = rep.loadPartitionSchema(id);
+            PartitionSchema partitionSchema = rep.loadPartitionSchema(id, null);  // Load the last version
 
             PartitionSchemaDialog dd = new PartitionSchemaDialog(shell, partitionSchema, rep.readDatabases(), variableSpace);
             if (dd.open())
             {
                 rep.insertLogEntry("Updating partition schema '"+partitionSchema.getName()+"'");
-                rep.save(partitionSchema);
+                rep.save(partitionSchema, Const.VERSION_COMMENT_EDIT_VERSION, null);
                 if(!partitionSchemaName.equalsIgnoreCase(partitionSchema.getName())) refreshTree();
             }
         }
@@ -3022,7 +3045,7 @@ public class RepositoryExplorerDialog extends Dialog
             ObjectId id = rep.getPartitionSchemaID(partitionSchemaName);
             if (id!=null)
             {
-                rep.delPartitionSchema(id);
+                rep.deletePartitionSchema(id);
             }
     
             refreshTree();
@@ -3047,7 +3070,7 @@ public class RepositoryExplorerDialog extends Dialog
                 if (idCluster==null)
                 {
                     rep.insertLogEntry("Creating new cluster '"+cluster.getName()+"'");
-                    rep.save(cluster); 
+                    rep.save(cluster, Const.VERSION_COMMENT_INITIAL_VERSION, null);  
                 }
                 else
                 {
@@ -3072,13 +3095,13 @@ public class RepositoryExplorerDialog extends Dialog
         try
         {
             ObjectId id = rep.getClusterID(clusterName);
-            ClusterSchema cluster = rep.loadClusterSchema(id, rep.getSlaveServers());
+            ClusterSchema cluster = rep.loadClusterSchema(id, rep.getSlaveServers(), null); // Load the last version
 
             ClusterSchemaDialog dd = new ClusterSchemaDialog(shell, cluster, rep.getSlaveServers());
             if (dd.open())
             {
                 rep.insertLogEntry("Updating cluster '"+cluster.getName()+"'");
-                rep.save(cluster); 
+                rep.save(cluster, Const.VERSION_COMMENT_EDIT_VERSION, null); 
                 if(!clusterName.equalsIgnoreCase(cluster.getName())) refreshTree();
             }
         }
@@ -3096,7 +3119,7 @@ public class RepositoryExplorerDialog extends Dialog
             ObjectId id = rep.getClusterID(clusterName);
             if (id!=null)
             {
-                rep.delClusterSchema(id);
+                rep.deleteClusterSchema(id);
             }
     
             refreshTree();

@@ -10,10 +10,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
-public class RepositoryNotePadDelegate extends BaseRepositoryDelegate {
+public class KettleDatabaseRepositoryNotePadDelegate extends KettleDatabaseRepositoryBaseDelegate {
 	// private static Class<?> PKG = NotePadMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-	public RepositoryNotePadDelegate(KettleDatabaseRepository repository) {
+	public KettleDatabaseRepositoryNotePadDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	

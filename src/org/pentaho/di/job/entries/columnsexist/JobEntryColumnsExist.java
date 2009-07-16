@@ -177,12 +177,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "tablename", tablename);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "schemaname", schemaname);
 			
-			if (connection!=null)
-			{
-				rep.saveJobEntryAttribute(id_job, getObjectId(), "connection", connection.getName());
-				// Also, save the step-database relationship!
-				rep.insertJobEntryDatabase(id_job, getObjectId(), connection.getObjectId());
-			}
+			rep.saveDatabaseMetaJobEntryAttribute(id_job, getObjectId(), "connection", "id_database", connection);
 			
 			   // save the arguments...
 		      if (arguments != null) {

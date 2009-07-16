@@ -43,7 +43,7 @@ public class RepositoryDirectoryUI {
      * @param getJobs Include jobs in the tree or not
      * @throws KettleDatabaseException
      */
-	public static void getTreeWithNames(TreeItem ti, Repository rep, Color dircolor, int sortPosition, boolean ascending, boolean getTransformations, boolean getJobs, RepositoryDirectory dir, String filterString) throws KettleDatabaseException
+	public static void getTreeWithNames(TreeItem ti, Repository rep, Color dircolor, int sortPosition, boolean includeDeleted, boolean ascending, boolean getTransformations, boolean getJobs, RepositoryDirectory dir, String filterString) throws KettleDatabaseException
 	{
 		ti.setText(dir.getDirectoryName());
 		ti.setForeground(dircolor);
@@ -55,7 +55,7 @@ public class RepositoryDirectoryUI {
 			RepositoryDirectory subdir = dir.getSubdirectory(i);
 			TreeItem subti = new TreeItem(ti, SWT.NONE);
 			subti.setImage(GUIResource.getInstance().getImageArrow());
-			getTreeWithNames(subti, rep, dircolor, sortPosition, ascending, getTransformations, getJobs, subdir, filterString);
+			getTreeWithNames(subti, rep, dircolor, sortPosition, includeDeleted, ascending, getTransformations, getJobs, subdir, filterString);
 		}
 		
 		try
@@ -65,7 +65,7 @@ public class RepositoryDirectoryUI {
 			// Then show the transformations & jobs in that directory...
             if (getTransformations)
             {
-                List<RepositoryObject> repositoryTransformations = rep.getTransformationObjects(dir.getObjectId());
+                List<RepositoryObject> repositoryTransformations = rep.getTransformationObjects(dir.getObjectId(), includeDeleted);
                 if (repositoryTransformations!=null)
                 {
                     repositoryObjects.addAll(repositoryTransformations);
@@ -73,7 +73,7 @@ public class RepositoryDirectoryUI {
             }
             if (getJobs)
             {
-                List<RepositoryObject> repositoryJobs = rep.getJobObjects(dir.getObjectId());
+                List<RepositoryObject> repositoryJobs = rep.getJobObjects(dir.getObjectId(), includeDeleted);
                 if (repositoryJobs!=null)
                 {
                     repositoryObjects.addAll(repositoryJobs);

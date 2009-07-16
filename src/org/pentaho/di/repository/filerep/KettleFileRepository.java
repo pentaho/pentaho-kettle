@@ -24,6 +24,7 @@ import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectVersion;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -50,6 +51,8 @@ public class KettleFileRepository implements Repository {
 	private static final String	EXT_PARTITION_SCHEMA	= ".kps";
 	
 	private static final String LOG_FILE = "repository.log";
+	
+	public static final String	FILE_REPOSITORY_VERSION	= "0.1";
 	
 	private KettleFileRepositoryMeta repositoryMeta;
 	private KettleFileRepositorySecurityProvider	securityProvider;
@@ -124,29 +127,37 @@ public class KettleFileRepository implements Repository {
 		return id.toString();
 	}
 	
+
+	public String calcObjectId(RepositoryElementInterface element) {
+		RepositoryDirectory directory = element.getRepositoryDirectory();
+		String name = element.getName();
+		String extension = calcExtension(element);
+		
+		return calcObjectId(directory, name, extension);
+	}
+	
 	private String calcExtension(RepositoryElementInterface element) {
 		if (TransMeta.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
 			return EXT_TRANSFORMATION;
 		} else
-		if (JobMeta.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
-			return EXT_JOB;
-		} else
-		if (DatabaseMeta.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
-			return EXT_DATABASE;
-		} else
-		if (SlaveServer.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
-			return EXT_SLAVE_SERVER;
-		} else
-		if (ClusterSchema.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
-			return EXT_CLUSTER_SCHEMA;
-		} else
-		if (PartitionSchema.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
-			return EXT_PARTITION_SCHEMA;
-		} else {
-			return ".xml";
-		}
+			if (JobMeta.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
+				return EXT_JOB;
+			} else
+				if (DatabaseMeta.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
+					return EXT_DATABASE;
+				} else
+					if (SlaveServer.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
+						return EXT_SLAVE_SERVER;
+					} else
+						if (ClusterSchema.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
+							return EXT_CLUSTER_SCHEMA;
+						} else
+							if (PartitionSchema.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
+								return EXT_PARTITION_SCHEMA;
+							} else {
+								return ".xml";
+							}
 	}
-
 	public String calcFilename(RepositoryElementInterface element) {
 		return calcFilename(element.getRepositoryDirectory(), element.getName(), calcExtension(element));
 	}
@@ -182,19 +193,26 @@ public class KettleFileRepository implements Repository {
 
 	// Common objects 
 	
-	public void save(RepositoryElementInterface repositoryElement) throws KettleException {
-		save(repositoryElement, null);
+	public void save(RepositoryElementInterface repositoryElement, String versionComment) throws KettleException {
+		save(repositoryElement, versionComment, null);
 	}
 
-	public void save(RepositoryElementInterface repositoryElement, ProgressMonitorListener monitor) throws KettleException {
-		save(repositoryElement, monitor, null, false);
+	public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor) throws KettleException {
+		save(repositoryElement, versionComment, monitor, null, false);
 	}
 
-	public void save(RepositoryElementInterface repositoryElement, ProgressMonitorListener monitor, ObjectId parentId, boolean used) throws KettleException {
+	public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, ObjectId parentId, boolean used) throws KettleException {
 		try {
 			if (!(repositoryElement instanceof XMLInterface)) {
 				throw new KettleException("Class ["+repositoryElement.getClass().getName()+"] needs to implement the XML Interface in order to save it to disk");
 			}
+			
+			if (!Const.isEmpty(versionComment)) {
+				insertLogEntry(versionComment);
+			}
+			
+			ObjectId objectId = new StringObjectId(calcObjectId(repositoryElement));
+			
 			FileObject fileObject = getFileObject(repositoryElement);
 			
 			String xml = ((XMLInterface)repositoryElement).getXML();
@@ -204,6 +222,16 @@ public class KettleFileRepository implements Repository {
 			os.close();
 			
 			repositoryElement.clearChanged();
+			
+			// See if the element was already saved in the repository.
+			// If the object ID is different, then we created an extra copy.
+			// If so, we need to now remove the old file to prevent us from having multiple copies.
+			//
+			if (repositoryElement.getObjectId()!=null && !repositoryElement.getObjectId().equals(objectId)) {
+				delObject(repositoryElement.getObjectId());
+			}
+
+			repositoryElement.setObjectId(objectId);
 		} catch(Exception e) {
 			throw new KettleException("Unable to save repository element ["+repositoryElement+"] to XML file : "+calcFilename(repositoryElement), e);
 		}
@@ -234,40 +262,40 @@ public class KettleFileRepository implements Repository {
 		}
 	}
 
-	
-	
-	public void delAllFromJob(ObjectId id_job) throws KettleException {
-		// TODO
-
-	}
-
-	public void delAllFromTrans(ObjectId id_transformation) throws KettleException {
-		String filename = calcFilename(id_transformation);
+	private void delObject(ObjectId id) throws KettleException {
+		String filename = calcFilename(id);
 		deleteFile(filename);
+	}
 	
+	public void deleteJob(ObjectId id_job) throws KettleException {
+		delObject(id_job);
 	}
 
-	public void delClusterSchema(ObjectId id_cluster) throws KettleException {
+	public void deleteTransformation(ObjectId id_transformation) throws KettleException {
+		delObject(id_transformation);
+	}
+
+	public void deleteClusterSchema(ObjectId id_cluster) throws KettleException {
 		// ID and filename are the same
 		deleteFile(id_cluster.getId());
 	}
 
-	public void delCondition(ObjectId id_condition) throws KettleException {
+	public void deleteCondition(ObjectId id_condition) throws KettleException {
 		
 
 	}
 
-	public void delPartitionSchema(ObjectId id_partition_schema) throws KettleException {
+	public void deletePartitionSchema(ObjectId id_partition_schema) throws KettleException {
 		// ID and filename are the same
 		deleteFile(id_partition_schema.getId());
 	}
 
-	public void delRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
+	public void deleteRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
 		
 
 	}
 
-	public void delSlave(ObjectId id_slave) throws KettleException {
+	public void deleteSlave(ObjectId id_slave) throws KettleException {
 		// ID and filename are the same
 		deleteFile(id_slave.getId());
 	}
@@ -306,12 +334,12 @@ public class KettleFileRepository implements Repository {
 		return new StringObjectId( calcObjectId((RepositoryDirectory)null)+name+EXT_SLAVE_SERVER);
 	}
 
-	public ObjectId[] getClusterIDs() throws KettleException {
+	public ObjectId[] getClusterIDs(boolean includeDeleted) throws KettleException {
 		return getRootObjectIDs(EXT_CLUSTER_SCHEMA);
 	}
 
 	public String[] getClusterNames() throws KettleException {
-		return convertRootIDsToNames(getClusterIDs());
+		return convertRootIDsToNames(getClusterIDs(false));
 	}
 
 	private String[] convertRootIDsToNames(ObjectId[] ids) {
@@ -350,12 +378,12 @@ public class KettleFileRepository implements Repository {
 
 	public ObjectId[] getTransformationDatabaseIDs(ObjectId id_transformation) throws KettleException { return new ObjectId[] {}; }
 
-	public ObjectId[] getDatabaseIDs() throws KettleException {
+	public ObjectId[] getDatabaseIDs(boolean includeDeleted) throws KettleException {
 		return getRootObjectIDs(EXT_DATABASE);
 	}
 
 	public String[] getDatabaseNames() throws KettleException {
-		return convertRootIDsToNames(getDatabaseIDs());
+		return convertRootIDsToNames(getDatabaseIDs(false));
 	}
 
 	public String[] getDirectoryNames(ObjectId id_directory) throws KettleException {
@@ -404,14 +432,6 @@ public class KettleFileRepository implements Repository {
 	public ObjectId[] getJobNoteIDs(ObjectId id_job) throws KettleException { return new ObjectId[] {}; }
 	public String[] getJobsUsingDatabase(ObjectId id_database) throws KettleException { return new String[] {}; }
 
-	public int getMajorVersion() {
-		return 0;
-	}
-
-	public int getMinorVersion() {
-		return 0;
-	}
-
 	public String getName() {
 		
 		return repositoryMeta.getName();
@@ -423,12 +443,12 @@ public class KettleFileRepository implements Repository {
 		return new StringObjectId( calcObjectId((RepositoryDirectory)null)+name+EXT_SLAVE_SERVER);
 	}
 
-	public ObjectId[] getPartitionSchemaIDs() throws KettleException {
+	public ObjectId[] getPartitionSchemaIDs(boolean includeDeleted) throws KettleException {
 		return getRootObjectIDs(EXT_PARTITION_SCHEMA);
 	}
 
 	public String[] getPartitionSchemaNames() throws KettleException {
-		return convertRootIDsToNames(getPartitionSchemaIDs());
+		return convertRootIDsToNames(getPartitionSchemaIDs(false));
 	}
 
 	public ObjectId getRootDirectoryID() throws KettleException {
@@ -468,20 +488,20 @@ public class KettleFileRepository implements Repository {
 		}
 	}
 
-	public ObjectId[] getSlaveIDs() throws KettleException {
+	public ObjectId[] getSlaveIDs(boolean includeDeleted) throws KettleException {
 		return getRootObjectIDs(EXT_SLAVE_SERVER);
 	}
 
 	public ObjectId[] getClusterSlaveIDs(ObjectId id_cluster_schema) throws KettleException { return new ObjectId[] {}; }
 
 	public String[] getSlaveNames() throws KettleException {
-		return convertRootIDsToNames(getSlaveIDs());
+		return convertRootIDsToNames(getSlaveIDs(false));
 	}
 
 	public List<SlaveServer> getSlaveServers() throws KettleException {
 		List<SlaveServer> list = new ArrayList<SlaveServer>();
-		for (ObjectId id : getSlaveIDs()) {
-			list.add(loadSlaveServer(id));
+		for (ObjectId id : getSlaveIDs(false)) {
+			list.add(loadSlaveServer(id, null));  // Load last version
 		}
 		return list;
 	}
@@ -561,8 +581,7 @@ public class KettleFileRepository implements Repository {
 	public String[] getTransformationsUsingSlave(ObjectId id_slave) throws KettleException { return new String[] {}; }
 
 	public String getVersion() {
-		// TODO save the version in a local XML file
-		return null;
+		return FILE_REPOSITORY_VERSION;
 	}
 
 	public ObjectId insertClusterSlave(ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException { return null; }
@@ -612,7 +631,7 @@ public class KettleFileRepository implements Repository {
 		return null;
 	}
 
-	public ClusterSchema loadClusterSchema(ObjectId id_cluster_schema, List<SlaveServer> slaveServers) throws KettleException {
+	public ClusterSchema loadClusterSchema(ObjectId id_cluster_schema, List<SlaveServer> slaveServers, String versionName) throws KettleException {
 		try {
 			return new ClusterSchema(loadNodeFromXML(id_cluster_schema, ClusterSchema.XML_TAG), slaveServers);
 		}
@@ -647,7 +666,7 @@ public class KettleFileRepository implements Repository {
 		}
 	}
 
-	public DatabaseMeta loadDatabaseMeta(ObjectId id_database) throws KettleException {
+	public DatabaseMeta loadDatabaseMeta(ObjectId id_database, String versionName) throws KettleException {
 		try {
 			return new DatabaseMeta(loadNodeFromXML(id_database, DatabaseMeta.XML_TAG));
 		}
@@ -656,10 +675,12 @@ public class KettleFileRepository implements Repository {
 		}
 	}
 
-	public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String code) throws KettleException { return null; }
-	public DatabaseMeta loadDatabaseMetaFromStepAttribute(ObjectId id_step, String code) throws KettleException { return null; }
+	public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String nameCode, String idCode, List<DatabaseMeta> databases) throws KettleException { return null; }
+	public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String nameCode, String idCode, DatabaseMeta database) throws KettleException {}
 
-	public JobMeta loadJob(String jobname, RepositoryDirectory repdir, ProgressMonitorListener monitor) throws KettleException {
+	public DatabaseMeta loadDatabaseMetaFromStepAttribute(ObjectId id_step, String code, List<DatabaseMeta> databases) throws KettleException { return null; }
+	
+	public JobMeta loadJob(String jobname, RepositoryDirectory repdir, ProgressMonitorListener monitor, String versionName) throws KettleException {
 		
 		// This is a standard load of a transformation serialized in XML...
 		//
@@ -673,7 +694,7 @@ public class KettleFileRepository implements Repository {
 
 	}
 
-	public PartitionSchema loadPartitionSchema(ObjectId id_partition_schema) throws KettleException {
+	public PartitionSchema loadPartitionSchema(ObjectId id_partition_schema, String versionName) throws KettleException {
 		try {
 			return new PartitionSchema(loadNodeFromXML(id_partition_schema, PartitionSchema.XML_TAG));
 		}
@@ -711,7 +732,7 @@ public class KettleFileRepository implements Repository {
 	}
 	
 
-	public List<RepositoryObject> getTransformationObjects(ObjectId id_directory) throws KettleException {
+	public List<RepositoryObject> getTransformationObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException {
 		
 		try {
 			List<RepositoryObject> list = new ArrayList<RepositoryObject>();
@@ -742,7 +763,7 @@ public class KettleFileRepository implements Repository {
 		}
 	}
 	
-	public List<RepositoryObject> getJobObjects(ObjectId id_directory) throws KettleException {
+	public List<RepositoryObject> getJobObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException {
 		
 		try {
 			List<RepositoryObject> list = new ArrayList<RepositoryObject>();
@@ -780,7 +801,7 @@ public class KettleFileRepository implements Repository {
 		return 0;
 	}
 
-	public SlaveServer loadSlaveServer(ObjectId id_slave_server) throws KettleException {
+	public SlaveServer loadSlaveServer(ObjectId id_slave_server, String versionName) throws KettleException {
 		try {
 			return new SlaveServer(loadNodeFromXML(id_slave_server, SlaveServer.XML_TAG));
 		}
@@ -789,7 +810,7 @@ public class KettleFileRepository implements Repository {
 		}
 	}
 
-	public TransMeta loadTransformation(String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables) throws KettleException {
+	public TransMeta loadTransformation(String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String versionName) throws KettleException {
 		
 		// This is a standard load of a transformation serialized in XML...
 		//
@@ -797,10 +818,9 @@ public class KettleFileRepository implements Repository {
 		TransMeta transMeta = new TransMeta(filename, this, setInternalVariables);
 		transMeta.setFilename(null);
 		transMeta.setName(transname);
-		transMeta.setObjectId(new StringObjectId(calcObjectId(repdir, transname, EXT_JOB)));
+		transMeta.setObjectId(new StringObjectId(calcObjectId(repdir, transname, EXT_TRANSFORMATION)));
 		
 		return transMeta;
-		
 	}
 
 	public ValueMetaAndData loadValueMetaAndData(ObjectId id_value) throws KettleException {
@@ -831,13 +851,13 @@ public class KettleFileRepository implements Repository {
 		
 		// Then we read the databases etc...
 		//
-		for (ObjectId id : getDatabaseIDs()) {
-			DatabaseMeta databaseMeta = loadDatabaseMeta(id);
+		for (ObjectId id : getDatabaseIDs(false)) {
+			DatabaseMeta databaseMeta = loadDatabaseMeta(id, null); // Load last version
 			jobMeta.addOrReplaceDatabase(databaseMeta);
 		}
 		
-		for (ObjectId id : getSlaveIDs()) {
-			SlaveServer slaveServer = loadSlaveServer(id);
+		for (ObjectId id : getSlaveIDs(false)) {
+			SlaveServer slaveServer = loadSlaveServer(id, null);  // Load last version
 			jobMeta.addOrReplaceSlaveServer(slaveServer);
 		}
 
@@ -852,23 +872,23 @@ public class KettleFileRepository implements Repository {
 		
 		// Then we read the databases etc...
 		//
-		for (ObjectId id : getDatabaseIDs()) {
-			DatabaseMeta databaseMeta = loadDatabaseMeta(id);
+		for (ObjectId id : getDatabaseIDs(false)) {
+			DatabaseMeta databaseMeta = loadDatabaseMeta(id, null);  // Load last version
 			transMeta.addOrReplaceDatabase(databaseMeta);
 		}
 		
-		for (ObjectId id : getSlaveIDs()) {
-			SlaveServer slaveServer = loadSlaveServer(id);
+		for (ObjectId id : getSlaveIDs(false)) {
+			SlaveServer slaveServer = loadSlaveServer(id, null);  // Load last version 
 			transMeta.addOrReplaceSlaveServer(slaveServer);
 		}
 
-		for (ObjectId id : getClusterIDs()) {
-			ClusterSchema clusterSchema = loadClusterSchema(id, transMeta.getSlaveServers());
+		for (ObjectId id : getClusterIDs(false)) {
+			ClusterSchema clusterSchema = loadClusterSchema(id, transMeta.getSlaveServers(), null);  // Load last version 
 			transMeta.addOrReplaceClusterSchema(clusterSchema);
 		}
 
-		for (ObjectId id : getPartitionSchemaIDs()) {
-			PartitionSchema partitionSchema = loadPartitionSchema(id);
+		for (ObjectId id : getPartitionSchemaIDs(false)) {
+			PartitionSchema partitionSchema = loadPartitionSchema(id, null);  // Load last version
 			transMeta.addOrReplacePartitionSchema(partitionSchema);
 		}
 		
@@ -891,7 +911,7 @@ public class KettleFileRepository implements Repository {
 			return new StringObjectId(calcObjectId(newDirectory, newName, extension));
 		}
 		catch (Exception e) {
-			throw new KettleException("Unable to rename object with ID ["+id+"] to ["+newName+"]");
+			throw new KettleException("Unable to rename object with ID ["+id+"] to ["+newName+"]", e);
 		}
 		
 	}
@@ -990,14 +1010,6 @@ public class KettleFileRepository implements Repository {
 		this.repositoryMeta = repositoryMeta;
 	}
 
-	// TODO implement rudimentary locking
-	public void lockJob(ObjectId id_job) throws KettleException {
-	}
-
-	// TODO implement rudimentary locking
-	public void lockTransformation(ObjectId id_transformation) throws KettleException {
-	}
-
 	public List<RepositoryLock> getTransformationLocks() throws KettleException {
 		return new ArrayList<RepositoryLock>();
 	}
@@ -1032,7 +1044,15 @@ public class KettleFileRepository implements Repository {
 	}
 
 	public void unlockTransformation(ObjectId id_transformation) throws KettleException {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
+	
+	public List<ObjectVersion> getVersions(RepositoryElementInterface element) throws KettleException {
+		return null; // NOT IMPLEMENTED
+	}
+	
+	public void undeleteObject(RepositoryElementInterface element) throws KettleException {
+		// NOT IMPLEMENTED!
+	}
+
 }

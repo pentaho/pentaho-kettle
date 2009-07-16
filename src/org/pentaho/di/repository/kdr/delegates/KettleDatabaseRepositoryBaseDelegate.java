@@ -3,12 +3,12 @@ package org.pentaho.di.repository.kdr.delegates;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
-public class BaseRepositoryDelegate {
+public class KettleDatabaseRepositoryBaseDelegate {
 
 	protected KettleDatabaseRepository repository;
 	protected LogWriter log;
 	
-	public BaseRepositoryDelegate(KettleDatabaseRepository repository) {
+	public KettleDatabaseRepositoryBaseDelegate(KettleDatabaseRepository repository) {
 		this.repository = repository;
 		this.log = repository.log;
 	}

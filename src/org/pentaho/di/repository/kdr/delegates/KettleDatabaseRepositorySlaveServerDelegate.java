@@ -10,11 +10,11 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
-public class RepositorySlaveServerDelegate extends BaseRepositoryDelegate {
+public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
 	private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
-	public RepositorySlaveServerDelegate(KettleDatabaseRepository repository) {
+	public KettleDatabaseRepositorySlaveServerDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	

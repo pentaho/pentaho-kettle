@@ -231,7 +231,7 @@ public class Pan
 								{
 									if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.LoadTransInfo"));
 									
-									transMeta = rep.loadTransformation(optionTransname.toString(), directory, null, true);
+									transMeta = rep.loadTransformation(optionTransname.toString(), directory, null, true, null); // reads last version
 									if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.AllocateTrans"));
 									
 									trans = new Trans(transMeta);

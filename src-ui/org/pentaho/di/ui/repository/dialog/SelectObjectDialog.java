@@ -99,6 +99,8 @@ public class SelectObjectDialog extends Dialog
 	private RepositoryDirectory	directoryTree;
 
 	private RepositoryCapabilities	capabilities;
+
+	private boolean	includeDeleted;
 	
     public SelectObjectDialog(Shell parent, Repository rep)
     {
@@ -113,6 +115,8 @@ public class SelectObjectDialog extends Dialog
 		this.rep       = rep;
         this.showTrans = showTransformations;
         this.showJobs  = showJobs;
+        
+        this.includeDeleted = false; // TODO: make this a configuration option in the dialog!
 		
 		shellText = BaseMessages.getString(PKG, "SelectObjectDialog.Dialog.Main.Title"); //$NON-NLS-1$
 		lineText = BaseMessages.getString(PKG, "SelectObjectDialog.Dialog.Object.Title"); //$NON-NLS-1$
@@ -374,7 +378,7 @@ public class SelectObjectDialog extends Dialog
             ti.setImage(GUIResource.getInstance().getImageFolderConnections());
             ti.setExpanded(true);
             
-			RepositoryDirectoryUI.getTreeWithNames(ti, rep, dircolor, sortColumn, ascending, showTrans, showJobs, directoryTree, filterString);
+			RepositoryDirectoryUI.getTreeWithNames(ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, directoryTree, filterString);
         }
         catch(KettleException e)
         {

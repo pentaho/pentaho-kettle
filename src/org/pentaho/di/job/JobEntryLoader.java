@@ -254,7 +254,7 @@ public class JobEntryLoader implements LoaderInputStreamProvider
 			}
 		} else
 		{
-			throw new KettleStepLoaderException("No valid step/plugin specified (plugin=null).");
+			throw new KettleStepLoaderException("No valid job-entry/plugin specified (plugin=null).");
 		}
 	}
 
@@ -345,16 +345,15 @@ public class JobEntryLoader implements LoaderInputStreamProvider
 	}
 
 	/**
-	 * @param stepid
-	 * @return The StepPlugin for the step with the specified ID. Null is
-	 *         returned when the ID couldn't be found!
+	 * @param entryTypeId
+	 * @return The JobPlugin for the job entry with the specified type ID. Null is returned when the ID couldn't be found!
 	 */
-	public JobPlugin findJobPluginWithID(String stepid)
+	public JobPlugin findJobPluginWithID(String entryTypeId)
 	{
 		for (int i = 0; i < pluginList.size(); i++)
 		{
 			JobPlugin sp = (JobPlugin) pluginList.get(i);
-			if (sp.getID().equalsIgnoreCase(stepid))
+			if (sp.getID().equalsIgnoreCase(entryTypeId))
 				return sp;
 		}
 		return null;
@@ -367,18 +366,17 @@ public class JobEntryLoader implements LoaderInputStreamProvider
 		for (int i = 0; i < steps.length; i++)
 		{
 			JobPlugin sp = getJobEntryWithType(type, i);
-			// System.out.println("sp #"+i+" = "+sp.getID());
 			steps[i] = sp;
 		}
 		return steps;
 	}
 
-	public JobPlugin findJobEntriesWithID(String stepid)
+	public JobPlugin findJobEntriesWithID(String entryTypeId)
 	{
 		for (int i = 0; i < pluginList.size(); i++)
 		{
 			JobPlugin sp = (JobPlugin) pluginList.get(i);
-			if (sp.getID().equalsIgnoreCase(stepid))
+			if (sp.getID().equalsIgnoreCase(entryTypeId))
 				return sp;
 		}
 		return null;
@@ -407,11 +405,10 @@ public class JobEntryLoader implements LoaderInputStreamProvider
 	}
 
 	/**
-	 * Determine the step's id based upon the StepMetaInterface we get...
+	 * Determine the job entry's type id based upon the JobEntryInterface we get...
 	 * 
-	 * @param jei
-	 *            The StepMetaInterface
-	 * @return the step's id or null if we couldn't find anything.
+	 * @param jei The job entry interface to reference 
+	 * @return the job entry's type id or null if we couldn't find anything.
 	 */
 	public String getJobEntryID(JobEntryInterface jei)
 	{

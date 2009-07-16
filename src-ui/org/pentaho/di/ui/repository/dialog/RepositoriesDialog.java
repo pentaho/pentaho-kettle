@@ -46,6 +46,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
@@ -431,6 +432,10 @@ public class RepositoriesDialog
                 if (ri != null)
                 {
                 	RepositoryPluginMeta pluginMeta = RepositoryLoader.getInstance().findPluginMeta(ri.getId());
+        	    	if (pluginMeta==null) {
+        	    		throw new KettleException("Unable to find repository plugin for id ["+ri.getId()+"]");
+        	    	}
+
             		RepositoryDialogInterface dd = getRepositoryDialog(pluginMeta, ri, input);
                     if (dd.open() != null)
                     {
@@ -531,7 +536,8 @@ public class RepositoriesDialog
 	}
 
 	protected RepositoryDialogInterface getRepositoryDialog(RepositoryPluginMeta pluginMeta, RepositoryMeta repositoryMeta, RepositoriesMeta input2) throws Exception {
-		Class<?> dialogClass = Class.forName(pluginMeta.getDialogClassName(), false, ClassLoader.getSystemClassLoader());
+		ClassLoader classLoader = RepositoryLoader.getInstance().getClassLoader(pluginMeta);
+		Class<?> dialogClass = classLoader.loadClass(pluginMeta.getDialogClassName());
 		Constructor<?> constructor = dialogClass.getConstructor(Shell.class, Integer.TYPE, RepositoryMeta.class, RepositoriesMeta.class);
 		return (RepositoryDialogInterface) constructor.newInstance(new Object[] { shell, Integer.valueOf(SWT.NONE), repositoryMeta, input, });
 	}
@@ -611,22 +617,42 @@ public class RepositoriesDialog
                 	// OK, now try the username and password
                 	//
                 	rep = RepositoryLoader.getInstance().createRepositoryObject(repinfo.getId());
+                	
+                	if (!repinfo.getRepositoryCapabilities().managesUsers()) {
+                		userinfo = new UserInfo(wUsername.getText());
+                		userinfo.setPassword(wPassword.getText());
+                		
+                		// TODO find out where do to get appropriate permissions from
+                		//
+                		ProfileMeta adminProfile = new ProfileMeta("Administrator", "Administrator");
+                		adminProfile.addPermission(Permission.ADMIN);
+                		userinfo.setProfile(adminProfile);
+                	}
+                	
                 	rep.init(repinfo, userinfo);
                     rep.connect();
                 }
                 catch (KettleException ke)
                 {
-                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-                    mb.setMessage(BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.RepositoryUnableToConnect.Message1") + Const.CR + ke.getSuperMessage());
-                    mb.setText(BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.RepositoryUnableToConnect.Title"));
-                    mb.open();
-
+                	new ErrorDialog(shell, 
+                			BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.RepositoryUnableToConnect.Title"),
+                			BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.RepositoryUnableToConnect.Message1") + Const.CR + ke.getSuperMessage(),
+                			ke
+                			);
+                	/*
+	                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+	                    mb.setMessage(BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.RepositoryUnableToConnect.Message1") + Const.CR + ke.getSuperMessage());
+	                    mb.setText(BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.RepositoryUnableToConnect.Title"));
+	                    mb.open();
+					*/
                     return;
                 }
 
                 try
                 {
-                    userinfo = rep.getSecurityProvider().loadUserInfo(wUsername.getText(), wPassword.getText());
+					if (repinfo.getRepositoryCapabilities().managesUsers()) {
+						userinfo = rep.getSecurityProvider().loadUserInfo(wUsername.getText(), wPassword.getText());
+					}
                     props.setLastRepository(repinfo.getName());
                     props.setLastRepositoryLogin(wUsername.getText());
                 }

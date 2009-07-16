@@ -23,6 +23,16 @@
 		<property name="setNext" value="steps/step" />
 	</config>
 
+	<!--  This adds classes annotated with the @RepositoryPlugin annotation as a Kettle repository plugin -->
+	<config id="repositories-annotation-config">
+		<config-class>
+			org.pentaho.di.core.config.AnnotatedRepositoriesConfigManager
+		</config-class>
+		<!-- the packages to scan for the annotation.  Even though this is not required, it is advisable to enter a value here to
+		avoid full classpath scanning.  Different packages can be separated by commas. Lastly, the scan IS RECURSIVE. -->
+		<property name="packages" value="org.pentaho.di.repository" />
+	</config>
+
 	<!--  This reads the repository types from the XML File defined below (configURL) -->
 	<config id="repositories-xml-config">
 		<config-class>

@@ -250,7 +250,7 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			database = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");
+			database = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
             tablename = rep.getStepAttributeString(id_step, "tablename");
             schemaname = rep.getStepAttributeString(id_step, "schemaname");
             istablenameInfield =  rep.getStepAttributeBoolean(id_step, "istablenameInfield");

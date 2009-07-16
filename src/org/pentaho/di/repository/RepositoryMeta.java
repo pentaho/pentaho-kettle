@@ -7,6 +7,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.w3c.dom.Node;
 
 public interface RepositoryMeta {
+	
+	public static final String XML_TAG = "repository";
 
 	public abstract void loadXML(Node repnode, List<DatabaseMeta> databases) throws KettleException;
 

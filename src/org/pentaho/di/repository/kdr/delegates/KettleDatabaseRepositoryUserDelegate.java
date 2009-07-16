@@ -13,11 +13,11 @@ import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
-public class RepositoryUserDelegate extends BaseRepositoryDelegate {
+public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
 	private static Class<?> PKG = UserInfo.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
-	public RepositoryUserDelegate(KettleDatabaseRepository repository) {
+	public KettleDatabaseRepositoryUserDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	

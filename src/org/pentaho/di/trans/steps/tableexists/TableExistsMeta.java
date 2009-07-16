@@ -192,7 +192,7 @@ public class TableExistsMeta extends BaseStepMeta implements StepMetaInterface
 	{
     	try
     	{
-			database = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");  //$NON-NLS-1$
+			database = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  //$NON-NLS-1$
             tablenamefield = rep.getStepAttributeString(id_step, "tablenamefield"); //$NON-NLS-1$
             schemaname = rep.getStepAttributeString(id_step, "schemaname");
             

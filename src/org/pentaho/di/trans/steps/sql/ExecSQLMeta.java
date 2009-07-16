@@ -307,7 +307,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
 			executedEachInputRow = rep.getStepAttributeBoolean(id_step, "execute_each_row"); //$NON-NLS-1$
 			replaceVariables = rep.getStepAttributeBoolean(id_step, "replace_variables"); //$NON-NLS-1$
 			sql = rep.getStepAttributeString(id_step, "sql"); //$NON-NLS-1$

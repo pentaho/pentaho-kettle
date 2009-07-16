@@ -27,10 +27,10 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectVersion;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
-import org.pentaho.di.repository.RepositoryRevision;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.www.SlaveServerDetection;
 import org.w3c.dom.Node;
@@ -82,7 +82,7 @@ public class ClusterSchema
     
     private ObjectId id;
     
-    private RepositoryRevision revision;
+    private ObjectVersion version;
     
     public ClusterSchema()
     {
@@ -506,22 +506,26 @@ public class ClusterSchema
 		return REPOSITORY_ELEMENT_TYPE;
 	}
 
-	/**
-	 * @return the revision
-	 */
-	public RepositoryRevision getRevision() {
-		return revision;
+	public ObjectVersion getObjectVersion() {
+		return version;
 	}
-
-	/**
-	 * @param revision the revision to set
-	 */
-	public void setRevision(RepositoryRevision revision) {
-		this.revision = revision;
+	
+	public void setObjectVersion(ObjectVersion objectVersion) {
+		this.version = objectVersion;
 	}
 
 	// Clusters can't be locked
 	public RepositoryLock getRepositoryLock() {
 		return null;
 	}
+	
+	public String getDescription() {
+		// NOT USED
+		return null;
+	}
+	
+	public void setDescription(String description) {
+		// NOT USED
+	}
+	
 }

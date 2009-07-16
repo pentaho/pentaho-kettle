@@ -200,7 +200,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
 			
 			sql                       =      rep.getStepAttributeString (id_step, "sql");
 			catalog                   =      rep.getStepAttributeString(id_step, "catalog");

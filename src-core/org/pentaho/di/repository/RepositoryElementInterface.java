@@ -2,6 +2,7 @@ package org.pentaho.di.repository;
 
 
 
+
 /**
  * A repository element is an object that can be saved or loaded from the repository.
  * As such, we need to be able to identify it.
@@ -21,17 +22,21 @@ public interface RepositoryElementInterface {
 	public void setName(String name);
 	public String getName();
 	
+	public void setDescription(String description);
+	public String getDescription();
+	
 	public void setObjectId(ObjectId id);
 	public ObjectId getObjectId();
 	
 	public String getRepositoryElementType();
-	
-	public RepositoryRevision getRevision();
-	
+		
 	public RepositoryLock getRepositoryLock();
 	
 	/**
 	 * Clears the changed flag
 	 */
 	public void clearChanged();
+	
+	public void setObjectVersion(ObjectVersion objectVersion);
+	public ObjectVersion getObjectVersion();
 }

@@ -66,31 +66,29 @@ public class SpoonDBDelegate extends SpoonDelegate
 		sql.open();
 	}
 
-	public void editConnection(DatabaseMeta databaseMeta)
-	{
+	public void editConnection(DatabaseMeta databaseMeta) {
 		HasDatabasesInterface hasDatabasesInterface = spoon.getActiveHasDatabasesInterface();
 		if (hasDatabasesInterface == null)
 			return; // program error, exit just to make sure.
 
 		DatabaseMeta before = (DatabaseMeta) databaseMeta.clone();
 
-		// DatabaseDialog con = new DatabaseDialog(spoon.getShell(), databaseMeta);
-    XulDatabaseDialog con = new XulDatabaseDialog(spoon.getShell(), databaseMeta);
+		// DatabaseDialog con = new DatabaseDialog(spoon.getShell(),
+		// databaseMeta);
+		XulDatabaseDialog con = new XulDatabaseDialog(spoon.getShell(), databaseMeta);
 		con.setDatabases(hasDatabasesInterface.getDatabases());
 		String newname = con.open();
 		if (!Const.isEmpty(newname)) // null: CANCEL
 		{
-		  databaseMeta = con.getDatabaseMeta();
+			databaseMeta = con.getDatabaseMeta();
 			// newname =
 			// db.verifyAndModifyDatabaseName(transMeta.getDatabases(), name);
 
 			// Store undo/redo information
 			DatabaseMeta after = (DatabaseMeta) databaseMeta.clone();
-			spoon.addUndoChange((UndoInterface) hasDatabasesInterface, new DatabaseMeta[] { before },
-					new DatabaseMeta[] { after }, new int[] { hasDatabasesInterface
-							.indexOfDatabase(databaseMeta) });
+			spoon.addUndoChange((UndoInterface) hasDatabasesInterface, new DatabaseMeta[] { before }, new DatabaseMeta[] { after }, new int[] { hasDatabasesInterface.indexOfDatabase(databaseMeta) });
 
-			saveConnection(databaseMeta);
+			saveConnection(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION);
 
 			spoon.refreshTree();
 		}
@@ -119,7 +117,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 						.addUndoNew((UndoInterface) hasDatabasesInterface,
 								new DatabaseMeta[] { (DatabaseMeta) databaseMetaCopy.clone() },
 								new int[] { pos + 1 });
-				saveConnection(databaseMetaCopy);
+				saveConnection(databaseMetaCopy, Const.VERSION_COMMENT_EDIT_VERSION);
 				spoon.refreshTree();
 			}
 		}
@@ -420,7 +418,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 		return true;
 	}
 
-	public void saveConnection(DatabaseMeta db)
+	public void saveConnection(DatabaseMeta db, String versionComment)
 	{
 		// Also add to repository?
 		Repository rep = spoon.getRepository();
@@ -431,9 +429,13 @@ public class SpoonDBDelegate extends SpoonDelegate
 			{
 				try
 				{
-					rep.insertLogEntry("Saving database '" + db.getName() + "'");
-
-					rep.save(db);
+					
+					if (Const.isEmpty(versionComment)) {
+						rep.insertLogEntry("Saving database '" + db.getName() + "'");
+					} else {
+						rep.insertLogEntry("Save database : "+versionComment);
+					}
+					rep.save(db, versionComment, null);
 					spoon.getLog().logDetailed(toString(), BaseMessages.getString(PKG, "Spoon.Log.SavedDatabaseConnection", db.getDatabaseName()));
 
 					db.setChanged(false);
@@ -454,58 +456,39 @@ public class SpoonDBDelegate extends SpoonDelegate
 		}
 	}
 
-	public void newConnection()
-	{
+	public void newConnection() {
+
 		HasDatabasesInterface hasDatabasesInterface = spoon.getActiveHasDatabasesInterface();
-		if (hasDatabasesInterface == null && spoon.rep==null)
-		{
+		if (hasDatabasesInterface == null && spoon.rep == null) {
 			return;
 		}
 
 		DatabaseMeta databaseMeta = new DatabaseMeta();
 		if (hasDatabasesInterface instanceof VariableSpace) {
-			databaseMeta.shareVariablesWith((VariableSpace)hasDatabasesInterface);
-		}
-		else {
+			databaseMeta.shareVariablesWith((VariableSpace) hasDatabasesInterface);
+		} else {
 			databaseMeta.initializeVariablesFrom(null);
 		}
-		
-    // DatabaseDialog con = new DatabaseDialog(spoon.getShell(), databaseMeta);
-    XulDatabaseDialog con = new XulDatabaseDialog(spoon.getShell(), databaseMeta);
-    String con_name = con.open();
-    if (!Const.isEmpty(con_name))
-    {
-      databaseMeta = con.getDatabaseMeta();
-			if (hasDatabasesInterface!=null)
-			{
-				databaseMeta.verifyAndModifyDatabaseName(hasDatabasesInterface.getDatabases(), null);
-				hasDatabasesInterface.addDatabase(databaseMeta);
-				spoon.addUndoNew((UndoInterface) hasDatabasesInterface,
-						new DatabaseMeta[] { (DatabaseMeta) databaseMeta.clone() },
-						new int[] { hasDatabasesInterface.indexOfDatabase(databaseMeta) });
-				saveConnection(databaseMeta);
-				spoon.refreshTree();
-			}
-			else
-			{
-				// Save it in the repository...
-				try 
-				{
-					if (!spoon.rep.getSecurityProvider().isReadOnly())
-					{
-						spoon.rep.save(databaseMeta);
-					}
-					else
-					{
-						throw new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser"));
-					}
-				} 
-				catch (KettleException e) 
-				{
-					new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName()), e);
+
+		XulDatabaseDialog con = new XulDatabaseDialog(spoon.getShell(), databaseMeta);
+		String con_name = con.open();
+		if (!Const.isEmpty(con_name)) {
+			databaseMeta = con.getDatabaseMeta();
+
+			databaseMeta.verifyAndModifyDatabaseName(hasDatabasesInterface.getDatabases(), null);
+			hasDatabasesInterface.addDatabase(databaseMeta);
+			spoon.addUndoNew((UndoInterface) hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta) databaseMeta.clone() }, new int[] { hasDatabasesInterface.indexOfDatabase(databaseMeta) });
+			try {
+				if (!spoon.rep.getSecurityProvider().isReadOnly()) {
+					spoon.rep.save(databaseMeta, Const.VERSION_COMMENT_INITIAL_VERSION, null);
+				} else {
+					throw new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser"));
 				}
+			} catch (KettleException e) {
+				new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName()), e);
 			}
-		}
+			spoon.refreshTree();
+		}			
 	}
 
 }

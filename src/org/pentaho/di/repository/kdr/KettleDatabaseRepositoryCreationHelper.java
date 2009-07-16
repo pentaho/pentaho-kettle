@@ -22,7 +22,7 @@ import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ProfileMeta.Permission;
-import org.pentaho.di.repository.kdr.delegates.RepositoryConnectionDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectionDelegate;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 
@@ -164,8 +164,8 @@ public class KettleDatabaseRepositoryCreationHelper {
         	}
             Object[] data = new Object[] {
                     nextId.longValue(),
-                    Long.valueOf(RepositoryConnectionDelegate.REQUIRED_MAJOR_VERSION),
-                    Long.valueOf(RepositoryConnectionDelegate.REQUIRED_MINOR_VERSION),
+                    Long.valueOf(KettleDatabaseRepositoryConnectionDelegate.REQUIRED_MAJOR_VERSION),
+                    Long.valueOf(KettleDatabaseRepositoryConnectionDelegate.REQUIRED_MINOR_VERSION),
                     new Date(),
                     Boolean.valueOf(upgrade),
                 };

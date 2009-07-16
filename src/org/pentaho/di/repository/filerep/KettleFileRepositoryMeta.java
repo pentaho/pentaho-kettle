@@ -2,7 +2,6 @@ package org.pentaho.di.repository.filerep;
 
 import java.util.List;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -30,6 +29,7 @@ public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements Repo
     public RepositoryCapabilities getRepositoryCapabilities() {
     	return new RepositoryCapabilities() {
     		public boolean supportsUsers() { return false; }
+    		public boolean managesUsers() { return false; }
     		public boolean isReadOnly() { return readOnly; }
     		public boolean supportsRevisions() { return false; }
     		public boolean supportsMetadata() { return false; }
@@ -41,11 +41,11 @@ public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements Repo
 	{
         StringBuffer retval = new StringBuffer(100);
 		
-		retval.append("  <repository>").append(Const.CR);
+		retval.append("  ").append(XMLHandler.openTag(XML_TAG));
 		retval.append(super.getXML());
 		retval.append("    ").append(XMLHandler.addTagValue("base_directory", baseDirectory));
 		retval.append("    ").append(XMLHandler.addTagValue("read_only", readOnly));
-		retval.append("  </repository>").append(Const.CR);
+		retval.append("  ").append(XMLHandler.closeTag(XML_TAG));
         
 		return retval.toString();
 	}

@@ -108,6 +108,14 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
 	public boolean supportsMetadata() {
 		return capabilities.supportsMetadata();
 	}
+	
+	public boolean allowsVersionComments() {
+		return false;
+	}
+	
+	public boolean isVersionCommentMandatory() {
+		return false;
+	}
 
 	// The file repository does not support users
 	//

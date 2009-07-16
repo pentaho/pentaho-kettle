@@ -309,7 +309,6 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 			if (condition!=null) 
 			{
 				rep.saveConditionStepAttribute(id_transformation, id_step, "id_condition", condition);
-				rep.insertTransStepCondition(id_transformation, id_step, condition.getObjectId());
 				rep.saveStepAttribute(id_transformation, id_step, "send_true_to", getSendTrueStepname()); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, "send_false_to", getSendFalseStepname()); //$NON-NLS-1$
 			}

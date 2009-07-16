@@ -73,7 +73,12 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   {
     setName(name);
     setDescription(description);
-    setID(null);
+    setObjectId(null);
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+	  return name.equalsIgnoreCase(((JobEntryBase)obj).getName());
   }
 
   public void clear()
@@ -83,7 +88,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     changed = false;
   }
 
-  public void setID(ObjectId id)
+  public void setObjectId(ObjectId id)
   {
     this.id = id;
   }

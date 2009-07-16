@@ -36,6 +36,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.ValueMeta;
@@ -447,8 +448,24 @@ public class XMLHandler
      * @param namespaceAware support XML namespaces.
      * @return the Document if all went well, null if an error occured!
      */
-    public static final Document loadXMLFile(FileObject fileObject, String systemID, boolean ignoreEntities,
-    		boolean namespaceAware) throws KettleXMLException
+    public static final Document loadXMLFile(FileObject fileObject, String systemID, boolean ignoreEntities, boolean namespaceAware) throws KettleXMLException
+    {
+    	try {
+			return loadXMLFile(KettleVFS.getInputStream(fileObject), systemID, ignoreEntities, namespaceAware);
+		} catch (FileSystemException e) {
+			throw new KettleXMLException("Unable to read file ["+fileObject.toString()+"]", e);
+		}
+    }
+    
+    /**
+     * Load a file into an XML document
+     * @param inputStream The stream to load a document from
+     * @param systemId Provide a base for resolving relative URIs.
+     * @param ignoreEntities Ignores external entities and returns an empty dummy.
+     * @param namespaceAware support XML namespaces.
+     * @return the Document if all went well, null if an error occured!
+     */
+    public static final Document loadXMLFile(InputStream inputStream, String systemID, boolean ignoreEntities, boolean namespaceAware) throws KettleXMLException
     {
         DocumentBuilderFactory dbf;
         DocumentBuilder db;
@@ -471,13 +488,11 @@ public class XMLHandler
             	db.setEntityResolver(new DTDIgnoringEntityResolver()); 
             }
             
-            InputStream inputStream=null;
             try
             {
             	if (Const.isEmpty(systemID)) {
             		// Normal parsing
             		//
-            		inputStream = KettleVFS.getInputStream(fileObject);
             		doc  = db.parse(inputStream);
             	} else {
             		// Do extra verifications
@@ -489,7 +504,6 @@ public class XMLHandler
             		if (!systemIDwithEndingSlash.endsWith("/") && !systemIDwithEndingSlash.endsWith("\\")) {
             			systemIDwithEndingSlash=systemIDwithEndingSlash.concat("/");
             		}
-            		inputStream = KettleVFS.getInputStream(fileObject);
             		doc  = db.parse(inputStream,systemIDwithEndingSlash);
             	}
             }
@@ -506,7 +520,7 @@ public class XMLHandler
         }
         catch(Exception e)
         {
-            throw new KettleXMLException("Error reading information from file", e);
+            throw new KettleXMLException("Error reading information from input stream", e);
         }
     }
     

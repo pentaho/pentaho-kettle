@@ -580,7 +580,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 {
 		try
 		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
             schemaName       =      rep.getStepAttributeString (id_step, "schema");
 			tablename        =      rep.getStepAttributeString (id_step, "table");
 			truncateTable    =      rep.getStepAttributeBoolean(id_step, "truncate"); 

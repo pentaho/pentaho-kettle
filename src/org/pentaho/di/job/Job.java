@@ -174,7 +174,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		this.rep = rep;
 		if (rep!=null)
 		{
-			jobMeta = rep.loadJob(jobname, rep.loadRepositoryDirectoryTree().findDirectory(dirname), null);
+			jobMeta = rep.loadJob(jobname, rep.loadRepositoryDirectoryTree().findDirectory(dirname), null, null);  // reads last version
 		}
 		else
 		{

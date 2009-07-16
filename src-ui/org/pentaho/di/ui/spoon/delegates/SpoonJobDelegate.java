@@ -756,7 +756,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 							jetrans.setFileName(Const.createFilename("${"+ Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}", transMeta.getName(), "."+Const.STRING_TRANS_DEFAULT_EXT));
 						}
 	
-						JobEntryCopy jectrans = new JobEntryCopy(spoon.getLog(), jetrans);
+						JobEntryCopy jectrans = new JobEntryCopy(jetrans);
 						jectrans.setDescription(BaseMessages.getString(PKG, "Spoon.RipDB.JobEntryTrans.Description1") + Const.CR + BaseMessages.getString(PKG, "Spoon.RipDB.JobEntryTrans.Description2") + sourceDbInfo + "].[" + tables[i] + "]" + Const.CR + BaseMessages.getString(PKG, "Spoon.RipDB.JobEntryTrans.Description3") + targetDbInfo + "].[" + tables[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 						jectrans.setDrawn();
 						location.x += 400;

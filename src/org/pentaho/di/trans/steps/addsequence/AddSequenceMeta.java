@@ -308,7 +308,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	
 			useDatabase        =   rep.getStepAttributeBoolean(id_step, "use_database");  //$NON-NLS-1$
 			
-			database = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");
+			database = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
 			
             schemaName         =   rep.getStepAttributeString (id_step, "schema"); //$NON-NLS-1$
 			sequenceName       =   rep.getStepAttributeString (id_step, "seqname"); //$NON-NLS-1$

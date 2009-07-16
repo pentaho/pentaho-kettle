@@ -19,10 +19,10 @@ import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
-public class RepositoryJobEntryDelegate extends BaseRepositoryDelegate {
+public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepositoryBaseDelegate {
 //	private static Class<?> PKG = JobEntryCopy.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryJobEntryDelegate(KettleDatabaseRepository repository) {
+	public KettleDatabaseRepositoryJobEntryDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	
@@ -125,7 +125,7 @@ public class RepositoryJobEntryDelegate extends BaseRepositoryDelegate {
 								loadJobEntryBase((JobEntryBase)jobEntry, id_jobentry, databases, slaveServers);
 							}
 							jobEntry.loadRep(repository, id_jobentry, databases, slaveServers);
-							jobEntryCopy.getEntry().setID(id_jobentry);
+							jobEntryCopy.getEntry().setObjectId(id_jobentry);
 							
 							jobentries.add(jobEntryCopy.getEntry());
 						} else

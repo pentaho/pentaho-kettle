@@ -37,11 +37,11 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 
-public class RepositoryTransDelegate extends BaseRepositoryDelegate {
+public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseRepositoryBaseDelegate {
 	
 	private static Class<?> PKG = TransMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryTransDelegate(KettleDatabaseRepository repository) {
+	public KettleDatabaseRepositoryTransDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	
@@ -104,7 +104,7 @@ public class RepositoryTransDelegate extends BaseRepositoryDelegate {
      *  
      * @throws KettleException if an error occurrs.
      */
-    public void saveTransformation(TransMeta transMeta, ProgressMonitorListener monitor) throws KettleException
+    public void saveTransformation(TransMeta transMeta, String versionComment, ProgressMonitorListener monitor) throws KettleException
     {
         try
         {
@@ -163,7 +163,7 @@ public class RepositoryTransDelegate extends BaseRepositoryDelegate {
                 // of the database for this id_transformation, before we put it back in...
                 if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.DeletingOldVersionTransformationTask.Title")); //$NON-NLS-1$
                 if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.DeletingOldVersionTransformation")); //$NON-NLS-1$
-                repository.delAllFromTrans(transMeta.getObjectId());
+                repository.deleteTransformation(transMeta.getObjectId());
                 if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.OldVersionOfTransformationRemoved")); //$NON-NLS-1$
             }
             if (monitor != null) monitor.worked(1);
@@ -192,7 +192,7 @@ public class RepositoryTransDelegate extends BaseRepositoryDelegate {
                 // ONLY save the database connection if it has changed and nothing was saved in the repository
                 if(databaseMeta.hasChanged() || databaseMeta.getObjectId()==null)
                 {
-                	repository.save(databaseMeta);
+                	repository.save(databaseMeta, versionComment);
                 }
                 if (monitor != null) monitor.worked(1);
             }
@@ -246,7 +246,7 @@ public class RepositoryTransDelegate extends BaseRepositoryDelegate {
                 // It might be simply loaded as a shared object from the repository
                 //
                 boolean isUsedByTransformation = transMeta.isUsingPartitionSchema(partitionSchema);
-                repository.save(partitionSchema, null, transMeta.getObjectId(), isUsedByTransformation);
+                repository.save(partitionSchema, versionComment, null, transMeta.getObjectId(), isUsedByTransformation);
             }
             
             // Save the slaves
@@ -257,7 +257,7 @@ public class RepositoryTransDelegate extends BaseRepositoryDelegate {
 
                 SlaveServer slaveServer = transMeta.getSlaveServers().get(i);
                 boolean isUsedByTransformation = transMeta.isUsingSlaveServer(slaveServer);
-                repository.save(slaveServer, null, transMeta.getObjectId(), isUsedByTransformation);
+                repository.save(slaveServer, versionComment, null, transMeta.getObjectId(), isUsedByTransformation);
             }
             
             // Save the clustering schemas
@@ -267,7 +267,7 @@ public class RepositoryTransDelegate extends BaseRepositoryDelegate {
 
                 ClusterSchema clusterSchema = transMeta.getClusterSchemas().get(i);
                 boolean isUsedByTransformation = transMeta.isUsingClusterSchema(clusterSchema);
-                repository.save(clusterSchema, null, transMeta.getObjectId(), isUsedByTransformation);
+                repository.save(clusterSchema, versionComment, null, transMeta.getObjectId(), isUsedByTransformation);
             }
             
             if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingDependencies")); //$NON-NLS-1$
@@ -723,10 +723,10 @@ public class RepositoryTransDelegate extends BaseRepositoryDelegate {
    {
        try
        {
-           ObjectId dbids[] = repository.getDatabaseIDs();
+           ObjectId dbids[] = repository.getDatabaseIDs(false);
            for (int i = 0; i < dbids.length; i++)
            {
-               DatabaseMeta databaseMeta = repository.loadDatabaseMeta(dbids[i]);
+               DatabaseMeta databaseMeta = repository.loadDatabaseMeta(dbids[i], null); // reads last version
                databaseMeta.shareVariablesWith(transMeta);
                
                DatabaseMeta check = transMeta.findDatabase(databaseMeta.getName()); // Check if there already is one in the transformation
@@ -762,10 +762,10 @@ public class RepositoryTransDelegate extends BaseRepositoryDelegate {
    {
        try
        {
-           ObjectId dbids[] = repository.getClusterIDs();
+           ObjectId dbids[] = repository.getClusterIDs(false);
            for (int i = 0; i < dbids.length; i++)
            {
-               ClusterSchema clusterSchema = repository.loadClusterSchema(dbids[i], transMeta.getSlaveServers());
+               ClusterSchema clusterSchema = repository.loadClusterSchema(dbids[i], transMeta.getSlaveServers(), null); // Load the last version
                clusterSchema.shareVariablesWith(transMeta);
                ClusterSchema check = transMeta.findClusterSchema(clusterSchema.getName()); // Check if there already is one in the transformation
                if (check==null || overWriteShared) 
@@ -795,10 +795,10 @@ public class RepositoryTransDelegate extends BaseRepositoryDelegate {
    {
        try
        {
-    	   ObjectId dbids[] = repository.getPartitionSchemaIDs();
+    	   ObjectId dbids[] = repository.getPartitionSchemaIDs(false);
            for (int i = 0; i < dbids.length; i++)
            {
-               PartitionSchema partitionSchema = repository.loadPartitionSchema(dbids[i]);
+               PartitionSchema partitionSchema = repository.loadPartitionSchema(dbids[i], null);  // Load last version 
                PartitionSchema check = transMeta.findPartitionSchema(partitionSchema.getName()); // Check if there already is one in the transformation
                if (check==null || overWriteShared) 
                {
@@ -826,10 +826,10 @@ public class RepositoryTransDelegate extends BaseRepositoryDelegate {
    {
        try
        {
-    	   ObjectId dbids[] = repository.getSlaveIDs();
+    	   ObjectId dbids[] = repository.getSlaveIDs(false);
            for (int i = 0; i < dbids.length; i++)
            {
-               SlaveServer slaveServer = repository.loadSlaveServer(dbids[i]);
+               SlaveServer slaveServer = repository.loadSlaveServer(dbids[i], null);  // Load last version
                slaveServer.shareVariablesWith(transMeta);
                SlaveServer check = transMeta.findSlaveServer(slaveServer.getName()); // Check if there already is one in the transformation
                if (check==null || overWriteShared) 

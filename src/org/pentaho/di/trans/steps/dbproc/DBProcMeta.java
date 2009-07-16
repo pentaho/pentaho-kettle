@@ -351,7 +351,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-			database = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");
+			database = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
             procedure = rep.getStepAttributeString(id_step, "procedure"); //$NON-NLS-1$
 
             int nrargs = rep.countNrStepAttributes(id_step, "arg_name"); //$NON-NLS-1$

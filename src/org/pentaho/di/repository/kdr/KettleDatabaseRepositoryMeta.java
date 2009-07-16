@@ -13,7 +13,6 @@ package org.pentaho.di.repository.kdr;
 
 import java.util.List;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -52,6 +51,7 @@ public class KettleDatabaseRepositoryMeta extends BaseRepositoryMeta implements 
 	public RepositoryCapabilities getRepositoryCapabilities() {
     	return new RepositoryCapabilities() {
     		public boolean supportsUsers() { return true; }
+    		public boolean managesUsers() { return true; }
     		public boolean isReadOnly() { return false; }
     		public boolean supportsRevisions() { return false; }
     		public boolean supportsMetadata() { return true; }
@@ -59,20 +59,6 @@ public class KettleDatabaseRepositoryMeta extends BaseRepositoryMeta implements 
     	};
     }
 
-	public void loadXML(Node repnode, List<DatabaseMeta> databases) throws KettleException
-	{
-		super.loadXML(repnode, databases);
-		try
-		{
-			String conn = XMLHandler.getTagValue(repnode, "connection") ;
-			databaseMeta  = DatabaseMeta.findDatabase(databases, conn);
-		}
-		catch(Exception e)
-		{
-			throw new KettleException("Unable to load Kettle database repository meta object", e);
-		}
-	}
-	
 	public void setName(String name)
 	{
 		this.name = name;
@@ -102,16 +88,30 @@ public class KettleDatabaseRepositoryMeta extends BaseRepositoryMeta implements 
 	{
 		return databaseMeta;
 	}
-		
+	
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer(100);
 		
-		retval.append("  <repository>").append(Const.CR);
+		retval.append("  ").append(XMLHandler.openTag(XML_TAG));
 		retval.append(super.getXML());
 		retval.append("    ").append(XMLHandler.addTagValue("connection",  databaseMeta!=null?databaseMeta.getName():null));
-		retval.append("  </repository>").append(Const.CR);
+		retval.append("  ").append(XMLHandler.closeTag(XML_TAG));
         
 		return retval.toString();
 	}
+	
+	public void loadXML(Node repnode, List<DatabaseMeta> databases) throws KettleException
+	{
+		super.loadXML(repnode, databases);
+		try
+		{
+			String conn = XMLHandler.getTagValue(repnode, "connection") ;
+			databaseMeta  = DatabaseMeta.findDatabase(databases, conn);
+		}
+		catch(Exception e)
+		{
+			throw new KettleException("Unable to load Kettle database repository meta object", e);
+		}
+	}	
 }

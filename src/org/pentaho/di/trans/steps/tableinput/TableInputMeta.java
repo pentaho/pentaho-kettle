@@ -300,7 +300,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");  //$NON-NLS-1$
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  //$NON-NLS-1$
 			
 			sql                       =      rep.getStepAttributeString (id_step, "sql");
 			rowLimit                  = (int)rep.getStepAttributeInteger(id_step, "limit");

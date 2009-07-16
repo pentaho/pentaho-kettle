@@ -10,7 +10,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
-import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.shared.SharedObjects;
@@ -22,6 +21,12 @@ public interface Repository {
 	 * @return The name of the repository
 	 */
 	public String getName();
+	
+	/**
+	 * Get the repository version.
+	 * @return The repository version as a string
+	 */
+	public String getVersion();
 	
 	/**
 	 * @return the metadata describing this repository.
@@ -58,7 +63,6 @@ public interface Repository {
      * */
     public void init(RepositoryMeta repositoryMeta, UserInfo userInfo);
     
-
 	// Common methods...
 
     /**
@@ -72,12 +76,10 @@ public interface Repository {
     public ObjectId getTransformationID(String name, RepositoryDirectory repositoryDirectory) throws KettleException;
     public ObjectId getJobId(String name, RepositoryDirectory repositoryDirectory) throws KettleException;
 
-    public void save(RepositoryElementInterface repositoryElement) throws KettleException;
-    public void save(RepositoryElementInterface repositoryElement, ProgressMonitorListener monitor) throws KettleException;
-    public void save(RepositoryElementInterface repositoryElement, ProgressMonitorListener monitor, ObjectId parentId, boolean used) throws KettleException;
-    
-    
-	// Transformations : Loading & saving objects...
+    public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor) throws KettleException;
+        
+	
+    // Transformations : Loading & saving objects...
 	
 	/**
 	 * Load a transformation with a name from a folder in the repository
@@ -87,7 +89,7 @@ public interface Repository {
 	 *  @param monitor the progress monitor to use (UI feedback)
 	 *  @param setInternalVariables set to true if you want to automatically set the internal variables of the loaded transformation. (true is the default with very few exceptions!) 
 	 */
-    public TransMeta loadTransformation(String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables) throws KettleException;
+    public TransMeta loadTransformation(String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String versionName) throws KettleException;
 
 	public SharedObjects readTransSharedObjects(TransMeta transMeta) throws KettleException;
 	
@@ -100,11 +102,12 @@ public interface Repository {
 	 * @param id_transformation the transformation id to delete
 	 * @throws KettleException
 	 */
-	public void delAllFromTrans(ObjectId id_transformation) throws KettleException;
+	public void deleteTransformation(ObjectId id_transformation) throws KettleException;
 	
 	/**
 	 * Locks this transformation for exclusive use by the current user of the repository
 	 * @param id_transformation the id of the transformation to lock
+	 * @param isSessionScoped If isSessionScoped is true then this lock will expire upon the expiration of the current session (either through an automatic or explicit Session.logout); if false, this lock does not expire until explicitly unlocked or automatically unlocked due to a implementation-specific limitation, such as a timeout. 
 	 * @param message the lock message 
 	 * @throws KettleException in case something goes wrong or the transformation is already locked by someone else.
 	 */
@@ -118,38 +121,26 @@ public interface Repository {
 	public void unlockTransformation(ObjectId id_transformation) throws KettleException;
 
 	/**
-	 * @return a list of the IDs of all the transformations that are locked at this time. 
-	 * @throws KettleException
-	 */
-	public List<RepositoryLock> getTransformationLocks() throws KettleException; 
-
-	/**
 	 * Return the lock object for this transformation.  Returns null if there is no lock present.
 	 * 
 	 * @param id_transformation
 	 * @return the lock object for this transformation, null if no lock is present.
 	 * @throws KettleDatabaseException
 	 */
-	public RepositoryLock getTransformationLock(ObjectId id_transformation) throws KettleDatabaseException;
+	public RepositoryLock getTransformationLock(ObjectId id_transformation) throws KettleException;
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	// Jobs: Loading & saving objects...
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 
-	public JobMeta loadJob(String jobname, RepositoryDirectory repdir, ProgressMonitorListener monitor) throws KettleException;
+	public JobMeta loadJob(String jobname, RepositoryDirectory repdir, ProgressMonitorListener monitor, String versionName) throws KettleException;
 	
     public SharedObjects readJobMetaSharedObjects(JobMeta jobMeta) throws KettleException;
 
     public ObjectId renameJob(ObjectId id_job, RepositoryDirectory newDirectory, String newName) throws KettleException;
 
-	public void delAllFromJob(ObjectId id_job) throws KettleException;
+	public void deleteJob(ObjectId id_job) throws KettleException;
 		
-	/**
-	 * @return a list of the IDs of all the jobs that are locked at this time. 
-	 * @throws KettleException
-	 */
-	public List<RepositoryLock> getJobLocks() throws KettleException; 
-
 	/**
 	 * Locks this job for exclusive use by the current user of the repository
 	 * @param id_job the id of the job to lock 
@@ -172,7 +163,7 @@ public interface Repository {
 	 * @return the lock object for this job, null if no lock is present.
 	 * @throws KettleDatabaseException
 	 */
-	public RepositoryLock getJobLock(ObjectId id_job) throws KettleDatabaseException;
+	public RepositoryLock getJobLock(ObjectId id_job) throws KettleException;
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	// Databases : loading, saving, renaming, etc.
@@ -183,7 +174,7 @@ public interface Repository {
 	 * @param id_database the id of the database connection to load
 	 * @throws KettleException in case something goes wrong with database, connection, etc.
 	 */
-	public DatabaseMeta loadDatabaseMeta(ObjectId id_database) throws KettleException;
+	public DatabaseMeta loadDatabaseMeta(ObjectId id_database, String versionName) throws KettleException;
 	
 	/**
 	 * Remove a database connection from the repository
@@ -192,12 +183,8 @@ public interface Repository {
 	 */
 	public void deleteDatabaseMeta(String databaseName) throws KettleException;
 
-	public ObjectId[] getTransformationDatabaseIDs(ObjectId id_transformation) throws KettleException;
-
-	public ObjectId[] getDatabaseIDs() throws KettleException;
+	public ObjectId[] getDatabaseIDs(boolean includeDeleted) throws KettleException;
     
-    public ObjectId[] getDatabaseAttributeIDs(ObjectId id_database) throws KettleException;
-
 	public String[] getDatabaseNames() throws KettleException;
 	
 	public ObjectId renameDatabase(ObjectId id_database, String newname) throws KettleException;
@@ -215,25 +202,23 @@ public interface Repository {
 	// ClusterSchema
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	
-    public ClusterSchema loadClusterSchema(ObjectId id_cluster_schema, List<SlaveServer> slaveServers) throws KettleException;
+    public ClusterSchema loadClusterSchema(ObjectId id_cluster_schema, List<SlaveServer> slaveServers, String versionLabel) throws KettleException;
 
-    public ObjectId[] getClusterIDs() throws KettleException;
+    public ObjectId[] getClusterIDs(boolean includeDeleted) throws KettleException;
 
     public String[] getClusterNames() throws KettleException;
 
     public ObjectId getClusterID(String name) throws KettleException;
 
-    public void delClusterSchema(ObjectId id_cluster) throws KettleException;
+    public void deleteClusterSchema(ObjectId id_cluster) throws KettleException;
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
     // SlaveServer
 	/////////////////////////////////////////////////////////////////////////////////////////////////
     
-    public SlaveServer loadSlaveServer(ObjectId id_slave_server) throws KettleException;
+    public SlaveServer loadSlaveServer(ObjectId id_slave_server, String versionLabel) throws KettleException;
 	
-    public ObjectId[] getSlaveIDs() throws KettleException;
-
-    public ObjectId[] getClusterSlaveIDs(ObjectId id_cluster_schema) throws KettleException;
+    public ObjectId[] getSlaveIDs(boolean includeDeleted) throws KettleException;
 
     public String[] getSlaveNames() throws KettleException;
     
@@ -245,15 +230,15 @@ public interface Repository {
 
     public ObjectId getSlaveID(String name) throws KettleException;
 
-    public void delSlave(ObjectId id_slave) throws KettleException;
+    public void deleteSlave(ObjectId id_slave) throws KettleException;
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
     // PartitionSchema
 	/////////////////////////////////////////////////////////////////////////////////////////////////
     
-	public PartitionSchema loadPartitionSchema(ObjectId id_partition_schema) throws KettleException;
+	public PartitionSchema loadPartitionSchema(ObjectId id_partition_schema, String versionLabel) throws KettleException;
 
-    public ObjectId[] getPartitionSchemaIDs() throws KettleException;
+    public ObjectId[] getPartitionSchemaIDs(boolean includeDeleted) throws KettleException;
 
     // public ObjectId[] getPartitionIDs(ObjectId id_partition_schema) throws KettleException;
 
@@ -261,22 +246,8 @@ public interface Repository {
 
 	public ObjectId getPartitionSchemaID(String name) throws KettleException;
 	
-    public void delPartitionSchema(ObjectId id_partition_schema) throws KettleException;
-
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////
-	// ValueMetaAndData
-	/////////////////////////////////////////////////////////////////////////////////////////////////
-    
-	public ValueMetaAndData loadValueMetaAndData(ObjectId id_value) throws KettleException;
+    public void deletePartitionSchema(ObjectId id_partition_schema) throws KettleException;
 	 
-	
-	/////////////////////////////////////////////////////////////////////////////////////////////////
-	// NotePadMeta
-	/////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	// public void saveNotePadMeta(NotePadMeta note, ObjectId id_transformation) throws KettleException;
-
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	// Directory stuff
@@ -284,11 +255,11 @@ public interface Repository {
 	
 	public RepositoryDirectory loadRepositoryDirectoryTree() throws KettleException;
 	
-	public RepositoryDirectory loadRepositoryDirectoryTree(RepositoryDirectory root) throws KettleException;
+	// public RepositoryDirectory loadRepositoryDirectoryTree(RepositoryDirectory root) throws KettleException;
 
 	public void saveRepositoryDirectory(RepositoryDirectory dir) throws KettleException;
 
-	public void delRepositoryDirectory(RepositoryDirectory dir) throws KettleException;
+	public void deleteRepositoryDirectory(RepositoryDirectory dir) throws KettleException;
 
 	public ObjectId renameRepositoryDirectory(RepositoryDirectory dir) throws KettleException;
 
@@ -304,9 +275,9 @@ public interface Repository {
 	
 	public String[] getTransformationNames(ObjectId id_directory) throws KettleException;
     
-    public List<RepositoryObject> getJobObjects(ObjectId id_directory) throws KettleException;
+    public List<RepositoryObject> getJobObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException;
 
-    public List<RepositoryObject> getTransformationObjects(ObjectId id_directory) throws KettleException;
+    public List<RepositoryObject> getTransformationObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException;
 
 
 	public String[] getJobNames(ObjectId id_directory) throws KettleException;
@@ -330,80 +301,30 @@ public interface Repository {
     // Relationships between objects !!!!!!!!!!!!!!!!!!!!!!  <-----------------
 	/////////////////////////////////////////////////////////////////////////////////////////////////
     
-	public void insertTransNote(ObjectId id_transformation, ObjectId id_note) throws KettleException;
-	public void insertJobNote(ObjectId id_job, ObjectId id_note) throws KettleException;
 	public void insertStepDatabase(ObjectId id_transformation, ObjectId id_step, ObjectId id_database) throws KettleException;
 	public void insertJobEntryDatabase(ObjectId id_job, ObjectId id_jobentry, ObjectId id_database) throws KettleException;
-    public ObjectId insertTransformationPartitionSchema(ObjectId id_transformation, ObjectId id_partition_schema) throws KettleException;
-    public ObjectId insertClusterSlave(ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException;
-    public ObjectId insertTransformationCluster(ObjectId id_transformation, ObjectId id_cluster) throws KettleException;
-    public ObjectId insertTransformationSlave(ObjectId id_transformation, ObjectId id_slave) throws KettleException;
-	public void insertTransStepCondition(ObjectId id_transformation, ObjectId id_step, ObjectId id_condition) throws KettleException;
 	
-	public ObjectId[] getTransNoteIDs(ObjectId id_transformation) throws KettleException;
-	public ObjectId[] getJobNoteIDs(ObjectId id_job) throws KettleException;
-
-    public ObjectId[] getTransformationPartitionSchemaIDs(ObjectId id_transformation) throws KettleException;
-    public ObjectId[] getTransformationClusterSchemaIDs(ObjectId id_transformation) throws KettleException;
-
-    public String[] getTransformationsUsingDatabase(ObjectId id_database) throws KettleException;
-	
-	public String[] getJobsUsingDatabase(ObjectId id_database) throws KettleException;
-	
-    public String[] getClustersUsingSlave(ObjectId id_slave) throws KettleException;
-
-	public String[] getTransformationsUsingSlave(ObjectId id_slave) throws KettleException;
-    
-    public String[] getTransformationsUsingPartitionSchema(ObjectId id_partition_schema) throws KettleException;
-    
-    public String[] getTransformationsUsingCluster(ObjectId id_cluster) throws KettleException;
-
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	// Condition
 	/////////////////////////////////////////////////////////////////////////////////////////////////
-    
+    	
 	/**
-     *  
-	 * Read a condition from the repository.
-	 * @param id_condition The condition id
-	 * @throws KettleException if something goes wrong.
+	 * This method saves the object ID of the condition object (if not null) in the step attributes
+	 * @param id_step
+	 * @param code
+	 * @param condition
 	 */
-	public Condition loadCondition(ObjectId id_condition) throws KettleException;
-	
-	public ObjectId saveCondition(Condition condition) throws KettleException;
-
-	public ObjectId saveCondition(Condition condition, ObjectId id_condition_parent) throws KettleException;
-
-	public ObjectId[] getSubConditionIDs(ObjectId id_condition) throws KettleException;
-
-	public ObjectId[] getTransformationConditionIDs(ObjectId id_transformation) throws KettleException;
-
-	public void delCondition(ObjectId id_condition) throws KettleException;
-
-	
-	  /////////////////////////////////////////////////////
-	 //// SUSPECT METHODS, ARE THEY REALLY NEEDED?    ////
-    /////////////////////////////////////////////////////
-	
-	/**
-	 * Return the major repository version.
-	 * @return the major repository version.
-	 */
-	public int getMajorVersion();
-	/**
-	 * Return the minor repository version.
-	 * @return the minor repository version.
-	 */
-	public int getMinorVersion();
+	public void saveConditionStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, Condition condition) throws KettleException;
 
 	/**
-	 * Get the repository version.
-	 * @return The repository version as major version + "." + minor version
+	 * Load a condition from the repository with the Object ID stored in a step attribute.
+	 * @param id_step
+	 * @param code
+	 * @return
+	 * @throws KettleException
 	 */
-	public String getVersion();
-	
-	
-	
+	public Condition loadConditionFromStepAttribute(ObjectId id_step, String code) throws KettleException;
+
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	// Attributes for steps...
 	/////////////////////////////////////////////////////////////////////////////////////////////////
@@ -457,7 +378,7 @@ public interface Repository {
 	 * @return
 	 * @throws KettleException
 	 */
-	public DatabaseMeta loadDatabaseMetaFromStepAttribute(ObjectId id_step, String code) throws KettleException;
+	public DatabaseMeta loadDatabaseMetaFromStepAttribute(ObjectId id_step, String code, List<DatabaseMeta> databases) throws KettleException;
 
 	/**
 	 * This method saves the object ID of the database object (if not null) in the step attributes
@@ -476,7 +397,7 @@ public interface Repository {
 	 * @return
 	 * @throws KettleException
 	 */
-	public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String code) throws KettleException;
+	public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String nameCode, String idCode, List<DatabaseMeta> databases) throws KettleException;
 
 	/**
 	 * This method saves the object ID of the database object (if not null) in the job entry attributes
@@ -485,23 +406,25 @@ public interface Repository {
 	 * @param code
 	 * @param database
 	 */
-	public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String code, DatabaseMeta database) throws KettleException;
+	public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String nameCode, String idCode, DatabaseMeta database) throws KettleException;
 
 	/**
-	 * Load a condition from the repository with the Object ID stored in a step attribute.
-	 * @param id_step
-	 * @param code
-	 * @return
-	 * @throws KettleException
+	 * Get the version history of a repository element.
+	 * If the capabilities of this repositories do not include version support, this method can return null.
+	 * 
+	 * @param element the element.  If the ID is specified, this will be taken.  Otherwise it will be looked up.
+	 * 
+	 * @return The version history, from first to last.
+	 * @throws KettleException in case something goes horribly wrong
 	 */
-	public Condition loadConditionFromStepAttribute(ObjectId id_step, String code) throws KettleException;
-
+	public List<ObjectVersion> getVersions(RepositoryElementInterface element) throws KettleException;
+	
 	/**
-	 * This method saves the object ID of the condition object (if not null) in the step attributes
-	 * @param id_step
-	 * @param code
-	 * @param condition
+	 * Removes he deleted flag from a repository element in the repository.  
+	 * If it wasn't deleted, it remains untouched.
+	 * 
+	 * @param element the repository element to restore
+	 * @throws KettleException get throws in case something goes horribly wrong.
 	 */
-	public void saveConditionStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, Condition condition) throws KettleException;
-
+	public void undeleteObject(RepositoryElementInterface element) throws KettleException;
 }

@@ -13,11 +13,11 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
-public class RepositoryClusterSchemaDelegate extends BaseRepositoryDelegate {
+public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
 //	private static Class<?> PKG = ClusterSchema.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryClusterSchemaDelegate(KettleDatabaseRepository repository) {
+	public KettleDatabaseRepositoryClusterSchemaDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	
@@ -46,7 +46,7 @@ public class RepositoryClusterSchemaDelegate extends BaseRepositoryDelegate {
         ObjectId[] pids = repository.getClusterSlaveIDs(id_cluster_schema);
         for (int i=0;i<pids.length;i++)
         {
-            SlaveServer slaveServer = repository.loadSlaveServer(pids[i]);
+            SlaveServer slaveServer = repository.loadSlaveServer(pids[i], null);  // Load last version
             SlaveServer reference = SlaveServer.findSlaveServer(slaveServers, slaveServer.getName());
             if (reference!=null) 
                 clusterSchema.getSlaveServers().add(reference);
@@ -57,12 +57,12 @@ public class RepositoryClusterSchemaDelegate extends BaseRepositoryDelegate {
         return clusterSchema;
     }
 
-    public void saveClusterSchema(ClusterSchema clusterSchema) throws KettleException
+    public void saveClusterSchema(ClusterSchema clusterSchema, String versionComment) throws KettleException
     {
-        saveClusterSchema(clusterSchema, null, false);
+        saveClusterSchema(clusterSchema, versionComment, null, false);
     }
 
-    public void saveClusterSchema(ClusterSchema clusterSchema, ObjectId id_transformation, boolean isUsedByTransformation) throws KettleException
+    public void saveClusterSchema(ClusterSchema clusterSchema, String versionComment, ObjectId id_transformation, boolean isUsedByTransformation) throws KettleException
     {
         clusterSchema.setObjectId(getClusterID(clusterSchema.getName()));
         if (clusterSchema.getObjectId()==null)
@@ -81,7 +81,7 @@ public class RepositoryClusterSchemaDelegate extends BaseRepositoryDelegate {
             SlaveServer slaveServer = clusterSchema.getSlaveServers().get(i);
             if (slaveServer.getObjectId()==null) // oops, not yet saved!
             {
-            	repository.save(slaveServer, null, id_transformation, isUsedByTransformation);
+            	repository.save(slaveServer, versionComment, null, id_transformation, isUsedByTransformation);
             }
             repository.insertClusterSlave(clusterSchema, slaveServer);
         }

@@ -104,7 +104,7 @@ public class RepositoryExporter {
 	            {
 	                try
 	                {
-	                    JobMeta ji = repository.loadJob(jobs[i], repdir, null);
+	                    JobMeta ji = repository.loadJob(jobs[i], repdir, null, null); // reads last version
 	                    System.out.println("Loading/Exporting job ["+repdir.getPath()+" : "+jobs[i]+"]");
 	                    if (monitor!=null) monitor.subTask("Exporting job ["+jobs[i]+"]");
 	                    
@@ -142,7 +142,7 @@ public class RepositoryExporter {
 	            {
 	                try
 	                {
-	                    TransMeta ti = repository.loadTransformation(trans[i], repdir, null, true);
+	                    TransMeta ti = repository.loadTransformation(trans[i], repdir, null, true, null); // reads last version
 	                    System.out.println("Loading/Exporting transformation ["+repdir.getPath()+" : "+trans[i]+"]  ("+ti.getRepositoryDirectory().getPath()+")");
 	                    if (monitor!=null) monitor.subTask("Exporting transformation ["+trans[i]+"]");
 	                    

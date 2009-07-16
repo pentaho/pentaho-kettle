@@ -18,7 +18,6 @@ public class StringObjectId implements ObjectId, Comparable<StringObjectId> {
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
-		if (!(obj instanceof StringObjectId)) return false;
 		
 		StringObjectId objectId = (StringObjectId) obj;
 		

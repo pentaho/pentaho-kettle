@@ -27,10 +27,10 @@ import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 
-public class RepositoryStepDelegate extends BaseRepositoryDelegate {
+public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseRepositoryBaseDelegate {
 	private static Class<?> PKG = StepMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
-	public RepositoryStepDelegate(KettleDatabaseRepository repository) {
+	public KettleDatabaseRepositoryStepDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	

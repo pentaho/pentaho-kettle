@@ -563,7 +563,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 	{
 		try
 		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
 
 			cached                   =      rep.getStepAttributeBoolean(id_step, "cache"); //$NON-NLS-1$
 			loadingAllDataInCache    =      rep.getStepAttributeBoolean(id_step, "cache_load_all"); //$NON-NLS-1$

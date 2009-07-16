@@ -199,7 +199,6 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.job.dialog.JobLoadProgressDialog;
-import org.pentaho.di.ui.job.dialog.JobSaveProgressDialog;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.RepositorySecurityUI;
 import org.pentaho.di.ui.repository.dialog.RepositoriesDialog;
@@ -3506,8 +3505,23 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					if (rep.getSecurityProvider().supportsUsers()) {
 						meta.setModifiedUser(rep.getUserInfo().getLogin());
 					}
+					
+					// Finally before saving, ask for a version comment (if applicable)
+					//
+					String versionComment = null;
+					boolean versionOk = false;
+					while (!versionOk) {
+						versionComment = RepositorySecurityUI.getVersionComment(shell, rep, "Modification of ["+meta.getName()+"]");
+						if (Const.isEmpty(versionComment) && rep.getSecurityProvider().isVersionCommentMandatory()) {
+							if (!RepositorySecurityUI.showVersionCommentMandatoryDialog(shell)) {
+								versionOk = true;
+							}
+						} else {
+							versionOk = true;
+						}
+					}
 
-					SaveProgressDialog tspd = new SaveProgressDialog(shell, rep, meta);
+					SaveProgressDialog tspd = new SaveProgressDialog(shell, rep, meta, versionComment);
 					if (tspd.open()) {
 						saved = true;
 						if (!props.getSaveConfirmation()) {
@@ -3546,87 +3560,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	public boolean saveJobRepository(JobMeta jobMeta, boolean ask_name) throws KettleException {
-		if (log.isDetailed())
-			log.logDetailed(toString(), "Save to repository..."); //$NON-NLS-1$
-		if (rep != null) {
-			boolean answer = true;
-			boolean ask = ask_name;
-			while (answer && (ask || jobMeta.getName() == null || jobMeta.getName().length() == 0)) {
-				if (!ask) {
-					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.GiveJobANameBeforeSaving.Message")); //$NON-NLS-1$
-					mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.GiveJobANameBeforeSaving.Title")); //$NON-NLS-1$
-					mb.open();
-				}
-				ask = false;
-				answer = JobGraph.editProperties(jobMeta, this, rep, false);
-			}
-
-			if (answer && jobMeta.getName() != null && jobMeta.getName().length() > 0) {
-				if (!rep.getSecurityProvider().isReadOnly()) {
-					boolean saved = false;
-					int response = SWT.YES;
-					if (rep.exists(jobMeta)) {
-						MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-						mb.setMessage("'" + jobMeta.getName() + "'" + Const.CR + Const.CR + BaseMessages.getString(PKG, "Spoon.Dialog.FileExistsOverWrite.Message")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.FileExistsOverWrite.Title")); //$NON-NLS-1$
-						response = mb.open();
-					}
-
-					if (response == SWT.YES) {
-
-						// Keep info on who & when this job was created...
-						if (jobMeta.getCreatedUser() == null || jobMeta.getCreatedUser().equals("-")) {
-							jobMeta.setCreatedDate(new Date());
-							jobMeta.setCreatedUser(rep.getUserInfo().getLogin());
-						} else {
-
-							jobMeta.setCreatedDate(jobMeta.getCreatedDate());
-							jobMeta.setCreatedUser(jobMeta.getCreatedUser());
-						}
-
-						// Keep info on who & when this job was changed...
-						jobMeta.setModifiedDate(new Date());
-						jobMeta.setModifiedUser(rep.getUserInfo().getLogin());
-
-						JobSaveProgressDialog jspd = new JobSaveProgressDialog(shell, rep, jobMeta);
-						if (jspd.open()) {
-							if (!props.getSaveConfirmation()) {
-								MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG, "Spoon.Dialog.JobWasStoredInTheRepository.Title"), //$NON-NLS-1$
-										null, BaseMessages.getString(PKG, "Spoon.Dialog.JobWasStoredInTheRepository.Message"), //$NON-NLS-1$
-										MessageDialog.QUESTION, new String[] { BaseMessages.getString(PKG, "System.Button.OK") }, //$NON-NLS-1$
-										0, BaseMessages.getString(PKG, "Spoon.Dialog.JobWasStoredInTheRepository.Toggle"), //$NON-NLS-1$
-										props.getSaveConfirmation());
-								MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-								md.open();
-								props.setSaveConfirmation(md.getToggleState());
-							}
-
-							// Handle last opened files...
-							props.addLastFile(LastUsedFile.FILE_TYPE_JOB, jobMeta.getName(), jobMeta.getRepositoryDirectory().getPath(), true, rep.getName());
-							saveSettings();
-							addMenuLast();
-
-							setShellText();
-
-							saved = true;
-						}
-					}
-					return saved;
-				} else {
-					MessageBox mb = new MessageBox(shell, SWT.CLOSE | SWT.ICON_ERROR);
-					mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.UserCanOnlyReadFromTheRepositoryJobNotSaved.Message")); //$NON-NLS-1$
-					mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.UserCanOnlyReadFromTheRepositoryJobNotSaved.Title")); //$NON-NLS-1$
-					mb.open();
-				}
-			}
-		} else {
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-			mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.NoRepositoryConnectionAvailable.Message")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.NoRepositoryConnectionAvailable.Title")); //$NON-NLS-1$
-			mb.open();
-		}
-		return false;
+		return saveToRepository(jobMeta, ask_name);
 	}
 
 	public boolean saveFileAs() throws KettleException {
@@ -5527,7 +5461,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 										log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.UnableFindDirectory", optionDirname.toString())); // "Can't find directory ["+dirname+"] in the repository."
 									} else {
 										if (!Const.isEmpty(optionTransname)) {
-											TransMeta transMeta = rep.loadTransformation(optionTransname.toString(), repdir, null, true);
+											TransMeta transMeta = rep.loadTransformation(optionTransname.toString(), repdir, null, true, null);  // reads last version
 											transMeta.setFilename(optionRepname.toString());
 											transMeta.clearChanged();
 											transMeta.setInternalKettleVariables();
@@ -5535,7 +5469,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 										} else {
 											// Try to load a specified job
 											// if any
-											JobMeta jobMeta = rep.loadJob(optionJobname.toString(), repdir, null);
+											JobMeta jobMeta = rep.loadJob(optionJobname.toString(), repdir, null, null); // reads last version
 											jobMeta.setFilename(optionRepname.toString());
 											jobMeta.clearChanged();
 											jobMeta.setInternalKettleVariables();
@@ -6022,7 +5956,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		try {
 			if (rep != null && partitionSchema.getObjectId() != null) {
 				// remove the partition schema from the repository too...
-				rep.delPartitionSchema(partitionSchema.getObjectId());
+				rep.deletePartitionSchema(partitionSchema.getObjectId());
 			}
 
 			int idx = transMeta.getPartitionSchemas().indexOf(partitionSchema);
@@ -6059,7 +5993,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		try {
 			if (rep != null && clusterSchema.getObjectId() != null) {
 				// remove the partition schema from the repository too...
-				rep.delClusterSchema(clusterSchema.getObjectId());
+				rep.deleteClusterSchema(clusterSchema.getObjectId());
 			}
 
 			int idx = transMeta.getClusterSchemas().indexOf(clusterSchema);

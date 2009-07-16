@@ -66,16 +66,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		clear();
 	}
 
-	/**
-	 * @deprecated Log is no longer required.
-	 * @param log
-	 */
-	public JobEntryCopy(LogWriter log)
-	{
-		clear();
-	}
-
-	public JobEntryCopy(LogWriter log, JobEntryInterface entry)
+	public JobEntryCopy(JobEntryInterface entry)
 	{
 		setEntry(entry);
 	}

@@ -20,6 +20,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -29,11 +30,11 @@ import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.shared.SharedObjects;
 
-public class RepositoryJobDelegate extends BaseRepositoryDelegate {
+public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
 	private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryJobDelegate(KettleDatabaseRepository repository) {
+	public KettleDatabaseRepositoryJobDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	
@@ -61,7 +62,7 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
      * @param monitor the (optional) UI progress monitor
      * @throws KettleException in case some IO error occurs.
      */
-    public void saveJob(JobMeta jobMeta, ProgressMonitorListener monitor) throws KettleException {
+    public void saveJob(JobMeta jobMeta, String versionComment, ProgressMonitorListener monitor) throws KettleException {
 		try {
 			
 			// Before saving the job, see if it's not locked by someone else...
@@ -104,7 +105,7 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 				// If we have a valid ID, we need to make sure everything is
 				// cleared out
 				// of the database for this id_job, before we put it back in...
-				repository.delAllFromJob(jobMeta.getObjectId());
+				repository.deleteJob(jobMeta.getObjectId());
 			}
 			if (monitor != null)
 				monitor.worked(1);
@@ -120,7 +121,7 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 				// ONLY save the database connection if it has changed and
 				// nothing was saved in the repository
 				if (databaseMeta.hasChanged() || databaseMeta.getObjectId() == null) {
-					repository.save(databaseMeta);
+					repository.save(databaseMeta, versionComment);
 				}
 				if (monitor != null)
 					monitor.worked(1);
@@ -143,7 +144,7 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 			//
 			for (int i = 0; i < jobMeta.getSlaveServers().size(); i++) {
 				SlaveServer slaveServer = jobMeta.getSlaveServers().get(i);
-				repository.save(slaveServer, null, jobMeta.getObjectId(), false);
+				repository.save(slaveServer, versionComment, null, jobMeta.getObjectId(), false);
 			}
 
 			//
@@ -307,7 +308,7 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 					if (id_logdb > 0) {
 						// Get the logconnection
 						//
-						jobMeta.setLogConnection( repository.loadDatabaseMeta(new LongObjectId(id_logdb)) );
+						jobMeta.setLogConnection( repository.loadDatabaseMeta(new LongObjectId(id_logdb), null)); // reads last version
 						jobMeta.getLogConnection().shareVariablesWith(jobMeta);
 					}
 					jobMeta.setUseBatchId( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_USE_BATCH_ID, false) ); //$NON-NLS-1$
@@ -350,12 +351,18 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 					}
 	
 					// Load the job entries...
+					//
+					
+					// Keep a unique list of job entries to facilitate in the loading.
+					//
+					List<JobEntryInterface> jobentries = new ArrayList<JobEntryInterface>();
+					
 					if(log.isDetailed()) log.logDetailed(toString(), "Loading " + jecids.length + " job entries"); //$NON-NLS-1$ //$NON-NLS-2$
 					for (int i = 0; i < jecids.length; i++) {
 						if (monitor != null)
 							monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingJobEntryNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
 	
-						JobEntryCopy jec = repository.jobEntryDelegate.loadJobEntryCopy(jobMeta.getObjectId(), jecids[i], jobMeta.getJobentries(), jobMeta.getDatabases(), jobMeta.getSlaveServers());
+						JobEntryCopy jec = repository.jobEntryDelegate.loadJobEntryCopy(jobMeta.getObjectId(), jecids[i], jobentries, jobMeta.getDatabases(), jobMeta.getSlaveServers());
 
 						// Also set the copy number...
 						// We count the number of job entry copies that use the job
@@ -588,9 +595,9 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
 	 */
 	public void readDatabases(JobMeta jobMeta, boolean overWriteShared) throws KettleException {
 		try {
-			ObjectId dbids[] = repository.getDatabaseIDs();
+			ObjectId dbids[] = repository.getDatabaseIDs(false);
 			for (int i = 0; i < dbids.length; i++) {
-				DatabaseMeta databaseMeta = repository.loadDatabaseMeta(dbids[i]);
+				DatabaseMeta databaseMeta = repository.loadDatabaseMeta(dbids[i], null); // reads last version
 				databaseMeta.shareVariablesWith(jobMeta);
 
 				// See if there already is one in the transformation
@@ -626,10 +633,10 @@ public class RepositoryJobDelegate extends BaseRepositoryDelegate {
     {
         try
         {
-            ObjectId dbids[] = repository.getSlaveIDs();
+            ObjectId dbids[] = repository.getSlaveIDs(false);
             for (int i = 0; i < dbids.length; i++)
             {
-                SlaveServer slaveServer = repository.loadSlaveServer(dbids[i]);
+                SlaveServer slaveServer = repository.loadSlaveServer(dbids[i], null);  // Load last version
                 slaveServer.shareVariablesWith(jobMeta);
 
                 SlaveServer check = jobMeta.findSlaveServer(slaveServer.getName()); // Check if there already is one in the transformation

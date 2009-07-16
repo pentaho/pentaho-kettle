@@ -12,6 +12,7 @@
 package org.pentaho.di.trans;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -75,11 +76,11 @@ import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectVersion;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
-import org.pentaho.di.repository.RepositoryRevision;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -1982,6 +1983,16 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     public String getXML() throws KettleException
     {
+    	return getXML(true, true, true, true, true);
+    }
+
+    public String getXML(
+    		boolean includeSteps,
+    		boolean includeDatabase, 
+    		boolean includeSlaves,
+    		boolean includeClusters,
+    		boolean includePartitions) throws KettleException
+    {
         Props props = null;
         if (Props.isInitialized()) props=Props.getInstance();
 
@@ -2063,39 +2074,43 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
         // The partitioning schemas...
         //
-        retval.append("    ").append(XMLHandler.openTag(XML_TAG_PARTITIONSCHEMAS)).append(Const.CR); //$NON-NLS-1$
-        for (int i = 0; i < partitionSchemas.size(); i++)
-        {
-            PartitionSchema partitionSchema = partitionSchemas.get(i);
-            retval.append(partitionSchema.getXML());
-        }
-        retval.append("    ").append(XMLHandler.closeTag(XML_TAG_PARTITIONSCHEMAS)).append(Const.CR); //$NON-NLS-1$
-        
+        if (includePartitions) {
+	        retval.append("    ").append(XMLHandler.openTag(XML_TAG_PARTITIONSCHEMAS)).append(Const.CR); //$NON-NLS-1$
+	        for (int i = 0; i < partitionSchemas.size(); i++)
+	        {
+	            PartitionSchema partitionSchema = partitionSchemas.get(i);
+	            retval.append(partitionSchema.getXML());
+	        }
+	        retval.append("    ").append(XMLHandler.closeTag(XML_TAG_PARTITIONSCHEMAS)).append(Const.CR); //$NON-NLS-1$
+        }        
         // The slave servers...
         //
-        retval.append("    ").append(XMLHandler.openTag(XML_TAG_SLAVESERVERS)).append(Const.CR); //$NON-NLS-1$
-        for (int i = 0; i < slaveServers.size(); i++)
-        {
-            SlaveServer slaveServer = slaveServers.get(i);
-            retval.append("         ").append(slaveServer.getXML()).append(Const.CR);
+        if (includeSlaves) {
+	        retval.append("    ").append(XMLHandler.openTag(XML_TAG_SLAVESERVERS)).append(Const.CR); //$NON-NLS-1$
+	        for (int i = 0; i < slaveServers.size(); i++)
+	        {
+	            SlaveServer slaveServer = slaveServers.get(i);
+	            retval.append("         ").append(slaveServer.getXML()).append(Const.CR);
+	        }
+	        retval.append("    ").append(XMLHandler.closeTag(XML_TAG_SLAVESERVERS)).append(Const.CR); //$NON-NLS-1$
         }
-        retval.append("    ").append(XMLHandler.closeTag(XML_TAG_SLAVESERVERS)).append(Const.CR); //$NON-NLS-1$
 
         // The cluster schemas...
         //
-        retval.append("    ").append(XMLHandler.openTag(XML_TAG_CLUSTERSCHEMAS)).append(Const.CR); //$NON-NLS-1$
-        for (int i = 0; i < clusterSchemas.size(); i++)
-        {
-            ClusterSchema clusterSchema = clusterSchemas.get(i);
-            retval.append(clusterSchema.getXML());
+        if (includeClusters) {
+	        retval.append("    ").append(XMLHandler.openTag(XML_TAG_CLUSTERSCHEMAS)).append(Const.CR); //$NON-NLS-1$
+	        for (int i = 0; i < clusterSchemas.size(); i++)
+	        {
+	            ClusterSchema clusterSchema = clusterSchemas.get(i);
+	            retval.append(clusterSchema.getXML());
+	        }
+	        retval.append("    ").append(XMLHandler.closeTag(XML_TAG_CLUSTERSCHEMAS)).append(Const.CR); //$NON-NLS-1$
         }
-        retval.append("    ").append(XMLHandler.closeTag(XML_TAG_CLUSTERSCHEMAS)).append(Const.CR); //$NON-NLS-1$
         
         retval.append("  ").append(XMLHandler.addTagValue("modified_user", modifiedUser));
         retval.append("  ").append(XMLHandler.addTagValue("modified_date", modifiedDate));
 
         retval.append("  ").append(XMLHandler.closeTag(XML_TAG_INFO)).append(Const.CR); //$NON-NLS-1$
-        
         
         retval.append("  ").append(XMLHandler.openTag(XML_TAG_NOTEPADS)).append(Const.CR); //$NON-NLS-1$
         if (notes != null) for (int i = 0; i < nrNotes(); i++)
@@ -2106,46 +2121,50 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         retval.append("  ").append(XMLHandler.closeTag(XML_TAG_NOTEPADS)).append(Const.CR); //$NON-NLS-1$
 
         // The database connections...
-        for (int i = 0; i < nrDatabases(); i++)
-        {
-            DatabaseMeta dbMeta = getDatabase(i);
-            if (props!=null && props.areOnlyUsedConnectionsSavedToXML())
-            {
-                if (isDatabaseConnectionUsed(dbMeta)) retval.append(dbMeta.getXML());
-            }
-            else
-            {
-                retval.append(dbMeta.getXML());
-            }
+        if (includeDatabase) {
+	        for (int i = 0; i < nrDatabases(); i++)
+	        {
+	            DatabaseMeta dbMeta = getDatabase(i);
+	            if (props!=null && props.areOnlyUsedConnectionsSavedToXML())
+	            {
+	                if (isDatabaseConnectionUsed(dbMeta)) retval.append(dbMeta.getXML());
+	            }
+	            else
+	            {
+	                retval.append(dbMeta.getXML());
+	            }
+	        }
         }
 
-        retval.append("  ").append(XMLHandler.openTag(XML_TAG_ORDER)).append(Const.CR); //$NON-NLS-1$
-        for (int i = 0; i < nrTransHops(); i++)
-        {
-            TransHopMeta transHopMeta = getTransHop(i);
-            retval.append(transHopMeta.getXML());
-        }
-        retval.append("  ").append(XMLHandler.closeTag(XML_TAG_ORDER)).append(Const.CR); //$NON-NLS-1$
-
-        /* The steps... */
-        for (int i = 0; i < nrSteps(); i++)
-        {
-            StepMeta stepMeta = getStep(i);
-            retval.append(stepMeta.getXML());
-        }
+        if (includeSteps) {
+	        retval.append("  ").append(XMLHandler.openTag(XML_TAG_ORDER)).append(Const.CR); //$NON-NLS-1$
+	        for (int i = 0; i < nrTransHops(); i++)
+	        {
+	            TransHopMeta transHopMeta = getTransHop(i);
+	            retval.append(transHopMeta.getXML());
+	        }
+	        retval.append("  ").append(XMLHandler.closeTag(XML_TAG_ORDER)).append(Const.CR); //$NON-NLS-1$
+	
+	        /* The steps... */
+	        for (int i = 0; i < nrSteps(); i++)
+	        {
+	            StepMeta stepMeta = getStep(i);
+	            retval.append(stepMeta.getXML());
+	        }
         
-        /* The error handling metadata on the steps */
-        retval.append("  ").append(XMLHandler.openTag(XML_TAG_STEP_ERROR_HANDLING)).append(Const.CR);
-        for (int i = 0; i < nrSteps(); i++)
-        {
-            StepMeta stepMeta = getStep(i);
-            
-            if (stepMeta.getStepErrorMeta()!=null)
-            {
-                retval.append(stepMeta.getStepErrorMeta().getXML());
-            }
+	        /* The error handling metadata on the steps */
+	        retval.append("  ").append(XMLHandler.openTag(XML_TAG_STEP_ERROR_HANDLING)).append(Const.CR);
+	        for (int i = 0; i < nrSteps(); i++)
+	        {
+	            StepMeta stepMeta = getStep(i);
+	            
+	            if (stepMeta.getStepErrorMeta()!=null)
+	            {
+	                retval.append(stepMeta.getStepErrorMeta().getXML());
+	            }
+	        }
+	        retval.append("  ").append(XMLHandler.closeTag(XML_TAG_STEP_ERROR_HANDLING)).append(Const.CR);
         }
-        retval.append("  ").append(XMLHandler.closeTag(XML_TAG_STEP_ERROR_HANDLING)).append(Const.CR);
 
         // The slave-step-copy/partition distribution.  Only used for slave transformations in a clustering environment.
         retval.append("   ").append(slaveStepCopyPartitionDistribution.getXML());
@@ -2272,7 +2291,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             throw new KettleXMLException(BaseMessages.getString(PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname)); //$NON-NLS-1$
         }
     }
-    
+        
+    public TransMeta(InputStream xmlStream, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException
+    {
+    	loadXML( XMLHandler.loadXMLFile(xmlStream, null, false, false), rep, setInternalVariables, parentVariableSpace, prompter);
+    }
+    	
     /**
      * Parse a file containing the XML that describes the transformation.
      * Specify a repository to load default list of database connections from and to reference in mappings etc.
@@ -3680,7 +3704,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     
     private long prevCount;
 
-	private RepositoryRevision	revision;
+	private ObjectVersion	objectVersion;
 
     /**
      * Put the steps in a more natural order: from start to finish. For the moment, we ignore splits and joins. Splits
@@ -4746,7 +4770,18 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public String toString()
     {
-        if (name != null) return name;
+        if (name != null) {
+        	if (directory!=null) {
+        		String path = directory.getPath();
+        		if (path.endsWith(RepositoryDirectory.DIRECTORY_SEPARATOR)) {
+        			return path+name;
+        		} else {
+        			return path+RepositoryDirectory.DIRECTORY_SEPARATOR+name;
+        		}
+        	} else {
+        		return name;
+        	}
+        }
         if (filename != null) return filename;
         return TransMeta.class.getName();
     }
@@ -5837,20 +5872,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	public String getRepositoryElementType() {
 		return REPOSITORY_ELEMENT_TYPE;
 	}
-	
-	/**
-	 * @return the revision
-	 */
-	public RepositoryRevision getRevision() {
-		return revision;
-	}
-
-	/**
-	 * @param revision the revision to set
-	 */
-	public void setRevision(RepositoryRevision revision) {
-		this.revision = revision;
-	}
 
 	/**
 	 * @return the repositoryLock
@@ -5864,5 +5885,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	 */
 	public void setRepositoryLock(RepositoryLock repositoryLock) {
 		this.repositoryLock = repositoryLock;
+	}
+
+	public void setObjectVersion(ObjectVersion objectVersion) {
+		this.objectVersion = objectVersion;
+	}
+	
+	public ObjectVersion getObjectVersion() {
+		return objectVersion;
 	}
 }

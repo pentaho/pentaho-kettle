@@ -177,12 +177,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 			
 			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
 
-			connection = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "id_database");
-			if (connection==null)
-			{
-				// This is were we end up in normally, the previous lines are for backward compatibility.
-				connection = DatabaseMeta.findDatabase(databases, rep.getJobEntryAttributeString(id_jobentry, "connection"));
-			}
+			connection = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "connection", "id_database", databases);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -210,12 +205,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 			
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "addfiletoresult", addfiletoresult);
 
-			if (connection!=null) 
-			{
-				rep.saveJobEntryAttribute(id_job, getObjectId(), "connection", connection.getName());
-				// Also, save the step-database relationship!
-				rep.insertJobEntryDatabase(id_job, getObjectId(), connection.getObjectId());
-			}
+			rep.saveDatabaseMetaJobEntryAttribute(id_job, getObjectId(), "connection", "id_database", connection);
 		}
 		catch(KettleDatabaseException dbe)
 		{

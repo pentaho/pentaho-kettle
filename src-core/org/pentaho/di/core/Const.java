@@ -153,6 +153,18 @@ public class Const
 			+ "jobentries";
 
 	/**
+	 *  Public directory containing external repositories plugins
+	 */
+	public static final String PLUGIN_REPOSITORIES_DIRECTORY_PUBLIC = "plugins" + FILE_SEPARATOR + "repositories";
+
+	/**
+	 *  Private directory containing external repositories plugins
+	 */
+	public static final String PLUGIN_REPOSITORIES_DIRECTORY_PRIVATE = getKettleDirectory() + FILE_SEPARATOR + "plugins" + FILE_SEPARATOR + "repositories";
+	
+	
+
+	/**
 	 * Default minimum date range...
 	 */
 	public static final Date MIN_DATE = new Date(-2208992400000L); // 1900/01/01 00:00:00.000
@@ -474,6 +486,16 @@ public class Const
 	 * that don't have the "log size limit" property set in their respective properties.
 	 */
 	public static final String KETTLE_LOG_SIZE_LIMIT = "KETTLE_LOG_SIZE_LIMIT";
+
+	/**
+	 * A general initial version comment 
+	 */
+	public static final String	VERSION_COMMENT_INITIAL_VERSION	= "Creation of initial version";
+
+	/**
+	 * A general edit version comment 
+	 */
+	public static final String	VERSION_COMMENT_EDIT_VERSION	= "Modification by user";
 
     private static String[] emptyPaddedSpacesStrings;
 
@@ -1389,15 +1411,27 @@ public class Const
 	 */
 	public static final String[] splitPath(String path, String separator)
 	{
-		/*
-		 *           012345
-		 *   Example /a/b/c    -->    new String[] { a, b, c }
-		 */
-		// System.out.println("splitString ["+path+"] using ["+separator+"]");
+		//
+		//  Example /a/b/c    -->    new String[] { a, b, c }
+		//
+		// Make sure training slashes are removed
+		//
+		//  Example /a/b/c/    -->    new String[] { a, b, c }
+		//
+		
+		// lose trailing separators
+		//
+		while (path.endsWith(separator)) {
+			path = path.substring(0, path.length()-1);
+		}
+		
+		// Check for empty paths...
+		//
 		if (path == null || path.length() == 0 || path.equals(separator))
 		{
 			return new String[] {};
 		}
+		
 		int sepLen = separator.length();
 		int nr_separators = 1;
 		int from = path.startsWith(separator) ? sepLen : 0;
@@ -1417,7 +1451,6 @@ public class Const
 			if (path.substring(i, i + sepLen).equalsIgnoreCase(separator))
 			{
 				spath[nr] = path.substring(from, i);
-				// System.out.println(nr+" --> ["+spath[nr]+"], (from,to)=("+from+", "+i+")");
 				nr++;
 
 				from = i + sepLen;
@@ -1426,7 +1459,6 @@ public class Const
 		if (nr < spath.length)
 		{
 			spath[nr] = path.substring(from);
-			// System.out.println(nr+" --> ["+spath[nr]+"], (from,to)=("+from+", "+path.length()+")");
 		}
 
 		// 

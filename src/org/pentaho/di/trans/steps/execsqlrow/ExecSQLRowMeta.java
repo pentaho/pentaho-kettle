@@ -251,7 +251,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
 			commitSize     		= (int)rep.getStepAttributeInteger(id_step, "commit");
             sqlField              = rep.getStepAttributeString (id_step, "sql_field"); //$NON-NLS-1$
 

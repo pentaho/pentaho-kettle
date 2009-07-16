@@ -21,10 +21,10 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectVersion;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
-import org.pentaho.di.repository.RepositoryRevision;
 import org.pentaho.di.resource.ResourceHolderInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.w3c.dom.Node;
@@ -53,7 +53,7 @@ public class PartitionSchema
 	private boolean dynamicallyDefined;
 	private String  numberOfPartitionsPerSlave;
 
-	private RepositoryRevision	revision;
+	private ObjectVersion objectVersion;
 
 	public PartitionSchema()
 	{
@@ -316,22 +316,20 @@ public class PartitionSchema
 		this.id = id;
 	}
 	
-	/**
-	 * @return the revision
-	 */
-	public RepositoryRevision getRevision() {
-		return revision;
+	public ObjectVersion getObjectVersion() {
+		return objectVersion;
 	}
 
-	/**
-	 * @param revision the revision to set
-	 */
-	public void setRevision(RepositoryRevision revision) {
-		this.revision = revision;
+	public void setObjectVersion(ObjectVersion objectVersion) {
+		this.objectVersion = objectVersion;
 	}
 	
 	// partition schemas can't be locked
 	public RepositoryLock getRepositoryLock() {
 		return null;
+	}
+	
+	public void setDescription(String description) {
+		// NOT USED
 	}
 }

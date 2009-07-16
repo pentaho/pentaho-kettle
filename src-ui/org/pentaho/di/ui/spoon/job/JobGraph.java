@@ -1721,7 +1721,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
           newTrans = new TransMeta(null, exactTransname, entry.arguments);
         } 
         else {
-          newTrans = spoon.rep.loadTransformation(exactTransname, spoon.rep.loadRepositoryDirectoryTree().findDirectory(entry.getDirectory()), null, true);
+          newTrans = spoon.rep.loadTransformation(exactTransname, spoon.rep.loadRepositoryDirectoryTree().findDirectory(entry.getDirectory()), null, true, null); // reads last version
         }
 
         copyInternalJobVariables(jobMeta, newTrans);
@@ -1781,7 +1781,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     // Load from repository?
     if (Const.isEmpty(exactFilename) && !Const.isEmpty(exactJobname)) {
       try {
-        JobMeta newJobMeta = spoon.rep.loadJob(exactJobname, spoon.rep.loadRepositoryDirectoryTree().findDirectory(entry.getDirectory()), null);
+        JobMeta newJobMeta = spoon.rep.loadJob(exactJobname, spoon.rep.loadRepositoryDirectoryTree().findDirectory(entry.getDirectory()), null, null); // reads last version
         newJobMeta.clearChanged();
         spoon.setParametersAsVariablesInUI(newJobMeta, newJobMeta);
         spoon.delegates.jobs.addJobGraph(newJobMeta);

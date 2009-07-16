@@ -2,6 +2,7 @@ package org.pentaho.di.repository.kdr;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
+import org.pentaho.di.repository.BaseRepositorySecurityProvider;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.RepositoryCapabilities;
@@ -10,31 +11,28 @@ import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.ProfileMeta.Permission;
-import org.pentaho.di.repository.kdr.delegates.RepositoryConnectionDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryPermissionDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryProfileDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryUserDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectionDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryPermissionDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryProfileDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryUserDelegate;
 
-public class KettleDatabaseRepositorySecurityProvider implements RepositorySecurityProvider {
+public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecurityProvider implements RepositorySecurityProvider {
 
-	private RepositoryMeta repositoryMeta;
-	private UserInfo userInfo;
 	private RepositoryCapabilities	capabilities;
 	private KettleDatabaseRepository repository;
-	private RepositoryUserDelegate	userDelegate;
-	private RepositoryProfileDelegate	profileDelegate;
-	private RepositoryPermissionDelegate	permissionDelegate;
-	private RepositoryConnectionDelegate	connectionDelegate;
+	private KettleDatabaseRepositoryUserDelegate	userDelegate;
+	private KettleDatabaseRepositoryProfileDelegate	profileDelegate;
+	private KettleDatabaseRepositoryPermissionDelegate	permissionDelegate;
+	private KettleDatabaseRepositoryConnectionDelegate	connectionDelegate;
 	
 	/**
 	 * @param repository 
 	 * @param userInfo
 	 */
 	public KettleDatabaseRepositorySecurityProvider(KettleDatabaseRepository repository, RepositoryMeta repositoryMeta, UserInfo userInfo) {
+		super(repositoryMeta, userInfo);
 		this.repository = repository;
-		this.repositoryMeta = repositoryMeta;
-		this.userInfo = userInfo;
-		this.capabilities = repositoryMeta.getRepositoryCapabilities();
+		this.capabilities = repositoryMeta.getRepositoryCapabilities(); 
 		
 		// This object is initialized last in the KettleDatabaseRepository constructor.
 		// As such it's safe to keep references here to the delegates...
@@ -45,28 +43,6 @@ public class KettleDatabaseRepositorySecurityProvider implements RepositorySecur
 		connectionDelegate = repository.connectionDelegate;
 	}
 
-	public UserInfo getUserInfo() {
-		return userInfo;
-	}
-
-	public void setUserInfo(UserInfo userInfo) {
-		this.userInfo = userInfo;
-	}
-	
-	/**
-	 * @return the repositoryMeta
-	 */
-	public RepositoryMeta getRepositoryMeta() {
-		return repositoryMeta;
-	}
-
-	/**
-	 * @param repositoryMeta the repositoryMeta to set
-	 */
-	public void setRepositoryMeta(RepositoryMeta repositoryMeta) {
-		this.repositoryMeta = repositoryMeta;
-	}
-	
 	public boolean isReadOnly() {
 		return capabilities.isReadOnly() || ( userInfo.isReadOnly() && !userInfo.isAdministrator());
 	}
@@ -84,11 +60,43 @@ public class KettleDatabaseRepositorySecurityProvider implements RepositorySecur
 	}
 	
 	public boolean isLockingPossible() {
-		return capabilities.supportsLocking() && ( userInfo.supportsLocking() || userInfo.isAdministrator());
+		return capabilities.supportsLocking() && ( userInfo!=null && ( userInfo.supportsLocking()  || userInfo.isAdministrator() ));
+	}
+	
+	public boolean allowsVersionComments() {
+		return false;
+	}
+	
+	public boolean isVersionCommentMandatory() {
+		return false;
 	}
 
-	public void validateAction(RepositoryOperation...operations) throws KettleException, KettleSecurityException {
+	public ProfileMeta loadProfileMeta(ObjectId id_profile) throws KettleException {
+    	return profileDelegate.loadProfileMeta(new ProfileMeta(), id_profile);
+    }
+    
+    public void saveProfile(ProfileMeta profileMeta) throws KettleException {
+    	profileDelegate.saveProfileMeta(profileMeta);
+    }
+    
+    
+    // UserInfo
 
+    public UserInfo loadUserInfo(String login) throws KettleException {
+    	return userDelegate.loadUserInfo(new UserInfo(), login);
+    }
+    
+    public UserInfo loadUserInfo(String login, String password) throws KettleException {
+    	return userDelegate.loadUserInfo(new UserInfo(), login, password);
+    }
+    
+    public void saveUserInfo(UserInfo userInfo) throws KettleException {
+    	userDelegate.saveUserInfo(userInfo);
+    }
+    
+
+	public void validateAction(RepositoryOperation...operations) throws KettleException, KettleSecurityException {
+	
 		// If there is no user available, we fail
 		//
 		if (userInfo==null) {
@@ -169,51 +177,13 @@ public class KettleDatabaseRepositorySecurityProvider implements RepositorySecur
 				if (userInfo.isReadOnly()) throw new KettleException(operation+" : user is read-only");
 				if (capabilities.isReadOnly()) throw new KettleException(operation+" : repository is read-only");
 				break;
-
+	
 			default:
 				throw new KettleException("Operation ["+operation+"] is unknown to the security handler.");
 			}
 		}
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-    // ProfileMeta
-
-    public ProfileMeta loadProfileMeta(ObjectId id_profile) throws KettleException {
-    	return profileDelegate.loadProfileMeta(new ProfileMeta(), id_profile);
-    }
-    
-    public void saveProfile(ProfileMeta profileMeta) throws KettleException {
-    	profileDelegate.saveProfileMeta(profileMeta);
-    }
-    
-    
-    // UserInfo
-
-    public UserInfo loadUserInfo(String login) throws KettleException {
-    	return userDelegate.loadUserInfo(new UserInfo(), login);
-    }
-    
-    public UserInfo loadUserInfo(String login, String password) throws KettleException {
-    	return userDelegate.loadUserInfo(new UserInfo(), login, password);
-    }
-    
-    public void saveUserInfo(UserInfo userInfo) throws KettleException {
-    	userDelegate.saveUserInfo(userInfo);
-    }
-	 
-    
     // PermissionMeta
     
 	/**

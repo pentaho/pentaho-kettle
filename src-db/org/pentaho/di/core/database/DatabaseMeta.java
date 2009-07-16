@@ -36,10 +36,10 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectVersion;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
-import org.pentaho.di.repository.RepositoryRevision;
 import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.w3c.dom.Node;
@@ -74,7 +74,7 @@ public class DatabaseMeta
 	
   private VariableSpace variables = new Variables();
   
-  private RepositoryRevision revision;
+  private ObjectVersion objectVersion;
 
 	/**
 	 * Indicates that the connections doesn't point to a type of database yet.
@@ -2255,27 +2255,7 @@ public class DatabaseMeta
         }
         return null;
     }
-    
-    /**
-     * Find a database with a certain name in an ArrayList of databases.
-     * @param databases The ArrayList of databases
-     * @param dbname The name of the database connection
-     * @param exclude the name of the database connection to exclude from the search
-     * @return The database object if one was found, null otherwise.
-     */
-    public static final DatabaseMeta findDatabase(List<DatabaseMeta> databases, String dbname, String exclude)
-    {
-        if (databases == null)
-            return null;
 
-        for (int i = 0; i < databases.size(); i++)
-        {
-            DatabaseMeta ci = (DatabaseMeta) databases.get(i);
-            if (ci.getName().equalsIgnoreCase(dbname))
-                return ci;
-        }
-        return null;
-    }
 
     /**
      * Find a database with a certain ID in an arraylist of databases.
@@ -2467,18 +2447,12 @@ public class DatabaseMeta
 		return REPOSITORY_ELEMENT_TYPE;
 	}
 
-	/**
-	 * @return the revision
-	 */
-	public RepositoryRevision getRevision() {
-		return revision;
+	public ObjectVersion getObjectVersion() {
+		return objectVersion;
 	}
 
-	/**
-	 * @param revision the revision to set
-	 */
-	public void setRevision(RepositoryRevision revision) {
-		this.revision = revision;
+	public void setObjectVersion(ObjectVersion objectVersion) {
+		this.objectVersion = objectVersion;
 	}
 	
 	// databases can't be locked
@@ -2486,5 +2460,13 @@ public class DatabaseMeta
 		return null;
 	}
 	
+	public String getDescription() {
+		// NOT USED
+		return null;
+	}
+	
+	public void setDescription(String description) {
+		// NOT USED
+	}
 
 }

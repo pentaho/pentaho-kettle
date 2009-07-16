@@ -210,7 +210,7 @@ public class Kitchen
 								{
 									if(log.isDebug())log.logDebug(STRING_KITCHEN,BaseMessages.getString(PKG, "Kitchen.Log.LoadingJobInfo"));
 									
-									jobMeta =  repository.loadJob(optionJobname.toString(), directory, null);
+									jobMeta =  repository.loadJob(optionJobname.toString(), directory, null, null); // reads last version
 									if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.AllocateJob"));
 									
 									job = new Job(log, repository, jobMeta);

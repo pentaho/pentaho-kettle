@@ -10,11 +10,11 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
-public class RepositoryPartitionSchemaDelegate extends BaseRepositoryDelegate {
+public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
 //	private static Class<?> PKG = PartitionSchema.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryPartitionSchemaDelegate(KettleDatabaseRepository repository) {
+	public KettleDatabaseRepositoryPartitionSchemaDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 
@@ -41,9 +41,11 @@ public class RepositoryPartitionSchemaDelegate extends BaseRepositoryDelegate {
 	public void savePartitionSchema(PartitionSchema partitionSchema, ObjectId id_transformation, boolean isUsedByTransformation) throws KettleException
 	{
 		// see if this partitioning schema is already in the repository...
+		//
 		partitionSchema.setObjectId( getPartitionSchemaID(partitionSchema.getName()) );
 		if (partitionSchema.getObjectId()==null)
 		{
+			
 			partitionSchema.setObjectId(insertPartitionSchema(partitionSchema));
 		}
 		else

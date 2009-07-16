@@ -27,7 +27,7 @@ import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
-public class RepositoryConnectionDelegate extends BaseRepositoryDelegate {
+public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRepositoryBaseDelegate {
 	private static Class<?> PKG = Repository.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     public static final int REQUIRED_MAJOR_VERSION = 4;
@@ -69,7 +69,7 @@ public class RepositoryConnectionDelegate extends BaseRepositoryDelegate {
     }
 	
 	
-	public RepositoryConnectionDelegate(KettleDatabaseRepository repository, DatabaseMeta databaseMeta) {
+	public KettleDatabaseRepositoryConnectionDelegate(KettleDatabaseRepository repository, DatabaseMeta databaseMeta) {
 		super(repository);
 
 		this.databaseMeta = databaseMeta;

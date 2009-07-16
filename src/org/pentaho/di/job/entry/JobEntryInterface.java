@@ -47,7 +47,7 @@ public interface JobEntryInterface
 	
 	public void    clear();
 	public ObjectId getObjectId();
-	public void     setID(ObjectId id);
+	public void     setObjectId(ObjectId id);
 	public String  getName();
 	public void    setName(String name);
 

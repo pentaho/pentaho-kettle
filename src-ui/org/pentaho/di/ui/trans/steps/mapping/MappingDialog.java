@@ -573,7 +573,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	{
 		// Read the transformation...
 		//
-		mappingTransMeta = repository.loadTransformation(transMeta.environmentSubstitute(transName), repdir, null, true);
+		mappingTransMeta = repository.loadTransformation(transMeta.environmentSubstitute(transName), repdir, null, true, null); // reads last version
 		mappingTransMeta.clearChanged();
 	}
 

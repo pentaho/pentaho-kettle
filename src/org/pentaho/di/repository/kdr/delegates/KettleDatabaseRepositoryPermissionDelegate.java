@@ -9,11 +9,11 @@ import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
-public class RepositoryPermissionDelegate extends BaseRepositoryDelegate {
+public class KettleDatabaseRepositoryPermissionDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
 	private static Class<?> PKG = ProfileMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryPermissionDelegate(KettleDatabaseRepository repository) {
+	public KettleDatabaseRepositoryPermissionDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	

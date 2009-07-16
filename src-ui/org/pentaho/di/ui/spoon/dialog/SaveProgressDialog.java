@@ -45,16 +45,19 @@ public class SaveProgressDialog
 	private Shell shell;
 	private Repository rep;
 	private EngineMetaInterface meta;
+
+	private String	versionComment;
 	
 
 	/**
 	 * Creates a new dialog that will handle the wait while saving a transformation...
 	 */
-	public SaveProgressDialog(Shell shell, Repository rep, EngineMetaInterface meta)
+	public SaveProgressDialog(Shell shell, Repository rep, EngineMetaInterface meta, String versionComment)
 	{
 		this.shell = shell;
 		this.rep = rep;
 		this.meta = meta;
+		this.versionComment = versionComment;
 	}
 	
 	public boolean open()
@@ -67,7 +70,7 @@ public class SaveProgressDialog
 			{
 				try
 				{
-					rep.save(meta, new ProgressMonitorAdapter(monitor));
+					rep.save(meta, versionComment, new ProgressMonitorAdapter(monitor));
 				}
 				catch(KettleException e)
 				{

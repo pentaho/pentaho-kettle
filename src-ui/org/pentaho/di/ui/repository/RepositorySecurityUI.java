@@ -1,10 +1,14 @@
 package org.pentaho.di.ui.repository;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryOperation;
+import org.pentaho.di.repository.RepositorySecurityProvider;
+import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 public class RepositorySecurityUI {
@@ -37,6 +41,41 @@ public class RepositorySecurityUI {
 			return true;
 		}
 		return false;
+	}
+
+	public static String getVersionComment(Shell shell, Repository repository, String operationDescription) {
+		if (repository==null) {
+			return null;
+		}
+		
+		RepositorySecurityProvider provider = repository.getSecurityProvider();
+		if (provider.allowsVersionComments()) {
+			
+			String explanation = "Enter a comment ";
+			if (provider.isVersionCommentMandatory()) {
+				explanation+="(Mandatory) : ";
+			} else {
+				explanation+=": ";
+			}
+			String versionComment = Const.VERSION_COMMENT_EDIT_VERSION+" of ["+operationDescription+"]";
+			EnterStringDialog dialog = new EnterStringDialog(shell, versionComment, "Enter comment", explanation);
+			dialog.setManditory(provider.isVersionCommentMandatory());
+			versionComment = dialog.open();
+			
+			return versionComment;
+		}
+		return null;
+	}
+
+	/**
+	 * @param shell the parent shell.
+	 * @return true if we need to retry, false if we need to cancel the operation.
+	 */
+	public static boolean showVersionCommentMandatoryDialog(Shell shell) {
+		MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_ERROR);
+		box.setText("Version comments are mandatory for this repository."+Const.CR+"Do you want to enter a comment?");
+		box.setMessage("Version comments are mandatory!");
+		return box.open() == SWT.YES;
 	}
 
 }

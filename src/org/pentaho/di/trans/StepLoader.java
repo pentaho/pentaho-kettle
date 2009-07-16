@@ -65,7 +65,6 @@ public class StepLoader implements LoaderInputStreamProvider
     private static final int PLUGIN_TYPE_STEP = 1;
     private static final int PLUGIN_TYPE_PARTIONER = 2;
     
-    
     private StepPluginMeta[] steps;
     
     private StepLoader(String pluginDirectory[])

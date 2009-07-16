@@ -211,13 +211,8 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 	{
 		try
 		{
-			connection = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "id_database");
-			if (connection==null)
-			{
-				// This is were we end up in normally, the previous lines are for backward compatibility.
-				connection = DatabaseMeta.findDatabase(databases, rep.getJobEntryAttributeString(id_jobentry, "connection"));
-			}
-
+			connection = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "connection", "id_database", databases);
+			
 			schemaname = rep.getJobEntryAttributeString(id_jobentry, "schemaname");
 			tablename = rep.getJobEntryAttributeString(id_jobentry, "tablename");
 			successCondition = getSuccessConditionByCode(Const.NVL(rep.getJobEntryAttributeString(id_jobentry,"success_condition"), ""));
@@ -250,13 +245,8 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 	{
 		try
 		{
-			if (connection!=null)
-			{
-				rep.saveJobEntryAttribute(id_job, getObjectId(), "connection", connection.getName());
-				// Also, save the step-database relationship!
-				rep.insertJobEntryDatabase(id_job, getObjectId(), connection.getObjectId());	
-			}
-
+			rep.saveDatabaseMetaJobEntryAttribute(id_job, getObjectId(), "connection", "id_database", connection);
+			
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "schemaname", schemaname);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "tablename", tablename);
 			rep.saveJobEntryAttribute(id_job, getObjectId(),"success_condition", getSuccessConditionCode(successCondition));

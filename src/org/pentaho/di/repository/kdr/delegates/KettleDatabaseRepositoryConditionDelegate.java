@@ -10,11 +10,11 @@ import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
-public class RepositoryConditionDelegate extends BaseRepositoryDelegate {
+public class KettleDatabaseRepositoryConditionDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
 //	private static Class<?> PKG = Condition.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryConditionDelegate(KettleDatabaseRepository repository) {
+	public KettleDatabaseRepositoryConditionDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 	

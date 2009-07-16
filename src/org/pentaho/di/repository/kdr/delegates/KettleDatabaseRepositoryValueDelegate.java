@@ -8,11 +8,11 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
-public class RepositoryValueDelegate extends BaseRepositoryDelegate {
+public class KettleDatabaseRepositoryValueDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
 //	private static Class<?> PKG = ValueMetaAndData.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public RepositoryValueDelegate(KettleDatabaseRepository repository) {
+	public KettleDatabaseRepositoryValueDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
 

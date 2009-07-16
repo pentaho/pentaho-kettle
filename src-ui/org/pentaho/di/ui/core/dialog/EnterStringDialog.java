@@ -12,6 +12,8 @@
  
 package org.pentaho.di.ui.core.dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -58,6 +60,7 @@ public class EnterStringDialog extends Dialog
 	private String shellText;
 	private String lineText;
 	private PropsUI props;
+	private boolean manditory;
 
     public EnterStringDialog(Shell parent, String string, String shellText, String lineText)
     {
@@ -102,6 +105,12 @@ public class EnterStringDialog extends Dialog
 		fdString.top  = new FormAttachment(wlString, margin);
 		fdString.right= new FormAttachment(0, length);
 		wString.setLayoutData(fdString);
+		
+		wString.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent arg0) {
+				setFlags();
+			}
+		});
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -124,7 +133,6 @@ public class EnterStringDialog extends Dialog
 		// Detect [X] or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
-
 		getData();
 		
 		BaseStepDialog.setSize(shell);
@@ -137,6 +145,12 @@ public class EnterStringDialog extends Dialog
 		return string;
 	}
 
+	protected void setFlags() {
+		String string = wString.getText();
+		boolean enabled = !manditory || !Const.isEmpty(string);
+		wOK.setEnabled(enabled);
+	}
+
 	public void dispose()
 	{
 		props.setScreen(new WindowProperty(shell));
@@ -145,8 +159,9 @@ public class EnterStringDialog extends Dialog
 	
 	public void getData()
 	{
-		wString.setText(string);
+		wString.setText(Const.NVL(string, ""));
 		wString.selectAll();
+		setFlags();
 	}
 	
 	private void cancel()
@@ -159,5 +174,19 @@ public class EnterStringDialog extends Dialog
 	{
 		string = wString.getText(); 
 		dispose();
+	}
+
+	/**
+	 * @return the manditory
+	 */
+	public boolean isManditory() {
+		return manditory;
+	}
+
+	/**
+	 * @param manditory the manditory to set
+	 */
+	public void setManditory(boolean manditory) {
+		this.manditory = manditory;
 	}
 }

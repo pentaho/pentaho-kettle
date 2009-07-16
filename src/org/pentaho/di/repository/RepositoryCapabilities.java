@@ -8,6 +8,11 @@ public interface RepositoryCapabilities {
 	public boolean supportsUsers();
 	
 	/**
+	 * @return true if users can be managed in the repository
+	 */
+	public boolean managesUsers();
+	
+	/**
 	 * @return true if this repository is read-only
 	 */
 	public boolean isReadOnly();

@@ -497,7 +497,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection");  //$NON-NLS-1$
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  //$NON-NLS-1$
             schemaName         =   rep.getStepAttributeString (id_step, "schema");
 			tablename          =   rep.getStepAttributeString (id_step, "table");
 			long commitSizeInt =   rep.getStepAttributeInteger(id_step, "commit");

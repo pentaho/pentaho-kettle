@@ -59,4 +59,14 @@ public interface RepositorySecurityProvider extends RepositoryUserInterface {
 	 * @return true if this repository supports file locking and if the user is allowed to lock a file
 	 */
 	public boolean isLockingPossible();
+	
+	/**
+	 * @return true if the repository supports revisions AND if it is possible to give version comments
+	 */
+	public boolean allowsVersionComments();
+
+	/**
+	 * @return true if version comments are allowed and mandatory.
+	 */
+	public boolean isVersionCommentMandatory();
 }

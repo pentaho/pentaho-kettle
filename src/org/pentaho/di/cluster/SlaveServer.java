@@ -52,10 +52,10 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectVersion;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
-import org.pentaho.di.repository.RepositoryRevision;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.www.AddExportServlet;
 import org.pentaho.di.www.AllocateServerSocketServlet;
@@ -105,7 +105,7 @@ public class SlaveServer
     
     private VariableSpace variables = new Variables();
 
-	private RepositoryRevision	revision;
+	private ObjectVersion objectVersion;
     
     public SlaveServer()
     {
@@ -757,7 +757,16 @@ public class SlaveServer
         }
         return null;
     }
-    
+
+    public static SlaveServer findSlaveServer(List<SlaveServer> slaveServers, ObjectId id)
+    {
+        for (SlaveServer slaveServer : slaveServers)
+        {
+            if (slaveServer.getObjectId()!=null && slaveServer.getObjectId().equals(id)) return slaveServer;
+        }
+        return null;
+    }
+
     public static String[] getSlaveServerNames(List<SlaveServer> slaveServers)
     {
         String[] names = new String[slaveServers.size()];
@@ -915,22 +924,25 @@ public class SlaveServer
 		return REPOSITORY_ELEMENT_TYPE;
 	}
 	
-	/**
-	 * @return the revision
-	 */
-	public RepositoryRevision getRevision() {
-		return revision;
+	public ObjectVersion getObjectVersion() {
+		return objectVersion;
 	}
 
-	/**
-	 * @param revision the revision to set
-	 */
-	public void setRevision(RepositoryRevision revision) {
-		this.revision = revision;
+	public void setObjectVersion(ObjectVersion objectVersion) {
+		this.objectVersion = objectVersion;
 	}
 	
 	// slave servers can't be locked
 	public RepositoryLock getRepositoryLock() {
 		return null;
+	}
+	
+	public String getDescription() {
+		// NOT USED
+		return null;
+	}
+	
+	public void setDescription(String description) {
+		// NOT USED
 	}
 }

@@ -63,11 +63,11 @@ import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectVersion;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
-import org.pentaho.di.repository.RepositoryRevision;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -111,8 +111,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	protected int jobStatus;
 
 	protected String filename;
-
-	private List<JobEntryInterface> jobentries;
 
 	private List<JobEntryCopy> jobcopies;
 
@@ -192,7 +190,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     
     private String logSizeLimit;
 
-	private RepositoryRevision	revision;
+	private ObjectVersion objectVersion;
 	
     private RepositoryLock repositoryLock;
 
@@ -215,7 +213,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		setFilename( null );
 
 		jobcopies = new ArrayList<JobEntryCopy>();
-		jobentries = new ArrayList<JobEntryInterface>();
 		jobhops = new ArrayList<JobHopMeta>();
 		notes = new ArrayList<NotePadMeta>();
 		databases = new ArrayList<DatabaseMeta>();
@@ -344,7 +341,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				jobMeta.clear();
 			} else {
 				jobMeta.jobcopies = new ArrayList<JobEntryCopy>();
-				jobMeta.jobentries = new ArrayList<JobEntryInterface>();
 				jobMeta.jobhops = new ArrayList<JobHopMeta>();
 				jobMeta.notes = new ArrayList<NotePadMeta>();
 				jobMeta.databases = new ArrayList<DatabaseMeta>();
@@ -352,8 +348,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				jobMeta.namedParams = new NamedParamsDefault();
 			}
 
-			for (JobEntryInterface entry : jobentries)
-				jobMeta.jobentries.add((JobEntryInterface) entry.clone());
 			for (JobEntryCopy entry : jobcopies)
 				jobMeta.jobcopies.add((JobEntryCopy) entry.clone_deep());
 			for (JobHopMeta entry : jobhops)
@@ -871,21 +865,26 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				JobEntryCopy je = new JobEntryCopy(entrynode, databases, slaveServers, rep);
 				JobEntryCopy prev = findJobEntry(je.getName(), 0, true);
 				if (prev != null) {
-					if (je.getNr() == 0) // See if the #0 already exists!
-					{
-						// Replace previous version with this one: remove it
-						// first
+					// See if the #0 (root entry) already exists!
+					//
+					if (je.getNr() == 0) {
+						
+						// Replace previous version with this one: remove it first
+						//
 						int idx = indexOfJobEntry(prev);
 						removeJobEntry(idx);
-					} else if (je.getNr() > 0) // Use previously defined
-												// JobEntry info!
-					{
+						
+					} else if (je.getNr() > 0) {
+						
+						// Use previously defined JobEntry info!
+						//
 						je.setEntry(prev.getEntry());
 
 						// See if entry already exists...
 						prev = findJobEntry(je.getName(), je.getNr(), true);
-						if (prev != null) // remove the old one!
-						{
+						if (prev != null) {
+							// remove the old one!
+							//
 							int idx = indexOfJobEntry(prev);
 							removeJobEntry(idx);
 						}
@@ -2579,10 +2578,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return jobcopies;
 	}
 	
-	public List<JobEntryInterface> getJobentries() {
-		return jobentries;
-	}
-	
 	public List<NotePadMeta> getNotes() {
 		return notes;
 	}
@@ -2595,18 +2590,12 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return REPOSITORY_ELEMENT_TYPE;
 	}
 	
-	/**
-	 * @return the revision
-	 */
-	public RepositoryRevision getRevision() {
-		return revision;
+	public ObjectVersion getObjectVersion() {
+		return objectVersion;
 	}
 
-	/**
-	 * @param revision the revision to set
-	 */
-	public void setRevision(RepositoryRevision revision) {
-		this.revision = revision;
+	public void setObjectVersion(ObjectVersion objectVersion) {
+		this.objectVersion = objectVersion;
 	}
 
 	/**
@@ -2621,5 +2610,21 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 */
 	public void setRepositoryLock(RepositoryLock repositoryLock) {
 		this.repositoryLock = repositoryLock;
+	}
+	
+	/**
+	 * Create a unique list of job entry interfaces
+	 * @return
+	 */
+	public List<JobEntryInterface> composeJobEntryInterfaceList() {
+		List<JobEntryInterface> list = new ArrayList<JobEntryInterface>();
+		
+		for (JobEntryCopy copy : jobcopies) {
+			if (!list.contains(copy.getEntry())) {
+				list.add(copy.getEntry());
+			}
+		}
+		
+		return list;
 	}
 }

@@ -42,6 +42,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectVersion;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
@@ -50,22 +51,22 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.repository.kdr.delegates.RepositoryClusterSchemaDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryConditionDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryConnectionDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryDatabaseDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryDirectoryDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryJobDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryJobEntryDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryNotePadDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryPartitionSchemaDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryPermissionDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryProfileDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositorySlaveServerDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryStepDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryTransDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryUserDelegate;
-import org.pentaho.di.repository.kdr.delegates.RepositoryValueDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryClusterSchemaDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConditionDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectionDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryDatabaseDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryDirectoryDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryJobDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryJobEntryDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryNotePadDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryPartitionSchemaDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryPermissionDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryProfileDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositorySlaveServerDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryStepDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryTransDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryUserDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryValueDelegate;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 
@@ -79,26 +80,26 @@ import org.pentaho.di.trans.TransMeta;
  * Created on 31-mrt-2004
  *
  */
-public class KettleDatabaseRepository extends BaseKettleDatabaseRepository implements Repository
+public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase implements Repository
 {
 //	private static Class<?> PKG = Repository.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
-	public RepositoryTransDelegate transDelegate;
-	public RepositoryJobDelegate jobDelegate;
-	public RepositoryDatabaseDelegate databaseDelegate;
-	public RepositorySlaveServerDelegate slaveServerDelegate;
-	public RepositoryClusterSchemaDelegate clusterSchemaDelegate;
-	public RepositoryPartitionSchemaDelegate partitionSchemaDelegate;
-	public RepositoryDirectoryDelegate directoryDelegate;
-	public RepositoryConnectionDelegate connectionDelegate;
-	public RepositoryProfileDelegate profileDelegate;
-	public RepositoryUserDelegate userDelegate;
-	public RepositoryPermissionDelegate permissionDelegate;
-	public RepositoryConditionDelegate conditionDelegate;
-	public RepositoryValueDelegate valueDelegate;
-	public RepositoryNotePadDelegate notePadDelegate;
-	public RepositoryStepDelegate stepDelegate;
-	public RepositoryJobEntryDelegate jobEntryDelegate;
+	public KettleDatabaseRepositoryTransDelegate transDelegate;
+	public KettleDatabaseRepositoryJobDelegate jobDelegate;
+	public KettleDatabaseRepositoryDatabaseDelegate databaseDelegate;
+	public KettleDatabaseRepositorySlaveServerDelegate slaveServerDelegate;
+	public KettleDatabaseRepositoryClusterSchemaDelegate clusterSchemaDelegate;
+	public KettleDatabaseRepositoryPartitionSchemaDelegate partitionSchemaDelegate;
+	public KettleDatabaseRepositoryDirectoryDelegate directoryDelegate;
+	public KettleDatabaseRepositoryConnectionDelegate connectionDelegate;
+	public KettleDatabaseRepositoryProfileDelegate profileDelegate;
+	public KettleDatabaseRepositoryUserDelegate userDelegate;
+	public KettleDatabaseRepositoryPermissionDelegate permissionDelegate;
+	public KettleDatabaseRepositoryConditionDelegate conditionDelegate;
+	public KettleDatabaseRepositoryValueDelegate valueDelegate;
+	public KettleDatabaseRepositoryNotePadDelegate notePadDelegate;
+	public KettleDatabaseRepositoryStepDelegate stepDelegate;
+	public KettleDatabaseRepositoryJobEntryDelegate jobEntryDelegate;
 	private KettleDatabaseRepositorySecurityProvider	securityProvider;
 	
 	public KettleDatabaseRepository() {
@@ -117,22 +118,22 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 	private void init() {
 		// Create the delegates...
 		//
-		this.transDelegate = new RepositoryTransDelegate(this);
-		this.jobDelegate = new RepositoryJobDelegate(this);
-		this.databaseDelegate = new RepositoryDatabaseDelegate(this);
-		this.slaveServerDelegate = new RepositorySlaveServerDelegate(this);
-		this.clusterSchemaDelegate = new RepositoryClusterSchemaDelegate(this);
-		this.partitionSchemaDelegate = new RepositoryPartitionSchemaDelegate(this);
-		this.directoryDelegate = new RepositoryDirectoryDelegate(this);
-		this.connectionDelegate = new RepositoryConnectionDelegate(this, repositoryMeta.getConnection());
-		this.profileDelegate = new RepositoryProfileDelegate(this);
-		this.userDelegate = new RepositoryUserDelegate(this);
-		this.permissionDelegate = new RepositoryPermissionDelegate(this);
-		this.conditionDelegate = new RepositoryConditionDelegate(this);
-		this.valueDelegate = new RepositoryValueDelegate(this);
-		this.notePadDelegate = new RepositoryNotePadDelegate(this);
-		this.stepDelegate = new RepositoryStepDelegate(this);
-		this.jobEntryDelegate = new RepositoryJobEntryDelegate(this);
+		this.transDelegate = new KettleDatabaseRepositoryTransDelegate(this);
+		this.jobDelegate = new KettleDatabaseRepositoryJobDelegate(this);
+		this.databaseDelegate = new KettleDatabaseRepositoryDatabaseDelegate(this);
+		this.slaveServerDelegate = new KettleDatabaseRepositorySlaveServerDelegate(this);
+		this.clusterSchemaDelegate = new KettleDatabaseRepositoryClusterSchemaDelegate(this);
+		this.partitionSchemaDelegate = new KettleDatabaseRepositoryPartitionSchemaDelegate(this);
+		this.directoryDelegate = new KettleDatabaseRepositoryDirectoryDelegate(this);
+		this.connectionDelegate = new KettleDatabaseRepositoryConnectionDelegate(this, repositoryMeta.getConnection());
+		this.profileDelegate = new KettleDatabaseRepositoryProfileDelegate(this);
+		this.userDelegate = new KettleDatabaseRepositoryUserDelegate(this);
+		this.permissionDelegate = new KettleDatabaseRepositoryPermissionDelegate(this);
+		this.conditionDelegate = new KettleDatabaseRepositoryConditionDelegate(this);
+		this.valueDelegate = new KettleDatabaseRepositoryValueDelegate(this);
+		this.notePadDelegate = new KettleDatabaseRepositoryNotePadDelegate(this);
+		this.stepDelegate = new KettleDatabaseRepositoryStepDelegate(this);
+		this.jobEntryDelegate = new KettleDatabaseRepositoryJobEntryDelegate(this);
 		
 		this.creationHelper = new KettleDatabaseRepositoryCreationHelper(this);
 		
@@ -190,7 +191,7 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
     
     // TransMeta
     
-    public TransMeta loadTransformation(String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables) throws KettleException {
+    public TransMeta loadTransformation(String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String versionName) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.READ_TRANSFORMATION);
     	return transDelegate.loadTransformation(new TransMeta(), transname, repdir, monitor, setInternalVariables);
 	}
@@ -232,7 +233,7 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 	 * @param the monitor to use as feedback in a UI (or null if not used)
 	 * @throws KettleException
 	 */
-	public JobMeta loadJob(String jobname, RepositoryDirectory repdir, ProgressMonitorListener monitor) throws KettleException {
+	public JobMeta loadJob(String jobname, RepositoryDirectory repdir, ProgressMonitorListener monitor, String versionName) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.READ_JOB);
     	
 		return jobDelegate.loadJobMeta(jobname, repdir, monitor);
@@ -293,27 +294,31 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
     	throw new KettleException("We can't verify the existance of repository element type ["+repositoryElement.getRepositoryElementType()+"]");
     }
     
-    public void save(RepositoryElementInterface repositoryElement) throws KettleException {
+    public void save(RepositoryElementInterface repositoryElement, String versionComment) throws KettleException {
     	save(repositoryElement, null);
     }
 
-    public void save(RepositoryElementInterface repositoryElement, ProgressMonitorListener monitor) throws KettleException {
-    	save(repositoryElement, monitor, null, false);
+    public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor) throws KettleException {
+    	save(repositoryElement, versionComment, monitor, null, false);
     }
     	 
-    public void save(RepositoryElementInterface repositoryElement, ProgressMonitorListener monitor, ObjectId parentId, boolean used) throws KettleException {
+    public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, ObjectId parentId, boolean used) throws KettleException {
     	
     	try {
     		lockRepository();
+    		
+    		if (!Const.isEmpty(versionComment)) {
+    			insertLogEntry(versionComment);
+    		}
         
 	    	if (JobMeta.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
 	        	securityProvider.validateAction(RepositoryOperation.MODIFY_JOB);
-	    		jobDelegate.saveJob((JobMeta)repositoryElement, monitor);
+	    		jobDelegate.saveJob((JobMeta)repositoryElement, versionComment, monitor);
 	    	} else
 	
 	    	if (TransMeta.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
 	        	securityProvider.validateAction(RepositoryOperation.MODIFY_TRANSFORMATION);
-	    		transDelegate.saveTransformation((TransMeta)repositoryElement, monitor);
+	    		transDelegate.saveTransformation((TransMeta)repositoryElement, versionComment, monitor);
 	    	} else
 	    	
 	    	if (DatabaseMeta.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
@@ -333,7 +338,7 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 
 	    	if (ClusterSchema.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
 	        	securityProvider.validateAction(RepositoryOperation.MODIFY_CLUSTER_SCHEMA);
-	    		clusterSchemaDelegate.saveClusterSchema((ClusterSchema)repositoryElement, parentId, used);
+	    		clusterSchemaDelegate.saveClusterSchema((ClusterSchema)repositoryElement, versionComment, parentId, used);
 	    	} else
 
 	    	throw new KettleException("We can't save the element with type ["+repositoryElement.getRepositoryElementType()+"] in the repository");
@@ -374,7 +379,7 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 	 * @param id_database the id of the database connection to load
 	 * @throws KettleException in case something goes wrong with database, connection, etc.
 	 */
-	public DatabaseMeta loadDatabaseMeta(ObjectId id_database) throws KettleException {
+	public DatabaseMeta loadDatabaseMeta(ObjectId id_database, String versionName) throws KettleException {
 		return databaseDelegate.loadDatabaseMeta(id_database);
 	}
 	
@@ -390,19 +395,19 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 
 	// ClusterSchema
 	
-    public ClusterSchema loadClusterSchema(ObjectId id_cluster_schema, List<SlaveServer> slaveServers) throws KettleException {
+    public ClusterSchema loadClusterSchema(ObjectId id_cluster_schema, List<SlaveServer> slaveServers, String versionName) throws KettleException {
     	return clusterSchemaDelegate.loadClusterSchema(id_cluster_schema, slaveServers);
     }
 	
     // SlaveServer
     
-    public SlaveServer loadSlaveServer(ObjectId id_slave_server) throws KettleException {
+    public SlaveServer loadSlaveServer(ObjectId id_slave_server, String versionName) throws KettleException {
     	return slaveServerDelegate.loadSlaveServer(id_slave_server);
     }
     
     // PartitionSchema
     
-	public PartitionSchema loadPartitionSchema(ObjectId id_partition_schema) throws KettleException {
+	public PartitionSchema loadPartitionSchema(ObjectId id_partition_schema, String versionName) throws KettleException {
 		return partitionSchemaDelegate.loadPartitionSchema(id_partition_schema);
 	}
 
@@ -441,7 +446,7 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 		directoryDelegate.saveRepositoryDirectory(dir);
 	}
 
-	public void delRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
+	public void deleteRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.DELETE_DIRECTORY);
 		directoryDelegate.delRepositoryDirectory(dir);
 	}
@@ -653,12 +658,12 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 		return connectionDelegate.getStrings("SELECT "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" = " + id_directory + " ORDER BY "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME));
 	}
     
-    public List<RepositoryObject> getJobObjects(ObjectId id_directory) throws KettleException
+    public List<RepositoryObject> getJobObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException
     {
         return getRepositoryObjects(quoteTable(KettleDatabaseRepository.TABLE_R_JOB), RepositoryObject.STRING_OBJECT_TYPE_JOB, id_directory);
     }
 
-    public List<RepositoryObject> getTransformationObjects(ObjectId id_directory) throws KettleException
+    public List<RepositoryObject> getTransformationObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException
     {
         return getRepositoryObjects(quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION), RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION, id_directory);
     }
@@ -715,7 +720,7 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
         return connectionDelegate.getIDs("SELECT "+quote(KettleDatabaseRepository.FIELD_JOB_NOTE_ID_NOTE)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB_NOTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_NOTE_ID_JOB)+" = " + id_job);
 	}
 
-	public ObjectId[] getDatabaseIDs() throws KettleException
+	public ObjectId[] getDatabaseIDs(boolean includeDeleted) throws KettleException
 	{
         return connectionDelegate.getIDs("SELECT "+quote(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE)+" ORDER BY "+quote(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE));
 	}
@@ -725,7 +730,7 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
         return connectionDelegate.getIDs("SELECT "+quote(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = "+id_database);
     }
     
-    public ObjectId[] getPartitionSchemaIDs() throws KettleException
+    public ObjectId[] getPartitionSchemaIDs(boolean includeDeleted) throws KettleException
     {
         return connectionDelegate.getIDs("SELECT "+quote(KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA)+" ORDER BY "+quote(KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME));
     }
@@ -745,12 +750,12 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
         return connectionDelegate.getIDs("SELECT ID_TRANS_CLUSTER FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_CLUSTER)+" WHERE ID_TRANSFORMATION = " + id_transformation);
     }
     
-    public ObjectId[] getClusterIDs() throws KettleException
+    public ObjectId[] getClusterIDs(boolean includeDeleted) throws KettleException
     {
         return connectionDelegate.getIDs("SELECT "+quote(KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_CLUSTER)+" ORDER BY "+quote(KettleDatabaseRepository.FIELD_CLUSTER_NAME)); 
     }
 
-    public ObjectId[] getSlaveIDs() throws KettleException
+    public ObjectId[] getSlaveIDs(boolean includeDeleted) throws KettleException
     {
         return connectionDelegate.getIDs("SELECT "+quote(KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_SLAVE));
     }
@@ -925,7 +930,7 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 		execStatement(sql);
 	}
 
-	public synchronized void delCondition(ObjectId id_condition) throws KettleException
+	public synchronized void deleteCondition(ObjectId id_condition) throws KettleException
 	{
 		boolean ok = true;
 		ObjectId ids[] = getSubConditionIDs(id_condition);
@@ -934,11 +939,11 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 			// Delete the sub-conditions...
 			for (int i = 0; i < ids.length && ok; i++)
 			{
-				delCondition(ids[i]);
+				deleteCondition(ids[i]);
 			}
 
 			// Then delete the main condition
-			delCondition(id_condition);
+			deleteCondition(id_condition);
 		}
 		else
 		{
@@ -952,7 +957,7 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 		ObjectId ids[] = getTransformationConditionIDs(id_transformation);
 		for (int i = 0; i < ids.length; i++)
 		{
-			delCondition(ids[i]);
+			deleteCondition(ids[i]);
 		}
 		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transformation;
 		execStatement(sql);
@@ -1120,7 +1125,7 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 		execStatement(sql);
 	}
 
-    public synchronized void delSlave(ObjectId id_slave) throws KettleException
+    public synchronized void deleteSlave(ObjectId id_slave) throws KettleException
     {
 		securityProvider.validateAction(RepositoryOperation.DELETE_SLAVE_SERVER);
 
@@ -1164,15 +1169,15 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
         }
     }
    
-    public synchronized void delPartitionSchema(ObjectId id_partition_schema) throws KettleException {
+    public synchronized void deletePartitionSchema(ObjectId id_partition_schema) throws KettleException {
     	partitionSchemaDelegate.delPartitionSchema(id_partition_schema);
     }
     
-    public synchronized void delClusterSchema(ObjectId id_cluster) throws KettleException {
+    public synchronized void deleteClusterSchema(ObjectId id_cluster) throws KettleException {
        clusterSchemaDelegate.delClusterSchema(id_cluster);
     }
 
-	public synchronized void delAllFromTrans(ObjectId id_transformation) throws KettleException
+	public synchronized void deleteTransformation(ObjectId id_transformation) throws KettleException
 	{
 		delTransNotes(id_transformation);
 		delStepAttributes(id_transformation);
@@ -1188,7 +1193,7 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 		delTrans(id_transformation);
 	}
 	
-	public synchronized void delAllFromJob(ObjectId id_job) throws KettleException
+	public synchronized void deleteJob(ObjectId id_job) throws KettleException
 	{
 		// log.logBasic(toString(), "Deleting info in repository on ID_JOB: "+id_job);
 
@@ -1302,10 +1307,10 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
     public List<DatabaseMeta> getDatabases() throws KettleException
     {
         List<DatabaseMeta> list = new ArrayList<DatabaseMeta>();
-        ObjectId[] databaseIDs = getDatabaseIDs();
+        ObjectId[] databaseIDs = getDatabaseIDs(false);
         for (int i=0;i<databaseIDs.length;i++)
         {
-            DatabaseMeta databaseMeta = loadDatabaseMeta(databaseIDs[i]);
+            DatabaseMeta databaseMeta = loadDatabaseMeta(databaseIDs[i], null); // reads last version
             list.add(databaseMeta);
         }
             
@@ -1319,10 +1324,10 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
     public List<SlaveServer> getSlaveServers() throws KettleException
     {
         List<SlaveServer> list = new ArrayList<SlaveServer>();
-        ObjectId[] slaveIDs = getSlaveIDs();
+        ObjectId[] slaveIDs = getSlaveIDs(false);
         for (int i=0;i<slaveIDs.length;i++)
         {
-            SlaveServer slaveServer = loadSlaveServer(slaveIDs[i]);
+            SlaveServer slaveServer = loadSlaveServer(slaveIDs[i], null);  // Load last version
             list.add(slaveServer);
         }
             
@@ -1345,10 +1350,10 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 	public List<DatabaseMeta> readDatabases() throws KettleException
 	{
 		List<DatabaseMeta> databases = new ArrayList<DatabaseMeta>();
-		ObjectId[] ids = getDatabaseIDs();
+		ObjectId[] ids = getDatabaseIDs(false);
 		for (int i=0;i<ids.length;i++) 
 		{
-			DatabaseMeta databaseMeta = loadDatabaseMeta(ids[i]);
+			DatabaseMeta databaseMeta = loadDatabaseMeta(ids[i], null); // reads last versions
 			databases.add(databaseMeta);
 		}
 		return databases;
@@ -1591,13 +1596,13 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 		return jobEntryDelegate.insertJobEntry(id_job, jobEntryBase);
 	}
 	
-	public DatabaseMeta loadDatabaseMetaFromStepAttribute(ObjectId id_step, String code) throws KettleException {
+	public DatabaseMeta loadDatabaseMetaFromStepAttribute(ObjectId id_step, String code, List<DatabaseMeta> databases) throws KettleException {
 		
 		long id_database = getStepAttributeInteger(id_step, code);
 		if (id_database<=0) {
 			return null;
 		}
-		return databaseDelegate.loadDatabaseMeta(new LongObjectId(id_database));
+		return DatabaseMeta.findDatabase(databases, new LongObjectId(id_database));
 	}
 
 	/**
@@ -1616,28 +1621,41 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 		}
 	}
 
-	public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String code) throws KettleException {
+	public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String nameCode, String idCode, List<DatabaseMeta> databases) throws KettleException {
 		
-		long id_database = getJobEntryAttributeInteger(id_jobentry, code);
+		long id_database = getJobEntryAttributeInteger(id_jobentry, idCode);
 		if (id_database<=0) {
-			return null;
+			String name = getJobEntryAttributeString(id_jobentry, nameCode);
+			if (name==null) {
+				return null;
+			}
+			return DatabaseMeta.findDatabase(databases, name);
 		}
-		return databaseDelegate.loadDatabaseMeta(new LongObjectId(id_database));
+		return DatabaseMeta.findDatabase(databases, new LongObjectId(id_database));
 	}
-
+	
+	
 	/**
 	 * This method saves the object ID of the database object (if not null) in the step attributes
 	 * @param id_transformation
 	 * @param id_step
-	 * @param string
+	 * @param linkCode
+	 * @param nameCode
+	 * @param idCode
 	 * @param database
 	 */
-	public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String code, DatabaseMeta database) throws KettleException {
+	public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String nameCode, String idCode, DatabaseMeta database) throws KettleException {
 		ObjectId id = null;
 		if (database!=null) {
 			id = database.getObjectId();
 			Long id_database = id==null ? Long.valueOf(-1L) : new LongObjectId(id).longValue();
-			saveJobEntryAttribute(id_job, id_jobentry, code, id_database);
+			
+			// Save both the ID and the name of the database connection...
+			//
+			saveJobEntryAttribute(id_job, id_jobentry, idCode, id_database);
+			saveJobEntryAttribute(id_job, id_jobentry, nameCode, id_database);
+			
+			insertJobEntryDatabase(id_job, id_jobentry, id);
 		}
 	}
 
@@ -1668,8 +1686,14 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 		ObjectId id = null;
 		if (condition!=null) {
 			id = condition.getObjectId();
+			if (id==null) {
+				id = saveCondition(condition);
+			}
+			
 			Long id_condition = id==null ? Long.valueOf(-1L) : new LongObjectId(id).longValue();
 			saveStepAttribute(id_transformation, id_step, code, id_condition);
+			
+			insertTransStepCondition(id_transformation, id_step, condition.getObjectId());
 		}
 	}
 
@@ -1679,4 +1703,13 @@ public class KettleDatabaseRepository extends BaseKettleDatabaseRepository imple
 	public KettleDatabaseRepositorySecurityProvider getSecurityProvider() {
 		return securityProvider;
 	}
+
+	public List<ObjectVersion> getVersions(RepositoryElementInterface element) throws KettleException {
+		return null; // NOT IMPLEMENTED
+	}
+	
+	public void undeleteObject(RepositoryElementInterface element) throws KettleException {
+		// NOT IMPLEMENTED
+	}
+
 }

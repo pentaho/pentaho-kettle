@@ -4,7 +4,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.UserInfo;
 
-public class BaseKettleDatabaseRepository {
+public class KettleDatabaseRepositoryBase {
 
 //	private static Class<?> PKG = Repository.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -455,7 +455,7 @@ public class BaseKettleDatabaseRepository {
     
     protected KettleDatabaseRepositoryCreationHelper creationHelper;
 
-    public BaseKettleDatabaseRepository() {
+    public KettleDatabaseRepositoryBase() {
 		this.log = LogWriter.getInstance();
     }
 	

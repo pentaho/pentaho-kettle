@@ -510,7 +510,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
                 {
                     try
                     {
-                        mappingTransMeta = rep.loadTransformation(realTransname, repdir, null, true);
+                        mappingTransMeta = rep.loadTransformation(realTransname, repdir, null, true, null);  // reads last version
                         LogWriter.getInstance().logDetailed("Loading Mapping from repository", "Mapping transformation ["+realTransname+"] was loaded from the repository");
                     }
                     catch(Exception e)
