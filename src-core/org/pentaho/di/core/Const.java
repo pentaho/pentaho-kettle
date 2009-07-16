@@ -1419,17 +1419,17 @@ public class Const
 		//  Example /a/b/c/    -->    new String[] { a, b, c }
 		//
 		
-		// lose trailing separators
-		//
-		while (path.endsWith(separator)) {
-			path = path.substring(0, path.length()-1);
-		}
-		
 		// Check for empty paths...
 		//
 		if (path == null || path.length() == 0 || path.equals(separator))
 		{
 			return new String[] {};
+		}
+
+		// lose trailing separators
+		//
+		while (path.endsWith(separator)) {
+			path = path.substring(0, path.length()-1);
 		}
 		
 		int sepLen = separator.length();
