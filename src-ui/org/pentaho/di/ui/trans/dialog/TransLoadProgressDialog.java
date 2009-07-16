@@ -51,16 +51,19 @@ public class TransLoadProgressDialog
 	private String transname;
 	private RepositoryDirectory repdir;
 	private TransMeta transInfo;
+
+	private String	versionLabel;
 	
 	/**
 	 * Creates a new dialog that will handle the wait while loading a transformation...
 	 */
-	public TransLoadProgressDialog(Shell shell, Repository rep, String transname, RepositoryDirectory repdir)
+	public TransLoadProgressDialog(Shell shell, Repository rep, String transname, RepositoryDirectory repdir, String versionLabel)
 	{
 		this.shell = shell;
 		this.rep = rep;
 		this.transname = transname;
 		this.repdir = repdir;
+		this.versionLabel = versionLabel;
 		
 		this.transInfo = null;
 	}
@@ -71,13 +74,9 @@ public class TransLoadProgressDialog
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
-                // This is running in a new process: copy some KettleVariables info
-                // LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), parentThread, true);
-                // --> don't set variables if not running in different thread --> pmd.run(true,true, op);
-				
 				try
 				{
-					transInfo = rep.loadTransformation(transname, repdir, new ProgressMonitorAdapter(monitor), true, null); // reads last version
+					transInfo = rep.loadTransformation(transname, repdir, new ProgressMonitorAdapter(monitor), true, versionLabel);
 				}
 				catch(KettleException e)
 				{

@@ -46,9 +46,11 @@ import org.pentaho.di.repository.ObjectVersion;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
+import org.pentaho.di.repository.RepositoryElementLocationInterface;
 import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryClusterSchemaDelegate;
@@ -269,29 +271,21 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	// Common methods...
 	//////////////////////////////
 
-    /**
-     * See if a repository object exists in the repository
-     * @param repositoryElement the repository element to verify
-     * @return true if the job exists
-     * @throws KettleException in case something goes wrong.
-     */
-    public boolean exists(RepositoryElementInterface repositoryElement) throws KettleException {
+	public boolean exists(String name, RepositoryDirectory repositoryDirectory, RepositoryObjectType objectType) throws KettleException {
     	
-    	if (JobMeta.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
+		switch(objectType) {
+		case JOB : 
         	securityProvider.validateAction(RepositoryOperation.READ_JOB);
-    		return jobDelegate.existsJobMeta(repositoryElement);
-    	} else
-
-    	if (TransMeta.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
+    		return jobDelegate.existsJobMeta(name, repositoryDirectory, objectType);
+    		
+		case TRANSFORMATION :
+			
         	securityProvider.validateAction(RepositoryOperation.READ_TRANSFORMATION);
-    		return transDelegate.existsTransMeta(repositoryElement);
-    	} else
-    	
-    	if (UserInfo.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
-    		return userDelegate.existsUserInfo(repositoryElement);
-    	} else
+    		return transDelegate.existsTransMeta(name, repositoryDirectory, objectType);
 
-    	throw new KettleException("We can't verify the existance of repository element type ["+repositoryElement.getRepositoryElementType()+"]");
+    	default : 
+    		throw new KettleException("We can't verify the existance of repository element type ["+objectType+"]");
+    	}
     }
     
     public void save(RepositoryElementInterface repositoryElement, String versionComment) throws KettleException {
@@ -310,38 +304,34 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     		if (!Const.isEmpty(versionComment)) {
     			insertLogEntry(versionComment);
     		}
-        
-	    	if (JobMeta.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
+    		
+    		switch(repositoryElement.getRepositoryElementType()) {
+    		case JOB : 
 	        	securityProvider.validateAction(RepositoryOperation.MODIFY_JOB);
 	    		jobDelegate.saveJob((JobMeta)repositoryElement, versionComment, monitor);
-	    	} else
-	
-	    	if (TransMeta.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
+    			break;
+    		case TRANSFORMATION : 
 	        	securityProvider.validateAction(RepositoryOperation.MODIFY_TRANSFORMATION);
 	    		transDelegate.saveTransformation((TransMeta)repositoryElement, versionComment, monitor);
-	    	} else
-	    	
-	    	if (DatabaseMeta.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
+    			break;
+    		case DATABASE : 
 	        	securityProvider.validateAction(RepositoryOperation.MODIFY_DATABASE);
 	    		databaseDelegate.saveDatabaseMeta((DatabaseMeta)repositoryElement);
-	    	} else
-	
-	    	if (SlaveServer.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
+    			break;
+    		case SLAVE_SERVER :
 	        	securityProvider.validateAction(RepositoryOperation.MODIFY_SLAVE_SERVER);
 	    		slaveServerDelegate.saveSlaveServer((SlaveServer)repositoryElement, parentId, used);
-	    	} else
-
-	    	if (PartitionSchema.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
-	        	securityProvider.validateAction(RepositoryOperation.MODIFY_PARTITION_SCHEMA);
-	    		partitionSchemaDelegate.savePartitionSchema((PartitionSchema)repositoryElement, parentId, used);
-	    	} else
-
-	    	if (ClusterSchema.REPOSITORY_ELEMENT_TYPE.equals(repositoryElement.getRepositoryElementType())) {
+    			break;
+    		case CLUSTER_SCHEMA :
 	        	securityProvider.validateAction(RepositoryOperation.MODIFY_CLUSTER_SCHEMA);
 	    		clusterSchemaDelegate.saveClusterSchema((ClusterSchema)repositoryElement, versionComment, parentId, used);
-	    	} else
-
-	    	throw new KettleException("We can't save the element with type ["+repositoryElement.getRepositoryElementType()+"] in the repository");
+    			break;
+    		case PARTITION_SCHEMA :
+	        	securityProvider.validateAction(RepositoryOperation.MODIFY_PARTITION_SCHEMA);
+	    		partitionSchemaDelegate.savePartitionSchema((PartitionSchema)repositoryElement, parentId, used);
+	    	default:
+	    		throw new KettleException("We can't save the element with type ["+repositoryElement.getRepositoryElementType()+"] in the repository");
+    		}
 	    	
 			// Automatically commit changes to these elements.
 	    	//
@@ -1704,11 +1694,11 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		return securityProvider;
 	}
 
-	public List<ObjectVersion> getVersions(RepositoryElementInterface element) throws KettleException {
+	public List<ObjectVersion> getVersions(RepositoryElementLocationInterface element) throws KettleException {
 		return null; // NOT IMPLEMENTED
 	}
 	
-	public void undeleteObject(RepositoryElementInterface element) throws KettleException {
+	public void undeleteObject(RepositoryElementLocationInterface element) throws KettleException {
 		// NOT IMPLEMENTED
 	}
 

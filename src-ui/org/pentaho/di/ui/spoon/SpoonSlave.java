@@ -46,6 +46,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectVersion;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
@@ -758,7 +759,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 				return null;
 			}
 
-			public String getRepositoryElementType() {
+			public RepositoryObjectType getRepositoryElementType() {
 				return null;
 			}
 
@@ -787,5 +788,10 @@ public class SpoonSlave extends Composite implements TabItemInterface
 			}
 		};
     }
+
+	public void setControlStates() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

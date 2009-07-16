@@ -17,8 +17,6 @@
 
 package org.pentaho.di.ui.trans.dialog;
 
-import java.util.ArrayList;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -39,7 +37,6 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -50,16 +47,14 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.PartitionDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransMeta;
@@ -70,8 +65,6 @@ import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
-import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
-import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -86,14 +79,14 @@ public class TransDialog extends Dialog
 {
     private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-  public static enum Tabs {TRANS_TAB, PARAM_TAB, LOG_TAB, DATE_TAB, DEP_TAB, MISC_TAB, PART_TAB, MONITOR_TAB};
+  public static enum Tabs {TRANS_TAB, PARAM_TAB, LOG_TAB, DATE_TAB, DEP_TAB, MISC_TAB, MONITOR_TAB};
   
   private LogWriter    log;
 	
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wTransTab, wParamTab, wLogTab, wDateTab, wDepTab, wMiscTab, wPartTab, wMonitorTab;
+	private CTabItem     wTransTab, wParamTab, wLogTab, wDateTab, wDepTab, wMiscTab, wMonitorTab;
 
 	private Text         wTransname;
 
@@ -152,12 +145,6 @@ public class TransDialog extends Dialog
 	private Text         wSizeRowset;
     private Button       wUniqueConnections;
 
-    // Partitions tab
-    private List wSchemaList;
-    private TableView wPartitions;
-    private java.util.List<PartitionSchema> schemas;
-    private Text wSchemaName;
-
 	private Button wOK, wGet, wSQL, wCancel;
 	private FormData fdGet;
 	private Listener lsOK, lsGet, lsSQL, lsCancel;
@@ -177,9 +164,6 @@ public class TransDialog extends Dialog
     private int margin;
 
     private String[] connectionNames;
-    private int      previousSchemaIndex;
-
-    private Button wGetPartitions;
 
     private Button wShowFeedback;
 
@@ -222,13 +206,6 @@ public class TransDialog extends Dialog
         this.rep      = rep;
         
         this.newDirectory = null;
-        
-        schemas = new ArrayList<PartitionSchema>();
-        for (int i=0;i<transMeta.getPartitionSchemas().size();i++)
-        {
-            schemas.add( (PartitionSchema) transMeta.getPartitionSchemas().get(i).clone() );
-        }
-        previousSchemaIndex = -1;
         
         directoryChangeAllowed=true;
         changed=false;
@@ -273,7 +250,6 @@ public class TransDialog extends Dialog
 		addDateTab();
 		addDepTab();
 		addMiscTab();
-        addPartTab();
         addMonitoringTab();
 		
 		fdTabFolder = new FormData();
@@ -1334,120 +1310,6 @@ public class TransDialog extends Dialog
 
     }
 
-    private void addPartTab()
-    {
-        //////////////////////////
-        // START OF PARTITION TAB///
-        ///
-        wPartTab=new CTabItem(wTabFolder, SWT.NONE);
-        wPartTab.setText(BaseMessages.getString(PKG, "TransDialog.PartitioningTab.Label")); //$NON-NLS-1$
-        
-        Composite wPartComp = new Composite(wTabFolder, SWT.NONE);
-        props.setLook(wPartComp);
-
-        FormLayout partLayout = new FormLayout();
-        partLayout.marginWidth  = Const.FORM_MARGIN;
-        partLayout.marginHeight = Const.FORM_MARGIN;
-        wPartComp.setLayout(partLayout);
-
-        // Buttons new / delete
-        Button wNew = new Button(wPartComp, SWT.PUSH);
-        wNew.setText(BaseMessages.getString(PKG, "System.Button.New"));
-        props.setLook(wNew);
-        wNew.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { newSchema(); } });
-
-        Button wDelete = new Button(wPartComp, SWT.PUSH);
-        wDelete.setText(BaseMessages.getString(PKG, "System.Button.Delete"));
-        props.setLook(wDelete);
-        wDelete.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { deleteSchema(); } });
-
-        wGetPartitions = new Button(wPartComp, SWT.PUSH);
-        wGetPartitions.setText(BaseMessages.getString(PKG, "TransDialog.GetPartitionsButton.Label"));
-        props.setLook(wGetPartitions);
-        wGetPartitions.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { getPartitions(); } });
-
-        // put the buttons centered at the bottom of the tab
-        BaseStepDialog.positionBottomButtons(wPartComp, new Button[] { wNew, wGetPartitions, wDelete, } , margin, null); 
-        
-        // Schema list:
-        Label wlSchemaList = new Label(wPartComp, SWT.LEFT);
-        wlSchemaList.setText(BaseMessages.getString(PKG, "TransDialog.SchemaList.Label")); //$NON-NLS-1$
-        props.setLook(wlSchemaList);
-        FormData fdlSchemaList=new FormData();
-        fdlSchemaList.left = new FormAttachment(0, 0);
-        fdlSchemaList.top  = new FormAttachment(0, margin);
-        wlSchemaList.setLayoutData(fdlSchemaList);
-        wSchemaList=new List(wPartComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-        props.setLook(wSchemaList);
-        FormData fdSchemaList=new FormData();
-        fdSchemaList.left   = new FormAttachment(0, 0);
-        fdSchemaList.right  = new FormAttachment(middle, 0);
-        fdSchemaList.top    = new FormAttachment(wlSchemaList, margin);
-        fdSchemaList.bottom = new FormAttachment(wNew, -margin*2);
-        wSchemaList.setLayoutData(fdSchemaList);
-        wSchemaList.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { applySchema(); refreshPartitions(); } });
-
-        // Partition name:
-        Label wlSchemaName = new Label(wPartComp, SWT.LEFT);
-        wlSchemaName.setText(BaseMessages.getString(PKG, "TransDialog.PartitionName.Label")); //$NON-NLS-1$
-        props.setLook(wlSchemaName);
-        FormData fdlSchemaName=new FormData();
-        fdlSchemaName.left = new FormAttachment(middle, margin*2);
-        fdlSchemaName.top  = new FormAttachment(0, margin);
-        wlSchemaName.setLayoutData(fdlSchemaName);
-        wSchemaName=new Text(wPartComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-        props.setLook(wSchemaName);
-        FormData fdSchemaName=new FormData();
-        fdSchemaName.left   = new FormAttachment(middle, margin*2);
-        fdSchemaName.right  = new FormAttachment(100, 0);
-        fdSchemaName.top    = new FormAttachment(wlSchemaName, margin);
-        wSchemaName.setLayoutData(fdSchemaName);
-
-        // Schema list:
-        Label wlPartitions = new Label(wPartComp, SWT.LEFT);
-        wlPartitions.setText(BaseMessages.getString(PKG, "TransDialog.Partitions.Label")); //$NON-NLS-1$
-        props.setLook(wlPartitions);
-        FormData fdlPartitions=new FormData();
-        fdlPartitions.left = new FormAttachment(middle, margin*2);
-        fdlPartitions.top  = new FormAttachment(wSchemaName, margin);
-        wlPartitions.setLayoutData(fdlPartitions);
-        
-        ColumnInfo[] partitionColumns=new ColumnInfo[] 
-            {
-                new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.ColumnInfo.PartitionID.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
-            };
-        wPartitions=new TableView(transMeta, wPartComp, 
-                              SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
-                              partitionColumns, 
-                              1,  
-                              lsMod,
-                              props
-                              );
-        props.setLook(wPartitions);
-        FormData fdPartitions=new FormData();
-        fdPartitions.left   = new FormAttachment(middle, margin*2);
-        fdPartitions.right  = new FormAttachment(100, 0);
-        fdPartitions.top    = new FormAttachment(wlPartitions, margin);
-        fdPartitions.bottom = new FormAttachment(wNew, -margin*2);
-        wPartitions.setLayoutData(fdPartitions);
-
-        // TransDialog.SchemaPartitions.Label
-
-        FormData fdPartComp = new FormData();
-        fdPartComp.left  = new FormAttachment(0, 0);
-        fdPartComp.top   = new FormAttachment(0, 0);
-        fdPartComp.right = new FormAttachment(100, 0);
-        fdPartComp.bottom= new FormAttachment(100, 0);
-        wPartComp.setLayoutData(fdPartComp);
-    
-        wPartComp.layout();
-        wPartTab.setControl(wPartComp);
-        
-        /////////////////////////////////////////////////////////////
-        /// END OF PARTITIONING TAB
-        /////////////////////////////////////////////////////////////
-
-    }
 
     private void addMonitoringTab()
     {
@@ -1525,111 +1387,6 @@ public class TransDialog extends Dialog
         /// END OF MONITORING TAB
         /////////////////////////////////////////////////////////////
 
-    }
-
-
-    protected void getPartitions()
-    {
-        java.util.List<String> partitionedDatabaseNames = new ArrayList<String>();
-        
-        for (int i=0;i<transMeta.getDatabases().size();i++)
-        {
-            DatabaseMeta databaseMeta = transMeta.getDatabase(i); 
-            if (databaseMeta.isPartitioned())
-            {
-                partitionedDatabaseNames.add(databaseMeta.getName());
-            }
-        }
-        String dbNames[] = (String[]) partitionedDatabaseNames.toArray(new String[partitionedDatabaseNames.size()]);
-        
-        if (dbNames.length>0)
-        {
-            EnterSelectionDialog dialog = new EnterSelectionDialog(shell, dbNames,
-                BaseMessages.getString(PKG, "TransDialog.SelectPartitionedDatabase.Title"),
-                BaseMessages.getString(PKG, "TransDialog.SelectPartitionedDatabase.Message"));
-            String dbName = dialog.open();
-            if (dbName!=null)
-            {
-                DatabaseMeta databaseMeta = transMeta.findDatabase(dbName);
-                PartitionDatabaseMeta[] partitioningInformation = databaseMeta.getPartitioningInformation();
-                if (partitioningInformation!=null)
-                {
-                    // Here we are...
-                    wPartitions.clearAll(false);
-                    
-                    for (int i = 0; i < partitioningInformation.length; i++)
-                    {
-                        PartitionDatabaseMeta meta = partitioningInformation[i];
-                        wPartitions.add(new String[] { meta.getPartitionId() } );
-                    }
-                    
-                    wPartitions.removeEmptyRows();
-                    wPartitions.setRowNums();
-                    wPartitions.optWidth(true);
-                }
-            }
-        }
-        
-    }
-
-
-    protected void deleteSchema()
-    {
-        if (previousSchemaIndex>=0)
-        {
-            int idx = wSchemaList.getSelectionIndex();
-            schemas.remove( idx );
-            wSchemaList.remove( idx );
-            idx--;
-            if (idx<0) idx=0;
-            if (idx<schemas.size())
-            {
-                wSchemaList.select(idx);
-                previousSchemaIndex=idx;
-            }
-            else
-            {
-                previousSchemaIndex=-1;
-            }
-            refreshPartitions();
-        }
-    }
-
-    protected void applySchema()
-    {
-        if (previousSchemaIndex>=0)
-        {
-            PartitionSchema partitionSchema = (PartitionSchema)schemas.get(previousSchemaIndex);
-            partitionSchema.setName(wSchemaName.getText());
-            java.util.List<String> ids = new ArrayList<String>();
-            
-            int nrNonEmptyPartitions = wPartitions.nrNonEmpty();
-            for (int i=0;i<nrNonEmptyPartitions;i++)
-            {
-                ids.add( wPartitions.getNonEmpty(i).getText(1) );
-            }
-            partitionSchema.setPartitionIDs(ids);
-        }
-        previousSchemaIndex=wSchemaList.getSelectionIndex();
-    }
-
-
-    protected void newSchema()
-    {
-        String name = BaseMessages.getString(PKG, "TransDialog.NewPartitionSchema.Name", Integer.toString(schemas.size() + 1));
-        EnterStringDialog askName = new EnterStringDialog(shell, name,
-            BaseMessages.getString(PKG, "TransDialog.NewPartitionSchema.Title"),
-            BaseMessages.getString(PKG, "TransDialog.NewPartitionSchema.Message"));
-        name = askName.open();
-        if (name!=null)
-        {
-            PartitionSchema schema = new PartitionSchema(name, new ArrayList<String>());
-            schemas.add(schema);
-            wSchemaList.add(name);
-            previousSchemaIndex = schemas.size()-1; 
-            wSchemaList.select( previousSchemaIndex );
-            refreshPartitions();
-        }
     }
 
 
@@ -1731,17 +1488,6 @@ public class TransDialog extends Dialog
 		wParamFields.setRowNums();
 		wParamFields.optWidth(true);
         
-        // The partitions?
-        for (PartitionSchema schema : schemas)
-        {
-            wSchemaList.add(schema.getName());
-        }
-        if (schemas.size()>0)
-        {
-            wSchemaList.setSelection(0);
-        }
-        refreshPartitions();
-		
 		// Directory:
 		if (transMeta.getRepositoryDirectory()!=null && transMeta.getRepositoryDirectory().getPath()!=null) 
 			wDirectory.setText(transMeta.getRepositoryDirectory().getPath());
@@ -1757,36 +1503,6 @@ public class TransDialog extends Dialog
 		setFlags();
 	}
 	
-	private void refreshPartitions()
-    {
-        wPartitions.clearAll(false);
-        if (wSchemaList.getSelectionCount()==1)
-        {
-            wSchemaName.setEnabled(true);
-            wPartitions.table.setEnabled(true);
-            wGetPartitions.setEnabled(true);
-
-            PartitionSchema partitionSchema = (PartitionSchema)schemas.get(wSchemaList.getSelectionIndex());
-            wSchemaName.setText(partitionSchema.getName());
-            java.util.List<String> partitionIDs = partitionSchema.getPartitionIDs();
-            
-            for (int i=0;i<partitionIDs.size();i++)
-            {
-                TableItem tableItem = new TableItem(wPartitions.table, SWT.NONE);
-                tableItem.setText(1, partitionIDs.get(i));
-            }
-            wPartitions.removeEmptyRows();
-            wPartitions.setRowNums();
-            wPartitions.optWidth(true);
-        }
-        else
-        {
-            wSchemaName.setEnabled(false);
-            wPartitions.table.setEnabled(false);
-            wGetPartitions.setEnabled(false);
-        }
-    }
-
 	public void setFlags()
     {
         wbDirectory.setEnabled(rep!=null);
@@ -1898,7 +1614,7 @@ public class TransDialog extends Dialog
 		transMeta.setSharedObjectsFile(wSharedObjectsFile.getText());
 		transMeta.setUsingThreadPriorityManagment(wManageThreads.getSelection());
 
-		if (directoryChangeAllowed) {
+		if (directoryChangeAllowed && transMeta.getObjectId()!=null) {
 			if (newDirectory != null) {
 				RepositoryDirectory dirFrom = transMeta.getRepositoryDirectory();
 
@@ -1935,10 +1651,6 @@ public class TransDialog extends Dialog
 			wEnableStepPerfInterval.selectAll();
 			OK = false;
 		}
-
-		// Also get the partition schemas...
-		applySchema(); // get last changes too...
-		transMeta.setPartitionSchemas(schemas);
 
 		if (OK) {
 			transMeta.setChanged(changed || transMeta.hasChanged());
@@ -2097,31 +1809,28 @@ public class TransDialog extends Dialog
 	
 	private void setCurrentTab(Tabs currentTab){
 	  
-	  switch(currentTab){
-	    case TRANS_TAB:
-	      wTabFolder.setSelection(wTransTab);
-	      break;
-	    case PARAM_TAB:
-	        wTabFolder.setSelection(wParamTab);
-	        break;	      
-      case PART_TAB:
-        wTabFolder.setSelection(wPartTab);
-        break;
-      case MISC_TAB:
-        wTabFolder.setSelection(wMiscTab);
-        break;
-      case DATE_TAB:
-        wTabFolder.setSelection(wDateTab);
-        break;
-      case LOG_TAB:
-        wTabFolder.setSelection(wLogTab);
-        break;
-      case DEP_TAB:
-        wTabFolder.setSelection(wDepTab);
-        break;
-      case MONITOR_TAB:
-        wTabFolder.setSelection(wMonitorTab);
-        break;
-	  }
+	  switch (currentTab) {
+		case TRANS_TAB:
+			wTabFolder.setSelection(wTransTab);
+			break;
+		case PARAM_TAB:
+			wTabFolder.setSelection(wParamTab);
+			break;
+		case MISC_TAB:
+			wTabFolder.setSelection(wMiscTab);
+			break;
+		case DATE_TAB:
+			wTabFolder.setSelection(wDateTab);
+			break;
+		case LOG_TAB:
+			wTabFolder.setSelection(wLogTab);
+			break;
+		case DEP_TAB:
+			wTabFolder.setSelection(wDepTab);
+			break;
+		case MONITOR_TAB:
+			wTabFolder.setSelection(wMonitorTab);
+			break;
+		}
 	}
 }

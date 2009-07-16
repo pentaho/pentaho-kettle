@@ -125,6 +125,8 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
+import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
+import org.pentaho.di.ui.repository.dialog.RepositoryVersionBrowserDialogInterface;
 import org.pentaho.di.ui.spoon.AreaOwner;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
@@ -983,7 +985,10 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
           transMeta.unselectAll();
 
-          StepMeta before = (StepMeta) stepMeta.clone();
+          StepMeta before = null;
+          if (!newstep) { 
+        	  before= (StepMeta) stepMeta.clone();
+          }
 
           stepMeta.drawStep();
           stepMeta.setSelected(true);
@@ -992,8 +997,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           if (newstep) {
             spoon.addUndoNew(transMeta, new StepMeta[] { stepMeta }, new int[] { transMeta.indexOfStep(stepMeta) });
           } else {
-            spoon.addUndoChange(transMeta, new StepMeta[] { before }, new StepMeta[] { (StepMeta) stepMeta.clone() },
-                new int[] { transMeta.indexOfStep(stepMeta) });
+            spoon.addUndoChange(transMeta, new StepMeta[] { before }, new StepMeta[] { (StepMeta) stepMeta.clone() }, new int[] { transMeta.indexOfStep(stepMeta) });
           }
 
           canvas.forceFocus();
@@ -2609,7 +2613,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     // Load shared objects
     //
-    if (tid.isSharedObjectsFileChanged() || ti != null) {
+    if (tid.isSharedObjectsFileChanged()) {
       try {
         SharedObjects sharedObjects = rep!=null ? rep.readTransSharedObjects(transMeta) : transMeta.readSharedObjects();
         spoon.sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
@@ -2701,6 +2705,18 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     } else {
       disposeExtraView();
     }
+  }
+  
+  public void browseVersionHistory() {
+	  try {
+		RepositoryVersionBrowserDialogInterface dialog = RepositoryExplorerDialog.getVersionBrowserDialog(shell, spoon.rep, transMeta.getName(), transMeta.getRepositoryDirectory(), transMeta.getRepositoryElementType());
+		String versionLabel = dialog.open();
+		if (versionLabel!=null) {
+			spoon.loadObjectFromRepository(transMeta.getName(), transMeta.getRepositoryElementType(), transMeta.getRepositoryDirectory(), versionLabel);
+		}
+	} catch (Exception e) {
+		new ErrorDialog(shell, BaseMessages.getString(PKG, "TransGraph.VersionBrowserException.Title"), BaseMessages.getString(PKG, "TransGraph.VersionBrowserException.Message"), e);
+	}
   }
 
   /**
@@ -3169,7 +3185,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     }
   }
 
-  private synchronized void setControlStates() {
+  public synchronized void setControlStates() {
 	if (getDisplay().isDisposed()) return;
 	
     getDisplay().asyncExec(new Runnable() {
@@ -3213,7 +3229,15 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           previewButton.setEnable(!running);
         }
 
-        // TODO: enable/disable Transformation menu entries too
+        // version browser button...
+        //
+        XulToolbarButton versionsButton = toolbar.getButtonById("browse-versions");
+        if (versionsButton != null) {
+          boolean hasRepository = spoon.rep!=null;
+          boolean enabled = hasRepository && spoon.rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions(); 
+          versionsButton.setEnable(enabled);
+        }
+
       }
 
     });

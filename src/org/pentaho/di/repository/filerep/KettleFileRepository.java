@@ -29,9 +29,11 @@ import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
+import org.pentaho.di.repository.RepositoryElementLocationInterface;
 import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.UserInfo;
@@ -136,29 +138,11 @@ public class KettleFileRepository implements Repository {
 		return calcObjectId(directory, name, extension);
 	}
 	
-	private String calcExtension(RepositoryElementInterface element) {
-		if (TransMeta.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
-			return EXT_TRANSFORMATION;
-		} else
-			if (JobMeta.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
-				return EXT_JOB;
-			} else
-				if (DatabaseMeta.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
-					return EXT_DATABASE;
-				} else
-					if (SlaveServer.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
-						return EXT_SLAVE_SERVER;
-					} else
-						if (ClusterSchema.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
-							return EXT_CLUSTER_SCHEMA;
-						} else
-							if (PartitionSchema.REPOSITORY_ELEMENT_TYPE.equals(element.getRepositoryElementType())) {
-								return EXT_PARTITION_SCHEMA;
-							} else {
-								return ".xml";
-							}
+	private String calcExtension(RepositoryElementLocationInterface element) {
+		return element.getRepositoryElementType().getExtension();
 	}
-	public String calcFilename(RepositoryElementInterface element) {
+	
+	public String calcFilename(RepositoryElementLocationInterface element) {
 		return calcFilename(element.getRepositoryDirectory(), element.getName(), calcExtension(element));
 	}
 	
@@ -178,13 +162,17 @@ public class KettleFileRepository implements Repository {
 		return calcDirectoryName(null)+id.toString();
 	}
 	
-	private FileObject getFileObject(RepositoryElementInterface element) throws IOException {
+	private FileObject getFileObject(RepositoryElementLocationInterface element) throws IOException {
 		return KettleVFS.getFileObject(calcFilename(element));
 	}
 
-	public boolean exists(RepositoryElementInterface repositoryElement) throws KettleException {
+	public boolean exists(final String name, final RepositoryDirectory repositoryDirectory, final RepositoryObjectType objectType) throws KettleException {
 		try {
-			FileObject fileObject = getFileObject(repositoryElement);
+			FileObject fileObject = getFileObject(new RepositoryElementLocationInterface() {
+				public RepositoryObjectType getRepositoryElementType() { return objectType; }
+				public RepositoryDirectory getRepositoryDirectory() { return repositoryDirectory; }
+				public String getName() { return name; }
+			});
 			return fileObject.exists();
 		} catch(Exception e) {
 			throw new KettleException(e);
@@ -1047,11 +1035,11 @@ public class KettleFileRepository implements Repository {
 		// TODO Auto-generated method stub		
 	}
 	
-	public List<ObjectVersion> getVersions(RepositoryElementInterface element) throws KettleException {
+	public List<ObjectVersion> getVersions(RepositoryElementLocationInterface element) throws KettleException {
 		return null; // NOT IMPLEMENTED
 	}
 	
-	public void undeleteObject(RepositoryElementInterface element) throws KettleException {
+	public void undeleteObject(RepositoryElementLocationInterface element) throws KettleException {
 		// NOT IMPLEMENTED!
 	}
 

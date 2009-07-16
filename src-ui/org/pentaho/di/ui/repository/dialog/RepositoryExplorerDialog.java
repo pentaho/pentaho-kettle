@@ -16,6 +16,7 @@ package org.pentaho.di.ui.repository.dialog;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
@@ -75,7 +76,11 @@ import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryElementLocationInterface;
+import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.repository.RepositoryPluginMeta;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.TransMeta;
@@ -125,17 +130,22 @@ public class RepositoryExplorerDialog extends Dialog
      *
      */
     public class RepositoryObjectReference {
-    	private String              type;   // Type of object
+    	private RepositoryObjectType type;   // Type of object
     	private RepositoryDirectory directory;    // The directory to which it belongs.
     	private String              name;   // name of object being referenced	
+    	private String              versionLabel; // the version to be loaded
     	
-    	public RepositoryObjectReference(String type, RepositoryDirectory dir, String name) {
+    	public RepositoryObjectReference(RepositoryObjectType type, RepositoryDirectory dir, String name) {
+    		this(type, dir, name, null);
+    	}
+    	
+    	public RepositoryObjectReference(RepositoryObjectType type, RepositoryDirectory dir, String name, String versionLabel) {
     		this.type = type;
     		this.directory = dir;
     		this.name = name;
+    		this.versionLabel = versionLabel;
     	}
-    	
-		public RepositoryDirectory getDirectory()
+    	public RepositoryDirectory getDirectory()
 		{
 			return directory;
 		}
@@ -143,9 +153,12 @@ public class RepositoryExplorerDialog extends Dialog
 		{
 			return name;
 		}
-		public String getType()
+		public RepositoryObjectType getType()
 		{
 			return type;
+		}
+		public String getVersionLabel() {
+			return versionLabel;
 		}
     }
     
@@ -963,6 +976,18 @@ public class RepositoryExplorerDialog extends Dialog
 							}
 						}
 					);
+					// Transformation history...
+					MenuItem miHist = new MenuItem(mTree, SWT.PUSH); 
+					miHist.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.History")); //$NON-NLS-1$
+					miHist.addSelectionListener( 
+						new SelectionAdapter() 
+						{ 
+							public void widgetSelected(SelectionEvent e) 
+							{ 
+								showTransformationVersions(item, repdir);
+							}
+						}
+					);
 					// Delete transformation
 					MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
 					miDel.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Delete")); //$NON-NLS-1$
@@ -1441,7 +1466,7 @@ public class RepositoryExplorerDialog extends Dialog
 	
 	public void openTransformation(String name, RepositoryDirectory repdir)
 	{
-		lastOpened = new RepositoryObjectReference(STRING_TRANSFORMATIONS, repdir, name);
+		lastOpened = new RepositoryObjectReference(RepositoryObjectType.TRANSFORMATION, repdir, name);
 		if (callback != null) {
 			if (callback.open(lastOpened))			{
 				close();
@@ -1451,10 +1476,32 @@ public class RepositoryExplorerDialog extends Dialog
 			close();
 		}
 	}
+	
+	public void showTransformationVersions(String name, RepositoryDirectory repdir)
+	{
+		try {
+			RepositoryVersionBrowserDialogInterface versionBrowserDialog = getVersionBrowserDialog(name, repdir, RepositoryObjectType.TRANSFORMATION);
+			
+			String versionLabel = versionBrowserDialog.open();
+			if (versionLabel!=null) {
+				lastOpened = new RepositoryObjectReference(RepositoryObjectType.TRANSFORMATION, repdir, name, versionLabel);
+				if (callback != null) {
+					if (callback.open(lastOpened))			{
+						close();
+					}
+				}
+				else {
+					close();
+				}
+			}
+		} catch(Exception e) {
+			new ErrorDialog(shell, "Error browsing transformation history", "There was an error browsing the transformation history", e);
+		}
+	}
 
 	public void openJob(String name, RepositoryDirectory repdir)
 	{
-		lastOpened = new RepositoryObjectReference(STRING_JOBS, repdir, name);
+		lastOpened = new RepositoryObjectReference(RepositoryObjectType.JOB, repdir, name);
 		if (callback != null) {
 			if (callback.open(lastOpened)) {
 				close();
@@ -3130,4 +3177,24 @@ public class RepositoryExplorerDialog extends Dialog
                     BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
+    
+    protected RepositoryVersionBrowserDialogInterface getVersionBrowserDialog(final String name, final RepositoryDirectory repositoryDirectory, final RepositoryObjectType objectType) throws Exception {
+    	return getVersionBrowserDialog(shell, rep, name, repositoryDirectory, objectType);
+    }
+    	
+	public static final RepositoryVersionBrowserDialogInterface getVersionBrowserDialog(Shell shell, Repository repository, final String name, final RepositoryDirectory repositoryDirectory, final RepositoryObjectType objectType) throws Exception {
+		
+		RepositoryElementLocationInterface element = new RepositoryElementLocationInterface() {
+			public RepositoryObjectType getRepositoryElementType() { return objectType; }
+			public RepositoryDirectory getRepositoryDirectory() { return repositoryDirectory; }
+			public String getName() { return name; }
+		};
+		
+		RepositoryPluginMeta pluginMeta = RepositoryLoader.getInstance().findPluginMeta( repository.getRepositoryMeta().getId() );
+		ClassLoader classLoader = RepositoryLoader.getInstance().getClassLoader(pluginMeta);
+		Class<?> dialogClass = classLoader.loadClass(pluginMeta.getVersionBrowserClassName());
+		Constructor<?> constructor = dialogClass.getConstructor(Shell.class, Integer.TYPE, Repository.class, RepositoryElementLocationInterface.class);
+		return (RepositoryVersionBrowserDialogInterface) constructor.newInstance(new Object[] { shell, Integer.valueOf(SWT.NONE), repository, element, });
+	}
+
 }

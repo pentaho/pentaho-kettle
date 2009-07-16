@@ -40,6 +40,7 @@ import org.pentaho.di.repository.ObjectVersion;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.w3c.dom.Node;
@@ -61,7 +62,7 @@ public class DatabaseMeta
 
   public static final String XML_TAG = "connection";
 
-  public static final String REPOSITORY_ELEMENT_TYPE = "database";
+  public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.DATABASE;
 
   // Comparator for sorting databases alphabetically by name
   public static final Comparator<DatabaseMeta> comparator = new Comparator<DatabaseMeta>(){
@@ -2443,7 +2444,7 @@ public class DatabaseMeta
 		throw new RuntimeException("Setting a directory on a database connection is not supported");
 	}
 	
-	public String getRepositoryElementType() {
+	public RepositoryObjectType getRepositoryElementType() {
 		return REPOSITORY_ELEMENT_TYPE;
 	}
 

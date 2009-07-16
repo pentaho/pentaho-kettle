@@ -111,11 +111,13 @@ import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
+import org.pentaho.di.ui.repository.dialog.RepositoryVersionBrowserDialogInterface;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
-import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.TransPainter;
 import org.pentaho.di.ui.spoon.XulMessages;
+import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.xul.menu.XulMenu;
@@ -1699,10 +1701,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     String exactTransname = jobMeta.environmentSubstitute(entry.getTransname());
 
     // check, whether a tab of this name is already opened
-    TabItem tab = spoon.delegates.tabs.findTabItem(exactFilename, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
+    TabItem tab = spoon.delegates.tabs.findTabItem(exactFilename, ObjectType.TRANSFORMATION_GRAPH);
     if (tab == null) {
-      tab = spoon.delegates.tabs.findTabItem(Const.filenameOnly(exactFilename),
-          TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
+      tab = spoon.delegates.tabs.findTabItem(Const.filenameOnly(exactFilename), ObjectType.TRANSFORMATION_GRAPH);
     }
     if (tab != null) {
       spoon.tabfolder.setSelected(tab);
@@ -2714,6 +2715,18 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     spoon.exploreDatabase();
   }
 
+  public void browseVersionHistory() {
+	  try {
+		RepositoryVersionBrowserDialogInterface dialog = RepositoryExplorerDialog.getVersionBrowserDialog(shell, spoon.rep, jobMeta.getName(), jobMeta.getRepositoryDirectory(), jobMeta.getRepositoryElementType());
+		String versionLabel = dialog.open();
+		if (versionLabel!=null) {
+			spoon.loadObjectFromRepository(jobMeta.getName(), jobMeta.getRepositoryElementType(), jobMeta.getRepositoryDirectory(), versionLabel);
+		}
+	} catch (Exception e) {
+		new ErrorDialog(shell, BaseMessages.getString(PKG, "JobGraph.VersionBrowserException.Title"), BaseMessages.getString(PKG, "JobGraph.VersionBrowserException.Message"), e);
+	}
+  }
+
   public synchronized void startJob(JobExecutionConfiguration executionConfiguration) throws KettleException {
     if (job == null) // Not running, start the transformation...
     {
@@ -2858,7 +2871,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     }
   }
 
-  private void setControlStates() {
+  public synchronized void setControlStates() {
 	  if (getDisplay().isDisposed()) return;
 	  
       getDisplay().asyncExec(new Runnable() {
@@ -2890,7 +2903,14 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
           stopButton.setEnable(running);
         }
 
-        // TODO: enable/disable Job menu entries too
+        // version browser button...
+        //
+        XulToolbarButton versionsButton = toolbar.getButtonById("browse-versions");
+        if (versionsButton != null) {
+          boolean hasRepository = spoon.rep!=null;
+          boolean enabled = hasRepository && spoon.rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions(); 
+          versionsButton.setEnable(enabled);
+        }
       }
 
     });

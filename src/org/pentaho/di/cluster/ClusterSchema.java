@@ -31,6 +31,7 @@ import org.pentaho.di.repository.ObjectVersion;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.www.SlaveServerDetection;
 import org.w3c.dom.Node;
@@ -51,7 +52,7 @@ public class ClusterSchema
 
     public static final String XML_TAG = "clusterschema"; //$NON-NLS-1$
     
-    public static final String REPOSITORY_ELEMENT_TYPE = "clusterschema";
+    public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.CLUSTER_SCHEMA;
 
     /** the name of the cluster schema */
     private String name;
@@ -502,7 +503,7 @@ public class ClusterSchema
 	public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
 	}
 
-	public String getRepositoryElementType() {
+	public RepositoryObjectType getRepositoryElementType() {
 		return REPOSITORY_ELEMENT_TYPE;
 	}
 

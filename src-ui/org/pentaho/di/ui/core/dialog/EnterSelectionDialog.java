@@ -148,15 +148,18 @@ public class EnterSelectionDialog extends Dialog
 		int margin = Const.MARGIN;
 		
 		ToolBar treeTb = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT);
+		props.setLook(treeTb);
 
 		ToolItem wtfilter = new ToolItem(treeTb, SWT.SEPARATOR);
 		Label wlfilter = new Label(treeTb, SWT.SEARCH);
+		props.setLook(wlfilter);
 		wlfilter.setText(BaseMessages.getString(PKG, "EnterSelectionDialog.FilterString.Label"));
 		wtfilter.setControl(wlfilter);
 		wtfilter.setWidth(60);
 		
 		wfilter = new ToolItem(treeTb, SWT.SEPARATOR);
 		searchText = new Text(treeTb, SWT.SEARCH | SWT.CANCEL);
+		props.setLook(searchText);
 		searchText.setToolTipText(BaseMessages.getString(PKG, "EnterSelectionDialog.FilterString.ToolTip"));
 		wfilter.setControl(searchText);
 		wfilter.setWidth(120);

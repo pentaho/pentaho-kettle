@@ -15,21 +15,17 @@ package org.pentaho.di.repository;
  * @author matt
  *
  */
-public interface RepositoryElementInterface {
+public interface RepositoryElementInterface extends RepositoryElementLocationInterface {
 	public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory);
-	public RepositoryDirectory getRepositoryDirectory();
 	
 	public void setName(String name);
-	public String getName();
 	
 	public void setDescription(String description);
 	public String getDescription();
 	
 	public void setObjectId(ObjectId id);
 	public ObjectId getObjectId();
-	
-	public String getRepositoryElementType();
-		
+			
 	public RepositoryLock getRepositoryLock();
 	
 	/**

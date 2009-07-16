@@ -66,6 +66,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.job.dialog.JobExecutionConfigurationDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabMapEntry;
+import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.spoon.wizards.RipDatabaseWizardPage1;
 import org.pentaho.di.ui.spoon.wizards.RipDatabaseWizardPage2;
@@ -930,7 +931,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		String tabName = spoon.delegates.tabs.makeJobGraphTabName(jobMeta);
 
 		// Close the associated tabs...
-		TabItem graphTab = spoon.delegates.tabs.findTabItem(tabName, TabMapEntry.OBJECT_TYPE_JOB_GRAPH);
+		TabItem graphTab = spoon.delegates.tabs.findTabItem(tabName, ObjectType.JOB_GRAPH);
 		if (graphTab != null)
 		{
 			spoon.delegates.tabs.removeTab(graphTab);
@@ -960,7 +961,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			// If yes, select that tab
 			//
 			String tabName = spoon.delegates.tabs.makeJobGraphTabName(jobMeta);
-			TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName, TabMapEntry.OBJECT_TYPE_JOB_GRAPH);
+			TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName, ObjectType.JOB_GRAPH);
 			if (tabItem == null)
 			{
 				JobGraph jobGraph = new JobGraph(spoon.tabfolder.getSwtTabset(), spoon, jobMeta);
@@ -970,9 +971,9 @@ public class SpoonJobDelegate extends SpoonDelegate
 				tabItem.setToolTipText(toolTipText);
 				tabItem.setImage(GUIResource.getInstance().getImageJobGraph());
 				tabItem.setControl(jobGraph);
-
-				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, jobGraph,
-						TabMapEntry.OBJECT_TYPE_JOB_GRAPH));
+				
+				String versionLabel = jobMeta.getObjectVersion() == null ? null : jobMeta.getObjectVersion().getName();
+				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, versionLabel, jobGraph, ObjectType.JOB_GRAPH));
 
 				// OK, also see if we need to open a new history window.
 				if (jobMeta.getLogConnection() != null && !Const.isEmpty(jobMeta.getLogTable()))

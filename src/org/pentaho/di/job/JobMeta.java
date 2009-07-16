@@ -68,6 +68,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -96,7 +97,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 	private static final String XML_TAG_SLAVESERVERS = "slaveservers"; //$NON-NLS-1$
 	
-	public static final String REPOSITORY_ELEMENT_TYPE = "job";
+	public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.JOB;
 
 	protected ObjectId objectId;
 
@@ -2586,7 +2587,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return jobhops;
 	}
 	
-	public String getRepositoryElementType() {
+	public RepositoryObjectType getRepositoryElementType() {
 		return REPOSITORY_ELEMENT_TYPE;
 	}
 	

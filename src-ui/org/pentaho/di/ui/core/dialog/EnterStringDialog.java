@@ -86,7 +86,7 @@ public class EnterStringDialog extends Dialog
 		shell.setLayout(formLayout);
 		shell.setImage(GUIResource.getInstance().getImageSpoon());
 		shell.setText(shellText);
-		int length = Const.LENGTH;
+
 		int margin = Const.MARGIN;
 
 		// The String line...
@@ -103,7 +103,7 @@ public class EnterStringDialog extends Dialog
 		fdString=new FormData();
 		fdString.left = new FormAttachment(0, 0);
 		fdString.top  = new FormAttachment(wlString, margin);
-		fdString.right= new FormAttachment(0, length);
+		fdString.right= new FormAttachment(100, -margin);
 		wString.setLayoutData(fdString);
 		
 		wString.addModifyListener(new ModifyListener() {

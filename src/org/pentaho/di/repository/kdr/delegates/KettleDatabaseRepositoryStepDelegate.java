@@ -119,6 +119,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
                 
                 // Get the partitioning as well...
 				stepMeta.setStepPartitioningMeta( loadStepPartitioningMeta(stepMeta.getObjectId()) );
+				stepMeta.getStepPartitioningMeta().setPartitionSchemaAfterLoading(partitionSchemas);
                 
                 // Get the cluster schema name
                 stepMeta.setClusterSchemaName( repository.getStepAttributeString(id_step, "cluster_schema") );

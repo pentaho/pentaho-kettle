@@ -240,7 +240,9 @@ public class GUIResource
     private Image imageInfoHop;
     
     private Image imageWarning;
-    
+
+    private Image imageVersionBrowser;
+
     private Image imageNew;
     private Image imageEdit;
     private Image imageDelete;
@@ -410,6 +412,7 @@ public class GUIResource
 		    imageErrorHop.dispose();
 		    imageInfoHop.dispose();
 		    imageWarning.dispose();
+		    imageVersionBrowser.dispose();
 		    imageExpandAll.dispose();
 		    imageSearchSmall.dispose();
 		    imageViewPanel.dispose();
@@ -630,6 +633,7 @@ public class GUIResource
     imageErrorHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ErrorHop_image")); // , "ui/images/error-hop.png;
     imageInfoHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("InfoHop_image")); // , "ui/images/info-hop.png;
     imageWarning = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Warning_image")); // , "ui/images/warning.png;
+    imageVersionBrowser = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("VersionBrowser_image")); // , "ui/images/version-history.png;
 
     imageNew= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("New_image")); // , "ui/images/generic-new.png;
     imageEdit= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Edit_image")); // , "ui/images/generic-edit.png;
@@ -1602,6 +1606,10 @@ public class GUIResource
   public Image getImageWarning(){
 	    return imageWarning;
   }
+
+  public Image getImageVersionBrowser(){
+	    return imageVersionBrowser;
+}
 
   public Image getImageNew(){
 	    return imageNew;

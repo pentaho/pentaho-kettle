@@ -263,5 +263,10 @@ public class SpoonBrowser implements TabItemInterface
     	return null;
     }
 
+	public void setControlStates() {
+		// TODO Auto-generated method stub
+		
+	}
+
     
 }

@@ -46,6 +46,7 @@ import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabMapEntry;
+import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.di.ui.trans.debug.TransDebugDialog;
@@ -150,8 +151,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		String tabName = spoon.delegates.tabs.makeTransGraphTabName(transMeta);
 
 		// Close the associated tabs...
-		TabItem graphTab = spoon.delegates.tabs.findTabItem(tabName,
-				TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
+		TabItem graphTab = spoon.delegates.tabs.findTabItem(tabName, ObjectType.TRANSFORMATION_GRAPH);
 		if (graphTab != null)
 		{
 			spoon.delegates.tabs.removeTab(graphTab);
@@ -181,7 +181,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			// If yes, select that tab
 			//
 			String tabName = spoon.delegates.tabs.makeTransGraphTabName(transMeta);
-			TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
+			TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName, ObjectType.TRANSFORMATION_GRAPH);
 			if (tabItem == null)
 			{
 				TransGraph transGraph = new TransGraph(spoon.tabfolder.getSwtTabset(), spoon, transMeta);
@@ -199,7 +199,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 					transGraph.extraViewTabFolder.setSelection(transGraph.transHistoryDelegate.getTransHistoryTab());
 				}
 
-				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, transGraph, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH));
+				String versionLabel = transMeta.getObjectVersion() == null ? null : transMeta.getObjectVersion().getName();
+				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, versionLabel, transGraph, ObjectType.TRANSFORMATION_GRAPH));
 			}
 			int idx = spoon.tabfolder.indexOf(tabItem);
 

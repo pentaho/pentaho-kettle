@@ -67,11 +67,14 @@ public interface Repository {
 
     /**
      * See if a repository object exists in the repository
-     * @param repositoryElement the repository element to verify
+     * 
+     * @param name the name of the object
+     * @param repositoryDirectory the directory in which it should reside
+     * @param objectType the type of repository object
      * @return true if the job exists
      * @throws KettleException in case something goes wrong.
      */
-    public boolean exists(RepositoryElementInterface repositoryElement) throws KettleException;
+    public boolean exists(String name, RepositoryDirectory repositoryDirectory, RepositoryObjectType objectType) throws KettleException;
     
     public ObjectId getTransformationID(String name, RepositoryDirectory repositoryDirectory) throws KettleException;
     public ObjectId getJobId(String name, RepositoryDirectory repositoryDirectory) throws KettleException;
@@ -417,7 +420,7 @@ public interface Repository {
 	 * @return The version history, from first to last.
 	 * @throws KettleException in case something goes horribly wrong
 	 */
-	public List<ObjectVersion> getVersions(RepositoryElementInterface element) throws KettleException;
+	public List<ObjectVersion> getVersions(RepositoryElementLocationInterface element) throws KettleException;
 	
 	/**
 	 * Removes he deleted flag from a repository element in the repository.  
@@ -426,5 +429,5 @@ public interface Repository {
 	 * @param element the repository element to restore
 	 * @throws KettleException get throws in case something goes horribly wrong.
 	 */
-	public void undeleteObject(RepositoryElementInterface element) throws KettleException;
+	public void undeleteObject(RepositoryElementLocationInterface element) throws KettleException;
 }

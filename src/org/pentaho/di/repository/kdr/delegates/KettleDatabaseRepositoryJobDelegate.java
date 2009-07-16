@@ -24,8 +24,8 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.shared.SharedObjects;
@@ -226,16 +226,12 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
     	}
     }
 
-	public boolean existsJobMeta(RepositoryElementInterface repositoryElement) {
-		if (repositoryElement.getObjectId() == null) {
-			try {
-				if (getJobID(repositoryElement.getName(), repositoryElement.getRepositoryDirectory().getObjectId()) != null)
-					return true;
-			} catch (KettleException dbe) {
-				return true;
-			}
+	public boolean existsJobMeta(String name, RepositoryDirectory repositoryDirectory, RepositoryObjectType objectType) throws KettleException {
+		try {
+			return (getJobID(name, repositoryDirectory.getObjectId()) != null);
+		} catch (KettleException e) {
+			throw new KettleException("Unable to verify if the job with name ["+name+"] in directory ["+repositoryDirectory+"] exists", e);
 		}
-		return false;
 	}
     
 	/**

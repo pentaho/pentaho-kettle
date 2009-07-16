@@ -24,9 +24,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.ProgressMonitorAdapter;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -46,25 +44,18 @@ public class JobLoadProgressDialog
 	private String jobname;
 	private RepositoryDirectory repdir;
 	private JobMeta jobInfo;
+	private String	versionLabel;
 
-    /**
-     * Creates a new dialog that will handle the wait while loading a job...
-     * @deprecated please use the constructor version without log or props
-     */
-    public JobLoadProgressDialog(LogWriter log, Props props, Shell shell, Repository rep, String jobname, RepositoryDirectory repdir)
-    {
-        this(shell, rep, jobname, repdir);
-    }
-    
 	/**
 	 * Creates a new dialog that will handle the wait while loading a job...
 	 */
-	public JobLoadProgressDialog(Shell shell, Repository rep, String jobname, RepositoryDirectory repdir)
+	public JobLoadProgressDialog(Shell shell, Repository rep, String jobname, RepositoryDirectory repdir, String versionLabel)
 	{
 		this.shell = shell;
 		this.rep = rep;
 		this.jobname = jobname;
 		this.repdir = repdir;
+		this.versionLabel = versionLabel;
 		
 		this.jobInfo = null;
 	}
@@ -75,13 +66,9 @@ public class JobLoadProgressDialog
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
-                // This is running in a new process: copy some KettleVariables info
-                // LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), kettleVariables.getLocalThread(), true);
-                // --> don't set variables if not running in different thread --> pmd.run(true,true, op);
-
 				try
 				{
-					jobInfo = rep.loadJob(jobname, repdir, new ProgressMonitorAdapter(monitor), null); // reads last version
+					jobInfo = rep.loadJob(jobname, repdir, new ProgressMonitorAdapter(monitor), versionLabel);
 				}
 				catch(KettleException e)
 				{

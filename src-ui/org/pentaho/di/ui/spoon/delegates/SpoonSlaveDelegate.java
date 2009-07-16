@@ -21,6 +21,7 @@ import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonSlave;
 import org.pentaho.di.ui.spoon.TabMapEntry;
+import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabSet;
 
@@ -38,7 +39,7 @@ public class SpoonSlaveDelegate extends SpoonDelegate
 
 		// See if there is a SpoonSlave for this slaveServer...
 		String tabName = spoon.delegates.tabs.makeSlaveTabName(slaveServer);
-		TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName, TabMapEntry.OBJECT_TYPE_SLAVE_SERVER);
+		TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName, ObjectType.SLAVE_SERVER);
 		if (tabItem == null)
 		{
 			SpoonSlave spoonSlave = new SpoonSlave(tabfolder.getSwtTabset(), SWT.NONE, spoon, slaveServer);
@@ -47,7 +48,7 @@ public class SpoonSlaveDelegate extends SpoonDelegate
 					+ slaveServer.getServerAndPort());
 			tabItem.setControl(spoonSlave);
 
-			spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, spoonSlave, TabMapEntry.OBJECT_TYPE_SLAVE_SERVER));
+			spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, null, spoonSlave, ObjectType.SLAVE_SERVER));
 		}
 		int idx = tabfolder.indexOf(tabItem);
 		tabfolder.setSelected(idx);

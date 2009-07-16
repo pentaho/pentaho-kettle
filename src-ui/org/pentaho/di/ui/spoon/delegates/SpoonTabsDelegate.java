@@ -26,12 +26,14 @@ import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.ObjectVersion;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonBrowser;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
+import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.ui.util.Launch;
@@ -140,7 +142,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		}
 	}
 	
-	public void removeTab(String tabText, int tabMapEntryType)
+	public void removeTab(String tabText, ObjectType tabMapEntryType)
 	{
 	  TabItem tabItem = null;
 		for (TabMapEntry tabMapEntry : getTabs()) {
@@ -233,7 +235,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			// If no, add it
 			// If yes, select that tab
 			//
-			TabItem tabItem = findTabItem(name, TabMapEntry.OBJECT_TYPE_BROWSER);
+			TabItem tabItem = findTabItem(name, ObjectType.BROWSER);
 			if (tabItem == null)
 			{
 				CTabFolder cTabFolder = tabfolder.getSwtTabset();
@@ -242,7 +244,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 				tabItem.setImage(GUIResource.getInstance().getImageLogoSmall());
 				tabItem.setControl(browser.getComposite());
 
-				tabMap.add(new TabMapEntry(tabItem, name, browser, TabMapEntry.OBJECT_TYPE_BROWSER));
+				tabMap.add(new TabMapEntry(tabItem, name, null, browser, ObjectType.BROWSER));
 			}
 			int idx = tabfolder.indexOf(tabItem);
 
@@ -270,7 +272,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		}
 	}
 
-	public TabItem findTabItem(String tabItemText, int objectType)
+	public TabItem findTabItem(String tabItemText, ObjectType objectType)
 	{
 		for (TabMapEntry entry : tabMap)
 		{
@@ -364,17 +366,12 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			transMeta.nameFromFilename();
 		}
 
-		return transMeta.getName();
-	}
-
-	public String makeJobLogTabName(JobMeta jobMeta)
-	{
-		return BaseMessages.getString(PKG, "Spoon.Title.LogJobView", makeJobGraphTabName(jobMeta));
-	}
-
-	public String makeJobHistoryTabName(JobMeta jobMeta)
-	{
-		return BaseMessages.getString(PKG, "Spoon.Title.LogJobHistoryView", makeJobGraphTabName(jobMeta));
+		String name = transMeta.getName();
+		ObjectVersion version = transMeta.getObjectVersion();
+		if (version!=null) {
+			name+=":v"+version.getName();
+		}
+		return name;
 	}
 
 	public String makeJobGraphTabName(JobMeta jobMeta)
@@ -387,7 +384,12 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			jobMeta.nameFromFilename();
 		}
 
-		return jobMeta.getName();
+		String name = jobMeta.getName();
+		ObjectVersion version = jobMeta.getObjectVersion();
+		if (version!=null) {
+			name+=":v"+version.getName();
+		}
+		return name;
 	}
 
 	public void tabSelected(TabItem item)

@@ -63,6 +63,7 @@ align="vertical" >
 					<menuseparator/>
                     <menuitem value="repository-lock-file" disabled="true" label="%Spoon.Menu.Repository.LockFile"/>
                     <menuitem value="repository-unlock-file" label="%Spoon.Menu.Repository.UnlockFile"/>
+                    <menuitem value="repository-browse-history" disabled="true" label="%Spoon.Menu.Repository.BrowseVersionHistory"/>
 					<menuseparator/>
                     <menuitem value="repository-edit-user" acceltext="CTRL-U"  accesskey="ctrl-u" disabled="true" label="%Spoon.Menu.Repository.EditCurrentUser"/>
                </menupopup>

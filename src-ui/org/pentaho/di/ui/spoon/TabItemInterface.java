@@ -28,5 +28,6 @@ public interface TabItemInterface
     public int showChangedWarning();
     public boolean applyChanges() throws KettleException;
     public EngineMetaInterface getMeta();
+    public void setControlStates();
     
 }

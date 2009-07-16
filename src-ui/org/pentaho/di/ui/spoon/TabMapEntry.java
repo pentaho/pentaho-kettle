@@ -17,22 +17,17 @@ import org.pentaho.xul.swt.tab.TabItem;
 
 public class TabMapEntry
 {
-    public static final int OBJECT_TYPE_TRANSFORMATION_GRAPH   = 1;
-    public static final int OBJECT_TYPE_TRANSFORMATION_LOG     = 2;
-    public static final int OBJECT_TYPE_TRANSFORMATION_HISTORY = 3;
-    public static final int OBJECT_TYPE_JOB_GRAPH              = 4;
-    public static final int OBJECT_TYPE_JOB_LOG                = 5;
-    public static final int OBJECT_TYPE_JOB_HISTORY            = 6;
-    public static final int OBJECT_TYPE_SLAVE_SERVER              = 7;
-    public static final int OBJECT_TYPE_BROWSER                = 8;
-    
+	public enum ObjectType { TRANSFORMATION_GRAPH, JOB_GRAPH, SLAVE_SERVER, BROWSER, };
+	
     private TabItem tabItem;
     
     private String objectName;
+    
+    private String versionLabel;
 
     private TabItemInterface object;
     
-    private int objectType;
+    private ObjectType objectType;
 
     /**
      * @param tabName
@@ -40,12 +35,21 @@ public class TabMapEntry
      * @param objectType
      * @param object
      */
-    public TabMapEntry(TabItem tabItem, String objectName, TabItemInterface object, int objectType)
+    public TabMapEntry(TabItem tabItem, String objectName, String versionLabel, TabItemInterface object, ObjectType objectType)
     {
         this.tabItem = tabItem;
         this.objectName = objectName;
+        this.versionLabel = versionLabel;
         this.object = object;
         this.objectType = objectType;
+    }
+    
+    public boolean equals(Object obj) {
+    	TabMapEntry entry = (TabMapEntry) obj;
+    	
+    	boolean sameVersion = (versionLabel==null && entry.versionLabel==null) || (versionLabel!=null && versionLabel.equals(versionLabel)) ;
+    	
+    	return objectType.equals(entry.objectType) && objectName.equals(entry.objectName) && sameVersion;
     }
 
     /**
@@ -64,6 +68,14 @@ public class TabMapEntry
         this.objectName = objectName;
     }
 
+    public String getVersionLabel() {
+		return versionLabel;
+	}
+    
+    public void setVersionLabel(String versionLabel) {
+		this.versionLabel = versionLabel;
+	}
+    
     /**
      * @return the object
      */
@@ -99,7 +111,7 @@ public class TabMapEntry
     /**
      * @return the objectType
      */
-    public int getObjectType()
+    public ObjectType getObjectType()
     {
         return objectType;
     }
@@ -107,7 +119,7 @@ public class TabMapEntry
     /**
      * @param objectType the objectType to set
      */
-    public void setObjectType(int objectType)
+    public void setObjectType(ObjectType objectType)
     {
         this.objectType = objectType;
     }

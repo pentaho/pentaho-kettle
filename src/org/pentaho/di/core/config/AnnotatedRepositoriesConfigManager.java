@@ -74,12 +74,16 @@ public class AnnotatedRepositoriesConfigManager<T extends RepositoryPluginMeta> 
 			// Determine the i18n description of the step description (name)
 			//
 			String name = BaseMessages.getString(packageName, repositoryPlugin.name());
-			if (name.startsWith("!") && name.endsWith("!")) name=BaseMessages.getString(PKG, repositoryPlugin.name());
+			if (name.startsWith("!") && name.endsWith("!")) {
+				name=BaseMessages.getString(PKG, repositoryPlugin.name());
+			}
 			
 			// Determine the i18n tool tip text for the step (the extended description)
 			//
 			String description = BaseMessages.getString(packageName, repositoryPlugin.description());
-			if (description.startsWith("!") && description.endsWith("!")) description=BaseMessages.getString(PKG, repositoryPlugin.description());
+			if (description.startsWith("!") && description.endsWith("!")) {
+				description=BaseMessages.getString(PKG, repositoryPlugin.description());
+			}
 			
 			// Add the step to the list...
 			//

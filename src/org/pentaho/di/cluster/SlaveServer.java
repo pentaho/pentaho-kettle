@@ -56,6 +56,7 @@ import org.pentaho.di.repository.ObjectVersion;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.www.AddExportServlet;
 import org.pentaho.di.www.AllocateServerSocketServlet;
@@ -84,7 +85,7 @@ public class SlaveServer
 
     public static final String XML_TAG = "slaveserver"; //$NON-NLS-1$
 
-    public static final String REPOSITORY_ELEMENT_TYPE = "slaveserver";
+    public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.SLAVE_SERVER;
 
     private static LogWriter log = LogWriter.getInstance();    
     
@@ -920,7 +921,7 @@ public class SlaveServer
 		throw new RuntimeException("Setting a directory on a database connection is not supported");
 	}
 	
-	public String getRepositoryElementType() {
+	public RepositoryObjectType getRepositoryElementType() {
 		return REPOSITORY_ELEMENT_TYPE;
 	}
 	

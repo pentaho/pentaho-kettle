@@ -81,6 +81,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -113,7 +114,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     public static final String XML_TAG = "transformation";
         
-	public static final String REPOSITORY_ELEMENT_TYPE = "transformation";
+	public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.TRANSFORMATION;
 
     private static LogWriter         log = LogWriter.getInstance();
 
@@ -327,7 +328,17 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             }
             return t1.getFilename().compareTo(t2.getFilename());
         }
-        return t1.getName().compareTo(t2.getName()); 
+        
+        // Compare by name, repositories etc.
+        //
+        if (t1.getObjectVersion()!=null && t2.getObjectVersion()==null) return  1; 
+        if (t1.getObjectVersion()==null && t2.getObjectVersion()!=null) return -1;
+        int cmp = t1.getObjectVersion().getName().compareTo(t2.getObjectVersion().getName());
+        if (cmp==0) {
+        	return t1.getName().compareTo(t2.getName());
+        } else {
+        	return cmp;
+        }
     } 
     
     public int compareTo(TransMeta o)
@@ -5869,7 +5880,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		this.logSizeLimit = logSizeLimit;
 	}
 	
-	public String getRepositoryElementType() {
+	public RepositoryObjectType getRepositoryElementType() {
 		return REPOSITORY_ELEMENT_TYPE;
 	}
 
