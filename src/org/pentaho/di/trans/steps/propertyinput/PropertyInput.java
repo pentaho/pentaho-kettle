@@ -21,11 +21,13 @@ package org.pentaho.di.trans.steps.propertyinput;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -39,6 +41,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
 
 /**
  * Read all Properties files, convert them to rows and writes these to one or more output streams.
@@ -66,6 +69,8 @@ public class PropertyInput extends BaseStep implements StepInterface
 			if (data.files==null || data.files.nrOfFiles()==0)
 					throw new KettleException(BaseMessages.getString(PKG, "PropertyInput.Log.NoFiles"));
 	
+			handleMissingFiles();
+			
 			  // Create the output row meta-data
             data.outputRowMeta = new RowMeta();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
@@ -126,7 +131,27 @@ public class PropertyInput extends BaseStep implements StepInterface
 	         }
 		}
 		 return true;
-	}		
+	}	
+	private void handleMissingFiles() throws KettleException
+	{
+		List<FileObject> nonExistantFiles = data.files.getNonExistantFiles();
+		if (nonExistantFiles.size() != 0)
+		{
+			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
+			log.logError(BaseMessages.getString(PKG, "PropertyInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "PropertyInput.Log.RequiredFiles", message));
+
+			throw new KettleException(BaseMessages.getString(PKG, "PropertyInput.Log.RequiredFilesMissing",message));
+		}
+
+		List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
+		if (nonAccessibleFiles.size() != 0)
+		{
+			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
+			log.logError(BaseMessages.getString(PKG, "PropertyInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "PropertyInput.Log.RequiredNotAccessibleFiles",message));
+
+				throw new KettleException(BaseMessages.getString(PKG, "PropertyInput.Log.RequiredNotAccessibleFilesMissing",message));
+		}
+	}
 	private Object[] getOneRow() throws KettleException
 	{	
 		try{

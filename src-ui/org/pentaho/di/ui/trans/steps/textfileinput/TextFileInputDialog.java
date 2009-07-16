@@ -503,7 +503,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				wFilenameList.add(new String[] { wFilename.getText(), wFilemask.getText() } );
+				wFilenameList.add(new String[] { wFilename.getText(), wFilemask.getText(), TextFileInputMeta.RequiredFilesCode[0], TextFileInputMeta.RequiredFilesCode[0]} );
 				wFilename.setText("");
 				wFilemask.setText("");
 				wFilenameList.removeEmptyRows();
@@ -909,16 +909,18 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                 new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.FileDirColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
                 new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.WildcardColumn.Column"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
                 new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.RequiredColumn.Column"), ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO ),
+          		new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.IncludeSubDirs.Column"), ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO )
             };
 
         colinfo[ 0].setUsingVariables(true);
         colinfo[ 1].setToolTip(BaseMessages.getString(PKG, "TextFileInputDialog.RegExpColumn.Column"));
         colinfo[ 2].setToolTip(BaseMessages.getString(PKG, "TextFileInputDialog.RequiredColumn.Tooltip"));
+		colinfo[ 3].setToolTip(BaseMessages.getString(PKG, "TextFileInputDialog.IncludeSubDirs.Tooltip"));
 
         wFilenameList = new TableView(transMeta, wFileComp, 
                               SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
                               colinfo, 
-                              3,  
+                              4,  
                               lsMod,
                               props
                               );
@@ -2123,9 +2125,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		if (in.getFileName() !=null) 
 		{
 			wFilenameList.removeAll();
+	
 			for (int i=0;i<in.getFileName().length;i++) 
 			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i], in.getFileRequired()[i] } );
+				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] ,
+						in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
 			}
 			wFilenameList.removeEmptyRows();
 			wFilenameList.setRowNums();
@@ -2336,6 +2340,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		meta.setFileName( wFilenameList.getItems(0) );
 		meta.setFileMask( wFilenameList.getItems(1) );
 		meta.setFileRequired( wFilenameList.getItems(2) );
+		meta.setIncludeSubFolders( wFilenameList.getItems(3) );
 
 		for (int i=0;i<nrfields;i++)
 		{

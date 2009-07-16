@@ -88,6 +88,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.DirectoryDialogButtonListenerFactory;
 import org.pentaho.di.ui.trans.steps.textfileinput.VariableButtonListenerFactory;
 
+
 public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -515,14 +516,16 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         // fdAccepting.bottom = new FormAttachment(wAccStep, margin);
         gAccepting.setLayoutData(fdAccepting);
 
-		ColumnInfo[] colinfo=new ColumnInfo[3];
+		ColumnInfo[] colinfo=new ColumnInfo[4];
 		colinfo[ 0]=new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.FileDir.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false);
         colinfo[ 0].setUsingVariables(true);
 		colinfo[ 1]=new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.Wildcard.Column"),        ColumnInfo.COLUMN_TYPE_TEXT,    false );
 		colinfo[ 1].setToolTip(BaseMessages.getString(PKG, "ExcelInputDialog.Wildcard.Tooltip"));
 		colinfo[ 2]=new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.Required.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
 		colinfo[ 2].setToolTip(BaseMessages.getString(PKG, "ExcelInputDialog.Required.Tooltip"));
-		
+		colinfo[3]=new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.IncludeSubDirs.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
+		colinfo[ 3].setToolTip(BaseMessages.getString(PKG, "ExcelInputDialog.IncludeSubDirs.Tooltip"));
+		  
 		wFilenameList = new TableView(transMeta, wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
 						      colinfo, 
@@ -1192,9 +1195,11 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		if (meta.getFileName() !=null) 
 		{
 			wFilenameList.removeAll();
+
 			for (int i=0;i<meta.getFileName().length;i++) 
 			{
-				wFilenameList.add(new String[] { meta.getFileName()[i], meta.getFileMask()[i] , meta.getFileRequired()[i]} );
+				wFilenameList.add(new String[] { meta.getFileName()[i], meta.getFileMask()[i] ,
+						meta.getRequiredFilesDesc(meta.getFileRequired()[i]), meta.getRequiredFilesDesc(meta.getIncludeSubFolders()[i])} );
 			}
 			wFilenameList.removeEmptyRows();
 			wFilenameList.setRowNums();
@@ -1325,13 +1330,18 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		meta.allocate(nrfiles, nrsheets, nrfields);
 
-		for (int i=0;i<nrfiles;i++)
+		/*for (int i=0;i<nrfiles;i++)
 		{
 			TableItem item = wFilenameList.getNonEmpty(i);
 			meta.getFileName()[i] = item.getText(1);
 			meta.getFileMask()[i] = item.getText(2);
 			meta.getFileRequired()[i] = item.getText(3);
-		}
+		}*/
+		meta.setFileName( wFilenameList.getItems(0) );
+		meta.setFileMask( wFilenameList.getItems(1) );
+		meta.setFileRequired(wFilenameList.getItems(2));
+		meta.setIncludeSubFolders(wFilenameList.getItems(3));
+		
 
 		for (int i=0;i<nrsheets;i++)
 		{

@@ -57,6 +57,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString(PKG, "System.Combo.No"), BaseMessages.getString(PKG, "System.Combo.Yes") };
 	public static final String[] RequiredFilesCode = new String[] {"N", "Y"};
 	
+	
+	
 	/** Array of filenames */
 	private  String  fileName[]; 
 
@@ -113,6 +115,9 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	
 	/** Flag : do we ignore empty files */
 	private boolean IsIgnoreEmptyFile;
+	
+	/** Array of boolean values as string, indicating if we need to fetch sub folders. */
+	private  String  includeSubFolders[];
 	
 	/** Flag : do not fail if no file */
 	private boolean doNotFailIfNoFile;
@@ -253,7 +258,12 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	
+	public void setIncludeSubFolders(String[] includeSubFoldersin) {
+		for (int i=0;i<includeSubFoldersin.length;i++)
+		{
+			this.includeSubFolders[i] = getRequiredFilesCode(includeSubFoldersin[i]);
+		}
+	}
     /**
      * @return Returns the fileName.
      */
@@ -478,7 +488,9 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	public String getPrunePath() {
 		return prunePath;
 	}
-
+	public String[] getIncludeSubFolders() {
+		return includeSubFolders;
+	}
 	/**
 	 * @param prunePath the prunePath to set
 	 */
@@ -506,6 +518,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
             retval.fileName[i]     = fileName[i];
             retval.fileMask[i]     = fileMask[i];
             retval.fileRequired[i] = fileRequired[i];
+            retval.includeSubFolders[i] = includeSubFolders[i];
         }
 		
 		for (int i=0;i<nrFields;i++)
@@ -543,6 +556,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
             retval.append("      ").append(XMLHandler.addTagValue("name",     fileName[i]));
             retval.append("      ").append(XMLHandler.addTagValue("filemask", fileMask[i]));
             retval.append("      ").append(XMLHandler.addTagValue("file_required", fileRequired[i]));
+            retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", includeSubFolders[i]));  
                
         }
         retval.append("    </file>").append(Const.CR);
@@ -615,9 +629,11 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 				Node filenamenode = XMLHandler.getSubNodeByNr(filenode, "name", i); 
 				Node filemasknode = XMLHandler.getSubNodeByNr(filenode, "filemask", i); 
 				Node fileRequirednode = XMLHandler.getSubNodeByNr(filenode, "file_required", i);
+				Node includeSubFoldersnode = XMLHandler.getSubNodeByNr(filenode, "include_subfolders", i);
 				fileName[i] = XMLHandler.getNodeValue(filenamenode);
 				fileMask[i] = XMLHandler.getNodeValue(filemasknode);
 				fileRequired[i] = XMLHandler.getNodeValue(fileRequirednode);
+				includeSubFolders[i] = XMLHandler.getNodeValue(includeSubFoldersnode);
 			}
 			
 			for (int i=0;i<nrFields;i++)
@@ -649,6 +665,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		fileName     = new String [nrfiles];
 		fileMask     = new String [nrfiles];
 		fileRequired = new String[nrfiles];
+		includeSubFolders = new String[nrfiles];
 		inputFields  = new GetXMLDataField[nrfields];
 	}
 	
@@ -679,6 +696,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			fileName[i] = "filename"+(i+1);
 			fileMask[i] = "";
 			fileRequired[i] = RequiredFilesCode[0];
+			includeSubFolders[i] = RequiredFilesCode[0];
 		}
 		
 		for (int i=0;i<nrFields;i++)
@@ -766,6 +784,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 				fileName[i] =      rep.getStepAttributeString (id_step, i, "file_name"    );
 				fileMask[i] =      rep.getStepAttributeString (id_step, i, "file_mask"    );
 				fileRequired[i] =  rep.getStepAttributeString(id_step, i, "file_required");
+				includeSubFolders[i] =  rep.getStepAttributeString(id_step, i, "include_subfolders");
 			}
 
 			for (int i=0;i<nrFields;i++)
@@ -827,6 +846,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_name",     fileName[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_mask",     fileMask[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_required", fileRequired[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "include_subfolders", includeSubFolders[i]);
 			}
 			
 			for (int i=0;i<inputFields.length;i++)

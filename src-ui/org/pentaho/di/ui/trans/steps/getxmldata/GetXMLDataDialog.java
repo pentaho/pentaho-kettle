@@ -80,7 +80,6 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
-
 public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -521,7 +520,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
-		ColumnInfo[] colinfo=new ColumnInfo[3];
+		ColumnInfo[] colinfo=new ColumnInfo[4];
 		colinfo[ 0]=new ColumnInfo( BaseMessages.getString(PKG, "GetXMLDataDialog.Files.Filename.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false);
 		colinfo[ 1]=new ColumnInfo( BaseMessages.getString(PKG, "GetXMLDataDialog.Files.Wildcard.Column"),ColumnInfo.COLUMN_TYPE_TEXT, false );
 
@@ -529,7 +528,9 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		colinfo[1].setUsingVariables(true);
 		colinfo[1].setToolTip(BaseMessages.getString(PKG, "GetXMLDataDialog.Files.Wildcard.Tooltip"));
 		colinfo[2]=new ColumnInfo(BaseMessages.getString(PKG, "GetXMLDataDialog.Required.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,  GetXMLDataMeta.RequiredFilesDesc);
-		colinfo[2].setToolTip(BaseMessages.getString(PKG, "GetXMLDataDialog.Required.Tooltip"));		
+		colinfo[2].setToolTip(BaseMessages.getString(PKG, "GetXMLDataDialog.Required.Tooltip"));
+		colinfo[3]=new ColumnInfo(BaseMessages.getString(PKG, "GetXMLDataDialog.IncludeSubDirs.Column"), ColumnInfo.COLUMN_TYPE_CCOMBO,  GetXMLDataMeta.RequiredFilesDesc );
+		colinfo[3].setToolTip(BaseMessages.getString(PKG, "GetXMLDataDialog.IncludeSubDirs.Tooltip"));		
 		
 		wFilenameList = new TableView(transMeta,wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
@@ -1664,12 +1665,12 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		if (in.getFileName() !=null) 
 		{
 			wFilenameList.removeAll();
+			
 			for (int i=0;i<in.getFileName().length;i++) 
 			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i],in.getRequiredFilesDesc(in.getFileRequired()[i]) } );
+				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] , 
+						in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
 			}
-			
-			
 			wFilenameList.removeEmptyRows();
 			wFilenameList.setRowNums();
 			wFilenameList.optWidth(true);
@@ -1798,6 +1799,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		in.setFileName( wFilenameList.getItems(0) );
 		in.setFileMask( wFilenameList.getItems(1) );
 		in.setFileRequired(wFilenameList.getItems(2));
+		in.setIncludeSubFolders(wFilenameList.getItems(3));
 
 		for (int i=0;i<nrFields;i++)
 		{

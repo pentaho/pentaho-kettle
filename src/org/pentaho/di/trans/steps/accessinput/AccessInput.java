@@ -14,11 +14,13 @@ package org.pentaho.di.trans.steps.accessinput;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -288,7 +290,8 @@ public class AccessInput extends BaseStep implements StepInterface
 							logError(BaseMessages.getString(PKG, "AccessInput.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 							throw new KettleException(BaseMessages.getString(PKG, "AccessInput.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
-					}    
+					}   
+					handleMissingFiles();
 		        }  // End if first
 				
 				
@@ -334,8 +337,26 @@ public class AccessInput extends BaseStep implements StepInterface
 		}
 		return true;
 	}
-	
-	
+	private void handleMissingFiles() throws KettleException
+	{
+		List<FileObject> nonExistantFiles = data.files.getNonExistantFiles();
+		if (nonExistantFiles.size() != 0)
+		{
+			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
+			log.logError(BaseMessages.getString(PKG, "AccessInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "AccessInput.Log.RequiredFiles", message));
+
+			throw new KettleException(BaseMessages.getString(PKG, "AccessInput.Log.RequiredFilesMissing",message));
+		}
+
+		List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
+		if (nonAccessibleFiles.size() != 0)
+		{
+			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
+			log.logError(BaseMessages.getString(PKG, "AccessInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "AccessInput.Log.RequiredNotAccessibleFiles",message));
+
+				throw new KettleException(BaseMessages.getString(PKG, "AccessInput.Log.RequiredNotAccessibleFilesMissing",message));
+		}
+	}
 	/**
 	 * Build an empty row based on the meta-data...
 	 * 

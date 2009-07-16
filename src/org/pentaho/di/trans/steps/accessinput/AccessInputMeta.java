@@ -56,11 +56,22 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 {	
 	private static Class<?> PKG = AccessInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString(PKG, "System.Combo.No"), BaseMessages.getString(PKG, "System.Combo.Yes") };
+	public static final String[] RequiredFilesCode = new String[] {"N", "Y"};
+	
+	
 	/** Array of filenames */
 	private  String  fileName[]; 
 
 	/** Wildcard or filemask (regular expression) */
 	private  String  fileMask[];
+	
+	
+	/** Array of boolean values as string, indicating if a file is required. */
+	private  String  fileRequired[];
+	
+	/** Array of boolean values as string, indicating if we need to fetch sub folders. */
+	private  String  includeSubFolders[];
  	 
 	/** Flag indicating that we should include the filename in the output */
 	private  boolean includeFilename;
@@ -135,7 +146,17 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return fileMask;
     }
-    
+    public String[] getFileRequired() {
+		return fileRequired;
+	}
+    public String getRequiredFilesDesc(String tt)
+    {
+   	 if(tt==null) return RequiredFilesDesc[0]; 
+  		if(tt.equals(RequiredFilesCode[1]))
+  			return RequiredFilesDesc[1];
+  		else
+  			return RequiredFilesDesc[0]; 
+    }
     /**
      * @param fileMask The fileMask to set.
      */
@@ -143,6 +164,30 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.fileMask = fileMask;
     }
+
+	public void setFileRequired(String[] fileRequiredin) {
+		for (int i=0;i<fileRequiredin.length;i++)
+		{
+			this.fileRequired[i] = getRequiredFilesCode(fileRequiredin[i]);
+		}
+	}
+    public String getRequiredFilesCode(String tt)
+    {
+   	if(tt==null) return RequiredFilesCode[0]; 
+		if(tt.equals(RequiredFilesDesc[1]))
+			return RequiredFilesCode[1];
+		else
+			return RequiredFilesCode[0]; 
+    }
+	public String[] getIncludeSubFolders() {
+		return includeSubFolders;
+	}
+	public void setIncludeSubFolders(String[] includeSubFoldersin) {
+		for (int i=0;i<includeSubFoldersin.length;i++)
+		{
+			this.includeSubFolders[i] = getRequiredFilesCode(includeSubFoldersin[i]);
+		}
+	}
     
     /**
      * @return Returns the fileName.
@@ -371,6 +416,8 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			retval.fileName[i]     = fileName[i];
 			retval.fileMask[i]     = fileMask[i];
+			retval.fileRequired[i] = fileRequired[i];
+			retval.includeSubFolders[i] = includeSubFolders[i];
 		}
 		for (int i=0;i<nrFields;i++)
 		{
@@ -402,6 +449,8 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
         {
             retval.append("      ").append(XMLHandler.addTagValue("name",     fileName[i]));
             retval.append("      ").append(XMLHandler.addTagValue("filemask", fileMask[i]));
+			retval.append("      ").append(XMLHandler.addTagValue("file_required", fileRequired[i]));
+			retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", includeSubFolders[i]));
         }
         retval.append("    </file>").append(Const.CR);
         
@@ -465,8 +514,12 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				Node filenamenode = XMLHandler.getSubNodeByNr(filenode, "name", i); 
 				Node filemasknode = XMLHandler.getSubNodeByNr(filenode, "filemask", i); 
+				Node fileRequirednode = XMLHandler.getSubNodeByNr(filenode, "file_required", i);
+				Node includeSubFoldersnode = XMLHandler.getSubNodeByNr(filenode, "include_subfolders", i);
 				fileName[i] = XMLHandler.getNodeValue(filenamenode);
 				fileMask[i] = XMLHandler.getNodeValue(filemasknode);
+				fileRequired[i] = XMLHandler.getNodeValue(fileRequirednode);
+				includeSubFolders[i] = XMLHandler.getNodeValue(includeSubFoldersnode);
 			}
 			
 		
@@ -506,6 +559,8 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		fileName   = new String [nrfiles];
 		fileMask   = new String [nrfiles];
+		fileRequired = new String[nrfiles];
+		includeSubFolders = new String[nrfiles];   
 		inputFields = new AccessInputField[nrfields];        
 	}
 	
@@ -531,6 +586,8 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			fileName[i]="filename"+(i+1);
 			fileMask[i]="";
+			fileRequired[i] = RequiredFilesCode[0];
+			includeSubFolders[i] = RequiredFilesCode[0];
 		}
 		
 		for (int i=0;i<nrFields;i++)
@@ -636,6 +693,12 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				fileName[i] =      rep.getStepAttributeString (id_step, i, "file_name"    );
 				fileMask[i] =      rep.getStepAttributeString (id_step, i, "file_mask"    );
+				fileRequired[i] = rep.getStepAttributeString(id_step, i, "file_required");
+                if(!YES.equalsIgnoreCase(fileRequired[i]))
+                	fileRequired[i] = RequiredFilesCode[0];
+                includeSubFolders[i] = rep.getStepAttributeString(id_step, i, "include_subfolders");
+                if(!YES.equalsIgnoreCase(includeSubFolders[i]))
+                	includeSubFolders[i] = RequiredFilesCode[0];
 			}
 
 			for (int i=0;i<nrFields;i++)
@@ -686,6 +749,8 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_name",     fileName[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_mask",     fileMask[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "file_required", fileRequired[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "include_subfolders", includeSubFolders[i]);
 			}
 			
 			for (int i=0;i<inputFields.length;i++)
@@ -715,12 +780,18 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public FileInputList  getFiles(VariableSpace space)
 	{
-        String required[] = new String[fileName.length];
-        boolean subdirs[] = new boolean[fileName.length]; // boolean arrays are defaulted to false.
-        for (int i=0;i<required.length; required[i]="Y", i++); //$NON-NLS-1$
-        return FileInputList.createFileList(space, fileName, fileMask, required, subdirs);   
+        return FileInputList.createFileList(space, fileName, fileMask, fileRequired, includeSubFolderBoolean());   
 	}
-	
+	private boolean[] includeSubFolderBoolean()
+    {
+    	int len=fileName.length;
+		boolean includeSubFolderBoolean[]= new boolean[len];
+		for(int i=0; i<len; i++)
+		{
+			includeSubFolderBoolean[i]=YES.equalsIgnoreCase(includeSubFolders[i]);
+		}
+		return includeSubFolderBoolean;
+    }
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 	

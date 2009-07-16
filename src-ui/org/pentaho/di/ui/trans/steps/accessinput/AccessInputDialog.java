@@ -430,19 +430,26 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
-		ColumnInfo[] colinfo=new ColumnInfo[2];
-		colinfo[ 0]=new ColumnInfo(
+		ColumnInfo[] colinfo=new ColumnInfo[4];
+		colinfo[0]=new ColumnInfo(
           BaseMessages.getString(PKG, "AccessInputDialog.Files.Filename.Column"),
           ColumnInfo.COLUMN_TYPE_TEXT,
           false);
-		colinfo[ 1]=new ColumnInfo(
+		colinfo[1]=new ColumnInfo(
           BaseMessages.getString(PKG, "AccessInputDialog.Files.Wildcard.Column"),
           ColumnInfo.COLUMN_TYPE_TEXT,
           false);
+		colinfo[2]=new ColumnInfo(BaseMessages.getString(PKG, "AccessInputDialog.Required.Column"), 
+				ColumnInfo.COLUMN_TYPE_CCOMBO,  AccessInputMeta.RequiredFilesDesc );
+		colinfo[3]=new ColumnInfo(BaseMessages.getString(PKG, "AccessInputDialog.IncludeSubDirs.Column"), 
+				ColumnInfo.COLUMN_TYPE_CCOMBO,  AccessInputMeta.RequiredFilesDesc  );
+		
 		
 		colinfo[0].setUsingVariables(true);
 		colinfo[1].setUsingVariables(true);
 		colinfo[1].setToolTip(BaseMessages.getString(PKG, "AccessInputDialog.Files.Wildcard.Tooltip"));
+		colinfo[2].setToolTip(BaseMessages.getString(PKG, "AccessInputDialog.Required.Tooltip"));
+		colinfo[3].setToolTip(BaseMessages.getString(PKG, "AccessInputDialog.IncludeSubDirs.Tooltip"));
 				
 		wFilenameList = new TableView(transMeta,wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
@@ -1224,10 +1231,12 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		if (in.getFileName() !=null) 
 		{
 			wFilenameList.removeAll();
+
 			for (int i=0;i<in.getFileName().length;i++) 
 			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] } );
-			}
+				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] ,in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
+			}	
+			
 			wFilenameList.removeEmptyRows();
 			wFilenameList.setRowNums();
 			wFilenameList.optWidth(true);
@@ -1340,6 +1349,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
 		in.setFileName( wFilenameList.getItems(0) );
 		in.setFileMask( wFilenameList.getItems(1) );
+		in.setFileRequired(wFilenameList.getItems(2)); 
+		in.setIncludeSubFolders(wFilenameList.getItems(3));
 
 		for (int i=0;i<nrFields;i++)
 		{
