@@ -3542,10 +3542,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 				int response = SWT.YES;
 				if (rep.exists(meta.getName(), meta.getRepositoryDirectory(), meta.getRepositoryElementType())) {
-					MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-					mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptOverwriteTransformation.Message", meta.getName(), Const.CR));// "There already is a transformation called ["+transMeta.getName()+"] in the repository."+Const.CR+"Do you want to overwrite the transformation?"
-					mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.PromptOverwriteTransformation.Title"));// "Overwrite?"
-					response = mb.open();
+					// In case we support revisions, we can simply overwrite without a problem so we simply don't ask.
+					//
+					if (!rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions()) {
+						MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
+						mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptOverwriteTransformation.Message", meta.getName(), Const.CR));// "There already is a transformation called ["+transMeta.getName()+"] in the repository."+Const.CR+"Do you want to overwrite the transformation?"
+						mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.PromptOverwriteTransformation.Title"));// "Overwrite?"
+						response = mb.open();
+					}
 				}
 
 				boolean saved = false;
