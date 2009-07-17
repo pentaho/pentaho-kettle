@@ -333,7 +333,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         //
         if (t1.getObjectVersion()!=null && t2.getObjectVersion()==null) return  1; 
         if (t1.getObjectVersion()==null && t2.getObjectVersion()!=null) return -1;
-        int cmp = t1.getObjectVersion().getName().compareTo(t2.getObjectVersion().getName());
+        int cmp;
+        if (t1.getObjectVersion()==null && t2.getObjectVersion()==null) {
+        	 cmp=0;
+        } else {
+        	cmp = t1.getObjectVersion().getName().compareTo(t2.getObjectVersion().getName());
+        }
         if (cmp==0) {
         	return t1.getName().compareTo(t2.getName());
         } else {

@@ -2156,7 +2156,7 @@ public class TableView extends Composite
                 // Check if the column has a sorted mark set. In that case, we need the header to be a bit wider...
                 //
                 if (c==sortfield) {
-                	max+=10;
+                	max+=15;
                 }
 			} 
 				
@@ -2208,7 +2208,7 @@ public class TableView extends Composite
 			try
 			{
                 int extra = 30;
-                if (Const.isOSX() || Const.isLinux()) max*=1.1;
+                if (Const.isOSX() || Const.isLinux()) max*=1.25;
                 tc.setWidth(max+extra);
 			}
 			catch(Exception e) {}

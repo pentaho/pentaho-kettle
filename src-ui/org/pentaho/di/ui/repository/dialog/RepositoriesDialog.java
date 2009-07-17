@@ -460,8 +460,8 @@ public class RepositoriesDialog
             if (repositoryMeta != null)
             {
             	MessageBox messageBox = new MessageBox(shell, SWT.YES | SWT.NO);
-            	messageBox.setText(BaseMessages.getString("RepositoriesDialog.DelRepo.AreYouSure.Title"));
-            	messageBox.setMessage(BaseMessages.getString("RepositoriesDialog.DelRepo.AreYouSure.Message"));
+            	messageBox.setText(BaseMessages.getString(PKG, "RepositoriesDialog.DelRepo.AreYouSure.Title"));
+            	messageBox.setMessage(BaseMessages.getString(PKG, "RepositoriesDialog.DelRepo.AreYouSure.Message"));
             	int answer = messageBox.open();
             	if (answer==SWT.YES) {
 	                int idx = input.indexOfRepository(repositoryMeta);
