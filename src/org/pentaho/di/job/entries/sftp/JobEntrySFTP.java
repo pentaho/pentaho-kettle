@@ -495,14 +495,25 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			for (int i=0;i<filelist.length && !parentJob.isStopped();i++)
 			{
 				boolean getIt = true;
-				// First see if the file matches the regular expression!
-				if (!copyprevious && pattern!=null)
+
+				if(copyprevious)
 				{
-					Matcher matcher = pattern.matcher(filelist[i]);
-					getIt = matcher.matches();
+					// filenames list is send by previous job entry
+					// download if the current file is in this list
+					getIt=list_previous_filenames.contains(filelist[i]);
+				}	
+				else
+				{
+					// download files
+					// but before see if the file matches the regular expression!
+					if (pattern!=null)
+					{
+						Matcher matcher = pattern.matcher(filelist[i]);
+						getIt = matcher.matches();
+					}
 				}
 
-				if (getIt || list_previous_filenames.contains(filelist[i]))
+				if (getIt)
 				{
 					if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobSFTP.Log.GettingFiles",filelist[i],realTargetDirectory));
 
