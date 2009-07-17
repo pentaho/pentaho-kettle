@@ -438,15 +438,21 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
-		ColumnInfo[] colinfo = new ColumnInfo[2];
+		ColumnInfo[] colinfo = new ColumnInfo[4];
 		colinfo[0] = new ColumnInfo(BaseMessages.getString(PKG, "LDIFInputDialog.Files.Filename.Column"),
 				ColumnInfo.COLUMN_TYPE_TEXT, false);
 		colinfo[1] = new ColumnInfo(BaseMessages.getString(PKG, "LDIFInputDialog.Files.Wildcard.Column"),
 				ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinfo[2]=new ColumnInfo(BaseMessages.getString(PKG, "LDIFInputDialog.Required.Column"),        
+				ColumnInfo.COLUMN_TYPE_CCOMBO,  LDIFInputMeta.RequiredFilesDesc );
+		colinfo[3]=new ColumnInfo(BaseMessages.getString(PKG, "LDIFInputDialog.IncludeSubDirs.Column"),        
+				ColumnInfo.COLUMN_TYPE_CCOMBO,  LDIFInputMeta.RequiredFilesDesc );
 
 		colinfo[0].setUsingVariables(true);
 		colinfo[1].setUsingVariables(true);
 		colinfo[1].setToolTip(BaseMessages.getString(PKG, "LDIFInputDialog.Files.Wildcard.Tooltip"));
+		colinfo[2].setToolTip(BaseMessages.getString(PKG, "LDIFInputDialog.Required.Tooltip"));
+		colinfo[3].setToolTip(BaseMessages.getString(PKG, "LDIFInputDialog.IncludeSubDirs.Tooltip"));
 
 		wFilenameList = new TableView(transMeta,wFileComp, SWT.FULL_SELECTION
 				| SWT.SINGLE | SWT.BORDER, colinfo, 2, lsMod, props);
@@ -1188,9 +1194,10 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		
 		if (in.getFileName() != null) {
 			wFilenameList.removeAll();
-			for (int i = 0; i < in.getFileName().length; i++) {
-				wFilenameList.add(new String[] { in.getFileName()[i],
-						in.getFileMask()[i] });
+			for (int i=0;i<in.getFileName().length;i++) 
+			{
+				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] ,
+						in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
 			}
 			wFilenameList.removeEmptyRows();
 			wFilenameList.setRowNums();
@@ -1310,6 +1317,8 @@ public class LDIFInputDialog extends BaseStepDialog implements
 
 		in.setFileName(wFilenameList.getItems(0));
 		in.setFileMask(wFilenameList.getItems(1));
+		in.setFileRequired(wFilenameList.getItems(2));
+		in.setIncludeSubFolders(wFilenameList.getItems(3));
 
 		for (int i = 0; i < nrFields; i++) {
 			LDIFInputField field = new LDIFInputField();

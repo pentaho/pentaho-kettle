@@ -66,6 +66,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+
 public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static Class<?> PKG = GetFilesRowsCountMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -387,7 +388,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
-		ColumnInfo[] colinfo=new ColumnInfo[2];
+		ColumnInfo[] colinfo=new ColumnInfo[4];
 		colinfo[ 0]=new ColumnInfo(
           BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Files.Filename.Column"),
           ColumnInfo.COLUMN_TYPE_TEXT,
@@ -396,6 +397,10 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
           BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Files.Wildcard.Column"),
           ColumnInfo.COLUMN_TYPE_TEXT,
           false);
+		colinfo[ 2]=new ColumnInfo(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Required.Column"),        
+				ColumnInfo.COLUMN_TYPE_CCOMBO,  GetFilesRowsCountMeta.RequiredFilesDesc );
+		colinfo[ 3]=new ColumnInfo(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.IncludeSubDirs.Column"),        
+				ColumnInfo.COLUMN_TYPE_CCOMBO,  GetFilesRowsCountMeta.RequiredFilesDesc );
 		
 		colinfo[0].setUsingVariables(true);
 		colinfo[1].setUsingVariables(true);
@@ -950,7 +955,8 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 			wFilenameList.removeAll();
 			for (int i=0;i<in.getFileName().length;i++) 
 			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] } );
+				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] ,
+						in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
 			}
 			wFilenameList.removeEmptyRows();
 			wFilenameList.setRowNums();
@@ -1062,6 +1068,9 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		in.setFileName( wFilenameList.getItems(0) );
 		in.setFileMask( wFilenameList.getItems(1) );
+		in.setFileRequired(wFilenameList.getItems(2));
+		in.setIncludeSubFolders(wFilenameList.getItems(3));
+		
 		if (wRowSeparator.getText().length()>1)
 		{
 			if (wRowSeparator.getText().substring(0, 1).equals("\\"))
