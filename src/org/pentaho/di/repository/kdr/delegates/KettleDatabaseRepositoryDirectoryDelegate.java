@@ -197,8 +197,8 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 	{
 		try
 		{
-			String trans[]   = repository.getTransformationNames(dir.getObjectId());
-			String jobs[]    = repository.getJobNames(dir.getObjectId());
+			String trans[]   = repository.getTransformationNames(dir.getObjectId(), false); // TODO : include or exclude deleted objects?
+			String jobs[]    = repository.getJobNames(dir.getObjectId(), false); // TODO : include or exclude deleted objects?
 			ObjectId[] subDirectories = repository.getSubDirectoryIDs(dir.getObjectId());
 			if (trans.length==0 && jobs.length==0 && subDirectories.length==0)
 			{

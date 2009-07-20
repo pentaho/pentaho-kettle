@@ -99,7 +99,7 @@ public class RepositoryExporter {
 	        {
 	            RepositoryDirectory repdir = dirTree.findDirectory(dirids[d]);
 	
-	            String jobs[]  = repository.getJobNames(dirids[d]);
+	            String jobs[]  = repository.getJobNames(dirids[d], false);
 	            for (int i=0;i<jobs.length && (monitor==null || (monitor!=null && !monitor.isCanceled()));i++)
 	            {
 	                try
@@ -137,7 +137,7 @@ public class RepositoryExporter {
 	
 	            System.out.println("Directory ID #"+d+" : "+dirids[d]+" : "+repdir);
 	
-	            String trans[] = repository.getTransformationNames(dirids[d]);
+	            String trans[] = repository.getTransformationNames(dirids[d], false);
 	            for (int i=0;i<trans.length && (monitor==null || (monitor!=null && !monitor.isCanceled()));i++)
 	            {
 	                try

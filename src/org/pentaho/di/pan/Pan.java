@@ -243,7 +243,7 @@ public class Pan
 								{
 									if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.GettingListTransDirectory",""+directory));
 									
-									String transnames[] = rep.getTransformationNames(directory.getObjectId());
+									String transnames[] = rep.getTransformationNames(directory.getObjectId(), false);
 									for (int i=0;i<transnames.length;i++)
 									{
 										System.out.println(transnames[i]);

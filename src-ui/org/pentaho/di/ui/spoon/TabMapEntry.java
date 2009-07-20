@@ -12,6 +12,7 @@
 */
 package org.pentaho.di.ui.spoon;
 
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.xul.swt.tab.TabItem;
 
@@ -21,7 +22,11 @@ public class TabMapEntry
 	
     private TabItem tabItem;
     
+    private String filename;
+    
     private String objectName;
+    
+    private RepositoryDirectory repositoryDirectory;
     
     private String versionLabel;
 
@@ -35,10 +40,12 @@ public class TabMapEntry
      * @param objectType
      * @param object
      */
-    public TabMapEntry(TabItem tabItem, String objectName, String versionLabel, TabItemInterface object, ObjectType objectType)
+    public TabMapEntry(TabItem tabItem, String filename, String objectName, RepositoryDirectory repositoryDirectory, String versionLabel, TabItemInterface object, ObjectType objectType)
     {
         this.tabItem = tabItem;
+        this.filename = filename;
         this.objectName = objectName;
+        this.repositoryDirectory = repositoryDirectory;
         this.versionLabel = versionLabel;
         this.object = object;
         this.objectType = objectType;
@@ -46,10 +53,12 @@ public class TabMapEntry
     
     public boolean equals(Object obj) {
     	TabMapEntry entry = (TabMapEntry) obj;
-    	
-    	boolean sameVersion = (versionLabel==null && entry.versionLabel==null) || (versionLabel!=null && versionLabel.equals(versionLabel)) ;
-    	
-    	return objectType.equals(entry.objectType) && objectName.equals(entry.objectName) && sameVersion;
+    
+    	boolean sameFile = (filename==null && entry.filename==null) || (filename!=null && filename.equals(entry.versionLabel));
+    	boolean sameVersion = (versionLabel==null && entry.versionLabel==null) || (versionLabel!=null && versionLabel.equals(entry.versionLabel)) ;
+    	boolean sameDirectory = (repositoryDirectory==null && entry.repositoryDirectory==null) || 
+    		(repositoryDirectory!=null && entry.repositoryDirectory!=null && repositoryDirectory.getPath().equals(entry.repositoryDirectory.getPath()) );
+    	return objectType.equals(entry.objectType) && objectName.equals(entry.objectName) && sameVersion && sameFile && sameDirectory;
     }
 
     /**
@@ -123,4 +132,32 @@ public class TabMapEntry
     {
         this.objectType = objectType;
     }
+
+	/**
+	 * @return the filename
+	 */
+	public String getFilename() {
+		return filename;
+	}
+
+	/**
+	 * @param filename the filename to set
+	 */
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	/**
+	 * @return the repositoryDirectory
+	 */
+	public RepositoryDirectory getRepositoryDirectory() {
+		return repositoryDirectory;
+	}
+
+	/**
+	 * @param repositoryDirectory the repositoryDirectory to set
+	 */
+	public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
+		this.repositoryDirectory = repositoryDirectory;
+	}
 }

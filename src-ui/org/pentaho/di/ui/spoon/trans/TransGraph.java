@@ -98,6 +98,7 @@ import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.lineage.TransDataLineage;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryLock;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.StepLoader;
@@ -2708,15 +2709,22 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
   
   public void browseVersionHistory() {
-	  try {
-		RepositoryVersionBrowserDialogInterface dialog = RepositoryExplorerDialog.getVersionBrowserDialog(shell, spoon.rep, transMeta.getName(), transMeta.getRepositoryDirectory(), transMeta.getRepositoryElementType());
-		String versionLabel = dialog.open();
-		if (versionLabel!=null) {
-			spoon.loadObjectFromRepository(transMeta.getName(), transMeta.getRepositoryElementType(), transMeta.getRepositoryDirectory(), versionLabel);
+		  try {
+			  if (spoon.rep.exists(transMeta.getName(), transMeta.getRepositoryDirectory(), RepositoryObjectType.TRANSFORMATION)) {
+				RepositoryVersionBrowserDialogInterface dialog = RepositoryExplorerDialog.getVersionBrowserDialog(shell, spoon.rep, transMeta.getName(), transMeta.getRepositoryDirectory(), transMeta.getRepositoryElementType());
+				String versionLabel = dialog.open();
+				if (versionLabel!=null) {
+					spoon.loadObjectFromRepository(transMeta.getName(), transMeta.getRepositoryElementType(), transMeta.getRepositoryDirectory(), versionLabel);
+				}
+			  } else {
+				  MessageBox box = new MessageBox(shell, SWT.CLOSE | SWT.ICON_ERROR);
+				  box.setText("Sorry");
+				  box.setMessage("Can't find this transformation in the repository");
+				  box.open();
+			  }
+		} catch (Exception e) {
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "TransGraph.VersionBrowserException.Title"), BaseMessages.getString(PKG, "TransGraph.VersionBrowserException.Message"), e);
 		}
-	} catch (Exception e) {
-		new ErrorDialog(shell, BaseMessages.getString(PKG, "TransGraph.VersionBrowserException.Title"), BaseMessages.getString(PKG, "TransGraph.VersionBrowserException.Message"), e);
-	}
   }
 
   /**
@@ -3186,6 +3194,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public synchronized void setControlStates() {
+	if (this.isDisposed()) return;
 	if (getDisplay().isDisposed()) return;
 	
     getDisplay().asyncExec(new Runnable() {

@@ -243,4 +243,11 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		this.to_entry = toEntry;
 	}
 
+	/**
+	 * @param unconditional the unconditional to set
+	 */
+	public void setUnconditional(boolean unconditional) {
+		this.unconditional = unconditional;
+	}
+
 }

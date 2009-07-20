@@ -326,7 +326,7 @@ public class KettleFileRepository implements Repository {
 		return getRootObjectIDs(EXT_CLUSTER_SCHEMA);
 	}
 
-	public String[] getClusterNames() throws KettleException {
+	public String[] getClusterNames(boolean includeDeleted) throws KettleException {
 		return convertRootIDsToNames(getClusterIDs(false));
 	}
 
@@ -370,7 +370,7 @@ public class KettleFileRepository implements Repository {
 		return getRootObjectIDs(EXT_DATABASE);
 	}
 
-	public String[] getDatabaseNames() throws KettleException {
+	public String[] getDatabaseNames(boolean includeDeleted) throws KettleException {
 		return convertRootIDsToNames(getDatabaseIDs(false));
 	}
 
@@ -388,7 +388,7 @@ public class KettleFileRepository implements Repository {
 		return getObjectId(repositoryDirectory, name, EXT_JOB);
 	}
 
-	public String[] getJobNames(ObjectId id_directory) throws KettleException {
+	public String[] getJobNames(ObjectId id_directory, boolean includeDeleted) throws KettleException {
 		try {
 			List<String> list = new ArrayList<String>();
 			
@@ -435,7 +435,7 @@ public class KettleFileRepository implements Repository {
 		return getRootObjectIDs(EXT_PARTITION_SCHEMA);
 	}
 
-	public String[] getPartitionSchemaNames() throws KettleException {
+	public String[] getPartitionSchemaNames(boolean includeDeleted) throws KettleException {
 		return convertRootIDsToNames(getPartitionSchemaIDs(false));
 	}
 
@@ -482,7 +482,7 @@ public class KettleFileRepository implements Repository {
 
 	public ObjectId[] getClusterSlaveIDs(ObjectId id_cluster_schema) throws KettleException { return new ObjectId[] {}; }
 
-	public String[] getSlaveNames() throws KettleException {
+	public String[] getSlaveNames(boolean includeDeleted) throws KettleException {
 		return convertRootIDsToNames(getSlaveIDs(false));
 	}
 
@@ -533,7 +533,7 @@ public class KettleFileRepository implements Repository {
 		return getObjectId(repositoryDirectory, name, EXT_TRANSFORMATION);
 	}
 
-	public String[] getTransformationNames(ObjectId id_directory) throws KettleException {
+	public String[] getTransformationNames(ObjectId id_directory, boolean includeDeleted) throws KettleException {
 		try {
 			List<String> list = new ArrayList<String>();
 			

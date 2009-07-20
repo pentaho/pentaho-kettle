@@ -973,7 +973,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 				tabItem.setControl(jobGraph);
 				
 				String versionLabel = jobMeta.getObjectVersion() == null ? null : jobMeta.getObjectVersion().getName();
-				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, versionLabel, jobGraph, ObjectType.JOB_GRAPH));
+				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getRepositoryDirectory(), versionLabel, jobGraph, ObjectType.JOB_GRAPH));
 
 				// OK, also see if we need to open a new history window.
 				if (jobMeta.getLogConnection() != null && !Const.isEmpty(jobMeta.getLogTable()))

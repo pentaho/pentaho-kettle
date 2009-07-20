@@ -200,7 +200,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				}
 
 				String versionLabel = transMeta.getObjectVersion() == null ? null : transMeta.getObjectVersion().getName();
-				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, versionLabel, transGraph, ObjectType.TRANSFORMATION_GRAPH));
+				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, transMeta.getFilename(), transMeta.getName(), transMeta.getRepositoryDirectory(), versionLabel, transGraph, ObjectType.TRANSFORMATION_GRAPH));
 			}
 			int idx = spoon.tabfolder.indexOf(tabItem);
 

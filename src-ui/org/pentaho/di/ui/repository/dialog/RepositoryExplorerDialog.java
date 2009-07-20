@@ -217,16 +217,16 @@ public class RepositoryExplorerDialog extends Dialog
     private RepositoryObjectReference lastOpened;
 	private VariableSpace variableSpace;
 	
-	private ToolItem expandAll, collapseAll;
+	private ToolItem exportToXML, importFromXML, showHideDeleted, expandAll, collapseAll;
     
-    private FormData     fdexpandAll;
+    private FormData     fdTreeTb;
 	private RepositoryDirectory	directoryTree;
 	private RepositoryMeta	repositoryMeta;
 	private RepositoryCapabilities	capabilities;
 	private boolean	readonly;
 	private RepositorySecurityProvider	securityProvider;
 	private boolean	includeDeleted;
-    
+
 	private RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, VariableSpace variableSpace)
 	{
 		super(par, style);
@@ -245,7 +245,7 @@ public class RepositoryExplorerDialog extends Dialog
         securityProvider = rep.getSecurityProvider();
         readonly = securityProvider.isReadOnly();
         
-        includeDeleted = false; // TODO make this a configuration!
+        includeDeleted = false;
 	}
     
 	public RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, RepositoryExplorerCallback callback, VariableSpace variableSpace)
@@ -275,53 +275,48 @@ public class RepositoryExplorerDialog extends Dialog
     		formLayout.marginHeight = Const.FORM_MARGIN;
     		
     		shell.setLayout (formLayout);
-     		
-            // Add a menu on top!
-            Menu mBar = new Menu(shell, SWT.BAR);
-            shell.setMenuBar(mBar);
             
-            ////////////////////////////////////////////////////
-            // FILE
-            MenuItem mFile = new MenuItem(mBar, SWT.CASCADE); 
-            mFile.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Menu.File")); //$NON-NLS-1$
-            Menu msFile = new Menu(shell, SWT.DROP_DOWN);
-            mFile.setMenu(msFile);
-            
-            // File export ALL
+            // Add a small toolbar to expand/collapse all items
             //
-            MenuItem miFileExport = new MenuItem(msFile, SWT.CASCADE); 
-            miFileExport.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Menu.FileExportAll")); //$NON-NLS-1$
-            miFileExport.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportAll(null); } });
-            
-            // File import ALL
-            //
-            MenuItem miFileImport = new MenuItem(msFile, SWT.CASCADE); 
-            miFileImport.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Menu.FileImportAll")); //$NON-NLS-1$
-            miFileImport.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { importAll(); } });
+            ToolBar treeTb = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT );
+            props.setLook(treeTb);
+    		fdTreeTb=new FormData();
+    		fdTreeTb.left = new FormAttachment(0, 0);
+    		fdTreeTb.top  = new FormAttachment(0, 0);
+    		treeTb.setLayoutData(fdTreeTb);
 
-            new MenuItem(msFile, SWT.SEPARATOR);
-            
-            // File close
-            //
-            MenuItem miFileClose= new MenuItem(msFile, SWT.CASCADE); 
-            miFileClose.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Menu.FileClose")); //$NON-NLS-1$
-            miFileClose.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { close(); } });
-            
-            ToolBar treeTb = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT);
+    		// Add the items...
+    		//
+            exportToXML = new ToolItem(treeTb,SWT.PUSH);
+            exportToXML.setImage(GUIResource.getInstance().getImageExport());
+            exportToXML.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.ToolItem.ExportToXML.Label"));
+            exportToXML.setToolTipText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.ToolItem.ExportToXML.Tooltip"));
+            importFromXML = new ToolItem(treeTb,SWT.PUSH);
+            importFromXML.setImage(GUIResource.getInstance().getImageImport());
+            importFromXML.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.ToolItem.ImportFromXML.Label"));
+            importFromXML.setToolTipText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.ToolItem.ImportFromXML.Tooltip"));
+            new ToolItem(treeTb,SWT.SEPARATOR);
+            showHideDeleted = new ToolItem(treeTb,SWT.PUSH);
+            showHideDeleted.setImage(GUIResource.getInstance().getImageShowDeleted());
+            showHideDeleted.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.ToolItem.ShowDeleted.Label"));
+            showHideDeleted.setToolTipText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.ToolItem.ShowDeleted.Tooltip"));
+            showHideDeleted.setEnabled( rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions() );
+            new ToolItem(treeTb,SWT.SEPARATOR);
             expandAll = new ToolItem(treeTb,SWT.PUSH);
             expandAll.setImage(GUIResource.getInstance().getImageExpandAll());
+            expandAll.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.ToolItem.ExpandAll.Label"));
+            expandAll.setToolTipText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.ToolItem.ExpandAll.Tooltip"));
             collapseAll = new ToolItem(treeTb,SWT.PUSH);
             collapseAll.setImage(GUIResource.getInstance().getImageCollapseAll());
-    		fdexpandAll=new FormData();
-    		fdexpandAll.right = new FormAttachment(100, -20);
-    		fdexpandAll.top  = new FormAttachment(0, 0);
-    		treeTb.setLayoutData(fdexpandAll);
+            collapseAll.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.ToolItem.CollapseAll.Label"));
+            collapseAll.setToolTipText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.ToolItem.CollapseAll.Tooltip"));
+
             
      		// Tree
-     		wTree = new Tree(shell, SWT.MULTI | SWT.BORDER /*| (multiple?SWT.CHECK:SWT.NONE)*/);
+     		wTree = new Tree(shell, SWT.MULTI | SWT.BORDER );
             wTree.setHeaderVisible(true);
      		props.setLook(wTree);
-    
+     		
             // Add some columns to it as well...
             nameColumn = new TreeColumn(wTree, SWT.LEFT);
             nameColumn.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Column.Name")); //$NON-NLS-1$
@@ -366,7 +361,7 @@ public class RepositoryExplorerDialog extends Dialog
     		int margin =  10;
     
     		fdTree.left   = new FormAttachment(0, 0); // To the right of the label
-    		fdTree.top    = new FormAttachment(0, 0);
+    		fdTree.top    = new FormAttachment(treeTb, 0);
     		fdTree.right  = new FormAttachment(100, 0);
     		fdTree.bottom = new FormAttachment(100, -50);
     		wTree.setLayoutData(fdTree);
@@ -425,7 +420,29 @@ public class RepositoryExplorerDialog extends Dialog
   		    	expandAllItems(wTree.getItems(),false);
   		      }});
 
+    		importFromXML.addSelectionListener(new SelectionAdapter() {
+  		      public void widgetSelected(SelectionEvent event) {
+  		    	importAll();
+  		      }});
+
+    		exportToXML.addSelectionListener(new SelectionAdapter() {
+		      public void widgetSelected(SelectionEvent event) {
+		    	exportAll(null);
+		      }});
     		
+    		showHideDeleted.addSelectionListener(new SelectionAdapter() {
+		      public void widgetSelected(SelectionEvent event) {
+		    	includeDeleted = !includeDeleted;
+		    	if (includeDeleted) {
+		            showHideDeleted.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.ToolItem.HideDeleted.Label"));
+		            showHideDeleted.setToolTipText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.ToolItem.HideDeleted.Tooltip"));
+		    	}  else {
+		            showHideDeleted.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.ToolItem.ShowDeleted.Label"));
+		            showHideDeleted.setToolTipText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.ToolItem.ShowDeleted.Tooltip"));
+		    	}
+		    	refreshTree();
+		      }});
+
     		// Drag & Drop
     		Transfer[] ttypes = new Transfer[] {TextTransfer.getInstance() };
     		
@@ -1321,7 +1338,7 @@ public class RepositoryExplorerDialog extends Dialog
 			
             if (!!readonly) TreeItemAccelerator.addDoubleClick(tiParent, new DoubleClickInterface() { public void action(TreeItem treeItem) { newDatabase(); } });
 	
-			String names[] = rep.getDatabaseNames();			
+            String names[] = rep.getDatabaseNames(includeDeleted);			
 			for (int i=0;i<names.length;i++)
 			{
 				TreeItem newDB = new TreeItem(tiParent, SWT.NONE);
@@ -1337,7 +1354,7 @@ public class RepositoryExplorerDialog extends Dialog
             if (!readonly) TreeItemAccelerator.addDoubleClick(tiParent, 
             		new DoubleClickInterface() { public void action(TreeItem treeItem) { newPartitionSchema(); } });            
     
-            names = rep.getPartitionSchemaNames();          
+            names = rep.getPartitionSchemaNames(includeDeleted);          
             for (int i=0;i<names.length;i++)
             {
                 TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
@@ -1353,7 +1370,7 @@ public class RepositoryExplorerDialog extends Dialog
             tiParent.setText(STRING_SLAVES);
             if (!readonly) TreeItemAccelerator.addDoubleClick(tiParent, new DoubleClickInterface() { public void action(TreeItem treeItem) { newSlaveServer(); } });
 
-            names = rep.getSlaveNames();          
+            names = rep.getSlaveNames(includeDeleted);          
             for (int i=0;i<names.length;i++)
             {
                 TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
@@ -1369,7 +1386,7 @@ public class RepositoryExplorerDialog extends Dialog
             if (!readonly) TreeItemAccelerator.addDoubleClick(tiParent, 
             		new DoubleClickInterface() { public void action(TreeItem treeItem) { newCluster(); } });            
     
-            names = rep.getClusterNames();          
+            names = rep.getClusterNames(includeDeleted);          
             for (int i=0;i<names.length;i++)
             {
                 TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
@@ -2734,7 +2751,7 @@ public class RepositoryExplorerDialog extends Dialog
 				for (int d=0;d<dirids.length;d++)
 				{
 					RepositoryDirectory repdir = directoryTree.findDirectory(dirids[d]);				
-					String trans[] = rep.getTransformationNames(dirids[d]);
+					String trans[] = rep.getTransformationNames(dirids[d], false);
 				
 					// See if the directory exists...
 					File dir = new File(directory+repdir.getPath());
@@ -2796,7 +2813,7 @@ public class RepositoryExplorerDialog extends Dialog
 				for (int d=0;d<dirids.length;d++)
 				{
 					RepositoryDirectory repdir = directoryTree.findDirectory(dirids[d]);				
-					String jobs[] = rep.getJobNames(dirids[d]);
+					String jobs[] = rep.getJobNames(dirids[d], false);
 
 					// See if the directory exists...
 					File dir = new File(directory+repdir.getPath());

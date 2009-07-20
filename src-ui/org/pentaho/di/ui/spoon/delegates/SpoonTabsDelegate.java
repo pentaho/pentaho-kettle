@@ -244,7 +244,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 				tabItem.setImage(GUIResource.getInstance().getImageLogoSmall());
 				tabItem.setControl(browser.getComposite());
 
-				tabMap.add(new TabMapEntry(tabItem, name, null, browser, ObjectType.BROWSER));
+				tabMap.add(new TabMapEntry(tabItem, isURL ? urlString : null, name, null, null, browser, ObjectType.BROWSER));
 			}
 			int idx = tabfolder.indexOf(tabItem);
 

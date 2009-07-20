@@ -221,7 +221,7 @@ public class Kitchen
 								{
 									if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.GettingLostJobsInDirectory",""+directory));
 									
-									String jobnames[] = repository.getJobNames(directory.getObjectId());
+									String jobnames[] = repository.getJobNames(directory.getObjectId(), false);
 									for (int i=0;i<jobnames.length;i++)
 									{
 										System.out.println(jobnames[i]);

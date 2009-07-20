@@ -246,7 +246,11 @@ public class GUIResource
     private Image imageNew;
     private Image imageEdit;
     private Image imageDelete;
-    
+    private Image imageShowDeleted;
+
+    private Image imageImport;
+    private Image imageExport;
+
     private Image imageLocked;
     
 
@@ -420,7 +424,10 @@ public class GUIResource
 		    imageNew.dispose();
 		    imageEdit.dispose();
 		    imageDelete.dispose();
+		    imageShowDeleted.dispose();
 		    imageLocked.dispose();
+		    imageImport.dispose();
+		    imageExport.dispose();
 
 		    disposeImage(imageNoteSmall);
 		    disposeImage(imageColor);
@@ -638,6 +645,10 @@ public class GUIResource
     imageNew= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("New_image")); // , "ui/images/generic-new.png;
     imageEdit= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Edit_image")); // , "ui/images/generic-edit.png;
     imageDelete = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Delete_image")); // , "ui/images/generic-delete.png;
+    imageShowDeleted = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowDeleted_image")); // , "ui/images/show-deleted.png;
+
+    imageImport = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Import_image")); // , "ui/images/import.png;
+    imageExport = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Export_image")); // , "ui/images/export.png;
 
     imageLocked = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Locked_image")); // , "ui/images/locked.png;
 
@@ -1620,6 +1631,18 @@ public class GUIResource
   
   public Image getImageDelete(){
 	    return imageDelete;
+  }
+
+  public Image getImageShowDeleted(){
+	    return imageShowDeleted;
+ }
+
+  public Image getImageImport() {
+		return imageImport;
+  }
+
+  public Image getImageExport() {
+		return imageExport;
   }
 
   public Image getImageLocked(){

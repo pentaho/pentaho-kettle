@@ -188,7 +188,7 @@ public interface Repository {
 
 	public ObjectId[] getDatabaseIDs(boolean includeDeleted) throws KettleException;
     
-	public String[] getDatabaseNames() throws KettleException;
+	public String[] getDatabaseNames(boolean includeDeleted) throws KettleException;
 	
 	public ObjectId renameDatabase(ObjectId id_database, String newname) throws KettleException;
 
@@ -209,7 +209,7 @@ public interface Repository {
 
     public ObjectId[] getClusterIDs(boolean includeDeleted) throws KettleException;
 
-    public String[] getClusterNames() throws KettleException;
+    public String[] getClusterNames(boolean includeDeleted) throws KettleException;
 
     public ObjectId getClusterID(String name) throws KettleException;
 
@@ -223,7 +223,7 @@ public interface Repository {
 	
     public ObjectId[] getSlaveIDs(boolean includeDeleted) throws KettleException;
 
-    public String[] getSlaveNames() throws KettleException;
+    public String[] getSlaveNames(boolean includeDeleted) throws KettleException;
     
     /**
      * @return a list of all the slave servers in the repository.
@@ -245,7 +245,7 @@ public interface Repository {
 
     // public ObjectId[] getPartitionIDs(ObjectId id_partition_schema) throws KettleException;
 
-    public String[] getPartitionSchemaNames() throws KettleException;
+    public String[] getPartitionSchemaNames(boolean includeDeleted) throws KettleException;
 
 	public ObjectId getPartitionSchemaID(String name) throws KettleException;
 	
@@ -276,14 +276,14 @@ public interface Repository {
 	 */
 	public RepositoryDirectory createRepositoryDirectory(RepositoryDirectory parentDirectory, String directoryPath) throws KettleException;
 	
-	public String[] getTransformationNames(ObjectId id_directory) throws KettleException;
+	public String[] getTransformationNames(ObjectId id_directory, boolean includeDeleted) throws KettleException;
     
     public List<RepositoryObject> getJobObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException;
 
     public List<RepositoryObject> getTransformationObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException;
 
 
-	public String[] getJobNames(ObjectId id_directory) throws KettleException;
+	public String[] getJobNames(ObjectId id_directory, boolean includeDeleted) throws KettleException;
 
 	public String[] getDirectoryNames(ObjectId id_directory) throws KettleException;
 

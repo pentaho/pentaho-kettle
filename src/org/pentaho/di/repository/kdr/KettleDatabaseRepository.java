@@ -643,7 +643,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	// READ DATA FROM REPOSITORY
 	//////////////////////////////////////////////////////////////////////////////////////////
 
-	public synchronized String[] getTransformationNames(ObjectId id_directory) throws KettleException
+	public synchronized String[] getTransformationNames(ObjectId id_directory, boolean includeDeleted) throws KettleException
 	{
 		return connectionDelegate.getStrings("SELECT "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" = " + id_directory + " ORDER BY "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME));
 	}
@@ -670,7 +670,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     }
     
 
-	public synchronized String[] getJobNames(ObjectId id_directory) throws KettleException
+	public synchronized String[] getJobNames(ObjectId id_directory, boolean includeDeleted) throws KettleException
 	{
         return connectionDelegate.getStrings("SELECT "+quote(KettleDatabaseRepository.FIELD_JOB_NAME)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY)+" = " + id_directory + " ORDER BY "+quote(KettleDatabaseRepository.FIELD_JOB_NAME));
 	}
@@ -755,25 +755,25 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
         return connectionDelegate.getIDs("SELECT "+quote(KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_SLAVE)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" = " + id_cluster_schema);
     }
     
-	public synchronized String[] getDatabaseNames() throws KettleException
+	public synchronized String[] getDatabaseNames(boolean includeDeleted) throws KettleException
 	{
 		String nameField = quote(KettleDatabaseRepository.FIELD_DATABASE_NAME);
 		return connectionDelegate.getStrings("SELECT "+nameField+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE)+" ORDER BY "+nameField);
 	}
     
-    public synchronized String[] getPartitionSchemaNames() throws KettleException
+    public synchronized String[] getPartitionSchemaNames(boolean includeDeleted) throws KettleException
     {
         String nameField = quote(KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME);
         return connectionDelegate.getStrings("SELECT "+nameField+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA)+" ORDER BY "+nameField);
     }
     
-    public synchronized String[] getSlaveNames() throws KettleException
+    public synchronized String[] getSlaveNames(boolean includeDeleted) throws KettleException
     {
         String nameField = quote(KettleDatabaseRepository.FIELD_SLAVE_NAME);
         return connectionDelegate.getStrings("SELECT "+nameField+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_SLAVE)+" ORDER BY "+nameField);
     }
     
-    public synchronized String[] getClusterNames() throws KettleException
+    public synchronized String[] getClusterNames(boolean includeDeleted) throws KettleException
     {
         String nameField = quote(KettleDatabaseRepository.FIELD_CLUSTER_NAME);
         return connectionDelegate.getStrings("SELECT "+nameField+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_CLUSTER)+" ORDER BY "+nameField);

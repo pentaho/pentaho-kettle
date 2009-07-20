@@ -317,7 +317,22 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			}
 			return t1.getFilename().compareTo(t2.getFilename());
 		}
-		return t1.getName().compareTo(t2.getName());
+		
+        // Compare by name : repositories etc.
+        //
+        if (t1.getObjectVersion()!=null && t2.getObjectVersion()==null) return  1; 
+        if (t1.getObjectVersion()==null && t2.getObjectVersion()!=null) return -1;
+        int cmp;
+        if (t1.getObjectVersion()==null && t2.getObjectVersion()==null) {
+        	 cmp=0;
+        } else {
+        	cmp = t1.getObjectVersion().getName().compareTo(t2.getObjectVersion().getName());
+        }
+        if (cmp==0) {
+        	return t1.getName().compareTo(t2.getName());
+        } else {
+        	return cmp;
+        }
 	}
 
 	public int compareTo(JobMeta o) {
