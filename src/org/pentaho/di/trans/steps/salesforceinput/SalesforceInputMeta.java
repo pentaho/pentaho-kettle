@@ -56,7 +56,7 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 {	
 	private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public String TargetDefaultURL= "https://www.salesforce.com/services/Soap/u/10.0";
+	
  	 
 	/** Flag indicating that we should include the generated SQL in the output */
 	private  boolean includeSQL;
@@ -111,6 +111,21 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 
 	/** The fields to return... */
 	private SalesforceInputField inputFields[];
+	
+	/**  option: specify query **/
+	private boolean specifyQuery;
+	
+	//** query entered by user **/
+	private String query;
+	
+	private int nrFields;
+	
+	private String readTo;
+	private String readFrom;
+	
+	
+	/** records filter */
+	private int recordsFilter;
 	
 	
 	public SalesforceInputMeta()
@@ -182,6 +197,36 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 		this.module = module;
 	}
 	/**
+	 * @return Returns the query.
+	 */
+	public String getQuery()
+	{
+		return query;
+	}
+    
+	/**
+	 * @param query The query to set.
+	 */
+	public void setQuery(String query)
+	{
+		this.query = query;
+	}
+	/**
+	 * @return Returns the specifyQuery.
+	 */
+	public boolean isSpecifyQuery()
+	{
+		return specifyQuery;
+	}
+    
+	/**
+	 * @param specifyQuery The specifyQuery to set.
+	 */
+	public void setSpecifyQuery(boolean specifyQuery)
+	{
+		this.specifyQuery = specifyQuery;
+	}
+	/**
 	 * @return Returns the condition.
 	 */
 	public String getCondition()
@@ -247,7 +292,13 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 		this.moduleField = module_field;
 	}
     
-    
+	 public int getRecordsFilter() {
+			return recordsFilter;
+		}
+	 public void setRecordsFilter(int recordsFilter) {
+			this.recordsFilter= recordsFilter;
+		}
+
 	/**
 	 * @return Returns the includeTargetURL.
 	 */
@@ -379,6 +430,34 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 	}
 	
 	/**
+	 * @return Returns the readFrom.
+	 */
+	public String getReadFrom()
+	{
+		return readFrom;
+	}
+	/**
+	 * @param readFrom the readFrom to set.
+	 */
+	public void setReadFrom(String readFrom)
+	{
+		this.readFrom= readFrom;
+	}
+	/**
+	 * @return Returns the readTo.
+	 */
+	public String getReadTo()
+	{
+		return readTo;
+	}
+	/**
+	 * @param readTo the readTo to set.
+	 */
+	public void setReadTo(String readTo)
+	{
+		this.readTo= readTo;
+	}
+	/**
 	 * @return Returns the sqlField.
 	 */
 	public String getSQLField()
@@ -445,6 +524,8 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 		retval.append("    "+XMLHandler.addTagValue("password",   Encr.encryptPasswordIfNotUsingVariables(password), false));
 		retval.append("    "+XMLHandler.addTagValue("module",   module));
 		retval.append("    "+XMLHandler.addTagValue("condition",   condition));
+		retval.append("    "+XMLHandler.addTagValue("specifyQuery",   specifyQuery));
+		retval.append("    "+XMLHandler.addTagValue("query",   query));
 		retval.append("    "+XMLHandler.addTagValue("include_targeturl",includeTargetURL));
 		retval.append("    "+XMLHandler.addTagValue("targeturl_field",   targetURLField));
 		retval.append("    "+XMLHandler.addTagValue("include_module",   includeModule));
@@ -455,7 +536,10 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 		retval.append("    "+XMLHandler.addTagValue("sql_field",   sqlField));
 		retval.append("    "+XMLHandler.addTagValue("include_Timestamp",includeTimestamp));
 		retval.append("    "+XMLHandler.addTagValue("timestamp_field",   timestampField));
-        
+		retval.append("    "+XMLHandler.addTagValue("read_from",   readFrom));
+		retval.append("    "+XMLHandler.addTagValue("read_to",   readTo));
+		retval.append("    "+XMLHandler.addTagValue("records_filter",SalesforceConnectionUtils.getRecordsFilterCode(recordsFilter)));
+		
 		retval.append("    <fields>"+Const.CR);
 		for (int i=0;i<inputFields.length;i++)
 		{
@@ -481,7 +565,9 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 			}
 
 			module     = XMLHandler.getTagValue(stepnode, "module");
-			condition     = XMLHandler.getTagValue(stepnode, "condition");		
+			condition     = XMLHandler.getTagValue(stepnode, "condition");
+			query     = XMLHandler.getTagValue(stepnode, "query");
+			specifyQuery   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "specifyQuery"));
 			includeTargetURL   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_targeturl"));
 			targetURLField     = XMLHandler.getTagValue(stepnode, "targeturl_field");
 			includeModule   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_module"));
@@ -492,7 +578,10 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 			sqlField     = XMLHandler.getTagValue(stepnode, "targetsql_field");
 			includeTimestamp   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_Timestamp"));
 			timestampField     = XMLHandler.getTagValue(stepnode, "timestamp_field");
-	
+			readFrom     = XMLHandler.getTagValue(stepnode, "read_from");
+			readTo     = XMLHandler.getTagValue(stepnode, "read_to");
+			recordsFilter = SalesforceConnectionUtils.getRecordsFilterByCode(Const.NVL(XMLHandler.getTagValue(stepnode,	"records_filter"), ""));
+			
 			Node fields     = XMLHandler.getSubNode(stepnode,  "fields");
 			int nrFields    = XMLHandler.countNodes(fields,    "field");
 	
@@ -518,10 +607,18 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		inputFields = new SalesforceInputField[nrfields];        
 	}
-	
+	public int getNrFields()
+	{
+		return nrFields;
+	}
 	public void setDefault()
 	{
-		targeturl=TargetDefaultURL ;
+		readFrom="";
+		readTo="";
+		nrFields=0;
+		specifyQuery=false;
+		query="";
+		targeturl=SalesforceConnectionUtils.TARGET_DEFAULT_URL ;
 		password = "";
 		module = "Account";
 		condition = "";
@@ -550,8 +647,7 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
 		int i;
-		for (i=0;i<inputFields.length;i++)
-		{
+		for (i=0;i<inputFields.length;i++){
 			SalesforceInputField field = inputFields[i];      
 	        
 			int type=field.getType();
@@ -631,7 +727,8 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 			// H.kawaguchi Add 19-01-2009
 			condition     = rep.getStepAttributeString (id_step, "condition");
 			// H.kawaguchi Add 19-01-2009
-			
+			query     = rep.getStepAttributeString (id_step, "query");
+			specifyQuery   = rep.getStepAttributeBoolean(id_step, "specifyQuery");  
 			includeTargetURL   = rep.getStepAttributeBoolean(id_step, "include_targeturl");  
 			targetURLField     = rep.getStepAttributeString (id_step, "targeturl_field");
 			includeModule   = rep.getStepAttributeBoolean(id_step, "include_module");  
@@ -644,7 +741,11 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 			timestampField     = rep.getStepAttributeString (id_step, "timestamp_field");
 			rowLimit          = rep.getStepAttributeString(id_step, "limit");
 			timeout          =  rep.getStepAttributeString(id_step, "timeout");
+			readFrom          =  rep.getStepAttributeString(id_step, "read_from");
+			readTo          =  rep.getStepAttributeString(id_step, "read_to");
+			recordsFilter = SalesforceConnectionUtils.getRecordsFilterByCode(Const.NVL(rep.getStepAttributeString(id_step, "records_filter"), ""));
 			int nrFields      = rep.countNrStepAttributes(id_step, "field_name");
+			
             
 			allocate(nrFields);
 
@@ -691,6 +792,8 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 			// H.kawaguchi Add 19-01-2009
 			rep.saveStepAttribute(id_transformation, id_step, "condition",         condition);
 			// H.kawaguchi Add 19-01-2009
+			rep.saveStepAttribute(id_transformation, id_step, "query",         query);
+			rep.saveStepAttribute(id_transformation, id_step, "specifyQuery",    specifyQuery);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "include_targeturl",  includeTargetURL);
 			rep.saveStepAttribute(id_transformation, id_step, "targeturl_field",   targetURLField);
@@ -704,7 +807,9 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
 			rep.saveStepAttribute(id_transformation, id_step, "timeout",           timeout);
-			
+			rep.saveStepAttribute(id_transformation, id_step, "read_from",           readFrom);
+			rep.saveStepAttribute(id_transformation, id_step, "read_to",           readTo);
+			rep.saveStepAttribute(id_transformation, id_step, "records_filter", SalesforceConnectionUtils.getRecordsFilterCode(recordsFilter));
 			
 			for (int i=0;i<inputFields.length;i++)
 			{

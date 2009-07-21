@@ -14,6 +14,9 @@
  
 package org.pentaho.di.trans.steps.salesforceinput;
 
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -29,13 +32,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-import com.sforce.soap.partner.DescribeSObjectResult;
-import com.sforce.soap.partner.GetUserInfoResult;
-import com.sforce.soap.partner.LoginResult;
-import com.sforce.soap.partner.SessionHeader;
-import com.sforce.soap.partner.SforceServiceLocator;
-import com.sforce.soap.partner.SoapBindingStub;
-import com.sforce.soap.partner.sobject.SObject;
 
 
 /**
@@ -54,195 +50,136 @@ public class SalesforceInput extends BaseStep implements StepInterface
 	public SalesforceInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
-	}
-	
-	public SoapBindingStub getBinding(String Url,String username, String password, String module, 
-			String condition,String timeout) throws KettleException
-	{
-		SoapBindingStub binding=null;
-		LoginResult loginResult = null;
-		GetUserInfoResult userInfo = null;
-		
-		
-		try{
-			binding = (SoapBindingStub) new SforceServiceLocator().getSoap();
-			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL") + " : " + binding._getProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY));
-		      
-	        //  Set timeout
-			int timeOut=Const.toInt(timeout, 0);
-	      	if(timeOut>0) binding.setTimeout(timeOut);
-	        
-	      	// Set URL
-	        binding._setProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY, Url);
-	        
-	        // Attempt the login giving the user feedback
-		      
-	        if (log.isDetailed())
-	        {
-	        	logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginNow"));
-	        	logDetailed("----------------------------------------->");
-	        	logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL",Url));
-	        	logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginUsername",username));
-	        	logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginModule",module));
-	        	if(!Const.isEmpty(condition)) logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginCondition",condition));
-	        	logDetailed("<-----------------------------------------");
-	        }
-	        
-	        // Login
-	        loginResult = binding.login(username, password);
-	        
-	        if (log.isDebug())
-	        {
-	        	logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SessionId") + " : " + loginResult.getSessionId());
-	        	logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.NewServerURL") + " : " + loginResult.getServerUrl());
-	        }
-	        
-	        // set the session header for subsequent call authentication
-	        binding._setProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY,loginResult.getServerUrl());
-	
-	        // Create a new session header object and set the session id to that
-	        // returned by the login
-	        SessionHeader sh = new SessionHeader();
-	        sh.setSessionId(loginResult.getSessionId());
-	        binding.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(), "SessionHeader", sh);
-	       
-	        // Return the user Infos
-	        userInfo = binding.getUserInfo();
-	        if (log.isDebug()) 
-	        {
-	        	logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserInfos") + " : " + userInfo.getUserFullName());
-	        	logDebug("----------------------------------------->");
-	        	logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserName") + " : " + userInfo.getUserFullName());
-	        	logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserEmail") + " : " + userInfo.getUserEmail());
-	        	logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserLanguage") + " : " + userInfo.getUserLanguage());
-	        	logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserOrganization") + " : " + userInfo.getOrganizationName());    
-			    logDebug("<-----------------------------------------");
-	        }	
-		}catch(Exception e)
-		{
-			throw new KettleException(e);
-		}
-		return binding;
-	}
-
-	 public void connectSalesforce() throws KettleException {
-		 
-		String username=environmentSubstitute(meta.getUserName());
-		String password = environmentSubstitute(meta.getPassword());
-		String module = environmentSubstitute(meta.getModule());
-		String condition = environmentSubstitute(meta.getCondition()); 
-		String timeout= environmentSubstitute(meta.getTimeOut()); 
-		
-		// connect and return binding
-		data.binding=getBinding(data.URL,username, password, module, condition,timeout);
-		
-		if(data.binding==null)  throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Exception.CanNotGetBiding"));
-		
-
-	    try{
-	    	
-			// check if we can query this Object
-			
-		    DescribeSObjectResult describeSObjectResult = data.binding.describeSObject(module);
-		        
-		    if (describeSObjectResult == null) throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.ErrorGettingObject"));
-		        
-		    if(!describeSObjectResult.isQueryable()) throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.ObjectNotQueryable",module));
-			
-		    // Built SQL statement
-		    String SQLString=BuiltSQl();
-		        
-		    if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.SQLString") + " : " +  SQLString);        
-		    
-		    if(meta.includeSQL()) data.SQL=SQLString;
-	    	if(meta.includeTimestamp()) data.Timestamp= data.binding.getServerTimestamp().toString();
-	 		if(log.isDebug()) BaseMessages.getString(PKG, "SalesforceInput.Log.ServerTimestamp",""+data.binding.getServerTimestamp());
-	 		
-	    	// return query result
-	        data.qr = data.binding.query(SQLString);
-	        
-	        data.limitReached = true;
-	        data.recordcount=data.qr.getSize();
-	        if(data.recordcount>0) 
-	        {
-	        	data.limitReached = false;	
-	        	data.nrRecords=data.qr.getRecords().length;
-	        }
-	        
-	        if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.RecordCount") + " : " +  data.recordcount);      
-	        
-		}catch(Exception e)
-		{
-			throw new KettleException(e);
-		}
-	 }
+	}	
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		if(first)
-		{
+		if(first){
 			first=false;
-			// Check if module is specified 
-			 if (Const.isEmpty(meta.getModule()))
-			 {
-				 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.ModuleMissing.DialogMessage"));
-			 }
-			 
+			String soQL=environmentSubstitute(meta.getQuery());
+			// check target URL
+			String realUrl=environmentSubstitute(meta.getTargetURL());
+			if(Const.isEmpty(realUrl))
+				throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.TargetURLMissing.Error"));
+			
+			// check username
+			String realUser=environmentSubstitute(meta.getUserName());
+			if(Const.isEmpty(realUser))
+				throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.UsernameMissing.Error"));
+			
+			
+			if(meta.isSpecifyQuery()) {
+				// Check if user specified a query 
+				 if (Const.isEmpty(soQL)) {
+					 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.QueryMissing.DialogMessage"));
+				 }
+			}else {
+				data.Module=environmentSubstitute(meta.getModule());
+				// Check if module is specified 
+				 if (Const.isEmpty(data.Module)) {
+					 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.ModuleMissing.DialogMessage"));
+				 }
+				 // check records filter
+				 if(meta.getRecordsFilter()!=SalesforceConnectionUtils.RECORDS_FILTER_ALL){
+					 String realFromDateString=environmentSubstitute(meta.getReadFrom());
+					 if(Const.isEmpty(realFromDateString))
+						 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.FromDateMissing.DialogMessage")); 
+					  
+					 String realToDateString=environmentSubstitute(meta.getReadTo());
+					 if(Const.isEmpty(realToDateString))
+						 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.ToDateMissing.DialogMessage")); 
+					 try{
+						 SimpleDateFormat startDate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						 SimpleDateFormat endDate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						 startDate.parse(realFromDateString);
+						 endDate.parse(realToDateString);
+						 
+						 data.startCal = (GregorianCalendar) startDate.getCalendar();
+						 data.endCal = (GregorianCalendar)endDate.getCalendar(); 
+					 }catch(Exception e) {
+						 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.ErrorParsingDate"),e);
+					 }
+				 }
+			}
 			  // Check if username is specified 
-			 if (Const.isEmpty(meta.getUserName()))
-			 {
+			 if (Const.isEmpty(meta.getUserName())){
 				 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.UsernameMissing.DialogMessage"));
 			 }
 			 
 			data.limit=Const.toLong(environmentSubstitute(meta.getRowLimit()),0);
-			data.URL=environmentSubstitute(meta.getTargetURL());
-			data.Module=environmentSubstitute(meta.getModule());
 			
 			// get total fields in the grid
 			data.nrfields = meta.getInputFields().length;
 			
 			 // Check if field list is filled 
-			 if (data.nrfields==0)
-			 {
+			 if (data.nrfields==0) {
 				 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.FieldsMissing.DialogMessage"));
 			 }
-			 
-			// Create the output row meta-data
+		
+		    // Create the output row meta-data
             data.outputRowMeta = new RowMeta();
 
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-
-            // For String to <type> conversions, we allocate a conversion meta data row as well...
-			//
-			data.convertRowMeta = data.outputRowMeta.clone();
-			for (int i=0;i<data.convertRowMeta.size();i++) {
-				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
-			}
+		    meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			
-			// connect to Salesforce
-			connectSalesforce();
+            // For String to <type> conversions, we allocate a conversion meta data row as well...
+		    //
+			 data.convertRowMeta = data.outputRowMeta.clone();
+			 for (int i=0;i<data.convertRowMeta.size();i++) {
+				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
+			 }
+			
+			// create a Salesforce connection
+			data.connection= new SalesforceConnection(realUrl, realUser,environmentSubstitute(meta.getPassword()), 
+					Const.toInt(environmentSubstitute(meta.getTimeOut()),0));
+			
+		    // Build query if needed
+		    if(meta.isSpecifyQuery()) {
+		    	// Free hand SOQL Query
+		    	data.connection.setSQL(soQL.replace("\n\r", "").replace("\n", ""));
+		    } else {
+		    	// retrieve data from a module
+		    	// Set condition if needed
+		    	String realCondition=environmentSubstitute(meta.getCondition());
+		    	if(!Const.isEmpty(realCondition)) data.connection.setCondition(realCondition);
+		    	// Set module
+		    	data.connection.setModule(data.Module);
+		    	// Set calendars for update or deleted records
+		    	if(meta.getRecordsFilter()!=SalesforceConnectionUtils.RECORDS_FILTER_ALL)
+		    		data.connection.setCalendar(meta.getRecordsFilter(), data.startCal, data.endCal);
+		    	// Build now SOQL
+		    	data.connection.setSQL(BuiltSOQl());
+		    }
+		    
+		    // Now connect ...
+		    data.connection.connect();	
+		    // We are connected, so let's query Salesforce
+		    data.connection.query(meta.isSpecifyQuery());
+		    
+		    data.limitReached = true;
+	        data.recordcount=data.connection.getQueryResultSize();
+	        if(data.recordcount>0) {
+	        	data.limitReached = false;	
+	        	data.nrRecords=data.connection.getRecordsCount();
+	        }
+	        if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.RecordCount") + " : " +  data.recordcount); 
+	        
 		}
-		
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.Connected"));	
 		
 		Object[] outputRowData=null;
         boolean sendToErrorRow=false;
 		String errorMessage = null;
-		try 
-		{	
+		try  {	
 			// get one row ...
 			outputRowData =getOneRow();
 			
-			if(outputRowData==null)
-			{
+			if(outputRowData==null) {
 				setOutputDone();
 				return false;
 			}
 		
 			putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 		    
-		    if (checkFeedback(getLinesInput()))
-		    {
+		    if (checkFeedback(getLinesInput())) {
 		    	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInput.log.LineRow",""+ getLinesInput()));
 		    }
 	          
@@ -251,15 +188,12 @@ public class SalesforceInput extends BaseStep implements StepInterface
             
 		    return true; 
 		} 
-		catch(KettleException e)
-		{
-			if (getStepMeta().isDoingErrorHandling())
-			{
+		catch(KettleException e) {
+			if (getStepMeta().isDoingErrorHandling()) {
 		         sendToErrorRow = true;
 		         errorMessage = e.toString();
 			}
-			else
-			{
+			else {
 				logError(BaseMessages.getString(PKG, "SalesforceInput.log.Exception", e.getMessage()));
                 logError(Const.getStackTracker(e));
 				setErrors(1);
@@ -267,18 +201,15 @@ public class SalesforceInput extends BaseStep implements StepInterface
 				setOutputDone();  // signal end to receiver(s)
 				return false;				
 			}
-			if (sendToErrorRow)
-			{
+			if (sendToErrorRow) {
 			   // Simply add this row to the error row
 			   putError(getInputRowMeta(), outputRowData, 1, errorMessage, null, "SalesforceInput001");
 			}
 		} 
 		return true;
 	}		
-	private Object[] getOneRow()  throws KettleException
-	{
-		if (data.limitReached || data.rownr>=data.recordcount)
-		{
+	private Object[] getOneRow()  throws KettleException {
+		if (data.limitReached || data.rownr>=data.recordcount) {
 	      return null;
 		} 
 
@@ -288,109 +219,93 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		try{
 			
 			// check for limit rows
-            if (data.limit>0 && data.rownr>=data.limit-1)
-            {
+            if (data.limit>0 && data.rownr>=data.limit-1) {
             	// User specified limit and we reached it 
             	// We end here 
             	data.limitReached = true;
             	return null;
-            }else
-            {
-				if(data.rownr>=data.nrRecords)
-				{
-					// We retrieved all records available here
-					// maybe we need to query more again ...
-					if(log.isDetailed()) log.logDetailed(toString(), 
-							BaseMessages.getString(PKG, "SalesforceInput.Log.NeedQueryMore",""+data.rownr));
-	
-					// check the done attribute on the QueryResult and call QueryMore 
-					// with the QueryLocator if there are more records to be retrieved
-					if(!data.qr.isDone()) 
-					{
-						data.qr=data.binding.queryMore(data.qr.getQueryLocator());
-						int nr=data.qr.getRecords().length;
-						data.nrRecords+=nr;
+            }else {
+				if(data.rownr>=data.nrRecords) {
+					if(meta.getRecordsFilter()==SalesforceConnectionUtils.RECORDS_FILTER_ALL) {
+						// We retrieved all records available here
+						// maybe we need to query more again ...
 						if(log.isDetailed()) log.logDetailed(toString(), 
-								BaseMessages.getString(PKG, "SalesforceInput.Log.QueryMoreRetrieved",""+nr));
-						
-						// We need here to initialize recordIndex
-						data.recordIndex=0;
-					}else
-					{
-						// Query is done .. we finished !
-						return null;
+								BaseMessages.getString(PKG, "SalesforceInput.Log.NeedQueryMore",""+data.rownr));
+		
+						if(data.connection.queryMore()) {
+							// We returned more result (query is not done yet)
+							int nr=data.connection.getRecordsCount();
+							data.nrRecords+=nr;
+							if(log.isDetailed()) log.logDetailed(toString(), 
+									BaseMessages.getString(PKG, "SalesforceInput.Log.QueryMoreRetrieved",""+nr));
+							
+							// We need here to initialize recordIndex
+							data.recordIndex=0;
+						}else {
+							// Query is done .. we finished !
+							return null;
+						}
 					}
 				}
             }
 			
-			SObject con = data.qr.getRecords()[(int)data.recordIndex];
-
-			for (int i=0;i<data.nrfields;i++)
-			{
-				String value=null;
-				if(con.get_any()[i]!=null) value=con.get_any()[i].getValue();
+			for (int i=0;i<data.nrfields;i++) {
+				String value=data.connection.getRecordValue((int)data.recordIndex, i);
 				
 				// DO Trimming!
-				switch (meta.getInputFields()[i].getTrimType())
-				{
-				case SalesforceInputField.TYPE_TRIM_LEFT:
-					value = Const.ltrim(value);
-					break;
-				case SalesforceInputField.TYPE_TRIM_RIGHT:
-					value = Const.rtrim(value);
-					break;
-				case SalesforceInputField.TYPE_TRIM_BOTH:
-					value = Const.trim(value);
-					break;
-				default:
-					break;
+				switch (meta.getInputFields()[i].getTrimType()) {
+					case SalesforceInputField.TYPE_TRIM_LEFT:
+						value = Const.ltrim(value);
+						break;
+					case SalesforceInputField.TYPE_TRIM_RIGHT:
+						value = Const.rtrim(value);
+						break;
+					case SalesforceInputField.TYPE_TRIM_BOTH:
+						value = Const.trim(value);
+						break;
+					default:
+						break;
 				}
-					      
+				      
 				// DO CONVERSIONS...
 				//
 			    ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(i);
 				ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(i);
 				outputRowData[i] = targetValueMeta.convertData(sourceValueMeta, value);
-	    
+				
 				// Do we need to repeat this field if it is null?
-				if (meta.getInputFields()[i].isRepeated())
-				{
-					if (data.previousRow!=null && Const.isEmpty(value))
-					{
+				if (meta.getInputFields()[i].isRepeated()) {
+					if (data.previousRow!=null && Const.isEmpty(value)) {
 						outputRowData[i] = data.previousRow[i];
 					}
-				}		
+				}
+		
 			}  // End of loop over fields...
 			
 			int rowIndex = data.nrfields;
 			
 			// See if we need to add the url to the row...  
-			if (meta.includeTargetURL() && !Const.isEmpty(meta.getTargetURLField()))
-			{
-				outputRowData[rowIndex++]= data.URL;
+			if (meta.includeTargetURL() && !Const.isEmpty(meta.getTargetURLField())) {
+				outputRowData[rowIndex++]= data.connection.getURL();
 			}
 			
 			// See if we need to add the module to the row...  
-			if (meta.includeModule() && !Const.isEmpty(meta.getModuleField()))
-			{
-				outputRowData[rowIndex++]=data.Module;
+			if (meta.includeModule() && !Const.isEmpty(meta.getModuleField())) {
+				outputRowData[rowIndex++]=data.connection.getModule();
 			}
 	        
 			// See if we need to add the generated SQL to the row...  
-			if (meta.includeSQL() && !Const.isEmpty(meta.getSQLField()))
-			{
-				outputRowData[rowIndex++]=data.SQL;
+			if (meta.includeSQL() && !Const.isEmpty(meta.getSQLField())) {
+				outputRowData[rowIndex++]=data.connection.getSQL();
 			}
 	        
 			// See if we need to add the server timestamp to the row...  
-			if (meta.includeTimestamp() && !Const.isEmpty(meta.getTimestampField()))
-			{
-				outputRowData[rowIndex++]=data.Timestamp;
+			if (meta.includeTimestamp() && !Const.isEmpty(meta.getTimestampField())) {
+				outputRowData[rowIndex++]=data.connection.getServerTimestamp();
 			}
 			
 			// See if we need to add the row number to the row...  
-	        if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField()))
-	        {
+	        if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField())) {
 	            outputRowData[rowIndex++] = new Long(data.rownr);
 	        }
 	        
@@ -398,49 +313,62 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			
 			data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
 		 }
-		 catch (Exception e)
-		 {
+		 catch (Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Exception.CanNotReadFromSalesforce"), e);
 		 }
 		
 		return outputRowData;
 	}
- /* build the SQL statement to send to 
-  * Salesforce
-  */ 
- private String BuiltSQl()
- {
-	String sql="SELECT ";
-	
-	SalesforceInputField fields[] = meta.getInputFields();
-	
-	for (int i=0;i<data.nrfields;i++){
-		SalesforceInputField field = fields[i];    
-		sql = sql + environmentSubstitute(field.getField());
-		if(i<data.nrfields-1) sql+= ",";
+	 /* build the SQL statement to send to 
+	  * Salesforce
+	  */ 
+	 private String BuiltSOQl() {
+		String sql="";
+		SalesforceInputField fields[] = meta.getInputFields();
+		
+		switch (meta.getRecordsFilter()) {
+		case SalesforceConnectionUtils.RECORDS_FILTER_UPDATED:
+			for (int i=0;i<data.nrfields;i++){
+				SalesforceInputField field = fields[i];    
+				sql+= environmentSubstitute(field.getField());
+				if(i<data.nrfields-1) sql+= ",";
+			}
+			break;
+		case SalesforceConnectionUtils.RECORDS_FILTER_DELETED:
+			sql+="SELECT ";
+			for (int i=0;i<data.nrfields;i++){
+				SalesforceInputField field = fields[i];    
+				sql+= environmentSubstitute(field.getField());
+				if(i<data.nrfields-1) sql+= ",";
+			}
+			sql+= " FROM " + environmentSubstitute(meta.getModule()) + " WHERE isDeleted = true";
+		break;
+		default:
+			sql+="SELECT ";
+			for (int i=0;i<data.nrfields;i++){
+				SalesforceInputField field = fields[i];    
+				sql+= environmentSubstitute(field.getField());
+				if(i<data.nrfields-1) sql+= ",";
+			}
+			sql = sql + " FROM " + environmentSubstitute(meta.getModule());
+			if (!Const.isEmpty(environmentSubstitute(meta.getCondition()))){
+				sql+= " WHERE " + environmentSubstitute(meta.getCondition().replace("\n\r", "").replace("\n", ""));
+			}
+		break;
 	}
-	
-	sql = sql + " FROM " + environmentSubstitute(meta.getModule());
-	
-	if (!Const.isEmpty(environmentSubstitute(meta.getCondition()))){
-		sql = sql + " WHERE " + environmentSubstitute(meta.getCondition().replace("\n\r", "").replace("\n", ""));
-	}
-	
-	return sql;
- }
- 
+		return sql;
+  }
+	 
 	/**
 	 * Build an empty row based on the meta-data.
 	 * 
 	 * @return
 	 */
-	private Object[] buildEmptyRow()
-	{
+	private Object[] buildEmptyRow(){
        Object[] rowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
 	    return rowData;
 	}
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
-	{
+	public boolean init(StepMetaInterface smi, StepDataInterface sdi){
 		meta=(SalesforceInputMeta)smi;
 		data=(SalesforceInputData)sdi;
 		
@@ -451,18 +379,11 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		return false;
 	}
 	
-	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
-	{
+	public void dispose(StepMetaInterface smi, StepDataInterface sdi){
 		meta=(SalesforceInputMeta)smi;
 		data=(SalesforceInputData)sdi;
-		try
-		{
-			if(!data.qr.isDone()) 
-			{
-				data.qr.setDone(true);
-				data.qr=null;
-			}
-			if(data.binding!=null) data.binding=null;
+		try{
+			if(data.connection!=null) data.connection.close();
 			if(data.outputRowMeta!=null) data.outputRowMeta=null;
 			if(data.convertRowMeta!=null) data.convertRowMeta=null;
 			if(data.previousRow!=null) data.previousRow=null;
@@ -472,8 +393,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 	
 	//
 	// Run is were the action happens!	
-	public void run()
-	{
+	public void run() {
     	BaseStep.runStepThread(this, meta, data);
 	}
 }

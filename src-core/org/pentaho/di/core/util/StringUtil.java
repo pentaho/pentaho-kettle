@@ -550,4 +550,28 @@ public class StringUtil
 	{
 		return getFormattedDateTime(new Date(), milliseconds);
 	}	
+	public static boolean IsInteger(String str){
+		  try {
+		    Integer.parseInt(str);
+		  }catch(NumberFormatException e)   {return false; }
+		  return true;
+	}
+	
+	public static boolean IsNumber(String str){
+		  try {
+			  Double.valueOf(str).doubleValue();
+		  }catch(Exception e)   {return false; }
+		  return true;
+	}
+	public static boolean IsDate(String str){
+		return IsDate("yy-mm-dd");
+	}
+	public static boolean IsDate(String str, String mask){
+		  // TODO: What about other dates? Maybe something for a CRQ
+		  try  {
+		        SimpleDateFormat fdate = new SimpleDateFormat("yy-mm-dd");
+		        fdate.parse(str);
+		  } catch(Exception e)   {return false; }
+		  return true;
+	}
 }

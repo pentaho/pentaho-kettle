@@ -154,6 +154,8 @@ public class GUIResource
 
 	private Image imageBol;
 	
+	private Image imageCalendar;
+	
 	private Image imageCluster;
 	
 	private Image imageSlave;
@@ -390,6 +392,7 @@ public class GUIResource
 			imageKettleLogo.dispose();
 			imageBanner.dispose();
 			imageBol.dispose();
+			imageCalendar.dispose();
 			imageCluster.dispose();
 			imageSlave.dispose();
 			imageArrow.dispose();
@@ -602,6 +605,9 @@ public class GUIResource
 		imageKettleLogo = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Logo_lrg_image")); // , "ui/images/logo_kettle_lrg.png"
 		imageBanner = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Banner_bg_image")); // , "ui/images/bg_banner.png"
 		imageBol = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("BOL_image")); // , "ui/images/BOL.png"
+		imageCalendar = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Calendar_image")), new RGB(255, 255, 255)); // , "ui/images/Calendar.png"
+		
+		
 		imageCredits = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Credits_image")); // , "ui/images/credits.png"
 		imageStart = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("STR_image")); // , "ui/images/STR.png"
 		imageDummy = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("DUM_image")); // , "ui/images/DUM.png"
@@ -958,6 +964,14 @@ public class GUIResource
 	public Image getImageBol()
 	{
 		return imageBol;
+	}
+	
+	/**
+	 * @return Returns the imageCalendar.
+	 */
+	public Image getImageCalendar()
+	{
+		return imageCalendar;
 	}
 	
 	/**

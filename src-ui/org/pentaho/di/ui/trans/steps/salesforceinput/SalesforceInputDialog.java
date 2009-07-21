@@ -15,14 +15,14 @@
 
 package org.pentaho.di.ui.trans.steps.salesforceinput;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.axis.message.MessageElement;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -33,8 +33,11 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -55,27 +58,26 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
+import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputField;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
+import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
-import com.sforce.soap.partner.DescribeGlobalResult;
-import com.sforce.soap.partner.DescribeSObjectResult;
 import com.sforce.soap.partner.Field;
-import com.sforce.soap.partner.LoginResult;
-import com.sforce.soap.partner.SessionHeader;
-import com.sforce.soap.partner.SforceServiceLocator;
-import com.sforce.soap.partner.SoapBindingStub;
 
 public class SalesforceInputDialog extends BaseStepDialog implements StepDialogInterface {
 	
@@ -109,6 +111,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	
 	private Label wlInclModuleField,wlLimit,wlTimeOut,wlCondition,wlModule,wlInclSQLField,wlInclSQL;
 	
+	private Group wConnectionGroup, wSettingsGroup;
+	
 	private Label wlInclTimestampField,wlInclTimestamp;
 	
 	private FormData fdlInclSQL,fdInclSQL,fdlInclSQLField;
@@ -129,24 +133,47 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
     private LabelTextVar wUserName,wURL,wPassword;
     
-    private Text  wCondition;
+    private StyledTextComp  wCondition;
+    
+    private Button wspecifyQuery;
+    private FormData fdspecifyQuery;
+    private Label wlspecifyQuery;
+    private FormData fdlspecifyQuery;
+    
+	private StyledTextComp         wQuery;
+	private FormData    fdQuery;
+	private Label wlQuery;
+	private FormData fdlQuery;
     
     private TextVar wTimeOut,wLimit;
 
     private ComboVar  wModule;
 
-    private boolean  gotModule = false;
-    
-    private boolean  getModulesListError = false;     /* True if error getting modules list */
+	private Group wAdditionalFields, wAdvancedGroup;
 	
-	private Group wAdditionalFields;
+	private FormData fdAdditionalFields, fdAdvancedGroup;
 	
-	private FormData fdAdditionalFields;
+	private Label 		wlRecordsFilter;
+	private CCombo 		wRecordsFilter;
+	private FormData    fdlRecordsFilter;
+	private FormData    fdRecordsFilter;
+	
+	private Label        wlReadFrom;
+	private TextVar      wReadFrom;
+	private FormData     fdlReadFrom, fdReadFrom;
+	private Button		open;
+	
+	private Label        wlReadTo;
+	private TextVar      wReadTo;
+	private FormData     fdlReadTo, fdReadTo;
+	private Button		opento;
 	
 	private Button wTest;
 	
 	private FormData fdTest;
     private Listener lsTest;
+    
+	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
     
 	public SalesforceInputDialog(Shell parent, Object in, TransMeta transMeta,
 			String sname) {
@@ -216,8 +243,20 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		fileLayout.marginHeight = 3;
 		wFileComp.setLayout(fileLayout);
 		
+		
+        //////////////////////////
+        // START CONNECTION GROUP
+
+        wConnectionGroup = new Group(wFileComp, SWT.SHADOW_ETCHED_IN);
+        wConnectionGroup.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.ConnectionGroup.Label")); //$NON-NLS-1$;
+        FormLayout fconnLayout = new FormLayout();
+        fconnLayout .marginWidth = 3;
+        fconnLayout .marginHeight = 3;
+        wConnectionGroup.setLayout(fconnLayout );
+        props.setLook(wConnectionGroup);
+		
 	      // Webservice URL
-        wURL = new LabelTextVar(transMeta,wFileComp, BaseMessages.getString(PKG, "SalesforceInputDialog.URL.Label"), 
+        wURL = new LabelTextVar(transMeta,wConnectionGroup, BaseMessages.getString(PKG, "SalesforceInputDialog.URL.Label"), 
         		BaseMessages.getString(PKG, "SalesforceInputDialog.URL.Tooltip"));
         props.setLook(wURL);
         wURL.addModifyListener(lsMod);
@@ -229,7 +268,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         
 
 	      // UserName line
-        wUserName = new LabelTextVar(transMeta,wFileComp, BaseMessages.getString(PKG, "SalesforceInputDialog.User.Label"), 
+        wUserName = new LabelTextVar(transMeta,wConnectionGroup, BaseMessages.getString(PKG, "SalesforceInputDialog.User.Label"), 
         		BaseMessages.getString(PKG, "SalesforceInputDialog.User.Tooltip"));
         props.setLook(wUserName);
         wUserName.addModifyListener(lsMod);
@@ -240,7 +279,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         wUserName.setLayoutData(fdUserName);
 		
         // Password line
-        wPassword = new LabelTextVar(transMeta,wFileComp, BaseMessages.getString(PKG, "SalesforceInputDialog.Password.Label"), 
+        wPassword = new LabelTextVar(transMeta,wConnectionGroup, BaseMessages.getString(PKG, "SalesforceInputDialog.Password.Label"), 
         		BaseMessages.getString(PKG, "SalesforceInputDialog.Password.Tooltip"));
         props.setLook(wPassword);
         wPassword.setEchoChar('*');
@@ -261,7 +300,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         });
 
 		// Test Salesforce connection button
-		wTest=new Button(wFileComp,SWT.PUSH);
+		wTest=new Button(wConnectionGroup,SWT.PUSH);
 		wTest.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.TestConnection.Label"));
  		props.setLook(wTest);
 		fdTest=new FormData();
@@ -271,51 +310,72 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		fdTest.right= new FormAttachment(100, 0);
 		wTest.setLayoutData(fdTest);
 		
+        FormData fdConnectionGroup= new FormData();
+        fdConnectionGroup.left = new FormAttachment(0, 0);
+        fdConnectionGroup.right = new FormAttachment(100, 0);
+        fdConnectionGroup.top = new FormAttachment(0, margin);
+        wConnectionGroup.setLayoutData(fdConnectionGroup);
+
+        // END CONNECTION  GROUP
+        //////////////////////////
+		
+        //////////////////////////
+        // START SETTINGS GROUP
+
+        wSettingsGroup = new Group(wFileComp, SWT.SHADOW_ETCHED_IN);
+        wSettingsGroup.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.HttpAuthGroup.Label")); //$NON-NLS-1$;
+        FormLayout fsettingsLayout = new FormLayout();
+        fsettingsLayout .marginWidth = 3;
+        fsettingsLayout .marginHeight = 3;
+        wSettingsGroup.setLayout(fsettingsLayout );
+        props.setLook(wSettingsGroup);
+        
+        wlspecifyQuery = new Label(wSettingsGroup, SWT.RIGHT);
+		wlspecifyQuery.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.specifyQuery.Label"));
+		props.setLook(wlspecifyQuery);
+		fdlspecifyQuery = new FormData();
+		fdlspecifyQuery.left = new FormAttachment(0, 0);
+		fdlspecifyQuery.top = new FormAttachment(wConnectionGroup, 2*margin);
+		fdlspecifyQuery.right = new FormAttachment(middle, -margin);
+		wlspecifyQuery.setLayoutData(fdlspecifyQuery);
+		wspecifyQuery = new Button(wSettingsGroup, SWT.CHECK);
+		props.setLook(wspecifyQuery);
+		wspecifyQuery.setToolTipText(BaseMessages.getString(PKG, "SalesforceInputDialog.specifyQuery.Tooltip"));
+		fdspecifyQuery = new FormData();
+		fdspecifyQuery.left = new FormAttachment(middle, 0);
+		fdspecifyQuery.top = new FormAttachment(wConnectionGroup, 2*margin);
+		wspecifyQuery.setLayoutData(fdspecifyQuery);
+		wspecifyQuery.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				setEnableQuery();
+			}
+		}
+	);
+        
  		// Module
-		wlModule=new Label(wFileComp, SWT.RIGHT);
+		wlModule=new Label(wSettingsGroup, SWT.RIGHT);
         wlModule.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.Module.Label"));
         props.setLook(wlModule);
         fdlModule=new FormData();
         fdlModule.left = new FormAttachment(0, 0);
-        fdlModule.top  = new FormAttachment(wTest, 2*margin);
+        fdlModule.top  = new FormAttachment(wspecifyQuery, margin);
         fdlModule.right= new FormAttachment(middle, -margin);
         wlModule.setLayoutData(fdlModule);
-        wModule=new ComboVar(transMeta,wFileComp, SWT.BORDER | SWT.READ_ONLY);
+        wModule=new ComboVar(transMeta,wSettingsGroup, SWT.BORDER | SWT.READ_ONLY);
         wModule.setEditable(true);
         props.setLook(wModule);
         wModule.addModifyListener(lsMod);
         fdModule=new FormData();
         fdModule.left = new FormAttachment(middle, margin);
-        fdModule.top  = new FormAttachment(wTest, 2*margin);
+        fdModule.top  = new FormAttachment(wspecifyQuery, margin);
         fdModule.right= new FormAttachment(100, -margin);
         wModule.setLayoutData(fdModule);
-        wModule.addFocusListener(new FocusListener()
-            {
-                public void focusLost(org.eclipse.swt.events.FocusEvent e)
-                {
-                	getModulesListError = false;
-                }
-            
-                public void focusGained(org.eclipse.swt.events.FocusEvent e)
-                {
-                    // check if the URL and login credentials passed and not just had error 
-                	if (Const.isEmpty(wURL.getText()) || 
-                   		Const.isEmpty(wUserName.getText()) ||
-                		Const.isEmpty(wPassword.getText()) ||
-                		(getModulesListError )) return; 
-
-
-                    Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
-                    shell.setCursor(busy);
-                    getModulesList();
-                    shell.setCursor(null);
-                    busy.dispose();
-                }
-            }
-        );
-
+        wModule.setItems(SalesforceConnectionUtils.modulesList);
+       
 	    // condition
-        wlCondition = new Label(wFileComp, SWT.RIGHT);
+        wlCondition = new Label(wSettingsGroup, SWT.RIGHT);
         wlCondition.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.Condition.Label"));
         props.setLook(wlCondition);
         fdlCondition = new FormData();
@@ -324,9 +384,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         fdlCondition.right = new FormAttachment(middle, -margin);
         wlCondition.setLayoutData(fdlCondition);
 
-        wCondition = new Text(wFileComp, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        wCondition=new StyledTextComp(wSettingsGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
         wCondition.setToolTipText(BaseMessages.getString(PKG, "SalesforceInputDialog.Condition.Tooltip"));
-        props.setLook(wCondition);
+        props.setLook(wCondition, Props.WIDGET_STYLE_FIXED);
         wCondition.addModifyListener(lsMod);
         fdCondition = new FormData();
         fdCondition.left = new FormAttachment(middle, margin);
@@ -335,7 +395,51 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         fdCondition.bottom = new FormAttachment(100, -margin);
         wCondition.setLayoutData(fdCondition);
 
+
+	    // Query
+        wlQuery = new Label(wSettingsGroup, SWT.RIGHT);
+        wlQuery.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.Query.Label"));
+        props.setLook(wlQuery);
+        fdlQuery = new FormData();
+        fdlQuery.left = new FormAttachment(0, -margin);
+        fdlQuery.top = new FormAttachment(wspecifyQuery, margin);
+        fdlQuery.right = new FormAttachment(middle, -margin);
+        wlQuery.setLayoutData(fdlQuery);
+        
+		wQuery=new StyledTextComp(wSettingsGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+ 		props.setLook(wQuery, Props.WIDGET_STYLE_FIXED);
+		wQuery.addModifyListener(lsMod);
+		fdQuery=new FormData();
+		fdQuery.left  = new FormAttachment(middle, margin);
+		fdQuery.top   = new FormAttachment(wspecifyQuery, margin );
+		fdQuery.right = new FormAttachment(100, -margin);
+		fdQuery.bottom= new FormAttachment(100, -margin );
+		wQuery.setLayoutData(fdQuery);
+		wQuery.addModifyListener(new ModifyListener()
+            {
+                public void modifyText(ModifyEvent arg0)
+                {
+                    setQueryToolTip();
+                }
+            }
+        );
 		
+		// Text Higlighting
+		lineStyler = new SQLValuesHighlight();
+		wQuery.addLineStyleListener(lineStyler);
+		wCondition.addLineStyleListener(lineStyler);
+		
+        FormData fdSettingsGroup= new FormData();
+        fdSettingsGroup.left = new FormAttachment(0, 0);
+        fdSettingsGroup.right = new FormAttachment(100, 0);
+        fdSettingsGroup.bottom = new FormAttachment(100, 0);
+        fdSettingsGroup.top = new FormAttachment(wConnectionGroup, margin);
+        wSettingsGroup.setLayoutData(fdSettingsGroup);
+
+        // END SETTINGS GROUP
+        //////////////////////////
+        
+        
 		fdFileComp = new FormData();
 		fdFileComp.left = new FormAttachment(0, 0);
 		fdFileComp.top = new FormAttachment(0, 0);
@@ -364,6 +468,177 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		props.setLook(wContentComp);
 		wContentComp.setLayout(contentLayout);
 
+		
+		// ///////////////////////////////
+		// START OF Advanced GROUP  //
+		///////////////////////////////// 
+
+		wAdvancedGroup= new Group(wContentComp, SWT.SHADOW_NONE);
+		props.setLook(wAdvancedGroup);
+		wAdvancedGroup.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.AdvancedGroup.Label"));
+		
+		FormLayout advancedgroupLayout = new FormLayout();
+		advancedgroupLayout .marginWidth = 10;
+		advancedgroupLayout .marginHeight = 10;
+		wAdvancedGroup.setLayout(advancedgroupLayout );
+		
+
+		// RecordsFilter
+		wlRecordsFilter=new Label(wAdvancedGroup, SWT.RIGHT);
+		wlRecordsFilter.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.RecordsFilter.Label")); //$NON-NLS-1$
+ 		props.setLook(wlRecordsFilter);
+		fdlRecordsFilter=new FormData();
+		fdlRecordsFilter.left = new FormAttachment(0, 0);
+		fdlRecordsFilter.right= new FormAttachment(middle, -margin);
+		fdlRecordsFilter.top  = new FormAttachment(0, 2*margin);
+		wlRecordsFilter.setLayoutData(fdlRecordsFilter);
+		
+		wRecordsFilter=new CCombo(wAdvancedGroup, SWT.BORDER | SWT.READ_ONLY);
+ 		props.setLook(wRecordsFilter);
+ 		wRecordsFilter.addModifyListener(lsMod);
+		fdRecordsFilter=new FormData();
+		fdRecordsFilter.left = new FormAttachment(middle, 0);
+		fdRecordsFilter.top  = new FormAttachment(0, 2*margin);
+		fdRecordsFilter.right= new FormAttachment(100, -margin);
+		wRecordsFilter.setLayoutData(fdRecordsFilter);
+		wRecordsFilter.setItems(SalesforceConnectionUtils.recordsFilterDesc);
+		wRecordsFilter.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				updateRecordsFilter();
+			}
+		});
+
+		open = new Button (wAdvancedGroup, SWT.PUSH);
+		open.setImage(GUIResource.getInstance().getImageCalendar());
+		open.setToolTipText (BaseMessages.getString(PKG, "SalesforceInputDialog.OpenCalendar"));
+	    FormData fdlButton=new FormData();
+	    fdlButton.top  = new FormAttachment(wRecordsFilter, margin);
+	    fdlButton.right= new FormAttachment(100, 0);
+	    open.setLayoutData(fdlButton);
+	    open.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent e) {
+				final Shell dialog = new Shell (shell, SWT.DIALOG_TRIM );
+				dialog.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.SelectDate"));
+				dialog.setImage(GUIResource.getInstance().getImageSpoon());
+				dialog.setLayout (new GridLayout (3, false));
+
+				final DateTime calendar = new DateTime (dialog, SWT.CALENDAR);
+			    final DateTime time = new DateTime (dialog, SWT.TIME | SWT.TIME);
+				new Label (dialog, SWT.NONE);
+				new Label (dialog, SWT.NONE);
+
+				Button ok = new Button (dialog, SWT.PUSH);
+				ok.setText(BaseMessages.getString(PKG, "System.Button.OK"));
+				ok.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, false, false));
+				ok.addSelectionListener (new SelectionAdapter () {
+					public void widgetSelected (SelectionEvent e) {
+						wReadFrom.setText(calendar.getYear()+"-"+
+								((calendar.getMonth () + 1)<10 ? "0"+(calendar.getMonth () + 1) : (calendar.getMonth () + 1)) 
+										+"-"+((calendar.getDay () + 1)<10 ? "0"+calendar.getDay () : calendar.getDay ())
+										+" "+(time.getHours()<10 ? "0"+time.getHours() : time.getHours())
+										+":"+(time.getMinutes()<10 ? "0"+time.getMinutes() : time.getMinutes())
+										+":"+(time.getMinutes()<10 ? "0"+time.getMinutes() : time.getMinutes())					
+						); 
+				          
+						dialog.close ();
+					}
+				});
+				dialog.setDefaultButton (ok);
+				dialog.pack ();
+				dialog.open ();
+			}
+		});
+		
+		wlReadFrom=new Label(wAdvancedGroup, SWT.RIGHT);
+		wlReadFrom.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.ReadFrom.Label"));
+ 		props.setLook(wlReadFrom);
+		fdlReadFrom=new FormData();
+		fdlReadFrom.left = new FormAttachment(0, 0);
+		fdlReadFrom.top  = new FormAttachment(wRecordsFilter, margin);
+		fdlReadFrom.right= new FormAttachment(middle, -margin);
+		wlReadFrom.setLayoutData(fdlReadFrom);
+		wReadFrom=new TextVar(transMeta, wAdvancedGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wReadFrom.setToolTipText(BaseMessages.getString(PKG, "SalesforceInputDialog.ReadFrom.Tooltip"));
+ 		props.setLook(wReadFrom);
+		wReadFrom.addModifyListener(lsMod);
+		fdReadFrom=new FormData();
+		fdReadFrom.left = new FormAttachment(middle, 0);
+		fdReadFrom.top  = new FormAttachment(wRecordsFilter, margin);
+		fdReadFrom.right= new FormAttachment(open, -margin);
+		wReadFrom.setLayoutData(fdReadFrom);
+
+		
+		opento = new Button (wAdvancedGroup, SWT.PUSH);
+		opento.setImage(GUIResource.getInstance().getImageCalendar());
+		opento.setToolTipText (BaseMessages.getString(PKG, "SalesforceInputDialog.OpenCalendar"));
+	    FormData fdlButtonto=new FormData();
+	    fdlButtonto.top  = new FormAttachment(wReadFrom, 2*margin);
+	    fdlButtonto.right= new FormAttachment(100, 0);
+	    opento.setLayoutData(fdlButtonto);
+	    opento.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent e) {
+				final Shell dialogto = new Shell (shell, SWT.DIALOG_TRIM );
+				dialogto.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.SelectDate"));
+				dialogto.setImage(GUIResource.getInstance().getImageSpoon());
+				dialogto.setLayout (new GridLayout (3, false));
+
+				final DateTime calendarto = new DateTime (dialogto, SWT.CALENDAR | SWT.BORDER);
+			    final DateTime timeto = new DateTime (dialogto, SWT.TIME | SWT.TIME);
+				new Label (dialogto, SWT.NONE);
+				new Label (dialogto, SWT.NONE);
+				Button okto = new Button (dialogto, SWT.PUSH);
+				okto.setText(BaseMessages.getString(PKG, "System.Button.OK"));
+				okto.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, false, false));
+				okto.addSelectionListener (new SelectionAdapter () {
+					public void widgetSelected (SelectionEvent e) {
+						wReadTo.setText(calendarto.getYear()+"-"+
+								((calendarto.getMonth() + 1)<10 ? "0"+(calendarto.getMonth () + 1) : (calendarto.getMonth () + 1)) 
+								+"-"+((calendarto.getDay () + 1)<10 ? "0"+calendarto.getDay () : calendarto.getDay())
+								+" "+(timeto.getHours()<10 ? "0"+timeto.getHours() : timeto.getHours())
+								+":"+(timeto.getMinutes()<10 ? "0"+timeto.getMinutes() : timeto.getMinutes())
+								+":"+(timeto.getSeconds()<10 ? "0"+timeto.getSeconds() : timeto.getSeconds())
+						); 
+						dialogto.close ();
+					}
+				});
+				dialogto.setDefaultButton (okto);
+				dialogto.pack ();
+				dialogto.open ();
+			}
+		});
+		
+		wlReadTo=new Label(wAdvancedGroup, SWT.RIGHT);
+		wlReadTo.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.ReadTo.Label"));
+ 		props.setLook(wlReadTo);
+		fdlReadTo=new FormData();
+		fdlReadTo.left = new FormAttachment(0, 0);
+		fdlReadTo.top  = new FormAttachment(wReadFrom, 2*margin);
+		fdlReadTo.right= new FormAttachment(middle, -margin);
+		wlReadTo.setLayoutData(fdlReadTo);
+		wReadTo=new TextVar(transMeta, wAdvancedGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wReadTo.setToolTipText(BaseMessages.getString(PKG, "SalesforceInputDialog.ReadTo.Tooltip"));
+ 		props.setLook(wReadTo);
+		wReadTo.addModifyListener(lsMod);
+		fdReadTo=new FormData();
+		fdReadTo.left = new FormAttachment(middle, 0);
+		fdReadTo.top  = new FormAttachment(wReadFrom, 2*margin);
+		fdReadTo.right= new FormAttachment(opento, -margin);
+		wReadTo.setLayoutData(fdReadTo);
+
+		
+		fdAdvancedGroup= new FormData();
+		fdAdvancedGroup.left = new FormAttachment(0, margin);
+		fdAdvancedGroup.top = new FormAttachment(0, 2*margin);
+		fdAdvancedGroup.right = new FormAttachment(100, -margin);
+		wAdvancedGroup.setLayoutData(fdAdvancedGroup);
+		
+		// ///////////////////////////////////////////////////////////
+		// / END OF Advanced GROUP
+		// ///////////////////////////////////////////////////////////	
+	
+		
 		// ///////////////////////////////
 		// START OF Additional Fields GROUP  //
 		///////////////////////////////// 
@@ -383,7 +658,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		props.setLook(wlInclURL);
 		fdlInclURL = new FormData();
 		fdlInclURL.left = new FormAttachment(0, 0);
-		fdlInclURL.top = new FormAttachment(0, 3*margin);
+		fdlInclURL.top = new FormAttachment(wAdvancedGroup, margin);
 		fdlInclURL.right = new FormAttachment(middle, -margin);
 		wlInclURL.setLayoutData(fdlInclURL);
 		wInclURL = new Button(wAdditionalFields, SWT.CHECK);
@@ -391,7 +666,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		wInclURL.setToolTipText(BaseMessages.getString(PKG, "SalesforceInputDialog.InclURL.Tooltip"));
 		fdInclURL = new FormData();
 		fdInclURL.left = new FormAttachment(middle, 0);
-		fdInclURL.top = new FormAttachment(0, 3*margin);
+		fdInclURL.top = new FormAttachment(wAdvancedGroup, margin);
 		wInclURL.setLayoutData(fdInclURL);
 		wInclURL.addSelectionListener(new SelectionAdapter() 
 		{
@@ -407,14 +682,14 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		props.setLook(wlInclURLField);
 		fdlInclURLField = new FormData();
 		fdlInclURLField.left = new FormAttachment(wInclURL, margin);
-		fdlInclURLField.top = new FormAttachment(0, 3*margin);
+		fdlInclURLField.top = new FormAttachment(wAdvancedGroup, margin);
 		wlInclURLField.setLayoutData(fdlInclURLField);
 		wInclURLField = new TextVar(transMeta,wAdditionalFields, SWT.SINGLE | SWT.LEFT	| SWT.BORDER);
 		props.setLook(wlInclURLField);
 		wInclURLField.addModifyListener(lsMod);
 		fdInclURLField = new FormData();
 		fdInclURLField.left = new FormAttachment(wlInclURLField,margin);
-		fdInclURLField.top = new FormAttachment(0,  3*margin);
+		fdInclURLField.top = new FormAttachment(wAdvancedGroup,  margin);
 		fdInclURLField.right = new FormAttachment(100, 0);
 		wInclURLField.setLayoutData(fdInclURLField);
 		
@@ -591,7 +866,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		
 		fdAdditionalFields = new FormData();
 		fdAdditionalFields.left = new FormAttachment(0, margin);
-		fdAdditionalFields.top = new FormAttachment(0, 3*margin);
+		fdAdditionalFields.top = new FormAttachment(wAdvancedGroup, margin);
 		fdAdditionalFields.right = new FormAttachment(100, -margin);
 		wAdditionalFields.setLayoutData(fdAdditionalFields);
 		
@@ -815,6 +1090,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		setEnableInclTimestamp();
 		setEnableInclModule();
 		setEnableInclRownum();
+		setEnableQuery();
+	
 		input.setChanged(changed);
 
 		shell.open();
@@ -840,6 +1117,25 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	wInclURLField.setEnabled(wInclURL.getSelection());
 	wlInclURLField.setEnabled(wInclURL.getSelection());
  }
+ private void setEnableQuery()
+ {
+	wQuery.setVisible(wspecifyQuery.getSelection());
+	wlCondition.setVisible(!wspecifyQuery.getSelection());
+	wCondition.setVisible(!wspecifyQuery.getSelection());
+	wlModule.setVisible(!wspecifyQuery.getSelection());
+	wModule.setVisible(!wspecifyQuery.getSelection());
+	
+	if(wspecifyQuery.getSelection()){
+		if(wInclModule.getSelection()) wInclModule.setSelection(false);
+		wRecordsFilter.setText(SalesforceConnectionUtils.getRecordsFilterDesc(SalesforceConnectionUtils.RECORDS_FILTER_ALL));
+	}
+	wlInclModule.setEnabled(!wspecifyQuery.getSelection());
+	wInclModule.setEnabled(!wspecifyQuery.getSelection());
+	setEnableInclModule();
+	wlRecordsFilter.setEnabled(!wspecifyQuery.getSelection());
+	wRecordsFilter.setEnabled(!wspecifyQuery.getSelection());
+	updateRecordsFilter();
+ }
  private void setEnableInclSQL()
  {
 	wInclSQLField.setEnabled(wInclSQL.getSelection());
@@ -853,165 +1149,191 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
  
  private void setEnableInclModule()
  {
-	wInclModuleField.setEnabled(wInclModule.getSelection());
-	wlInclModuleField.setEnabled(wInclModule.getSelection());
+	wInclModuleField.setEnabled(wInclModule.getSelection() && !wspecifyQuery.getSelection());
+	wlInclModuleField.setEnabled(wInclModule.getSelection() && !wspecifyQuery.getSelection());
  }
  private void setEnableInclRownum()
  {
 	wInclRownumField.setEnabled(wInclRownum.getSelection());
 	wlInclRownumField.setEnabled(wInclRownum.getSelection());
  }
- private void test()
-	{
-		try
+ private void test(){
+	 
+	 boolean successConnection=true;
+	 String msgError=null;
+	 SalesforceConnection connection=null;
+	 try
      {
 			SalesforceInputMeta meta = new SalesforceInputMeta();
 			getInfo(meta);
 			
-			// check if the user is given
-			if (!checkUser()) return;
+			// get real values
+			String realURL=transMeta.environmentSubstitute(meta.getTargetURL());
+			String realUsername=transMeta.environmentSubstitute(meta.getUserName());
+			String realPassword=transMeta.environmentSubstitute(meta.getPassword());
+			int realTimeOut=Const.toInt(transMeta.environmentSubstitute(meta.getTimeOut()),0);
+
+			connection=new SalesforceConnection(realURL,realUsername,realPassword,realTimeOut); 
+			connection.connect();
 			
-			getBinding();
+		}
+		catch(Exception e) {
+			successConnection=false;
+			msgError=e.getMessage();
+		} finally{
+			if(connection!=null) {
+				try {connection.close();}catch(Exception e){};
+			}
+		}
+		if(successConnection) {
 			
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
 			mb.setMessage(BaseMessages.getString(PKG, "SalesforceInputDialog.Connected.OK",wUserName.getText()) +Const.CR);
 			mb.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.Connected.Title.Ok")); 
 			mb.open();
-	
-		}
-		catch(Exception e)
-		{
+		}else{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "SalesforceInputDialog.Connected.NOK",wUserName.getText(),e.getMessage()));
+			mb.setMessage(BaseMessages.getString(PKG, "SalesforceInputDialog.Connected.NOK",wUserName.getText(),msgError));
 			mb.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.Connected.Title.Error")); 
 			mb.open(); 
-		} 
+		}
 	}
- private SoapBindingStub getBinding() throws KettleException
- {
-	SoapBindingStub binding;
-	LoginResult loginResult = null;
-	
-	try {
-	// get real values
-	String realURL=transMeta.environmentSubstitute(wURL.getText());
-	String realUsername=transMeta.environmentSubstitute(wUserName.getText());
-	String realPassword=transMeta.environmentSubstitute(wPassword.getText());
-	int realTimeOut=Const.toInt(transMeta.environmentSubstitute(wTimeOut.getText()),0);
-
-	 //binding = SalesforceInput.get
-	  binding = (SoapBindingStub) new SforceServiceLocator().getSoap();
-     //  Set timeout
-	if(realTimeOut>0)  binding.setTimeout(realTimeOut);
-      
-     if (!Const.isEmpty(realURL))
-     	binding._setProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY, realURL);
-
-     // Login
-     loginResult = binding.login(realUsername, realPassword);
-      
-     // set the session header for subsequent call authentication
-     binding._setProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY,loginResult.getServerUrl());
-
-     // Create a new session header object and set the session id to that
-     // returned by the login
-     SessionHeader sh = new SessionHeader();
-     sh.setSessionId(loginResult.getSessionId());
-     binding.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(), "SessionHeader", sh);
-	}catch(Exception e)
-	{
-		throw new KettleException(e);
-	}
-     return binding;
- }
-  private void getModulesList()
+  /*private void getModulesList()
   {
 	  if (!gotModule){
-
+		  SalesforceConnection connection=null;
 		  try{
+			 SalesforceInputMeta meta = new SalesforceInputMeta();
+			 getInfo(meta);
+			  
+			 // get real values
+			 String realURL=transMeta.environmentSubstitute(meta.getTargetURL());
+			 String realUsername=transMeta.environmentSubstitute(meta.getUserName());
+			 String realPassword=transMeta.environmentSubstitute(meta.getPassword());
+			 int realTimeOut=Const.toInt(transMeta.environmentSubstitute(meta.getTimeOut()),0);
+
+			  connection=new SalesforceConnection(realURL,realUsername,realPassword,realTimeOut); 
+			  connection.connect();
+	
 			  String selectedField=wModule.getText();
 			  wModule.removeAll();
-			  SoapBindingStub binding=getBinding();
-			  DescribeGlobalResult describeGlobalResult = binding.describeGlobal();
+			  
+			  DescribeGlobalResult describeGlobalResult = connection.getBinding().describeGlobal();
 			  // let's get all objects
-			  // please do not fetch (too long)!
 			  String[] types = describeGlobalResult.getTypes();
 			  wModule.setItems(types);
 			  if(!Const.isEmpty(selectedField)) wModule.setText(selectedField);
 			  
 		      gotModule = true;
-        	  getModulesListError = false;
+        	  getModulesListError = false;        	  
 			  
 		  }catch(Exception e)
 		  {
 				new ErrorDialog(shell,BaseMessages.getString(PKG, "SalesforceInputDialog.ErrorRetrieveModules.DialogTitle"),
 						BaseMessages.getString(PKG, "SalesforceInputDialog.ErrorRetrieveData.ErrorRetrieveModules"),e);
 				getModulesListError = true;
+		  }finally{
+				if(connection!=null) {
+					try {connection.close();}catch(Exception e){};
+				}
 		  }
 	   }
+  }*/
+
+  protected void setQueryToolTip()
+  {
+     wQuery.setToolTipText(transMeta.environmentSubstitute(wQuery.getText()));
   }
- 
  private void get() 
  { 
+	 SalesforceConnection connection=null;
 	try {
 		
 		SalesforceInputMeta meta = new SalesforceInputMeta();
 		getInfo(meta);
 		
-		// Check if a module, username is specified 
-		if (!checkInput()) return;
-		
 		// Clear Fields Grid
 		wFields.removeAll();
-	     
-	   String realModule=transMeta.environmentSubstitute(wModule.getText());
-	   // get binding
-	   SoapBindingStub binding=getBinding();
-	   // Get object
-       DescribeSObjectResult describeSObjectResult = binding.describeSObject(realModule);
-        
-       if (describeSObjectResult != null) 
-        {
-		   if(!describeSObjectResult.isQueryable())
-		   {
-				throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.ObjectNotQueryable",realModule));
-		   }else{
-		        // Object is queryable
-	            Field[] fields = describeSObjectResult.getFields();
-	            
-	            for (int i = 0; i < fields.length; i++) 
-	            {
-	            	String FieldLabel= fields[i].getLabel();	
-	            	String FieldName= fields[i].getName();	
-	            	String FieldType=fields[i].getType().getValue();
-	            	String FieldLengh =  fields[i].getLength() + "";
-	            	
-	            	TableItem item = new TableItem(wFields.table,SWT.NONE);
-					item.setText(1, FieldLabel);
-					item.setText(2, FieldName);
+		
+	    // get real values
+	    String realModule=transMeta.environmentSubstitute(meta.getModule());
+		String realURL=transMeta.environmentSubstitute(meta.getTargetURL());
+		String realUsername=transMeta.environmentSubstitute(meta.getUserName());
+		String realPassword=transMeta.environmentSubstitute(meta.getPassword());
+		int realTimeOut=Const.toInt(transMeta.environmentSubstitute(meta.getTimeOut()),0);
+
+		connection=new SalesforceConnection(realURL,realUsername,realPassword,realTimeOut); 
+		if(meta.isSpecifyQuery())   {
+			// Free hand SOQL
+			String realQuery=transMeta.environmentSubstitute(meta.getQuery());
+			connection.setSQL(realQuery);
+			connection.connect();
+		    // We are connected, do let's query
+			MessageElement[] fields =  connection.getElements();
+			int nrFields=fields.length;
+			
+			for(int i=0; i<nrFields;i++) {
+				// get fieldname
+				String fieldname=fields[i].getName();
+				// return first value
+				String firstValue=fields[i].getValue();
+
+	            TableItem item = new TableItem(wFields.table,SWT.NONE);
+				item.setText(1, fieldname);
+				item.setText(2, fieldname);
+			
+	            // Try to guess field type
+				// I know it's not clean (see up)
+	            if(StringUtil.IsDate(firstValue,"yyyy-MM-dd")){
+	            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_DATE));
+	            	item.setText(4, "yyyy-MM-dd");		    			
+	            } else if(StringUtil.IsInteger(firstValue)) {
+	            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_INTEGER));
+	            	item.setText(5, ""+ValueMeta.DEFAULT_INTEGER_LENGTH);
+	            } else if(StringUtil.IsNumber(firstValue)){
+	            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_NUMBER)); 
+	            } else if(firstValue.equals("true")||firstValue.equals("false")){
+	            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_BOOLEAN));     
+	            }else
+	            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_STRING));    
+			}
+		}else{
+			connection.setModule(realModule);
+			connection.connect();
+
+            Field[] fields = connection.getModuleFields();
+            
+            for (int i = 0; i < fields.length; i++)  {
+            	String FieldLabel= fields[i].getLabel();	
+            	String FieldName= fields[i].getName();	
+            	String FieldType=fields[i].getType().getValue();
+            	String FieldLengh =  fields[i].getLength() + "";
+            	
+            	TableItem item = new TableItem(wFields.table,SWT.NONE);
+				item.setText(1, FieldLabel);
+				item.setText(2, FieldName);
+			
+				// Try to get the Type
+				if (FieldType.equals("boolean")) {
+					item.setText(3, "Boolean");
+				} else if (FieldType.equals("datetime") || FieldType.equals("date")) {
+					item.setText(3, "Date");
+					item.setText(4, DEFAULT_DATE_FORMAT);
+				} else if (FieldType.equals("double")) {
+					item.setText(3, "Number");
+                } else if (FieldType.equals("int")) {
+					item.setText(3, "Integer");
+				}
+		        else {
+		        item.setText(3, "String");
+		        }
 				
-					// Try to get the Type
-					if (FieldType.equals("boolean")) {
-						item.setText(3, "Boolean");
-					} else if (FieldType.equals("datetime") || FieldType.equals("date")) {
-						item.setText(3, "Date");
-						item.setText(4, DEFAULT_DATE_FORMAT);
-					} else if (FieldType.equals("double")) {
-						item.setText(3, "Number");
-	                } else if (FieldType.equals("int")) {
-						item.setText(3, "Integer");
-					}
-				      else {
-				        item.setText(3, "String");
-				      }
-					
-					// Get length
-					if (!FieldType.equals("boolean") && !FieldType.equals("datetime") && !FieldType.equals("date"))
-					{
-						item.setText(5, FieldLengh);
-					}					
-	            }
-		   }
+				// Get length
+				if (!FieldType.equals("boolean") && !FieldType.equals("datetime") && !FieldType.equals("date"))
+				{
+					item.setText(5, FieldLengh);
+				}					
+	       }
         }
 		wFields.removeEmptyRows();
 		wFields.setRowNums();
@@ -1022,10 +1344,24 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	} catch (Exception e) {
 		new ErrorDialog(shell,BaseMessages.getString(PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogTitle"),
 				BaseMessages.getString(PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogMessage"),e);
-
+	}finally{
+		if(connection!=null) {
+			try {connection.close();}catch(Exception e){};
+		}
 	}
  }
+  private void updateRecordsFilter()
+  {
+	  boolean activeFilter=(!wspecifyQuery.getSelection() && SalesforceConnectionUtils.getRecordsFilterByDesc(wRecordsFilter.getText())!=SalesforceConnectionUtils.RECORDS_FILTER_ALL);
 
+	  wlReadFrom.setEnabled(activeFilter);
+	  wReadFrom.setEnabled(activeFilter);
+	  open.setEnabled(activeFilter);
+	  wlReadTo.setEnabled(activeFilter);
+	  wReadTo.setEnabled(activeFilter);
+	  opento.setEnabled(activeFilter);
+			  
+  }
 
 	/**
 	 * Read the data from the TextFileInputMeta object and show it in this
@@ -1042,6 +1378,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		wModule.setText(Const.NVL(in.getModule(), "Account"));
 		wCondition.setText(Const.NVL(in.getCondition(),""));
 		
+		wspecifyQuery.setSelection(in.isSpecifyQuery());
+		wQuery.setText(Const.NVL(in.getQuery(),""));
+		wRecordsFilter.setText(SalesforceConnectionUtils.getRecordsFilterDesc(input.getRecordsFilter()));
 		wInclURLField.setText(Const.NVL(in.getTargetURLField(),""));
 		wInclURL.setSelection(in.includeTargetURL());
 		
@@ -1062,6 +1401,10 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 			
 		wLimit.setText("" + in.getRowLimit());
 
+		wReadFrom.setText(Const.NVL(in.getReadFrom(),""));
+		wReadTo.setText(Const.NVL(in.getReadTo(),""));
+		
+		
 		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SalesforceInputDialog.Log.GettingFieldsInfo"));
 		for (int i = 0; i < in.getInputFields().length; i++) 
 		{
@@ -1136,11 +1479,14 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		stepname = wStepname.getText(); // return value
 
 		// copy info to SalesforceInputMeta class (input)
-		in.setTargetURL(Const.NVL(wURL.getText(),in.TargetDefaultURL));
+		in.setTargetURL(Const.NVL(wURL.getText(),SalesforceConnectionUtils.TARGET_DEFAULT_URL));
 		in.setUserName(Const.NVL(wUserName.getText(),""));
 		in.setPassword(Const.NVL(wPassword.getText(),""));
 		in.setModule(Const.NVL(wModule.getText(),"Account"));
 		in.setCondition(Const.NVL(wCondition.getText(),""));
+		
+		in.setSpecifyQuery(wspecifyQuery.getSelection());
+		in.setQuery(Const.NVL(wQuery.getText(),""));
 		
 		in.setTimeOut(Const.NVL(wTimeOut.getText(),"0"));
 		in.setRowLimit(Const.NVL(wLimit.getText(),"0"));
@@ -1149,13 +1495,14 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		in.setTimestampField(Const.NVL(wInclTimestampField.getText(),""));
 		in.setModuleField(Const.NVL(wInclModuleField.getText(),""));
 		in.setRowNumberField(Const.NVL(wInclRownumField.getText(),""));
-		
+		in.setRecordsFilter(SalesforceConnectionUtils.getRecordsFilterByDesc(wRecordsFilter.getText()));
 		in.setIncludeTargetURL(wInclURL.getSelection());
 		in.setIncludeSQL(wInclSQL.getSelection());
 		in.setIncludeTimestamp(wInclTimestamp.getSelection());
 		in.setIncludeModule(wInclModule.getSelection());
 		in.setIncludeRowNumber(wInclRownum.getSelection());
-
+		in.setReadFrom(wReadFrom.getText());
+		in.setReadTo(wReadTo.getText());
 		int nrFields = wFields.nrNonEmpty();
 
 		in.allocate(nrFields);
@@ -1186,12 +1533,10 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	// Preview the data
 	private void preview() {
 		try {
-			// Create the LDIF input step
 			SalesforceInputMeta oneMeta = new SalesforceInputMeta();
 			getInfo(oneMeta);
 
 			// check if the path is given
-			if (!checkInput()) return;
 			
 			 TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
 	            
@@ -1234,41 +1579,6 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 					BaseMessages.getString(PKG, "SalesforceInputDialog.ErrorPreviewingData.DialogMessage"),
 					e);
 		}
-	}
-	// check if module, username is given
-	private boolean checkInput(){
-        if (Const.isEmpty(wModule.getText()))
-        {
-            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage(BaseMessages.getString(PKG, "SalesforceInputDialog.ModuleMissing.DialogMessage"));
-            mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
-            mb.open(); 
-            return false;
-        }
-        if (Const.isEmpty(wUserName.getText()))
-        {
-            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage(BaseMessages.getString(PKG, "SalesforceInputDialog.UsernameMissing.DialogMessage"));
-            mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
-            mb.open(); 
-            return false;
-        }
-        
-        return true;
-	}
-	// check if username is given
-	private boolean checkUser(){
-
-        if (Const.isEmpty(wUserName.getText()))
-        {
-            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage(BaseMessages.getString(PKG, "SalesforceInputDialog.UsernameMissing.DialogMessage"));
-            mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
-            mb.open(); 
-            return false;
-        }
-        
-        return true;
 	}
 	public String toString() {
 		return this.getClass().getName();
