@@ -56,8 +56,6 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 {	
 	private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	
- 	 
 	/** Flag indicating that we should include the generated SQL in the output */
 	private  boolean includeSQL;
 	
