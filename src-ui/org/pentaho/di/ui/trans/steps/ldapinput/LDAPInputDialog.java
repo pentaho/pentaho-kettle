@@ -94,6 +94,14 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	private Button       wInclRownum;
 	private FormData     fdlInclRownum, fdRownum;
 	
+	private Label        wlsetPaging;
+	private Button       wsetPaging;
+	private FormData     fdlsetPaging, fdsetPaging;
+	
+	private Label        wlPageSize;
+	private TextVar       wPageSize;
+	private FormData     fdlPageSize, fdPageSize;
+	
 	private Label        wlusingAuthentication;
 	private Button       wusingAuthentication;
 	private FormData     fdlusingAuthentication;
@@ -593,6 +601,47 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdMultiValuedSeparator.right= new FormAttachment(100, 0);
 		wMultiValuedSeparator.setLayoutData(fdMultiValuedSeparator);
        
+		// Use page ranging?
+		wlsetPaging=new Label(wContentComp, SWT.RIGHT);
+		wlsetPaging.setText(BaseMessages.getString(PKG, "LDAPInputDialog.setPaging.Label"));
+ 		props.setLook(wlsetPaging);
+		fdlsetPaging=new FormData();
+		fdlsetPaging.left = new FormAttachment(0, 0);
+		fdlsetPaging.top  = new FormAttachment(wMultiValuedSeparator, margin);
+		fdlsetPaging.right= new FormAttachment(middle, -margin);
+		wlsetPaging.setLayoutData(fdlsetPaging);
+		wsetPaging=new Button(wContentComp, SWT.CHECK );
+ 		props.setLook(wsetPaging);
+		wsetPaging.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.setPaging.Tooltip"));
+		fdsetPaging=new FormData();
+		fdsetPaging.left = new FormAttachment(middle, 0);
+		fdsetPaging.top  = new FormAttachment(wMultiValuedSeparator, margin);
+		wsetPaging.setLayoutData(fdsetPaging);
+		wsetPaging.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					setPaging();
+				}
+			}
+		);
+		wlPageSize=new Label(wContentComp, SWT.RIGHT);
+		wlPageSize.setText(BaseMessages.getString(PKG, "LDAPInputDialog.PageSize.Label"));
+ 		props.setLook(wlPageSize);
+		fdlPageSize=new FormData();
+		fdlPageSize.left = new FormAttachment(wsetPaging, margin);
+		fdlPageSize.top  = new FormAttachment(wMultiValuedSeparator, margin);
+		wlPageSize.setLayoutData(fdlPageSize);
+		wPageSize=new TextVar(transMeta,wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wPageSize);
+ 		wPageSize.addModifyListener(lsMod);
+ 		fdPageSize=new FormData();
+ 		fdPageSize.left = new FormAttachment(wlPageSize, margin);
+ 		fdPageSize.top  = new FormAttachment(wMultiValuedSeparator, margin);
+ 		fdPageSize.right= new FormAttachment(100, 0);
+		wPageSize.setLayoutData(fdPageSize);
+		
+		
 		fdContentComp = new FormData();
 		fdContentComp.left  = new FormAttachment(0, 0);
 		fdContentComp.top   = new FormAttachment(0, 0);
@@ -768,6 +817,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		setSize();
 		getData(input);
 		useAuthentication();
+		setPaging();
 		input.setChanged(changed);
 	
 		wFields.optWidth(true);
@@ -946,7 +996,11 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		  catch(NumberFormatException e)   {return false; }
 		  return true;
 	}
-	
+	private void setPaging()
+	{
+		wlPageSize.setEnabled(wsetPaging.getSelection());
+		wPageSize.setEnabled(wsetPaging.getSelection());
+	}
 	private boolean IsNumber(String str)
 	{
 		  try 
@@ -987,10 +1041,12 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	{
 		
 		wInclRownum.setSelection(in.includeRowNumber());
-		wusingAuthentication.setSelection(in.UseAuthentication());
-		
-		
 		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
+		
+		wusingAuthentication.setSelection(in.UseAuthentication());
+		wsetPaging.setSelection(in.isPaging());
+		if (in.getPageSize()!=null) wPageSize.setText(in.getPageSize());
+		
 		wLimit.setText(""+in.getRowLimit());
 		wTimeLimit.setText(""+in.getTimeLimit());
 		if(in.getMultiValuedSeparator()!=null)	wMultiValuedSeparator.setText(in.getMultiValuedSeparator());
@@ -1080,8 +1136,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		in.setMultiValuedSeparator(wMultiValuedSeparator.getText());
 		in.setIncludeRowNumber( wInclRownum.getSelection() );
 		in.setUseAuthentication( wusingAuthentication.getSelection() );
-		
-		
+		in.setPaging(wsetPaging.getSelection() );
+		in.setPageSize(wPageSize.getText());
 		in.setRowNumberField( wInclRownumField.getText() );
 		in.setHost( wHost.getText() );
 		in.setUserName( wUserName.getText() );

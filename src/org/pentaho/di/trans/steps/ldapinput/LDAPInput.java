@@ -21,9 +21,12 @@ import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
-import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.naming.ldap.Control;
+import javax.naming.ldap.InitialLdapContext;
+import javax.naming.ldap.PagedResultsControl;
+import javax.naming.ldap.PagedResultsResponseControl;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -105,7 +108,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 		
 			putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 		    
-			if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "LDAPInput.log.ReadRow"), outputRowData.toString());
+			if(log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "LDAPInput.log.ReadRow"), data.outputRowMeta.getString(outputRowData));
 			
 		    if (checkFeedback(getLinesInput()))
 		    {
@@ -139,11 +142,58 @@ public class LDAPInput extends BaseStep implements StepInterface
 	}		
 	private Object[] getOneRow()  throws KettleException
 	{
-
-		while (!data.results.hasMoreElements())
-		{
-	      return null;
-		} 
+		
+		 while (!data.results.hasMoreElements())
+		 {
+			if(data.pagingSet)
+			{
+				// we are using paging...
+				// we need here to check the response controls
+				// and pass back cookie to next page
+				try 
+				{
+					// examine response controls
+					Control[] rc = data.ctx.getResponseControls();
+					if (rc != null) 
+					{
+						for (int i = 0; i < rc.length; i++) 
+						{
+							if (rc[i] instanceof PagedResultsResponseControl) 
+							{
+								PagedResultsResponseControl prc = (PagedResultsResponseControl) rc[i];
+								data.cookie = prc.getCookie();
+							}
+						}
+					}
+					// pass the cookie back for the next page
+					data.ctx.setRequestControls(new javax.naming.ldap.Control[] 
+					        { new PagedResultsControl(data.pageSize, data.cookie,Control.CRITICAL) });
+						
+					 if ((data.cookie != null) && (data.cookie.length != 0))
+					 {
+						 // get search result for the page
+						 data.results = data.ctx.search(data.searchbase,data.filter, data.controls);
+					 }else
+					 {
+						 return null;
+					 }
+				 
+				}catch(Exception e)
+				{
+					throw new KettleException(BaseMessages.getString(PKG, "LDAPInput.Exception.ErrorPaging"), e);
+				}
+			 
+				while (!data.results.hasMoreElements())
+				{
+				   return null;
+				}
+			}else
+			{
+				// User do not want to use paging
+				// we have already returned all the result
+				return null;
+			}
+		 }
 
 		 // Build an empty row based on the meta-data		  
 		 Object[] outputRowData=buildEmptyRow();
@@ -254,9 +304,9 @@ public class LDAPInput extends BaseStep implements StepInterface
 			String username=environmentSubstitute(meta.getUserName());
 			String password=environmentSubstitute(meta.getPassword());
 	        //Set the filter string.  The more exact of the search string
-			String filter=environmentSubstitute(meta.getFilterString());
+			data.filter=environmentSubstitute(meta.getFilterString()).replace("\n\r", "").replace("\n", "");
 			//Set the Search base.This is the place where the search will
-			String searchbase=environmentSubstitute(meta.getSearchBase());
+			data.searchbase=environmentSubstitute(meta.getSearchBase());
 			 
 			 
 	        Hashtable<String, String> env = new Hashtable<String, String>();
@@ -274,8 +324,8 @@ public class LDAPInput extends BaseStep implements StepInterface
 	        	env.put(Context.SECURITY_CREDENTIALS, password); 
 	        }
 
-	       data.ctx=new InitialDirContext(env);
-		  
+	       //data.ctx=new InitialDirContext(env);
+	        data.ctx=new InitialLdapContext(env, null);
 	       if (data.ctx==null)
 		   {
 			   logError(BaseMessages.getString(PKG, "LDAPInput.Error.UnableToConnectToServer"));
@@ -287,11 +337,11 @@ public class LDAPInput extends BaseStep implements StepInterface
 		   //DirContext schema = data.ctx.getSchema("");  
 		   //if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDAPInput.SchemaList.Message",""+schema.list(""))); 
 	       
-		   SearchControls controls = new SearchControls();
-		   controls.setCountLimit(meta.getRowLimit());
+		   data.controls = new SearchControls();
+		   data.controls.setCountLimit(meta.getRowLimit());
 		    
 		   // Time Limit
-		   if(meta.getTimeLimit()>0)   controls.setTimeLimit(meta.getTimeLimit() * 1000);
+		   if(meta.getTimeLimit()>0)   data.controls.setTimeLimit(meta.getTimeLimit() * 1000);
 
 		   // Limit returned attributes to user selection
 		   String[] attrReturned = new String [meta.getInputFields().length];
@@ -302,22 +352,38 @@ public class LDAPInput extends BaseStep implements StepInterface
 			
 		   }
 		   
-		   controls.setReturningAttributes(attrReturned);
+		   data.controls.setReturningAttributes(attrReturned);
 		     
 		     
-		   if(Const.isEmpty(searchbase))
+		   if(Const.isEmpty(data.searchbase))
 		   {
 			    // get Search Base
 			    Attributes attrs = data.ctx.getAttributes("", new String[] { "namingContexts" });
 				Attribute attr = attrs.get("namingContexts");
 				  
-				searchbase=attr.get().toString();
-				if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "LDAPInput.SearchBaseFound",searchbase) );
+				data.searchbase=attr.get().toString();
+				if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "LDAPInput.SearchBaseFound",data.searchbase) );
 		    } 
-		
-	        controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+		    //Specify the search scope
+		   data.controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 	         
-	        data.results = data.ctx.search(searchbase,filter.replace("\n\r", "").replace("\n", ""), controls);
+	        //Set the page size?
+	        if(meta.isPaging())
+	        {
+	        	data.pageSize=Const.toInt(environmentSubstitute(meta.getPageSize()),-1);
+	        	if(data.pageSize>-1)
+	        	{
+	        		// paging is activated
+	        		data.pagingSet=true;
+	        		//Request the paged results control
+	    			Control[] ctls = new Control[]{new PagedResultsControl(data.pageSize,true)};
+	    			data.ctx.setRequestControls(ctls);
+
+	        		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "LDAPInput.Log.PageSize",data.pageSize) );
+	        	}
+	        }
+	        // Apply search base and return result
+	        data.results = data.ctx.search(data.searchbase,data.filter, data.controls);
 	        
 		 }catch (Exception e)
 		 {

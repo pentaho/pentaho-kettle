@@ -26,8 +26,9 @@ import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
 import javax.naming.NamingEnumeration;
-import javax.naming.directory.DirContext;
+import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.naming.ldap.InitialLdapContext;
 
 
 /**
@@ -50,11 +51,18 @@ public class LDAPInputData extends BaseStepData implements StepDataInterface
 
     public long                rownr;
     
-    public DirContext ctx;
+    public InitialLdapContext ctx;
     NamingEnumeration<SearchResult> results;
     public String multi_valuedFieldSeparator;
 
     public int nrfields;
+    
+    public String searchbase;
+    public String filter;
+    public SearchControls controls;
+    public byte[] cookie;
+    public boolean pagingSet;
+    public int pageSize;
     
 	public LDAPInputData()
 	{
@@ -73,7 +81,12 @@ public class LDAPInputData extends BaseStepData implements StepDataInterface
 		multi_valuedFieldSeparator=null;
 		results=null;
 		nrfields=0;
-
+		searchbase=null;
+		filter=null;
+		controls=null;
+		cookie=null;
+		pagingSet=false;
+		pageSize=-1;
 	}
 	
    

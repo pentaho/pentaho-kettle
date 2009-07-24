@@ -55,6 +55,12 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	/** Flag indicating that we use authentication for connection */
 	private boolean useAuthentication;
+	
+	/** Flag indicating that we use paging */
+	private boolean usePaging;
+	
+	/**  page size */
+	private String pagesize;
 
 	/** Flag indicating that a row number field should be included in the output */
 	private  boolean includeRowNumber;
@@ -117,7 +123,22 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.useAuthentication=useAuthentication;
 	}
-		
+	
+	/**
+     * @return Returns the input usePaging.
+     */
+	public boolean isPaging()
+	{
+		return usePaging;
+	}
+	
+	 /**
+     * @param usePaging The usePaging to set.
+     */
+	public void setPaging(boolean usePaging)
+	{
+		this.usePaging=usePaging;
+	}
 	/**
      * @return Returns the input fields.
      */
@@ -305,6 +326,22 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     /**
+     * @param pagesize The pagesize.
+     */
+    public void setPageSize(String pagesize)
+    {
+        this.pagesize = pagesize;
+    }
+    
+    
+    /**
+     * @return Returns the pagesize.
+     */
+    public String getPageSize()
+    {
+        return pagesize;
+    }
+    /**
      * @param rowLimit The rowLimit to set.
      */
     public void setRowLimit(long rowLimit)
@@ -319,9 +356,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return rowNumberField;
     }
-    
 
-    
     
     /**
      * @param rowNumberField The rowNumberField to set.
@@ -364,7 +399,8 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval=new StringBuffer(500);
         
-        
+        retval.append("    ").append(XMLHandler.addTagValue("usepaging",          usePaging));
+        retval.append("    ").append(XMLHandler.addTagValue("pagesize",    pagesize));
         retval.append("    ").append(XMLHandler.addTagValue("useauthentication",  useAuthentication));
         retval.append("    ").append(XMLHandler.addTagValue("rownum",          includeRowNumber));
         retval.append("    ").append(XMLHandler.addTagValue("rownum_field",    rowNumberField));
@@ -415,7 +451,8 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			
-			
+			usePaging  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "usepaging"));
+			pagesize    = XMLHandler.getTagValue(stepnode, "pagesize");
 			useAuthentication  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "useauthentication"));
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
@@ -478,7 +515,8 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void setDefault()
 	{
-
+		usePaging=false;
+		pagesize="1000";
 		useAuthentication=false;
 		includeRowNumber = false;
 		rowNumberField   = "";
@@ -519,9 +557,6 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	        
 		}
 		
-		
-			
-		
 		if (includeRowNumber)
 		{
 			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(rowNumberField), ValueMeta.TYPE_INTEGER);
@@ -550,7 +585,8 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 		try
 		{
-			
+			usePaging  = rep.getStepAttributeBoolean(id_step, "usepaging");
+			pagesize    = rep.getStepAttributeString (id_step, "pagesize");
 			useAuthentication  = rep.getStepAttributeBoolean(id_step, "useauthentication");
 			includeRowNumber  = rep.getStepAttributeBoolean(id_step, "rownum");
 			rowNumberField    = rep.getStepAttributeString (id_step, "rownum_field");
@@ -601,7 +637,8 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			
+			rep.saveStepAttribute(id_transformation, id_step, "usepaging",          usePaging);
+			rep.saveStepAttribute(id_transformation, id_step, "pagesize",    pagesize);
 			rep.saveStepAttribute(id_transformation, id_step, "useauthentication",  useAuthentication);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
