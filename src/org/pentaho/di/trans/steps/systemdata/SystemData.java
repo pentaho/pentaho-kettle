@@ -14,10 +14,7 @@ package org.pentaho.di.trans.steps.systemdata;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
+import java.util.Locale;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -31,6 +28,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.version.BuildVersion;
+
 
 
 /**
@@ -253,12 +251,312 @@ public class SystemData extends BaseStep implements StepInterface
                 row[index] = BuildVersion.getInstance().getBuildDate();
                 break;
             case SystemDataMeta.TYPE_SYSTEM_INFO_CURRENT_PID:
-        		RuntimeMXBean mx = ManagementFactory.getRuntimeMXBean();
-        		String pid=mx.getName();
-        		int indexOf=pid.indexOf("@");
-        		if(indexOf>0) pid=pid.substring(0,indexOf);
-                row[index] =new Long(pid);
+                row[index] =new Long(Management.getPID());
                 break;
+            case SystemDataMeta.TYPE_SYSTEM_INFO_JVM_TOTAL_MEMORY:
+                row[index] = Runtime.getRuntime().totalMemory();
+                break;  
+            case SystemDataMeta.TYPE_SYSTEM_INFO_JVM_FREE_MEMORY:
+                row[index] = Runtime.getRuntime().freeMemory();
+                break;  
+            case SystemDataMeta.TYPE_SYSTEM_INFO_JVM_MAX_MEMORY:
+                row[index] = Runtime.getRuntime().maxMemory();
+                break; 
+            case SystemDataMeta.TYPE_SYSTEM_INFO_JVM_AVAILABLE_MEMORY:
+            	Runtime rt=Runtime.getRuntime();
+                row[index] = rt.maxMemory()-rt.totalMemory()-rt.freeMemory();
+                break; 
+            case SystemDataMeta.TYPE_SYSTEM_INFO_AVAILABLE_PROCESSORS:
+                row[index] = (long)Runtime.getRuntime().availableProcessors();
+                break;
+            case SystemDataMeta.TYPE_SYSTEM_INFO_JVM_CPU_TIME:
+                row[index] = Management.getJVMCpuTime()/1000000;
+                break;
+            case SystemDataMeta.TYPE_SYSTEM_INFO_TOTAL_PHYSICAL_MEMORY_SIZE:
+                row[index] = Management.getTotalPhysicalMemorySize();
+                break;
+            case SystemDataMeta.TYPE_SYSTEM_INFO_TOTAL_SWAP_SPACE_SIZE:
+                row[index] = Management.getTotalSwapSpaceSize();
+                break;
+            case SystemDataMeta.TYPE_SYSTEM_INFO_COMMITTED_VIRTUAL_MEMORY_SIZE:
+                row[index] = Management.getCommittedVirtualMemorySize();
+                break;
+            case SystemDataMeta.TYPE_SYSTEM_INFO_FREE_PHYSICAL_MEMORY_SIZE:
+                row[index] = Management.getFreePhysicalMemorySize();
+                break;
+            case SystemDataMeta.TYPE_SYSTEM_INFO_FREE_SWAP_SPACE_SIZE:
+                row[index] = Management.getFreeSwapSpaceSize();
+                break;
+                
+        	case SystemDataMeta.TYPE_SYSTEM_INFO_PREV_WEEK_START:
+				cal = Calendar.getInstance();
+				cal.add(Calendar.WEEK_OF_YEAR, -1);
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREV_WEEK_END: 
+				cal = Calendar.getInstance();
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, -1);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREV_WEEK_OPEN_END: 
+				cal = Calendar.getInstance();
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, -1);
+				cal.add(Calendar.DAY_OF_WEEK, -2);
+				row[index] = cal.getTime();				
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREV_WEEK_START_US:
+				cal = Calendar.getInstance(Locale.US);
+				cal.add(Calendar.WEEK_OF_YEAR, -1);
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREV_WEEK_END_US: 
+				cal = Calendar.getInstance(Locale.US);
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, -1);
+				row[index] = cal.getTime();	
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_THIS_WEEK_START:
+				cal = Calendar.getInstance();
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_THIS_WEEK_END: 
+				cal = Calendar.getInstance();
+				cal.add(Calendar.WEEK_OF_YEAR, 1);
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, -1);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_THIS_WEEK_OPEN_END: 
+				cal = Calendar.getInstance();
+				cal.add(Calendar.WEEK_OF_YEAR, 1);
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, -1);
+				cal.add(Calendar.DAY_OF_WEEK, -2);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_THIS_WEEK_START_US:
+				cal = Calendar.getInstance(Locale.US);
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_THIS_WEEK_END_US: 
+				cal = Calendar.getInstance(Locale.US);
+				cal.add(Calendar.WEEK_OF_YEAR, 1);
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, -1);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_NEXT_WEEK_START:
+				cal = Calendar.getInstance();
+				cal.add(Calendar.WEEK_OF_YEAR, 1);
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_NEXT_WEEK_END: 
+				cal = Calendar.getInstance();
+				cal.add(Calendar.WEEK_OF_YEAR, 2);
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, -1);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_NEXT_WEEK_OPEN_END: 
+				cal = Calendar.getInstance();
+				cal.add(Calendar.WEEK_OF_YEAR, 2);
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, -1);
+				cal.add(Calendar.DAY_OF_WEEK, -2);
+				row[index] = cal.getTime();				
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_NEXT_WEEK_START_US:
+				cal = Calendar.getInstance(Locale.US);
+				cal.add(Calendar.WEEK_OF_YEAR, 1);
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_NEXT_WEEK_END_US: 
+				cal = Calendar.getInstance(Locale.US);
+				cal.add(Calendar.WEEK_OF_YEAR, 2);
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, -1);
+				row[index] = cal.getTime();	
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREV_QUARTER_START:
+				cal = Calendar.getInstance();
+				cal.add(Calendar.MONTH, -3-(cal.get(Calendar.MONTH) % 3));
+				cal.set(Calendar.DAY_OF_MONTH,1);
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREV_QUARTER_END:
+				cal = Calendar.getInstance();
+				cal.add(Calendar.MONTH, -1 - (cal.get(Calendar.MONTH) % 3));
+				cal.set(Calendar.DAY_OF_MONTH,cal.getActualMaximum(Calendar.DATE));
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 59);
+				cal.set(Calendar.SECOND, 59);
+				cal.set(Calendar.MILLISECOND, 999);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_THIS_QUARTER_START:
+				cal = Calendar.getInstance();
+				cal.add(Calendar.MONTH, 0 - (cal.get(Calendar.MONTH) % 3));
+				cal.set(Calendar.DAY_OF_MONTH,1);
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_THIS_QUARTER_END:
+				cal = Calendar.getInstance();
+				cal.add(Calendar.MONTH, 2 - (cal.get(Calendar.MONTH) % 3));
+				cal.set(Calendar.DAY_OF_MONTH,cal.getActualMaximum(Calendar.DATE));
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 59);
+				cal.set(Calendar.SECOND, 59);
+				cal.set(Calendar.MILLISECOND, 999);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_NEXT_QUARTER_START:
+				cal = Calendar.getInstance();
+				cal.add(Calendar.MONTH, 3 -(cal.get(Calendar.MONTH) % 3));
+				cal.set(Calendar.DAY_OF_MONTH,1);
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_NEXT_QUARTER_END:
+				cal = Calendar.getInstance();
+				cal.add(Calendar.MONTH, 5 - (cal.get(Calendar.MONTH) % 3));
+				cal.set(Calendar.DAY_OF_MONTH,cal.getActualMaximum(Calendar.DATE));
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 59);
+				cal.set(Calendar.SECOND, 59);
+				cal.set(Calendar.MILLISECOND, 999);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREV_YEAR_START:
+				cal = Calendar.getInstance();
+				cal.add(Calendar.YEAR, -1);
+				cal.set(Calendar.DAY_OF_YEAR,cal.getActualMinimum(Calendar.DATE));
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+				row[index] = cal.getTime();				
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREV_YEAR_END:
+				cal = Calendar.getInstance();
+				cal.set(Calendar.DAY_OF_YEAR,cal.getActualMinimum(Calendar.DATE));
+				cal.add(Calendar.DAY_OF_YEAR, -1);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 59);
+				cal.set(Calendar.SECOND, 59);
+				cal.set(Calendar.MILLISECOND, 999);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_THIS_YEAR_START:
+				cal = Calendar.getInstance();
+				cal.set(Calendar.DAY_OF_YEAR,cal.getActualMinimum(Calendar.DATE));
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+				row[index] = cal.getTime();				
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_THIS_YEAR_END:
+				cal = Calendar.getInstance();
+				cal.add(Calendar.YEAR, 1);
+				cal.set(Calendar.DAY_OF_YEAR,cal.getActualMinimum(Calendar.DATE));
+				cal.add(Calendar.DAY_OF_YEAR, -1);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 59);
+				cal.set(Calendar.SECOND, 59);
+				cal.set(Calendar.MILLISECOND, 999);
+				row[index] = cal.getTime();				
+				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_NEXT_YEAR_START:
+				cal = Calendar.getInstance();
+				cal.add(Calendar.YEAR, 1);
+				cal.set(Calendar.DAY_OF_YEAR,cal.getActualMinimum(Calendar.DATE));
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+				row[index] = cal.getTime();				
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_NEXT_YEAR_END:
+				cal = Calendar.getInstance();
+				cal.add(Calendar.YEAR, 2);
+				cal.set(Calendar.DAY_OF_YEAR,cal.getActualMinimum(Calendar.DATE));
+				cal.add(Calendar.DAY_OF_YEAR, -1);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 59);
+				cal.set(Calendar.SECOND, 59);
+				cal.set(Calendar.MILLISECOND, 999);
+				row[index] = cal.getTime();				
+				break; 
 			default: break;
 			}
 		}

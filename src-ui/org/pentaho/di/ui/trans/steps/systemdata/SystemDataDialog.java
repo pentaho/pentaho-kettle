@@ -36,16 +36,23 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.systemdata.SystemDataMeta;
+import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.dialog.EnterTextDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-
 
 
 public class SystemDataDialog extends BaseStepDialog implements StepDialogInterface
@@ -61,6 +68,8 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 	private FormData     fdlFields, fdFields;
 	
 	private SystemDataMeta input;
+	
+	private boolean isReceivingInput=false;
 
 	public SystemDataDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -95,6 +104,10 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
+		
+		// See if the step receives input.
+		//
+		isReceivingInput = transMeta.findNrPrevSteps(stepMeta)>0;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
@@ -167,17 +180,22 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
+		wPreview=new Button(shell, SWT.PUSH);
+		wPreview.setText(BaseMessages.getString(PKG, "SystemDataDialog.Button.PreviewRows"));
+		wPreview.setEnabled(!isReceivingInput);
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
+		setButtonPositions(new Button[] { wOK, wCancel, wPreview }, margin, wFields);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
+		lsPreview  = new Listener() { public void handleEvent(Event e) { preview();   } };
 		
 		wCancel.addListener(SWT.Selection, lsCancel);
 		wOK.addListener    (SWT.Selection, lsOK    );
+		wPreview.addListener(SWT.Selection, lsPreview);
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
@@ -234,19 +252,73 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 	private void ok()
 	{
 		if (Const.isEmpty(wStepname.getText())) return;
+		
+        try
+        {
+            getInfo(input);
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "SystemDataDialog.ErrorParsingData.DialogTitle"), BaseMessages.getString(PKG, "SystemDataDialog.ErrorParsingData.DialogMessage"), e);
+        }
+		dispose();
+	}
+	private void getInfo(SystemDataMeta in) throws KettleException
+	{
 
 		stepname = wStepname.getText(); // return value
-		//Table table = wFields.table;
-
 		int count = wFields.nrNonEmpty();
-		input.allocate(count);
+		in.allocate(count);
 		
 		for (int i=0;i<count;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
-			input.getFieldName()[i]   = item.getText(1);
-			input.getFieldType()[i]   = SystemDataMeta.getType(item.getText(2));
+			in.getFieldName()[i]   = item.getText(1);
+			in.getFieldType()[i]   = SystemDataMeta.getType(item.getText(2));
 		}
-		dispose();
+	}
+	// Preview the data
+	private void preview()
+	{
+        try
+        {
+            SystemDataMeta oneMeta = new SystemDataMeta();
+            getInfo(oneMeta);
+        
+            TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
+            
+            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "SystemDataDialog.NumberRows.DialogTitle"), BaseMessages.getString(PKG, "SystemDataDialog.NumberRows.DialogMessage"));
+            
+            int previewSize = numberDialog.open();
+            if (previewSize>0)
+            {
+                TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
+                progressDialog.open();
+                
+                if (!progressDialog.isCancelled())
+                {
+                    Trans trans = progressDialog.getTrans();
+                    String loggingText = progressDialog.getLoggingText();
+                    
+                    if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
+                    {
+                    	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
+                    			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true );
+                    	etd.setReadOnly();
+                    	etd.open();
+                    }
+                             
+                    PreviewRowsDialog prd = new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(),
+							progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog
+									.getPreviewRows(wStepname.getText()), loggingText);
+					prd.open();
+                    
+                }
+            }
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "SystemDataDialog.ErrorPreviewingData.DialogTitle"), BaseMessages.getString(PKG, "SystemDataDialog.ErrorPreviewingData.DialogMessage"), e);
+       }
 	}
 }

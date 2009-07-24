@@ -95,6 +95,44 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
     public final static int TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION  = 39; 
     public final static int TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE     = 40; 
     public final static int TYPE_SYSTEM_INFO_CURRENT_PID     = 41; 
+    public final static int TYPE_SYSTEM_INFO_JVM_MAX_MEMORY        = 42;
+    public final static int TYPE_SYSTEM_INFO_JVM_TOTAL_MEMORY      = 43; 
+    public final static int TYPE_SYSTEM_INFO_JVM_FREE_MEMORY       = 44;
+    public final static int TYPE_SYSTEM_INFO_JVM_AVAILABLE_MEMORY  = 45;
+    public final static int TYPE_SYSTEM_INFO_AVAILABLE_PROCESSORS  = 46;
+    public final static int TYPE_SYSTEM_INFO_JVM_CPU_TIME  = 47;
+    public final static int TYPE_SYSTEM_INFO_TOTAL_PHYSICAL_MEMORY_SIZE  = 48;
+    public final static int TYPE_SYSTEM_INFO_TOTAL_SWAP_SPACE_SIZE  = 49;
+    public final static int TYPE_SYSTEM_INFO_COMMITTED_VIRTUAL_MEMORY_SIZE  = 50;
+    public final static int TYPE_SYSTEM_INFO_FREE_PHYSICAL_MEMORY_SIZE  = 51;
+    public final static int TYPE_SYSTEM_INFO_FREE_SWAP_SPACE_SIZE  = 52;
+    public final static int TYPE_SYSTEM_INFO_PREV_WEEK_START   =  53;
+    public final static int TYPE_SYSTEM_INFO_PREV_WEEK_END     =  54;
+    public final static int TYPE_SYSTEM_INFO_PREV_WEEK_OPEN_END     =  55;
+    public final static int TYPE_SYSTEM_INFO_PREV_WEEK_START_US   =  56;
+    public final static int TYPE_SYSTEM_INFO_PREV_WEEK_END_US     =  57;
+    public final static int TYPE_SYSTEM_INFO_THIS_WEEK_START   =  58;
+    public final static int TYPE_SYSTEM_INFO_THIS_WEEK_END     =  59;
+    public final static int TYPE_SYSTEM_INFO_THIS_WEEK_OPEN_END     =  60;
+    public final static int TYPE_SYSTEM_INFO_THIS_WEEK_START_US   =  61;
+    public final static int TYPE_SYSTEM_INFO_THIS_WEEK_END_US     =  62;
+    public final static int TYPE_SYSTEM_INFO_NEXT_WEEK_START   =  63;
+    public final static int TYPE_SYSTEM_INFO_NEXT_WEEK_END     =  64;
+    public final static int TYPE_SYSTEM_INFO_NEXT_WEEK_OPEN_END     =  65;
+    public final static int TYPE_SYSTEM_INFO_NEXT_WEEK_START_US   =  66;
+    public final static int TYPE_SYSTEM_INFO_NEXT_WEEK_END_US     =  67;
+    public final static int TYPE_SYSTEM_INFO_PREV_QUARTER_START   =  68;
+    public final static int TYPE_SYSTEM_INFO_PREV_QUARTER_END     =  69;
+    public final static int TYPE_SYSTEM_INFO_THIS_QUARTER_START   =  70;
+    public final static int TYPE_SYSTEM_INFO_THIS_QUARTER_END     =  71;
+    public final static int TYPE_SYSTEM_INFO_NEXT_QUARTER_START   =  72;
+    public final static int TYPE_SYSTEM_INFO_NEXT_QUARTER_END     =  73;
+    public final static int TYPE_SYSTEM_INFO_PREV_YEAR_START   =  74;
+    public final static int TYPE_SYSTEM_INFO_PREV_YEAR_END     =  75;
+    public final static int TYPE_SYSTEM_INFO_THIS_YEAR_START   =  76;
+    public final static int TYPE_SYSTEM_INFO_THIS_YEAR_END     =  77;
+    public final static int TYPE_SYSTEM_INFO_NEXT_YEAR_START   =  78;
+    public final static int TYPE_SYSTEM_INFO_NEXT_YEAR_END     =  79;
 
     public static final SystemDataMetaFunction functions[] = new SystemDataMetaFunction[] {
             null,
@@ -140,6 +178,58 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
             new SystemDataMetaFunction(TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION , "kettle build version", BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.KettleBuildVersion")),
             new SystemDataMetaFunction(TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE    , "kettle build date",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.KettleBuildDate")),
             new SystemDataMetaFunction(TYPE_SYSTEM_INFO_CURRENT_PID    , "Current PID",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.CurrentPID")),
+            
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_JVM_MAX_MEMORY   , "jvm max memory",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.JVMMaxMemory")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_JVM_TOTAL_MEMORY    , "jvm total memory",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.JVMTotalMemory")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_JVM_FREE_MEMORY    , "jvm free memory",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.JVMFreeMemory")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_JVM_AVAILABLE_MEMORY   , "jvm available memory",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.JVMAvailableMemory")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_AVAILABLE_PROCESSORS   , "available processors",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.AvailableProcessors")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_JVM_CPU_TIME   , "jvm cpu time",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.JVMCPUTime")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_TOTAL_PHYSICAL_MEMORY_SIZE   , "total physical memory size",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.TotalPhysicalMemorySize")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_TOTAL_SWAP_SPACE_SIZE   , "total swap space size",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.TotalSwapSpaceSize")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_COMMITTED_VIRTUAL_MEMORY_SIZE   , "committed virtual memory size",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.CommittedVirtualMemorySize")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_FREE_PHYSICAL_MEMORY_SIZE   , "free physical memory size",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.FreePhysicalMemorySize")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_FREE_SWAP_SPACE_SIZE   , "free swap space size",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.FreeSwapSpaceSize")),
+            
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_WEEK_START   , "last week start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.LastWeekStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_WEEK_END   , "last week end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.LastWeekEnd")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_WEEK_OPEN_END   , "last week open end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.LastWeekOpenEnd")),
+            
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_WEEK_START_US   , "last week start us",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.LastWeekStartUS")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_WEEK_END_US   , "last week end us",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.LastWeekEndUS")),
+
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_WEEK_START   , "this week start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.ThisWeekStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_WEEK_END   , "this week end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.ThisWeekEnd")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_WEEK_OPEN_END   , "this week open end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.ThisWeekOpenEnd")),
+            
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_WEEK_START_US   , "this week start us",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.ThisWeekStartUS")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_WEEK_END_US   , "this week end us",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.ThisWeekEndUS")),
+            
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_WEEK_START   , "next week start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.NextWeekStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_WEEK_END   , "next week end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.NextWeekEnd")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_WEEK_OPEN_END   , "next week open end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.NextWeekOpenEnd")),
+           
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_WEEK_START_US   , "next week start us",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.NextWeekStartUS")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_WEEK_END_US   , "next week end us",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.NextWeekEndUS")),
+            
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_QUARTER_START   , "prev quarter start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PrevQuarterStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_QUARTER_END   , "prev quarter end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PrevQuarterEnd")),
+            
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_QUARTER_START   , "this quarter start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.ThisQuarterStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_QUARTER_END   , "this quarter end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.ThisQuarterEnd")),
+            
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_QUARTER_START   , "next quarter start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.NextQuarterStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_QUARTER_END   , "next quarter end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.NextQuarterEnd")),
+            
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_YEAR_START   , "prev year start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PrevYearStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_YEAR_END   , "prev year end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PrevYearEnd")),
+            
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_YEAR_START   , "this year start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.ThisYearStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_YEAR_END   , "this year end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.ThisYearEnd")),
+            
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_YEAR_START   , "next year start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.NextYearStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_YEAR_END   , "next year end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.NextYearEnd")),
+            
 };
     
 	private String fieldName[];
@@ -296,6 +386,33 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 			case TYPE_SYSTEM_INFO_NEXT_MONTH_END: 
 			case TYPE_SYSTEM_INFO_MODIFIED_DATE:
             case TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE:
+            case TYPE_SYSTEM_INFO_PREV_WEEK_START:
+            case TYPE_SYSTEM_INFO_PREV_WEEK_END:
+            case TYPE_SYSTEM_INFO_PREV_WEEK_OPEN_END:
+            case TYPE_SYSTEM_INFO_PREV_WEEK_START_US:
+            case TYPE_SYSTEM_INFO_PREV_WEEK_END_US:
+            case TYPE_SYSTEM_INFO_THIS_WEEK_START:
+            case TYPE_SYSTEM_INFO_THIS_WEEK_END:
+            case TYPE_SYSTEM_INFO_THIS_WEEK_OPEN_END:
+            case TYPE_SYSTEM_INFO_THIS_WEEK_START_US:
+            case TYPE_SYSTEM_INFO_THIS_WEEK_END_US:
+            case TYPE_SYSTEM_INFO_NEXT_WEEK_START:
+            case TYPE_SYSTEM_INFO_NEXT_WEEK_END:
+            case TYPE_SYSTEM_INFO_NEXT_WEEK_OPEN_END:
+            case TYPE_SYSTEM_INFO_NEXT_WEEK_START_US:
+            case TYPE_SYSTEM_INFO_NEXT_WEEK_END_US:
+            case TYPE_SYSTEM_INFO_PREV_QUARTER_START:
+            case TYPE_SYSTEM_INFO_PREV_QUARTER_END:
+            case TYPE_SYSTEM_INFO_THIS_QUARTER_START:
+            case TYPE_SYSTEM_INFO_THIS_QUARTER_END:
+            case TYPE_SYSTEM_INFO_NEXT_QUARTER_START:
+            case TYPE_SYSTEM_INFO_NEXT_QUARTER_END:
+            case TYPE_SYSTEM_INFO_PREV_YEAR_START:
+            case TYPE_SYSTEM_INFO_PREV_YEAR_END:
+            case TYPE_SYSTEM_INFO_THIS_YEAR_START:
+            case TYPE_SYSTEM_INFO_THIS_YEAR_END:
+            case TYPE_SYSTEM_INFO_NEXT_YEAR_START:
+            case TYPE_SYSTEM_INFO_NEXT_YEAR_END:
 				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_DATE); 
 				break;
 				
@@ -326,6 +443,11 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 				v=new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING);
 				break;
             case TYPE_SYSTEM_INFO_CURRENT_PID:
+		    case TYPE_SYSTEM_INFO_JVM_TOTAL_MEMORY:
+		    case TYPE_SYSTEM_INFO_JVM_FREE_MEMORY:
+		    case TYPE_SYSTEM_INFO_JVM_MAX_MEMORY:
+		    case TYPE_SYSTEM_INFO_JVM_AVAILABLE_MEMORY:
+		    case TYPE_SYSTEM_INFO_AVAILABLE_PROCESSORS:
 				v=new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_INTEGER);
 				v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 				break;
