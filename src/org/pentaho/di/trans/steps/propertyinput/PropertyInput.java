@@ -193,7 +193,12 @@ public class PropertyInput extends BaseStep implements StepInterface
 					if(meta.getInputFields()[i].getColumnCode().equals(PropertyInputField.ColumnCode[PropertyInputField.COLUMN_KEY]))
 						value=key;
 					else
-						value= data.pro.getProperty(key) ;
+					{
+						if(meta.isResolveValueVariable())
+							value= environmentSubstitute(data.pro.getProperty(key));
+						else
+							value= data.pro.getProperty(key) ;
+					}
 
 					// DO Trimming!
 					switch (meta.getInputFields()[i].getTrimType())

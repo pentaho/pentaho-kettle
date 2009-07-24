@@ -79,6 +79,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 	/** Flag indicating that we should reset RowNum for each file */
 	private boolean resetRowNumber;
 	
+	/** Flag do variable substitution for value */
+	private boolean resolvevaluevariable;
 	
 	/** The name of the field in the output containing the filename */
 	private  String  filenameField;
@@ -313,7 +315,21 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
         this.resetRowNumber = resetRowNumber;
     }
     
+    /**
+     * @param resolvevaluevariable The resolvevaluevariable to set.
+     */
+    public void setResolveValueVariable(boolean resolvevaluevariable)
+    {
+        this.resolvevaluevariable=resolvevaluevariable;
+    }
     
+    /**
+     *  @return Returns resolvevaluevariable.
+     */
+    public boolean isResolveValueVariable()
+    {
+        return resolvevaluevariable;
+    }
     /**
      * @return Returns the rowLimit.
      */
@@ -390,6 +406,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("filefield",       filefield));
         retval.append("    ").append(XMLHandler.addTagValue("rownum_field",    rowNumberField));
         retval.append("    ").append(XMLHandler.addTagValue("resetrownumber",  resetRowNumber));
+        retval.append("    ").append(XMLHandler.addTagValue("resolvevaluevariable",  resolvevaluevariable));
         retval.append("    <file>").append(Const.CR);
         for (int i=0;i<fileName.length;i++)
         {
@@ -445,7 +462,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 			dynamicFilenameField    = XMLHandler.getTagValue(stepnode, "filename_Field");
 			resetRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "resetrownumber"));
-	
+			resolvevaluevariable  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "resolvevaluevariable"));
 			Node filenode   = XMLHandler.getSubNode(stepnode,  "file");
 			Node fields     = XMLHandler.getSubNode(stepnode,  "fields");
 			int nrFiles     = XMLHandler.countNodes(filenode,  "name");
@@ -509,6 +526,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void setDefault()
 	{
+		resolvevaluevariable=false;
 		isaddresult=true;
 		filefield=false;
 		includeFilename  = false;
@@ -620,6 +638,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 			filefield  = rep.getStepAttributeBoolean(id_step, "filefield");
 			rowNumberField    = rep.getStepAttributeString (id_step, "rownum_field");
 			resetRowNumber     = rep.getStepAttributeBoolean (id_step, "reset_rownumber");
+			resolvevaluevariable= rep.getStepAttributeBoolean (id_step, "resolve_value_variable");
+				
 			rowLimit          = rep.getStepAttributeInteger(id_step, "limit");
 			int nrFiles       = rep.countNrStepAttributes(id_step, "file_name");
 			int nrFields      = rep.countNrStepAttributes(id_step, "field_name");
@@ -677,7 +697,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
 			rep.saveStepAttribute(id_transformation, id_step, "reset_rownumber",  resetRowNumber);
-
+			rep.saveStepAttribute(id_transformation, id_step, "resolve_value_variable",  resolvevaluevariable);
 		
 			for (int i=0;i<fileName.length;i++)
 			{

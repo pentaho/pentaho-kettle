@@ -74,6 +74,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+
 public class PropertyInputDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static Class<?> PKG = PropertyInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -133,6 +134,10 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
    
 	private TableView    wFields;
 	private FormData     fdFields;
+	
+	private Label        wlresolveValueVariable;
+	private Button       wresolveValueVariable;
+	private FormData     fdlresolveValueVariable,fdresolveValueVariable;
 
 	private PropertyInputMeta input;
 	
@@ -596,6 +601,23 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 		
+		wlresolveValueVariable=new Label(wContentComp, SWT.RIGHT);
+		wlresolveValueVariable.setText(BaseMessages.getString(PKG, "PropertyInputDialog.resolveValueVariable.Label"));
+ 		props.setLook(wlresolveValueVariable);
+		fdlresolveValueVariable=new FormData();
+		fdlresolveValueVariable.left = new FormAttachment(0, 0);
+		fdlresolveValueVariable.top  = new FormAttachment(wLimit, margin);
+		fdlresolveValueVariable.right= new FormAttachment(middle, -margin);
+		wlresolveValueVariable.setLayoutData(fdlresolveValueVariable);
+		wresolveValueVariable=new Button(wContentComp, SWT.CHECK );
+ 		props.setLook(wresolveValueVariable);
+		wresolveValueVariable.setToolTipText(BaseMessages.getString(PKG, "PropertyInputDialog.resolveValueVariable.Tooltip"));
+		fdresolveValueVariable=new FormData();
+		fdresolveValueVariable.left = new FormAttachment(middle, 0);
+		fdresolveValueVariable.top  = new FormAttachment(wLimit, margin);
+		wresolveValueVariable.setLayoutData(fdresolveValueVariable);
+		
+		
 		// ///////////////////////////////
 		// START OF AddFileResult GROUP  //
 		///////////////////////////////// 
@@ -614,7 +636,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
  		props.setLook(wlAddResult);
 		fdlAddResult=new FormData();
 		fdlAddResult.left = new FormAttachment(0, 0);
-		fdlAddResult.top  = new FormAttachment(wLimit, margin);
+		fdlAddResult.top  = new FormAttachment(wresolveValueVariable, margin);
 		fdlAddResult.right= new FormAttachment(middle, -margin);
 		wlAddResult.setLayoutData(fdlAddResult);
 		wAddResult=new Button(wAddFileResult, SWT.CHECK );
@@ -622,12 +644,12 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		wAddResult.setToolTipText(BaseMessages.getString(PKG, "PropertyInputDialog.AddResult.Tooltip"));
 		fdAddResult=new FormData();
 		fdAddResult.left = new FormAttachment(middle, 0);
-		fdAddResult.top  = new FormAttachment(wLimit, margin);
+		fdAddResult.top  = new FormAttachment(wresolveValueVariable, margin);
 		wAddResult.setLayoutData(fdAddResult);
 
 		fdAddFileResult = new FormData();
 		fdAddFileResult.left = new FormAttachment(0, margin);
-		fdAddFileResult.top = new FormAttachment(wLimit, margin);
+		fdAddFileResult.top = new FormAttachment(wresolveValueVariable, margin);
 		fdAddFileResult.right = new FormAttachment(100, -margin);
 		wAddFileResult.setLayoutData(fdAddFileResult);
 			
@@ -1097,7 +1119,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		wInclFilename.setSelection(in.includeFilename());
 		wInclRownum.setSelection(in.includeRowNumber());
 		wAddResult.setSelection(in.isAddResultFile());
-		
+		wresolveValueVariable.setSelection(in.isResolveValueVariable());
 		wFileField.setSelection(in.isFileField());
 		
 		if (in.getFilenameField()!=null) wInclFilenameField.setText(in.getFilenameField());
@@ -1189,6 +1211,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		in.setFileField(wFileField.getSelection() );
 		in.setRowNumberField( wInclRownumField.getText() );
 		in.setResetRowNumber( wResetRownum.getSelection() );
+		in.setResolveValueVariable( wresolveValueVariable.getSelection() );
 		int nrFiles     = wFilenameList.getItemCount();
 		int nrFields    = wFields.nrNonEmpty();
 		in.allocate(nrFiles, nrFields);
