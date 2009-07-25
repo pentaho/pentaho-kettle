@@ -68,6 +68,12 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     /** The base name of the output file */
 	private  String fileName;
 	
+    /* Specification if file name is in field*/
+    
+    private boolean fileNameInField;
+    
+    private String fileNameField;
+	
 	/** The file extention in case of a generated filename */
 	private  String  extension;
 	
@@ -89,6 +95,8 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     /** Comment to add in file */
     private String comment;
 
+    /** Flag append in file **/
+    private boolean append;
 
 	 public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 	    throws KettleXMLException
@@ -128,6 +136,32 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     {
         return fileName;
     }
+    /**
+     * @return Is the file name coded in a field?
+     */
+	public boolean isFileNameInField() {
+		return fileNameInField;
+	}
+	
+	/**
+     * @param fileNameInField Is the file name coded in a field?
+     */
+	public void setFileNameInField(boolean fileNameInField) {
+		this.fileNameInField = fileNameInField;
+	}
+	/**
+     * @return The field name that contains the output file name.
+     */
+	public String getFileNameField() {
+		return fileNameField;
+	}
+	
+	/**
+     * @param fileNameField Name of the field that contains the file name
+     */
+	public void setFileNameField(String fileNameField) {
+		this.fileNameField = fileNameField;
+	}
 
     
     /**
@@ -219,6 +253,21 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     public void setCreateParentFolder(boolean createparentfolder)
     {
     	this.createparentfolder=createparentfolder;
+    }
+    /**
+     * @return Returns the append flag.
+     */
+    public boolean isAppend()
+    {
+    	return append;
+    }
+    
+    /**
+     * @param append The append to set.
+     */
+    public void setAppend(boolean append)
+    {
+    	this.append=append;
     }
     
     public String getComment()
@@ -325,7 +374,8 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 			timeInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
 			AddToResult     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "AddToResult"));
 			fileName  = XMLHandler.getTagValue(stepnode, "file", "name");
-		
+			fileNameInField="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "fileNameInField"));
+			fileNameField       = XMLHandler.getTagValue(stepnode, "fileNameField");
 		
         }
 		catch(Exception e)
@@ -336,15 +386,12 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 
 	public void setDefault()
 	{
-		
+		append=false;
 		createparentfolder=false;
 		// Items ...
 		keyfield    = null;
 		valuefield    = null;
-		comment  =null;
-
-
-        
+		comment  =null;  
 	}
 
 	public String getXML()
@@ -358,7 +405,8 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 		retval.append("    "+XMLHandler.addTagValue("valuefield",   valuefield));
 		retval.append("    "+XMLHandler.addTagValue("comment",   comment));
 		
-
+        retval.append("    "+XMLHandler.addTagValue("fileNameInField",  fileNameInField));
+        retval.append("    "+XMLHandler.addTagValue("fileNameField",  fileNameField));  
 		retval.append("    <file>"+Const.CR);
 
 		retval.append("      "+XMLHandler.addTagValue("name",       fileName));
@@ -370,6 +418,7 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 		
 		retval.append("      "+XMLHandler.addTagValue("create_parent_folder",   createparentfolder));
 		retval.append("    "+XMLHandler.addTagValue("addtoresult",      AddToResult));
+		retval.append("    "+XMLHandler.addTagValue("append",      append));
 		retval.append("      </file>"+Const.CR);
 		
 		
@@ -397,7 +446,9 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 			
 			createparentfolder        =      rep.getStepAttributeBoolean(id_step, "create_parent_folder");
 			AddToResult     =      rep.getStepAttributeBoolean(id_step, "addtoresult");
-			
+			append     =      rep.getStepAttributeBoolean(id_step, "append");
+			fileNameInField =      rep.getStepAttributeBoolean (id_step, "fileNameInField");
+			fileNameField	=	   rep.getStepAttributeString (id_step, "fileNameField");
 
 		}
 		catch(Exception e)
@@ -425,8 +476,9 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 			
 			rep.saveStepAttribute(id_transformation, id_step, "create_parent_folder",    createparentfolder);
 			rep.saveStepAttribute(id_transformation, id_step, "addtoresult",        AddToResult);
-
-			
+			rep.saveStepAttribute(id_transformation, id_step, "append",        append);
+			rep.saveStepAttribute(id_transformation, id_step, "fileNameInField",   fileNameInField);
+			rep.saveStepAttribute(id_transformation, id_step, "fileNameField",   fileNameField);
 		}
 		catch(Exception e)
 		{
@@ -576,15 +628,18 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 			// From : ${Internal.Transformation.Filename.Directory}/../foo/bar.data
 			// To   : /home/matt/test/files/foo/bar.data
 			//
-			FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName));
-				
-			// If the file doesn't exist, forget about this effort too!
-			//
-			if (fileObject.exists()) {
-				// Convert to an absolute path...
-				// 
-				fileName = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
-				return fileName;
+			// In case the name of the file comes from previous steps, forget about this!
+			if (!fileNameInField) {
+				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName));
+					
+				// If the file doesn't exist, forget about this effort too!
+				//
+				if (fileObject.exists()) {
+					// Convert to an absolute path...
+					// 
+					fileName = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
+					return fileName;
+				}
 			}
 			return null;
 		} catch (Exception e) {

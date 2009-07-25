@@ -65,11 +65,6 @@ public class PropertyOutput extends BaseStep implements StepInterface
 
 		if (r==null)  // no more input to be expected...
 		{
-			if(!first)
-			{
-				// Save properties to file
-				saveProperties(data.pro);
-			}
 			setOutputDone();
 			return false;
 		}
@@ -99,36 +94,57 @@ public class PropertyOutput extends BaseStep implements StepInterface
 				throw new KettleException(BaseMessages.getString(PKG, "PropertyOutput.Log.ErrorFindingField",meta.getValueField()));
 			}
             
-			// Let's check for filename...
-			String filename=buildFilename();
-			// Check if filename is empty..
-			if(Const.isEmpty(filename))
+			if(meta.isFileNameInField())
 			{
-				logError(BaseMessages.getString(PKG, "PropertyOutput.Log.FilenameEmpty"));
-				throw new KettleException(BaseMessages.getString(PKG, "PropertyOutput.Log.FilenameEmpty"));	
+				String realFieldName=environmentSubstitute(meta.getFileNameField());
+				if(Const.isEmpty(realFieldName))
+				{
+					logError(BaseMessages.getString(PKG, "PropertyOutput.Log.FilenameInFieldEmpty"));
+					throw new KettleException(BaseMessages.getString(PKG, "PropertyOutput.Log.FilenameInFieldEmpty"));	
+				}
+				data.indexOfFieldfilename=data.inputRowMeta.indexOfValue(realFieldName);
+				if (data.indexOfFieldfilename<0)
+				{
+					// The field is unreachable !
+					logError(BaseMessages.getString(PKG, "PropertyOutput.Log.ErrorFindingField", meta.getValueField()));
+					throw new KettleException(BaseMessages.getString(PKG, "PropertyOutput.Log.ErrorFindingField",meta.getValueField()));
+				}
+			}else
+			{
+				// Let's check for filename...
+				data.filename=buildFilename();
+				// Check if filename is empty..
+				if(Const.isEmpty(data.filename))
+				{
+					logError(BaseMessages.getString(PKG, "PropertyOutput.Log.FilenameEmpty"));
+					throw new KettleException(BaseMessages.getString(PKG, "PropertyOutput.Log.FilenameEmpty"));	
+				}
+				
+				openNewFile();
 			}
-			try{
-				data.file=KettleVFS.getFileObject(filename);
-			}catch(Exception e){throw new KettleException(e);}
-
-
-			// Create parent folder if needed...
-			createParentFolder();
 	
 		} // end first
 		
-		
-		boolean sendToErrorRow=false;
-        String errorMessage = null;
-		String propkey=null;
-		String propvalue=null;
-		
-		// Get value field
-        if(data.indexOfKeyField>-1) propkey= data.inputRowMeta.getString(r,data.indexOfKeyField);
-        if(data.indexOfValueField>-1) propvalue= data.inputRowMeta.getString(r,data.indexOfValueField);
 
+		// Get value field
+		String propkey=data.inputRowMeta.getString(r,data.indexOfKeyField);
+		String propvalue= data.inputRowMeta.getString(r,data.indexOfValueField);
+		
         try
         {
+    		if(meta.isFileNameInField())
+    		{
+    			data.filename=data.inputRowMeta.getString(r,data.indexOfFieldfilename);
+    			if(Const.isEmpty(data.filename))
+    				throw new KettleException(BaseMessages.getString(PKG, "PropertyOutputMeta.Log.FileNameEmty"));
+    			if(!checkSameFile())
+    			{
+    				// close previous file
+    				closeFile();
+    				// Open new file
+    				openNewFile();
+    			}
+    		}
 
             if(!data.KeySet.contains(propkey))
             {
@@ -152,6 +168,8 @@ public class PropertyOutput extends BaseStep implements StepInterface
 		}
 		catch(KettleStepException e)
 		{
+			boolean sendToErrorRow=false;
+	        String errorMessage = null;
 			if (getStepMeta().isDoingErrorHandling())
             {
                 sendToErrorRow = true;
@@ -174,10 +192,38 @@ public class PropertyOutput extends BaseStep implements StepInterface
 		
 		return true;
 	}
-	
+	public boolean checkSameFile() throws KettleException
+	{
+		return data.previousFileName.equals(data.filename);
+	}
+
+	private void saveProcessingFile()
+	{
+		data.previousFileName=data.filename;
+	}
+	private void openNewFile()  throws KettleException
+	{
+		try
+		{
+			data.pro=new Properties();
+			data.KeySet.clear();
+			
+			data.file=KettleVFS.getFileObject(data.filename);
+			if(meta.isAppend() && data.file.exists())
+				data.pro.load(KettleVFS.getInputStream(data.file));
+		
+			// Create parent folder if needed...
+			createParentFolder();
+			
+			saveProcessingFile();
+			
+		}catch(Exception e)
+		{
+			throw new KettleException("Error opening file ["+data.filename+"]!",e);
+		}
+	}
 	private void createParentFolder() throws KettleException
 	{
-		
 		if(meta.isCreateParentFolder())
 		{
 			FileObject parentfolder=null;
@@ -200,22 +246,25 @@ public class PropertyOutput extends BaseStep implements StepInterface
 				throw new KettleException(BaseMessages.getString(PKG, "PropertyOutput.Log.CanNotCreateParentFolder",parentfolder.getName().toString()));
 			
 			}
-		 finally {
+		    finally {
 	         	if ( parentfolder != null )
 	         	{
 	         		try  {
 	         			parentfolder.close();
-	         		}
-	         		catch ( Exception ex ) {};
+	         		}catch ( Exception ex ) {};
 	         	}
 		 }
 		} 	
 	}
-   private void saveProperties(Properties p) throws KettleException{
-	   OutputStream propsFile=null;;
+   private boolean closeFile()
+   {
+	   if(data.file==null) return true;
+	   boolean retval=false;
+	   OutputStream propsFile=null;
+
         try {
 			propsFile = KettleVFS.getOutputStream(data.file,false);
-            p.store(propsFile, environmentSubstitute(meta.getComment()));
+            data.pro.store(propsFile, environmentSubstitute(meta.getComment()));
           
 			if( meta.AddToResult())
 			{
@@ -223,20 +272,32 @@ public class PropertyOutput extends BaseStep implements StepInterface
 				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
 				resultFile.setComment(BaseMessages.getString(PKG, "PropertyOutput.Log.FileAddedResult"));
 				addResultFile(resultFile);
-			}   
-            
+			}  
+			data.KeySet.clear();
+			retval = true;
         } catch (Exception e) {
-        	throw new KettleException(e);
+			logError("Exception trying to close file [" + data.file.getName() + "]! :" + e.toString());
+			setErrors(1);
         }finally
         {
-        	if(propsFile!=null)
-        	{
+        	if(propsFile!=null) {
         		try{
+        
         			propsFile.close();
         			propsFile=null;
         		}catch(Exception e){};
         	}
+        	if(data.file!=null) {
+        		try{
+        			data.file.close();
+        			data.file=null;
+        		}catch(Exception e){};
+	     	}
+        	if(data.pro!=null) data.pro=null;
         }
+        
+        
+        return retval;
     }
 	public String buildFilename()
 	{
@@ -250,7 +311,6 @@ public class PropertyOutput extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
-			data.KeySet.clear();
 			return true;
 		}
 		return false;
@@ -260,13 +320,8 @@ public class PropertyOutput extends BaseStep implements StepInterface
 	{
 		meta=(PropertyOutputMeta)smi;
 		data=(PropertyOutputData)sdi;
-		try  {
-			if(data.file!=null)
-			{
-	     		data.file.close();
-	     		data.file=null;
-	     	}
-		}catch ( Exception ex ) {};
+		closeFile();
+
 		setOutputDone();
 		super.dispose(smi, sdi);
 	}

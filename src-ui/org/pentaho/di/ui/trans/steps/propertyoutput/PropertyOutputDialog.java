@@ -50,6 +50,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.propertyoutput.PropertyOutputMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -90,7 +91,14 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
 	private TextVar      wExtension;
 	private FormData     fdlExtension, fdExtension;
 
-
+	private Label        wlFileNameInField;
+    private Button       wFileNameInField;
+    private FormData     fdlFileNameInField, fdFileNameInField;
+    
+	private Label        wlFileNameField;
+	private ComboVar      wFileNameField;
+	private FormData     fdlFileNameField, fdFileNameField;
+    
 	private Label        wlAddStepnr;
 	private Button       wAddStepnr;
 	private FormData     fdlAddStepnr, fdAddStepnr;
@@ -137,6 +145,10 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
     private Label wlComment;
     private Text wComment;
     private FormData fdlComment, fdComment;
+    
+	private Label        wlAppend;
+	private Button       wAppend;
+	private FormData     fdlAppend, fdAppend;
 
     private PropertyOutputMeta input;
 	
@@ -307,10 +319,7 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
 		// ///////////////////////////////////////////////////////////
 		// / END OF Fields GROUP
 		// ///////////////////////////////////////////////////////////
-        
-		
-		
-		
+
 		
 		fdGeneralComp=new FormData();
 		fdGeneralComp.left  = new FormAttachment(0, 0);
@@ -323,14 +332,9 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
 		wGeneralTab.setControl(wGeneralComp);
  		props.setLook(wGeneralComp);
  		
- 		
- 		
 		/////////////////////////////////////////////////////////////
 		/// END OF GENERAL TAB
 		/////////////////////////////////////////////////////////////
-
- 		
-	
  		
 		//////////////////////////
 		// START OF CONTENT TAB///
@@ -389,13 +393,40 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
 		fdFilename.right= new FormAttachment(wbFilename, -margin);
 		wFilename.setLayoutData(fdFilename);
 		
+		
+		// Append checkbox
+		wlAppend=new Label(wFileName, SWT.RIGHT);
+		wlAppend.setText(BaseMessages.getString(PKG, "PropertyOutputDialog.Append.Label"));
+ 		props.setLook(wlAppend);
+		fdlAppend=new FormData();
+		fdlAppend.left = new FormAttachment(0, 0);
+		fdlAppend.top  = new FormAttachment(wFilename, margin);
+		fdlAppend.right= new FormAttachment(middle, -margin);
+		wlAppend.setLayoutData(fdlAppend);
+		wAppend=new Button(wFileName, SWT.CHECK);
+ 		props.setLook(wAppend);
+ 		wAppend.setToolTipText(BaseMessages.getString(PKG, "PropertyOutputDialog.Append.Tooltip"));
+		fdAppend=new FormData();
+		fdAppend.left = new FormAttachment(middle, 0);
+		fdAppend.top  = new FormAttachment(wFilename, margin);
+		fdAppend.right= new FormAttachment(100, 0);
+		wAppend.setLayoutData(fdAppend);
+		wAppend.addSelectionListener(new SelectionAdapter() 
+	        {
+				public void widgetSelected(SelectionEvent arg0)
+				{
+					input.setChanged();
+				}
+			});
+		
+		
 		// Create Parent Folder
 		wlCreateParentFolder=new Label(wFileName, SWT.RIGHT);
 		wlCreateParentFolder.setText(BaseMessages.getString(PKG, "PropertyOutputDialog.CreateParentFolder.Label"));
  		props.setLook(wlCreateParentFolder);
 		fdlCreateParentFolder=new FormData();
 		fdlCreateParentFolder.left = new FormAttachment(0, 0);
-		fdlCreateParentFolder.top  = new FormAttachment(wFilename, margin);
+		fdlCreateParentFolder.top  = new FormAttachment(wAppend, margin);
 		fdlCreateParentFolder.right= new FormAttachment(middle, -margin);
 		wlCreateParentFolder.setLayoutData(fdlCreateParentFolder);
 		wCreateParentFolder=new Button(wFileName, SWT.CHECK );
@@ -403,7 +434,7 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
  		props.setLook(wCreateParentFolder);
 		fdCreateParentFolder=new FormData();
 		fdCreateParentFolder.left = new FormAttachment(middle, 0);
-		fdCreateParentFolder.top  = new FormAttachment(wFilename, margin);
+		fdCreateParentFolder.top  = new FormAttachment(wAppend, margin);
 		fdCreateParentFolder.right= new FormAttachment(100, 0);
 		wCreateParentFolder.setLayoutData(fdCreateParentFolder);
 		wCreateParentFolder.addSelectionListener(new SelectionAdapter() 
@@ -414,13 +445,62 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
 				}
 			}
 		);
+		
+		// FileNameInField line
+        wlFileNameInField=new Label(wFileName, SWT.RIGHT);
+        wlFileNameInField.setText(BaseMessages.getString(PKG, "PropertyOutputDialog.FileNameInField.Label"));
+        props.setLook(wlFileNameInField);
+        fdlFileNameInField=new FormData();
+        fdlFileNameInField.left = new FormAttachment(0, 0);
+        fdlFileNameInField.top  = new FormAttachment(wCreateParentFolder, margin);
+        fdlFileNameInField.right= new FormAttachment(middle, -margin);
+        wlFileNameInField.setLayoutData(fdlFileNameInField);
+        wFileNameInField=new Button(wFileName, SWT.CHECK );
+        wlFileNameInField.setToolTipText(BaseMessages.getString(PKG, "PropertyOutputDialog.FileNameInField.Label"));
+        props.setLook(wFileNameInField);
+        fdFileNameInField=new FormData();
+        fdFileNameInField.left = new FormAttachment(middle, 0);
+        fdFileNameInField.top  = new FormAttachment(wCreateParentFolder, margin);
+        fdFileNameInField.right= new FormAttachment(100, 0);
+        wFileNameInField.setLayoutData(fdFileNameInField);
+        wFileNameInField.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                	input.setChanged();
+                	activeFilenameInField();
+                }
+            }
+        );
+
+		// FileNameField Line
+		wlFileNameField=new Label(wFileName, SWT.RIGHT);
+		wlFileNameField.setText(BaseMessages.getString(PKG, "PropertyOutputDialog.FileNameField.Label")); //$NON-NLS-1$
+ 		props.setLook(wlFileNameField);
+		fdlFileNameField=new FormData();
+		fdlFileNameField.left = new FormAttachment(0, 0);
+		fdlFileNameField.right= new FormAttachment(middle, -margin);
+		fdlFileNameField.top  = new FormAttachment(wFileNameInField, margin);
+		wlFileNameField.setLayoutData(fdlFileNameField);
+		
+    	wFileNameField=new ComboVar(transMeta, wFileName, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wFileNameField);
+		wFileNameField.addModifyListener(lsMod);
+		fdFileNameField=new FormData();
+		fdFileNameField.left = new FormAttachment(middle, 0);
+		fdFileNameField.top  = new FormAttachment(wFileNameInField, margin);
+		fdFileNameField.right= new FormAttachment(100, 0);
+		wFileNameField.setLayoutData(fdFileNameField);
+		wFileNameField.setEnabled(false);
+		wFileNameField.setItems(fieldNames);
+		
 		// Extension line
 		wlExtension=new Label(wFileName, SWT.RIGHT);
 		wlExtension.setText(BaseMessages.getString(PKG, "System.Label.Extension"));
  		props.setLook(wlExtension);
 		fdlExtension=new FormData();
 		fdlExtension.left = new FormAttachment(0, 0);
-		fdlExtension.top  = new FormAttachment(wCreateParentFolder, margin);
+		fdlExtension.top  = new FormAttachment(wFileNameField, margin);
 		fdlExtension.right= new FormAttachment(middle, -margin);
 		wlExtension.setLayoutData(fdlExtension);
 		
@@ -429,7 +509,7 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
  		wExtension.addModifyListener(lsMod);
  		fdExtension=new FormData();
 		fdExtension.left = new FormAttachment(middle, 0);
-		fdExtension.top  = new FormAttachment(wCreateParentFolder, margin);
+		fdExtension.top  = new FormAttachment(wFileNameField, margin);
 		fdExtension.right= new FormAttachment(100, -margin);
 		wExtension.setLayoutData(fdExtension);
 
@@ -714,6 +794,7 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
 		// Set the shell size, based upon previous time...
 		setSize();
 		getData();
+		activeFilenameInField();
 		
 		
 		input.setChanged(changed);//backupChanged);
@@ -725,7 +806,23 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
 		}
 		return stepname;
 	}
-	
+	private void activeFilenameInField()
+	{
+		wlFileNameField.setEnabled(wFileNameInField.getSelection());
+		wFileNameField.setEnabled(wFileNameInField.getSelection());
+		wlFilename.setEnabled(!wFileNameInField.getSelection());
+		wFilename.setEnabled(!wFileNameInField.getSelection());
+		wbFilename.setEnabled(!wFileNameInField.getSelection());
+		wlExtension.setEnabled(!wFileNameInField.getSelection());
+		wExtension.setEnabled(!wFileNameInField.getSelection());
+		wlAddDate.setEnabled(!wFileNameInField.getSelection());
+		wAddDate.setEnabled(!wFileNameInField.getSelection());
+		wlAddStepnr.setEnabled(!wFileNameInField.getSelection());
+		wAddStepnr.setEnabled(!wFileNameInField.getSelection());
+		wlAddTime.setEnabled(!wFileNameInField.getSelection());
+		wAddTime.setEnabled(!wFileNameInField.getSelection());
+		wbShowFiles.setEnabled(!wFileNameInField.getSelection());
+	}
 	
 	 private void getFields()
 	 {
@@ -756,7 +853,8 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
 		if (input.getValueField()  != null) wValueField.setText(input.getValueField());
 		
 		if (input.getFileName()  != null) wFilename.setText(input.getFileName());
-
+        wFileNameInField.setSelection(input.isFileNameInField());
+        if (input.getFileNameField() !=null) wFileNameField.setText(input.getFileNameField());
 		wCreateParentFolder.setSelection(input.isCreateParentFolder());
 		if (input.getExtension() != null) 
 			wExtension.setText(input.getExtension());
@@ -768,7 +866,8 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
 		wAddStepnr.setSelection(input.isStepNrInFilename());
         
         wAddToResult.setSelection( input.AddToResult() );
-		
+        wAppend.setSelection( input.isAppend());
+        
     	if (input.getComment() != null) 
 			wComment.setText(input.getComment());
         
@@ -787,13 +886,14 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
 		info.setKeyField(wKeyField.getText() );
 		info.setValueField(wValueField.getText() );
 		info.setCreateParentFolder(wCreateParentFolder.getSelection() );
-
+		info.setAppend(wAppend.getSelection() );
 		info.setFileName(   wFilename.getText() );
 		info.setExtension(  wExtension.getText() );
 		info.setStepNrInFilename( wAddStepnr.getSelection() );
 		info.setDateInFilename( wAddDate.getSelection() );
 		info.setTimeInFilename( wAddTime.getSelection() );
-		
+		info.setFileNameField(   wFileNameField.getText() );
+		info.setFileNameInField( wFileNameInField.getSelection() );
 		info.setAddToResult( wAddToResult.getSelection() );
 		
 		info.setComment(   wComment.getText() );
@@ -808,7 +908,6 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
 		
 		dispose();
 	}
-	
 	
 	
 }

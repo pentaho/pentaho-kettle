@@ -44,10 +44,13 @@ public class PropertyOutputData extends BaseStepData implements StepDataInterfac
 	public int indexOfValueField;
 	
 	public int indexOfFieldfilename;
-	HashSet<String> KeySet = new HashSet<String>();
+	public HashSet<String> KeySet;
 	public FileObject file;
+	public String filename;
 	
-	Properties pro = new Properties();
+	public Properties pro;
+	
+	public String previousFileName;
     
 	public PropertyOutputData()
 	{
@@ -60,6 +63,9 @@ public class PropertyOutputData extends BaseStepData implements StepDataInterfac
 		
 		indexOfFieldfilename=-1;
 		file=null;
+		previousFileName="";
+		KeySet = new HashSet<String>();
+		filename=null;
 	}
 
 }
