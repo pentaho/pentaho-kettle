@@ -115,6 +115,7 @@ public class ValueDataUtil
     	if(dataA==null) return null;
     	return Const.maskXML(dataA.toString());
     }
+ 
     public static String useCDATA(ValueMetaInterface metaA, Object dataA)
     {
     	if(dataA==null) return null;
@@ -703,7 +704,19 @@ public class ValueDataUtil
         
         throw new KettleValueException("The 'monthOfDate' function only works with dates");
     }
-    
+    public static Object quarterOfDate(ValueMetaInterface metaA, Object dataA) throws KettleValueException
+    {
+        if (dataA==null) return null;
+
+        if (metaA.isDate())
+        {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime( metaA.getDate(dataA) );
+            return new Long((calendar.get(Calendar.MONTH) + 3) / 3);
+        }
+        
+        throw new KettleValueException("The 'monthOfDate' function only works with dates");
+    }
     public static Object dayOfYear(ValueMetaInterface metaA, Object dataA) throws KettleValueException
     {
         if (dataA==null) return null;

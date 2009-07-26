@@ -575,6 +575,18 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_DATE; 
                 }
                 break;
+                case CalculatorMetaFunction.CALC_QUARTER_OF_DATE          : // What is the quarter (Integer) of a date?
+                {                   
+                    calcData[index] = ValueDataUtil.quarterOfDate(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_SUBSTITUTE_VARIABLE      : // variable substitution in string
+                {                   
+                    calcData[index] = environmentSubstitute(dataA.toString());
+                    resultType=ValueMetaInterface.TYPE_STRING;
+                }
+                break;
                 default:
                     throw new KettleValueException(BaseMessages.getString(PKG, "Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }

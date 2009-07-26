@@ -83,6 +83,8 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_STRING_LEN           =  52;
     public static final int CALC_LOAD_FILE_CONTENT_BINARY   =  53;
     public static final int CALC_ADD_TIME_TO_DATE       =  54;
+    public static final int CALC_QUARTER_OF_DATE        = 55;
+    public static final int CALC_SUBSTITUTE_VARIABLE        = 56;
     
     public static final String calc_desc[] = 
         { 
@@ -140,7 +142,9 @@ public class CalculatorMetaFunction implements Cloneable
             "REMOVE_DIGITS",
             "STRING_LEN",
             "LOAD_FILE_CONTENT_BINARY",
-            "ADD_TIME_TO_DATE"
+            "ADD_TIME_TO_DATE",
+            "QUARTER_OF_DATE",
+            "SUBSTITUTE_VARIABLE"
         };
     
     public static final String calcLongDesc[] = 
@@ -200,6 +204,8 @@ public class CalculatorMetaFunction implements Cloneable
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.StringLen"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.LoadFileContentInBinary"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.AddTimeToDate"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.QuarterOfDate"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.SubstituteVariable")
         };
    
     private String fieldName;

@@ -343,6 +343,12 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_ADD_TIME_TO_DATE   :   // ADD TIME TO A DATE
                 defaultResultType = ValueMetaInterface.TYPE_DATE;
                 break;
+            case CalculatorMetaFunction.CALC_QUARTER_OF_DATE           : // What is the quarter (Integer) of a date?
+                defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_SUBSTITUTE_VARIABLE       : // variable substitution in string
+                defaultResultType=ValueMetaInterface.TYPE_STRING;
+                break;
             default:
                 break;
             }
