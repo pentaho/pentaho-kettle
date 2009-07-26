@@ -52,7 +52,7 @@ public class LDAPInputData extends BaseStepData implements StepDataInterface
     public long                rownr;
     
     public InitialLdapContext ctx;
-    NamingEnumeration<SearchResult> results;
+    public NamingEnumeration<SearchResult> results;
     public String multi_valuedFieldSeparator;
 
     public int nrfields;
