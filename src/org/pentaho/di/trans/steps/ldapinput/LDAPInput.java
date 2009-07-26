@@ -324,8 +324,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 	        	env.put(Context.SECURITY_CREDENTIALS, password); 
 	        }
 
-	       //data.ctx=new InitialDirContext(env);
-	        data.ctx=new InitialLdapContext(env, null);
+	       data.ctx=new InitialLdapContext(env, null);
 	       if (data.ctx==null)
 		   {
 			   logError(BaseMessages.getString(PKG, "LDAPInput.Error.UnableToConnectToServer"));

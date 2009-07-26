@@ -1077,6 +1077,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		if(wFileField.getSelection()) wInclFilename.setSelection(false);
 		wInclFilename.setEnabled(!wFileField.getSelection());
 		wlInclFilename.setEnabled(!wFileField.getSelection());
+		wlLimit.setEnabled(!wFileField.getSelection());	
 		wLimit.setEnabled(!wFileField.getSelection());	
 		wPreview.setEnabled(!wFileField.getSelection());
 		wGet.setEnabled(!wFileField.getSelection());
