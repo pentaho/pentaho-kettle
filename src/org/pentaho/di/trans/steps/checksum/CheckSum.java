@@ -208,7 +208,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 			crc32.update(Buff.toString().getBytes());
 			retval = new Long(crc32.getValue());
 		} else {
-			Adler32 adler32 = new java.util.zip.Adler32();
+			Adler32 adler32 = new Adler32();
 			adler32.update(Buff.toString().getBytes());
 			retval = new Long(adler32.getValue());
 		}
