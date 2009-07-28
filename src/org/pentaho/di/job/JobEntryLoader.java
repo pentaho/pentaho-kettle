@@ -115,10 +115,17 @@ public class JobEntryLoader implements LoaderInputStreamProvider
 
 			jobs.addAll(cjobs);
 
-			for (JobPluginMeta job : jobs)
-				if (job.getType() != JobEntryType.NONE)
-					pluginList.add(new JobPlugin(JobPlugin.TYPE_NATIVE, job.getId(), job.getType(), job.getTooltipDesc(), null, null, job.getImageFileName(), job.getClassName()
-							.getName(), job.getCategory()));
+			for (JobPluginMeta job : jobs) {
+				if (job.getType() != JobEntryType.NONE) {
+					pluginList.add(new JobPlugin(JobPlugin.TYPE_NATIVE, job.getId(), job.getType(), job.getTooltipDesc(), null, null, job.getImageFileName(), job.getClassName().getName(), job.getCategory()));
+				} else {
+					if (!Const.isEmpty(job.getName())) {
+						// Annotated plugin...
+						//
+						pluginList.add(new JobPlugin(JobPlugin.TYPE_PLUGIN, job.getId(), job.getName(), job.getTooltipDesc(), null, null, job.getImageFileName(), job.getClassName().getName(), job.getCategory()));
+					}
+				}
+			}
 		} catch (KettleConfigException e)
 		{
 			e.printStackTrace();
@@ -272,19 +279,21 @@ public class JobEntryLoader implements LoaderInputStreamProvider
 		// forth, as with ant
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
 				new FileSystemResourceLoader());
-		for (int i = 0; i < jarfiles.length; i++)
-		{
-			try
+		if (jarfiles!=null) {
+			for (int i = 0; i < jarfiles.length; i++)
 			{
-				Resource[] paths = resolver.getResources(jarfiles[i]);
-				for (Resource path : paths)
+				try
 				{
-					classpath.add(path.getURL());
+					Resource[] paths = resolver.getResources(jarfiles[i]);
+					for (Resource path : paths)
+					{
+						classpath.add(path.getURL());
+					}
+				} catch (IOException e)
+				{
+					e.printStackTrace();
+					continue;
 				}
-			} catch (IOException e)
-			{
-				e.printStackTrace();
-				continue;
 			}
 		}
 

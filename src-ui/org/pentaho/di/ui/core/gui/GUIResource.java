@@ -470,8 +470,7 @@ public class GUIResource
 				String filename = steps[i].getIconFilename();
 				try
 				{
-					//InputStream stream = getClass().getResourceAsStream(filename);
-					image = ImageUtil.getImage(display, filename); // new Image(display, stream);
+					image = ImageUtil.getImage(display, filename);
 				} catch (Exception e)
 				{
 					log.logError("Kettle", "Unable to find required step image file or image format not supported (e.g. interlaced) [" + filename + " : " + e.toString());
@@ -487,7 +486,7 @@ public class GUIResource
 				String filename = steps[i].getIconFilename();
 				try
 				{
-					image = new Image(display, filename);
+					image = ImageUtil.getImage(display, filename);
 				} catch (Exception e)
 				{
 					log.logError("Kettle", "Unable to find required step image file [" + filename + " : " + e.toString());
@@ -707,7 +706,7 @@ public class GUIResource
 				String filename = plugins[i].getIconFilename();
 				try
 				{
-					image = new Image(display, filename);
+					image = ImageUtil.getImage(display, filename);
 				} catch (Exception e)
 				{
 					try 
