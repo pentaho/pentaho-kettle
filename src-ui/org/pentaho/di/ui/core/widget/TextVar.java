@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 /**
@@ -78,9 +79,8 @@ public class TextVar extends Composite {
     this.insertTextInterface = insertTextInterface;
     this.variables = space;
 
-    //props.setLook(this);
+    PropsUI.getInstance().setLook(this);
 
-    // int margin = Const.MARGIN;
     FormLayout formLayout = new FormLayout();
     formLayout.marginWidth = 0;
     formLayout.marginHeight = 0;
@@ -96,17 +96,10 @@ public class TextVar extends Composite {
     Image image = GUIResource.getInstance().getImageVariable();
     controlDecoration.setImage(image);
     controlDecoration.setDescriptionText(BaseMessages.getString(PKG, "TextVar.tooltip.InsertVariable"));
-
-    //props.setLook(wText);
+    PropsUI.getInstance().setLook(controlDecoration.getControl());
 
     wText.addModifyListener(getModifyListenerTooltipText(wText));
   
-    //  SelectionAdapter lsVar = null;
-    // VariableButtonListenerFactory.getSelectionAdapter(this, wText, getCaretPositionInterface,
-    //    insertTextInterface, variables);
-    //wText.addKeyListener(getControlSpaceKeyListener(variables, wText, lsVar, getCaretPositionInterface,
-    //    insertTextInterface));
-
     controlSpaceKeyAdapter = new ControlSpaceKeyAdapter(variables, wText,getCaretPositionInterface, insertTextInterface);
     wText.addKeyListener(controlSpaceKeyAdapter);
 
