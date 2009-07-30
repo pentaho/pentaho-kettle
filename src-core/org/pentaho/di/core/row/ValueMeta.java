@@ -2873,8 +2873,8 @@ public class ValueMeta implements ValueMetaInterface
         case TYPE_STRING:
             {
             	// if (isStorageBinaryString() && identicalFormat && storageMetadata.isSingleByteEncoding()) return compareBinaryStrings((byte[])data1, (byte[])data2); TODO
-            	String one = Const.rtrim(getString(data1));
-                String two = Const.rtrim(getString(data2));
+            	String one = getString(data1);
+                String two = getString(data2);
     
                 if (caseInsensitive)
                 {
@@ -2938,10 +2938,12 @@ public class ValueMeta implements ValueMetaInterface
                     cmp = b1[i] - b2[i];
                     if (cmp!=0)
                     {
-                        cmp = Math.abs(cmp);
+                        cmp = cmp < 0 ? -1 : 1;
                         break;
                     }
                 }
+                
+                cmp = b1.length - b2.length; 
             }
             break;
         default: 
