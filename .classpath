@@ -114,5 +114,6 @@
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-2.5.4.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-2.5.4.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="libext/ini4j-0.5.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

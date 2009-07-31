@@ -21,9 +21,12 @@ package org.pentaho.di.trans.steps.propertyinput;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.vfs.FileObject;
+import org.ini4j.Wini;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -44,7 +47,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 
 /**
- * Read all Properties files, convert them to rows and writes these to one or more output streams.
+ * Read all Properties files (& INI files)
+ * , convert them to rows and writes these to one or more output streams.
  * 
  * @author Samatar
  * @since 24-03-2008
@@ -157,21 +161,44 @@ public class PropertyInput extends BaseStep implements StepInterface
 		try{
 			if(meta.isFileField())
 			{
-				 while ((data.readrow==null) || (!data.it.hasNext()))
-				 { 
-					if (!openNextFile()) return null;
-				 }	
+				 while ((data.readrow==null) 
+						 || ((data.propfiles && !data.it.hasNext()) ||(!data.propfiles && !data.iniIt.hasNext())))
+				 {  
+					//if (!openNextFile()) return null;
+					 
+					// In case we read all sections
+					// maybe we have to change section for ini files...
+					 if(!data.propfiles && data.realSection==null && data.readrow!=null &&  data.itSection.hasNext())
+					 {
+						 data.iniSection =  data.wini.get(data.itSection.next().toString());
+						 data.iniIt = data.iniSection.keySet().iterator();
+					 }else
+					 {
+						 if (!openNextFile()) return null;
+					 }
+					 
+				 }		 
 			}
 			else
 			{
-				while ((data.file==null) || (!data.it.hasNext()))
+				while ((data.file==null) 
+						|| ((data.propfiles && !data.it.hasNext()) ||(!data.propfiles && !data.iniIt.hasNext())))
 				{
-			        if (!openNextFile()) return null;
+					// In case we read all sections
+					// maybe we have to change section for ini files...
+					 if(!data.propfiles && data.realSection==null && data.file!=null &&  data.itSection.hasNext())
+					 {
+						 data.iniSection =  data.wini.get(data.itSection.next().toString());
+						 data.iniIt = data.iniSection.keySet().iterator();
+					 }else
+					 {
+						 if (!openNextFile()) return null;
+					 }
 				}
 			}
-
 		} catch (Exception IO)
 		{
+		    logError("Unable to read row from file : " + IO.getMessage());
 			return null;
 		}
 		 // Build an empty row based on the meta-data		  
@@ -182,7 +209,10 @@ public class PropertyInput extends BaseStep implements StepInterface
 
 		 try{	
 			   String key=null;
-			   key=data.it.next().toString();
+			   if(data.propfiles)
+				   key=data.it.next().toString();
+			   else
+				   key=data.iniIt.next().toString();
 			   
 				// Execute for each Input field...
 				for (int i=0;i<meta.getInputFields().length;i++)
@@ -195,9 +225,19 @@ public class PropertyInput extends BaseStep implements StepInterface
 					else
 					{
 						if(meta.isResolveValueVariable())
-							value= environmentSubstitute(data.pro.getProperty(key));
+						{
+							if(data.propfiles)
+								value= environmentSubstitute(data.pro.getProperty(key));
+							else
+								value=environmentSubstitute(data.iniSection.fetch(key));  // for INI files
+						}
 						else
-							value= data.pro.getProperty(key) ;
+						{
+							if(data.propfiles)
+								value= data.pro.getProperty(key);
+							else
+								value=data.iniSection.fetch(key);  // for INI files
+						}
 					}
 
 					// DO Trimming!
@@ -250,6 +290,12 @@ public class PropertyInput extends BaseStep implements StepInterface
 		        if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField()))
 		        {
 		            r[data.totalpreviousfields+rowIndex++] = new Long(data.rownr);
+		        }
+		        
+		        // See if we need to add the section for INI files ...  
+		        if (meta.includeIniSection() && !Const.isEmpty(meta.getINISectionField()))
+		        {
+		        	 r[data.totalpreviousfields+rowIndex++]= environmentSubstitute(data.iniSection.getName());
 		        }
 		        
 				RowMetaInterface irow = getInputRowMeta();
@@ -359,16 +405,42 @@ public class PropertyInput extends BaseStep implements StepInterface
 			}
 
 			 File f = new File(KettleVFS.getFilename(data.file));
-			 FileInputStream in = new FileInputStream(f);
-	         data.pro.load(in);
+			 if(data.propfiles)
+			 {
+				 // load properties file
+				 data.pro=new Properties();
+		         data.pro.load(new FileInputStream(f));
+		         
+		         data.it = data.pro.keySet().iterator();
+			 }else
+			 {
+	         
+		         // load INI file
+		         data.wini = new Wini(f);
+		         if(!Const.isEmpty(data.realEncoding))
+		        	 data.wini.getConfig().setFileEncoding(Charset.forName(data.realEncoding));
+		         if(data.realSection!=null)
+		         {
+		        	 // just one section
+		        	 data.iniSection = data.wini.get(data.realSection); 
+		        	 if(data.iniSection==null) throw new KettleException(BaseMessages.getString(PKG, "PropertyInput.Error.CanNotFindSection",data.realSection, ""+data.file.getName()));
+		         }
+		         else
+		         {
+		         	// We need to fetch all sections
+		        	data.itSection=data.wini.keySet().iterator();
+		         	data.iniSection =  data.wini.get( data.itSection.next().toString());
+		         }
+		         data.iniIt = data.iniSection.keySet().iterator();
+			 }
+	         
 	         
 	         if (log.isDetailed()) 
 	         {
 	        	 logDetailed(BaseMessages.getString(PKG, "PropertyInput.Log.FileOpened", data.file.toString()));
-	        	 logDetailed(BaseMessages.getString(PKG, "PropertyInput.log.TotalKey", ""+data.pro.keySet().size(),KettleVFS.getFilename(data.file)));
-	         } 
-
-	         data.it = data.pro.keySet().iterator();
+	        	 log.logDetailed(toString(),BaseMessages.getString(PKG, "PropertyInput.log.TotalKey", 
+	        			 ""+(data.propfiles?data.pro.size():data.iniSection.size()), KettleVFS.getFilename(data.file)));
+	         }
 		}
 		catch(Exception e)
 		{
@@ -402,6 +474,11 @@ public class PropertyInput extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
+			String realEncoding=environmentSubstitute(meta.getEncoding());
+			if(!Const.isEmpty(realEncoding)) data.realEncoding=realEncoding;
+			String realSection=environmentSubstitute(meta.getSection());
+			if(!Const.isEmpty(realSection)) data.realSection=realSection;
+			data.propfiles=(PropertyInputMeta.getFileTypeByDesc(meta.getFileType())==PropertyInputMeta.FILE_TYPE_PROPERTY);
 			data.rownr = 1L;
 			data.totalpreviousfields=0;
 			
@@ -415,18 +492,16 @@ public class PropertyInput extends BaseStep implements StepInterface
 		meta=(PropertyInputMeta)smi;
 		data=(PropertyInputData)sdi;
 
-		if(data.rw!=null) data.rw=null;
 		if(data.readrow!=null) data.readrow=null;
-		
+		if(data.iniSection!=null) data.iniSection.clear();data.iniSection=null;
+		if(data.itSection!=null) data.itSection=null;
 		if(data.file!=null) 
 		{
 			try
 			{
 				data.file.close();
 				data.file=null;
-			}catch  (Exception e)
-			{
-			}
+			}catch  (Exception e){} // ignore this
 		}
 		
 		super.dispose(smi, sdi);

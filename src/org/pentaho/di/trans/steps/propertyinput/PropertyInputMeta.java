@@ -60,6 +60,16 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 	public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString(PKG, "System.Combo.No"), BaseMessages.getString(PKG, "System.Combo.Yes") };
 	public static final String[] RequiredFilesCode = new String[] {"N", "Y"};
 	
+	public static final String DEFAULT_ENCODING="UTF-8";
+	
+	private String encoding;
+	
+	private String fileType;
+	public static final String[] fileTypeDesc = new String[] {BaseMessages.getString(PKG, "PropertyInputMeta.FileType.Property"),BaseMessages.getString(PKG, "PropertyInputMeta.FileType.Ini")};
+	public static final String[] fileTypeCode = new String[] {"property", "ini"};
+	public static final int FILE_TYPE_PROPERTY = 0;
+	public static final int FILE_TYPE_INI = 1;
+	
 	/** Array of filenames */
 	private  String  fileName[]; 
 
@@ -110,6 +120,14 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
     public final static String type_trim_code[] = { "none", "left", "right", "both" };
     
     public final static String column_code[] = { "key", "value" };
+    
+	/** Flag indicating that a INI file section field should be included in the output */
+	private  boolean includeIniSection;
+	
+	/** The name of the field in the output containing the INI file section*/
+	private String iniSectionField;
+	
+	private String section;
     
 	public PropertyInputMeta()
 	{
@@ -250,7 +268,107 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.includeFilename = includeFilename;
     }
+    public static String getFileTypeCode(int i) {
+		if (i < 0 || i >= fileTypeCode.length)
+			return fileTypeCode[0];
+		return fileTypeCode[i];
+	}
+	public static int getFileTypeByDesc(String tt) {
+		if (tt == null)
+			return 0;
 
+		for (int i = 0; i < fileTypeDesc.length; i++) {
+			if (fileTypeDesc[i].equalsIgnoreCase(tt))
+				return i;
+		}
+		// If this fails, try to match using the code.
+		return getFileTypeByCode(tt);
+	}
+	public static int getFileTypeByCode(String tt) {
+		if (tt == null)
+			return 0;
+
+		for (int i = 0; i < fileTypeCode.length; i++) {
+			if (fileTypeCode[i].equalsIgnoreCase(tt))
+				return i;
+		}
+		return 0;
+	}
+	public static String getFileTypeDesc(int i) {
+		if (i < 0 || i >= fileTypeDesc.length)
+			return fileTypeDesc[0];
+		return fileTypeDesc[i];
+	}
+	public void setFileType(String filetype)
+	{
+		this.fileType=filetype;
+	}
+	public String getFileType()
+	{
+		return fileType;
+	}
+    /**
+     * @param includeIniSection The includeIniSection to set.
+     */
+    public void setIncludeIniSection(boolean includeIniSection)
+    {
+        this.includeIniSection = includeIniSection;
+    }
+
+    
+    /**
+     * @return Returns the includeIniSection.
+     */
+    public boolean includeIniSection()
+    {
+        return includeIniSection;
+    }
+    /**
+     * @param encoding The encoding to set.
+     */
+    public void setEncoding(String encoding)
+    {
+        this.encoding = encoding;
+    }
+    
+    /**
+     *  @return Returns encoding.
+     */
+    public String getEncoding()
+    {
+        return encoding;
+    }
+    /**
+     * @param iniSectionField The iniSectionField to set.
+     */
+    public void setINISectionField(String iniSectionField)
+    {
+        this.iniSectionField = iniSectionField;
+    }
+    
+    /**
+     * @return Returns the iniSectionField.
+     */
+    public String getINISectionField()
+    {
+        return iniSectionField;
+    }
+   
+    /**
+     * @param section The section to set.
+     */
+    public void setSection(String section)
+    {
+        this.section = section;
+    }
+    
+    /**
+     * @return Returns the section.
+     */
+    public String getSection()
+    {
+        return section;
+    }
     
     /**
      * @return Returns the includeRowNumber.
@@ -398,6 +516,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
     public String getXML()
     {
         StringBuffer retval=new StringBuffer(500);
+        retval.append("    ").append(XMLHandler.addTagValue("file_type",         fileType));
+        retval.append("    ").append(XMLHandler.addTagValue("encoding",         encoding));
         retval.append("    ").append(XMLHandler.addTagValue("include",         includeFilename));
         retval.append("    ").append(XMLHandler.addTagValue("include_field",   filenameField));
         retval.append("    ").append(XMLHandler.addTagValue("filename_Field",  dynamicFilenameField));
@@ -407,6 +527,9 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("rownum_field",    rowNumberField));
         retval.append("    ").append(XMLHandler.addTagValue("resetrownumber",  resetRowNumber));
         retval.append("    ").append(XMLHandler.addTagValue("resolvevaluevariable",  resolvevaluevariable));
+        retval.append("    ").append(XMLHandler.addTagValue("ini_section",          includeIniSection));
+        retval.append("    ").append(XMLHandler.addTagValue("ini_section_field",    iniSectionField));
+        retval.append("    ").append(XMLHandler.addTagValue("section",  section));
         retval.append("    <file>").append(Const.CR);
         for (int i=0;i<fileName.length;i++)
         {
@@ -448,6 +571,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
+			fileType     = XMLHandler.getTagValue(stepnode, "file_type");
+			encoding     = XMLHandler.getTagValue(stepnode, "encoding");
 			includeFilename   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include"));
 			filenameField     = XMLHandler.getTagValue(stepnode, "include_field");
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
@@ -457,7 +582,9 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 				isaddresult=true;
 			else
 				isaddresult  = "Y".equalsIgnoreCase(addresult);
-			
+			section    = XMLHandler.getTagValue(stepnode, "section");
+			iniSectionField    = XMLHandler.getTagValue(stepnode, "ini_section_field");
+			includeIniSection  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "ini_section"));
 			filefield  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filefield"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 			dynamicFilenameField    = XMLHandler.getTagValue(stepnode, "filename_Field");
@@ -526,6 +653,11 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void setDefault()
 	{
+		fileType=fileTypeCode[0];
+		section="";
+		encoding=DEFAULT_ENCODING;
+		includeIniSection=false;
+		iniSectionField="";
 		resolvevaluevariable=false;
 		isaddresult=true;
 		filefield=false;
@@ -575,21 +707,30 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 	        v.setCurrencySymbol(field.getCurrencySymbol());
 			r.addValueMeta(v);   
 		}
-		
-		if (includeFilename)
+		String realFilenameField=space.environmentSubstitute(filenameField);
+		if (includeFilename && !Const.isEmpty(realFilenameField))
 		{
-			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(filenameField), ValueMeta.TYPE_STRING);
-            v.setLength(250);
-            v.setPrecision(-1);
+			ValueMetaInterface v = new ValueMeta(realFilenameField, ValueMeta.TYPE_STRING);
+			v.setLength(500);
+			v.setPrecision(-1);
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}
 			
-		
-		if (includeRowNumber)
+		String realRowNumberField=space.environmentSubstitute(rowNumberField);
+		if (includeRowNumber && !Const.isEmpty(realRowNumberField))
 		{
-			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(rowNumberField), ValueMeta.TYPE_INTEGER);
+			ValueMetaInterface v = new ValueMeta(realRowNumberField, ValueMeta.TYPE_INTEGER);
 			v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
+			v.setOrigin(name);
+			r.addValueMeta(v);
+		}
+		String realSectionField=space.environmentSubstitute(iniSectionField);
+		if (includeIniSection && !Const.isEmpty(realSectionField))
+		{
+			ValueMetaInterface v = new ValueMeta(realSectionField,  ValueMeta.TYPE_STRING);
+			v.setLength(500);
+			v.setPrecision(-1);
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}
@@ -621,9 +762,13 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
 	throws KettleException
 	{
-	
 		try
 		{
+			fileType     = rep.getStepAttributeString (id_step, "file_type");
+			section     = rep.getStepAttributeString (id_step, "section");
+			encoding     = rep.getStepAttributeString (id_step, "encoding");
+			includeIniSection  = rep.getStepAttributeBoolean(id_step, "ini_section");
+			iniSectionField    = rep.getStepAttributeString (id_step, "ini_section_field");
 			includeFilename   = rep.getStepAttributeBoolean(id_step, "include");  
 			filenameField     = rep.getStepAttributeString (id_step, "include_field");
 			dynamicFilenameField  = rep.getStepAttributeString(id_step, "filename_Field");
@@ -688,6 +833,11 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
+			rep.saveStepAttribute(id_transformation, id_step, "file_type",   fileType);
+			rep.saveStepAttribute(id_transformation, id_step, "section",   section);
+			rep.saveStepAttribute(id_transformation, id_step, "encoding",   encoding);
+			rep.saveStepAttribute(id_transformation, id_step, "ini_section",          includeIniSection);
+			rep.saveStepAttribute(id_transformation, id_step, "ini_section_field",    iniSectionField);
 			rep.saveStepAttribute(id_transformation, id_step, "include",         includeFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "include_field",   filenameField);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
@@ -761,7 +911,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		
         FileInputList fileInputList = getFiles(transMeta);
-		// String files[] = getFiles();
+
 		if (fileInputList==null || fileInputList.getFiles().size()==0)
 		{
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "PropertyInputMeta.CheckResult.NoFiles"), stepMeta);

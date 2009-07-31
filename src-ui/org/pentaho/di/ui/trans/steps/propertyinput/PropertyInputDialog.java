@@ -19,6 +19,10 @@
 
 package org.pentaho.di.ui.trans.steps.propertyinput;
 
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -30,7 +34,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -47,6 +50,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.ini4j.Wini;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -55,6 +59,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -69,16 +74,17 @@ import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-
 public class PropertyInputDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static Class<?> PKG = PropertyInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
+    private static final String[] YES_NO_COMBO = new String[] {  BaseMessages.getString(PKG, "System.Combo.No"),  BaseMessages.getString(PKG, "System.Combo.Yes") };
+	
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
@@ -86,6 +92,9 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 
 	private Composite    wFileComp, wContentComp, wFieldsComp;
 	private FormData     fdFileComp, fdContentComp, fdFieldsComp;
+	
+	private Group wSettingsGroup;
+	private FormData fdSettingsGroup;
 
 	private Label        wlFilename;
 	private Button       wbbFilename; // Browse: add file or directory
@@ -119,25 +128,42 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 	private Label        wlInclRownum;
 	private Button       wInclRownum;
 	private FormData     fdlInclRownum, fdRownum;
-
+	
+	private boolean gotEncodings=false;
+	
 	private Label        wlInclRownumField;
 	private TextVar      wInclRownumField;
 	private FormData     fdlInclRownumField, fdInclRownumField;
 	
+	private Label        wlInclINIsection;
+	private Button       wInclINIsection;
+	private FormData     fdlInclINIsection;
+
+	private Label        wlInclINIsectionField;
+	private TextVar      wInclINIsectionField;
+	private FormData     fdlInclINIsectionField, fdInclINIsectionField;
+
+	
 	private Label        wlResetRownum;
 	private Button       wResetRownum;
 	private FormData     fdlResetRownum;
+
+	private Label        wlresolveValueVariable;
+	private Button       wresolveValueVariable;
+	private FormData     fdlresolveValueVariable,fdresolveValueVariable;
 	
 	private Label        wlLimit;
 	private Text         wLimit;
 	private FormData     fdlLimit, fdLimit;
+	
+	private Label        wlSection;
+	private TextVar         wSection;
+	private FormData     fdlSection, fdSection;
+	private Button wbbSection;
+	private FormData fdbSection;
    
 	private TableView    wFields;
 	private FormData     fdFields;
-	
-	private Label        wlresolveValueVariable;
-	private Button       wresolveValueVariable;
-	private FormData     fdlresolveValueVariable,fdresolveValueVariable;
 
 	private PropertyInputMeta input;
 	
@@ -148,16 +174,28 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 	private FormData fdOriginFiles,fdFilenameField,fdlFilenameField,fdAddResult,fdAddFileResult;
     private Button wFileField,wAddResult;
     
+    private Label        wlEncoding;
+    private ComboVar     wEncoding;
+    private FormData     fdlEncoding, fdEncoding;
+    
+    private Label        wlFileType;
+    private CCombo       wFileType;
+    private FormData     fdFileType, fdlFileType;
+    
+    
     private Label wlFileField,wlFilenameField,wlAddResult;
     private CCombo wFilenameField;
     private FormData fdlFileField,fdFileField;
     
+    private boolean gotPreviousfields=false;
 	
 	public static final int dateLengths[] = new int[]
 	{
 		23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6
 	};
 
+	
+	
 	public PropertyInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -187,14 +225,14 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "PropertyInputDialog.DialogTitle"));
+		shell.setText( BaseMessages.getString(PKG, "PropertyInputDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
+		wlStepname.setText( BaseMessages.getString(PKG, "System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -218,7 +256,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		// START OF FILE TAB   ///
 		//////////////////////////
 		wFileTab=new CTabItem(wTabFolder, SWT.NONE);
-		wFileTab.setText(BaseMessages.getString(PKG, "PropertyInputDialog.File.Tab"));
+		wFileTab.setText( BaseMessages.getString(PKG, "PropertyInputDialog.File.Tab"));
 		
 		wFileComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wFileComp);
@@ -235,7 +273,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 
 		wOriginFiles = new Group(wFileComp, SWT.SHADOW_NONE);
 		props.setLook(wOriginFiles);
-		wOriginFiles.setText(BaseMessages.getString(PKG, "PropertyInputDialog.wOriginFiles.Label"));
+		wOriginFiles.setText( BaseMessages.getString(PKG, "PropertyInputDialog.wOriginFiles.Label"));
 		
 		FormLayout OriginFilesgroupLayout = new FormLayout();
 		OriginFilesgroupLayout.marginWidth = 10;
@@ -244,19 +282,20 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		
 		//Is Filename defined in a Field		
 		wlFileField = new Label(wOriginFiles, SWT.RIGHT);
-		wlFileField.setText(BaseMessages.getString(PKG, "PropertyInputDialog.FileField.Label"));
+		wlFileField.setText( BaseMessages.getString(PKG, "PropertyInputDialog.FileField.Label"));
 		props.setLook(wlFileField);
 		fdlFileField = new FormData();
-		fdlFileField.left = new FormAttachment(0, -margin);
+		fdlFileField.left = new FormAttachment(0, 0);
 		fdlFileField.top = new FormAttachment(0, margin);
-		fdlFileField.right = new FormAttachment(middle, -2*margin);
+		fdlFileField.right = new FormAttachment(middle, -margin);
 		wlFileField.setLayoutData(fdlFileField);
+		
 		
 		wFileField = new Button(wOriginFiles, SWT.CHECK);
 		props.setLook(wFileField);
-		wFileField.setToolTipText(BaseMessages.getString(PKG, "PropertyInputDialog.FileField.Tooltip"));
+		wFileField.setToolTipText( BaseMessages.getString(PKG, "PropertyInputDialog.FileField.Tooltip"));
 		fdFileField = new FormData();
-		fdFileField.left = new FormAttachment(middle, -margin);
+		fdFileField.left = new FormAttachment(middle, margin);
 		fdFileField.top = new FormAttachment(0, margin);
 		wFileField.setLayoutData(fdFileField);		
 		SelectionAdapter lfilefield = new SelectionAdapter()
@@ -271,12 +310,12 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
         
 		// Filename field
 		wlFilenameField=new Label(wOriginFiles, SWT.RIGHT);
-        wlFilenameField.setText(BaseMessages.getString(PKG, "PropertyInputDialog.wlFilenameField.Label"));
+        wlFilenameField.setText( BaseMessages.getString(PKG, "PropertyInputDialog.wlFilenameField.Label"));
         props.setLook(wlFilenameField);
         fdlFilenameField=new FormData();
-        fdlFilenameField.left = new FormAttachment(0, -margin);
+        fdlFilenameField.left = new FormAttachment(0, 0);
         fdlFilenameField.top  = new FormAttachment(wFileField, margin);
-        fdlFilenameField.right= new FormAttachment(middle, -2*margin);
+        fdlFilenameField.right= new FormAttachment(middle, -margin);
         wlFilenameField.setLayoutData(fdlFilenameField);
         
         
@@ -285,7 +324,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
         props.setLook(wFilenameField);
         wFilenameField.addModifyListener(lsMod);
         fdFilenameField=new FormData();
-        fdFilenameField.left = new FormAttachment(middle, -margin);
+        fdFilenameField.left = new FormAttachment(middle, margin);
         fdFilenameField.top  = new FormAttachment(wFileField, margin);
         fdFilenameField.right= new FormAttachment(100, -margin);
         wFilenameField.setLayoutData(fdFilenameField);
@@ -297,11 +336,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
             
                 public void focusGained(org.eclipse.swt.events.FocusEvent e)
                 {
-                    Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
-                    shell.setCursor(busy);
                     setFileField();
-                    shell.setCursor(null);
-                    busy.dispose();
                 }
             }
         );           	
@@ -317,11 +352,11 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		// ///////////////////////////////////////////////////////////		
 
 		
-		
+		middle = middle/2;
 
 		// Filename line
 		wlFilename=new Label(wFileComp, SWT.RIGHT);
-		wlFilename.setText(BaseMessages.getString(PKG, "PropertyInputDialog.Filename.Label"));
+		wlFilename.setText( BaseMessages.getString(PKG, "PropertyInputDialog.Filename.Label"));
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -331,8 +366,8 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 
 		wbbFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbbFilename);
-		wbbFilename.setText(BaseMessages.getString(PKG, "PropertyInputDialog.FilenameBrowse.Button"));
-		wbbFilename.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
+		wbbFilename.setText( BaseMessages.getString(PKG, "PropertyInputDialog.FilenameBrowse.Button"));
+		wbbFilename.setToolTipText( BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(wOriginFiles, margin);
@@ -340,8 +375,8 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 
 		wbaFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbaFilename);
-		wbaFilename.setText(BaseMessages.getString(PKG, "PropertyInputDialog.FilenameAdd.Button"));
-		wbaFilename.setToolTipText(BaseMessages.getString(PKG, "PropertyInputDialog.FilenameAdd.Tooltip"));
+		wbaFilename.setText( BaseMessages.getString(PKG, "PropertyInputDialog.FilenameAdd.Button"));
+		wbaFilename.setToolTipText( BaseMessages.getString(PKG, "PropertyInputDialog.FilenameAdd.Tooltip"));
 		fdbaFilename=new FormData();
 		fdbaFilename.right= new FormAttachment(wbbFilename, -margin);
 		fdbaFilename.top  = new FormAttachment(wOriginFiles, margin);
@@ -349,7 +384,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 
 	        
 		
-		wFilename=new TextVar(transMeta,wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();
@@ -359,25 +394,25 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		wFilename.setLayoutData(fdFilename);
 
 		wlFilemask=new Label(wFileComp, SWT.RIGHT);
-		wlFilemask.setText(BaseMessages.getString(PKG, "PropertyInputDialog.RegExp.Label"));
+		wlFilemask.setText( BaseMessages.getString(PKG, "PropertyInputDialog.RegExp.Label"));
  		props.setLook(wlFilemask);
 		fdlFilemask=new FormData();
 		fdlFilemask.left = new FormAttachment(0, 0);
-		fdlFilemask.top  = new FormAttachment(wFilename, margin);
+		fdlFilemask.top  = new FormAttachment(wFilename, 2*margin);
 		fdlFilemask.right= new FormAttachment(middle, -margin);
 		wlFilemask.setLayoutData(fdlFilemask);
-		wFilemask=new TextVar(transMeta,wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilemask=new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilemask);
 		wFilemask.addModifyListener(lsMod);
 		fdFilemask=new FormData();
 		fdFilemask.left = new FormAttachment(middle, 0);
-		fdFilemask.top  = new FormAttachment(wFilename, margin);
+		fdFilemask.top  = new FormAttachment(wFilename, 2*margin);
 		fdFilemask.right= new FormAttachment(100, 0);
 		wFilemask.setLayoutData(fdFilemask);
 
 		// Filename list line
 		wlFilenameList=new Label(wFileComp, SWT.RIGHT);
-		wlFilenameList.setText(BaseMessages.getString(PKG, "PropertyInputDialog.FilenameList.Label"));
+		wlFilenameList.setText( BaseMessages.getString(PKG, "PropertyInputDialog.FilenameList.Label"));
  		props.setLook(wlFilenameList);
 		fdlFilenameList=new FormData();
 		fdlFilenameList.left = new FormAttachment(0, 0);
@@ -388,8 +423,8 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		// Buttons to the right of the screen...
 		wbdFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbdFilename);
-		wbdFilename.setText(BaseMessages.getString(PKG, "PropertyInputDialog.FilenameRemove.Button"));
-		wbdFilename.setToolTipText(BaseMessages.getString(PKG, "PropertyInputDialog.FilenameRemove.Tooltip"));
+		wbdFilename.setText( BaseMessages.getString(PKG, "PropertyInputDialog.FilenameRemove.Button"));
+		wbdFilename.setToolTipText( BaseMessages.getString(PKG, "PropertyInputDialog.FilenameRemove.Tooltip"));
 		fdbdFilename=new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
 		fdbdFilename.top  = new FormAttachment (wFilemask, 40);
@@ -397,8 +432,8 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 
 		wbeFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbeFilename);
-		wbeFilename.setText(BaseMessages.getString(PKG, "PropertyInputDialog.FilenameEdit.Button"));
-		wbeFilename.setToolTipText(BaseMessages.getString(PKG, "PropertyInputDialog.FilenameEdit.Tooltip"));
+		wbeFilename.setText( BaseMessages.getString(PKG, "PropertyInputDialog.FilenameEdit.Button"));
+		wbeFilename.setToolTipText( BaseMessages.getString(PKG, "PropertyInputDialog.FilenameEdit.Tooltip"));
 		fdbeFilename=new FormData();
 		fdbeFilename.right = new FormAttachment(100, 0);
 		fdbeFilename.top  = new FormAttachment (wbdFilename, margin);
@@ -407,33 +442,34 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 
 		wbShowFiles=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbShowFiles);
-		wbShowFiles.setText(BaseMessages.getString(PKG, "PropertyInputDialog.ShowFiles.Button"));
+		wbShowFiles.setText( BaseMessages.getString(PKG, "PropertyInputDialog.ShowFiles.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left   = new FormAttachment(middle, 0);
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
 		ColumnInfo[] colinfo=new ColumnInfo[4];
-		colinfo[0]=new ColumnInfo(
-          BaseMessages.getString(PKG, "PropertyInputDialog.Files.Filename.Column"),
+		colinfo[ 0]=new ColumnInfo(
+           BaseMessages.getString(PKG, "PropertyInputDialog.Files.Filename.Column"),
           ColumnInfo.COLUMN_TYPE_TEXT,
           false);
-		colinfo[1]=new ColumnInfo(
-          BaseMessages.getString(PKG, "PropertyInputDialog.Files.Wildcard.Column"),
+		colinfo[ 1]=new ColumnInfo(
+           BaseMessages.getString(PKG, "PropertyInputDialog.Files.Wildcard.Column"),
           ColumnInfo.COLUMN_TYPE_TEXT,
           false);
-    	colinfo[2]=new ColumnInfo(BaseMessages.getString(PKG, "PropertyInputDialog.Required.Column"),        
-      			ColumnInfo.COLUMN_TYPE_CCOMBO,  PropertyInputMeta.RequiredFilesDesc );
-      	colinfo[3]=new ColumnInfo(BaseMessages.getString(PKG, "PropertyInputDialog.IncludeSubDirs.Column"),        
-      			ColumnInfo.COLUMN_TYPE_CCOMBO,  PropertyInputMeta.RequiredFilesDesc  );
+      	colinfo[ 2]=new ColumnInfo( BaseMessages.getString(PKG, "PropertyInputDialog.Required.Column"),        
+      			ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
+      	colinfo[ 3]=new ColumnInfo( BaseMessages.getString(PKG, "PropertyInputDialog.IncludeSubDirs.Column"),        
+      			ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
+		
 		
 		colinfo[0].setUsingVariables(true);
 		colinfo[1].setUsingVariables(true);
-		colinfo[1].setToolTip(BaseMessages.getString(PKG, "PropertyInputDialog.Files.Wildcard.Tooltip"));
-		colinfo[2].setToolTip(BaseMessages.getString(PKG, "PropertyInputDialog.Required.Tooltip"));
-		colinfo[3].setToolTip(BaseMessages.getString(PKG, "PropertyInputDialog.IncludeSubDirs.Tooltip"));
-				
-		wFilenameList = new TableView(transMeta,wFileComp, 
+		colinfo[1].setToolTip( BaseMessages.getString(PKG, "PropertyInputDialog.Files.Wildcard.Tooltip"));
+		colinfo[ 2].setToolTip( BaseMessages.getString(PKG, "PropertyInputDialog.Required.Tooltip"));
+		colinfo[ 3].setToolTip( BaseMessages.getString(PKG, "PropertyInputDialog.IncludeSubDirs.Tooltip"));
+		
+		wFilenameList = new TableView(transMeta, wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
 						      colinfo, 
 						      2,  
@@ -462,12 +498,12 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		/////////////////////////////////////////////////////////////
 		/// END OF FILE TAB
 		/////////////////////////////////////////////////////////////
-
+		middle = props.getMiddlePct();
 		//////////////////////////
 		// START OF CONTENT TAB///
 		///
 		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-		wContentTab.setText(BaseMessages.getString(PKG, "PropertyInputDialog.Content.Tab"));
+		wContentTab.setText( BaseMessages.getString(PKG, "PropertyInputDialog.Content.Tab"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;
@@ -477,13 +513,157 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
  		props.setLook(wContentComp);
 		wContentComp.setLayout(contentLayout);
 		
+		
+		// ///////////////////////////////
+		// START OF SettingsGroup GROUP  //
+		///////////////////////////////// 
+
+		wSettingsGroup= new Group(wContentComp, SWT.SHADOW_NONE);
+		props.setLook(wSettingsGroup);
+		wSettingsGroup.setText( BaseMessages.getString(PKG, "PropertyInputDialog.SettingsGroup.Label"));
+		
+		FormLayout settingsGroupLayout = new FormLayout();
+		settingsGroupLayout .marginWidth = 10;
+		settingsGroupLayout .marginHeight = 10;
+		wSettingsGroup.setLayout(settingsGroupLayout );
+		
+		wlFileType=new Label(wSettingsGroup, SWT.RIGHT);
+        wlFileType.setText( BaseMessages.getString(PKG, "PropertyInputDialog.FileType.Label"));
+        props.setLook(wlFileType);
+        fdlFileType=new FormData();
+        fdlFileType.left = new FormAttachment(0, 0);
+        fdlFileType.top  = new FormAttachment(0, margin);
+        fdlFileType.right= new FormAttachment(middle, -margin);
+        wlFileType.setLayoutData(fdlFileType);
+        wFileType=new CCombo(wSettingsGroup, SWT.BORDER | SWT.READ_ONLY);
+        wFileType.setEditable(true);
+        wFileType.setItems(PropertyInputMeta.fileTypeDesc);
+        props.setLook(wFileType);
+        wFileType.addModifyListener(lsMod);
+        fdFileType=new FormData();
+        fdFileType.left = new FormAttachment(middle, 0);
+        fdFileType.top  = new FormAttachment(0, margin);
+        fdFileType.right= new FormAttachment(100, 0);
+        wFileType.setLayoutData(fdFileType);
+        wFileType.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+            	setFileType();
+            }
+        });
+       
+        wlEncoding=new Label(wSettingsGroup, SWT.RIGHT);
+        wlEncoding.setText( BaseMessages.getString(PKG, "PropertyInputDialog.Encoding.Label"));
+        props.setLook(wlEncoding);
+        fdlEncoding=new FormData();
+        fdlEncoding.left = new FormAttachment(0, 0);
+        fdlEncoding.top  = new FormAttachment(wFileType, margin);
+        fdlEncoding.right= new FormAttachment(middle, -margin);
+        wlEncoding.setLayoutData(fdlEncoding);
+        wEncoding=new ComboVar(transMeta, wSettingsGroup, SWT.BORDER | SWT.READ_ONLY);
+        wEncoding.setEditable(true);
+        props.setLook(wEncoding);
+        wEncoding.addModifyListener(lsMod);
+        fdEncoding=new FormData();
+        fdEncoding.left = new FormAttachment(middle, 0);
+        fdEncoding.top  = new FormAttachment(wFileType, margin);
+        fdEncoding.right= new FormAttachment(100, 0);
+        wEncoding.setLayoutData(fdEncoding);
+        wEncoding.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                    setEncodings();
+                }
+            }
+        );
+        
+		wlSection=new Label(wSettingsGroup, SWT.RIGHT);
+		wlSection.setText( BaseMessages.getString(PKG, "PropertyInputDialog.Section.Label"));
+ 		props.setLook(wlSection);
+		fdlSection=new FormData();
+		fdlSection.left = new FormAttachment(0, 0);
+		fdlSection.top  = new FormAttachment(wEncoding, margin);
+		fdlSection.right= new FormAttachment(middle, -margin);
+		wlSection.setLayoutData(fdlSection);
+
+		wbbSection=new Button(wSettingsGroup, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbbSection);
+		wbbSection.setText( BaseMessages.getString(PKG, "PropertyInputDialog.SectionBrowse.Button"));
+		fdbSection=new FormData();
+		fdbSection.right= new FormAttachment(100, 0);
+		fdbSection.top  = new FormAttachment(wEncoding, margin);
+		wbbSection.setLayoutData(fdbSection);
+		wbbSection.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getSections(); } } );
+		
+		
+		wSection=new TextVar(transMeta, wSettingsGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSection.setToolTipText( BaseMessages.getString(PKG, "PropertyInputDialog.Section.Tooltip"));
+ 		props.setLook(wSection);
+		wSection.addModifyListener(lsMod);
+		fdSection=new FormData();
+		fdSection.left = new FormAttachment(middle, 0);
+		fdSection.top  = new FormAttachment(wEncoding, margin);
+		fdSection.right= new FormAttachment(wbbSection, -margin);
+		wSection.setLayoutData(fdSection);
+		
+		wlLimit=new Label(wSettingsGroup, SWT.RIGHT);
+		wlLimit.setText( BaseMessages.getString(PKG, "PropertyInputDialog.Limit.Label"));
+ 		props.setLook(wlLimit);
+		fdlLimit=new FormData();
+		fdlLimit.left = new FormAttachment(0, 0);
+		fdlLimit.top  = new FormAttachment(wbbSection, margin);
+		fdlLimit.right= new FormAttachment(middle, -margin);
+		wlLimit.setLayoutData(fdlLimit);
+		wLimit=new Text(wSettingsGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wLimit);
+		wLimit.addModifyListener(lsMod);
+		fdLimit=new FormData();
+		fdLimit.left = new FormAttachment(middle, 0);
+		fdLimit.top  = new FormAttachment(wbbSection, margin);
+		fdLimit.right= new FormAttachment(100, 0);
+		wLimit.setLayoutData(fdLimit);
+		
+		wlresolveValueVariable=new Label(wSettingsGroup, SWT.RIGHT);
+		wlresolveValueVariable.setText( BaseMessages.getString(PKG, "PropertyInputDialog.resolveValueVariable.Label"));
+ 		props.setLook(wlresolveValueVariable);
+		fdlresolveValueVariable=new FormData();
+		fdlresolveValueVariable.left = new FormAttachment(0, 0);
+		fdlresolveValueVariable.top  = new FormAttachment(wLimit, margin);
+		fdlresolveValueVariable.right= new FormAttachment(middle, -margin);
+		wlresolveValueVariable.setLayoutData(fdlresolveValueVariable);
+		wresolveValueVariable=new Button(wSettingsGroup, SWT.CHECK );
+ 		props.setLook(wresolveValueVariable);
+		wresolveValueVariable.setToolTipText( BaseMessages.getString(PKG, "PropertyInputDialog.resolveValueVariable.Tooltip"));
+		fdresolveValueVariable=new FormData();
+		fdresolveValueVariable.left = new FormAttachment(middle, 0);
+		fdresolveValueVariable.top  = new FormAttachment(wLimit, margin);
+		wresolveValueVariable.setLayoutData(fdresolveValueVariable);
+		
+
+
+		fdSettingsGroup= new FormData();
+		fdSettingsGroup.left = new FormAttachment(0, margin);
+		fdSettingsGroup.top = new FormAttachment(wresolveValueVariable, margin);
+		fdSettingsGroup.right = new FormAttachment(100, -margin);
+		wSettingsGroup.setLayoutData(fdSettingsGroup);
+			
+		// ///////////////////////////////////////////////////////////
+		// / END OF SettingsGroup GROUP
+		// ///////////////////////////////////////////////////////////	
+       
 		// /////////////////////////////////
 		// START OF Additional Fields GROUP
 		// /////////////////////////////////
 
 		wAdditionalGroup = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wAdditionalGroup);
-		wAdditionalGroup.setText(BaseMessages.getString(PKG, "PropertyInputDialog.Group.AdditionalGroup.Label"));
+		wAdditionalGroup.setText( BaseMessages.getString(PKG, "PropertyInputDialog.Group.AdditionalGroup.Label"));
 		
 		FormLayout additionalgroupLayout = new FormLayout();
 		additionalgroupLayout.marginWidth = 10;
@@ -491,41 +671,41 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		wAdditionalGroup.setLayout(additionalgroupLayout);
 
 		wlInclFilename=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlInclFilename.setText(BaseMessages.getString(PKG, "PropertyInputDialog.InclFilename.Label"));
+		wlInclFilename.setText( BaseMessages.getString(PKG, "PropertyInputDialog.InclFilename.Label"));
  		props.setLook(wlInclFilename);
 		fdlInclFilename=new FormData();
 		fdlInclFilename.left = new FormAttachment(0, 0);
-		fdlInclFilename.top  = new FormAttachment(0, margin);
+		fdlInclFilename.top  = new FormAttachment(wSettingsGroup, margin);
 		fdlInclFilename.right= new FormAttachment(middle, -margin);
 		wlInclFilename.setLayoutData(fdlInclFilename);
 		wInclFilename=new Button(wAdditionalGroup, SWT.CHECK );
  		props.setLook(wInclFilename);
-		wInclFilename.setToolTipText(BaseMessages.getString(PKG, "PropertyInputDialog.InclFilename.Tooltip"));
+		wInclFilename.setToolTipText( BaseMessages.getString(PKG, "PropertyInputDialog.InclFilename.Tooltip"));
 		fdInclFilename=new FormData();
 		fdInclFilename.left = new FormAttachment(middle, 0);
-		fdInclFilename.top  = new FormAttachment(0, margin);
+		fdInclFilename.top  = new FormAttachment(wSettingsGroup, margin);
 		wInclFilename.setLayoutData(fdInclFilename);
 
 		wlInclFilenameField=new Label(wAdditionalGroup, SWT.LEFT);
-		wlInclFilenameField.setText(BaseMessages.getString(PKG, "PropertyInputDialog.InclFilenameField.Label"));
+		wlInclFilenameField.setText( BaseMessages.getString(PKG, "PropertyInputDialog.InclFilenameField.Label"));
  		props.setLook(wlInclFilenameField);
 		fdlInclFilenameField=new FormData();
 		fdlInclFilenameField.left = new FormAttachment(wInclFilename, margin);
-		fdlInclFilenameField.top  = new FormAttachment(0, margin);
+		fdlInclFilenameField.top  = new FormAttachment(wSettingsGroup, margin);
 		wlInclFilenameField.setLayoutData(fdlInclFilenameField);
-		wInclFilenameField=new TextVar(transMeta,wAdditionalGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wInclFilenameField=new TextVar(transMeta, wAdditionalGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wInclFilenameField);
 		wInclFilenameField.addModifyListener(lsMod);
 		fdInclFilenameField=new FormData();
 		fdInclFilenameField.left = new FormAttachment(wlInclFilenameField , margin);
-		fdInclFilenameField.top  = new FormAttachment(0, margin);
+		fdInclFilenameField.top  = new FormAttachment(wSettingsGroup, margin);
 		fdInclFilenameField.right= new FormAttachment(100, 0);
 		wInclFilenameField.setLayoutData(fdInclFilenameField);
 		
 
 	
 		wlInclRownum=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlInclRownum.setText(BaseMessages.getString(PKG, "PropertyInputDialog.InclRownum.Label"));
+		wlInclRownum.setText( BaseMessages.getString(PKG, "PropertyInputDialog.InclRownum.Label"));
  		props.setLook(wlInclRownum);
 		fdlInclRownum=new FormData();
 		fdlInclRownum.left = new FormAttachment(0, 0);
@@ -534,20 +714,20 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		wlInclRownum.setLayoutData(fdlInclRownum);
 		wInclRownum=new Button(wAdditionalGroup, SWT.CHECK );
  		props.setLook(wInclRownum);
-		wInclRownum.setToolTipText(BaseMessages.getString(PKG, "PropertyInputDialog.InclRownum.Tooltip"));
+		wInclRownum.setToolTipText( BaseMessages.getString(PKG, "PropertyInputDialog.InclRownum.Tooltip"));
 		fdRownum=new FormData();
 		fdRownum.left = new FormAttachment(middle, 0);
 		fdRownum.top  = new FormAttachment(wInclFilenameField, margin);
 		wInclRownum.setLayoutData(fdRownum);
 
 		wlInclRownumField=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlInclRownumField.setText(BaseMessages.getString(PKG, "PropertyInputDialog.InclRownumField.Label"));
+		wlInclRownumField.setText( BaseMessages.getString(PKG, "PropertyInputDialog.InclRownumField.Label"));
  		props.setLook(wlInclRownumField);
 		fdlInclRownumField=new FormData();
 		fdlInclRownumField.left = new FormAttachment(wInclRownum, margin);
 		fdlInclRownumField.top  = new FormAttachment(wInclFilenameField, margin);
 		wlInclRownumField.setLayoutData(fdlInclRownumField);
-		wInclRownumField=new TextVar(transMeta,wAdditionalGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wInclRownumField=new TextVar(transMeta, wAdditionalGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wInclRownumField);
 		wInclRownumField.addModifyListener(lsMod);
 		fdInclRownumField=new FormData();
@@ -558,7 +738,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		
 		
 		wlResetRownum=new Label(wAdditionalGroup, SWT.RIGHT);
-		wlResetRownum.setText(BaseMessages.getString(PKG, "PropertyInputDialog.ResetRownum.Label"));
+		wlResetRownum.setText( BaseMessages.getString(PKG, "PropertyInputDialog.ResetRownum.Label"));
  		props.setLook(wlResetRownum);
 		fdlResetRownum=new FormData();
 		fdlResetRownum.left = new FormAttachment(wInclRownum, margin);
@@ -566,16 +746,49 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		wlResetRownum.setLayoutData(fdlResetRownum);
 		wResetRownum=new Button(wAdditionalGroup, SWT.CHECK );
  		props.setLook(wResetRownum);
-		wResetRownum.setToolTipText(BaseMessages.getString(PKG, "PropertyInputDialog.ResetRownum.Tooltip"));
+		wResetRownum.setToolTipText( BaseMessages.getString(PKG, "PropertyInputDialog.ResetRownum.Tooltip"));
 		fdRownum=new FormData();
 		fdRownum.left = new FormAttachment(wlResetRownum, margin);
 		fdRownum.top  = new FormAttachment(wInclRownumField, margin);	
 		wResetRownum.setLayoutData(fdRownum);
 		
 		
+		wlInclINIsection=new Label(wAdditionalGroup, SWT.RIGHT);
+		wlInclINIsection.setText( BaseMessages.getString(PKG, "PropertyInputDialog.InclINIsection.Label"));
+ 		props.setLook(wlInclINIsection);
+		fdlInclINIsection=new FormData();
+		fdlInclINIsection.left = new FormAttachment(0, 0);
+		fdlInclINIsection.top  = new FormAttachment(wResetRownum, margin);
+		fdlInclINIsection.right= new FormAttachment(middle, -margin);
+		wlInclINIsection.setLayoutData(fdlInclINIsection);
+		wInclINIsection=new Button(wAdditionalGroup, SWT.CHECK );
+ 		props.setLook(wInclINIsection);
+		wInclINIsection.setToolTipText( BaseMessages.getString(PKG, "PropertyInputDialog.InclINIsection.Tooltip"));
+		fdRownum=new FormData();
+		fdRownum.left = new FormAttachment(middle, 0);
+		fdRownum.top  = new FormAttachment(wResetRownum, margin);
+		wInclINIsection.setLayoutData(fdRownum);
+
+		wlInclINIsectionField=new Label(wAdditionalGroup, SWT.RIGHT);
+		wlInclINIsectionField.setText( BaseMessages.getString(PKG, "PropertyInputDialog.InclINIsectionField.Label"));
+ 		props.setLook(wlInclINIsectionField);
+		fdlInclINIsectionField=new FormData();
+		fdlInclINIsectionField.left = new FormAttachment(wInclINIsection, margin);
+		fdlInclINIsectionField.top  = new FormAttachment(wResetRownum, margin);
+		wlInclINIsectionField.setLayoutData(fdlInclINIsectionField);
+		wInclINIsectionField=new TextVar(transMeta, wAdditionalGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wInclINIsectionField);
+		wInclINIsectionField.addModifyListener(lsMod);
+		fdInclINIsectionField=new FormData();
+		fdInclINIsectionField.left = new FormAttachment(wlInclINIsectionField, margin);
+		fdInclINIsectionField.top  = new FormAttachment(wResetRownum, margin);
+		fdInclINIsectionField.right= new FormAttachment(100, 0);
+		wInclINIsectionField.setLayoutData(fdInclINIsectionField);
+		
+		
 		fdAdditionalGroup = new FormData();
 		fdAdditionalGroup.left = new FormAttachment(0, margin);
-		fdAdditionalGroup.top = new FormAttachment(0, margin);
+		fdAdditionalGroup.top = new FormAttachment(wSettingsGroup, margin);
 		fdAdditionalGroup.right = new FormAttachment(100, -margin);
 		wAdditionalGroup.setLayoutData(fdAdditionalGroup);
 		
@@ -584,47 +797,14 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		// ///////////////////////////////////////////////////////////
 		
 		
-		wlLimit=new Label(wContentComp, SWT.RIGHT);
-		wlLimit.setText(BaseMessages.getString(PKG, "PropertyInputDialog.Limit.Label"));
- 		props.setLook(wlLimit);
-		fdlLimit=new FormData();
-		fdlLimit.left = new FormAttachment(0, 0);
-		fdlLimit.top  = new FormAttachment(wAdditionalGroup, 2*margin);
-		fdlLimit.right= new FormAttachment(middle, -margin);
-		wlLimit.setLayoutData(fdlLimit);
-		wLimit=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wLimit);
-		wLimit.addModifyListener(lsMod);
-		fdLimit=new FormData();
-		fdLimit.left = new FormAttachment(middle, 0);
-		fdLimit.top  = new FormAttachment(wAdditionalGroup, 2*margin);
-		fdLimit.right= new FormAttachment(100, 0);
-		wLimit.setLayoutData(fdLimit);
-		
-		wlresolveValueVariable=new Label(wContentComp, SWT.RIGHT);
-		wlresolveValueVariable.setText(BaseMessages.getString(PKG, "PropertyInputDialog.resolveValueVariable.Label"));
- 		props.setLook(wlresolveValueVariable);
-		fdlresolveValueVariable=new FormData();
-		fdlresolveValueVariable.left = new FormAttachment(0, 0);
-		fdlresolveValueVariable.top  = new FormAttachment(wLimit, margin);
-		fdlresolveValueVariable.right= new FormAttachment(middle, -margin);
-		wlresolveValueVariable.setLayoutData(fdlresolveValueVariable);
-		wresolveValueVariable=new Button(wContentComp, SWT.CHECK );
- 		props.setLook(wresolveValueVariable);
-		wresolveValueVariable.setToolTipText(BaseMessages.getString(PKG, "PropertyInputDialog.resolveValueVariable.Tooltip"));
-		fdresolveValueVariable=new FormData();
-		fdresolveValueVariable.left = new FormAttachment(middle, 0);
-		fdresolveValueVariable.top  = new FormAttachment(wLimit, margin);
-		wresolveValueVariable.setLayoutData(fdresolveValueVariable);
-		
-		
+	
 		// ///////////////////////////////
 		// START OF AddFileResult GROUP  //
 		///////////////////////////////// 
 
 		wAddFileResult = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wAddFileResult);
-		wAddFileResult.setText(BaseMessages.getString(PKG, "PropertyInputDialog.wAddFileResult.Label"));
+		wAddFileResult.setText( BaseMessages.getString(PKG, "PropertyInputDialog.wAddFileResult.Label"));
 		
 		FormLayout AddFileResultgroupLayout = new FormLayout();
 		AddFileResultgroupLayout.marginWidth = 10;
@@ -632,24 +812,24 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		wAddFileResult.setLayout(AddFileResultgroupLayout);
 
 		wlAddResult=new Label(wAddFileResult, SWT.RIGHT);
-		wlAddResult.setText(BaseMessages.getString(PKG, "PropertyInputDialog.AddResult.Label"));
+		wlAddResult.setText( BaseMessages.getString(PKG, "PropertyInputDialog.AddResult.Label"));
  		props.setLook(wlAddResult);
 		fdlAddResult=new FormData();
 		fdlAddResult.left = new FormAttachment(0, 0);
-		fdlAddResult.top  = new FormAttachment(wresolveValueVariable, margin);
+		fdlAddResult.top  = new FormAttachment(wAdditionalGroup, margin);
 		fdlAddResult.right= new FormAttachment(middle, -margin);
 		wlAddResult.setLayoutData(fdlAddResult);
 		wAddResult=new Button(wAddFileResult, SWT.CHECK );
  		props.setLook(wAddResult);
-		wAddResult.setToolTipText(BaseMessages.getString(PKG, "PropertyInputDialog.AddResult.Tooltip"));
+		wAddResult.setToolTipText( BaseMessages.getString(PKG, "PropertyInputDialog.AddResult.Tooltip"));
 		fdAddResult=new FormData();
 		fdAddResult.left = new FormAttachment(middle, 0);
-		fdAddResult.top  = new FormAttachment(wresolveValueVariable, margin);
+		fdAddResult.top  = new FormAttachment(wAdditionalGroup, margin);
 		wAddResult.setLayoutData(fdAddResult);
 
 		fdAddFileResult = new FormData();
 		fdAddFileResult.left = new FormAttachment(0, margin);
-		fdAddFileResult.top = new FormAttachment(wresolveValueVariable, margin);
+		fdAddFileResult.top = new FormAttachment(wAdditionalGroup, margin);
 		fdAddFileResult.right = new FormAttachment(100, -margin);
 		wAddFileResult.setLayoutData(fdAddFileResult);
 			
@@ -676,7 +856,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		// Fields tab...
 		//
 		wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
-		wFieldsTab.setText(BaseMessages.getString(PKG, "PropertyInputDialog.Fields.Tab"));
+		wFieldsTab.setText( BaseMessages.getString(PKG, "PropertyInputDialog.Fields.Tab"));
 		
 		FormLayout fieldsLayout = new FormLayout ();
 		fieldsLayout.marginWidth  = Const.FORM_MARGIN;
@@ -687,7 +867,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
  		props.setLook(wFieldsComp);
 		
  		wGet=new Button(wFieldsComp, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "PropertyInputDialog.GetFields.Button"));
+		wGet.setText( BaseMessages.getString(PKG, "PropertyInputDialog.GetFields.Button"));
 		fdGet=new FormData();
 		fdGet.left=new FormAttachment(50, 0);
 		fdGet.bottom =new FormAttachment(100, 0);
@@ -698,51 +878,53 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		ColumnInfo[] colinf=new ColumnInfo[]
             {
 			 new ColumnInfo(
-         BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Name.Column"),
+          BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Name.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
-         new ColumnInfo(BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Attribut.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,PropertyInputField.ColumnDesc, false),
+         //new ColumnInfo( BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Attribut.Column"),ColumnInfo.COLUMN_TYPE_TEXT,false),
          
-		 new ColumnInfo(BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Type.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,ValueMeta.getTypes(),true ),
-		 new ColumnInfo(BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Format.Column"),
+         new ColumnInfo( BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Attribut.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,PropertyInputField.ColumnDesc, false),
+         
+		 new ColumnInfo( BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Type.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,ValueMeta.getTypes(),true ),
+		 new ColumnInfo( BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Format.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,Const.getConversionFormats()),
          new ColumnInfo(
-         BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Length.Column"),
+          BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Length.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Precision.Column"),
+          BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Precision.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Currency.Column"),
+          BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Currency.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Decimal.Column"),
+          BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Decimal.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Group.Column"),
+          BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Group.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.TrimType.Column"),
+          BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.TrimType.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
          PropertyInputField.trimTypeDesc,
          true ),
 			 new ColumnInfo(
-         BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Repeat.Column"),
+          BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Repeat.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
-         new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") },
+         new String[] {  BaseMessages.getString(PKG, "System.Combo.Yes"),  BaseMessages.getString(PKG, "System.Combo.No") },
          true ),
      
     };
 		
 		colinf[0].setUsingVariables(true);
-		colinf[0].setToolTip(BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Name.Column.Tooltip"));
-		colinf[1].setToolTip(BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Attribut.Column.Tooltip"));
-		wFields=new TableView(transMeta,wFieldsComp, 
+		colinf[0].setToolTip( BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Name.Column.Tooltip"));
+		colinf[1].setToolTip( BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Attribut.Column.Tooltip"));
+		wFields=new TableView(transMeta, wFieldsComp, 
 						      SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  
@@ -775,13 +957,13 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		wTabFolder.setLayoutData(fdTabFolder);
 		
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
+		wOK.setText( BaseMessages.getString(PKG, "System.Button.OK"));
 
 		wPreview=new Button(shell, SWT.PUSH);
-		wPreview.setText(BaseMessages.getString(PKG, "PropertyInputDialog.Button.PreviewRows"));
+		wPreview.setText( BaseMessages.getString(PKG, "PropertyInputDialog.Button.PreviewRows"));
 		
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
+		wCancel.setText( BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
 
@@ -808,7 +990,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				wFilenameList.add(new String[] { wFilename.getText(), wFilemask.getText() } );
+				wFilenameList.add(new String[] { wFilename.getText(), wFilemask.getText(), PropertyInputMeta.RequiredFilesCode[0], PropertyInputMeta.RequiredFilesCode[0]} );
 				wFilename.setText("");
 				wFilemask.setText("");
 				wFilenameList.removeEmptyRows();
@@ -863,7 +1045,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     					
     					if (files.length > 0)
     			        {
-    			            EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, BaseMessages.getString(PKG, "PropertyInputDialog.FilesReadSelection.DialogTitle"), BaseMessages.getString(PKG, "PropertyInputDialog.FilesReadSelection.DialogMessage"));
+    			            EnterSelectionDialog esd = new EnterSelectionDialog(shell, files,  BaseMessages.getString(PKG, "PropertyInputDialog.FilesReadSelection.DialogTitle"),  BaseMessages.getString(PKG, "PropertyInputDialog.FilesReadSelection.DialogMessage"));
     			            esd.setViewOnly();
     			            esd.open();
     			        }
@@ -871,14 +1053,14 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     					else
     					{
     			            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-    			            mb.setMessage(BaseMessages.getString(PKG, "PropertyInputDialog.NoFileFound.DialogMessage"));
-    			            mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
+    			            mb.setMessage( BaseMessages.getString(PKG, "PropertyInputDialog.NoFileFound.DialogMessage"));
+    			            mb.setText( BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
     			            mb.open(); 
     					}
                     }
-                    catch(KettleException ex)
+                    catch(Exception ex)
                     {
-                        new ErrorDialog(shell, BaseMessages.getString(PKG, "PropertyInputDialog.ErrorParsingData.DialogTitle"), BaseMessages.getString(PKG, "PropertyInputDialog.ErrorParsingData.DialogMessage"), ex);
+                        new ErrorDialog(shell,  BaseMessages.getString(PKG, "PropertyInputDialog.ErrorParsingData.DialogTitle"),  BaseMessages.getString(PKG, "PropertyInputDialog.ErrorParsingData.DialogMessage"), ex);
                     }
 				}
 			}
@@ -891,6 +1073,15 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 				public void widgetSelected(SelectionEvent e) 
 				{
 					setIncludeFilename();
+				}
+			}
+		);
+		// Enable/disable the right fields to allow a filename to be added to each row...
+		wInclINIsection.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					setIncludeSection();
 				}
 			}
 		);
@@ -910,7 +1101,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wFilename.setToolTipText("");//StringUtil.environmentSubstitute( wFilename.getText() ) );
+					wFilename.setToolTipText("");
 				}
 			}
 		);
@@ -929,7 +1120,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 						DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
 						if (wFilename.getText()!=null)
 						{
-							String fpath = "";//StringUtil.environmentSubstitute(wFilename.getText());
+							String fpath = "";
 							dialog.setFilterPath( fpath );
 						}
 						
@@ -942,14 +1133,24 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 					else
 					{
 						FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-						dialog.setFilterExtensions(new String[] {"*.properties;*.PROPERTIES", "*"});
+						
+						if(PropertyInputMeta.getFileTypeByDesc(wFileType.getText())==PropertyInputMeta.FILE_TYPE_PROPERTY)
+						{
+							dialog.setFilterExtensions(new String[] {"*.properties;*.PROPERTIES", "*"});
+							dialog.setFilterNames(new String[] { BaseMessages.getString(PKG, "PropertyInputDialog.FileType.PropertiesFiles"),  BaseMessages.getString(PKG, "System.FileType.AllFiles")});
+						}
+						else
+						{
+							dialog.setFilterExtensions(new String[] {"*.ini;*.INI", "*"});
+							dialog.setFilterNames(new String[] { BaseMessages.getString(PKG, "PropertyInputDialog.FileType.INIFiles"),  BaseMessages.getString(PKG, "System.FileType.AllFiles")});
+						}
+							
 						if (wFilename.getText()!=null)
 						{
 							String fname = "";
 							dialog.setFileName( fname );
 						}
 						
-						dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "PropertyInputDialog.FileType.PropertiesFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
 						
 						if (dialog.open()!=null)
 						{
@@ -969,6 +1170,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		// Set the shell size, based upon previous time...
 		setSize();
 		getData(input);
+		setFileType();
 		input.setChanged(changed);
 		ActiveFileField();
 		wFields.optWidth(true);
@@ -980,6 +1182,41 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		}
 		return stepname;
 	}
+	private void setFileType()
+	{
+		boolean active=(PropertyInputMeta.getFileTypeByDesc(wFileType.getText())==PropertyInputMeta.FILE_TYPE_INI);
+		wlSection.setEnabled(active);
+		wSection.setEnabled(active);
+		wbbSection.setEnabled(active);
+		wlEncoding.setEnabled(active);
+		wEncoding.setEnabled(active);
+		if(!active && wInclINIsection.getSelection()) wInclINIsection.setSelection(false);
+		wlInclINIsection.setEnabled(active);
+		wInclINIsection.setEnabled(active);
+		setIncludeSection();
+	}
+	private void setEncodings()
+    {
+        // Encoding of the text file:
+        if (!gotEncodings)
+        {
+            gotEncodings = true;
+            
+            wEncoding.removeAll();
+            ArrayList<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
+            for (int i=0;i<values.size();i++)
+            {
+                Charset charSet = (Charset)values.get(i);
+                wEncoding.add( charSet.displayName() );
+            }
+            
+            // Now select the default!
+            String defEncoding = Const.getEnvironmentVariable("file.encoding", PropertyInputMeta.DEFAULT_ENCODING);
+            int idx = Const.indexOfString(defEncoding, wEncoding.getItems() );
+            if (idx>=0) wEncoding.select( idx );
+        }
+    }
+	 
 	 private void setFileField()
 	 {
 		 try{
@@ -1002,61 +1239,62 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 				new ErrorDialog(shell, BaseMessages.getString(PKG, "PropertyInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "PropertyInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 	 }
-	private void get()
-	{
-		RowMetaInterface fields = new RowMeta();
-		
-        try
-        {
-        	
-        	PropertyInputMeta meta = new PropertyInputMeta();
-    		getInfo(meta);
-        	
-            
-            FileInputList inputList = meta.getFiles(transMeta);
 
-            if (inputList.getFiles().size()>0)
-            {
-
-				ValueMetaInterface field = new ValueMeta(PropertyInputField.getColumnDesc(0), ValueMetaInterface.TYPE_STRING);
-				fields.addValueMeta(field);
-				field = new ValueMeta(PropertyInputField.getColumnDesc(1), ValueMetaInterface.TYPE_STRING);
-				fields.addValueMeta(field);
-
-            }	
-    					
-		}
-        catch(Exception e)
-		{
-    		 new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "PropertyInputDialog.ErrorReadingFile.DialogMessage", e.toString()), e);
-		} 
-
-            
-            if (fields.size()>0)
-    		{
-            	
-            	// Clear Fields Grid
-                wFields.removeAll();
-                
-    			for (int j=0;j<fields.size();j++)
-    			{
-    				ValueMetaInterface field = fields.getValueMeta(j);
-    				wFields.add(new String[] { field.getName(), field.getName(),field.getTypeDesc(), "", "-1", "","","","","none", "N" } );
-    			}
-    			wFields.removeEmptyRows();
-    			wFields.setRowNums();
-    			wFields.optWidth(true);
-    		}
-    		else
-    		{
-    			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-    			mb.setMessage(BaseMessages.getString(PKG, "PropertyInputDialog.UnableToFindFields.DialogTitle"));
-    			mb.setText(BaseMessages.getString(PKG, "PropertyInputDialog.UnableToFindFields.DialogMessage"));
-    			mb.open(); 
-    		}
-            
- 
+	 private void get()
+	 {
+		 if(!gotPreviousfields) 
+		 {
+			gotPreviousfields=true;
+			RowMetaInterface fields = new RowMeta();
+			
+	        try
+	        {
+	        	PropertyInputMeta meta = new PropertyInputMeta();
+	    		getInfo(meta);
+	            
+	            FileInputList inputList = meta.getFiles(transMeta);
+	
+	            if (inputList.getFiles().size()>0)
+	            {
+	
+					ValueMetaInterface field = new ValueMeta(PropertyInputField.getColumnDesc(0), ValueMetaInterface.TYPE_STRING);
+					fields.addValueMeta(field);
+					field = new ValueMeta(PropertyInputField.getColumnDesc(1), ValueMetaInterface.TYPE_STRING);
+					fields.addValueMeta(field);
+	
+	            }	
+	    					
+			}
+	        catch(Exception e)
+			{
+	    		 new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), BaseMessages.getString(PKG, "PropertyInputDialog.ErrorReadingFile.DialogMessage", e.toString()), e);
+			} 
+	 
+	        if (fields.size()>0)
+			{
+	        	
+	        	// Clear Fields Grid
+	            wFields.removeAll();
+	            
+				for (int j=0;j<fields.size();j++)
+				{
+					ValueMetaInterface field = fields.getValueMeta(j);
+					wFields.add(new String[] { field.getName(), field.getName(),field.getTypeDesc(), "", "-1", "","","","","none", "N" } );
+				}
+				wFields.removeEmptyRows();
+				wFields.setRowNums();
+				wFields.optWidth(true);
+			}
+			else
+			{
+				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+				mb.setMessage(BaseMessages.getString(PKG, "PropertyInputDialog.UnableToFindFields.DialogTitle"));
+				mb.setText(BaseMessages.getString(PKG, "PropertyInputDialog.UnableToFindFields.DialogMessage"));
+				mb.open(); 
+			}
+		 }
 	}
+
 	private void ActiveFileField()
 	{
 		wlFilenameField.setEnabled(wFileField.getSelection());
@@ -1087,7 +1325,12 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		wlInclFilenameField.setEnabled(wInclFilename.getSelection());
 		wInclFilenameField.setEnabled(wInclFilename.getSelection());
 	}
-
+	public void setIncludeSection()
+	{
+		boolean active=(PropertyInputMeta.getFileTypeByDesc(wFileType.getText())==PropertyInputMeta.FILE_TYPE_INI);
+		wlInclINIsectionField.setEnabled(active && wInclINIsection.getSelection());
+		wInclINIsectionField.setEnabled(active && wInclINIsection.getSelection());
+	}
 	public void setIncludeRownum()
 	{
 		wlInclRownumField.setEnabled(wInclRownum.getSelection());
@@ -1108,6 +1351,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		if (in.getFileName() !=null) 
 		{
 			wFilenameList.removeAll();
+		
 			for (int i=0;i<in.getFileName().length;i++) 
 			{
 				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] ,
@@ -1117,21 +1361,23 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 			wFilenameList.setRowNums();
 			wFilenameList.optWidth(true);
 		}
+		wFileType.setText(PropertyInputMeta.getFileTypeDesc(PropertyInputMeta.getFileTypeByCode(in.getFileType())));
 		wInclFilename.setSelection(in.includeFilename());
 		wInclRownum.setSelection(in.includeRowNumber());
+		wInclINIsection.setSelection(in.includeIniSection());
 		wAddResult.setSelection(in.isAddResultFile());
 		wresolveValueVariable.setSelection(in.isResolveValueVariable());
 		wFileField.setSelection(in.isFileField());
-		
+		if (in.getEncoding()!=null) wEncoding.setText(in.getEncoding());
 		if (in.getFilenameField()!=null) wInclFilenameField.setText(in.getFilenameField());
 		if (in.getDynamicFilenameField()!=null) wFilenameField.setText(in.getDynamicFilenameField());
-		
-		
+		if (in.getINISectionField()!=null) wInclINIsectionField.setText(in.getINISectionField());
+		if (in.getSection()!=null) wSection.setText(in.getSection());
 		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
 		wResetRownum.setSelection(in.resetRowNumber());
 		wLimit.setText(""+in.getRowLimit());
 
-		log.logDebug(toString(), BaseMessages.getString(PKG, "PropertyInputDialog.Log.GettingFieldsInfo"));
+		log.logDebug(toString(),  BaseMessages.getString(PKG, "PropertyInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
 		    PropertyInputField field = in.getInputFields()[i];
@@ -1149,7 +1395,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     			String group    = field.getGroupSymbol();
     			String decim    = field.getDecimalSymbol();
     			String trim     = field.getTrimTypeDesc();
-    			String rep      = field.isRepeated()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No");
+    			String rep      = field.isRepeated()? BaseMessages.getString(PKG, "System.Combo.Yes"): BaseMessages.getString(PKG, "System.Combo.No");
     			
                 if (name    !=null) item.setText( 1, name);
                 if (column  !=null) item.setText( 2, column);
@@ -1171,7 +1417,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 
 		setIncludeFilename();
 		setIncludeRownum();
-
+		setIncludeSection();
 		wStepname.selectAll();
 	}
 
@@ -1192,7 +1438,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, BaseMessages.getString(PKG, "PropertyInputDialog.ErrorParsingData.DialogTitle"), BaseMessages.getString(PKG, "PropertyInputDialog.ErrorParsingData.DialogMessage"), e);
+            new ErrorDialog(shell,  BaseMessages.getString(PKG, "PropertyInputDialog.ErrorParsingData.DialogTitle"),  BaseMessages.getString(PKG, "PropertyInputDialog.ErrorParsingData.DialogMessage"), e);
         }
 		dispose();
 	}
@@ -1206,22 +1452,24 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		in.setIncludeFilename( wInclFilename.getSelection() );
 		in.setFilenameField( wInclFilenameField.getText() );
 		in.setIncludeRowNumber( wInclRownum.getSelection() );
+		in.setIncludeIniSection(wInclINIsection.getSelection() );
 		in.setAddResultFile( wAddResult.getSelection() );
-		
+		in.setEncoding(wEncoding.getText() );
 		in.setDynamicFilenameField( wFilenameField.getText() );
 		in.setFileField(wFileField.getSelection() );
 		in.setRowNumberField( wInclRownumField.getText() );
+		in.setINISectionField(wInclINIsectionField.getText() );
 		in.setResetRowNumber( wResetRownum.getSelection() );
 		in.setResolveValueVariable( wresolveValueVariable.getSelection() );
 		int nrFiles     = wFilenameList.getItemCount();
 		int nrFields    = wFields.nrNonEmpty();
 		in.allocate(nrFiles, nrFields);
-
+		in.setSection(wSection.getText());
 		in.setFileName( wFilenameList.getItems(0) );
 		in.setFileMask( wFilenameList.getItems(1) );
 		in.setFileRequired(wFilenameList.getItems(2));
 		in.setIncludeSubFolders(wFilenameList.getItems(3));
-
+		in.setFileType(PropertyInputMeta.getFileTypeCode(PropertyInputMeta.getFileTypeByDesc(wFileType.getText())));
 		for (int i=0;i<nrFields;i++)
 		{
 		    PropertyInputField field = new PropertyInputField();
@@ -1238,15 +1486,13 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 			field.setDecimalSymbol( item.getText(8) );
 			field.setGroupSymbol( item.getText(9) );
 			field.setTrimType( PropertyInputField.getTrimTypeByDesc(item.getText(10)) );
-			field.setRepeated( BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(11)) );		
+			field.setRepeated(  BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(11)) );		
             
 			in.getInputFields()[i] = field;
 		}	
 	}
 	
-
 	
-		
 	// Preview the data
 	private void preview()
 	{
@@ -1295,10 +1541,69 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
        }
 	}
 
+		
+	
 	public String toString()
 	{
 		return this.getClass().getName();
 	}
-	
-	
-}
+	private void getSections()
+	{
+		Wini wini=new Wini();
+		PropertyInputMeta meta = new PropertyInputMeta();
+		try
+		{
+			getInfo(meta);
+			
+			FileInputList fileInputList = meta.getFiles(transMeta);
+
+			if (fileInputList.nrOfFiles()>0)
+			{
+				// Check the first file
+			    if (fileInputList.getFile(0).exists()) {
+			       // Open the file (only first file) in readOnly ...
+				   //
+			       wini = new Wini(KettleVFS.getInputStream(fileInputList.getFile(0)));
+			       Iterator<String> itSection=wini.keySet().iterator();
+			       String[] sectionsList=new String[wini.keySet().size()];
+			       int i=0;
+			       while(itSection.hasNext())
+			       {
+			    	   sectionsList[i]=itSection.next().toString();
+			    	   i++;
+			       }
+					Const.sortStrings(sectionsList);
+					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, sectionsList, 
+							 BaseMessages.getString(PKG, "PropertyInputDialog.Dialog.SelectASection.Title"), 
+							 BaseMessages.getString(PKG, "PropertyInputDialog.Dialog.SelectASection.Message"));
+					String sectionname = dialog.open();
+					if (sectionname != null) {
+						wSection.setText(sectionname);
+					}
+				} else {
+					// The file not exists !
+					throw new KettleException( BaseMessages.getString(PKG, "PropertyInputDialog.Exception.FileDoesNotExist", 
+							KettleVFS.getFilename(fileInputList.getFile(0))));
+				}				
+			}
+			else
+			{
+				// No file specified
+				 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+		            mb.setMessage( BaseMessages.getString(PKG, "PropertyInputDialog.FilesMissing.DialogMessage"));
+		            mb.setText( BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
+		            mb.open(); 
+			}
+		}
+		catch(Throwable e)
+	    {
+	        new ErrorDialog(shell,  BaseMessages.getString(PKG, "PropertyInputDialog.UnableToGetListOfSections.Title"), 
+	        		 BaseMessages.getString(PKG, "PropertyInputDialog.UnableToGetListOfSections.Message"), e);
+	    }
+	    finally
+	    {
+	    	if(wini!=null) wini.clear();wini=null;
+	    	meta=null;
+	    }
+	}
+	}
