@@ -33,6 +33,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -185,7 +186,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		retval.append("      ").append(XMLHandler.addTagValue("port",   port));
 		retval.append("      ").append(XMLHandler.addTagValue("servername",   serverName));
 		retval.append("      ").append(XMLHandler.addTagValue("username",     userName));
-		retval.append("      ").append(XMLHandler.addTagValue("password",     password));
+	    retval.append("      ").append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(getPassword())));
 		retval.append("      ").append(XMLHandler.addTagValue("ftpdirectory", ftpDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("targetdirectory", targetDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",     wildcard));
@@ -227,7 +228,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	      	port          = XMLHandler.getTagValue(entrynode, "port");
 			serverName          = XMLHandler.getTagValue(entrynode, "servername");
 			userName            = XMLHandler.getTagValue(entrynode, "username");
-			password            = XMLHandler.getTagValue(entrynode, "password");
+		    password = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "password")); 
 			ftpDirectory        = XMLHandler.getTagValue(entrynode, "ftpdirectory");
 			targetDirectory     = XMLHandler.getTagValue(entrynode, "targetdirectory");
 			wildcard            = XMLHandler.getTagValue(entrynode, "wildcard");
@@ -282,7 +283,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			    
 		    }
 		    nr_limit          = XMLHandler.getTagValue(entrynode, "nr_limit");
-			success_condition          = XMLHandler.getTagValue(entrynode, "success_condition");
+			success_condition = Const.NVL(XMLHandler.getTagValue(entrynode, "success_condition"),SUCCESS_IF_NO_ERRORS);
 		      
 		}
 		catch(KettleXMLException xe)
@@ -299,7 +300,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	      	port          = rep.getJobEntryAttributeString(id_jobentry, "port");
 			serverName          = rep.getJobEntryAttributeString(id_jobentry, "servername");
 			userName            = rep.getJobEntryAttributeString(id_jobentry, "username");
-			password            = rep.getJobEntryAttributeString(id_jobentry, "password");
+			password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "password") );
 			ftpDirectory        = rep.getJobEntryAttributeString(id_jobentry, "ftpdirectory");
 			targetDirectory     = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory");
 			wildcard            = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
@@ -352,7 +353,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			    	ifFileExists=ifFileExistsSkip;
 		    }
 		    nr_limit  = rep.getJobEntryAttributeString(id_jobentry, "nr_limit");
-			success_condition  = rep.getJobEntryAttributeString(id_jobentry, "success_condition");
+			success_condition  = Const.NVL(rep.getJobEntryAttributeString(id_jobentry, "success_condition"), SUCCESS_IF_NO_ERRORS);
 			
 		}
 		catch(KettleException dbe)
@@ -368,7 +369,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "port",      port);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "username",        userName);
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "password",        password);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables(password));
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "ftpdirectory",    ftpDirectory);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "targetdirectory", targetDirectory);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard",        wildcard);
