@@ -248,7 +248,8 @@ public class MergeJoin extends BaseStep implements StepInterface
             	{
             		for (Object[] two : data.twos)
             		{
-            			Object[] combi = RowDataUtil.addRowData(one, data.oneMeta.size(), two);
+            			Object[] oneBig = RowDataUtil.createResizedCopy(one, data.oneMeta.size() + data.twoMeta.size());
+            			Object[] combi = RowDataUtil.addRowData(oneBig, data.oneMeta.size(), two);
             			putRow(data.outputRowMeta, combi);
             		}
             	}
