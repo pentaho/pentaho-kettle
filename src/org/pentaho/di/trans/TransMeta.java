@@ -2730,7 +2730,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         Document doc=null;
         try
         {
-            doc = XMLHandler.loadXMLFile(KettleVFS.getFileObject(fname));
+    		doc = XMLHandler.loadXMLFile(KettleVFS.getFileObject(fname));
         }
         catch (IOException e)
         {
@@ -2817,7 +2817,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param parentVariableSpace the parent variable space to use during TransMeta construction
      * @throws KettleXMLException
      */
-    public void loadXML(Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException
+    public synchronized void loadXML(Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException
     {
         Props props = null;
         if (Props.isInitialized())

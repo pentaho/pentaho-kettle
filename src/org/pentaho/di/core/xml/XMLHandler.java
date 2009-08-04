@@ -593,7 +593,7 @@ public class XMLHandler
      * @param filename The filename to load into a document
      * @return the Document if all went well, null if an error occured!
      */
-    public static final Document loadXMLFile(FileObject fileObject) throws KettleXMLException
+    public synchronized static final Document loadXMLFile(FileObject fileObject) throws KettleXMLException
     {
         DocumentBuilderFactory dbf;
         DocumentBuilder db;
