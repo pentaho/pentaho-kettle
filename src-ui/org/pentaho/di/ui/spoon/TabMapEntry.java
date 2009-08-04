@@ -33,6 +33,8 @@ public class TabMapEntry
     private TabItemInterface object;
     
     private ObjectType objectType;
+    
+    private boolean showingLocation;
 
     /**
      * @param tabName
@@ -54,11 +56,14 @@ public class TabMapEntry
     public boolean equals(Object obj) {
     	TabMapEntry entry = (TabMapEntry) obj;
     
-    	boolean sameFile = (filename==null && entry.filename==null) || (filename!=null && filename.equals(entry.versionLabel));
+    	boolean sameType = objectType.equals(entry.objectType); 
+    	boolean sameName = objectName.equals(entry.objectName);
+    	boolean sameFile = (filename==null && entry.filename==null) || (filename!=null && filename.equals(entry.filename));
     	boolean sameVersion = (versionLabel==null && entry.versionLabel==null) || (versionLabel!=null && versionLabel.equals(entry.versionLabel)) ;
-    	boolean sameDirectory = (repositoryDirectory==null && entry.repositoryDirectory==null) || 
+    	boolean sameDirectory = (repositoryDirectory==null && entry.repositoryDirectory==null) ||  
     		(repositoryDirectory!=null && entry.repositoryDirectory!=null && repositoryDirectory.getPath().equals(entry.repositoryDirectory.getPath()) );
-    	return objectType.equals(entry.objectType) && objectName.equals(entry.objectName) && sameVersion && sameFile && sameDirectory;
+    	
+    	return  sameType && sameName && sameVersion && sameFile && sameDirectory;
     }
 
     /**
@@ -160,4 +165,20 @@ public class TabMapEntry
 	public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
 		this.repositoryDirectory = repositoryDirectory;
 	}
+
+	/**
+	 * @return the showingLocation
+	 */
+	public boolean isShowingLocation() {
+		return showingLocation;
+	}
+
+	/**
+	 * @param showingLocation the showingLocation to set
+	 */
+	public void setShowingLocation(boolean showingLocation) {
+		this.showingLocation = showingLocation;
+	}
+
+
 }

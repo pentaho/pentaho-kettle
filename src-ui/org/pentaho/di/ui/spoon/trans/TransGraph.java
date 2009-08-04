@@ -2546,7 +2546,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
    */
   public int showChangedWarning() {
     MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING);
-    mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptSave.Message", spoon.makeTransGraphTabName(transMeta)));//"This model has changed.  Do you want to save it?"
+    mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptSave.Message", spoon.makeTabName(transMeta, true)));//"This model has changed.  Do you want to save it?"
     mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.PromptSave.Title"));
     return mb.open();
   }
@@ -2620,7 +2620,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         spoon.sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
       } catch (KettleException e) {
         new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title"), 
-        		BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTransGraphTabName(transMeta)), e);
+        		BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTabName(transMeta, true)), e);
       }
       
       // If we added properties, add them to the variables too, so that they appear in the CTRL-SPACE variable completion.

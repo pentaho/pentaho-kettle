@@ -73,8 +73,8 @@ public class RepositorySecurityUI {
 	 */
 	public static boolean showVersionCommentMandatoryDialog(Shell shell) {
 		MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_ERROR);
-		box.setText("Version comments are mandatory for this repository."+Const.CR+"Do you want to enter a comment?");
-		box.setMessage("Version comments are mandatory!");
+		box.setMessage("Version comments are mandatory for this repository."+Const.CR+"Do you want to enter a comment?");
+		box.setText("Version comments are mandatory!");
 		return box.open() == SWT.YES;
 	}
 

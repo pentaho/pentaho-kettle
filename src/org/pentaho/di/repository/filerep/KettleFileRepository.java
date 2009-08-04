@@ -313,9 +313,6 @@ public class KettleFileRepository implements Repository {
 		}
 	}
 
-
-	public ObjectId findStepAttributeID(ObjectId id_step, int nr, String code) throws KettleException { return null; }
-
 	public ObjectId getClusterID(String name) throws KettleException {
 		// The ID is the filename relative to the base directory, including the file extension
 		//

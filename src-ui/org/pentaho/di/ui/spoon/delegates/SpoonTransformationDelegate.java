@@ -62,7 +62,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 	 * TransMeta object. If the transformation has no name it will be mapped
 	 * under a number [1], [2] etc.
 	 */
-	private Map<String, TransMeta> transformationMap;
+	private List<TransMeta> transformationMap;
 	
 	/**
 	 * Remember the debugging configuration per transformation
@@ -77,7 +77,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 	public SpoonTransformationDelegate(Spoon spoon)
 	{
 		super(spoon);
-		transformationMap = new Hashtable<String, TransMeta>();
+		transformationMap = new ArrayList<TransMeta>();
 		transDebugMetaMap = new Hashtable<TransMeta, TransDebugMeta>();
 		transPreviewMetaMap = new Hashtable<TransMeta, TransDebugMeta>();
 	}
@@ -85,60 +85,28 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 	/**
 	 * Add a transformation to the
 	 * 
-	 * @param transMeta
-	 *            the transformation to add to the map
-	 * @return the key used to store the transformation in the map
-	 */
-	public String addTransformation(TransMeta transMeta)
+	 * @param transMeta the transformation to add to the map
+	 * @return true if the transformation was added, false if it couldn't be added (already loaded)  
+	 **/
+	public boolean addTransformation(TransMeta transMeta)
 	{
-		String key = spoon.delegates.tabs.makeTransGraphTabName(transMeta);
-
-		TransMeta xform = (TransMeta) transformationMap.get(key);
-		if (xform == null)
+		int index = transformationMap.indexOf(transMeta);
+		if (index<0)
 		{
-			transformationMap.put(key, transMeta);
+			transformationMap.add(transMeta);
+			return true;
 		} else
 		{
-			// found a transformation tab that has the same name, is it the same
-			// as the one we want to load, if not warn the user of the duplicate
-			// name
-			// this check may produce false negatives, i.e., references that are
-			// deemed
-			// different when they in fact refer to the same entry. For example,
-			// one of
-			// the transforms may use a variable reference or an alternative but
-			// equivalent5
-			boolean same = false;
-			if (transMeta.isRepReference() && xform.isRepReference())
-			{
-				// a repository value, check directory
-				same = transMeta.getRepositoryDirectory().getPath().equals(xform.getRepositoryDirectory().getPath());
-			} else if (transMeta.isFileReference() && xform.isFileReference())
-			{
-				// a file system entry, check file path
-				same = transMeta.getFilename().equals(xform.getFilename());
-			}
-
-			if (!same)
-			{
-				ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK
-						| SWT.ICON_INFORMATION, BaseMessages.getString(PKG, "Spoon.Dialog.TransAlreadyLoaded.Title"),
-						"'" + key + "'" + Const.CR + Const.CR
-								+ BaseMessages.getString(PKG, "Spoon.Dialog.TransAlreadyLoaded.Message"));
-				dialog.setTimeOut(6);
-				dialog.open();
-				/*
-				 * MessageBox mb = new MessageBox(shell, SWT.OK |
-				 * SWT.ICON_INFORMATION);
-				 * mb.setMessage("'"+key+"'"+Const.CR+Const.CR+BaseMessages.getString(PKG, "Spoon.Dialog.TransAlreadyLoaded.Message")); //
-				 * Transformation is already loaded
-				 * mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.TransAlreadyLoaded.Title")); //
-				 * Sorry! mb.open();
-				 */
-			}
+			ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK
+					| SWT.ICON_INFORMATION, BaseMessages.getString(PKG, "Spoon.Dialog.TransAlreadyLoaded.Title"), 
+					"'" + transMeta.toString() + "'" + Const.CR + 
+					Const.CR + 
+					BaseMessages.getString(PKG, "Spoon.Dialog.TransAlreadyLoaded.Message"));
+			dialog.setTimeOut(6);
+			dialog.open();
+			
+			return false;
 		}
-
-		return key;
 	}
 
 	/**
@@ -148,24 +116,20 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 	 */
 	public synchronized void closeTransformation(TransMeta transMeta)
 	{
-		String tabName = spoon.delegates.tabs.makeTransGraphTabName(transMeta);
-
 		// Close the associated tabs...
-		TabItem graphTab = spoon.delegates.tabs.findTabItem(tabName, ObjectType.TRANSFORMATION_GRAPH);
-		if (graphTab != null)
-		{
-			spoon.delegates.tabs.removeTab(graphTab);
+		//
+		TabMapEntry entry = spoon.delegates.tabs.findTabMapEntry(transMeta);
+		if (entry!=null) {
+			spoon.delegates.tabs.removeTab(entry);
 		}
 		
 		// Also remove it from the item from the transformationMap
 		// Otherwise it keeps showing up in the objects tree
 		// Look for the transformation, not the key (name might have changed)
 		//
-		List<String> keys = new ArrayList<String>(transformationMap.keySet());
-		for (String key : keys) {
-			if (transformationMap.get(key).equals(transMeta)) {
-				transformationMap.remove(key);
-			}
+		int index = transformationMap.indexOf(transMeta);
+		if (index>=0) {
+			transformationMap.remove(index);
 		}
 		
 		spoon.refreshTree();
@@ -173,20 +137,45 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 
 	public void addTransGraph(TransMeta transMeta)
 	{
-		String key = addTransformation(transMeta);
-		if (key != null)
+		boolean added = addTransformation(transMeta);
+		if (added)
 		{
-			// See if there already is a tab for this graph
+			// See if there already is a tab for this graph with the short default name.
+			// If there is, set that one to show the location as well.
+			// If not, simply add it without
 			// If no, add it
 			// If yes, select that tab
 			//
-			String tabName = spoon.delegates.tabs.makeTransGraphTabName(transMeta);
-			TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName, ObjectType.TRANSFORMATION_GRAPH);
-			if (tabItem == null)
-			{
+			boolean showLocation = false;
+			boolean addTab = true;
+			String tabName = spoon.delegates.tabs.makeTabName(transMeta, showLocation);
+			TabMapEntry tabEntry = spoon.delegates.tabs.findTabMapEntry(tabName, ObjectType.TRANSFORMATION_GRAPH);
+			if (tabEntry!=null) {
+				// We change the already loaded transformation to also show the location.
+				//
+				showLocation=true;
+
+				// Try again, including the location of the object...
+				//
+				tabName = spoon.delegates.tabs.makeTabName(transMeta, showLocation);
+				TabMapEntry exactSameEntry = spoon.delegates.tabs.findTabMapEntry(tabName, ObjectType.TRANSFORMATION_GRAPH);
+				if (exactSameEntry != null) {
+					// Already loaded, simply select the tab item in question...
+					//
+					addTab = false;
+				} else {
+					// We might need to rename the tab of the entry already loaded!
+					//
+					tabEntry.setShowingLocation(true);
+					String newTabName = spoon.delegates.tabs.makeTabName(tabEntry.getObject().getMeta(), showLocation);
+					tabEntry.getTabItem().setText(newTabName);
+				}
+			}
+			
+			if (addTab) {
 				TransGraph transGraph = new TransGraph(spoon.tabfolder.getSwtTabset(), spoon, transMeta);
-				tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
-				String toolTipText = BaseMessages.getString(PKG, "Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTransGraphTabName(transMeta));
+				TabItem tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
+				String toolTipText = BaseMessages.getString(PKG, "Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTabName(transMeta, showLocation));
 				if (!Const.isEmpty(transMeta.getFilename())) toolTipText+=Const.CR+Const.CR+transMeta.getFilename();
 				tabItem.setToolTipText(toolTipText);
 				tabItem.setImage(GUIResource.getInstance().getImageTransGraph());
@@ -200,9 +189,14 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				}
 
 				String versionLabel = transMeta.getObjectVersion() == null ? null : transMeta.getObjectVersion().getName();
-				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, transMeta.getFilename(), transMeta.getName(), transMeta.getRepositoryDirectory(), versionLabel, transGraph, ObjectType.TRANSFORMATION_GRAPH));
+				
+				tabEntry = new TabMapEntry(tabItem, transMeta.getFilename(), transMeta.getName(), transMeta.getRepositoryDirectory(), versionLabel, transGraph, ObjectType.TRANSFORMATION_GRAPH);
+				tabEntry.setShowingLocation(showLocation);
+				
+				spoon.delegates.tabs.addTab(tabEntry);				
 			}
-			int idx = spoon.tabfolder.indexOf(tabItem);
+
+			int idx = spoon.tabfolder.indexOf(tabEntry.getTabItem());
 
 			// keep the focus on the graph
 			spoon.tabfolder.setSelected(idx);
@@ -251,28 +245,31 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 
 	public List<TransMeta> getTransformationList()
 	{
-		return new ArrayList<TransMeta>(transformationMap.values());
+		return transformationMap;
 	}
 
-	public TransMeta getTransformation(String tabItemText)
+	public TransMeta getTransformation(String name)
 	{
-		return transformationMap.get(tabItemText);
+		TabMapEntry entry = spoon.delegates.tabs.findTabMapEntry(name, ObjectType.TRANSFORMATION_GRAPH);
+		if (entry!=null) {
+			return (TransMeta) entry.getObject().getManagedObject();
+		}
+		// Try again, TODO: remove part below
+		//
+		for (TransMeta xform : transformationMap) {
+			if (name!=null && name.equals(xform.getName())) return xform;
+		}
+		return null;
 	}
 
-	public void addTransformation(String key, TransMeta entry)
+	public void removeTransformation(TransMeta transMeta)
 	{
-		transformationMap.put(key, entry);
-	}
-
-	public void removeTransformation(String key)
-	{
-		transformationMap.remove(key);
+		transformationMap.remove(transMeta);
 	}
 
 	public TransMeta[] getLoadedTransformations()
 	{
-		List<TransMeta> list = new ArrayList<TransMeta>(transformationMap.values());
-		return list.toArray(new TransMeta[list.size()]);
+		return transformationMap.toArray(new TransMeta[transformationMap.size()]);
 	}
 
 	public TransGraph findTransGraphOfTransformation(TransMeta transMeta)

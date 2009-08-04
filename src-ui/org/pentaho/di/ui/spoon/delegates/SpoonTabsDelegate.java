@@ -128,39 +128,19 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		
 		return close;
 	}
-
-	public void removeTab(TabItem tabItem )
+	
+	public void removeTab(TabMapEntry tabMapEntry )
 	{
-		for (TabMapEntry tabMapEntry : getTabs()) {
-			if (tabMapEntry.getTabItem().equals(tabItem)) {
+		for (TabMapEntry entry : getTabs()) {
+			if (tabMapEntry.equals(entry)) {
 				tabMap.remove(tabMapEntry);
-				break;
 			}
 		}
-		if (!tabItem.isDisposed()){
-		  tabItem.dispose();
+		if (!tabMapEntry.getTabItem().isDisposed()){
+		  tabMapEntry.getTabItem().dispose();
 		}
 	}
 	
-	public void removeTab(String tabText, ObjectType tabMapEntryType)
-	{
-	  TabItem tabItem = null;
-		for (TabMapEntry tabMapEntry : getTabs()) {
-			if (tabMapEntry.getObjectName().equals(tabText) && tabMapEntry.getObjectType()==tabMapEntryType) {
-        tabItem = tabMapEntry.getTabItem();
-				tabMap.remove(tabMapEntry);
-				break;
-			}
-		}
-
-		if(tabItem != null){
-	    if (!tabItem.isDisposed()){
-	      tabItem.dispose();
-	    }
-		}
-
-	}
-
 	public List<TabMapEntry> getTabs()
 	{
 		List<TabMapEntry> list = new ArrayList<TabMapEntry>();
@@ -203,16 +183,6 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		return meta;
 	}
 
-	public String makeLogTabName(TransMeta transMeta)
-	{
-		return BaseMessages.getString(PKG, "Spoon.Title.LogTransView", makeTransGraphTabName(transMeta));
-	}
-
-	public String makeHistoryTabName(TransMeta transMeta)
-	{
-		return BaseMessages.getString(PKG, "Spoon.Title.LogTransHistoryView", makeTransGraphTabName(transMeta));
-	}
-
 	public String makeSlaveTabName(SlaveServer slaveServer)
 	{
 		return "Slave server: " + slaveServer.getName();
@@ -235,18 +205,19 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			// If no, add it
 			// If yes, select that tab
 			//
-			TabItem tabItem = findTabItem(name, ObjectType.BROWSER);
-			if (tabItem == null)
+			TabMapEntry tabMapEntry = findTabMapEntry(name, ObjectType.BROWSER);
+			if (tabMapEntry == null)
 			{
 				CTabFolder cTabFolder = tabfolder.getSwtTabset();
 				SpoonBrowser browser = new SpoonBrowser(cTabFolder, spoon, urlString,isURL);
-				tabItem = new TabItem(tabfolder, name, name);
+				TabItem tabItem = new TabItem(tabfolder, name, name);
 				tabItem.setImage(GUIResource.getInstance().getImageLogoSmall());
 				tabItem.setControl(browser.getComposite());
 
-				tabMap.add(new TabMapEntry(tabItem, isURL ? urlString : null, name, null, null, browser, ObjectType.BROWSER));
+				tabMapEntry = new TabMapEntry(tabItem, isURL ? urlString : null, name, null, null, browser, ObjectType.BROWSER);
+				tabMap.add(tabMapEntry);
 			}
-			int idx = tabfolder.indexOf(tabItem);
+			int idx = tabfolder.indexOf(tabMapEntry.getTabItem());
 
 			// keep the focus on the graph
 			tabfolder.setSelected(idx);
@@ -272,7 +243,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		}
 	}
 
-	public TabItem findTabItem(String tabItemText, ObjectType objectType)
+	public TabMapEntry findTabMapEntry(String tabItemText, ObjectType objectType)
 	{
 		for (TabMapEntry entry : tabMap)
 		{
@@ -281,11 +252,27 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			if (objectType == entry.getObjectType()
 					&& entry.getTabItem().getText().equalsIgnoreCase(tabItemText))
 			{
-				return entry.getTabItem();
+				return entry;
+			}
+		}
+		return null;
+	}	
+	
+	public TabMapEntry findTabMapEntry(Object managedObject)
+	{
+		for (TabMapEntry entry : tabMap)
+		{
+			if (entry.getTabItem().isDisposed())
+				continue;
+			if (entry.getObject().getManagedObject().equals(managedObject))
+			{
+				return entry;
 			}
 		}
 		return null;
 	}
+	
+	
 
 	/**
 	 * Rename the tabs
@@ -302,31 +289,33 @@ public class SpoonTabsDelegate extends SpoonDelegate
 				continue;
 			}
 
-			TabItem before = entry.getTabItem();
+			// TabItem before = entry.getTabItem();
 			// PDI-1683: need to get the String here, otherwise using only the "before" instance below, the reference gets changed and result is always the same
-			String beforeText=before.getText();
+			// String beforeText=before.getText();
+			//
 			Object managedObject = entry.getObject().getManagedObject();
 			if (managedObject != null)
 			{
-
 				if (entry.getObject() instanceof TransGraph)
 				{
 					TransMeta transMeta = (TransMeta) managedObject;
-					entry.getTabItem().setText(makeTransGraphTabName(transMeta));
-					String toolTipText = BaseMessages.getString(PKG, "Spoon.TabTrans.Tooltip", makeTransGraphTabName(transMeta));
+					String tabText = makeTabName(transMeta, entry.isShowingLocation());
+					entry.getTabItem().setText(tabText);
+					String toolTipText = BaseMessages.getString(PKG, "Spoon.TabTrans.Tooltip", tabText);
 					if (Const.isWindows() && !Const.isEmpty(transMeta.getFilename())) toolTipText+=Const.CR+Const.CR+transMeta.getFilename();
 					entry.getTabItem().setToolTipText(toolTipText);
 				} 
 				else if (entry.getObject() instanceof JobGraph)
 				{
 					JobMeta jobMeta = (JobMeta) managedObject;
-					entry.getTabItem().setText(makeJobGraphTabName(jobMeta));
-					String toolTipText = BaseMessages.getString(PKG, "Spoon.TabJob.Tooltip", makeJobGraphTabName(jobMeta));
+					entry.getTabItem().setText(makeTabName(jobMeta, entry.isShowingLocation()));
+					String toolTipText = BaseMessages.getString(PKG, "Spoon.TabJob.Tooltip", makeTabName(jobMeta, entry.isShowingLocation()));
 					if (Const.isWindows() && !Const.isEmpty(jobMeta.getFilename())) toolTipText+=Const.CR+Const.CR+jobMeta.getFilename();
 					entry.getTabItem().setToolTipText(toolTipText);
 				}
 			}
 
+			/*
 			String after = entry.getTabItem().getText();
 
 			if (!beforeText.equals(after)) // PDI-1683, could be improved to rename all the time
@@ -346,6 +335,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 					spoon.delegates.jobs.addJob(after, (JobMeta) entry.getObject().getManagedObject());
 				}
 			}
+			*/
 		}
 		spoon.setShellText();
 	}
@@ -355,7 +345,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		tabMap.add(entry);
 	}
 
-	public String makeTransGraphTabName(TransMeta transMeta)
+	public String makeTabName(EngineMetaInterface transMeta, boolean showingDirectory)
 	{
 		if (Const.isEmpty(transMeta.getName()) && Const.isEmpty(transMeta.getFilename()))
 			return Spoon.STRING_TRANS_NO_NAME;
@@ -365,27 +355,23 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		{
 			transMeta.nameFromFilename();
 		}
+		
+		String name = "";
+		
+		if (showingDirectory) {
+			if (!Const.isEmpty(transMeta.getFilename())) {
+				// Regular file...
+				//
+				name += transMeta.getFilename()+" : ";
+			} else {
+				// Repository object...
+				//
+				name += transMeta.getRepositoryDirectory().getPath()+" : ";
+			}
+		}
 
-		String name = transMeta.getName();
+		name += transMeta.getName();
 		ObjectVersion version = transMeta.getObjectVersion();
-		if (version!=null) {
-			name+=":v"+version.getName();
-		}
-		return name;
-	}
-
-	public String makeJobGraphTabName(JobMeta jobMeta)
-	{
-		if (Const.isEmpty(jobMeta.getName()) && Const.isEmpty(jobMeta.getFilename()))
-			return Spoon.STRING_JOB_NO_NAME;
-
-		if (Const.isEmpty(jobMeta.getName()) || spoon.delegates.jobs.isDefaultJobName(jobMeta.getName()))
-		{
-			jobMeta.nameFromFilename();
-		}
-
-		String name = jobMeta.getName();
-		ObjectVersion version = jobMeta.getObjectVersion();
 		if (version!=null) {
 			name+=":v"+version.getName();
 		}

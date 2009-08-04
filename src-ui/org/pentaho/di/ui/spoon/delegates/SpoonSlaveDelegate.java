@@ -39,18 +39,19 @@ public class SpoonSlaveDelegate extends SpoonDelegate
 
 		// See if there is a SpoonSlave for this slaveServer...
 		String tabName = spoon.delegates.tabs.makeSlaveTabName(slaveServer);
-		TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName, ObjectType.SLAVE_SERVER);
-		if (tabItem == null)
+		TabMapEntry tabMapEntry = spoon.delegates.tabs.findTabMapEntry(tabName, ObjectType.SLAVE_SERVER);
+		if (tabMapEntry == null)
 		{
 			SpoonSlave spoonSlave = new SpoonSlave(tabfolder.getSwtTabset(), SWT.NONE, spoon, slaveServer);
-			tabItem = new TabItem(tabfolder, tabName, tabName);
+			TabItem tabItem = new TabItem(tabfolder, tabName, tabName);
 			tabItem.setToolTipText("Status of slave server : " + slaveServer.getName() + " : "
 					+ slaveServer.getServerAndPort());
 			tabItem.setControl(spoonSlave);
 
-			spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, null, tabName, null, null, spoonSlave, ObjectType.SLAVE_SERVER));
+			tabMapEntry = new TabMapEntry(tabItem, null, tabName, null, null, spoonSlave, ObjectType.SLAVE_SERVER);
+			spoon.delegates.tabs.addTab(tabMapEntry);
 		}
-		int idx = tabfolder.indexOf(tabItem);
+		int idx = tabfolder.indexOf(tabMapEntry.getTabItem());
 		tabfolder.setSelected(idx);
 	}
 

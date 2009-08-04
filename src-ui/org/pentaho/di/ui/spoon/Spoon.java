@@ -20,7 +20,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -747,8 +746,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	public void closeSpoonBrowser() {
-		delegates.tabs.removeTab(STRING_WELCOME_TAB_NAME, ObjectType.BROWSER);
-		TabItem browserTab = delegates.tabs.findTabItem(STRING_WELCOME_TAB_NAME, ObjectType.BROWSER);
+		TabMapEntry browserTab = delegates.tabs.findTabMapEntry(STRING_WELCOME_TAB_NAME, ObjectType.BROWSER);
 
 		if (browserTab != null) {
 			delegates.tabs.removeTab(browserTab);
@@ -1905,29 +1903,32 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 */
 	public void showSelection() {
 		TreeSelection[] objects = getTreeObjects(selectionTree);
-		if (objects.length != 1)
-			return; // not yet supported, we can do this later when the OSX bug
-		// goes away
+		if (objects.length != 1) {
+			return; // not yet supported, we can do this later when the OSX bug goes away
+		}
 
 		TreeSelection object = objects[0];
 
 		final Object selection = object.getSelection();
 		final Object parent = object.getParent();
-
+		
 		TransMeta transMeta = null;
-		if (selection instanceof TransMeta)
+		if (selection instanceof TransMeta) {
 			transMeta = (TransMeta) selection;
-		if (parent instanceof TransMeta)
+		}
+		if (parent instanceof TransMeta) {
 			transMeta = (TransMeta) parent;
+		}
+		
 		if (transMeta != null) {
-			// Search the corresponding TransGraph tab
-
-			TabItem tabItem = delegates.tabs.findTabItem(makeTransGraphTabName(transMeta), ObjectType.TRANSFORMATION_GRAPH);
-			if (tabItem != null) {
+			
+			TabMapEntry entry = delegates.tabs.findTabMapEntry(transMeta);
+			if (entry!=null) {
 				int current = tabfolder.getSelectedIndex();
-				int desired = tabfolder.indexOf(tabItem);
-				if (current != desired)
+				int desired = tabfolder.indexOf(entry.getTabItem());
+				if (current != desired) {
 					tabfolder.setSelected(desired);
+				}
 				transMeta.setInternalKettleVariables();
 				if (getCoreObjectsState() != STATE_CORE_OBJECTS_SPOON) {
 					// Switch the core objects in the lower left corner to the
@@ -1943,11 +1944,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		if (parent instanceof JobMeta)
 			jobMeta = (JobMeta) parent;
 		if (jobMeta != null) {
-			// Search the corresponding TransGraph tab
-			TabItem tabItem = delegates.tabs.findTabItem(delegates.tabs.makeJobGraphTabName(jobMeta), ObjectType.JOB_GRAPH);
-			if (tabItem != null) {
+			
+			TabMapEntry entry = delegates.tabs.findTabMapEntry(transMeta);
+			if (entry!=null) {
 				int current = tabfolder.getSelectedIndex();
-				int desired = tabfolder.indexOf(tabItem);
+				int desired = tabfolder.indexOf(entry.getTabItem());
 				if (current != desired)
 					tabfolder.setSelected(desired);
 				jobMeta.setInternalKettleVariables();
@@ -2855,7 +2856,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					SharedObjects sharedObjects = rep.readTransSharedObjects(transMeta);
 					sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
 				} catch (KettleException e) {
-					new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", makeTransGraphTabName(transMeta)), e);
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", makeTabName(transMeta, true)), e);
 				}
 
 				// Then we need to re-match the databases at save time...
@@ -3236,7 +3237,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		transMeta.setName(STRING_TRANSFORMATION + " " + nr);
 
 		// See if a transformation with the same name isn't already loaded...
-		while (findTransformation(delegates.tabs.makeTransGraphTabName(transMeta)) != null) {
+		//
+		while (findTransformation(delegates.tabs.makeTabName(transMeta, false)) != null) {
 			nr++;
 			transMeta.setName(STRING_TRANSFORMATION + " " + nr); // rename
 		}
@@ -3265,7 +3267,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				SharedObjects sharedObjects = rep != null ? rep.readJobMetaSharedObjects(jobMeta) : jobMeta.readSharedObjects();
 				sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
 			} catch (KettleException e) {
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", delegates.tabs.makeJobGraphTabName(jobMeta)), e);
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", delegates.tabs.makeTabName(jobMeta, true)), e);
 			}
 
 			int nr = 1;
@@ -3273,7 +3275,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 			// See if a transformation with the same name isn't already
 			// loaded...
-			while (findJob(delegates.tabs.makeJobGraphTabName(jobMeta)) != null) {
+			while (findJob(delegates.tabs.makeTabName(jobMeta, true)) != null) {
 				nr++;
 				jobMeta.setName(STRING_JOB + " " + nr); // rename
 			}
@@ -3416,7 +3418,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					if (mapEntry.getObject() instanceof TransGraph) {
 						TransMeta transMeta = (TransMeta) mapEntry.getObject().getManagedObject();
 						if (transMeta.hasChanged()) {
-							delegates.tabs.removeTab(mapEntry.getTabItem());
+							delegates.tabs.removeTab(mapEntry);
 						}
 					}
 					// A running transformation?
@@ -3425,7 +3427,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						TransGraph transGraph = (TransGraph) mapEntry.getObject();
 						if (transGraph.isRunning()) {
 							transGraph.stop();
-							delegates.tabs.removeTab(mapEntry.getTabItem());
+							delegates.tabs.removeTab(mapEntry);
 						}
 					}
 				}
@@ -3554,62 +3556,67 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 				boolean saved = false;
 				if (response == SWT.YES) {
-					shell.setCursor(cursor_hourglass);
-
-					// Keep info on who & when this transformation was
-					// created and or modified...
-					if (meta.getCreatedDate() == null) {
-						meta.setCreatedDate(new Date());
-						if (rep.getSecurityProvider().supportsUsers()) {
-							meta.setCreatedUser(rep.getUserInfo().getLogin());
+					try {
+						shell.setCursor(cursor_hourglass);
+	
+						// Keep info on who & when this transformation was
+						// created and or modified...
+						if (meta.getCreatedDate() == null) {
+							meta.setCreatedDate(new Date());
+							if (rep.getSecurityProvider().supportsUsers()) {
+								meta.setCreatedUser(rep.getUserInfo().getLogin());
+							}
 						}
-					}
-
-					// Keep info on who & when this transformation was
-					// changed...
-					meta.setModifiedDate(new Date());
-					if (rep.getSecurityProvider().supportsUsers()) {
-						meta.setModifiedUser(rep.getUserInfo().getLogin());
-					}
-
-					// Finally before saving, ask for a version comment (if
-					// applicable)
-					//
-					String versionComment = null;
-					boolean versionOk = false;
-					while (!versionOk) {
-						versionComment = RepositorySecurityUI.getVersionComment(shell, rep, "Modification of [" + meta.getName() + "]");
-						if (Const.isEmpty(versionComment) && rep.getSecurityProvider().isVersionCommentMandatory()) {
-							if (!RepositorySecurityUI.showVersionCommentMandatoryDialog(shell)) {
+	
+						// Keep info on who & when this transformation was
+						// changed...
+						meta.setModifiedDate(new Date());
+						if (rep.getSecurityProvider().supportsUsers()) {
+							meta.setModifiedUser(rep.getUserInfo().getLogin());
+						}
+	
+						// Finally before saving, ask for a version comment (if
+						// applicable)
+						//
+						String versionComment = null;
+						boolean versionOk = false;
+						while (!versionOk) {
+							versionComment = RepositorySecurityUI.getVersionComment(shell, rep, meta.getName());
+							if (Const.isEmpty(versionComment) && rep.getSecurityProvider().isVersionCommentMandatory()) {
+								if (!RepositorySecurityUI.showVersionCommentMandatoryDialog(shell)) {
+									return false; // no, I don't want to enter a version comment and yes, it's mandatory.
+								}
+							} else {
 								versionOk = true;
 							}
-						} else {
-							versionOk = true;
 						}
-					}
-
-					SaveProgressDialog tspd = new SaveProgressDialog(shell, rep, meta, versionComment);
-					if (tspd.open()) {
-						saved = true;
-						if (!props.getSaveConfirmation()) {
-							MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG, "Spoon.Message.Warning.SaveOK"), // "Save OK!"
-									null, BaseMessages.getString(PKG, "Spoon.Message.Warning.TransformationWasStored"),// "This transformation was stored in repository"
-									MessageDialog.QUESTION, new String[] { BaseMessages.getString(PKG, "Spoon.Message.Warning.OK") },// "OK!"
-									0, BaseMessages.getString(PKG, "Spoon.Message.Warning.NotShowThisMessage"),// "Don't show this message again."
-									props.getSaveConfirmation());
-							MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-							md.open();
-							props.setSaveConfirmation(md.getToggleState());
+	
+						if (versionOk) {
+							SaveProgressDialog tspd = new SaveProgressDialog(shell, rep, meta, versionComment);
+							if (tspd.open()) {
+								saved = true;
+								if (!props.getSaveConfirmation()) {
+									MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG, "Spoon.Message.Warning.SaveOK"), // "Save OK!"
+											null, BaseMessages.getString(PKG, "Spoon.Message.Warning.TransformationWasStored"),// "This transformation was stored in repository"
+											MessageDialog.QUESTION, new String[] { BaseMessages.getString(PKG, "Spoon.Message.Warning.OK") },// "OK!"
+											0, BaseMessages.getString(PKG, "Spoon.Message.Warning.NotShowThisMessage"),// "Don't show this message again."
+											props.getSaveConfirmation());
+									MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
+									md.open();
+									props.setSaveConfirmation(md.getToggleState());
+								}
+		
+								// Handle last opened files...
+								props.addLastFile(meta.getFileType(), meta.getName(), meta.getRepositoryDirectory().getPath(), true, getRepositoryName());
+								saveSettings();
+								addMenuLast();
+		
+								setShellText();
+							}
 						}
-
-						// Handle last opened files...
-						props.addLastFile(meta.getFileType(), meta.getName(), meta.getRepositoryDirectory().getPath(), true, getRepositoryName());
-						saveSettings();
-						addMenuLast();
-
-						setShellText();
+					} finally {
+						shell.setCursor(null);
 					}
-					shell.setCursor(null);
 				}
 				return saved;
 			}
@@ -4117,15 +4124,19 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		boolean showAll = activeTransMeta == null && activeJobMeta == null;
 
 		// get a list of transformations from the transformation map
+		//
+
+			/*
 		List<TransMeta> transformations = delegates.trans.getTransformationList();
 		Collections.sort(transformations);
 		TransMeta[] transMetas = transformations.toArray(new TransMeta[transformations.size()]);
-
+	
 		// get a list of jobs from the job map
 		List<JobMeta> jobs = delegates.jobs.getJobList();
 		Collections.sort(jobs);
 		JobMeta[] jobMetas = jobs.toArray(new JobMeta[jobs.size()]);
-
+			*/
+			
 		// Refresh the content of the tree for those transformations
 		//
 		// First remove the old ones.
@@ -4143,175 +4154,178 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				TreeMemory.getInstance().storeExpanded(STRING_SPOON_MAIN_TREE, tiTrans, true);
 			}
 
-			for (int t = 0; t < transMetas.length; t++) {
-				TransMeta transMeta = transMetas[t];
+			for (TabMapEntry entry : delegates.tabs.getTabs()) {
+				Object managedObject = entry.getObject().getManagedObject();
+				if (managedObject instanceof TransMeta) {
+					TransMeta transMeta = (TransMeta)managedObject;
 
-				if (!props.isOnlyActiveFileShownInTree() || showAll || (activeTransMeta != null && activeTransMeta.equals(transMeta))) {
-
-					// Add a tree item with the name of transformation
-					//
-					String name = delegates.tabs.makeTransGraphTabName(transMeta);
-					if (Const.isEmpty(name)) {
-						name = STRING_TRANS_NO_NAME;
-					}
-
-					TreeItem tiTransName = new TreeItem(tiTrans, SWT.NONE);
-					tiTransName.setText(name);
-					tiTransName.setImage(guiResource.getImageTransGraph());
-
-					// Set expanded if this is the only transformation shown.
-					if (props.isOnlyActiveFileShownInTree()) {
-						TreeMemory.getInstance().storeExpanded(STRING_SPOON_MAIN_TREE, tiTransName, true);
-					}
-
-					// /////////////////////////////////////////////////////
-					//
-					// Now add the database connections
-					//
-					TreeItem tiDbTitle = new TreeItem(tiTransName, SWT.NONE);
-					tiDbTitle.setText(STRING_CONNECTIONS);
-					tiDbTitle.setImage(guiResource.getImageBol());
-
-					String[] dbNames = new String[transMeta.nrDatabases()];
-					for (int i = 0; i < dbNames.length; i++)
-						dbNames[i] = transMeta.getDatabase(i).getName();
-					Arrays.sort(dbNames, new Comparator<String>() {
-						public int compare(String o1, String o2) {
-							return o1.compareToIgnoreCase(o2);
+					if (!props.isOnlyActiveFileShownInTree() || showAll || (activeTransMeta != null && activeTransMeta.equals(transMeta))) {
+	
+						// Add a tree item with the name of transformation
+						//
+						String name = delegates.tabs.makeTabName(transMeta, entry.isShowingLocation());
+						if (Const.isEmpty(name)) {
+							name = STRING_TRANS_NO_NAME;
 						}
-					});
-
-					// Draw the connections themselves below it.
-					for (int i = 0; i < dbNames.length; i++) {
-						DatabaseMeta databaseMeta = transMeta.findDatabase(dbNames[i]);
-
-						if (!filterMatch(dbNames[i]))
-							continue;
-
-						TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
-						tiDb.setText(databaseMeta.getName());
-						if (databaseMeta.isShared())
-							tiDb.setFont(guiResource.getFontBold());
-						tiDb.setImage(guiResource.getImageConnection());
-					}
-
-					// /////////////////////////////////////////////////////
-					//
-					// The steps
-					//
-					TreeItem tiStepTitle = new TreeItem(tiTransName, SWT.NONE);
-					tiStepTitle.setText(STRING_STEPS);
-					tiStepTitle.setImage(guiResource.getImageBol());
-
-					// Put the steps below it.
-					for (int i = 0; i < transMeta.nrSteps(); i++) {
-						StepMeta stepMeta = transMeta.getStep(i);
-						StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(stepMeta.getStepID());
-
-						if (!filterMatch(stepMeta.getName()) && !filterMatch(stepMeta.getDescription()))
-							continue;
-
-						TreeItem tiStep = new TreeItem(tiStepTitle, SWT.NONE);
-						tiStep.setText(stepMeta.getName());
-						if (stepMeta.isShared())
-							tiStep.setFont(guiResource.getFontBold());
-						if (!stepMeta.isDrawn())
-							tiStep.setForeground(guiResource.getColorDarkGray());
-						Image stepIcon = guiResource.getImagesStepsSmall().get(stepPlugin.getID()[0]);
-						if (stepIcon == null)
-							stepIcon = guiResource.getImageBol();
-						tiStep.setImage(stepIcon);
-					}
-
-					// /////////////////////////////////////////////////////
-					//
-					// The hops
-					//
-					TreeItem tiHopTitle = new TreeItem(tiTransName, SWT.NONE);
-					tiHopTitle.setText(STRING_HOPS);
-					tiHopTitle.setImage(guiResource.getImageBol());
-
-					// Put the steps below it.
-					for (int i = 0; i < transMeta.nrTransHops(); i++) {
-						TransHopMeta hopMeta = transMeta.getTransHop(i);
-
-						if (!filterMatch(hopMeta.toString()))
-							continue;
-
-						TreeItem tiHop = new TreeItem(tiHopTitle, SWT.NONE);
-						tiHop.setText(hopMeta.toString());
-						if (hopMeta.isEnabled())
-							tiHop.setImage(guiResource.getImageHop());
-						else
-							tiHop.setImage(guiResource.getImageDisabledHop());
-					}
-
-					// /////////////////////////////////////////////////////
-					//
-					// The partitions
-					//
-					TreeItem tiPartitionTitle = new TreeItem(tiTransName, SWT.NONE);
-					tiPartitionTitle.setText(STRING_PARTITIONS);
-					tiPartitionTitle.setImage(guiResource.getImageBol());
-
-					// Put the steps below it.
-					for (int i = 0; i < transMeta.getPartitionSchemas().size(); i++) {
-						PartitionSchema partitionSchema = transMeta.getPartitionSchemas().get(i);
-						if (!filterMatch(partitionSchema.getName()))
-							continue;
-						TreeItem tiPartition = new TreeItem(tiPartitionTitle, SWT.NONE);
-						tiPartition.setText(partitionSchema.getName());
-						tiPartition.setImage(guiResource.getImageFolderConnections());
-						if (partitionSchema.isShared())
-							tiPartition.setFont(guiResource.getFontBold());
-					}
-
-					// /////////////////////////////////////////////////////
-					//
-					// The slaves
-					//
-					TreeItem tiSlaveTitle = new TreeItem(tiTransName, SWT.NONE);
-					tiSlaveTitle.setText(STRING_SLAVES);
-					tiSlaveTitle.setImage(guiResource.getImageBol());
-
-					// Put the slaves below it.
-					//
-					String[] slaveNames = transMeta.getSlaveServerNames();
-					Arrays.sort(slaveNames, new Comparator<String>() {
-						public int compare(String o1, String o2) {
-							return o1.compareToIgnoreCase(o2);
+	
+						TreeItem tiTransName = new TreeItem(tiTrans, SWT.NONE);
+						tiTransName.setText(name);
+						tiTransName.setImage(guiResource.getImageTransGraph());
+	
+						// Set expanded if this is the only transformation shown.
+						if (props.isOnlyActiveFileShownInTree()) {
+							TreeMemory.getInstance().storeExpanded(STRING_SPOON_MAIN_TREE, tiTransName, true);
 						}
-					});
-
-					for (int i = 0; i < slaveNames.length; i++) {
-						SlaveServer slaveServer = transMeta.findSlaveServer(slaveNames[i]);
-						if (!filterMatch(slaveServer.getName()))
-							continue;
-						TreeItem tiSlave = new TreeItem(tiSlaveTitle, SWT.NONE);
-						tiSlave.setText(slaveServer.getName());
-						tiSlave.setImage(guiResource.getImageSlave());
-						if (slaveServer.isShared())
-							tiSlave.setFont(guiResource.getFontBold());
-					}
-
-					// /////////////////////////////////////////////////////
-					//
-					// The clusters
-					//
-					TreeItem tiClusterTitle = new TreeItem(tiTransName, SWT.NONE);
-					tiClusterTitle.setText(STRING_CLUSTERS);
-					tiClusterTitle.setImage(guiResource.getImageBol());
-
-					// Put the steps below it.
-					for (int i = 0; i < transMeta.getClusterSchemas().size(); i++) {
-						ClusterSchema clusterSchema = transMeta.getClusterSchemas().get(i);
-						if (!filterMatch(clusterSchema.getName()))
-							continue;
-						TreeItem tiCluster = new TreeItem(tiClusterTitle, SWT.NONE);
-						tiCluster.setText(clusterSchema.toString());
-						tiCluster.setImage(guiResource.getImageCluster());
-						if (clusterSchema.isShared())
-							tiCluster.setFont(guiResource.getFontBold());
+	
+						// /////////////////////////////////////////////////////
+						//
+						// Now add the database connections
+						//
+						TreeItem tiDbTitle = new TreeItem(tiTransName, SWT.NONE);
+						tiDbTitle.setText(STRING_CONNECTIONS);
+						tiDbTitle.setImage(guiResource.getImageBol());
+	
+						String[] dbNames = new String[transMeta.nrDatabases()];
+						for (int i = 0; i < dbNames.length; i++)
+							dbNames[i] = transMeta.getDatabase(i).getName();
+						Arrays.sort(dbNames, new Comparator<String>() {
+							public int compare(String o1, String o2) {
+								return o1.compareToIgnoreCase(o2);
+							}
+						});
+	
+						// Draw the connections themselves below it.
+						for (int i = 0; i < dbNames.length; i++) {
+							DatabaseMeta databaseMeta = transMeta.findDatabase(dbNames[i]);
+	
+							if (!filterMatch(dbNames[i]))
+								continue;
+	
+							TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
+							tiDb.setText(databaseMeta.getName());
+							if (databaseMeta.isShared())
+								tiDb.setFont(guiResource.getFontBold());
+							tiDb.setImage(guiResource.getImageConnection());
+						}
+	
+						// /////////////////////////////////////////////////////
+						//
+						// The steps
+						//
+						TreeItem tiStepTitle = new TreeItem(tiTransName, SWT.NONE);
+						tiStepTitle.setText(STRING_STEPS);
+						tiStepTitle.setImage(guiResource.getImageBol());
+	
+						// Put the steps below it.
+						for (int i = 0; i < transMeta.nrSteps(); i++) {
+							StepMeta stepMeta = transMeta.getStep(i);
+							StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(stepMeta.getStepID());
+	
+							if (!filterMatch(stepMeta.getName()) && !filterMatch(stepMeta.getDescription()))
+								continue;
+	
+							TreeItem tiStep = new TreeItem(tiStepTitle, SWT.NONE);
+							tiStep.setText(stepMeta.getName());
+							if (stepMeta.isShared())
+								tiStep.setFont(guiResource.getFontBold());
+							if (!stepMeta.isDrawn())
+								tiStep.setForeground(guiResource.getColorDarkGray());
+							Image stepIcon = guiResource.getImagesStepsSmall().get(stepPlugin.getID()[0]);
+							if (stepIcon == null)
+								stepIcon = guiResource.getImageBol();
+							tiStep.setImage(stepIcon);
+						}
+	
+						// /////////////////////////////////////////////////////
+						//
+						// The hops
+						//
+						TreeItem tiHopTitle = new TreeItem(tiTransName, SWT.NONE);
+						tiHopTitle.setText(STRING_HOPS);
+						tiHopTitle.setImage(guiResource.getImageBol());
+	
+						// Put the steps below it.
+						for (int i = 0; i < transMeta.nrTransHops(); i++) {
+							TransHopMeta hopMeta = transMeta.getTransHop(i);
+	
+							if (!filterMatch(hopMeta.toString()))
+								continue;
+	
+							TreeItem tiHop = new TreeItem(tiHopTitle, SWT.NONE);
+							tiHop.setText(hopMeta.toString());
+							if (hopMeta.isEnabled())
+								tiHop.setImage(guiResource.getImageHop());
+							else
+								tiHop.setImage(guiResource.getImageDisabledHop());
+						}
+	
+						// /////////////////////////////////////////////////////
+						//
+						// The partitions
+						//
+						TreeItem tiPartitionTitle = new TreeItem(tiTransName, SWT.NONE);
+						tiPartitionTitle.setText(STRING_PARTITIONS);
+						tiPartitionTitle.setImage(guiResource.getImageBol());
+	
+						// Put the steps below it.
+						for (int i = 0; i < transMeta.getPartitionSchemas().size(); i++) {
+							PartitionSchema partitionSchema = transMeta.getPartitionSchemas().get(i);
+							if (!filterMatch(partitionSchema.getName()))
+								continue;
+							TreeItem tiPartition = new TreeItem(tiPartitionTitle, SWT.NONE);
+							tiPartition.setText(partitionSchema.getName());
+							tiPartition.setImage(guiResource.getImageFolderConnections());
+							if (partitionSchema.isShared())
+								tiPartition.setFont(guiResource.getFontBold());
+						}
+	
+						// /////////////////////////////////////////////////////
+						//
+						// The slaves
+						//
+						TreeItem tiSlaveTitle = new TreeItem(tiTransName, SWT.NONE);
+						tiSlaveTitle.setText(STRING_SLAVES);
+						tiSlaveTitle.setImage(guiResource.getImageBol());
+	
+						// Put the slaves below it.
+						//
+						String[] slaveNames = transMeta.getSlaveServerNames();
+						Arrays.sort(slaveNames, new Comparator<String>() {
+							public int compare(String o1, String o2) {
+								return o1.compareToIgnoreCase(o2);
+							}
+						});
+	
+						for (int i = 0; i < slaveNames.length; i++) {
+							SlaveServer slaveServer = transMeta.findSlaveServer(slaveNames[i]);
+							if (!filterMatch(slaveServer.getName()))
+								continue;
+							TreeItem tiSlave = new TreeItem(tiSlaveTitle, SWT.NONE);
+							tiSlave.setText(slaveServer.getName());
+							tiSlave.setImage(guiResource.getImageSlave());
+							if (slaveServer.isShared())
+								tiSlave.setFont(guiResource.getFontBold());
+						}
+	
+						// /////////////////////////////////////////////////////
+						//
+						// The clusters
+						//
+						TreeItem tiClusterTitle = new TreeItem(tiTransName, SWT.NONE);
+						tiClusterTitle.setText(STRING_CLUSTERS);
+						tiClusterTitle.setImage(guiResource.getImageBol());
+	
+						// Put the steps below it.
+						for (int i = 0; i < transMeta.getClusterSchemas().size(); i++) {
+							ClusterSchema clusterSchema = transMeta.getClusterSchemas().get(i);
+							if (!filterMatch(clusterSchema.getName()))
+								continue;
+							TreeItem tiCluster = new TreeItem(tiClusterTitle, SWT.NONE);
+							tiCluster.setText(clusterSchema.toString());
+							tiCluster.setImage(guiResource.getImageCluster());
+							if (clusterSchema.isShared())
+								tiCluster.setFont(guiResource.getFontBold());
+						}
 					}
 				}
 			}
@@ -4330,120 +4344,123 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 			// Now add the jobs
 			//
-			for (int t = 0; t < jobMetas.length; t++) {
-				JobMeta jobMeta = jobMetas[t];
+			for (TabMapEntry entry : delegates.tabs.getTabs()) {
+				Object managedObject = entry.getObject().getManagedObject();
+				if (managedObject instanceof JobMeta) {
+					JobMeta jobMeta = (JobMeta)managedObject;
 
-				if (!props.isOnlyActiveFileShownInTree() || showAll || (activeJobMeta != null && activeJobMeta.equals(jobMeta))) {
-					// Add a tree item with the name of job
-					//
-					String name = delegates.tabs.makeJobGraphTabName(jobMeta);
-					if (Const.isEmpty(name)) {
-						name = STRING_JOB_NO_NAME;
-					}
-					if (!filterMatch(name)) {
-						continue;
-					}
-
-					TreeItem tiJobName = new TreeItem(tiJobs, SWT.NONE);
-					tiJobName.setText(name);
-					tiJobName.setImage(guiResource.getImageJobGraph());
-
-					// Set expanded if this is the only job shown.
-					if (props.isOnlyActiveFileShownInTree()) {
-						TreeMemory.getInstance().storeExpanded(STRING_SPOON_MAIN_TREE, tiJobName, true);
-					}
-
-					// /////////////////////////////////////////////////////
-					//
-					// Now add the database connections
-					//
-					TreeItem tiDbTitle = new TreeItem(tiJobName, SWT.NONE);
-					tiDbTitle.setText(STRING_CONNECTIONS);
-					tiDbTitle.setImage(guiResource.getImageBol());
-
-					String[] dbNames = new String[jobMeta.nrDatabases()];
-					for (int i = 0; i < dbNames.length; i++)
-						dbNames[i] = jobMeta.getDatabase(i).getName();
-					Arrays.sort(dbNames, new Comparator<String>() {
-						public int compare(String o1, String o2) {
-							return o1.compareToIgnoreCase(o2);
+					if (!props.isOnlyActiveFileShownInTree() || showAll || (activeJobMeta != null && activeJobMeta.equals(jobMeta))) {
+						// Add a tree item with the name of job
+						//
+						String name = delegates.tabs.makeTabName(jobMeta, true);
+						if (Const.isEmpty(name)) {
+							name = STRING_JOB_NO_NAME;
 						}
-					});
-
-					// Draw the connections themselves below it.
-					for (int i = 0; i < dbNames.length; i++) {
-						DatabaseMeta databaseMeta = jobMeta.findDatabase(dbNames[i]);
-						if (!filterMatch(databaseMeta.getName()))
+						if (!filterMatch(name)) {
 							continue;
-						TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
-						tiDb.setText(databaseMeta.getName());
-						if (databaseMeta.isShared())
-							tiDb.setFont(guiResource.getFontBold());
-						tiDb.setImage(guiResource.getImageConnection());
-					}
-
-					// /////////////////////////////////////////////////////
-					//
-					// The job entries
-					//
-					TreeItem tiJobEntriesTitle = new TreeItem(tiJobName, SWT.NONE);
-					tiJobEntriesTitle.setText(STRING_JOB_ENTRIES);
-					tiJobEntriesTitle.setImage(guiResource.getImageBol());
-
-					// Put the job entries below it.
-					//
-					for (int i = 0; i < jobMeta.nrJobEntries(); i++) {
-						JobEntryCopy jobEntry = jobMeta.getJobEntry(i);
-
-						if (!filterMatch(jobEntry.getName()) && !filterMatch(jobEntry.getDescription()))
-							continue;
-
-						TreeItem tiJobEntry = ConstUI.findTreeItem(tiJobEntriesTitle, jobEntry.getName());
-						if (tiJobEntry != null)
-							continue; // only show it once
-
-						tiJobEntry = new TreeItem(tiJobEntriesTitle, SWT.NONE);
-						tiJobEntry.setText(jobEntry.getName());
-						// if (jobEntry.isShared())
-						// tiStep.setFont(guiResource.getFontBold()); TODO:
-						// allow job entries to be shared as well...
-						if (jobEntry.isStart()) {
-							tiJobEntry.setImage(GUIResource.getInstance().getImageStart());
-						} else if (jobEntry.isDummy()) {
-							tiJobEntry.setImage(GUIResource.getInstance().getImageDummy());
-						} else {
-							String key = jobEntry.getEntry().getTypeId();
-							Image image = GUIResource.getInstance().getImagesJobentriesSmall().get(key);
-							tiJobEntry.setImage(image);
 						}
-					}
-
-					// /////////////////////////////////////////////////////
-					//
-					// The slaves
-					//
-					TreeItem tiSlaveTitle = new TreeItem(tiJobName, SWT.NONE);
-					tiSlaveTitle.setText(STRING_SLAVES);
-					tiSlaveTitle.setImage(guiResource.getImageBol());
-
-					// Put the slaves below it.
-					//
-					String[] slaveNames = jobMeta.getSlaveServerNames();
-					Arrays.sort(slaveNames, new Comparator<String>() {
-						public int compare(String o1, String o2) {
-							return o1.compareToIgnoreCase(o2);
+	
+						TreeItem tiJobName = new TreeItem(tiJobs, SWT.NONE);
+						tiJobName.setText(name);
+						tiJobName.setImage(guiResource.getImageJobGraph());
+	
+						// Set expanded if this is the only job shown.
+						if (props.isOnlyActiveFileShownInTree()) {
+							TreeMemory.getInstance().storeExpanded(STRING_SPOON_MAIN_TREE, tiJobName, true);
 						}
-					});
-
-					for (int i = 0; i < slaveNames.length; i++) {
-						SlaveServer slaveServer = jobMeta.findSlaveServer(slaveNames[i]);
-						if (!filterMatch(slaveServer.getName()))
-							continue;
-						TreeItem tiSlave = new TreeItem(tiSlaveTitle, SWT.NONE);
-						tiSlave.setText(slaveServer.getName());
-						tiSlave.setImage(guiResource.getImageSlave());
-						if (slaveServer.isShared())
-							tiSlave.setFont(guiResource.getFontBold());
+	
+						// /////////////////////////////////////////////////////
+						//
+						// Now add the database connections
+						//
+						TreeItem tiDbTitle = new TreeItem(tiJobName, SWT.NONE);
+						tiDbTitle.setText(STRING_CONNECTIONS);
+						tiDbTitle.setImage(guiResource.getImageBol());
+	
+						String[] dbNames = new String[jobMeta.nrDatabases()];
+						for (int i = 0; i < dbNames.length; i++)
+							dbNames[i] = jobMeta.getDatabase(i).getName();
+						Arrays.sort(dbNames, new Comparator<String>() {
+							public int compare(String o1, String o2) {
+								return o1.compareToIgnoreCase(o2);
+							}
+						});
+	
+						// Draw the connections themselves below it.
+						for (int i = 0; i < dbNames.length; i++) {
+							DatabaseMeta databaseMeta = jobMeta.findDatabase(dbNames[i]);
+							if (!filterMatch(databaseMeta.getName()))
+								continue;
+							TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
+							tiDb.setText(databaseMeta.getName());
+							if (databaseMeta.isShared())
+								tiDb.setFont(guiResource.getFontBold());
+							tiDb.setImage(guiResource.getImageConnection());
+						}
+	
+						// /////////////////////////////////////////////////////
+						//
+						// The job entries
+						//
+						TreeItem tiJobEntriesTitle = new TreeItem(tiJobName, SWT.NONE);
+						tiJobEntriesTitle.setText(STRING_JOB_ENTRIES);
+						tiJobEntriesTitle.setImage(guiResource.getImageBol());
+	
+						// Put the job entries below it.
+						//
+						for (int i = 0; i < jobMeta.nrJobEntries(); i++) {
+							JobEntryCopy jobEntry = jobMeta.getJobEntry(i);
+	
+							if (!filterMatch(jobEntry.getName()) && !filterMatch(jobEntry.getDescription()))
+								continue;
+	
+							TreeItem tiJobEntry = ConstUI.findTreeItem(tiJobEntriesTitle, jobEntry.getName());
+							if (tiJobEntry != null)
+								continue; // only show it once
+	
+							tiJobEntry = new TreeItem(tiJobEntriesTitle, SWT.NONE);
+							tiJobEntry.setText(jobEntry.getName());
+							// if (jobEntry.isShared())
+							// tiStep.setFont(guiResource.getFontBold()); TODO:
+							// allow job entries to be shared as well...
+							if (jobEntry.isStart()) {
+								tiJobEntry.setImage(GUIResource.getInstance().getImageStart());
+							} else if (jobEntry.isDummy()) {
+								tiJobEntry.setImage(GUIResource.getInstance().getImageDummy());
+							} else {
+								String key = jobEntry.getEntry().getTypeId();
+								Image image = GUIResource.getInstance().getImagesJobentriesSmall().get(key);
+								tiJobEntry.setImage(image);
+							}
+						}
+	
+						// /////////////////////////////////////////////////////
+						//
+						// The slaves
+						//
+						TreeItem tiSlaveTitle = new TreeItem(tiJobName, SWT.NONE);
+						tiSlaveTitle.setText(STRING_SLAVES);
+						tiSlaveTitle.setImage(guiResource.getImageBol());
+	
+						// Put the slaves below it.
+						//
+						String[] slaveNames = jobMeta.getSlaveServerNames();
+						Arrays.sort(slaveNames, new Comparator<String>() {
+							public int compare(String o1, String o2) {
+								return o1.compareToIgnoreCase(o2);
+							}
+						});
+	
+						for (int i = 0; i < slaveNames.length; i++) {
+							SlaveServer slaveServer = jobMeta.findSlaveServer(slaveNames[i]);
+							if (!filterMatch(slaveServer.getName()))
+								continue;
+							TreeItem tiSlave = new TreeItem(tiSlaveTitle, SWT.NONE);
+							tiSlave.setText(slaveServer.getName());
+							tiSlave.setImage(guiResource.getImageSlave());
+							if (slaveServer.isShared())
+								tiSlave.setFont(guiResource.getFontBold());
+						}
 					}
 				}
 			}
@@ -6358,8 +6375,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		delegates.steps.delStep(transMeta, stepMeta);
 	}
 
-	public String makeTransGraphTabName(TransMeta transMeta) {
-		return delegates.tabs.makeTransGraphTabName(transMeta);
+	public String makeTabName(TransMeta transMeta, boolean showingLocation) {
+		return delegates.tabs.makeTabName(transMeta, showingLocation);
 	}
 
 	public void newConnection() {

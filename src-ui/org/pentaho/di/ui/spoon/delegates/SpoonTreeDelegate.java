@@ -32,13 +32,12 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.ui.core.ConstUI;
-import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TreeSelection;
 
@@ -90,7 +89,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 							object = new TreeSelection(path[1], StepPlugin.class);
 						}
 					}
-					if (path[0].equals(Spoon.STRING_TRANSFORMATIONS)) // Transformations title
+					if (path[0].equals(Spoon.STRING_TRANSFORMATIONS)) // Transformation title
 					{
 						object = new TreeSelection(path[1], spoon.delegates.trans.getTransformation(path[1]));
 					}
@@ -101,8 +100,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					break;
 
 				case 3: // ------complete-----
-					if (path[0].equals(Spoon.STRING_TRANSFORMATIONS)) // Transformations
-					// title
+					if (path[0].equals(Spoon.STRING_TRANSFORMATIONS)) // Transformations title
 					{
 						TransMeta transMeta = spoon.delegates.trans.getTransformation(path[1]);
 						if (path[2].equals(Spoon.STRING_CONNECTIONS))

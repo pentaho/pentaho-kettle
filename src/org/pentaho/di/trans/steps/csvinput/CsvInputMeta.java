@@ -666,4 +666,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		}
 	}
 	
+	public boolean supportsErrorHandling() {
+		return true;
+	}
+	
 }

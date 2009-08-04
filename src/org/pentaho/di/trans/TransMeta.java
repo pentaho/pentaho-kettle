@@ -318,7 +318,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         
         if (Const.isEmpty(t1.getName()) && !Const.isEmpty(t2.getName())) return -1;
         if (!Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName())) return  1;
-        if (Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName()))
+        if (Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName()) || t1.getName().equals(t2.getName()))
         {
             if (Const.isEmpty(t1.getFilename()) && !Const.isEmpty(t2.getFilename())) return -1;
             if (!Const.isEmpty(t1.getFilename()) && Const.isEmpty(t2.getFilename())) return  1;
@@ -4786,6 +4786,14 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public String toString()
     {
+        if (!Const.isEmpty(filename)) {
+        	if (Const.isEmpty(name)) {
+        		return filename;
+        	} else {
+        		return filename+" : "+name;
+        	}
+        }
+
         if (name != null) {
         	if (directory!=null) {
         		String path = directory.getPath();
@@ -4797,9 +4805,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         	} else {
         		return name;
         	}
+        } else {
+        	return TransMeta.class.getName();
         }
-        if (filename != null) return filename;
-        return TransMeta.class.getName();
     }
 
     /**

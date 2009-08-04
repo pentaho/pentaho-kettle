@@ -17,7 +17,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -84,12 +83,12 @@ public class SpoonJobDelegate extends SpoonDelegate
 	 * TransMeta object. If the transformation has no name it will be mapped
 	 * under a number [1], [2] etc.
 	 */
-	private Map<String, JobMeta> jobMap;
+	private List<JobMeta> jobMap;
 
 	public SpoonJobDelegate(Spoon spoon)
 	{
 		super(spoon);
-		jobMap = new Hashtable<String, JobMeta>();
+		jobMap = new ArrayList<JobMeta>();
 	}
 
 	public JobEntryCopy newJobEntry(JobMeta jobMeta, String type_desc, boolean openit)
@@ -806,45 +805,6 @@ public class SpoonJobDelegate extends SpoonDelegate
 		return jobMeta;
 	}
 
-	/*
-	private void addJobHistory(JobMeta jobMeta, boolean select)
-	{
-		// See if there already is a tab for this history view
-		// If no, add it
-		// If yes, select that tab
-		//
-		String tabName = spoon.delegates.tabs.makeJobHistoryTabName(jobMeta);
-		TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName, TabMapEntry.OBJECT_TYPE_JOB_HISTORY);
-		if (tabItem == null)
-		{
-			JobHistory jobHistory = new JobHistory(spoon.tabfolder.getSwtTabset(), spoon, jobMeta);
-			tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
-			tabItem.setToolTipText(BaseMessages.getString(PKG, "Spoon.Title.ExecHistoryJobView.Tooltip", spoon.delegates.tabs
-					.makeJobGraphTabName(jobMeta)));
-			tabItem.setControl(jobHistory);
-
-			// If there is an associated log window that's open, find it and add
-			// a refresher
-			JobLog jobLog = findJobLogOfJob(jobMeta);
-			if (jobLog != null)
-			{
-				JobHistoryRefresher jobHistoryRefresher = new JobHistoryRefresher(tabItem, jobHistory);
-				spoon.tabfolder.addListener(jobHistoryRefresher);
-				// jobLog.setJobHistoryRefresher(jobHistoryRefresher);
-			}
-			jobHistory.markRefreshNeeded(); // will refresh when first selected
-
-			spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, jobHistory,
-					TabMapEntry.OBJECT_TYPE_JOB_HISTORY));
-		}
-		if (select)
-		{
-			int idx = spoon.tabfolder.indexOf(tabItem);
-			spoon.tabfolder.setSelected(idx);
-		}
-	}
-	*/
-
 	public boolean isDefaultJobName(String name)
 	{
 		if (!name.startsWith(Spoon.STRING_JOB))
@@ -885,40 +845,25 @@ public class SpoonJobDelegate extends SpoonDelegate
 	 * 
 	 * @param jobMeta
 	 *            the job to add to the map
-	 * @return the key used to store the transformation in the map
+	 * @return true if the job was added
 	 */
-	public String addJob(JobMeta jobMeta)
+	public boolean addJob(JobMeta jobMeta)
 	{
-		String key = spoon.delegates.tabs.makeJobGraphTabName(jobMeta);
-		JobMeta xjob = jobMap.get(key);
-		if (xjob == null)
+		int index = jobMap.indexOf(jobMeta);
+		if (index<0)
 		{
-			jobMap.put(key, jobMeta);
+			jobMap.add(jobMeta);
+			return true;
 		} else
 		{
-			// found a transformation tab that has the same name, is it the same
-			// as the one we want to load, if not warn the user of the duplicate name
-			boolean same = false;
-	        
-			if (jobMeta.isRepReference() && xjob.isRepReference())
-			{
-				// a repository value
-				same = jobMeta.getRepositoryDirectory().getPath().equals(xjob.getRepositoryDirectory().getPath());
-			}
-			else if (jobMeta.isFileReference() && xjob.isFileReference()){
-				// a file system entry
-				same = jobMeta.getFilename().equals(xjob.getFilename());
-			}
-			if (!same) {
-				ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION,
-						BaseMessages.getString(PKG, "Spoon.Dialog.JobAlreadyLoaded.Title"), "'" + key + "'" + Const.CR
-								+ Const.CR + BaseMessages.getString(PKG, "Spoon.Dialog.JobAlreadyLoaded.Message"));
-				dialog.setTimeOut(6);
-				dialog.open();
-			}
+			ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION,
+					BaseMessages.getString(PKG, "Spoon.Dialog.JobAlreadyLoaded.Title"), "'" + jobMeta.toString() + "'" + Const.CR
+							+ Const.CR + BaseMessages.getString(PKG, "Spoon.Dialog.JobAlreadyLoaded.Message"));
+			dialog.setTimeOut(6);
+			dialog.open();
+			return false;
 		}
 
-		return key;
 	}
 
 	/**
@@ -928,24 +873,19 @@ public class SpoonJobDelegate extends SpoonDelegate
 	 */
 	public void closeJob(JobMeta jobMeta)
 	{
-		String tabName = spoon.delegates.tabs.makeJobGraphTabName(jobMeta);
-
 		// Close the associated tabs...
-		TabItem graphTab = spoon.delegates.tabs.findTabItem(tabName, ObjectType.JOB_GRAPH);
-		if (graphTab != null)
-		{
-			spoon.delegates.tabs.removeTab(graphTab);
+		//
+		TabMapEntry entry = spoon.delegates.tabs.findTabMapEntry(jobMeta);
+		if (entry!=null) {
+			spoon.delegates.tabs.removeTab(entry);
 		}
-
+		
 		// Also remove it from the item from the jobMap
 		// Otherwise it keeps showing up in the objects tree
-		// Look for the job, not the key (name might have changed)
 		//
-		List<String> keys = new ArrayList<String>(jobMap.keySet());
-		for (String key : keys) {
-			if (jobMap.get(key).equals(jobMeta)) {
-				jobMap.remove(key);
-			}
+		int index = jobMap.indexOf(jobMeta);
+		if (index>=0) {
+			jobMap.remove(index);
 		}
 		
 		spoon.refreshTree();
@@ -953,27 +893,47 @@ public class SpoonJobDelegate extends SpoonDelegate
 
 	public void addJobGraph(JobMeta jobMeta)
 	{
-		String key = addJob(jobMeta);
-		if (key != null)
+		boolean added = addJob(jobMeta);
+		if (added)
 		{
-			// See if there already is a tab for this graph
+			// See if there already is a tab for this graph with the short default name.
+			// If there is, set that one to show the location as well.
+			// If not, simply add it without
 			// If no, add it
 			// If yes, select that tab
 			//
-			String tabName = spoon.delegates.tabs.makeJobGraphTabName(jobMeta);
-			TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName, ObjectType.JOB_GRAPH);
-			if (tabItem == null)
-			{
+			boolean showLocation = false;
+			boolean addTab = true;
+			String tabName = spoon.delegates.tabs.makeTabName(jobMeta, showLocation);
+			TabMapEntry tabEntry = spoon.delegates.tabs.findTabMapEntry(tabName, ObjectType.JOB_GRAPH);
+			if (tabEntry!=null) {
+				// We change the already loaded job to also show the location.
+				//
+				showLocation=true;
+				tabEntry.setShowingLocation(true);
+				String newTabName = spoon.delegates.tabs.makeTabName(tabEntry.getObject().getMeta(), showLocation);
+				tabEntry.getTabItem().setText(newTabName);
+				
+				// Try again, including the location of the object...
+				//
+				tabName = spoon.delegates.tabs.makeTabName(jobMeta, showLocation);
+				tabEntry = spoon.delegates.tabs.findTabMapEntry(tabName, ObjectType.JOB_GRAPH);
+				if (tabEntry!=null) {
+					// Already loaded, simply select the tab item in question...
+					//
+					addTab = false;
+				}
+			}
+			
+			if (addTab) {
 				JobGraph jobGraph = new JobGraph(spoon.tabfolder.getSwtTabset(), spoon, jobMeta);
-				tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
-				String toolTipText = BaseMessages.getString(PKG, "Spoon.TabJob.Tooltip", spoon.delegates.tabs.makeJobGraphTabName(jobMeta));
+				
+				TabItem tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
+				String toolTipText = BaseMessages.getString(PKG, "Spoon.TabJob.Tooltip", spoon.delegates.tabs.makeTabName(jobMeta, showLocation));
 				if (!Const.isEmpty(jobMeta.getFilename())) toolTipText+=Const.CR+Const.CR+jobMeta.getFilename();
 				tabItem.setToolTipText(toolTipText);
-				tabItem.setImage(GUIResource.getInstance().getImageJobGraph());
+				tabItem.setImage(GUIResource.getInstance().getImageTransGraph());
 				tabItem.setControl(jobGraph);
-				
-				String versionLabel = jobMeta.getObjectVersion() == null ? null : jobMeta.getObjectVersion().getName();
-				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getRepositoryDirectory(), versionLabel, jobGraph, ObjectType.JOB_GRAPH));
 
 				// OK, also see if we need to open a new history window.
 				if (jobMeta.getLogConnection() != null && !Const.isEmpty(jobMeta.getLogTable()))
@@ -981,8 +941,16 @@ public class SpoonJobDelegate extends SpoonDelegate
 					jobGraph.addAllTabs();
 					jobGraph.extraViewTabFolder.setSelection(jobGraph.jobHistoryDelegate.getJobHistoryTab());
 				}
+
+				String versionLabel = jobMeta.getObjectVersion() == null ? null : jobMeta.getObjectVersion().getName();
+				
+				tabEntry = new TabMapEntry(tabItem, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getRepositoryDirectory(), versionLabel, jobGraph, ObjectType.JOB_GRAPH);
+				tabEntry.setShowingLocation(showLocation);
+				
+				spoon.delegates.tabs.addTab(tabEntry);				
 			}
-			int idx = spoon.tabfolder.indexOf(tabItem);
+
+			int idx = spoon.tabfolder.indexOf(tabEntry.getTabItem());
 
 			// keep the focus on the graph
 			spoon.tabfolder.setSelected(idx);
@@ -1034,23 +1002,27 @@ public class SpoonJobDelegate extends SpoonDelegate
 
 	public List<JobMeta> getJobList()
 	{
-		return new ArrayList<JobMeta>(jobMap.values());
+		return jobMap;
 	}
 
-	public JobMeta getJob(String tabItemText)
+	public JobMeta getJob(String name)
 	{
-		return jobMap.get(tabItemText);
+		TabMapEntry entry = spoon.delegates.tabs.findTabMapEntry(name, ObjectType.JOB_GRAPH);
+		if (entry!=null) {
+			return (JobMeta) entry.getObject().getManagedObject();
+		}
+
+		// TODO: remove part below
+		//
+		for (JobMeta jobMeta : jobMap) {
+			if (name!=null && name.equals(jobMeta.getName())) return jobMeta;
+		}
+		return null;
 	}
 
 	public JobMeta[] getLoadedJobs()
 	{
-		List<JobMeta> list = new ArrayList<JobMeta>(jobMap.values());
-		return list.toArray(new JobMeta[list.size()]);
-	}
-
-	public void addJob(String key, JobMeta entry)
-	{
-		jobMap.put(key, entry);
+		return jobMap.toArray(new JobMeta[jobMap.size()]);
 	}
 
 	public void removeJob(String key)

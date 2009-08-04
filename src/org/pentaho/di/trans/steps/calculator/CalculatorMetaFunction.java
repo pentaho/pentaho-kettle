@@ -20,6 +20,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.w3c.dom.Node;
 
 public class CalculatorMetaFunction implements Cloneable
@@ -380,8 +381,11 @@ public class CalculatorMetaFunction implements Cloneable
         // The conversion mask was added in a certain revision.
         // Anything that we load from before then should get masks set to retain backward compatibility
         //
-        if (rep.findStepAttributeID(id_step, nr, "conversion_mask") != null) {
-        	fixBackwardCompatibility();
+        if (rep instanceof KettleDatabaseRepository) {
+        	KettleDatabaseRepository repository = (KettleDatabaseRepository) rep;
+	        if (repository.findStepAttributeID(id_step, nr, "conversion_mask") != null) {
+	        	fixBackwardCompatibility();
+	        }
         }
     }
     

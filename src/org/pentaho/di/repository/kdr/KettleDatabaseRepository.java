@@ -1536,14 +1536,12 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 
 	/**
 	 * This method is only used to check backward compatibility with the 2.x series.
-	 * TODO : See what we can do to remove this from Repository
 	 * 
 	 * @param id_step
 	 * @param nr
 	 * @param code
 	 * @return
 	 * @throws KettleException
-	 * @deprecated
 	 */
 	public ObjectId findStepAttributeID(ObjectId id_step, int nr, String code) throws KettleException {
 		return connectionDelegate.findStepAttributeID(id_step, nr, code);

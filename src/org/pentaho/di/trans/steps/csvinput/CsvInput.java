@@ -21,8 +21,10 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.exception.KettleConversionException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -126,24 +128,42 @@ public class CsvInput extends BaseStep implements StepInterface
 			}
 		}
 		
-		Object[] outputRowData=readOneRow(true);    // get row, set busy!
-		if (outputRowData==null)  // no more input to be expected...
-		{
-			if (openNextFile()) {
-				return true; // try again on the next loop...
+		try {
+			Object[] outputRowData=readOneRow(true);    // get row, set busy!
+			if (outputRowData==null)  // no more input to be expected...
+			{
+				if (openNextFile()) {
+					return true; // try again on the next loop...
+				}
+				else {
+					setOutputDone(); // last file, end here
+					return false;
+				}
 			}
-			else {
-				setOutputDone(); // last file, end here
-				return false;
+			else 
+			{
+				putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
+		        if (checkFeedback(getLinesInput())) 
+		        {
+		        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "CsvInput.Log.LineNumber", Long.toString(getLinesInput()))); //$NON-NLS-1$
+		        }
 			}
 		}
-		else 
-		{
-			putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
-	        if (checkFeedback(getLinesInput())) 
-	        {
-	        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "CsvInput.Log.LineNumber", Long.toString(getLinesInput()))); //$NON-NLS-1$
-	        }
+		catch(KettleConversionException e) {
+			if (meta.supportsErrorHandling()) {
+				StringBuffer errorDescriptions = new StringBuffer(100);
+				StringBuffer errorFields = new StringBuffer(50);
+				for (int i=0;i<e.getCauses().size();i++) {
+					if (i>0) {
+						errorDescriptions.append(", ");
+						errorFields.append(", ");
+					}
+					errorDescriptions.append(e.getCauses().get(i).getMessage());
+					errorFields.append(e.getFields().get(i).toStringMeta());
+				}
+				
+				putError(data.outputRowMeta, e.getRowData(), e.getCauses().size(), errorDescriptions.toString(), errorFields.toString(), "CSVINPUT001");
+			}
 		}
 			
 		return true;
@@ -373,6 +393,8 @@ public class CsvInput extends BaseStep implements StepInterface
 			int outputIndex=0;
 			boolean newLineFound = false;
 			int newLines = 0;
+			List<Exception> conversionExceptions = null;
+			List<ValueMetaInterface> exceptionFields = null;
 			
 			// The strategy is as follows...
 			// We read a block of byte[] from the file.
@@ -555,7 +577,21 @@ public class CsvInput extends BaseStep implements StepInterface
 						// That will do the actual conversion.
 						//
 						ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(outputIndex);
-						outputRowData[outputIndex++] = sourceValueMeta.convertBinaryStringToNativeType(field);
+						try {
+							outputRowData[outputIndex++] = sourceValueMeta.convertBinaryStringToNativeType(field);
+						} catch(KettleValueException e) {
+							// There was a conversion error,
+							//
+							outputRowData[outputIndex++] = null;
+							
+							if (conversionExceptions==null) {
+								conversionExceptions = new ArrayList<Exception>();
+								exceptionFields = new ArrayList<ValueMetaInterface>();
+							}
+							
+							conversionExceptions.add(e);
+							exceptionFields.add(sourceValueMeta);
+						}
 					}
 				}
 				else {
@@ -619,7 +655,17 @@ public class CsvInput extends BaseStep implements StepInterface
 			}
 		
 			incrementLinesInput();
+			
+			if (conversionExceptions!=null && conversionExceptions.size()>0) {
+				// Forward the first exception
+				//
+				throw new KettleConversionException("There were "+conversionExceptions.size()+" conversion errors on line "+getLinesInput(), conversionExceptions, exceptionFields, outputRowData);
+			}
+			
 			return outputRowData;
+		}
+		catch(KettleConversionException e) {
+			throw e;
 		}
 		catch (Exception e)
 		{

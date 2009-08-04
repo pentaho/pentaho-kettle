@@ -115,6 +115,7 @@ import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryVersionBrowserDialogInterface;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
+import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.TransPainter;
 import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
@@ -123,7 +124,6 @@ import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.xul.menu.XulMenu;
 import org.pentaho.xul.menu.XulMenuChoice;
 import org.pentaho.xul.menu.XulPopupMenu;
-import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.toolbar.XulToolbar;
 import org.pentaho.xul.toolbar.XulToolbarButton;
 
@@ -1701,12 +1701,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     String exactTransname = jobMeta.environmentSubstitute(entry.getTransname());
 
     // check, whether a tab of this name is already opened
-    TabItem tab = spoon.delegates.tabs.findTabItem(exactFilename, ObjectType.TRANSFORMATION_GRAPH);
-    if (tab == null) {
-      tab = spoon.delegates.tabs.findTabItem(Const.filenameOnly(exactFilename), ObjectType.TRANSFORMATION_GRAPH);
+    TabMapEntry tabEntry = spoon.delegates.tabs.findTabMapEntry(exactFilename, ObjectType.TRANSFORMATION_GRAPH);
+    if (tabEntry == null) {
+      tabEntry = spoon.delegates.tabs.findTabMapEntry(Const.filenameOnly(exactFilename), ObjectType.TRANSFORMATION_GRAPH);
     }
-    if (tab != null) {
-      spoon.tabfolder.setSelected(tab);
+    if (tabEntry != null) {
+      spoon.tabfolder.setSelected(tabEntry.getTabItem());
       return;
     }
 
@@ -2470,8 +2470,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
   public int showChangedWarning() {
     MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING);
-    mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.FileChangedSaveFirst.Message", spoon.delegates.tabs
-        .makeJobGraphTabName(jobMeta)));//"This model has changed.  Do you want to save it?"
+    mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.FileChangedSaveFirst.Message", spoon.delegates.tabs.makeTabName(jobMeta, true)));//"This model has changed.  Do you want to save it?"
     mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.FileChangedSaveFirst.Title"));
     return mb.open();
   }
@@ -2499,8 +2498,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         spoon.sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
       } catch (Exception e) {
         new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title"), 
-        		BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.delegates.tabs
-                .makeJobGraphTabName(jobMeta)), e);
+        		BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.delegates.tabs.makeTabName(jobMeta, true)), e);
       }
     }
     

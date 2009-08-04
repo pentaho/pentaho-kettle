@@ -302,34 +302,30 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	/**
 	 * Compares two transformation on name, filename
 	 */
-	public int compare(JobMeta t1, JobMeta t2) {
-		if (Const.isEmpty(t1.getName()) && !Const.isEmpty(t2.getName()))
-			return -1;
-		if (!Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName()))
-			return 1;
-		if (Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName())) {
-			if (Const.isEmpty(t1.getFilename()) && !Const.isEmpty(t2.getFilename()))
-				return -1;
-			if (!Const.isEmpty(t1.getFilename()) && Const.isEmpty(t2.getFilename()))
-				return 1;
-			if (Const.isEmpty(t1.getFilename()) && Const.isEmpty(t2.getFilename())) {
+	public int compare(JobMeta j1, JobMeta j2) {
+		if (Const.isEmpty(j1.getName()) && !Const.isEmpty(j2.getName())) return -1;
+		if (!Const.isEmpty(j1.getName()) && Const.isEmpty(j2.getName())) return 1;
+		if (Const.isEmpty(j1.getName()) && Const.isEmpty(j2.getName()) || j1.getName().equals(j2.getName())) {
+			if (Const.isEmpty(j1.getFilename()) && !Const.isEmpty(j2.getFilename())) return -1;
+			if (!Const.isEmpty(j1.getFilename()) && Const.isEmpty(j2.getFilename())) return 1;
+			if (Const.isEmpty(j1.getFilename()) && Const.isEmpty(j2.getFilename())) {
 				return 0;
 			}
-			return t1.getFilename().compareTo(t2.getFilename());
+			return j1.getFilename().compareTo(j2.getFilename());
 		}
 		
         // Compare by name : repositories etc.
         //
-        if (t1.getObjectVersion()!=null && t2.getObjectVersion()==null) return  1; 
-        if (t1.getObjectVersion()==null && t2.getObjectVersion()!=null) return -1;
+        if (j1.getObjectVersion()!=null && j2.getObjectVersion()==null) return  1; 
+        if (j1.getObjectVersion()==null && j2.getObjectVersion()!=null) return -1;
         int cmp;
-        if (t1.getObjectVersion()==null && t2.getObjectVersion()==null) {
+        if (j1.getObjectVersion()==null && j2.getObjectVersion()==null) {
         	 cmp=0;
         } else {
-        	cmp = t1.getObjectVersion().getName().compareTo(t2.getObjectVersion().getName());
+        	cmp = j1.getObjectVersion().getName().compareTo(j2.getObjectVersion().getName());
         }
         if (cmp==0) {
-        	return t1.getName().compareTo(t2.getName());
+        	return j1.getName().compareTo(j2.getName());
         } else {
         	return cmp;
         }
@@ -1695,12 +1691,28 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	public String toString() {
-		if (name != null)
-			return name;
-		if (filename != null)
-			return filename;
-		else
-			return getClass().getName();
+        if (!Const.isEmpty(filename)) {
+        	if (Const.isEmpty(name)) {
+        		return filename;
+        	} else {
+        		return filename+" : "+name;
+        	}
+        }
+
+        if (name != null) {
+        	if (directory!=null) {
+        		String path = directory.getPath();
+        		if (path.endsWith(RepositoryDirectory.DIRECTORY_SEPARATOR)) {
+        			return path+name;
+        		} else {
+        			return path+RepositoryDirectory.DIRECTORY_SEPARATOR+name;
+        		}
+        	} else {
+        		return name;
+        	}
+        } else {
+        	return JobMeta.class.getName();
+        }
 	}
 
 	/**

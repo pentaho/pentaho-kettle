@@ -350,8 +350,6 @@ public interface Repository {
 	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, double value) throws KettleException;
 	
 	public int countNrStepAttributes(ObjectId id_step, String code) throws KettleException;
-	
-	public ObjectId findStepAttributeID(ObjectId id_step, int nr, String code) throws KettleException;
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	// Attributes for job entries...
