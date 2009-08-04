@@ -35,6 +35,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -149,7 +150,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 		
 		retval.append("      ").append(XMLHandler.addTagValue("servername",   serverName));
 		retval.append("      ").append(XMLHandler.addTagValue("username",     userName));
-		retval.append("      ").append(XMLHandler.addTagValue("password",     password));
+	    retval.append("      ").append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(getPassword()))); 
 		retval.append("      ").append(XMLHandler.addTagValue("serverport",   serverPort));
 		retval.append("      ").append(XMLHandler.addTagValue("ftpdirectory", ftpDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("localdirectory", localDirectory));
@@ -187,7 +188,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 			super.loadXML(entrynode, databases, slaveServers);
 			serverName          = XMLHandler.getTagValue(entrynode, "servername");
 			userName            = XMLHandler.getTagValue(entrynode, "username");
-			password            = XMLHandler.getTagValue(entrynode, "password");
+			password = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "password"));
 			serverPort      = XMLHandler.getTagValue(entrynode, "serverport");
 			ftpDirectory        = XMLHandler.getTagValue(entrynode, "ftpdirectory");
 			localDirectory     = XMLHandler.getTagValue(entrynode, "localdirectory");
@@ -229,7 +230,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 		super.loadRep(rep, id_jobentry, databases, slaveServers);
 			serverName          = rep.getJobEntryAttributeString(id_jobentry, "servername");
 			userName            = rep.getJobEntryAttributeString(id_jobentry, "username");
-			password            = rep.getJobEntryAttributeString(id_jobentry, "password");
+			password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "password") );
 			serverPort 			 =rep.getJobEntryAttributeString(id_jobentry, "serverport");
 			ftpDirectory        = rep.getJobEntryAttributeString(id_jobentry, "ftpdirectory");
 			localDirectory     = rep.getJobEntryAttributeString(id_jobentry, "localdirectory");
@@ -272,7 +273,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
-			rep.saveJobEntryAttribute(id_job, getID(), "password",        password);
+		    rep.saveJobEntryAttribute(id_job, getID(), "password", Encr.encryptPasswordIfNotUsingVariables(password));
 			rep.saveJobEntryAttribute(id_job, getID(), "serverport",      serverPort);
 			rep.saveJobEntryAttribute(id_job, getID(), "ftpdirectory",    ftpDirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "localdirectory", localDirectory);

@@ -34,6 +34,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -155,7 +156,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		retval.append("      ").append(XMLHandler.addTagValue("servername",   serverName));
 		retval.append("      ").append(XMLHandler.addTagValue("port", port));
 		retval.append("      ").append(XMLHandler.addTagValue("username",     userName));
-		retval.append("      ").append(XMLHandler.addTagValue("password",     password));
+	    retval.append("      ").append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(getPassword()))); 
 		retval.append("      ").append(XMLHandler.addTagValue("ftpdirectory", ftpDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",     wildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("timeout",      timeout));
@@ -191,7 +192,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 	      	port = XMLHandler.getTagValue(entrynode, "port"); //$NON-NLS-1$
 			serverName          = XMLHandler.getTagValue(entrynode, "servername");
 			userName            = XMLHandler.getTagValue(entrynode, "username");
-			password            = XMLHandler.getTagValue(entrynode, "password");
+			password = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "password"));
 			ftpDirectory        = XMLHandler.getTagValue(entrynode, "ftpdirectory");
 			wildcard            = XMLHandler.getTagValue(entrynode, "wildcard");
 			timeout             = Const.toInt(XMLHandler.getTagValue(entrynode, "timeout"), 10000);
@@ -229,7 +230,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 	      	port	= rep.getJobEntryAttributeString(id_jobentry, "port");
 	      	serverName          = rep.getJobEntryAttributeString(id_jobentry, "servername");
 			userName            = rep.getJobEntryAttributeString(id_jobentry, "username");
-			password            = rep.getJobEntryAttributeString(id_jobentry, "password");
+			password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "password") );
 			ftpDirectory        = rep.getJobEntryAttributeString(id_jobentry, "ftpdirectory");
 			wildcard            = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			timeout             = (int)rep.getJobEntryAttributeInteger(id_jobentry, "timeout");
@@ -269,7 +270,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 			rep.saveJobEntryAttribute(id_job, getID(), "port", port);
 			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
-			rep.saveJobEntryAttribute(id_job, getID(), "password",        password);
+		    rep.saveJobEntryAttribute(id_job, getID(), "password", Encr.encryptPasswordIfNotUsingVariables(password));
 			rep.saveJobEntryAttribute(id_job, getID(), "ftpdirectory",    ftpDirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard",        wildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "timeout",         timeout);
