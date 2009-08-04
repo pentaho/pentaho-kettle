@@ -29,6 +29,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -124,7 +125,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		retval.append("      ").append(XMLHandler.addTagValue("servername",   serverName));
 		retval.append("      ").append(XMLHandler.addTagValue("serverport",   serverPort));
 		retval.append("      ").append(XMLHandler.addTagValue("username",     userName));
-		retval.append("      ").append(XMLHandler.addTagValue("password",     password));
+	    retval.append("      ").append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(getPassword())));
 		retval.append("      ").append(XMLHandler.addTagValue("remoteDirectory", remoteDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("localDirectory", localDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",     wildcard));
@@ -152,7 +153,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 			serverName      = XMLHandler.getTagValue(entrynode, "servername");
 			serverPort      = XMLHandler.getTagValue(entrynode, "serverport");
 			userName        = XMLHandler.getTagValue(entrynode, "username");
-			password        = XMLHandler.getTagValue(entrynode, "password");
+			password = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "password")); 
 			remoteDirectory   = XMLHandler.getTagValue(entrynode, "remoteDirectory");
 			localDirectory = XMLHandler.getTagValue(entrynode, "localDirectory");
 			wildcard        = XMLHandler.getTagValue(entrynode, "wildcard");
@@ -173,7 +174,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
             	// if we couldn't retrieve an encoding, assume it's an old instance and
             	// put in the the encoding used before v 2.4.0
             	controlEncoding = LEGACY_CONTROL_ENCODING;
-            }       ;
+            } 
 		}
 		catch(KettleXMLException xe)
 		{
@@ -191,7 +192,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
             if (intServerPort>0 && Const.isEmpty(serverPort)) serverPort = Integer.toString(intServerPort);
 
 			userName        = rep.getJobEntryAttributeString(id_jobentry, "username");
-			password        = rep.getJobEntryAttributeString(id_jobentry, "password");
+			password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "password") );
 			remoteDirectory   = rep.getJobEntryAttributeString(id_jobentry, "remoteDirectory");
 			localDirectory = rep.getJobEntryAttributeString(id_jobentry, "localDirectory");
 			wildcard        = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
@@ -226,7 +227,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "serverport",      serverPort);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "username",        userName);
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "password",        password);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables(password));
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "remoteDirectory",    remoteDirectory);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "localDirectory", localDirectory);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard",        wildcard);
