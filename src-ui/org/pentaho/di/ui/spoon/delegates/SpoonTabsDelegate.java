@@ -345,7 +345,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		tabMap.add(entry);
 	}
 
-	public String makeTabName(EngineMetaInterface transMeta, boolean showingDirectory)
+	public String makeTabName(EngineMetaInterface transMeta, boolean showLocation)
 	{
 		if (Const.isEmpty(transMeta.getName()) && Const.isEmpty(transMeta.getFilename()))
 			return Spoon.STRING_TRANS_NO_NAME;
@@ -358,7 +358,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		
 		String name = "";
 		
-		if (showingDirectory) {
+		if (showLocation) {
 			if (!Const.isEmpty(transMeta.getFilename())) {
 				// Regular file...
 				//
@@ -371,9 +371,11 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		}
 
 		name += transMeta.getName();
-		ObjectVersion version = transMeta.getObjectVersion();
-		if (version!=null) {
-			name+=":v"+version.getName();
+		if (showLocation) {
+			ObjectVersion version = transMeta.getObjectVersion();
+			if (version!=null) {
+				name+=":v"+version.getName();
+			}
 		}
 		return name;
 	}

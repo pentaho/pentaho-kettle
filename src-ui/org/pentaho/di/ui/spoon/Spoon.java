@@ -3033,20 +3033,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 				// Load a transformation
 				if (RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION.equals(type)) {
-					TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell, rep, name, repdir, null); // Load
-																												// last
-																												// version
+					TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell, rep, name, repdir, null); // Loads the last version
 					TransMeta transMeta = tlpd.open();
 					sharedObjectsFileMap.put(transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects());
 					setTransMetaVariables(transMeta);
 
 					if (transMeta != null) {
 						if (log.isDetailed())
-							log.logDetailed(toString(), BaseMessages.getString(PKG, "Spoon.Log.LoadToTransformation", name, repdir.getDirectoryName()));// "Transformation ["+transname+"] in directory ["+repdir+"] loaded from the repository."
+							log.logDetailed(toString(), BaseMessages.getString(PKG, "Spoon.Log.LoadToTransformation", name, repdir.getDirectoryName()));
 						props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, name, repdir.getPath(), true, rep.getName());
 						addMenuLast();
 						transMeta.clearChanged();
-						transMeta.setFilename(name);
+						// transMeta.setFilename(name); // Don't do it, it's a bad idea!
 						addTransGraph(transMeta);
 					}
 					refreshGraph();
@@ -3055,9 +3053,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				} else
 				// Load a job
 				if (RepositoryObject.STRING_OBJECT_TYPE_JOB.equals(type)) {
-					JobLoadProgressDialog jlpd = new JobLoadProgressDialog(shell, rep, name, repdir, null); // Load
-																											// last
-																											// version
+					JobLoadProgressDialog jlpd = new JobLoadProgressDialog(shell, rep, name, repdir, null); // Loads the last version
 					JobMeta jobMeta = jlpd.open();
 					sharedObjectsFileMap.put(jobMeta.getSharedObjects().getFilename(), jobMeta.getSharedObjects());
 					setJobMetaVariables(jobMeta);

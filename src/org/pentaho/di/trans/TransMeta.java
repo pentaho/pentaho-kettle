@@ -311,38 +311,48 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     }
 
     /**
-     * Compares two transformation on name, filename
+     * Compares two transformation on name, filename, repository directory, etc.
      */
     public int compare(TransMeta t1, TransMeta t2) 
     {
-        
-        if (Const.isEmpty(t1.getName()) && !Const.isEmpty(t2.getName())) return -1;
-        if (!Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName())) return  1;
-        if (Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName()) || t1.getName().equals(t2.getName()))
-        {
-            if (Const.isEmpty(t1.getFilename()) && !Const.isEmpty(t2.getFilename())) return -1;
-            if (!Const.isEmpty(t1.getFilename()) && Const.isEmpty(t2.getFilename())) return  1;
-            if (Const.isEmpty(t1.getFilename()) && Const.isEmpty(t2.getFilename()))
-            {
-                return 0;
-            }
-            return t1.getFilename().compareTo(t2.getFilename());
-        }
-        
-        // Compare by name : repositories etc.
-        //
-        if (t1.getObjectVersion()!=null && t2.getObjectVersion()==null) return  1; 
-        if (t1.getObjectVersion()==null && t2.getObjectVersion()!=null) return -1;
-        int cmp;
-        if (t1.getObjectVersion()==null && t2.getObjectVersion()==null) {
-        	 cmp=0;
+    	// If we don't have a filename, the transformation comes from a repository
+    	//
+        if (Const.isEmpty(t1.getFilename())) {
+        	
+        	if (!Const.isEmpty(t2.getFilename())) return -1;
+
+        	// First compare names...
+        	//
+            if (Const.isEmpty(t1.getName()) && !Const.isEmpty(t2.getName())) return -1;
+            if (!Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName())) return  1;
+            int cmpName = t1.getName().compareTo(t2.getName());
+            if (cmpName!=0) return cmpName;
+            
+            // Same name, compare Repository directory...
+            //
+            int cmpDirectory = t1.getRepositoryDirectory().getPath().compareTo(t2.getRepositoryDirectory().getPath());
+            if (cmpDirectory!=0) return cmpDirectory;
+            
+            // Same name, same directory, compare versions
+            //
+            if (t1.getObjectVersion()!=null && t2.getObjectVersion()==null) return  1; 
+            if (t1.getObjectVersion()==null && t2.getObjectVersion()!=null) return -1;
+            if (t1.getObjectVersion()==null && t2.getObjectVersion()==null) return  0;
+            return t1.getObjectVersion().getName().compareTo(t2.getObjectVersion().getName());
+            
         } else {
-        	cmp = t1.getObjectVersion().getName().compareTo(t2.getObjectVersion().getName());
-        }
-        if (cmp==0) {
-        	return t1.getName().compareTo(t2.getName());
-        } else {
-        	return cmp;
+        	if (Const.isEmpty(t2.getFilename())) return 1;
+
+        	// First compare names
+        	//
+            if (Const.isEmpty(t1.getName()) && !Const.isEmpty(t2.getName())) return -1;
+            if (!Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName())) return  1;
+            int cmpName = t1.getName().compareTo(t2.getName());
+            if (cmpName!=0) return cmpName;
+
+            // Same name, compare filenames...
+            //
+            return t1.getFilename().compareTo(t2.getFilename()); 
         }
     } 
     
