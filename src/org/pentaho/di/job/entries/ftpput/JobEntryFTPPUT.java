@@ -142,8 +142,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 	    retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHost)); //$NON-NLS-1$ //$NON-NLS-2$
 	    retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort)); //$NON-NLS-1$ //$NON-NLS-2$
 	    retval.append("      ").append(XMLHandler.addTagValue("proxy_username", proxyUsername)); //$NON-NLS-1$ //$NON-NLS-2$
-	    retval.append("      ").append(XMLHandler.addTagValue("proxy_password", proxyPassword)); //$NON-NLS-1$ //$NON-NLS-2$
-	    
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword))); 
 		
 		return retval.toString();
 	}
@@ -170,8 +169,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		    proxyHost = XMLHandler.getTagValue(entrynode, "proxy_host"); //$NON-NLS-1$
 		    proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port"); //$NON-NLS-1$
 		    proxyUsername = XMLHandler.getTagValue(entrynode, "proxy_username"); //$NON-NLS-1$
-		    proxyPassword = XMLHandler.getTagValue(entrynode, "proxy_password"); //$NON-NLS-1$
-            
+		    proxyPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "proxy_password"));
             if ( controlEncoding == null )
             {
             	// if we couldn't retrieve an encoding, assume it's an old instance and
@@ -216,7 +214,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		    proxyHost	= rep.getJobEntryAttributeString(id_jobentry, "proxy_host"); //$NON-NLS-1$
 		    proxyPort	= rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); //$NON-NLS-1$
 		    proxyUsername	= rep.getJobEntryAttributeString(id_jobentry, "proxy_username"); //$NON-NLS-1$
-		    proxyPassword = rep.getJobEntryAttributeString(id_jobentry, "proxy_password"); //$NON-NLS-1$
+		    proxyPassword = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "proxy_password") );
 		}
 		catch(KettleException dbe)
 		{
@@ -248,7 +246,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_host", proxyHost); //$NON-NLS-1$
 		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_port", proxyPort); //$NON-NLS-1$
 		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_username", proxyUsername); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_password", proxyPassword); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword));
 		}
 		catch(KettleDatabaseException dbe)
 		{

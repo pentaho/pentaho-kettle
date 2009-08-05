@@ -206,7 +206,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	    retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHost)); //$NON-NLS-1$ //$NON-NLS-2$
 	    retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort)); //$NON-NLS-1$ //$NON-NLS-2$
 	    retval.append("      ").append(XMLHandler.addTagValue("proxy_username", proxyUsername)); //$NON-NLS-1$ //$NON-NLS-2$
-	    retval.append("      ").append(XMLHandler.addTagValue("proxy_password", proxyPassword)); //$NON-NLS-1$ //$NON-NLS-2$
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword)));
 	    
 	    retval.append("      ").append(XMLHandler.addTagValue("ifFileExists", SifFileExists));
 	    
@@ -261,8 +261,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		    proxyHost = XMLHandler.getTagValue(entrynode, "proxy_host"); //$NON-NLS-1$
 		    proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port"); //$NON-NLS-1$
 		    proxyUsername = XMLHandler.getTagValue(entrynode, "proxy_username"); //$NON-NLS-1$
-		    proxyPassword = XMLHandler.getTagValue(entrynode, "proxy_password"); //$NON-NLS-1$
-		    
+		    proxyPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "proxy_password"));
+			
 		    SifFileExists=XMLHandler.getTagValue(entrynode, "ifFileExists"); 
 		    if(Const.isEmpty(SifFileExists))
 		    {
@@ -333,8 +333,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		    proxyHost	= rep.getJobEntryAttributeString(id_jobentry, "proxy_host"); //$NON-NLS-1$
 		    proxyPort	= rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); //$NON-NLS-1$
 		    proxyUsername	= rep.getJobEntryAttributeString(id_jobentry, "proxy_username"); //$NON-NLS-1$
-		    proxyPassword = rep.getJobEntryAttributeString(id_jobentry, "proxy_password"); //$NON-NLS-1$
-	
+		    proxyPassword = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "proxy_password") );
 		    SifFileExists = rep.getJobEntryAttributeString(id_jobentry, "ifFileExists");
 		    if(Const.isEmpty(SifFileExists))
 		    {
@@ -391,7 +390,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_host", proxyHost); //$NON-NLS-1$
 		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_port", proxyPort); //$NON-NLS-1$
 		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_username", proxyUsername); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_password", proxyPassword); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword));
 		    rep.saveJobEntryAttribute(id_job, getID(), "ifFileExists", SifFileExists);
 		    
 			rep.saveJobEntryAttribute(id_job, getID(), "nr_limit",  nr_limit);
