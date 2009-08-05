@@ -155,6 +155,15 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 				input.setChanged();
 			}
 		};
+
+		ModifyListener lsConnectionMod = new ModifyListener() 
+		{
+			public void modifyText(ModifyEvent e) 
+			{
+				input.setChanged();
+				setTableFieldCombo();
+			}
+		};
 		
 		FocusListener lsFocusLost = new FocusAdapter() {
 			public void focusLost(FocusEvent arg0) {
@@ -195,7 +204,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		// Connection line
 		wConnection = addConnectionLine(shell, wStepname, middle, margin);
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
-		wConnection.addModifyListener(lsMod);
+		wConnection.addModifyListener(lsConnectionMod);
 
         // Schema line...
         wlSchema=new Label(shell, SWT.RIGHT);
@@ -733,6 +742,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 			{
                 wSchema.setText(Const.NVL(std.getSchemaName(), ""));
 				wTable.setText(Const.NVL(std.getTableName(), ""));
+				setTableFieldCombo();
 			}
 		}
 		else
