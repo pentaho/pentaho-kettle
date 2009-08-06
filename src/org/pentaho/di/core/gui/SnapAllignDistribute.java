@@ -254,6 +254,10 @@ public class SnapAllignDistribute
                     int dummy = order[j];
                     order[j] = order[j + 1];
                     order[j + 1] = dummy;
+
+                    dummy = indices[j];
+                    indices[j] = indices[j + 1];
+                    indices[j + 1] = dummy;
                 }
             }
         }
@@ -269,6 +273,7 @@ public class SnapAllignDistribute
             before[i] = new Point(p.x, p.y);
             p.x = min + (i * distance);
             after[i] = new Point(p.x, p.y);
+            elemArray[i] = element;
         }
 
         // Undo!
@@ -302,7 +307,7 @@ public class SnapAllignDistribute
         }
 
         // Difficult to keep the steps in the correct order.
-        // If you just set the x-coordinates, you get special effects.
+        // If you just set the y-coordinates, you get special effects.
         // Best is to keep the current order of things.
         // First build an arraylist and store the order there.
         // Then sort order[], based upon the coordinate of the step.
@@ -317,6 +322,10 @@ public class SnapAllignDistribute
                     int dummy = order[j];
                     order[j] = order[j + 1];
                     order[j + 1] = dummy;
+                    
+                    dummy = indices[j];
+                    indices[j] = indices[j + 1];
+                    indices[j + 1] = dummy;
                 }
             }
         }
@@ -332,6 +341,7 @@ public class SnapAllignDistribute
             before[i] = new Point(p.x, p.y);
             p.y = min + (i * distance);
             after[i] = new Point(p.x, p.y);
+            elemArray[i] = element;
         }
 
         // Undo!
