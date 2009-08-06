@@ -304,9 +304,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private SashForm						sashform;
 	public TabSet							tabfolder;
 
-	public boolean							shift;
-	public boolean							control;
-
 	// THE HANDLERS
 	public SpoonDelegates					delegates				= new SpoonDelegates(this);
 
@@ -556,6 +553,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		defKeys = new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 
+				boolean shift = ((e.stateMask & SWT.SHIFT) != 0);
 				boolean ctrl = ((e.stateMask & SWT.CONTROL) != 0);
 				boolean alt = ((e.stateMask & SWT.ALT) != 0);
 
@@ -619,7 +617,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					key = new String(new char[] { c });
 				}
 
-				menuBar.handleAccessKey(key, alt, ctrl);
+				menuBar.handleAccessKey(key, alt, ctrl, shift);
 			}
 		};
 

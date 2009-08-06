@@ -52,8 +52,8 @@ public class MenuBar extends XulObject implements XulMenuBar {
 		return handler.handleMenuEvent( id );
 	}
 
-	public void handleAccessKey( String key, boolean alt, boolean ctrl ) {
-		handler.handleAccessKey( key, alt, ctrl );
+	public void handleAccessKey( String key, boolean alt, boolean ctrl, boolean shift ) {
+		handler.handleAccessKey( key, alt, ctrl, shift );
 	}
 
 	public void handleAccessKey( String accessKey ) {

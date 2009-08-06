@@ -40,8 +40,8 @@ public class PopupMenu extends Menu implements XulPopupMenu {
 		return handler.handleMenuEvent( id );
 	}
 
-	public void handleAccessKey( String key, boolean alt, boolean ctrl ) {
-		handler.handleAccessKey( key, alt, ctrl );
+	public void handleAccessKey( String key, boolean alt, boolean ctrl, boolean shift ) {
+		handler.handleAccessKey( key, alt, ctrl, shift );
 	}
 
 	public void handleAccessKey( String accessKey ) {

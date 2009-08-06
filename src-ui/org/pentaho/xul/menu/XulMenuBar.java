@@ -18,7 +18,7 @@ import org.pentaho.xul.menu.XulMenuChoice;
 
 public interface XulMenuBar extends XulItem {
 
-	public void handleAccessKey( String key, boolean alt, boolean ctrl );
+	public void handleAccessKey( String key, boolean alt, boolean ctrl, boolean shift );
 	
 	public void handleAccessKey( String accessKey );
 

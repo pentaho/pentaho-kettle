@@ -14,7 +14,7 @@ package org.pentaho.xul.menu;
 
 public interface XulPopupMenu extends XulMenu {
 
-	public void handleAccessKey( String key, boolean alt, boolean ctrl );
+	public void handleAccessKey( String key, boolean alt, boolean ctrl, boolean shift );
 	
 	public void handleAccessKey( String accessKey );
 

@@ -52,8 +52,8 @@ public class EventHandler {
 		return false;
 	}
 
-	public void handleAccessKey( String key, boolean alt, boolean ctrl ) {
-		String accessKey = ( (ctrl) ? "ctrl-" : "" ) + ( (alt) ? "alt-" : "" ) + key; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	public void handleAccessKey( String key, boolean alt, boolean ctrl, boolean shift ) {
+		String accessKey = ( (shift) ? "shift-" : "") + ( (ctrl) ? "ctrl-" : "" ) + ( (alt) ? "alt-" : "" ) + key; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		handleAccessKey( accessKey );
 	}
 
