@@ -649,6 +649,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 
       if (getStepMeta().isDoingErrorHandling()) {
         putError(getInputRowMeta(), r, 1, e.getMessage() + Const.CR + location, null, "SCR-001");
+        bRC=true; // continue by all means, even on the first row and out of this ugly design
       } else {
         throw (e);
       }
