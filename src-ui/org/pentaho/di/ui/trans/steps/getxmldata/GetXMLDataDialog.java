@@ -1435,11 +1435,10 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     			Document document  = reader.read( KettleVFS.getInputStream(inputList.getFile(0)),encoding );	
     			String realXPath=transMeta.environmentSubstitute(meta.getLoopXPath());
     			List<Node> nodes = document.selectNodes(realXPath);
-    			String realXPathCleaned=cleanLoopXpath(realXPath);
     			for (Node node : nodes) 
     			{
-    			    setNodeField(node,realXPathCleaned); 
-    			    ChildNode(node,realXPath,realXPathCleaned);
+    			    setNodeField(node); 
+    			    ChildNode(node);
     			}
     			 
                 wFields.removeEmptyRows();
@@ -1452,8 +1451,9 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
             new ErrorDialog(shell, Messages.getString("GetXMLDataDialog.ErrorParsingData.DialogTitle"), Messages.getString("GetXMLDataDialog.ErrorParsingData.DialogMessage"), e);
         }
 	}
-	private void ChildNode(Node node,String realXPath,String realXPathCleaned)
+	private boolean ChildNode(Node node)
 	{
+		 boolean rc=false; //true: we found child nodes
 		 Element ce = (Element) node;
 		 // List child 
 		 for(int j=0;j<ce.nodeCount();j++)
@@ -1464,21 +1464,19 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 				 Element cce = (Element) cnode;
 				 if(cce.nodeCount()>1)
 				 {
-					 if(Const.getOccurenceString(cnode.asXML(),"/>")<=1)
-					 {
-						 // We do not have child nodes ...
-						 setNodeField(cnode,realXPathCleaned); 
-					 }else
-					 {
-						 // let's get child nodes
-						 ChildNode(cnode,realXPath,realXPathCleaned);
+					 if(ChildNode(cnode)==false){
+						// We do not have child nodes ...
+						 setNodeField(cnode);
+						 rc=true;
 					 }
 				 }else
 				 {
-					 setNodeField(cnode,realXPathCleaned); 
+					 setNodeField(cnode);
+					 rc=true;
 				 }
 			 } 
-		 } 
+		 }
+		 return rc;
 	}
 	private void addLoopXPath(Node node)
 	{
@@ -1499,11 +1497,11 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		 } 
 	}
 
-	private void setAttributeField(Attribute attribute,String realXPathCleaned)
+	private void setAttributeField(Attribute attribute)
 	{
 		// Get Attribute Name
 		String attributname=attribute.getName();
-		String attributnametxt=cleanString(attribute.getPath(),realXPathCleaned);
+		String attributnametxt=cleanString(attribute.getPath());
 		if(!Const.isEmpty(attributnametxt) && !list.contains(attribute.getPath()))
 		{
             TableItem item = new TableItem(wFields.table, SWT.NONE);
@@ -1531,10 +1529,10 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		}// end if
 	            
 	}
-	private String cleanString(String inputstring,String realXPathCleaned)
+	private String cleanString(String inputstring)
 	{
 		String retval=inputstring;
-		retval=retval.replace(realXPathCleaned, "");
+		retval=retval.replace(wLoopXPath.getText(), "");
 		while(retval.startsWith("/"))
 		{
 			retval=retval.substring(1, retval.length());
@@ -1544,19 +1542,19 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void setNodeField(Node node,String realXPathCleaned)
+	private void setNodeField(Node node)
 	{
 		Element e = (Element) node; 
 		// get all attributes
 		List<Attribute> lista = e.attributes(); 
 		for(int i=0;i<lista.size();i++)
 		{
-			 setAttributeField(lista.get(i),realXPathCleaned);
+			 setAttributeField(lista.get(i));
 		}
 
 		// Get Node Name
 		String nodename=node.getName();
-		String nodenametxt=cleanString(node.getPath(),realXPathCleaned);
+		String nodenametxt=cleanString(node.getPath());
 		
 		if(!Const.isEmpty(nodenametxt) && !list.contains(nodenametxt))
 		{	
@@ -1883,36 +1881,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
             new ErrorDialog(shell, Messages.getString("GetXMLDataDialog.ErrorPreviewingData.DialogTitle"), Messages.getString("GetXMLDataDialog.ErrorPreviewingData.DialogMessage"), e);
         }
 	}
-	private String cleanLoopXpath(String realXPath)
-	{
-		StringBuffer buffer = new StringBuffer();
-		String open="[";
-		String close="]";
-		String rest = realXPath;
 
-		// search for opening string
-		int i = rest.indexOf(open);
-		while (i > -1)
-		{
-			int j = rest.indexOf(close, i + open.length());
-			// search for closing string
-			if (j > -1)
-			{			
-				buffer.append(rest.substring(0, i));
-				rest = rest.substring(j + close.length());
-			}
-			else
-			{
-				// no closing tag found; end the search
-				buffer.append(rest);
-				rest = "";
-			}
-			// keep searching
-			i = rest.indexOf(open);
-		}
-		buffer.append(rest);
-		return buffer.toString();
-	}
 	public String toString()
 	{
 		return this.getClass().getName();
