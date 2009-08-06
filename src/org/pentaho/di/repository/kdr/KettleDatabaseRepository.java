@@ -42,7 +42,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ObjectVersion;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
@@ -1692,7 +1692,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		return securityProvider;
 	}
 
-	public List<ObjectVersion> getVersions(RepositoryElementLocationInterface element) throws KettleException {
+	public List<ObjectRevision> getRevisions(RepositoryElementLocationInterface element) throws KettleException {
 		return null; // NOT IMPLEMENTED
 	}
 	

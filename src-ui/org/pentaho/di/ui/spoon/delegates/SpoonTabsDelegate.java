@@ -26,7 +26,7 @@ import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.repository.ObjectVersion;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -372,9 +372,9 @@ public class SpoonTabsDelegate extends SpoonDelegate
 
 		name += transMeta.getName();
 		if (showLocation) {
-			ObjectVersion version = transMeta.getObjectVersion();
+			ObjectRevision version = transMeta.getObjectRevision();
 			if (version!=null) {
-				name+=":v"+version.getName();
+				name+=" : r"+version.getName();
 			}
 		}
 		return name;

@@ -24,7 +24,7 @@ import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ObjectVersion;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -1032,7 +1032,7 @@ public class KettleFileRepository implements Repository {
 		// TODO Auto-generated method stub		
 	}
 	
-	public List<ObjectVersion> getVersions(RepositoryElementLocationInterface element) throws KettleException {
+	public List<ObjectRevision> getRevisions(RepositoryElementLocationInterface element) throws KettleException {
 		return null; // NOT IMPLEMENTED
 	}
 	

@@ -33,6 +33,6 @@ public interface RepositoryElementInterface extends RepositoryElementLocationInt
 	 */
 	public void clearChanged();
 	
-	public void setObjectVersion(ObjectVersion objectVersion);
-	public ObjectVersion getObjectVersion();
+	public void setObjectRevision(ObjectRevision objectRevision);
+	public ObjectRevision getObjectRevision();
 }

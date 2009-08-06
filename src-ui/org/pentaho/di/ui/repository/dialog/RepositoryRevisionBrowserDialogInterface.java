@@ -1,7 +1,7 @@
 package org.pentaho.di.ui.repository.dialog;
 
 
-public interface RepositoryVersionBrowserDialogInterface {
+public interface RepositoryRevisionBrowserDialogInterface {
 	/**
 	 * Open the repository version browser dialog
 	 * @return the version selected 

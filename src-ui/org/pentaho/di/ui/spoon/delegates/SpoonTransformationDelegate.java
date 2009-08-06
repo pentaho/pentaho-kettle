@@ -188,7 +188,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 					transGraph.extraViewTabFolder.setSelection(transGraph.transHistoryDelegate.getTransHistoryTab());
 				}
 
-				String versionLabel = transMeta.getObjectVersion() == null ? null : transMeta.getObjectVersion().getName();
+				String versionLabel = transMeta.getObjectRevision() == null ? null : transMeta.getObjectRevision().getName();
 				
 				tabEntry = new TabMapEntry(tabItem, transMeta.getFilename(), transMeta.getName(), transMeta.getRepositoryDirectory(), versionLabel, transGraph, ObjectType.TRANSFORMATION_GRAPH);
 				tabEntry.setShowingLocation(showLocation);

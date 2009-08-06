@@ -36,7 +36,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ObjectVersion;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
@@ -75,7 +75,7 @@ public class DatabaseMeta
 	
   private VariableSpace variables = new Variables();
   
-  private ObjectVersion objectVersion;
+  private ObjectRevision objectRevision;
 
 	/**
 	 * Indicates that the connections doesn't point to a type of database yet.
@@ -2448,12 +2448,12 @@ public class DatabaseMeta
 		return REPOSITORY_ELEMENT_TYPE;
 	}
 
-	public ObjectVersion getObjectVersion() {
-		return objectVersion;
+	public ObjectRevision getObjectRevision() {
+		return objectRevision;
 	}
 
-	public void setObjectVersion(ObjectVersion objectVersion) {
-		this.objectVersion = objectVersion;
+	public void setObjectRevision(ObjectRevision objectRevision) {
+		this.objectRevision = objectRevision;
 	}
 	
 	// databases can't be locked

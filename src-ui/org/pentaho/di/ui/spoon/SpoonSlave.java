@@ -43,7 +43,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ObjectVersion;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -780,11 +780,11 @@ public class SpoonSlave extends Composite implements TabItemInterface
 			public void setDescription(String description) {
 			}
 			
-			public ObjectVersion getObjectVersion() {
+			public ObjectRevision getObjectRevision() {
 				return null;
 			}
 			
-			public void setObjectVersion(ObjectVersion objectVersion) {
+			public void setObjectRevision(ObjectRevision objectRevision) {
 			}
 		};
     }

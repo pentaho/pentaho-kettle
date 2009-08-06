@@ -127,7 +127,7 @@ import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
-import org.pentaho.di.ui.repository.dialog.RepositoryVersionBrowserDialogInterface;
+import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
 import org.pentaho.di.ui.spoon.AreaOwner;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
@@ -2711,7 +2711,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   public void browseVersionHistory() {
 		  try {
 			  if (spoon.rep.exists(transMeta.getName(), transMeta.getRepositoryDirectory(), RepositoryObjectType.TRANSFORMATION)) {
-				RepositoryVersionBrowserDialogInterface dialog = RepositoryExplorerDialog.getVersionBrowserDialog(shell, spoon.rep, transMeta.getName(), transMeta.getRepositoryDirectory(), transMeta.getRepositoryElementType());
+				RepositoryRevisionBrowserDialogInterface dialog = RepositoryExplorerDialog.getVersionBrowserDialog(shell, spoon.rep, transMeta.getName(), transMeta.getRepositoryDirectory(), transMeta.getRepositoryElementType());
 				String versionLabel = dialog.open();
 				if (versionLabel!=null) {
 					spoon.loadObjectFromRepository(transMeta.getName(), transMeta.getRepositoryElementType(), transMeta.getRepositoryDirectory(), versionLabel);

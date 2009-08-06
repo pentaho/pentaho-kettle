@@ -21,7 +21,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ObjectVersion;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
@@ -54,7 +54,7 @@ public class PartitionSchema
 	private boolean dynamicallyDefined;
 	private String  numberOfPartitionsPerSlave;
 
-	private ObjectVersion objectVersion;
+	private ObjectRevision objectRevision;
 
 	public PartitionSchema()
 	{
@@ -317,12 +317,12 @@ public class PartitionSchema
 		this.id = id;
 	}
 	
-	public ObjectVersion getObjectVersion() {
-		return objectVersion;
+	public ObjectRevision getObjectRevision() {
+		return objectRevision;
 	}
 
-	public void setObjectVersion(ObjectVersion objectVersion) {
-		this.objectVersion = objectVersion;
+	public void setObjectRevision(ObjectRevision objectRevision) {
+		this.objectRevision = objectRevision;
 	}
 	
 	// partition schemas can't be locked

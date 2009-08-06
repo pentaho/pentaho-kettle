@@ -76,7 +76,7 @@ import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ObjectVersion;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
@@ -335,10 +335,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             
             // Same name, same directory, compare versions
             //
-            if (t1.getObjectVersion()!=null && t2.getObjectVersion()==null) return  1; 
-            if (t1.getObjectVersion()==null && t2.getObjectVersion()!=null) return -1;
-            if (t1.getObjectVersion()==null && t2.getObjectVersion()==null) return  0;
-            return t1.getObjectVersion().getName().compareTo(t2.getObjectVersion().getName());
+            if (t1.getObjectRevision()!=null && t2.getObjectRevision()==null) return  1; 
+            if (t1.getObjectRevision()==null && t2.getObjectRevision()!=null) return -1;
+            if (t1.getObjectRevision()==null && t2.getObjectRevision()==null) return  0;
+            return t1.getObjectRevision().getName().compareTo(t2.getObjectRevision().getName());
             
         } else {
         	if (Const.isEmpty(t2.getFilename())) return 1;
@@ -3730,7 +3730,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     
     private long prevCount;
 
-	private ObjectVersion	objectVersion;
+	private ObjectRevision	objectVersion;
 
     /**
      * Put the steps in a more natural order: from start to finish. For the moment, we ignore splits and joins. Splits
@@ -5921,11 +5921,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		this.repositoryLock = repositoryLock;
 	}
 
-	public void setObjectVersion(ObjectVersion objectVersion) {
-		this.objectVersion = objectVersion;
+	public void setObjectRevision(ObjectRevision objectRevision) {
+		this.objectVersion = objectRevision;
 	}
 	
-	public ObjectVersion getObjectVersion() {
+	public ObjectRevision getObjectRevision() {
 		return objectVersion;
 	}
 }

@@ -942,7 +942,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 					jobGraph.extraViewTabFolder.setSelection(jobGraph.jobHistoryDelegate.getJobHistoryTab());
 				}
 
-				String versionLabel = jobMeta.getObjectVersion() == null ? null : jobMeta.getObjectVersion().getName();
+				String versionLabel = jobMeta.getObjectRevision() == null ? null : jobMeta.getObjectRevision().getName();
 				
 				tabEntry = new TabMapEntry(tabItem, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getRepositoryDirectory(), versionLabel, jobGraph, ObjectType.JOB_GRAPH);
 				tabEntry.setShowingLocation(showLocation);

@@ -112,7 +112,7 @@ import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
-import org.pentaho.di.ui.repository.dialog.RepositoryVersionBrowserDialogInterface;
+import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
@@ -2715,7 +2715,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
   public void browseVersionHistory() {
 	  try {
-		RepositoryVersionBrowserDialogInterface dialog = RepositoryExplorerDialog.getVersionBrowserDialog(shell, spoon.rep, jobMeta.getName(), jobMeta.getRepositoryDirectory(), jobMeta.getRepositoryElementType());
+		RepositoryRevisionBrowserDialogInterface dialog = RepositoryExplorerDialog.getVersionBrowserDialog(shell, spoon.rep, jobMeta.getName(), jobMeta.getRepositoryDirectory(), jobMeta.getRepositoryElementType());
 		String versionLabel = dialog.open();
 		if (versionLabel!=null) {
 			spoon.loadObjectFromRepository(jobMeta.getName(), jobMeta.getRepositoryElementType(), jobMeta.getRepositoryDirectory(), versionLabel);

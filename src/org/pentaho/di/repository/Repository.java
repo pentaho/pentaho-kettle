@@ -91,8 +91,9 @@ public interface Repository {
 	 *  @param The folder to load it from
 	 *  @param monitor the progress monitor to use (UI feedback)
 	 *  @param setInternalVariables set to true if you want to automatically set the internal variables of the loaded transformation. (true is the default with very few exceptions!) 
+	 *  @param revision the revision to load.  Specify null to load the last version.
 	 */
-    public TransMeta loadTransformation(String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String versionName) throws KettleException;
+    public TransMeta loadTransformation(String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String revision) throws KettleException;
 
 	public SharedObjects readTransSharedObjects(TransMeta transMeta) throws KettleException;
 	
@@ -136,7 +137,14 @@ public interface Repository {
 	// Jobs: Loading & saving objects...
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 
-	public JobMeta loadJob(String jobname, RepositoryDirectory repdir, ProgressMonitorListener monitor, String versionName) throws KettleException;
+	/**
+	 * Load a job from the repository
+	 * @param jobname the name 
+	 * @param repdir the directory
+	 * @param monitor the progress monitor or null
+	 * @param revision the revision to load.  Specify null to load the last version.
+	 */
+	public JobMeta loadJob(String jobname, RepositoryDirectory repdir, ProgressMonitorListener monitor, String revision) throws KettleException;
 	
     public SharedObjects readJobMetaSharedObjects(JobMeta jobMeta) throws KettleException;
 
@@ -175,9 +183,10 @@ public interface Repository {
 	/**
 	 * Load the Database connection Metadata from the repository
 	 * @param id_database the id of the database connection to load
+	 * @param revision the revision to load.  Specify null to load the last version.
 	 * @throws KettleException in case something goes wrong with database, connection, etc.
 	 */
-	public DatabaseMeta loadDatabaseMeta(ObjectId id_database, String versionName) throws KettleException;
+	public DatabaseMeta loadDatabaseMeta(ObjectId id_database, String revision) throws KettleException;
 	
 	/**
 	 * Remove a database connection from the repository
@@ -410,15 +419,15 @@ public interface Repository {
 	public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String nameCode, String idCode, DatabaseMeta database) throws KettleException;
 
 	/**
-	 * Get the version history of a repository element.
-	 * If the capabilities of this repositories do not include version support, this method can return null.
+	 * Get the revision history of a repository element.
+	 * If the capabilities of this repositories do not include revision support, this method can return null.
 	 * 
 	 * @param element the element.  If the ID is specified, this will be taken.  Otherwise it will be looked up.
 	 * 
-	 * @return The version history, from first to last.
+	 * @return The revision history, sorted from first to last.
 	 * @throws KettleException in case something goes horribly wrong
 	 */
-	public List<ObjectVersion> getVersions(RepositoryElementLocationInterface element) throws KettleException;
+	public List<ObjectRevision> getRevisions(RepositoryElementLocationInterface element) throws KettleException;
 	
 	/**
 	 * Removes he deleted flag from a repository element in the repository.  
@@ -428,4 +437,16 @@ public interface Repository {
 	 * @throws KettleException get throws in case something goes horribly wrong.
 	 */
 	public void undeleteObject(RepositoryElementLocationInterface element) throws KettleException;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// public List<RepositoryVersion> getRepositoryVersions()
 }

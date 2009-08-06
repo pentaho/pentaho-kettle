@@ -4662,14 +4662,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			changed = transMeta;
 			fname = transMeta.getFilename();
 			name = transMeta.getName();
-			version = transMeta.getObjectVersion() == null ? null : transMeta.getObjectVersion().getName();
+			version = transMeta.getObjectRevision() == null ? null : transMeta.getObjectRevision().getName();
 		}
 		JobMeta jobMeta = getActiveJob();
 		if (jobMeta != null) {
 			changed = jobMeta;
 			fname = jobMeta.getFilename();
 			name = jobMeta.getName();
-			version = jobMeta.getObjectVersion() == null ? null : jobMeta.getObjectVersion().getName();
+			version = jobMeta.getObjectRevision() == null ? null : jobMeta.getObjectRevision().getName();
 		}
 
 		String text = "";

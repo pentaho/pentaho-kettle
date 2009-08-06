@@ -63,7 +63,7 @@ import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ObjectVersion;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
@@ -191,7 +191,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     
     private String logSizeLimit;
 
-	private ObjectVersion objectVersion;
+	private ObjectRevision objectRevision;
 	
     private RepositoryLock repositoryLock;
 
@@ -316,13 +316,13 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		
         // Compare by name : repositories etc.
         //
-        if (j1.getObjectVersion()!=null && j2.getObjectVersion()==null) return  1; 
-        if (j1.getObjectVersion()==null && j2.getObjectVersion()!=null) return -1;
+        if (j1.getObjectRevision()!=null && j2.getObjectRevision()==null) return  1; 
+        if (j1.getObjectRevision()==null && j2.getObjectRevision()!=null) return -1;
         int cmp;
-        if (j1.getObjectVersion()==null && j2.getObjectVersion()==null) {
+        if (j1.getObjectRevision()==null && j2.getObjectRevision()==null) {
         	 cmp=0;
         } else {
-        	cmp = j1.getObjectVersion().getName().compareTo(j2.getObjectVersion().getName());
+        	cmp = j1.getObjectRevision().getName().compareTo(j2.getObjectRevision().getName());
         }
         if (cmp==0) {
         	return j1.getName().compareTo(j2.getName());
@@ -2618,12 +2618,12 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return REPOSITORY_ELEMENT_TYPE;
 	}
 	
-	public ObjectVersion getObjectVersion() {
-		return objectVersion;
+	public ObjectRevision getObjectRevision() {
+		return objectRevision;
 	}
 
-	public void setObjectVersion(ObjectVersion objectVersion) {
-		this.objectVersion = objectVersion;
+	public void setObjectRevision(ObjectRevision objectRevision) {
+		this.objectRevision = objectRevision;
 	}
 
 	/**

@@ -1497,7 +1497,7 @@ public class RepositoryExplorerDialog extends Dialog
 	public void showTransformationVersions(String name, RepositoryDirectory repdir)
 	{
 		try {
-			RepositoryVersionBrowserDialogInterface versionBrowserDialog = getVersionBrowserDialog(name, repdir, RepositoryObjectType.TRANSFORMATION);
+			RepositoryRevisionBrowserDialogInterface versionBrowserDialog = getVersionBrowserDialog(name, repdir, RepositoryObjectType.TRANSFORMATION);
 			
 			String versionLabel = versionBrowserDialog.open();
 			if (versionLabel!=null) {
@@ -3195,11 +3195,11 @@ public class RepositoryExplorerDialog extends Dialog
         }
     }
     
-    protected RepositoryVersionBrowserDialogInterface getVersionBrowserDialog(final String name, final RepositoryDirectory repositoryDirectory, final RepositoryObjectType objectType) throws Exception {
+    protected RepositoryRevisionBrowserDialogInterface getVersionBrowserDialog(final String name, final RepositoryDirectory repositoryDirectory, final RepositoryObjectType objectType) throws Exception {
     	return getVersionBrowserDialog(shell, rep, name, repositoryDirectory, objectType);
     }
     	
-	public static final RepositoryVersionBrowserDialogInterface getVersionBrowserDialog(Shell shell, Repository repository, final String name, final RepositoryDirectory repositoryDirectory, final RepositoryObjectType objectType) throws Exception {
+	public static final RepositoryRevisionBrowserDialogInterface getVersionBrowserDialog(Shell shell, Repository repository, final String name, final RepositoryDirectory repositoryDirectory, final RepositoryObjectType objectType) throws Exception {
 		
 		RepositoryElementLocationInterface element = new RepositoryElementLocationInterface() {
 			public RepositoryObjectType getRepositoryElementType() { return objectType; }
@@ -3211,7 +3211,7 @@ public class RepositoryExplorerDialog extends Dialog
 		ClassLoader classLoader = RepositoryLoader.getInstance().getClassLoader(pluginMeta);
 		Class<?> dialogClass = classLoader.loadClass(pluginMeta.getVersionBrowserClassName());
 		Constructor<?> constructor = dialogClass.getConstructor(Shell.class, Integer.TYPE, Repository.class, RepositoryElementLocationInterface.class);
-		return (RepositoryVersionBrowserDialogInterface) constructor.newInstance(new Object[] { shell, Integer.valueOf(SWT.NONE), repository, element, });
+		return (RepositoryRevisionBrowserDialogInterface) constructor.newInstance(new Object[] { shell, Integer.valueOf(SWT.NONE), repository, element, });
 	}
 
 }

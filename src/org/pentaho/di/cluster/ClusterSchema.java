@@ -27,7 +27,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ObjectVersion;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryLock;
@@ -83,7 +83,7 @@ public class ClusterSchema
     
     private ObjectId id;
     
-    private ObjectVersion version;
+    private ObjectRevision objectRevision;
     
     public ClusterSchema()
     {
@@ -507,12 +507,12 @@ public class ClusterSchema
 		return REPOSITORY_ELEMENT_TYPE;
 	}
 
-	public ObjectVersion getObjectVersion() {
-		return version;
+	public ObjectRevision getObjectRevision() {
+		return objectRevision;
 	}
 	
-	public void setObjectVersion(ObjectVersion objectVersion) {
-		this.version = objectVersion;
+	public void setObjectRevision(ObjectRevision objectRevision) {
+		this.objectRevision = objectRevision;
 	}
 
 	// Clusters can't be locked
