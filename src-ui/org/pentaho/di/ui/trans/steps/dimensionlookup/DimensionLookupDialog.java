@@ -209,6 +209,14 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 				input.setChanged();
 			}
 		};
+		ModifyListener lsConnectionMod = new ModifyListener() 
+		{
+			public void modifyText(ModifyEvent e) 
+			{
+				input.setChanged();
+				setTableFieldCombo();
+			}
+		};	
 		FocusListener lsFocusLost = new FocusAdapter() {
 			public void focusLost(FocusEvent arg0) {
 				setTableFieldCombo();
@@ -283,7 +291,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		// Connection line
 		wConnection = addConnectionLine(shell, wUpdate, middle, margin);
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
-		wConnection.addModifyListener(lsMod);
+		wConnection.addModifyListener(lsConnectionMod);
 
 		wConnection.addModifyListener(new ModifyListener()
     		{
@@ -1407,6 +1415,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		{
             wSchema.setText(Const.NVL(std.getSchemaName(), ""));
 			wTable.setText(Const.NVL(std.getTableName(), ""));
+			setTableFieldCombo();
 		}
 	}
 
@@ -1462,6 +1471,8 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "DimensionLookupDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "DimensionLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
+	
+	// Set table "dimension field" and "technical key" drop downs  
 	private void setTableFieldCombo(){
 		Runnable fieldLoader = new Runnable() {
 			public void run() {
@@ -1470,6 +1481,8 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 					ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
 					colInfo.setComboValues(new String[] {});
 				}
+				// Ensure other table field dropdowns are refreshed fields when they next get focus
+				gotTableFields = false;
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
@@ -1487,6 +1500,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
 										colInfo.setComboValues(fieldNames);
 									}
+									wTk.setItems(fieldNames);
 								}
 							}
 						} catch (Exception e) {
