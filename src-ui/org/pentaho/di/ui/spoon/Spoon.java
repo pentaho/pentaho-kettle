@@ -585,7 +585,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				case SWT.F10:
 					key = "f10";break; //$NON-NLS-1$
 				case SWT.F11:
-					key = "f12";break; //$NON-NLS-1$
+					key = "f11";break; //$NON-NLS-1$
 				case SWT.F12:
 					key = "f12";break; //$NON-NLS-1$
 				case SWT.ARROW_UP:
