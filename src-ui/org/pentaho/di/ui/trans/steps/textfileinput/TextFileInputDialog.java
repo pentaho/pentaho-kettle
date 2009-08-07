@@ -2436,10 +2436,13 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 			if (meta.hasHeader() && nrInputFields>0)
 			{
-				MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
+				MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION );
 				mb.setMessage(BaseMessages.getString(PKG, "TextFileInputDialog.ClearFieldList.DialogMessage"));
 				mb.setText(BaseMessages.getString(PKG, "TextFileInputDialog.ClearFieldList.DialogTitle"));
 				clearFields = mb.open();
+				if (clearFields == SWT.CANCEL){ 
+					return;
+				}		
 			}
 
 			try

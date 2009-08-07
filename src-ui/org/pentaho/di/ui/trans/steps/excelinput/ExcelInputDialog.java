@@ -1780,10 +1780,13 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		int clearFields = SWT.YES;
 		if (wFields.nrNonEmpty()>0)
 		{
-			MessageBox messageBox = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
+			MessageBox messageBox = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION );
 			messageBox.setMessage(BaseMessages.getString(PKG, "ExcelInputDialog.ClearFieldList.DialogMessage"));
 			messageBox.setText(BaseMessages.getString(PKG, "ExcelInputDialog.ClearFieldList.DialogTitle"));
 			clearFields = messageBox.open();
+			if (clearFields == SWT.CANCEL){
+				return;
+			}
 		}
 		
 		FileInputList fileList = info.getFileList(transMeta);
