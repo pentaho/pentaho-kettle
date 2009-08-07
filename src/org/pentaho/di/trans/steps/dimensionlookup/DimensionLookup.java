@@ -435,7 +435,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				valueDateTo   = data.max_date;
 				valueVersion  = new Long(1L);     // Versions always start at 1.
 				
-				// get a new value from the sequence choosen.
+				// get a new value from the sequence generator chosen.
+				//
 				technicalKey = null;
 				switch ( getTechKeyCreation() )
 				{
@@ -575,7 +576,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.InsertNewVersion")+technicalKey.toString()); //$NON-NLS-1$
 					
 	                Long valueNewVersion = valueVersion + 1;
-					valueDateFrom = data.valueDateNow;
+	                // From date (valueDate) is calculated at the start of this method to be either the system date or the value in a column
+	                //
+					valueDateFrom = valueDate;
 					valueDateTo   = data.max_date; //$NON-NLS-1$
 
 					// First try to use an AUTOINCREMENT field
