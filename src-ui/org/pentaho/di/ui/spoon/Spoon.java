@@ -42,6 +42,11 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -672,6 +677,56 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		if (props.showWelcomePageOnStartup()) {
 			showWelcomePage();
 		}
+		
+		// Allow data to be copied or moved to the drop target
+		int operations = DND.DROP_COPY | DND.DROP_DEFAULT;
+		DropTarget target = new DropTarget(shell, operations);
+		
+		// Receive data in File format
+		final FileTransfer fileTransfer = FileTransfer.getInstance();
+		Transfer[] types = new Transfer[] {fileTransfer};
+		target.setTransfer(types);
+		
+		target.addDropListener(new DropTargetListener() {
+			public void dragEnter(DropTargetEvent event) {
+				if (event.detail == DND.DROP_DEFAULT) {
+					if ((event.operations & DND.DROP_COPY) != 0) {
+						event.detail = DND.DROP_COPY;
+					} else {
+						event.detail = DND.DROP_NONE;
+					}
+				}
+			}
+			
+			public void dragOver(DropTargetEvent event) {
+				event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
+			}
+			
+			public void dragOperationChanged(DropTargetEvent event) {
+				if (event.detail == DND.DROP_DEFAULT) {
+					if ((event.operations & DND.DROP_COPY) != 0) {
+						event.detail = DND.DROP_COPY;
+					} else {
+						event.detail = DND.DROP_NONE;
+					}
+				}
+			}
+			
+			public void dragLeave(DropTargetEvent event) {
+			}
+			
+			public void dropAccept(DropTargetEvent event) {
+			}
+			
+			public void drop(DropTargetEvent event) {
+				if (fileTransfer.isSupportedType(event.currentDataType)) {
+					String[] files = (String[])event.data;
+					for (int i = 0; i < files.length; i++) {
+						openFile(files[i], false);
+					}
+				}
+			}
+		});
 	}
 
 	private void initFileMenu() {
