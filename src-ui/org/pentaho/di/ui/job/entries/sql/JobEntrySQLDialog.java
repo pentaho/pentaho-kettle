@@ -116,6 +116,12 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
     private SelectionAdapter lsDef;
 
     private boolean changed;
+    
+    private Label wlUseOneStatement;
+
+    private Button wSendOneStatement;
+    
+    private FormData fdlUseOneStatement, fdUseOneStatement;
 
 	// File
 	private Label wlFilename;
@@ -275,7 +281,30 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
 			}
 		});
 
-		
+        // Send one SQL Statement?
+        wlUseOneStatement = new Label(shell, SWT.RIGHT);
+        wlUseOneStatement.setText(BaseMessages.getString(PKG, "JobSQL.SendOneStatement.Label"));
+        props.setLook(wlUseOneStatement);
+        fdlUseOneStatement = new FormData();
+        fdlUseOneStatement.left = new FormAttachment(0, 0);
+        fdlUseOneStatement.top = new FormAttachment(wbFilename, margin);
+        fdlUseOneStatement.right = new FormAttachment(middle, -margin);
+        wlUseOneStatement.setLayoutData(fdlUseOneStatement);
+        wSendOneStatement = new Button(shell, SWT.CHECK);
+        props.setLook(wSendOneStatement);
+        wSendOneStatement.setToolTipText(BaseMessages.getString(PKG, "JobSQL.SendOneStatement.Tooltip"));
+        fdUseOneStatement = new FormData();
+        fdUseOneStatement.left = new FormAttachment(middle, 0);
+        fdUseOneStatement.top = new FormAttachment(wbFilename, margin);
+        fdUseOneStatement.right = new FormAttachment(100, 0);
+        wSendOneStatement.setLayoutData(fdUseOneStatement);
+        wSendOneStatement.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                jobEntry.setChanged();
+            }
+        });
 		
         // Use variable substitution?
         wlUseSubs = new Label(shell, SWT.RIGHT);
@@ -283,7 +312,7 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
         props.setLook(wlUseSubs);
         fdlUseSubs = new FormData();
         fdlUseSubs.left = new FormAttachment(0, 0);
-        fdlUseSubs.top = new FormAttachment(wFilename, margin);
+        fdlUseSubs.top = new FormAttachment(wSendOneStatement, margin);
         fdlUseSubs.right = new FormAttachment(middle, -margin);
         wlUseSubs.setLayoutData(fdlUseSubs);
         wUseSubs = new Button(shell, SWT.CHECK);
@@ -291,7 +320,7 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
         wUseSubs.setToolTipText(BaseMessages.getString(PKG, "JobSQL.UseVariableSubst.Tooltip"));
         fdUseSubs = new FormData();
         fdUseSubs.left = new FormAttachment(middle, 0);
-        fdUseSubs.top = new FormAttachment(wFilename, margin);
+        fdUseSubs.top = new FormAttachment(wSendOneStatement, margin);
         fdUseSubs.right = new FormAttachment(100, 0);
         wUseSubs.setLayoutData(fdUseSubs);
         wUseSubs.addSelectionListener(new SelectionAdapter()
@@ -458,6 +487,7 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
 
         wUseSubs.setSelection(jobEntry.getUseVariableSubstitution());
         wSQLFromFile.setSelection(jobEntry.getSQLFromFile());
+        wSendOneStatement.setSelection(jobEntry.isSendOneStatement());
         
         if (jobEntry.getSQLFilename() != null)
         	wFilename.setText(jobEntry.getSQLFilename());
@@ -502,7 +532,7 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
         jobEntry.setUseVariableSubstitution(wUseSubs.getSelection());
         jobEntry.setSQLFromFile(wSQLFromFile.getSelection());
         jobEntry.setSQLFilename(wFilename.getText());
-        
+        jobEntry.setSendOneStatement(wSendOneStatement.getSelection());
         jobEntry.setDatabase(jobMeta.findDatabase(wConnection.getText()));
         dispose();
     }

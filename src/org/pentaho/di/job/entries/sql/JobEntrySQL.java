@@ -65,6 +65,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 	private boolean useVariableSubstitution = false;
 	private boolean sqlfromfile=false;
 	private String sqlfilename;
+	private boolean sendOneStatement=false;
 
 	public JobEntrySQL(String n)
 	{
@@ -95,7 +96,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 		retval.append("      ").append(XMLHandler.addTagValue("useVariableSubstitution", useVariableSubstitution ? "T" : "F"));
 		retval.append("      ").append(XMLHandler.addTagValue("sqlfromfile", sqlfromfile ? "T" : "F"));
 		retval.append("      ").append(XMLHandler.addTagValue("sqlfilename",      sqlfilename));
-		
+		retval.append("      ").append(XMLHandler.addTagValue("sendOneStatement", sendOneStatement ? "T" : "F"));
 		
 		retval.append("      ").append(XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
 
@@ -122,6 +123,9 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 			
 			sqlfilename    = XMLHandler.getTagValue(entrynode, "sqlfilename");
 			
+			String sOneStatement  = XMLHandler.getTagValue(entrynode, "sendOneStatement");
+			if (sOneStatement != null && sOneStatement.equalsIgnoreCase("T"))
+				sendOneStatement = true;
 
 		}
 		catch(KettleException e)
@@ -142,6 +146,10 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 			String ssql = rep.getJobEntryAttributeString(id_jobentry, "sqlfromfile");
 			if (ssql != null && ssql.equalsIgnoreCase("T"))
 				sqlfromfile = true;
+			
+			String ssendOneStatement = rep.getJobEntryAttributeString(id_jobentry, "sendOneStatement");
+			if (ssendOneStatement != null && ssendOneStatement.equalsIgnoreCase("T"))
+				sendOneStatement = true;
 			
 			sqlfilename = rep.getJobEntryAttributeString(id_jobentry, "sqlfilename");
 			
@@ -165,7 +173,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "useVariableSubstitution", useVariableSubstitution ? "T" : "F" );
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "sqlfromfile", sqlfromfile ? "T" : "F" );
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "sqlfilename", sqlfilename);
-	
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "sendOneStatement", sendOneStatement ? "T" : "F" );
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -212,7 +220,15 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 		return sqlfromfile;
 	}
 	
-
+	public boolean isSendOneStatement()
+	{
+		return sendOneStatement;
+	}
+	public void setSendOneStatement(boolean sendOneStatementin)
+	{
+		sendOneStatement = sendOneStatementin;
+	}
+	
 	public void setDatabase(DatabaseMeta database)
 	{
 		this.connection = database;
@@ -277,7 +293,11 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 						if(!Const.isEmpty(SFullLine))
 						{
 							if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobSQL.Log.SQlStatement",SFullLine));
-							db.execStatement(SFullLine);
+							// Run SQL
+							if(sendOneStatement)
+								db.execStatement(SFullLine);
+							else
+								db.execStatements(SFullLine);
 						}
 					}catch (Exception e)
 					{
@@ -291,7 +311,10 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 						mySQL = environmentSubstitute(sql);
 					else
 						mySQL = sql;
-					db.execStatements(mySQL);
+					if(sendOneStatement)
+						db.execStatement(mySQL);
+					else
+						db.execStatements(mySQL);
 				}
 			}
 			catch(KettleDatabaseException je)
