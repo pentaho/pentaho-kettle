@@ -40,6 +40,8 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MenuDetectEvent;
+import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -276,11 +278,9 @@ public class StyledTextComp extends Composite{
 			}
 		});
 			
-		
-		styledText.addListener(SWT.MouseDown, new Listener(){
-			public void handleEvent(Event e){
-				if (e.button == 3) {
-					//Enable menues, if the Selection is ok
+		styledText.addMenuDetectListener(new MenuDetectListener() {
+			public void menuDetected(MenuDetectEvent e) {
+					//Enable menus, if the Selection is ok
 					if(undoStack.size() > 0) styledTextPopupmenu.getItem(0).setEnabled(true);
 					else styledTextPopupmenu.getItem(0).setEnabled(false);
 
@@ -295,7 +295,6 @@ public class StyledTextComp extends Composite{
 						styledTextPopupmenu.getItem(3).setEnabled(false);
 						styledTextPopupmenu.getItem(4).setEnabled(false);
 					}
-				}
 			}
 		});
 		styledText.setMenu(styledTextPopupmenu);

@@ -12,8 +12,8 @@
 package org.pentaho.di.ui.repository.dialog;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MenuDetectEvent;
+import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -190,14 +190,11 @@ public class SelectDirectoryDialog extends Dialog
             }
         });
 
-        wTree.addMouseListener(new MouseAdapter()
+        wTree.addMenuDetectListener(new MenuDetectListener() 
         {
-            public void mouseDown(MouseEvent e)
+            public void menuDetected(MenuDetectEvent e)
             {
-                if (e.button == 3) // right click!
-                {
-                    setTreeMenu();
-                }
+                setTreeMenu();
             }
         });
 

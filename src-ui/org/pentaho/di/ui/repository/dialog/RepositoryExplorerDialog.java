@@ -33,6 +33,8 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MenuDetectEvent;
+import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -377,17 +379,18 @@ public class RepositoryExplorerDialog extends Dialog
     				}
     			}
     		);
+
+            wTree.addMenuDetectListener(new MenuDetectListener() 
+            	{
+                	public void menuDetected(MenuDetectEvent e)
+                	{	
+                		setTreeMenu();
+                	}
+            	}
+            );
     		
     		wTree.addMouseListener(new MouseAdapter()
     			{
-    				public void mouseDown(MouseEvent e)
-    				{
-    					if (e.button == 3) // right click!
-    					{
-    						setTreeMenu();
-    					}
-    				}
-    				
     				public void mouseDoubleClick(MouseEvent e) {
     					if (e.button == 1) // left double click!
     					{
