@@ -34,6 +34,7 @@ public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements Repo
     		public boolean supportsRevisions() { return false; }
     		public boolean supportsMetadata() { return false; }
     		public boolean supportsLocking() { return false; }
+    		public boolean hasVersionRegistry() { return false; }
     	};
     }
 

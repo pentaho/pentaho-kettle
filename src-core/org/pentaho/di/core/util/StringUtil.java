@@ -110,7 +110,7 @@ public class StringUtil
 	 * @param aString
 	 *            the string on which to apply the substitution.
 	 * @param variablesValues
-	 *            a map containg the variable values. The keys are the variable
+	 *            a map containing the variable values. The keys are the variable
 	 *            names, the values are the variable values.
 	 * @param open
 	 *            the open delimiter for variables.

@@ -15,6 +15,7 @@ package org.pentaho.di.ui.repository;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -25,6 +26,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class RepositoryDirectoryUI {
@@ -36,6 +39,7 @@ public class RepositoryDirectoryUI {
 
      * @param ti The TreeItem to set the name on and to create the subdirectories
      * @param rep The repository
+     * @param objectMap The tree path to repository object mapping to populate.
      * @param dircolor The color in which the directories will be drawn.
      * @param sortPosition The sort position
      * @param ascending The ascending flag
@@ -43,7 +47,7 @@ public class RepositoryDirectoryUI {
      * @param getJobs Include jobs in the tree or not
      * @throws KettleDatabaseException
      */
-	public static void getTreeWithNames(TreeItem ti, Repository rep, Color dircolor, int sortPosition, boolean includeDeleted, boolean ascending, boolean getTransformations, boolean getJobs, RepositoryDirectory dir, String filterString) throws KettleDatabaseException
+	public static void getTreeWithNames(TreeItem ti, Repository rep, Map<String, RepositoryObject> objectMap, Color dircolor, int sortPosition, boolean includeDeleted, boolean ascending, boolean getTransformations, boolean getJobs, RepositoryDirectory dir, String filterString) throws KettleDatabaseException
 	{
 		ti.setText(dir.getDirectoryName());
 		ti.setForeground(dircolor);
@@ -55,7 +59,7 @@ public class RepositoryDirectoryUI {
 			RepositoryDirectory subdir = dir.getSubdirectory(i);
 			TreeItem subti = new TreeItem(ti, SWT.NONE);
 			subti.setImage(GUIResource.getInstance().getImageArrow());
-			getTreeWithNames(subti, rep, dircolor, sortPosition, includeDeleted, ascending, getTransformations, getJobs, subdir, filterString);
+			getTreeWithNames(subti, rep, objectMap, dircolor, sortPosition, includeDeleted, ascending, getTransformations, getJobs, subdir, filterString);
 		}
 		
 		try
@@ -126,7 +130,7 @@ public class RepositoryDirectoryUI {
                 	{
                 		if(repositoryObject.getObjectType()!=null)
                 		{
-                			if (repositoryObject.getObjectType().toUpperCase().indexOf(filterString) >= 0)
+                			if (repositoryObject.getObjectType().getTypeDescription().toUpperCase().indexOf(filterString) >= 0)
                 				add=true;
                 		}
                 	}
@@ -137,18 +141,28 @@ public class RepositoryDirectoryUI {
                 {
                 	nrAdded++;
 	                TreeItem tiObject = new TreeItem(ti, SWT.NONE);
-	                if(repositoryObject.getObjectType()==RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION)
+	                if(repositoryObject.getObjectType()==RepositoryObjectType.TRANSFORMATION) {
 	                	tiObject.setImage(GUIResource.getInstance().getImageTransGraph());
-	                else if(repositoryObject.getObjectType()==RepositoryObject.STRING_OBJECT_TYPE_JOB)
+	                } else if(repositoryObject.getObjectType()==RepositoryObjectType.JOB) {
 	                	tiObject.setImage(GUIResource.getInstance().getImageJobGraph());
+	                }
 	                
 	                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	                tiObject.setText(0, Const.NVL(repositoryObject.getName(), ""));
-	                tiObject.setText(1, Const.NVL(repositoryObject.getObjectType(), ""));
+	                tiObject.setText(1, Const.NVL(repositoryObject.getObjectType().getTypeDescription(), ""));
 	                tiObject.setText(2, Const.NVL(repositoryObject.getModifiedUser(), ""));
 	                tiObject.setText(3, repositoryObject.getModifiedDate()!=null ? simpleDateFormat.format(repositoryObject.getModifiedDate()) : "");
 	                tiObject.setText(4, Const.NVL(repositoryObject.getDescription(), ""));
 	                tiObject.setText(5, Const.NVL(repositoryObject.getLockMessage(), ""));
+	                
+	                if (repositoryObject.isDeleted()) {
+	                	tiObject.setForeground(GUIResource.getInstance().getColorRed());
+	                }
+
+	                // Store the displayed repository object in the map...
+	                //
+	                String fullPath = ConstUI.getTreePath(tiObject, 0);
+	                objectMap.put(fullPath, repositoryObject);
                 }
             }
 

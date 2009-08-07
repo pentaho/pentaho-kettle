@@ -12,6 +12,9 @@
  
 
 package org.pentaho.di.ui.repository.dialog;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -42,6 +45,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -101,6 +105,8 @@ public class SelectObjectDialog extends Dialog
 	private RepositoryCapabilities	capabilities;
 
 	private boolean	includeDeleted;
+
+	private Map<String,RepositoryObject>	objectMap;
 	
     public SelectObjectDialog(Shell parent, Repository rep)
     {
@@ -378,7 +384,9 @@ public class SelectObjectDialog extends Dialog
             ti.setImage(GUIResource.getInstance().getImageFolderConnections());
             ti.setExpanded(true);
             
-			RepositoryDirectoryUI.getTreeWithNames(ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, directoryTree, filterString);
+            objectMap = new HashMap<String, RepositoryObject>();
+            
+			RepositoryDirectoryUI.getTreeWithNames(ti, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, directoryTree, filterString);
         }
         catch(KettleException e)
         {

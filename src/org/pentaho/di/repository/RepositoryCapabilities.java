@@ -31,4 +31,9 @@ public interface RepositoryCapabilities {
 	 * @return true if this repository supports file locking
 	 */
 	public boolean supportsLocking();
+	
+	/**
+	 * @return true if the repository has a version registry
+	 */
+	public boolean hasVersionRegistry();
 }

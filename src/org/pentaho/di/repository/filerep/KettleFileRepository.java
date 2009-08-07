@@ -37,6 +37,7 @@ import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.UserInfo;
+import org.pentaho.di.repository.RepositoryVersionRegistry;
 import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
@@ -734,9 +735,10 @@ public class KettleFileRepository implements Repository {
 					
 					if (name.endsWith(EXT_TRANSFORMATION)) {
 						
+						ObjectId id = new StringObjectId(calcObjectId(directory, folderName, EXT_TRANSFORMATION));
 						String transName = name.substring(0, name.length()-4);
 						Date date = new Date(child.getContent().getLastModifiedTime());
-						list.add( new RepositoryObject(transName, "-", date, "Transformation", "", "") );
+						list.add( new RepositoryObject(id, transName, directory, "-", date, RepositoryObjectType.TRANSFORMATION, "", "", false) );
 					}
 				}
 			}
@@ -764,10 +766,11 @@ public class KettleFileRepository implements Repository {
 					String name = child.getName().getBaseName();
 					
 					if (name.endsWith(EXT_JOB)) {
-						
-						String transName = name.substring(0, name.length()-4);
+
+						ObjectId id = new StringObjectId(calcObjectId(directory, folderName, EXT_JOB));
+						String jobName = name.substring(0, name.length()-4);
 						Date date = new Date(child.getContent().getLastModifiedTime());
-						list.add( new RepositoryObject(transName, "-", date, "Job", "", "") );
+						list.add( new RepositoryObject(id, jobName, directory, "-", date, RepositoryObjectType.JOB, "", "", false) );
 					}
 				}
 			}
@@ -1040,4 +1043,8 @@ public class KettleFileRepository implements Repository {
 		// NOT IMPLEMENTED!
 	}
 
+	public RepositoryVersionRegistry getVersionRegistry() throws KettleException {
+		// NOT IMPLEMENTED
+		return null;
+	}
 }

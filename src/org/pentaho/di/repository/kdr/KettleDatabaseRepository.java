@@ -53,6 +53,7 @@ import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.UserInfo;
+import org.pentaho.di.repository.RepositoryVersionRegistry;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryClusterSchemaDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConditionDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectionDelegate;
@@ -1698,6 +1699,11 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	
 	public void undeleteObject(RepositoryElementLocationInterface element) throws KettleException {
 		// NOT IMPLEMENTED
+	}
+
+	public RepositoryVersionRegistry getVersionRegistry() throws KettleException {
+		// NOT IMPLEMENTED
+		return null;
 	}
 
 }

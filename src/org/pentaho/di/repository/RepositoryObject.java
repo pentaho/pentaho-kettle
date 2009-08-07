@@ -30,11 +30,14 @@ public class RepositoryObject
     public static final String STRING_OBJECT_TYPE_JOB =            "Job";
     
     private String name;
+    private RepositoryDirectory repositoryDirectory;
     private String modifiedUser;
     private Date   modifiedDate;
-    private String objectType; 
+    private RepositoryObjectType objectType; 
     private String description;
     private String lockMessage;
+    private boolean deleted;
+	private ObjectId	objectId;
     
     public RepositoryObject()
     {
@@ -45,15 +48,18 @@ public class RepositoryObject
      * @param modifiedUser
      * @param modifiedDate
      */
-    public RepositoryObject(String name, String modifiedUser, Date modifiedDate, String objectType, String description, String lockMessage)
+    public RepositoryObject(ObjectId objectId, String name, RepositoryDirectory repositoryDirectory, String modifiedUser, Date modifiedDate, RepositoryObjectType objectType, String description, String lockMessage, boolean deleted)
     {
         this();
+        this.objectId = objectId;
         this.name = name;
+        this.repositoryDirectory = repositoryDirectory;
         this.modifiedUser = modifiedUser;
         this.modifiedDate = modifiedDate;
         this.objectType = objectType;
         this.description = description;
         this.lockMessage = lockMessage;
+        this.deleted = deleted;
     }
 
     /**
@@ -131,7 +137,7 @@ public class RepositoryObject
                     switch(sortPosition)
                     {
                     case 0: result=compareStrings(r1.getName(), r2.getName()); break; 
-                    case 1: result=compareStrings(r1.getObjectType(), r2.getObjectType()); break;
+                    case 1: result=compareStrings(r1.getObjectType().getTypeDescription(), r2.getObjectType().getTypeDescription()); break;
                     case 2: result=compareStrings(r1.getModifiedUser(), r2.getModifiedUser()); break;
                     case 3: result=compareDates(r1.getModifiedDate(), r2.getModifiedDate()); break; 
                     case 4: result=compareStrings(r1.getDescription(), r2.getDescription()); break; 
@@ -148,7 +154,7 @@ public class RepositoryObject
     /**
      * @return the objectType
      */
-    public String getObjectType()
+    public RepositoryObjectType getObjectType()
     {
         return objectType;
     }
@@ -156,7 +162,7 @@ public class RepositoryObject
     /**
      * @param objectType the objectType to set
      */
-    public void setObjectType(String objectType)
+    public void setObjectType(RepositoryObjectType objectType)
     {
         this.objectType = objectType;
     }
@@ -189,6 +195,48 @@ public class RepositoryObject
 	 */
 	public void setLockMessage(String lockMessage) {
 		this.lockMessage = lockMessage;
+	}
+
+	/**
+	 * @return the deleted
+	 */
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	/**
+	 * @param deleted the deleted to set
+	 */
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	/**
+	 * @return the repositoryDirectory
+	 */
+	public RepositoryDirectory getRepositoryDirectory() {
+		return repositoryDirectory;
+	}
+
+	/**
+	 * @param repositoryDirectory the repositoryDirectory to set
+	 */
+	public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
+		this.repositoryDirectory = repositoryDirectory;
+	}
+
+	/**
+	 * @return the objectId
+	 */
+	public ObjectId getObjectId() {
+		return objectId;
+	}
+
+	/**
+	 * @param objectId the objectId to set
+	 */
+	public void setObjectId(ObjectId objectId) {
+		this.objectId = objectId;
 	}
     
 }

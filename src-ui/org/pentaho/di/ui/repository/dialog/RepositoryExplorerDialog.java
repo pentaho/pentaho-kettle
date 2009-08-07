@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
@@ -78,9 +80,11 @@ import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryElementLocation;
 import org.pentaho.di.repository.RepositoryElementLocationInterface;
 import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryPluginMeta;
 import org.pentaho.di.repository.RepositorySecurityProvider;
@@ -228,6 +232,7 @@ public class RepositoryExplorerDialog extends Dialog
 	private boolean	readonly;
 	private RepositorySecurityProvider	securityProvider;
 	private boolean	includeDeleted;
+	private Map<String, RepositoryObject>	objectMap;
 
 	private RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, VariableSpace variableSpace)
 	{
@@ -240,6 +245,8 @@ public class RepositoryExplorerDialog extends Dialog
 
         sortColumn = 0;
         ascending = false;
+        
+        objectMap = new HashMap<String, RepositoryObject>();
         
         repositoryMeta = rep.getRepositoryMeta();
         capabilities = repositoryMeta.getRepositoryCapabilities();
@@ -353,7 +360,7 @@ public class RepositoryExplorerDialog extends Dialog
             lockColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(5); } });
 
             // Add a memory to the tree.
-            TreeMemory.addTreeListener(wTree,STRING_REPOSITORY_EXPLORER_TREE_NAME);
+            TreeMemory.addTreeListener(wTree, STRING_REPOSITORY_EXPLORER_TREE_NAME);
             
      		// Buttons
     		wOK = new Button(shell, SWT.PUSH); 
@@ -397,7 +404,6 @@ public class RepositoryExplorerDialog extends Dialog
     						doDoubleClick();
     					}
     				}
-
     			}
     		);
     		
@@ -661,9 +667,11 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 	  for (TreeItem item : treeitems) { 
 		    item.setExpanded(expand);
+		    TreeMemory.getInstance().storeExpanded(STRING_REPOSITORY_EXPLORER_TREE_NAME, ConstUI.getTreeStrings(item), expand);
 		    if(item.getItemCount()>0)
 		    	expandAllItems(item.getItems(),expand);
 	    }
+	  
 	}
 	protected void setSort(int i)
     {
@@ -801,7 +809,10 @@ public class RepositoryExplorerDialog extends Dialog
 			final TreeItem ti = tisel[0];
 			final int level = ConstUI.getTreeLevel(ti);
 			final String path[] = ConstUI.getTreeStrings(ti);
+			final String fullPath = ConstUI.getTreePath(ti, 0);
 			final String item = ti.getText();
+			
+			final RepositoryObject repositoryObject = objectMap.get(fullPath); 
 		
 			int cat = getItemCategory(ti);
 			
@@ -975,65 +986,80 @@ public class RepositoryExplorerDialog extends Dialog
 			case ITEM_CATEGORY_TRANSFORMATIONS_ROOT        :
 				break;
 			case ITEM_CATEGORY_TRANSFORMATION              :
-				if (level>=2)
+				if (level>=2 && repositoryObject!=null)
 				{
-					// The first 1 levels of path[] don't belong to the path to this transformation!
-					String realpath[] = new String[level-2];
-					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
-					
-					// Find the directory in the directory tree...
-					final RepositoryDirectory repdir = directoryTree.findDirectory(realpath);
+					final RepositoryDirectory repdir = repositoryObject.getRepositoryDirectory();
 
-					// Open transformation...
-					MenuItem miOpen  = new MenuItem(mTree, SWT.PUSH); 
-					miOpen.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Open")); //$NON-NLS-1$
-					miOpen.addSelectionListener( 
-						new SelectionAdapter() 
-						{ 
-							public void widgetSelected(SelectionEvent e) 
-							{ 
-								openTransformation(item, repdir);
-							}
+					if (tisel.length==1) {
+						if (!repositoryObject.isDeleted()) {
+							// Open transformation...
+							MenuItem miOpen  = new MenuItem(mTree, SWT.PUSH); 
+							miOpen.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Open")); //$NON-NLS-1$
+							miOpen.addSelectionListener( 
+								new SelectionAdapter() 
+								{ 
+									public void widgetSelected(SelectionEvent e) 
+									{ 
+										openTransformation(item, repdir);
+									}
+								}
+							);
+							// Rename transformation
+							MenuItem miRen  = new MenuItem(mTree, SWT.PUSH); 
+							miRen.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Rename")); //$NON-NLS-1$
+							miRen.addSelectionListener( 
+								new SelectionAdapter() 
+								{ 
+									public void widgetSelected(SelectionEvent e) 
+									{ 
+										renameTransformation(item, repdir); 
+									}
+								}
+							);
+							miRen.setEnabled(!readonly);
 						}
-					);
-					// Transformation history...
-					MenuItem miHist = new MenuItem(mTree, SWT.PUSH); 
-					miHist.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.History")); //$NON-NLS-1$
-					miHist.addSelectionListener( 
-						new SelectionAdapter() 
-						{ 
-							public void widgetSelected(SelectionEvent e) 
+						// Transformation history...
+						MenuItem miHist = new MenuItem(mTree, SWT.PUSH); 
+						miHist.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.History")); //$NON-NLS-1$
+						miHist.addSelectionListener( 
+							new SelectionAdapter() 
 							{ 
-								showTransformationVersions(item, repdir);
+								public void widgetSelected(SelectionEvent e) 
+								{ 
+									showTransformationVersions(item, repdir);
+								}
 							}
-						}
-					);
-					// Delete transformation
-					MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
-					miDel.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Delete")); //$NON-NLS-1$
-					miDel.addSelectionListener( 
-						new SelectionAdapter() 
-						{ 
-							public void widgetSelected(SelectionEvent e) 
+						);
+					}
+					
+					if (repositoryObject.isDeleted()) {
+						// Restore transformation
+						MenuItem miRestore  = new MenuItem(mTree, SWT.PUSH); 
+						miRestore.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Restore")); //$NON-NLS-1$
+						miRestore.addSelectionListener( 
+							new SelectionAdapter() 
 							{ 
-								delSelectedTransformations(); 
+								public void widgetSelected(SelectionEvent e) 
+								{ 
+									restoreSelectedObjects(); 
+								}
 							}
-						}
-					);
-					// Rename transformation
-					miDel.setEnabled(!readonly);
-					MenuItem miRen  = new MenuItem(mTree, SWT.PUSH); 
-					miRen.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Rename")); //$NON-NLS-1$
-					miRen.addSelectionListener( 
-						new SelectionAdapter() 
-						{ 
-							public void widgetSelected(SelectionEvent e) 
+						);
+					} else {
+						// Delete transformation
+						MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
+						miDel.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Delete")); //$NON-NLS-1$
+						miDel.addSelectionListener( 
+							new SelectionAdapter() 
 							{ 
-								renameTransformation(item, repdir); 
+								public void widgetSelected(SelectionEvent e) 
+								{ 
+									delSelectedObjects(); 
+								}
 							}
-						}
-					);
-					miRen.setEnabled(!readonly);
+						);
+						miDel.setEnabled(!readonly);
+					}
 				}
 				break;
 				
@@ -1119,52 +1145,79 @@ public class RepositoryExplorerDialog extends Dialog
 			case ITEM_CATEGORY_JOBS_ROOT                   :
 				break;				
 			case ITEM_CATEGORY_JOB                         :
+				if (level>=2 && repositoryObject!=null)
 				{
-					// The first 3 levels of text[] don't belong to the path to this transformation!
-					String realpath[] = new String[level-2];
-					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
-					
-					// Find the directory in the directory tree...
-					final RepositoryDirectory repdir = directoryTree.findDirectory(realpath);
-	
-                    // Open job...
-                    MenuItem miOpen  = new MenuItem(mTree, SWT.PUSH); 
-                    miOpen.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.Open")); //$NON-NLS-1$
-                    miOpen.addSelectionListener( 
-                        new SelectionAdapter() 
-                        { 
-                            public void widgetSelected(SelectionEvent e) 
-                            { 
-                                openJob(item, repdir);
-                            }
-                        }
-                    );
-					// Delete job
-					MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
-					miDel.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.Delete")); //$NON-NLS-1$
-					miDel.addSelectionListener( 
-						new SelectionAdapter() 
-						{ 
-							public void widgetSelected(SelectionEvent e) 
-							{ 
-								if (delJob(item, repdir)) ti.dispose();
-							}
+					final RepositoryDirectory repdir = repositoryObject.getRepositoryDirectory();
+
+					if (tisel.length==1) {
+						if (!repositoryObject.isDeleted()) {
+		                    // Open job...
+		                    MenuItem miOpen  = new MenuItem(mTree, SWT.PUSH); 
+		                    miOpen.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.Open")); //$NON-NLS-1$
+		                    miOpen.addSelectionListener( 
+		                        new SelectionAdapter() 
+		                        { 
+		                            public void widgetSelected(SelectionEvent e) 
+		                            { 
+		                                openJob(item, repdir);
+		                            }
+		                        }
+		                    );
+							// Rename job
+							MenuItem miRen  = new MenuItem(mTree, SWT.PUSH); 
+							miRen.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.Rename")); //$NON-NLS-1$
+							miRen.addSelectionListener( 
+								new SelectionAdapter() 
+								{ 
+									public void widgetSelected(SelectionEvent e) 
+									{ 
+										renameJob(ti, item, repdir); 
+									}
+								}
+							);
+							miRen.setEnabled(!readonly);
 						}
-					);
-					// Rename job
-					miDel.setEnabled(!readonly);
-					MenuItem miRen  = new MenuItem(mTree, SWT.PUSH); 
-					miRen.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.Rename")); //$NON-NLS-1$
-					miRen.addSelectionListener( 
-						new SelectionAdapter() 
-						{ 
-							public void widgetSelected(SelectionEvent e) 
+						// Job history...
+						MenuItem miHist = new MenuItem(mTree, SWT.PUSH); 
+						miHist.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.History")); //$NON-NLS-1$
+						miHist.addSelectionListener( 
+							new SelectionAdapter() 
 							{ 
-								renameJob(ti, item, repdir); 
+								public void widgetSelected(SelectionEvent e) 
+								{ 
+									showJobVersions(item, repdir);
+								}
 							}
-						}
-					);
-					miRen.setEnabled(!readonly);
+						);
+					}
+					if (repositoryObject.isDeleted()) {
+						// Restore transformation
+						MenuItem miRestore  = new MenuItem(mTree, SWT.PUSH); 
+						miRestore.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.Restore")); //$NON-NLS-1$
+						miRestore.addSelectionListener( 
+							new SelectionAdapter() 
+							{ 
+								public void widgetSelected(SelectionEvent e) 
+								{ 
+									restoreSelectedObjects(); 
+								}
+							}
+						);
+					} else {
+						// Delete job
+						MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
+						miDel.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.Delete")); //$NON-NLS-1$
+						miDel.addSelectionListener( 
+							new SelectionAdapter() 
+							{ 
+								public void widgetSelected(SelectionEvent e) 
+								{ 
+									delSelectedObjects();
+								}
+							}
+						);
+						miDel.setEnabled(!readonly);
+					}
 				}
 				break;
 				
@@ -1326,6 +1379,7 @@ public class RepositoryExplorerDialog extends Dialog
 		try
 		{
 			wTree.removeAll();
+			objectMap.clear();
 			
 			// Load the directory tree:
 			directoryTree = rep.loadRepositoryDirectoryTree();
@@ -1409,7 +1463,7 @@ public class RepositoryExplorerDialog extends Dialog
 				TreeItem newCat = new TreeItem(tiTrans, SWT.NONE);
 				newCat.setImage(GUIResource.getInstance().getImageLogoSmall());
 	    		Color dircolor = GUIResource.getInstance().getColorDirectory();
-				RepositoryDirectoryUI.getTreeWithNames(newCat, rep, dircolor, sortColumn, includeDeleted, ascending, true, false, directoryTree, null);
+				RepositoryDirectoryUI.getTreeWithNames(newCat, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, true, false, directoryTree, null);
 			}
 			
 			// The Jobs...				
@@ -1422,7 +1476,7 @@ public class RepositoryExplorerDialog extends Dialog
 				TreeItem newJob = new TreeItem(tiJob, SWT.NONE);
 				newJob.setImage(GUIResource.getInstance().getImageLogoSmall());
 	    		Color dircolor = GUIResource.getInstance().getColorDirectory();
-				RepositoryDirectoryUI.getTreeWithNames(newJob, rep, dircolor, sortColumn, includeDeleted, ascending, false, true, directoryTree, null);
+				RepositoryDirectoryUI.getTreeWithNames(newJob, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, false, true, directoryTree, null);
 			}
 	
 			//
@@ -1471,12 +1525,13 @@ public class RepositoryExplorerDialog extends Dialog
 					}
 				}
 			}
-            
+
+            // Always expand the top level entry...
+			TreeMemory.getInstance().storeExpanded(STRING_REPOSITORY_EXPLORER_TREE_NAME, new String[] { tiTree.getText() }, true);
+
             // Set the expanded flags based on the TreeMemory
 			TreeMemory.setExpandedFromMemory(wTree, STRING_REPOSITORY_EXPLORER_TREE_NAME);
             
-            // Always expand the top level entry...
-            tiTree.setExpanded(true);
 		}
 		catch(KettleException dbe)
 		{
@@ -1499,12 +1554,22 @@ public class RepositoryExplorerDialog extends Dialog
 	
 	public void showTransformationVersions(String name, RepositoryDirectory repdir)
 	{
+		showItemVersions(name, repdir, RepositoryObjectType.TRANSFORMATION);
+	}
+
+	public void showJobVersions(String name, RepositoryDirectory repdir)
+	{
+		showItemVersions(name, repdir, RepositoryObjectType.JOB);
+	}
+
+	public void showItemVersions(String name, RepositoryDirectory repdir, RepositoryObjectType objectType)
+	{
 		try {
-			RepositoryRevisionBrowserDialogInterface versionBrowserDialog = getVersionBrowserDialog(name, repdir, RepositoryObjectType.TRANSFORMATION);
+			RepositoryRevisionBrowserDialogInterface versionBrowserDialog = getVersionBrowserDialog(name, repdir, objectType);
 			
 			String versionLabel = versionBrowserDialog.open();
 			if (versionLabel!=null) {
-				lastOpened = new RepositoryObjectReference(RepositoryObjectType.TRANSFORMATION, repdir, name, versionLabel);
+				lastOpened = new RepositoryObjectReference(objectType, repdir, name, versionLabel);
 				if (callback != null) {
 					if (callback.open(lastOpened))			{
 						close();
@@ -1515,7 +1580,7 @@ public class RepositoryExplorerDialog extends Dialog
 				}
 			}
 		} catch(Exception e) {
-			new ErrorDialog(shell, "Error browsing transformation history", "There was an error browsing the transformation history", e);
+			new ErrorDialog(shell, "Error browsing item history", "There was an error browsing the history of ["+name+"] in ["+repdir.getPath()+"]", e);
 		}
 	}
 
@@ -1532,15 +1597,13 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 	}
 
-	public boolean delSelectedTransformations()
+	public boolean delSelectedObjects()
 	{
-		boolean retval=false;
-		TreeItem tiSel[] = wTree.getSelection();
-		boolean done  = false;
+		TreeItem items[] = wTree.getSelection();
 		boolean error = false;
 
 		MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
-		mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message1")+(tiSel.length>1?BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message2")+tiSel.length+BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message3"):BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message4"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message1")+(items.length>1?BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message2")+items.length+BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message3"):BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message4"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Title")); //$NON-NLS-1$
 		int answer = mb.open();
 		
@@ -1549,58 +1612,49 @@ public class RepositoryExplorerDialog extends Dialog
 			return false;
 		}
 		
-		for (int i=0;i<tiSel.length;i++)
+		for (int i=0;i<items.length;i++)
 		{
-			TreeItem ti = tiSel[i];
-			String name = ti.getText();
-			done = false;
-			
-			RepositoryDirectory repdir = getDirectory(ti);
-			
-			try
-			{
-				ObjectId id = rep.getTransformationID(ti.getText(), repdir);
-		
-				// System.out.println("Deleting transformation ["+name+"] with ID = "+id);
-		
-				if (id!=null)
-				{
-					// System.out.println("OK, Deleting transformation ["+name+"] with ID = "+id);
-					
-					try
-					{
-						rep.deleteTransformation(id);
-						done=true;
+			final RepositoryObject repositoryObject = objectMap.get(ConstUI.getTreePath(items[i], 0));
+			if (repositoryObject!=null) {
+				
+				try {
+					switch(repositoryObject.getObjectType()) {
+					case TRANSFORMATION : rep.deleteTransformation(repositoryObject.getObjectId()); break;
+					case JOB            : rep.deleteJob(repositoryObject.getObjectId()); break;
+					default: 
+						break;
 					}
-					catch(KettleException dbe)
-					{
-						new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRemoving.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRemoving.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						error=true;
-					}
-				}
-				else
-				{
-					mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorFinding.Message1")+name+"]"+Const.CR+BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorFinding.Title")); //$NON-NLS-1$
-					mb.open();
+				} catch(Exception e) {
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRemoving.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRemoving.Message")+repositoryObject.getName()+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					error=true;
 				}
-		
-				if (!error)
-				{
-					retval=true;
-				}
-				if (done) ti.dispose();
-			}
-			catch(KettleException dbe)
-			{
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorDeleting.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorDeleting.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
-				error=true;
 			}
 		}
+		refreshTree();
 		
-		return retval;
+		return !error;
+	}
+	
+	public boolean restoreSelectedObjects()
+	{
+		TreeItem items[] = wTree.getSelection();
+		boolean error = false;
+
+		for (int i=0;i<items.length;i++)
+		{
+			final RepositoryObject repositoryObject = objectMap.get(ConstUI.getTreePath(items[i], 0));
+			if (repositoryObject!=null) {
+				try {
+					rep.undeleteObject(new RepositoryElementLocation(repositoryObject.getName(), repositoryObject.getRepositoryDirectory(), repositoryObject.getObjectType()));
+				} catch(Exception e) {
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRestoring.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRestoring.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					error=true;
+				}
+			}
+		}
+		refreshTree();
+		
+		return !error;
 	}
 
 	public boolean renameTransformation(String name, RepositoryDirectory repdir)
@@ -1917,46 +1971,6 @@ public class RepositoryExplorerDialog extends Dialog
 		return retval;
 	}
 	
-	public boolean delJob(String name, RepositoryDirectory repdir)
-	{
-		boolean error = false;
-		
-		try
-		{
-			ObjectId id = rep.getJobId(name, repdir);
-	
-			// System.out.println("Deleting transformation ["+name+"] with ID = "+id);
-	
-			if (id!=null)
-			{
-				MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
-				mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Job.Delete.Confirmation.Message")); //$NON-NLS-1$
-				mb.setText("["+name+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-				int answer = mb.open();
-				
-				if (answer==SWT.YES)
-				{
-					// System.out.println("OK, Deleting transformation ["+name+"] with ID = "+id);
-					rep.deleteJob(id);
-				}
-			}
-			else
-			{
-				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Job.Delete.ErrorFinding.Message1")+name+"]"+Const.CR+BaseMessages.getString(PKG, "RepositoryExplorerDialog.Job.Delete.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Job.Delete.ErrorFinding.Title")); //$NON-NLS-1$
-				mb.open();
-				error=true;
-			}
-		}
-		catch(KettleException dbe)
-		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Job.Delete.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Job.Delete.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			error=true;
-		}
-			
-		return !error;
-	}
 
 	public void renameJob(TreeItem treeitem, String jobname, RepositoryDirectory repositorydir)
 	{

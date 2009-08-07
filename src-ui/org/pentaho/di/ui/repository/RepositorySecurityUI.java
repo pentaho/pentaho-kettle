@@ -33,7 +33,7 @@ public class RepositorySecurityUI {
 		
 		try {
 			if (repository==null) {
-				throw new KettleException("You are not logged on to a repository");
+				return false; // always OK if there is no repository.
 			}
 			repository.getSecurityProvider().validateAction(operations);
 		} catch(KettleException e) {
@@ -58,6 +58,9 @@ public class RepositorySecurityUI {
 				explanation+=": ";
 			}
 			String versionComment = Const.VERSION_COMMENT_EDIT_VERSION+" of ["+operationDescription+"]";
+			
+			
+			
 			EnterStringDialog dialog = new EnterStringDialog(shell, versionComment, "Enter comment", explanation);
 			dialog.setManditory(provider.isVersionCommentMandatory());
 			versionComment = dialog.open();

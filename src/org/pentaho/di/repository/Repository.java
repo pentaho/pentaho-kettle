@@ -439,14 +439,11 @@ public interface Repository {
 	public void undeleteObject(RepositoryElementLocationInterface element) throws KettleException;
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	// public List<RepositoryVersion> getRepositoryVersions()
+	/**
+	 * Get a hold of the version registry of this repository.
+	 * 
+	 * @return the version registry.
+	 * @throws KettleException in case something goes horribly wrong.
+	 */
+	public RepositoryVersionRegistry getVersionRegistry() throws KettleException;
 }
