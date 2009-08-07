@@ -903,11 +903,19 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 				realMoveToFolder=normalizePath(realMoveToFolder);
 				// Folder exists?
 				boolean folderExist=true;
+				if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.CheckMoveToFolder",realMoveToFolder));
+				String originalLocation = ftpclient.pwd();
 				try{
-					folderExist=ftpclient.exists(realMoveToFolder);
+					// does not work for folders, see PDI-2567: folderExist=ftpclient.exists(realMoveToFolder);
+					// try switching to the 'move to' folder.
+				    ftpclient.chdir(realMoveToFolder);
+					// Switch back to the previous location.
+				    if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTP.CheckMoveToFolderSwitchBack",originalLocation));
+					ftpclient.chdir(originalLocation);				    
 				}
 				catch (Exception e){
-					// Assume file does not exist !!
+					folderExist=false; 
+					// Assume folder does not exist !!
 				}
 				
 				if(!folderExist){
