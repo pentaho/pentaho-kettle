@@ -306,7 +306,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 	 */
 	public String getSQLListOfProcedures()
 	{
-		return "select o.name from sysobjects o, sysusers u where  xtype in ( 'FN', 'P' ) and o.uid = u.uid";
+		return "select o.name from sysobjects o, sysusers u where  xtype in ( 'FN', 'P' ) and o.uid = u.uid order by o.name";
 	}
 	/* (non-Javadoc)
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getReservedWords()

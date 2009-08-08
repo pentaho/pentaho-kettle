@@ -347,7 +347,8 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 		return  "select proname " +
 				"from pg_proc, pg_user " +
 				"where pg_user.usesysid = pg_proc.proowner " +
-				"and upper(pg_user.usename) = '"+getUsername().toUpperCase()+"'"
+				"and upper(pg_user.usename) = '"+getUsername().toUpperCase()+"' " +
+				"order by proname"
 				;
 	}
 
