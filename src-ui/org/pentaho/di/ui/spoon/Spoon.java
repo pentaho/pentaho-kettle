@@ -50,6 +50,8 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MenuDetectEvent;
+import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -4142,13 +4144,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			// Add a tree memory as well...
 			TreeMemory.addTreeListener(selectionTree, STRING_SPOON_MAIN_TREE);
 
-			selectionTree.addMouseListener(new MouseAdapter() {
-				public void mouseDown(MouseEvent event) {
-					if (event.button == 3) {
-						setMenu(selectionTree);
-					}
+			selectionTree.addMenuDetectListener(new MenuDetectListener() {
+				public void menuDetected(MenuDetectEvent e) {
+					setMenu(selectionTree);
 				}
 			});
+			
 			selectionTree.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					showSelection();
