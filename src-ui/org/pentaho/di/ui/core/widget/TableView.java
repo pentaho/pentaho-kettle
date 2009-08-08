@@ -2833,7 +2833,15 @@ public class TableView extends Composite
             }
         }
     }
-
+    
+    /**
+     * @return the getSortField
+     */
+    public int getSortField()
+    {
+    	return sortfield;
+    }
+    
     /**
      * @return the sortingDescending
      */

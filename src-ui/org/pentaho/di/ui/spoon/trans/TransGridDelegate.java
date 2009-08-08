@@ -280,6 +280,9 @@ public class TransGridDelegate extends SpoonDelegate {
             lastUpdateView = time;
 			int nrSteps = transGraph.trans.nrSteps();
 			if (hideInactiveSteps) nrSteps = transGraph.trans.nrActiveSteps();
+			
+			int sortColumn = transGridView.getSortField();
+			boolean sortDescending = transGridView.isSortingDescending();
 
 			if (table.getItemCount() != nrSteps)
             {
@@ -344,6 +347,10 @@ public class TransGridDelegate extends SpoonDelegate {
 			}
 			transGridView.setRowNums();
 			transGridView.optWidth(true);
+			// Only need to resort if the output has been sorted differently to the default
+			if (sortColumn != 0 || !sortDescending) {
+				transGridView.sortTable(sortColumn, sortDescending);
+			}
 		}
 		else
 		{
