@@ -536,7 +536,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 					public void widgetSelected (SelectionEvent e) {
 						wReadFrom.setText(calendar.getYear()+"-"+
 								((calendar.getMonth () + 1)<10 ? "0"+(calendar.getMonth () + 1) : (calendar.getMonth () + 1)) 
-										+"-"+((calendar.getDay () + 1)<10 ? "0"+calendar.getDay () : calendar.getDay ())
+										+"-"+(calendar.getDay()<10 ? "0"+calendar.getDay () : calendar.getDay())
 										+" "+(time.getHours()<10 ? "0"+time.getHours() : time.getHours())
 										+":"+(time.getMinutes()<10 ? "0"+time.getMinutes() : time.getMinutes())
 										+":"+(time.getMinutes()<10 ? "0"+time.getMinutes() : time.getMinutes())					
@@ -595,7 +595,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 					public void widgetSelected (SelectionEvent e) {
 						wReadTo.setText(calendarto.getYear()+"-"+
 								((calendarto.getMonth() + 1)<10 ? "0"+(calendarto.getMonth () + 1) : (calendarto.getMonth () + 1)) 
-								+"-"+((calendarto.getDay () + 1)<10 ? "0"+calendarto.getDay () : calendarto.getDay())
+								+"-"+(calendarto.getDay()<10 ? "0"+calendarto.getDay() : calendarto.getDay())
 								+" "+(timeto.getHours()<10 ? "0"+timeto.getHours() : timeto.getHours())
 								+":"+(timeto.getMinutes()<10 ? "0"+timeto.getMinutes() : timeto.getMinutes())
 								+":"+(timeto.getSeconds()<10 ? "0"+timeto.getSeconds() : timeto.getSeconds())
