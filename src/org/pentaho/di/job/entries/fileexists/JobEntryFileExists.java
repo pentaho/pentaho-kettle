@@ -17,6 +17,7 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlank
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
@@ -28,6 +29,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -36,9 +38,12 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.w3c.dom.Node;
 
 
@@ -204,5 +209,37 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
     andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
   }
 
-
+	/**
+	 * Since the exported job that runs this will reside in a ZIP file, we can't reference files relatively.
+	 * So what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
+	 * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like that.
+	 * TODO: create options to configure this behavior 
+	 */
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+		try {
+			// The object that we're modifying here is a copy of the original!
+			// So let's change the filename from relative to absolute by grabbing the file object...
+			// In case the name of the file comes from previous steps, forget about this!
+			//
+			if (!Const.isEmpty(filename)) {
+				// From : ${FOLDER}/../foo/bar.csv
+				// To   : /home/matt/test/files/foo/bar.csv
+				//
+				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(filename));
+				
+				// If the file doesn't exist, forget about this effort too!
+				//
+				if (fileObject.exists()) {
+					// Convert to an absolute path...
+					// 
+					filename = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
+					
+					return filename;
+				}
+			}
+			return null;
+		} catch (Exception e) {
+			throw new KettleException(e); //$NON-NLS-1$
+		}
+	}
 }
