@@ -203,6 +203,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 			retval.fieldName[i]  = fieldName[i];
 			retval.variableName[i] = variableName[i];
             retval.variableType[i] = variableType[i];
+            retval.defaultValue[i]  = defaultValue[i];
 		}
 		
 		return retval;
