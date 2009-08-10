@@ -8,10 +8,14 @@ public class LongObjectId implements ObjectId, Comparable<LongObjectId> {
 	}
 	
 	public LongObjectId(ObjectId objectId) {
-		if (objectId instanceof LongObjectId) {
-			this.id = ((LongObjectId)objectId).longValue();
+		if (objectId==null) {
+			this.id=-1L; // backward compatible
 		} else {
-			this.id = Long.valueOf(objectId.getId());
+			if (objectId instanceof LongObjectId) {
+				this.id = ((LongObjectId)objectId).longValue();
+			} else {
+				this.id = Long.valueOf(objectId.getId());
+			}
 		}
 	}
 	

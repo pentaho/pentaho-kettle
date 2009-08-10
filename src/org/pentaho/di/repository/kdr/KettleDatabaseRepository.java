@@ -330,6 +330,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     		case PARTITION_SCHEMA :
 	        	securityProvider.validateAction(RepositoryOperation.MODIFY_PARTITION_SCHEMA);
 	    		partitionSchemaDelegate.savePartitionSchema((PartitionSchema)repositoryElement, parentId, used);
+	    		break;
 	    	default:
 	    		throw new KettleException("We can't save the element with type ["+repositoryElement.getRepositoryElementType()+"] in the repository");
     		}
