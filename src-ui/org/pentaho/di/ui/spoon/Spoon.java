@@ -54,7 +54,6 @@ import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -155,7 +154,6 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.UserInfo;
@@ -2992,7 +2990,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				TransLoadProgressDialog progressDialog = new TransLoadProgressDialog(shell, rep, objname, repdir, versionLabel);
 				TransMeta transMeta = progressDialog.open();
 				transMeta.clearChanged();
-				transMeta.setFilename(objname);
+				// transMeta.setFilename(objname);
 				addTransGraph(transMeta);
 				refreshTree();
 				refreshGraph();
@@ -3009,7 +3007,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				JobLoadProgressDialog progressDialog = new JobLoadProgressDialog(shell, rep, objname, repdir, versionLabel);
 				JobMeta jobMeta = progressDialog.open();
 				jobMeta.clearChanged();
-				jobMeta.setFilename(objname);
+				// jobMeta.setFilename(objname);
 				jobMeta.setArguments(arguments);
 				delegates.jobs.addJobGraph(jobMeta);
 				refreshTree();
@@ -3082,12 +3080,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		} else {
 			SelectObjectDialog sod = new SelectObjectDialog(shell, rep);
 			if (sod.open() != null) {
-				String type = sod.getObjectType();
+				RepositoryObjectType type = sod.getObjectType();
 				String name = sod.getObjectName();
 				RepositoryDirectory repdir = sod.getDirectory();
 
 				// Load a transformation
-				if (RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION.equals(type)) {
+				if (RepositoryObjectType.TRANSFORMATION.equals(type)) {
 					TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell, rep, name, repdir, null); // Loads the last version
 					TransMeta transMeta = tlpd.open();
 					sharedObjectsFileMap.put(transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects());
@@ -3107,7 +3105,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					refreshHistory();
 				} else
 				// Load a job
-				if (RepositoryObject.STRING_OBJECT_TYPE_JOB.equals(type)) {
+				if (RepositoryObjectType.JOB.equals(type)) {
 					JobLoadProgressDialog jlpd = new JobLoadProgressDialog(shell, rep, name, repdir, null); // Loads the last version
 					JobMeta jobMeta = jlpd.open();
 					sharedObjectsFileMap.put(jobMeta.getSharedObjects().getFilename(), jobMeta.getSharedObjects());
@@ -5815,7 +5813,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 							if (transMeta != null) {
 								if (trackIt)
 									props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), repdir.getPath(), true, rep.getName());
-								transMeta.setFilename(lastUsedFile.getFilename());
+								// transMeta.setFilename(lastUsedFile.getFilename());
 								transMeta.clearChanged();
 								addTransGraph(transMeta);
 								refreshTree();

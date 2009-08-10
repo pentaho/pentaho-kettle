@@ -88,6 +88,7 @@ import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryPluginMeta;
 import org.pentaho.di.repository.RepositorySecurityProvider;
+import org.pentaho.di.repository.RepositoryVersionRegistry;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
@@ -415,6 +416,9 @@ public class RepositoryExplorerDialog extends Dialog
     					if (e.keyCode == SWT.F2)    { if (!readonly) renameInTree(); }
     					// F5 --> refresh...
     					if (e.keyCode == SWT.F5)    { refreshTree(); }
+    					// 
+    					if (e.keyCode == SWT.F12)    { showVersionRegistryDialog(); }
+    					
     				}
     			}
     		);
@@ -663,6 +667,7 @@ public class RepositoryExplorerDialog extends Dialog
 		return lastOpened;
 
 	}
+
 	private void expandAllItems(TreeItem[] treeitems,boolean expand)
 	{
 	  for (TreeItem item : treeitems) { 
@@ -1018,33 +1023,37 @@ public class RepositoryExplorerDialog extends Dialog
 							);
 							miRen.setEnabled(!readonly);
 						}
-						// Transformation history...
-						MenuItem miHist = new MenuItem(mTree, SWT.PUSH); 
-						miHist.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.History")); //$NON-NLS-1$
-						miHist.addSelectionListener( 
-							new SelectionAdapter() 
-							{ 
-								public void widgetSelected(SelectionEvent e) 
+						if (capabilities.supportsRevisions()) {
+							// Transformation history...
+							MenuItem miHist = new MenuItem(mTree, SWT.PUSH); 
+							miHist.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.History")); //$NON-NLS-1$
+							miHist.addSelectionListener( 
+								new SelectionAdapter() 
 								{ 
-									showTransformationVersions(item, repdir);
+									public void widgetSelected(SelectionEvent e) 
+									{ 
+										showTransformationVersions(item, repdir);
+									}
 								}
-							}
-						);
+							);
+						}
 					}
 					
 					if (repositoryObject.isDeleted()) {
-						// Restore transformation
-						MenuItem miRestore  = new MenuItem(mTree, SWT.PUSH); 
-						miRestore.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Restore")); //$NON-NLS-1$
-						miRestore.addSelectionListener( 
-							new SelectionAdapter() 
-							{ 
-								public void widgetSelected(SelectionEvent e) 
+						if (capabilities.supportsRevisions()) {
+							// Restore transformation
+							MenuItem miRestore  = new MenuItem(mTree, SWT.PUSH); 
+							miRestore.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Restore")); //$NON-NLS-1$
+							miRestore.addSelectionListener( 
+								new SelectionAdapter() 
 								{ 
-									restoreSelectedObjects(); 
+									public void widgetSelected(SelectionEvent e) 
+									{ 
+										restoreSelectedObjects(); 
+									}
 								}
-							}
-						);
+							);
+						}
 					} else {
 						// Delete transformation
 						MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
@@ -1177,32 +1186,36 @@ public class RepositoryExplorerDialog extends Dialog
 							);
 							miRen.setEnabled(!readonly);
 						}
-						// Job history...
-						MenuItem miHist = new MenuItem(mTree, SWT.PUSH); 
-						miHist.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.History")); //$NON-NLS-1$
-						miHist.addSelectionListener( 
-							new SelectionAdapter() 
-							{ 
-								public void widgetSelected(SelectionEvent e) 
+						if (capabilities.supportsRevisions()) {
+							// Job history...
+							MenuItem miHist = new MenuItem(mTree, SWT.PUSH); 
+							miHist.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.History")); //$NON-NLS-1$
+							miHist.addSelectionListener( 
+								new SelectionAdapter() 
 								{ 
-									showJobVersions(item, repdir);
+									public void widgetSelected(SelectionEvent e) 
+									{ 
+										showJobVersions(item, repdir);
+									}
 								}
-							}
-						);
+							);
+						}
 					}
 					if (repositoryObject.isDeleted()) {
-						// Restore transformation
-						MenuItem miRestore  = new MenuItem(mTree, SWT.PUSH); 
-						miRestore.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.Restore")); //$NON-NLS-1$
-						miRestore.addSelectionListener( 
-							new SelectionAdapter() 
-							{ 
-								public void widgetSelected(SelectionEvent e) 
+						if (capabilities.supportsRevisions()) {
+							// Restore job
+							MenuItem miRestore  = new MenuItem(mTree, SWT.PUSH); 
+							miRestore.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.Restore")); //$NON-NLS-1$
+							miRestore.addSelectionListener( 
+								new SelectionAdapter() 
 								{ 
-									restoreSelectedObjects(); 
+									public void widgetSelected(SelectionEvent e) 
+									{ 
+										restoreSelectedObjects(); 
+									}
 								}
-							}
-						);
+							);
+						}
 					} else {
 						// Delete job
 						MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
@@ -3230,5 +3243,21 @@ public class RepositoryExplorerDialog extends Dialog
 		Constructor<?> constructor = dialogClass.getConstructor(Shell.class, Integer.TYPE, Repository.class, RepositoryElementLocationInterface.class);
 		return (RepositoryRevisionBrowserDialogInterface) constructor.newInstance(new Object[] { shell, Integer.valueOf(SWT.NONE), repository, element, });
 	}
+
+	protected void showVersionRegistryDialog() {
+		
+		// If there is no version registry, don't bother
+		//
+		if (rep.getRepositoryMeta().getRepositoryCapabilities().hasVersionRegistry()) {
+			try {
+				RepositoryVersionRegistry versionRegistry = rep.getVersionRegistry();
+				VersionRegistryDialog dialog = new VersionRegistryDialog(shell, versionRegistry);
+				dialog.open();
+			} catch(Exception e) {
+                new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.VersionRegistry.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.VersionRegistry.UnexpectedError.Message1")+debug+"]"+Const.CR+BaseMessages.getString(PKG, "RepositoryExplorerDialog.Drop.UnexpectedError.Message2"), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			}
+		}
+	}
+
 
 }

@@ -46,6 +46,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -90,7 +91,7 @@ public class SelectObjectDialog extends Dialog
     private int sortColumn;
     private boolean ascending;
     private TreeColumn typeColumn;
-    private String objectType;
+    private RepositoryObjectType objectType;
     private boolean showTrans;
     private boolean showJobs;
     private TreeColumn descriptionColumn;
@@ -426,7 +427,13 @@ public class SelectObjectDialog extends Dialog
 				{
 					String path[] = ConstUI.getTreeStrings(ti.getParentItem());
 					objectName = ti.getText(0);
-                    objectType = ti.getText(1);
+                    objectType = null;
+                    for (RepositoryObjectType type : RepositoryObjectType.values()) {
+                    	if (type.getTypeDescription().equalsIgnoreCase(ti.getText(1))) {
+                    		objectType = type;
+                    		break;
+                    	}
+                    }
 					objectDirectory = directoryTree.findDirectory(path);
 					
 					if (objectDirectory!=null)
@@ -453,17 +460,9 @@ public class SelectObjectDialog extends Dialog
     /**
      * @return the objectType
      */
-    public String getObjectType()
+    public RepositoryObjectType getObjectType()
     {
         return objectType;
-    }
-
-    /**
-     * @param objectType the objectType to set
-     */
-    public void setObjectType(String objectType)
-    {
-        this.objectType = objectType;
     }
 
     /**
@@ -472,13 +471,5 @@ public class SelectObjectDialog extends Dialog
     public String getObjectName()
     {
         return objectName;
-    }
-
-    /**
-     * @param objectName the objectName to set
-     */
-    public void setObjectName(String objectName)
-    {
-        this.objectName = objectName;
     }
 }

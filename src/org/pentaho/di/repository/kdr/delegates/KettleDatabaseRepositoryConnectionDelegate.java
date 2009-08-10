@@ -1358,12 +1358,12 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
      * 
      * @throws KettleException
      */
-    public synchronized List<RepositoryObject> getRepositoryObjects(String tableName, String objectType, ObjectId id_directory) throws KettleException
+    public synchronized List<RepositoryObject> getRepositoryObjects(String tableName, RepositoryObjectType objectType, ObjectId id_directory) throws KettleException
     {
     	try
     	{
     		String idField;
-    		if (RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION.equals(objectType)) {
+    		if (RepositoryObjectType.TRANSFORMATION.equals(objectType)) {
     			idField = KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION;
     		} else {
     			idField = KettleDatabaseRepository.FIELD_JOB_ID_JOB;
@@ -1399,7 +1399,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 	            {
 	                ObjectId id = new LongObjectId( rowMeta.getInteger(r, 4) );
 	                RepositoryLock lock = null;
-	                if (RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION.equals(objectType)) {
+	                if (RepositoryObjectType.TRANSFORMATION.equals(objectType)) {
 	                	lock = repository.getTransformationLock(id);
 	                } else {
 	                	lock = repository.getJobLock(id);
@@ -1409,15 +1409,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 	                	lockMessage = lock.getLogin()+"("+lock.getUsername()+") : "+lock.getMessage(); // TODO fix this up a bit.
 	                }
 	                
-	                RepositoryObjectType repositoryObjectType = null;
-	                for (RepositoryObjectType type : RepositoryObjectType.values()) {
-	                	if (type.getTypeDescription().equalsIgnoreCase(objectType)) {
-	                		repositoryObjectType = type;
-	                		break;
-	                	}
-	                }
-	                
-	                repositoryObjects.add(new RepositoryObject(id, rowMeta.getString(r, 0), repositoryDirectory, rowMeta.getString(r, 1), rowMeta.getDate(r, 2), repositoryObjectType, rowMeta.getString(r, 3), lockMessage, false));
+	                repositoryObjects.add(new RepositoryObject(id, rowMeta.getString(r, 0), repositoryDirectory, rowMeta.getString(r, 1), rowMeta.getDate(r, 2), objectType, rowMeta.getString(r, 3), lockMessage, false));
 	            }          
 	        }
 	

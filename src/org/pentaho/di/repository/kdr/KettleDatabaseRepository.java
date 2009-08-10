@@ -651,12 +651,12 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     
     public List<RepositoryObject> getJobObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException
     {
-        return getRepositoryObjects(quoteTable(KettleDatabaseRepository.TABLE_R_JOB), RepositoryObject.STRING_OBJECT_TYPE_JOB, id_directory);
+        return getRepositoryObjects(quoteTable(KettleDatabaseRepository.TABLE_R_JOB), RepositoryObjectType.JOB, id_directory);
     }
 
     public List<RepositoryObject> getTransformationObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException
     {
-        return getRepositoryObjects(quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION), RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION, id_directory);
+        return getRepositoryObjects(quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION), RepositoryObjectType.TRANSFORMATION, id_directory);
     }
 
     /**
@@ -665,7 +665,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
      * 
      * @throws KettleException
      */
-    private synchronized List<RepositoryObject> getRepositoryObjects(String tableName, String objectType, ObjectId id_directory) throws KettleException
+    private synchronized List<RepositoryObject> getRepositoryObjects(String tableName, RepositoryObjectType objectType, ObjectId id_directory) throws KettleException
     {
     	return connectionDelegate.getRepositoryObjects(tableName, objectType, id_directory);
     }

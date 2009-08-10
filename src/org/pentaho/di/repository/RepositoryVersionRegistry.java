@@ -37,4 +37,11 @@ public interface RepositoryVersionRegistry {
 	 * @throws KettleException in case something goes wrong.
 	 */
 	public List<ObjectVersion> getVersions() throws KettleException;
+
+	/**
+	 * Remove a version from the registry
+	 * 
+	 * @param label the version to remove from the registry
+	 */
+	public void removeVersion(String label) throws KettleException;
 }

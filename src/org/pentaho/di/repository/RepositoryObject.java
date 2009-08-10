@@ -26,7 +26,9 @@ import java.util.List;
 public class RepositoryObject
 {
 
+	@Deprecated
     public static final String STRING_OBJECT_TYPE_TRANSFORMATION = "Transformation";
+	@Deprecated
     public static final String STRING_OBJECT_TYPE_JOB =            "Job";
     
     private String name;

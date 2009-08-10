@@ -57,7 +57,7 @@ public class VersionRegistryDialog extends Dialog
 
 	private TableView    wVersions;
 	
-	private Button wClose, wUpdate, wRefresh;
+	private Button wClose, wUpdate, wDelete, wRefresh;
 
 	private Shell         shell;
 	private PropsUI       props;
@@ -99,7 +99,7 @@ public class VersionRegistryDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
-		if (title==null) title = BaseMessages.getString(PKG, "SelectRowDialog.Title");
+		if (title==null) title = BaseMessages.getString(PKG, "VersionRegistryDialog.Title");
 
 		shell.setLayout(formLayout);
 		shell.setImage(GUIResource.getInstance().getImageTransGraph());
@@ -132,11 +132,14 @@ public class VersionRegistryDialog extends Dialog
 		wUpdate=new Button(shell, SWT.PUSH);
 		wUpdate.setText(BaseMessages.getString(PKG, "VersionRegistryDialog.Button.Update"));
 		wUpdate.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { update(); } });
+		wDelete=new Button(shell, SWT.PUSH);
+		wDelete.setText(BaseMessages.getString(PKG, "VersionRegistryDialog.Button.Delete"));
+		wDelete.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { delete(); } });
 		wRefresh=new Button(shell, SWT.PUSH);
 		wRefresh.setText(BaseMessages.getString(PKG, "VersionRegistryDialog.Button.Refresh"));
 		wRefresh.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { refresh(); } });
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wClose, wUpdate, }, margin, null);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wClose, wUpdate, wDelete, wRefresh, }, margin, null);
 
 		FormData fdVersions = new FormData();
 		fdVersions.left   = new FormAttachment(0, 0);
@@ -195,13 +198,27 @@ public class VersionRegistryDialog extends Dialog
 					versionRegistry.updateVersion(version);
 				}
 				
-				
+				refresh();
 			}
 		} catch(Exception e) {
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "VersionRegistryDialog.Exception.CouldNotUpdateVersions.Title"), BaseMessages.getString(PKG, "VersionRegistryDialog.Exception.CouldNotUpdateVersions.Message"), e);
 		}
 	}
-	
+
+	protected void delete() {
+		try {
+			
+			int[] indices = wVersions.getSelectionIndices();
+			for (int index : indices) {
+				String label = wVersions.table.getItem(index).getText(1);
+				versionRegistry.removeVersion(label);
+			}
+			refresh();
+		} catch(Exception e) {
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "VersionRegistryDialog.Exception.CouldNotUpdateVersions.Title"), BaseMessages.getString(PKG, "VersionRegistryDialog.Exception.CouldNotUpdateVersions.Message"), e);
+		}
+	}
+
 	private ObjectVersion findVersion(String label) {
 		for (ObjectVersion version : versions) {
 			if (version.getLabel().equals(label)) {
