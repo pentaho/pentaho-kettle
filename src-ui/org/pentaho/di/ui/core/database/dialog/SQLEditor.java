@@ -298,10 +298,11 @@ public class SQLEditor extends Dialog
             try
             {
     			db.connect(partitionId);
+    			String sqlScript=Const.isEmpty(wScript.getSelectionText())?wScript.getText():wScript.getSelectionText();
     			
     			// Multiple statements have to be split into parts
     			// We use the ";" to separate statements...
-    			String all = wScript.getText()+Const.CR;
+    			String all = sqlScript+Const.CR;
     			int from=0;
     			int to=0;
     			int length = all.length();

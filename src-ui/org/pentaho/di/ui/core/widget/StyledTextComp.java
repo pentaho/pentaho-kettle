@@ -143,7 +143,9 @@ public class StyledTextComp extends Composite{
 
 
 	}
-	
+	public String getSelectionText(){
+		return styledText.getSelectionText();
+	}
 	public String getText(){
 		return styledText.getText();
 	}

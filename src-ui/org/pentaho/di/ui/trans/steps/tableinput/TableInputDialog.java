@@ -463,9 +463,9 @@ public void setPosition(){
 		dispose();
 	}
 	
-    private void getInfo(TableInputMeta meta)
+    private void getInfo(TableInputMeta meta, boolean preview)
     {
-        meta.setSQL( wSQL.getText() );
+        meta.setSQL(preview && !Const.isEmpty(wSQL.getSelectionText())?wSQL.getSelectionText():wSQL.getText());
         meta.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
         meta.setRowLimit( Const.toInt(wLimit.getText(), 0) );
         meta.setLookupFromStep( transMeta.findStep( wDatefrom.getText() ) );
@@ -481,7 +481,7 @@ public void setPosition(){
 		stepname = wStepname.getText(); // return value
 		// copy info to TextFileInputMeta class (input)
         
-        getInfo(input);
+        getInfo(input, false);
         
 		if (input.getDatabaseMeta()==null)
 		{
@@ -599,7 +599,7 @@ public void setPosition(){
     {
         // Create the table input reader step...
         TableInputMeta oneMeta = new TableInputMeta();
-        getInfo(oneMeta);
+        getInfo(oneMeta, true);
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
         
