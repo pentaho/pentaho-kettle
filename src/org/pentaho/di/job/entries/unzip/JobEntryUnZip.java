@@ -33,6 +33,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
+import org.apache.commons.vfs.VFS;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -653,13 +654,14 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 					  return false;
 				  }
 					
+					 FileObject newFileObject=null;
 				  try{
 					  if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobUnZip.Log.ProcessingZipEntry",item.getName().getURI(), sourceFileObject.toString()));
 						
 					  // get real destination filename
 					  //
 					  String newFileName = realTargetdirectory + Const.FILE_SEPARATOR + getTargetFilename(item.getName().getPath());
-					  FileObject newFileObject = KettleVFS.getFileObject(newFileName);
+					  newFileObject = KettleVFS.getFileObject(newFileName);
 						
 					  if( item.getType().equals(FileType.FOLDER))
 					  {
@@ -749,7 +751,17 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 					  updateErrors();
 					  log.logError(toString(), BaseMessages.getString(PKG, "JobUnZip.Error.CanNotProcessZipEntry",item.getName().getURI(), sourceFileObject.toString()), e);
 				  }
-	         }// End while
+				  finally {
+					  if(newFileObject!=null) {
+						  try {
+							  newFileObject.close(); }catch(Exception e){};// ignore this
+					  }
+					  // Close file object
+					  // close() does not release resources!
+					  VFS.getManager().closeFileSystem(item.getFileSystem()); 
+					  if(items!=null) items=null;
+				  }
+	         }// End for
 
 		     // Here gc() is explicitly called if e.g. createfile is used in the same
 			 // job for the same file. The problem is that after creating the file the
