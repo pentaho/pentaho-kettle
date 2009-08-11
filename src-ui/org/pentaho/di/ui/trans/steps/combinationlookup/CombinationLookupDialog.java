@@ -23,13 +23,13 @@ import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FormAttachment;
@@ -62,6 +62,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.combinationlookup.CombinationLookupMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -79,7 +80,9 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
     private Label        wlSchema;
     private TextVar       wSchema;
-
+    private Button		 wbSchema;
+    private FormData	 fdbSchema;
+    
 	private Label        wlTable;
 	private Button       wbTable;
 	private TextVar      wTable;
@@ -170,8 +173,17 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 				input.setChanged();
 			}
 		};
-		FocusListener lsFocusLost = new FocusAdapter() {
-			public void focusLost(FocusEvent arg0) {
+		ModifyListener lsTableMod = new ModifyListener() {
+			public void modifyText(ModifyEvent arg0) {
+				input.setChanged();
+				setTableFieldCombo();
+			}
+		};
+		SelectionListener lsSelection = new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				input.setChanged();
 				setTableFieldCombo();
 			}
 		};
@@ -202,6 +214,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		wConnection = addConnectionLine(shell, wStepname, middle, margin);
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
+		wConnection.addSelectionListener(lsSelection);
 		wConnection.addModifyListener(new ModifyListener()
 			{
 				public void modifyText(ModifyEvent e)
@@ -224,15 +237,23 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
         fdlSchema.right= new FormAttachment(middle, -margin);
         fdlSchema.top  = new FormAttachment(wConnection, margin);
         wlSchema.setLayoutData(fdlSchema);
+        
+
+		wbSchema=new Button(shell, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbSchema);
+ 		wbSchema.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+ 		fdbSchema=new FormData();
+ 		fdbSchema.top  = new FormAttachment(wConnection, margin);
+ 		fdbSchema.right= new FormAttachment(100, 0);
+		wbSchema.setLayoutData(fdbSchema);
 
         wSchema=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
-        wSchema.addModifyListener(lsMod);
-        wSchema.addFocusListener(lsFocusLost);
+        wSchema.addModifyListener(lsTableMod);
         FormData fdSchema = new FormData();
         fdSchema.left = new FormAttachment(middle, 0);
         fdSchema.top  = new FormAttachment(wConnection, margin);
-        fdSchema.right= new FormAttachment(100, 0);
+        fdSchema.right= new FormAttachment(wbSchema, -margin);
         wSchema.setLayoutData(fdSchema);
 
 
@@ -243,7 +264,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		FormData fdlTable = new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
 		fdlTable.right = new FormAttachment(middle, -margin);
-		fdlTable.top = new FormAttachment(wSchema, margin );
+		fdlTable.top = new FormAttachment(wbSchema, margin );
 		wlTable.setLayoutData(fdlTable);
 
 		wbTable = new Button(shell, SWT.PUSH | SWT.CENTER);
@@ -251,16 +272,15 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
  		wbTable.setText(BaseMessages.getString(PKG, "CombinationLookupDialog.BrowseTable.Button"));
 		FormData fdbTable = new FormData();
 		fdbTable.right = new FormAttachment(100, 0);
-		fdbTable.top = new FormAttachment(wSchema, margin);
+		fdbTable.top = new FormAttachment(wbSchema, margin);
 		wbTable.setLayoutData(fdbTable);
 
 		wTable = new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
-		wTable.addModifyListener(lsMod);
-		wTable.addFocusListener(lsFocusLost);
+		wTable.addModifyListener(lsTableMod);
 		FormData fdTable = new FormData();
 		fdTable.left = new FormAttachment(middle, 0);
-		fdTable.top = new FormAttachment(wSchema, margin );
+		fdTable.top = new FormAttachment(wbSchema, margin );
 		fdTable.right = new FormAttachment(wbTable, -margin);
 		wTable.setLayoutData(fdTable);		
 		
@@ -578,7 +598,17 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
         
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
-
+		wbSchema.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					getSchemaNames();
+				}
+			}
+		);
+		
 		wbTable.addSelectionListener
 		(
 			new SelectionAdapter()
@@ -879,6 +909,52 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		in.setLastUpdateField( wLastUpdateField.getText() );
 	}
 
+	private void getSchemaNames()
+	{
+		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+		if (databaseMeta!=null)
+		{
+			Database database = new Database(databaseMeta);
+			try
+			{
+				database.connect();
+				String schemas[] = database.getSchemas();
+				
+				if (null != schemas && schemas.length>0) {
+					schemas=Const.sortStrings(schemas);	
+					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, schemas, 
+							BaseMessages.getString(PKG,"CombinationLookupDialog.AvailableSchemas.Title",wConnection.getText()), 
+							BaseMessages.getString(PKG,"CombinationLookupDialog.AvailableSchemas.Message",wConnection.getText()));
+					String d=dialog.open();
+					if (d!=null) 
+					{
+						wSchema.setText(Const.NVL(d.toString(), ""));
+						setTableFieldCombo();
+					}
+
+				}else
+				{
+					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+					mb.setMessage(BaseMessages.getString(PKG,"CombinationLookupDialog.NoSchema.Error"));
+					mb.setText(BaseMessages.getString(PKG,"CombinationLookupDialog.GetSchemas.Error"));
+					mb.open(); 
+				}
+			}
+			catch(Exception e)
+			{
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), 
+						BaseMessages.getString(PKG,"CombinationLookupDialog.ErrorGettingSchemas"), e);
+			}
+			finally
+			{
+				if(database!=null) 
+				{
+					database.disconnect();
+					database=null;
+				}
+			}
+		}
+	}
 	private void getTableName()
 	{
 		DatabaseMeta inf = null;
@@ -898,6 +974,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 			{
                 wSchema.setText(Const.NVL(std.getSchemaName(), ""));
 				wTable.setText(Const.NVL(std.getTableName(), ""));
+				setTableFieldCombo();
 			}
 		}
 		else

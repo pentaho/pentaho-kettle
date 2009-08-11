@@ -25,13 +25,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
@@ -68,6 +68,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dimensionlookup.DimensionLookupMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -95,6 +96,8 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
     private Label        wlSchema;
     private TextVar      wSchema;
+    private Button      wbSchema;
+    private FormData	fdbSchema;
 
 	private Label        wlTable;
 	private Button       wbTable;
@@ -216,12 +219,22 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 				input.setChanged();
 				setTableFieldCombo();
 			}
-		};	
-		FocusListener lsFocusLost = new FocusAdapter() {
-			public void focusLost(FocusEvent arg0) {
+		};
+		ModifyListener lsTableMod = new ModifyListener() {
+			public void modifyText(ModifyEvent arg0) {
+				input.setChanged();
 				setTableFieldCombo();
 			}
 		};
+		SelectionListener lsSelection = new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				input.setChanged();
+				setTableFieldCombo();
+			}
+		};
+
 		backupChanged = input.hasChanged();
 		backupUpdate = input.isUpdate();
 		backupAutoInc = input.isAutoIncrement();
@@ -292,7 +305,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		wConnection = addConnectionLine(shell, wUpdate, middle, margin);
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsConnectionMod);
-
+		wConnection.addSelectionListener(lsSelection);
 		wConnection.addModifyListener(new ModifyListener()
     		{
     			public void modifyText(ModifyEvent e)
@@ -314,14 +327,21 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         fdlSchema.top  = new FormAttachment(wConnection, margin);
         wlSchema.setLayoutData(fdlSchema);
 
+        wbSchema=new Button(shell, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbSchema);
+ 		wbSchema.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+ 		fdbSchema=new FormData();
+ 		fdbSchema.top  = new FormAttachment(wConnection, margin);
+ 		fdbSchema.right= new FormAttachment(100, 0);
+		wbSchema.setLayoutData(fdbSchema);
+		
         wSchema=new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
-        wSchema.addModifyListener(lsMod);
-        wSchema.addFocusListener(lsFocusLost);
+        wSchema.addModifyListener(lsTableMod);
         FormData fdSchema = new FormData();
         fdSchema.left = new FormAttachment(middle, 0);
         fdSchema.top  = new FormAttachment(wConnection, margin);
-        fdSchema.right= new FormAttachment(100, 0);
+        fdSchema.right= new FormAttachment(wbSchema, -margin);
         wSchema.setLayoutData(fdSchema);
 
 
@@ -332,7 +352,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		FormData fdlTable=new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
 		fdlTable.right= new FormAttachment(middle, -margin);
-		fdlTable.top  = new FormAttachment(wSchema, margin);
+		fdlTable.top  = new FormAttachment(wbSchema, margin);
 		wlTable.setLayoutData(fdlTable);
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
@@ -340,16 +360,15 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		wbTable.setText(BaseMessages.getString(PKG, "DimensionLookupDialog.Browse.Button")); //$NON-NLS-1$
 		FormData fdbTable=new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
-		fdbTable.top  = new FormAttachment(wSchema, margin);
+		fdbTable.top  = new FormAttachment(wbSchema, margin);
 		wbTable.setLayoutData(fdbTable);
 
 		wTable=new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
-		wTable.addModifyListener(lsMod);
-		wTable.addFocusListener(lsFocusLost);
+		wTable.addModifyListener(lsTableMod);
 		FormData fdTable=new FormData();
 		fdTable.left = new FormAttachment(middle, 0);
-		fdTable.top  = new FormAttachment(wSchema, margin);
+		fdTable.top  = new FormAttachment(wbSchema, margin);
 		fdTable.right= new FormAttachment(wbTable, 0);
 		wTable.setLayoutData(fdTable);
 
@@ -998,7 +1017,16 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
-
+		wbSchema.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					getSchemaNames();
+				}
+			}
+		);
 		wbTable.addSelectionListener
 		(
 			new SelectionAdapter()
@@ -1761,7 +1789,52 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "DimensionLookupDialog.UnableToBuildSQLError.DialogMessage"), BaseMessages.getString(PKG, "DimensionLookupDialog.UnableToBuildSQLError.DialogTitle"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
+	private void getSchemaNames()
+	{
+		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+		if (databaseMeta!=null)
+		{
+			Database database = new Database(databaseMeta);
+			try
+			{
+				database.connect();
+				String schemas[] = database.getSchemas();
+				
+				if (null != schemas && schemas.length>0) {
+					schemas=Const.sortStrings(schemas);	
+					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, schemas, 
+							BaseMessages.getString(PKG,"DimensionLookupDialog.AvailableSchemas.Title",wConnection.getText()), 
+							BaseMessages.getString(PKG,"DimensionLookupDialog.AvailableSchemas.Message",wConnection.getText()));
+					String d=dialog.open();
+					if (d!=null) 
+					{
+						wSchema.setText(Const.NVL(d.toString(), ""));
+						setTableFieldCombo();
+					}
 
+				}else
+				{
+					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+					mb.setMessage(BaseMessages.getString(PKG,"DimensionLookupDialog.NoSchema.Error"));
+					mb.setText(BaseMessages.getString(PKG,"DimensionLookupDialog.GetSchemas.Error"));
+					mb.open(); 
+				}
+			}
+			catch(Exception e)
+			{
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), 
+						BaseMessages.getString(PKG,"DimensionLookupDialog.ErrorGettingSchemas"), e);
+			}
+			finally
+			{
+				if(database!=null) 
+				{
+					database.disconnect();
+					database=null;
+				}
+			}
+		}
+	}
 	public String toString()
 	{
 		return this.getClass().getName();

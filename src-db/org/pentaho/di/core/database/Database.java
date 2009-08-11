@@ -4307,7 +4307,39 @@ public class Database implements VariableSpace
 	
 		return names.toArray(new String[names.size()]);
 	}
+	public String[] getSchemas() throws KettleDatabaseException
+	{
+		ArrayList<String> catalogList = new ArrayList<String>();
+		ResultSet catalogResultSet=null;
+		try
+		{
+			catalogResultSet =getDatabaseMetaData().getSchemas();
+			// Grab all the catalog names and put them in an array list
+			while (catalogResultSet!=null && catalogResultSet.next())
+			{
+				catalogList.add(catalogResultSet.getString(1));
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new KettleDatabaseException("Error getting schemas!", e);
+		}
+		finally
+		{
+			try
+			{
+				if (catalogResultSet!=null) catalogResultSet.close();
+			}
+			catch(SQLException e)
+			{
+				throw new KettleDatabaseException("Error closing resultset after getting schemas!", e);
+			}
+		}
 	
+		if(log.isDetailed()) log.logDetailed(toString(), "read :"+catalogList.size()+" schemas from db meta-data.");
+	
+		return catalogList.toArray(new String[catalogList.size()]);
+	}
 	public String[] getProcedures() throws KettleDatabaseException
 	{
 		String sql = databaseMeta.getSQLListOfProcedures();

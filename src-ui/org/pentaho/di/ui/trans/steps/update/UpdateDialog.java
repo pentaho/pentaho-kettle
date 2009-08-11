@@ -25,13 +25,11 @@ import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FormAttachment;
@@ -61,6 +59,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.update.UpdateMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -82,7 +81,9 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 
     private Label        wlSchema;
     private TextVar      wSchema;
-    private FormData     fdlSchema, fdSchema;
+    private FormData     fdlSchema, fdSchema;    
+    private FormData	fdbSchema;
+    private Button		wbSchema;
 
 	private Label        wlTable;
 	private Button       wbTable;
@@ -149,8 +150,17 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 				input.setChanged();
 			}
 		};
-		FocusListener lsFocusLost = new FocusAdapter() {
-			public void focusLost(FocusEvent arg0) {
+		ModifyListener lsTableMod = new ModifyListener() {
+			public void modifyText(ModifyEvent arg0) {
+				input.setChanged();
+				setTableFieldCombo();
+			}
+		};
+		SelectionListener lsSelection = new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				input.setChanged();
 				setTableFieldCombo();
 			}
 		};
@@ -189,6 +199,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		wConnection = addConnectionLine(shell, wStepname, middle, margin);
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
+		wConnection.addSelectionListener(lsSelection);
 		
         // Schema line...
         wlSchema=new Label(shell, SWT.RIGHT);
@@ -199,15 +210,22 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
         fdlSchema.right= new FormAttachment(middle, -margin);
         fdlSchema.top  = new FormAttachment(wConnection, margin*2);
         wlSchema.setLayoutData(fdlSchema);
+        
+    	wbSchema=new Button(shell, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbSchema);
+ 		wbSchema.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+ 		fdbSchema=new FormData();
+ 		fdbSchema.top  = new FormAttachment(wConnection, 2*margin);
+ 		fdbSchema.right= new FormAttachment(100, 0);
+		wbSchema.setLayoutData(fdbSchema);
 
         wSchema=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
-        wSchema.addModifyListener(lsMod);
-        wSchema.addFocusListener(lsFocusLost);
+        wSchema.addModifyListener(lsTableMod);
         fdSchema=new FormData();
         fdSchema.left = new FormAttachment(middle, 0);
         fdSchema.top  = new FormAttachment(wConnection, margin*2);
-        fdSchema.right= new FormAttachment(100, 0);
+        fdSchema.right= new FormAttachment(wbSchema, -margin);
         wSchema.setLayoutData(fdSchema);
 
 		// Table line...
@@ -217,7 +235,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		fdlTable=new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
 		fdlTable.right= new FormAttachment(middle, -margin);
-		fdlTable.top  = new FormAttachment(wSchema, margin);
+		fdlTable.top  = new FormAttachment(wbSchema, margin);
 		wlTable.setLayoutData(fdlTable);
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
@@ -225,16 +243,15 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		wbTable.setText(BaseMessages.getString(PKG, "UpdateDialog.Browse.Button")); //$NON-NLS-1$
 		fdbTable=new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
-		fdbTable.top  = new FormAttachment(wSchema, margin);
+		fdbTable.top  = new FormAttachment(wbSchema, margin);
 		wbTable.setLayoutData(fdbTable);
 
 		wTable=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
-		wTable.addModifyListener(lsMod);
-		wTable.addFocusListener(lsFocusLost);
+		wTable.addModifyListener(lsTableMod);
 		fdTable=new FormData();
 		fdTable.left = new FormAttachment(middle, 0);
-		fdTable.top  = new FormAttachment(wSchema, margin);
+		fdTable.top  = new FormAttachment(wbSchema, margin);
 		fdTable.right= new FormAttachment(wbTable, -margin);
 		wTable.setLayoutData(fdTable);
 
@@ -472,7 +489,16 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
         
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
-
+		wbSchema.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					getSchemaNames();
+				}
+			}
+		);
 		wbTable.addSelectionListener
 		(
 			new SelectionAdapter()
@@ -703,7 +729,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		
 		if (inf!=null)
 		{
-			log.logDebug(toString(), BaseMessages.getString(PKG, "UpdateDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
+			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "UpdateDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
 		
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());
@@ -713,6 +739,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 			{
                 wSchema.setText(Const.NVL(std.getSchemaName(), ""));
                 wTable.setText(Const.NVL(std.getTableName(), ""));
+                setTableFieldCombo();
 			}
 		}
 		else
@@ -807,6 +834,52 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "UpdateDialog.CouldNotBuildSQL.DialogTitle"), BaseMessages.getString(PKG, "UpdateDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
+	}
+	private void getSchemaNames()
+	{
+		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+		if (databaseMeta!=null)
+		{
+			Database database = new Database(databaseMeta);
+			try
+			{
+				database.connect();
+				String schemas[] = database.getSchemas();
+				
+				if (null != schemas && schemas.length>0) {
+					schemas=Const.sortStrings(schemas);	
+					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, schemas, 
+							BaseMessages.getString(PKG,"UpdateDialog.AvailableSchemas.Title",wConnection.getText()), 
+							BaseMessages.getString(PKG,"UpdateDialog.AvailableSchemas.Message",wConnection.getText()));
+					String d=dialog.open();
+					if (d!=null) 
+					{
+						wSchema.setText(Const.NVL(d.toString(), ""));
+						setTableFieldCombo();
+					}
+
+				}else
+				{
+					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+					mb.setMessage(BaseMessages.getString(PKG,"UpdateDialog.NoSchema.Error"));
+					mb.setText(BaseMessages.getString(PKG,"UpdateDialog.GetSchemas.Error"));
+					mb.open(); 
+				}
+			}
+			catch(Exception e)
+			{
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), 
+						BaseMessages.getString(PKG,"UpdateDialog.ErrorGettingSchemas"), e);
+			}
+			finally
+			{
+				if(database!=null) 
+				{
+					database.disconnect();
+					database=null;
+				}
+			}
+		}
 	}
 	
 	public String toString()

@@ -25,13 +25,11 @@ import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FormAttachment;
@@ -100,17 +98,10 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
     
     private ColumnInfo[] ciReturn;
     
-    private String lookupStep;
-    
-    private Map<String, Integer>      lookupFields;
-    private Map<String, Integer>      prevFields;
-    
 	public StreamLookupDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input=(StreamLookupMeta)in;
-		lookupFields =new HashMap<String, Integer>();
-		prevFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -129,8 +120,11 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 				input.setChanged();
 			}
 		};
-		FocusListener lsFocusLost = new FocusAdapter() {
-			public void focusLost(FocusEvent arg0) {
+		SelectionListener lsSelection = new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				input.setChanged();
 				setComboBoxesLookup();
 			}
 		};
@@ -185,7 +179,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		// transMeta.getInfoStep()
 		
 		wStep.addModifyListener(lsMod);
-		wStep.addFocusListener(lsFocusLost);
+		wStep.addSelectionListener(lsSelection);
 		
 		fdStep=new FormData();
 		fdStep.left = new FormAttachment(middle, 0);
@@ -364,59 +358,9 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		setSize();
 		
 		getData();
-		
-		lookupStep=wStep.getText();
-		
-        // 
-        // Search the fields in the background
-        //
-        
-        final Runnable runnable = new Runnable()
-        {
-            public void run()
-            {
-                StepMeta lookupStepMeta = transMeta.findStep(lookupStep);
-                if (lookupStepMeta!=null)
-                {
-                    try
-                    {
-                    	RowMetaInterface row = transMeta.getStepFields(lookupStepMeta);
-                        // Remember these fields...
-                        for (int i=0;i<row.size();i++)
-                        {
-                            lookupFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
-                        }
-                        
-                        setComboBoxesLookup(); 
-                    }
-                    catch(KettleException e)
-                    {
-                        log.logError(toString(), "It was not possible to retrieve the list of fields for step [" + lookupStep + "]!");
-                    }
-                }
-                StepMeta stepMeta = transMeta.findStep(stepname);
-                if (stepMeta!=null)
-                {
-                    try
-                    {
-                        RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
-                        // Remember these fields...
-                        for (int i=0;i<row.size();i++)
-                        {
-                            prevFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
-                        }
-                        
-                        setComboBoxes(); 
-                    }
-                    catch(KettleException e)
-                    {
-                    	log.logError(toString(),BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
-                    }
-                }
-            }
-        };
-        new Thread(runnable).start();
-		
+
+		setComboBoxes();
+        setComboBoxesLookup();
 		input.setChanged(changed);
 		
 		shell.open();
@@ -426,42 +370,94 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		}
 		return stepname;
 	}
+
 	protected void setComboBoxes()
     {
-        // Something was changed in the row.
+        // 
+        // Search the fields in the background
         //
-		final Map<String, Integer> fields = new HashMap<String, Integer>();;
         
-        // Add the currentMeta fields...
-        fields.putAll(prevFields);
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                        RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                        Map<String, Integer> prevFields= new HashMap<String, Integer>();
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            prevFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        
+                        // Something was changed in the row.
+                        //
+                		final Map<String, Integer> fields = new HashMap<String, Integer>();;
+                        
+                        // Add the currentMeta fields...
+                        fields.putAll(prevFields);
+                        
+                        Set<String> keySet = fields.keySet();
+                        List<String> entries = new ArrayList<String>(keySet);
+                        
+                        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
+                        Const.sortStrings(fieldNames);
+                        // return fields
+                        ciKey[0].setComboValues(fieldNames);
+                    }
+                    catch(KettleException e)
+                    {
+                    	log.logError(toString(),BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
         
-        Set<String> keySet = fields.keySet();
-        List<String> entries = new ArrayList<String>(keySet);
-        
-        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
-        Const.sortStrings(fieldNames);
-        // return fields
-        ciKey[0].setComboValues(fieldNames);
     }
+	
 	protected void setComboBoxesLookup()
     {
 		Runnable fieldLoader = new Runnable() {
 			public void run() {
-		        // Something was changed in the row.
-		        //
-				final Map<String, Integer> fields = new HashMap<String, Integer>();
-		        
-		        // Add the currentMeta fields...
-		        fields.putAll(lookupFields);
-		        
-		        Set<String> keySet = fields.keySet();
-		        List<String> entries = new ArrayList<String>(keySet);
-		        
-		        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
-		        Const.sortStrings(fieldNames);
-		        // return fields
-		        ciReturn[0].setComboValues(fieldNames);
-		        ciKey[1].setComboValues(fieldNames);
+		        StepMeta lookupStepMeta = transMeta.findStep(wStep.getText());
+                if (lookupStepMeta!=null)
+                {
+                    try
+                    {
+                        RowMetaInterface row = transMeta.getStepFields(lookupStepMeta);
+                        Map<String, Integer> lookupFields =new HashMap<String, Integer>();
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            lookupFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        
+                        // Something was changed in the row.
+        		        //
+        				final Map<String, Integer> fields = new HashMap<String, Integer>();
+        		        
+        		        // Add the currentMeta fields...
+        		        fields.putAll(lookupFields);
+        		        
+        		        Set<String> keySet = fields.keySet();
+        		        List<String> entries = new ArrayList<String>(keySet);
+        		        
+        		        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
+        		        Const.sortStrings(fieldNames);
+        		        // return fields
+        		        ciReturn[0].setComboValues(fieldNames);
+        		        ciKey[1].setComboValues(fieldNames);
+                    }
+                    catch(KettleException e)
+                    {
+                    	 log.logError(toString(), "It was not possible to retrieve the list of fields for step [" + wStep.getText() + "]!");
+                    }
+                }
 			}
 		};
 		shell.getDisplay().asyncExec(fieldLoader);
