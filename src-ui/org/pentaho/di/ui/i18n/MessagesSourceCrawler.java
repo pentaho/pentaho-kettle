@@ -336,8 +336,10 @@ public class MessagesSourceCrawler {
 			if (packagePattern.matcher(line).matches()) {
 				int beginIndex = line.indexOf("org.pentaho.");
 				int endIndex = line.indexOf(';');
-				messagesPackage = line.substring(beginIndex, endIndex); // this is the default
-				classPackage = messagesPackage;
+				if (beginIndex>=0 && endIndex>=0) {
+					messagesPackage = line.substring(beginIndex, endIndex); // this is the default
+					classPackage = messagesPackage;
+				}
 			}
 			
 			// Remember all the imports...
