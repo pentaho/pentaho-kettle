@@ -97,7 +97,6 @@
 	<classpathentry kind="lib" path="libext/salesforce/saaj.jar"/>
 	<classpathentry kind="lib" path="libext/salesforce/salesforce-1.0.jar"/>
 	<classpathentry kind="lib" path="libext/janino.jar"/>
-	<classpathentry kind="lib" path="libext/jackcess-1.1.18.jar"/>
 	<classpathentry kind="lib" path="libext/SNMP4J.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-2.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-vfs-2.0-20090205.jar"/>
@@ -115,5 +114,6 @@
 	<classpathentry kind="lib" path="libext/commons/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="libext/ini4j-0.5.1.jar"/>
 	<classpathentry kind="lib" path="libext/edtftpj2.0.4.jar"/>
+	<classpathentry kind="lib" path="libext/jackcess-1.1.19.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
