@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -455,6 +457,20 @@ public class GroupBy extends BaseStep implements StepInterface
 					data.mean[i] = mean;
 					data.agg[i] = sum;
 					break; 
+				case GroupByMeta.TYPE_GROUP_COUNT_DISTINCT :
+				  if (!subjMeta.isNull(subj)) {
+				    if (data.distinctObjs == null) {
+				      data.distinctObjs = new Set[meta.getSubjectField().length];
+				    }
+				    if (data.distinctObjs[i] == null) {
+				      data.distinctObjs[i] = new TreeSet<Object>();
+				    }
+				    Object obj = subjMeta.convertToNormalStorageType(subj);
+				    if (!data.distinctObjs[i].contains(obj)) {
+				      data.distinctObjs[i].add(obj);
+				      data.agg[i] = (Long)value + 1;
+				    }
+				  }
 				case GroupByMeta.TYPE_GROUP_COUNT_ALL      :
 					if (!subjMeta.isNull(subj)) {
 						data.counts[i]++;
@@ -510,7 +526,7 @@ public class GroupBy extends BaseStep implements StepInterface
 	{
 		// Put all the counters at 0
 		for (int i=0;i<data.counts.length;i++) data.counts[i]=0;
-		
+		data.distinctObjs = null;
 		data.agg = new Object[data.subjectnrs.length];
 		data.mean = new double[data.subjectnrs.length]; // sets all doubles to 0.0
 		data.aggMeta=new RowMeta();
@@ -539,6 +555,7 @@ public class GroupBy extends BaseStep implements StepInterface
                     vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_NUMBER);
                     v=new Double(0.0);
                     break;
+				case GroupByMeta.TYPE_GROUP_COUNT_DISTINCT  :
 				case GroupByMeta.TYPE_GROUP_COUNT_ALL       :
                     vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_INTEGER);
                     v=new Long(0L);                   
@@ -566,7 +583,8 @@ public class GroupBy extends BaseStep implements StepInterface
 					break;
 			}
             
-            if (meta.getAggregateType()[i]!=GroupByMeta.TYPE_GROUP_COUNT_ALL)
+            if (meta.getAggregateType()[i]!=GroupByMeta.TYPE_GROUP_COUNT_ALL && 
+                meta.getAggregateType()[i]!=GroupByMeta.TYPE_GROUP_COUNT_DISTINCT)
             {
             	vMeta.setLength(subjMeta.getLength(), subjMeta.getPrecision());
             }
@@ -631,6 +649,7 @@ public class GroupBy extends BaseStep implements StepInterface
                     				new ValueMeta("c",ValueMetaInterface.TYPE_INTEGER), new Long(data.counts[i])); 
                     		break;  //$NON-NLS-1$
                     case GroupByMeta.TYPE_GROUP_COUNT_ALL      : ag=new Long(data.counts[i]); break;
+                    case GroupByMeta.TYPE_GROUP_COUNT_DISTINCT : break;
                     case GroupByMeta.TYPE_GROUP_MIN            : break; 
                     case GroupByMeta.TYPE_GROUP_MAX            : break; 
                     case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION :

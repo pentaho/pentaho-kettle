@@ -60,6 +60,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 	public static final int TYPE_GROUP_CUMULATIVE_AVERAGE = 12;
 	public static final int TYPE_GROUP_STANDARD_DEVIATION = 13;
 	public static final int TYPE_GROUP_CONCAT_STRING	  = 14;
+	public static final int TYPE_GROUP_COUNT_DISTINCT   = 15;
 	
 
 	public static final String typeGroupCode[] =  /* WARNING: DO NOT TRANSLATE THIS. WE ARE SERIOUS, DON'T TRANSLATE! */ 
@@ -67,6 +68,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 			"-", "SUM", "AVERAGE", "MIN", "MAX", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ 
 			"COUNT_ALL", "CONCAT_COMMA", "FIRST", "LAST", "FIRST_INCL_NULL", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ 
 			"LAST_INCL_NULL", "CUM_SUM", "CUM_AVG", "STD_DEV","CONCAT_STRING",	 //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ 
+			"COUNT_DISTINCT", //$NON-NLS-1$
 		};
 
 	public static final String typeGroupLongDesc[] = 
@@ -86,6 +88,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
             Messages.getString("GroupByMeta.TypeGroupLongDesc.CUMUMALTIVE_AVERAGE"), //$NON-NLS-1$ 
             Messages.getString("GroupByMeta.TypeGroupLongDesc.STANDARD_DEVIATION"),  //$NON-NLS-1$ 
             Messages.getString("GroupByMeta.TypeGroupLongDesc.CONCAT_STRING"),  		//$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.COUNT_DISTINCT"),  		//$NON-NLS-1$             
 		};
 
 	
@@ -316,7 +319,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 				subjectField[i]    = XMLHandler.getTagValue(fnode, "subject");		 //$NON-NLS-1$
 				aggregateType[i]   = getType(XMLHandler.getTagValue(fnode, "type"));	 //$NON-NLS-1$
 				
-				if (aggregateType[i]==TYPE_GROUP_COUNT_ALL) {
+				if (aggregateType[i]==TYPE_GROUP_COUNT_ALL || aggregateType[i]==TYPE_GROUP_COUNT_DISTINCT) {
 					hasNumberOfValues = true;
 				}
 				
@@ -424,6 +427,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
                     case TYPE_GROUP_LAST_INCL_NULL     : 
 					case TYPE_GROUP_MIN                : 
 					case TYPE_GROUP_MAX                : value_type = subj.getType(); break;
+					case TYPE_GROUP_COUNT_DISTINCT     :
 					case TYPE_GROUP_COUNT_ALL          : value_type = ValueMetaInterface.TYPE_INTEGER; break;
                     case TYPE_GROUP_CONCAT_COMMA       : value_type = ValueMetaInterface.TYPE_STRING; break;
                     case TYPE_GROUP_STANDARD_DEVIATION : value_type = ValueMetaInterface.TYPE_NUMBER; break;
@@ -439,7 +443,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 					precision=-1;
 					length=-1;
 				}
-				else if (aggregateType[i]==TYPE_GROUP_COUNT_ALL)
+				else if (aggregateType[i]==TYPE_GROUP_COUNT_ALL || aggregateType[i]==TYPE_GROUP_COUNT_DISTINCT)
                 {
                     length    = ValueMetaInterface.DEFAULT_INTEGER_LENGTH;
                     precision = 0;
@@ -550,7 +554,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 				subjectField[i]   = rep.getStepAttributeString(id_step, i, "aggregate_subject"); //$NON-NLS-1$
 				aggregateType[i]      = getType( rep.getStepAttributeString(id_step, i, "aggregate_type") ); //$NON-NLS-1$
 				
-				if (aggregateType[i]==TYPE_GROUP_COUNT_ALL) {
+				if (aggregateType[i]==TYPE_GROUP_COUNT_ALL || aggregateType[i]==TYPE_GROUP_COUNT_DISTINCT) {
 					hasNumberOfValues = true;
 				}
 				valueField[i]   = rep.getStepAttributeString(id_step, i, "aggregate_value_field"); //$NON-NLS-1$
