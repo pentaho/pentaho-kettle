@@ -386,27 +386,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
                 public void widgetSelected(SelectionEvent e) 
                 {
                 	input.setChanged();
-                	
-                	if(wFileNameInField.getSelection()){
-                		wFileNameField.setEnabled(true);
-                		wbShowFiles.setEnabled(false);
-                        wFileIsCommand.setEnabled(false);
-                		
-                        if (fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_ZIP].equals(wCompression.getText())) {
-                            wbFilename.setEnabled(true);
-                            wFilename.setEnabled(true);
-                        } else {
-                            wbFilename.setEnabled(false);
-                            wFilename.setEnabled(false);
-                        }
-                	}
-                	else{
-                		wFileNameField.setEnabled(false);
-                		wbFilename.setEnabled(true);
-                		wFilename.setEnabled(true);
-                		wFileIsCommand.setEnabled(true);
-                		wbShowFiles.setEnabled(true);
-                	}              
+                	activeFileNameField();
+                          
                 }
             }
         );
@@ -1251,6 +1232,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		setSize();
 		
 		getData();
+		activeFileNameField();
 		input.setChanged(changed);
 		
 		shell.open();
@@ -1260,6 +1242,45 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		}
 		return stepname;
 	}
+	private void activeFileNameField()
+	{
+	   	wlFileNameField.setEnabled(wFileNameInField.getSelection());
+	   	wFileNameField.setEnabled(wFileNameInField.getSelection());
+    	wlExtension.setEnabled(!wFileNameInField.getSelection());
+    	wExtension.setEnabled(!wFileNameInField.getSelection());
+    	wlFilename.setEnabled(!wFileNameInField.getSelection());
+    	wFilename.setEnabled(!wFileNameInField.getSelection());
+    	
+    	if(wFileNameInField.getSelection()) 
+    	{
+    		if(!wDoNotOpenNewFileInit.getSelection())
+    			wDoNotOpenNewFileInit.setSelection(true);
+    		wAddDate.setSelection(false);
+    		wAddTime.setSelection(false);
+    		wSpecifyFormat.setSelection(false);
+    		wAddStepnr.setSelection(false);
+    		wAddPartnr.setSelection(false);
+    	}
+    	
+    	wlDoNotOpenNewFileInit.setEnabled(!wFileNameInField.getSelection());
+    	wDoNotOpenNewFileInit.setEnabled(!wFileNameInField.getSelection());
+    	wlSpecifyFormat.setEnabled(!wFileNameInField.getSelection());
+    	wSpecifyFormat.setEnabled(!wFileNameInField.getSelection());
+    	
+    	wAddStepnr.setEnabled(!wFileNameInField.getSelection());
+    	wlAddStepnr.setEnabled(!wFileNameInField.getSelection());
+    	wAddPartnr.setEnabled(!wFileNameInField.getSelection());
+    	wlAddPartnr.setEnabled(!wFileNameInField.getSelection());
+    	wSplitEvery.setText("0");
+    	wSplitEvery.setEnabled(!wFileNameInField.getSelection());
+    	wlSplitEvery.setEnabled(!wFileNameInField.getSelection());
+    	wEndedLine.setText("");
+      	wEndedLine.setEnabled(!wFileNameInField.getSelection());
+      	wbShowFiles.setEnabled(!wFileNameInField.getSelection());
+      	wbFilename.setEnabled(!wFileNameInField.getSelection());
+      	
+      	setDateTimeFormat();
+    }
 	protected void setComboBoxes()
     {
         // Something was changed in the row.
@@ -1285,13 +1306,12 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			wAddTime.setSelection(false);
 		}
 		
-		wDateTimeFormat.setEnabled(wSpecifyFormat.getSelection());
-		wlDateTimeFormat.setEnabled(wSpecifyFormat.getSelection());
-		wAddDate.setEnabled(!wSpecifyFormat.getSelection());
-		wlAddDate.setEnabled(!wSpecifyFormat.getSelection());
-		wAddTime.setEnabled(!wSpecifyFormat.getSelection());
-		wlAddTime.setEnabled(!wSpecifyFormat.getSelection());
-		
+		wDateTimeFormat.setEnabled(wSpecifyFormat.getSelection() && !wFileNameInField.getSelection());
+		wlDateTimeFormat.setEnabled(wSpecifyFormat.getSelection() && !wFileNameInField.getSelection());
+		wAddDate.setEnabled(!(wFileNameInField.getSelection() || wSpecifyFormat.getSelection()));
+		wlAddDate.setEnabled(!(wSpecifyFormat.getSelection() || wFileNameInField.getSelection()));
+		wAddTime.setEnabled(!(wSpecifyFormat.getSelection() || wFileNameInField.getSelection()));
+		wlAddTime.setEnabled(!(wSpecifyFormat.getSelection() || wFileNameInField.getSelection()));
 	}
     private void setEncodings()
     {
@@ -1351,16 +1371,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         
         wFileNameInField.setSelection(input.isFileNameInField());
         if (input.getFileNameField() !=null) wFileNameField.setText(input.getFileNameField());
-        if(input.isFileNameInField()){
-        	wFileNameField.setEnabled(true);
-    		wbShowFiles.setEnabled(false);
-    		if (!fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_ZIP].equals(wCompression.getText()))
-    		{
-    		    wbFilename.setEnabled(false);
-    		    wFilename.setEnabled(false);
-    		    wFileIsCommand.setEnabled(false);
-    		}
-        }
         
 		wSplitEvery.setText(""+input.getSplitEvery());
 
