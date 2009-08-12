@@ -17,6 +17,9 @@
 
 package org.pentaho.di.ui.trans.steps.textfileoutput;
 
+import static org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta.FILE_COMPRESSION_TYPE_ZIP;
+import static org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta.fileCompressionTypeCodes;
+
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -386,10 +389,16 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
                 	
                 	if(wFileNameInField.getSelection()){
                 		wFileNameField.setEnabled(true);
-                		wbFilename.setEnabled(false);
-                		wFilename.setEnabled(false);
-                		wFileIsCommand.setEnabled(false);
                 		wbShowFiles.setEnabled(false);
+                        wFileIsCommand.setEnabled(false);
+                		
+                        if (fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_ZIP].equals(wCompression.getText())) {
+                            wbFilename.setEnabled(true);
+                            wFilename.setEnabled(true);
+                        } else {
+                            wbFilename.setEnabled(false);
+                            wFilename.setEnabled(false);
+                        }
                 	}
                 	else{
                 		wFileNameField.setEnabled(false);
@@ -696,37 +705,12 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wContentComp.setLayout(contentLayout);
 
 
-		// Append to end of file?
-		wlAppend=new Label(wContentComp, SWT.RIGHT);
-		wlAppend.setText(Messages.getString("TextFileOutputDialog.Append.Label"));
- 		props.setLook(wlAppend);
-		fdlAppend=new FormData();
-		fdlAppend.left = new FormAttachment(0, 0);
-		fdlAppend.top  = new FormAttachment(0, 0);
-		fdlAppend.right= new FormAttachment(middle, -margin);
-		wlAppend.setLayoutData(fdlAppend);
-		wAppend=new Button(wContentComp, SWT.CHECK);
- 		props.setLook(wAppend);
-		fdAppend=new FormData();
-		fdAppend.left = new FormAttachment(middle, 0);
-		fdAppend.top  = new FormAttachment(0, 0);
-		fdAppend.right= new FormAttachment(100, 0);
-		wAppend.setLayoutData(fdAppend);
-		wAppend.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					input.setChanged();
-				}
-			}
-		);
-		
 		wlSeparator=new Label(wContentComp, SWT.RIGHT);
 		wlSeparator.setText(Messages.getString("TextFileOutputDialog.Separator.Label"));
  		props.setLook(wlSeparator);
 		fdlSeparator=new FormData();
 		fdlSeparator.left = new FormAttachment(0, 0);
-		fdlSeparator.top  = new FormAttachment(wAppend, margin);
+		fdlSeparator.top  = new FormAttachment(0, margin);
 		fdlSeparator.right= new FormAttachment(middle, -margin);
 		wlSeparator.setLayoutData(fdlSeparator);
 
@@ -735,7 +719,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wbSeparator.setText(Messages.getString("TextFileOutputDialog.Separator.Button"));
 		fdbSeparator=new FormData();
 		fdbSeparator.right= new FormAttachment(100, 0);
-		fdbSeparator.top  = new FormAttachment(wAppend, 0);
+		fdbSeparator.top  = new FormAttachment(0, 0);
 		wbSeparator.setLayoutData(fdbSeparator);
 		wbSeparator.addSelectionListener(new SelectionAdapter() 
 			{
@@ -752,7 +736,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wSeparator.addModifyListener(lsMod);
 		fdSeparator=new FormData();
 		fdSeparator.left = new FormAttachment(middle, 0);
-		fdSeparator.top  = new FormAttachment(wAppend, margin);
+		fdSeparator.top  = new FormAttachment(0, margin);
 		fdSeparator.right= new FormAttachment(wbSeparator, -margin);
 		wSeparator.setLayoutData(fdSeparator);
 
@@ -798,19 +782,44 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
             }
         );
 
+        // Append to end of file?
+        wlAppend=new Label(wContentComp, SWT.RIGHT);
+        wlAppend.setText(Messages.getString("TextFileOutputDialog.Append.Label"));
+        props.setLook(wlAppend);
+        fdlAppend=new FormData();
+        fdlAppend.left = new FormAttachment(0, 0);
+        fdlAppend.top  = new FormAttachment(wEnclForced, margin);
+        fdlAppend.right= new FormAttachment(middle, -margin);
+        wlAppend.setLayoutData(fdlAppend);
+        wAppend=new Button(wContentComp, SWT.CHECK);
+        props.setLook(wAppend);
+        fdAppend=new FormData();
+        fdAppend.left = new FormAttachment(middle, 0);
+        fdAppend.top  = new FormAttachment(wEnclForced, margin);
+        fdAppend.right= new FormAttachment(100, 0);
+        wAppend.setLayoutData(fdAppend);
+        wAppend.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    input.setChanged();
+                }
+            }
+        );
+        
 		wlHeader=new Label(wContentComp, SWT.RIGHT);
 		wlHeader.setText(Messages.getString("TextFileOutputDialog.Header.Label"));
  		props.setLook(wlHeader);
 		fdlHeader=new FormData();
 		fdlHeader.left = new FormAttachment(0, 0);
-		fdlHeader.top  = new FormAttachment(wEnclForced, margin);
+		fdlHeader.top  = new FormAttachment(wAppend, margin);
 		fdlHeader.right= new FormAttachment(middle, -margin);
 		wlHeader.setLayoutData(fdlHeader);
 		wHeader=new Button(wContentComp, SWT.CHECK );
  		props.setLook(wHeader);
 		fdHeader=new FormData();
 		fdHeader.left = new FormAttachment(middle, 0);
-		fdHeader.top  = new FormAttachment(wEnclForced, margin);
+		fdHeader.top  = new FormAttachment(wAppend, margin);
 		fdHeader.right= new FormAttachment(100, 0);
 		wHeader.setLayoutData(fdHeader);
 		wHeader.addSelectionListener(new SelectionAdapter() 
@@ -846,12 +855,31 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			}
 		);
 
-		wlFormat=new Label(wContentComp, SWT.RIGHT);
+        //Bruise:
+        wlEndedLine=new Label(wContentComp, SWT.RIGHT);
+        wlEndedLine.setText(Messages.getString("TextFileOutputDialog.EndedLine.Label"));
+        props.setLook(wlEndedLine);
+        fdlEndedLine=new FormData();
+        fdlEndedLine.left = new FormAttachment(0, 0);
+        fdlEndedLine.top  = new FormAttachment(wFooter, margin);
+        fdlEndedLine.right= new FormAttachment(middle, -margin);
+        wlEndedLine.setLayoutData(fdlEndedLine);
+        wEndedLine=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wEndedLine);
+        wEndedLine.addModifyListener(lsMod);
+        fdEndedLine=new FormData();
+        fdEndedLine.left = new FormAttachment(middle, 0);
+        fdEndedLine.top  = new FormAttachment(wFooter, margin);
+        fdEndedLine.right= new FormAttachment(100, 0);
+        wEndedLine.setLayoutData(fdEndedLine);
+
+        
+        wlFormat=new Label(wContentComp, SWT.RIGHT);
 		wlFormat.setText(Messages.getString("TextFileOutputDialog.Format.Label"));
  		props.setLook(wlFormat);
 		fdlFormat=new FormData();
 		fdlFormat.left = new FormAttachment(0, 0);
-		fdlFormat.top  = new FormAttachment(wFooter, margin);
+		fdlFormat.top  = new FormAttachment(wEndedLine, margin);
 		fdlFormat.right= new FormAttachment(middle, -margin);
 		wlFormat.setLayoutData(fdlFormat);
 		wFormat=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
@@ -864,7 +892,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wFormat.addModifyListener(lsMod);
 		fdFormat=new FormData();
 		fdFormat.left = new FormAttachment(middle, 0);
-		fdFormat.top  = new FormAttachment(wFooter, margin);
+		fdFormat.top  = new FormAttachment(wEndedLine, margin);
 		fdFormat.right= new FormAttachment(100, 0);
 		wFormat.setLayoutData(fdFormat);
 
@@ -880,13 +908,34 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wCompression.setText(Messages.getString("TextFileOutputDialog.Compression.Label"));
  		props.setLook(wCompression);
 
-		wCompression.setItems(TextFileOutputMeta.fileCompressionTypeCodes);
+		wCompression.setItems(fileCompressionTypeCodes);
 		wCompression.addModifyListener(lsMod);
 		fdCompression=new FormData();
 		fdCompression.left = new FormAttachment(middle, 0);
 		fdCompression.top  = new FormAttachment(wFormat, margin);
 		fdCompression.right= new FormAttachment(100, 0);
 		wCompression.setLayoutData(fdCompression);
+		wCompression.addModifyListener(new ModifyListener() 
+        {
+            public void modifyText(ModifyEvent arg0)
+            {
+                if (fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_ZIP].equals(wCompression.getText())) {
+                    wlFilename.setText(Messages.getString("TextFileOutputDialog.Filename.LabelIfZip"));
+                    wlFileNameField.setText(Messages.getString("TextFileOutputDialog.FileNameField.LabelIfZip"));
+                    wlFileNameInField.setText(Messages.getString("TextFileOutputDialog.FileNameInField.LabelIfZip"));
+                } else {
+                    if (wFileNameInField.getSelection()) {
+                        wbFilename.setEnabled(false);
+                        wFilename.setEnabled(false);
+                    }
+                    wlFilename.setText(Messages.getString("TextFileOutputDialog.Filename.Label"));
+                    wlFileNameField.setText(Messages.getString("TextFileOutputDialog.FileNameField.Label"));
+                    wlFileNameInField.setText(Messages.getString("TextFileOutputDialog.FileNameInField.Label"));
+                }
+            }
+        }
+    );
+
 
         wlEncoding=new Label(wContentComp, SWT.RIGHT);
         wlEncoding.setText(Messages.getString("TextFileOutputDialog.Encoding.Label"));
@@ -990,23 +1039,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		fdSplitEvery.right= new FormAttachment(100, 0);
 		wSplitEvery.setLayoutData(fdSplitEvery);
 
-		//Bruise:
-		wlEndedLine=new Label(wContentComp, SWT.RIGHT);
-		wlEndedLine.setText(Messages.getString("TextFileOutputDialog.EndedLine.Label"));
- 		props.setLook(wlEndedLine);
-		fdlEndedLine=new FormData();
-		fdlEndedLine.left = new FormAttachment(0, 0);
-		fdlEndedLine.top  = new FormAttachment(wSplitEvery, margin);
-		fdlEndedLine.right= new FormAttachment(middle, -margin);
-		wlEndedLine.setLayoutData(fdlEndedLine);
-		wEndedLine=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wEndedLine);
- 		wEndedLine.addModifyListener(lsMod);
-		fdEndedLine=new FormData();
-		fdEndedLine.left = new FormAttachment(middle, 0);
-		fdEndedLine.top  = new FormAttachment(wSplitEvery, margin);
-		fdEndedLine.right= new FormAttachment(100, 0);
-		wEndedLine.setLayoutData(fdEndedLine);
 		
 		fdContentComp = new FormData();
 		fdContentComp.left  = new FormAttachment(0, 0);
@@ -1321,10 +1353,13 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         if (input.getFileNameField() !=null) wFileNameField.setText(input.getFileNameField());
         if(input.isFileNameInField()){
         	wFileNameField.setEnabled(true);
-        	wbFilename.setEnabled(false);
-    		wFilename.setEnabled(false);
-    		wFileIsCommand.setEnabled(false);
     		wbShowFiles.setEnabled(false);
+    		if (!fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_ZIP].equals(wCompression.getText()))
+    		{
+    		    wbFilename.setEnabled(false);
+    		    wFilename.setEnabled(false);
+    		    wFileIsCommand.setEnabled(false);
+    		}
         }
         
 		wSplitEvery.setText(""+input.getSplitEvery());

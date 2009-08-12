@@ -13,22 +13,12 @@
 package org.pentaho.di.trans.steps.textfileoutput;
 
 import java.io.OutputStream;
-import java.text.DateFormatSymbols;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.GZIPOutputStream;
+import java.text.*;
+import java.util.*;
 import java.util.zip.ZipOutputStream;
 
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.trans.step.BaseStepData;
-import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.core.row.*;
+import org.pentaho.di.trans.step.*;
 
 /**
  * @author Matt
@@ -36,9 +26,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class TextFileOutputData extends BaseStepData implements StepDataInterface
 {
-	public int splitnr;
-
-	public int fieldnrs[];
+    public int fieldnrs[];
 
 	public NumberFormat nf;
 	public DecimalFormat df;
@@ -47,20 +35,11 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 	public SimpleDateFormat daf;
 	public DateFormatSymbols dafs;
 
-	public ZipOutputStream zip;
-	public GZIPOutputStream gzip;
-    
-    public OutputStream writer;
-
     public DecimalFormat        defaultDecimalFormat;
     public DecimalFormatSymbols defaultDecimalFormatSymbols;
 
     public SimpleDateFormat  defaultDateFormat;
     public DateFormatSymbols defaultDateFormatSymbols;
-
-    public Process cmdProc;
-
-    public OutputStream fos;
 
     public RowMetaInterface outputRowMeta;
 
@@ -74,26 +53,35 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 	
 	public boolean oneFileOpened;
 
-	public List<String> previouslyOpenedFiles;
-	
-	public int  fileNameFieldIndex;
+    public boolean isSplitting;
+    public long extraLinesWritten;
+    
+    public String lastRowFileName;
+    public int  fileNameFieldIndex;
+    public ValueMetaInterface fileNameMeta;
 
-	public ValueMetaInterface fileNameMeta;
-	
-	public Map<String,OutputStream> fileWriterMap;
+    public ZipOutputStream parentZipOutputStream;
+    public TextFileOutputData.OutputMeta outputMeta;
+    public TextFileOutputData.OutputMeta parentZipOutputMeta;
+    public Map<String,TextFileOutputData.OutputMeta> outputMetaMap;
 
-	public String fileName;
+    public boolean delayedHeaderWrite;
+    
+    public static class OutputMeta
+    {
+        public String name;
+        public OutputStream writer;
+        public Process cmdProc;
+        public int splitnr;
+    }
 
-    /**
-	 * 
-	 */
-	public TextFileOutputData()
-	{
-		super();
-		
-		nf = NumberFormat.getInstance();
-		df = (DecimalFormat)nf;
-		dfs=new DecimalFormatSymbols();
+    public TextFileOutputData()
+    {
+        super();
+
+        nf = NumberFormat.getInstance();
+        df = (DecimalFormat)nf;
+        dfs=new DecimalFormatSymbols();
 
 		daf = new SimpleDateFormat();
 		dafs= new DateFormatSymbols();
@@ -103,13 +91,10 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 
         defaultDateFormat = new SimpleDateFormat();
         defaultDateFormatSymbols = new DateFormatSymbols();
-        
-        previouslyOpenedFiles = new ArrayList<String>();
-        fileNameFieldIndex = -1;
 
-        cmdProc = null;
+        fileNameFieldIndex = -1;
         oneFileOpened=false;
-        
-        fileWriterMap = new HashMap<String,OutputStream>();
-	}
+
+        outputMetaMap = new HashMap<String,TextFileOutputData.OutputMeta>();
+    }
 }

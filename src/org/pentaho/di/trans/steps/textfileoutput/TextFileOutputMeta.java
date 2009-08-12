@@ -862,7 +862,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			retval+="_"+splitnr;
 		}
 		
-		if (meta.getFileCompression().equals("Zip"))
+		if (fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_ZIP].equals(meta.getFileCompression()))
 		{
 			if (ziparchive)
 			{
@@ -882,7 +882,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			{
 				retval+="."+realextension;
 			}
-			if (meta.getFileCompression().equals("GZip"))
+			if (fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_GZIP].equals(meta.getFileCompression()))
 			{
 				retval += ".gz";
 			}
