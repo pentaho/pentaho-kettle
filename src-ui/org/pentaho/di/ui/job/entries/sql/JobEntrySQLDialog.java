@@ -501,8 +501,6 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
     	wlFilename.setEnabled(wSQLFromFile.getSelection());
     	wFilename.setEnabled(wSQLFromFile.getSelection());
     	wbFilename.setEnabled(wSQLFromFile.getSelection());
-    	wUseSubs.setEnabled(!wSQLFromFile.getSelection());
-    	wlUseSubs.setEnabled(!wSQLFromFile.getSelection());
     	wSQL.setEnabled(!wSQLFromFile.getSelection());
     	wlSQL.setEnabled(!wSQLFromFile.getSelection());
     	wlPosition.setEnabled(!wSQLFromFile.getSelection());
