@@ -252,6 +252,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 			db.shareVariablesWith(this);
 			try
 			{
+				String mySQL = null;
 				db.connect();
 				if(sqlfromfile)
 				{
@@ -276,28 +277,18 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 						
 						BufferedReader buff = new BufferedReader(BIS);
 						String sLine = null;
-						String SFullLine=Const.CR;;
+						mySQL=Const.CR;;
 
 						while((sLine=buff.readLine())!=null) 
 						{
 							if(Const.isEmpty(sLine))
 							{
-								SFullLine= SFullLine +  Const.CR;	
+								mySQL= mySQL +  Const.CR;	
 							}
 							else
 							{
-								SFullLine=SFullLine+  Const.CR + sLine;
+								mySQL=mySQL+  Const.CR + sLine;
 							}
-						}
-						
-						if(!Const.isEmpty(SFullLine))
-						{
-							if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobSQL.Log.SQlStatement",SFullLine));
-							// Run SQL
-							if(sendOneStatement)
-								db.execStatement(SFullLine);
-							else
-								db.execStatements(SFullLine);
 						}
 					}catch (Exception e)
 					{
@@ -306,11 +297,13 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 					
 				}else
 				{
-					String mySQL = null;
-					if (useVariableSubstitution)
-						mySQL = environmentSubstitute(sql);
-					else
-						mySQL = sql;
+					mySQL=sql;
+				}
+				if(!Const.isEmpty(mySQL))
+				{
+					// let it run
+					if (useVariableSubstitution) mySQL = environmentSubstitute(mySQL);
+					if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobSQL.Log.SQlStatement",mySQL));
 					if(sendOneStatement)
 						db.execStatement(mySQL);
 					else
