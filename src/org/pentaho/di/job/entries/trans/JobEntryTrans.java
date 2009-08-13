@@ -213,7 +213,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
 		// specificationMethod
 		//
-		retval.append("      ").append(XMLHandler.addTagValue("specification_method", specificationMethod.getCode()));
+		retval.append("      ").append(XMLHandler.addTagValue("specification_method", specificationMethod == null ? null : specificationMethod.getCode()));
 		retval.append("      ").append(XMLHandler.addTagValue("trans_object_id",  transObjectId==null ? null : transObjectId.toString()));
 		retval.append("      ").append(XMLHandler.addTagValue("filename",          filename));
 		retval.append("      ").append(XMLHandler.addTagValue("transname",         transname));
@@ -419,7 +419,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			// long id_transformation = rep.getTransformationID(transname, directory.getID());
 			// rep.saveJobEntryAttribute(id_job, getID(), "id_transformation", id_transformation);
 			//
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "specification_method", specificationMethod.getCode());
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "specification_method", specificationMethod==null ? null : specificationMethod.getCode());
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "trans_object_id", transObjectId==null ? null : transObjectId.toString());
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "name", getTransname());
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "dir_path", getDirectory() != null ? getDirectory() : "");
