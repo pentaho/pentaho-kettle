@@ -2349,6 +2349,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				//
 				JobMeta jobMeta = (JobMeta) this.realClone(false);
 
+				// All objects get re-located to the root folder
+				//
+				jobMeta.setRepositoryDirectory(new RepositoryDirectory());
+
 				// Add used resources, modify transMeta accordingly
 				// Go through the list of steps, etc.
 				// These critters change the steps in the cloned TransMeta

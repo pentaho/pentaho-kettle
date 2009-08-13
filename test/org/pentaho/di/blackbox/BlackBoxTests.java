@@ -69,7 +69,7 @@ public class BlackBoxTests extends TestCase {
 				{
 					// we found a transformation
 					// see if we can find an output file
-					File expected = getExpectedOutputFile( dir, name.substring(0, name.length()-4) );
+					List<File> expected = getExpectedOutputFile( dir, name.substring(0, name.length()-4) );
 					try {
 						runTrans( files[i], expected );
 					} catch ( AssertionFailedError failure ) {
@@ -87,7 +87,7 @@ public class BlackBoxTests extends TestCase {
 		
 	}
 	
-	protected void runTrans( File transFile, File expected ) {
+	protected void runTrans( File transFile, List<File> expectedFiles ) {
 
 		System.out.println("Running: "+getPath(transFile));
 		LogWriter log;
@@ -97,10 +97,7 @@ public class BlackBoxTests extends TestCase {
 
         boolean ok = false;
         int failsIn = failures;
-		// create a path to the expected output
-		String actualFile = expected.getAbsolutePath();
-		actualFile = actualFile.replaceFirst(".expected.", ".actual.");
-
+        
 		try {
 			currentFile = transFile;
 			if( !transFile.exists() ) 
@@ -108,18 +105,31 @@ public class BlackBoxTests extends TestCase {
 				log.logError( "BlackBoxTest", "Transformation does not exist: "+ getPath( transFile ) );
 				addFailure( "Transformation does not exist: "+ getPath( transFile ) );
 			}
-			if( !expected.exists() ) 
+			if( expectedFiles.isEmpty() ) 
 			{
-				fail( "Expected output file does not exist: "+ getPath( expected ) );
-				addFailure("Expected output file does not exist: "+ getPath( expected ));
+				fail( "No expected output files found: "+ getPath( transFile ) );
+				addFailure("No expected output files found: "+ getPath( transFile ));
 			}
-			File actual = new File( actualFile );
 
 			try {
 				ok = runTrans( transFile.getAbsolutePath(), log );
-				if( ok ) {
-					fileCompare( expected, actual, log );
-				}
+				
+				// verify all the expected output files...
+				//
+		        for (int i=0;i<expectedFiles.size();i++) {
+		            
+		        	File expected = expectedFiles.get(i);
+		        	
+		    		// create a path to the expected output
+		    		String actualFile = expected.getAbsolutePath();
+		    		actualFile = actualFile.replaceFirst(".expected.", ".actual."); // single file case
+		    		actualFile = actualFile.replaceFirst(".expected_"+i+".", ".actual_"+i+"."); // multiple files case
+
+					File actual = new File( actualFile );
+					if( ok ) {
+						fileCompare( expected, actual, log );
+					}
+		        }			
 			} catch (KettleException ke) {
 				// this will get logged below
 			} catch ( AssertionFailedError failure ) {
@@ -132,7 +142,9 @@ public class BlackBoxTests extends TestCase {
 		}
 		log.removeAppender(stringAppender);
 		
-		if( !ok ) {
+		if( !ok && expectedFiles.size()==1) {
+			
+			File expected = expectedFiles.get(0);
 			String logStr = stringAppender.getBuffer().toString();
 			
 			String tmpFileName = transFile.getAbsolutePath().substring(0, transFile.getAbsolutePath().length()-4)+"-log.txt";
@@ -149,7 +161,7 @@ public class BlackBoxTests extends TestCase {
 			}
 		}
 	}
-	
+		
 	public void writeLog( File logFile, String logStr ) 
 	{
 		try {
@@ -325,25 +337,36 @@ public class BlackBoxTests extends TestCase {
 	 * @param baseName Name of the transformation or the job without the extension
 	 * @return
 	 */
-	protected File getExpectedOutputFile( File dir, String baseName ) {
-		File expected;
-		expected = new File( dir, baseName + ".expected.txt" );
-		if( expected.exists() ) 
-		{
-			return expected;
-		}
-		expected = new File( dir, baseName + ".expected.csv" );
-		if( expected.exists() ) 
-		{
-			return expected;
-		}
-		expected = new File( dir, baseName + ".expected.xml" );
-		if( expected.exists() ) 
-		{
-			return expected;
-		}
-		return null;
+	protected List<File> getExpectedOutputFile( File dir, String baseName ) {
+		List<File> files = new ArrayList<File>();
 		
+		for (String extension : new String[] { ".txt", ".csv", ".xml" }) {
+			File expected;
+			expected = new File( dir, baseName + ".expected"+extension );
+			if( expected.exists() ) 
+			{
+				files.add(expected);
+			}
+		
+			// now see if there are perhaps multiple files generated...
+			//
+			boolean found=true;
+			int nr=0;
+			while (found) {
+				expected = new File( dir, baseName + ".expected_"+nr+extension );
+				if( expected.exists() ) 
+				{
+					files.add(expected);
+					nr++;
+				}
+				else
+				{
+					found=false;
+				}
+			}
+		}
+		
+		return files;
 	}
 	
 	public boolean runTrans(String fileName, LogWriter log) throws KettleException

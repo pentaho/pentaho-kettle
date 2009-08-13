@@ -166,6 +166,8 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 			ObjectId id_jobentry = getJobEntryID(copy.getName(), id_job);
 			if (id_jobentry == null)
 			{
+				insertJobEntry(id_job, (JobEntryBase)entry);
+				
 				// THIS IS THE PLUGIN/JOB-ENTRY BEING SAVED!
 				//
 				entry.saveRep(repository, id_job);  
@@ -217,6 +219,8 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 		repository.connectionDelegate.getDatabase().insertRow();
 		repository.connectionDelegate.getDatabase().closeInsert();
 
+		jobEntryBase.setObjectId(id);
+		
 		return id;
 	}
 

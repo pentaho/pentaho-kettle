@@ -809,6 +809,10 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 			//
 			mappingTransMeta.setFilename(newFilename);
 
+			// exports always reside in the root directory, in case we want to turn this into a file repository...
+			//
+			mappingTransMeta.setRepositoryDirectory(new RepositoryDirectory());
+
 			// change it in the job entry
 			//
 			fileName = newFilename;

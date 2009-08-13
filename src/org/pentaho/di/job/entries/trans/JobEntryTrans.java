@@ -25,6 +25,7 @@ import java.util.Map;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -51,6 +52,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryImportLocation;
+import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -86,6 +88,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	private String              transname;
 	private String              filename;
 	private String              directory;
+	private ObjectId            transObjectId;
+	private ObjectLocationSpecificationMethod specificationMethod;
 
 	public  String  arguments[];
 	public  boolean argFromPrevious;
@@ -207,6 +211,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
 		retval.append(super.getXML());
 
+		// specificationMethod
+		//
+		retval.append("      ").append(XMLHandler.addTagValue("specification_method", specificationMethod.getCode()));
+		retval.append("      ").append(XMLHandler.addTagValue("trans_object_id",  transObjectId==null ? null : transObjectId.toString()));
 		retval.append("      ").append(XMLHandler.addTagValue("filename",          filename));
 		retval.append("      ").append(XMLHandler.addTagValue("transname",         transname));
         if (directory!=null)
@@ -270,9 +278,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		{
             super.loadXML(entrynode, databases, slaveServers);
 
+            String method = XMLHandler.getTagValue(entrynode, "specification_method");
+            specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
+            String transId = XMLHandler.getTagValue(entrynode, "trans_object_id");
+            transObjectId = Const.isEmpty(transId) ? null : new StringObjectId(transId);
 			filename = XMLHandler.getTagValue(entrynode, "filename") ;
 			transname = XMLHandler.getTagValue(entrynode, "transname") ;
-
             directory = XMLHandler.getTagValue(entrynode, "directory");
 
             argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
@@ -334,8 +345,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	}
 
 	// Load the jobentry from repository
+    //
 	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
 		try {
+			String method = rep.getJobEntryAttributeString(id_jobentry, "specification_method");
+            specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
+            String transId = rep.getJobEntryAttributeString(id_jobentry, "trans_object_id");
+            transObjectId = Const.isEmpty(transId) ? null : new StringObjectId(transId);
 			transname = rep.getJobEntryAttributeString(id_jobentry, "name");
 			directory = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
 			filename = rep.getJobEntryAttributeString(id_jobentry, "file_name");
@@ -402,6 +418,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			// Removed id_transformation as we do not know what it is if we are using variables in the path
 			// long id_transformation = rep.getTransformationID(transname, directory.getID());
 			// rep.saveJobEntryAttribute(id_job, getID(), "id_transformation", id_transformation);
+			//
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "specification_method", specificationMethod.getCode());
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "trans_object_id", transObjectId==null ? null : transObjectId.toString());
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "name", getTransname());
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "dir_path", getDirectory() != null ? getDirectory() : "");
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "file_name", filename);
@@ -450,6 +469,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	{
 		super.clear();
 
+		specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
 		transname=null;
 		filename=null;
 		directory = null;
@@ -1137,6 +1157,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		// Set the correct filename inside the XML.
 		//
 		transMeta.setFilename(newFilename);
+		
+		// exports always reside in the root directory, in case we want to turn this into a file repository...
+		//
+		transMeta.setRepositoryDirectory(new RepositoryDirectory());
 
 		// change it in the job entry
 		//

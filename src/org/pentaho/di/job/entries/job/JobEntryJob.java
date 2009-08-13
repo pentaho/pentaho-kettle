@@ -1076,6 +1076,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		//
 		jobMeta.setFilename(newFilename);
 
+		// exports always reside in the root directory, in case we want to turn this into a file repository...
+		//
+		jobMeta.setRepositoryDirectory(new RepositoryDirectory());
+
 		// change it in the job entry
 		//
 		filename = newFilename;

@@ -280,7 +280,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     		return jobDelegate.existsJobMeta(name, repositoryDirectory, objectType);
     		
 		case TRANSFORMATION :
-			
         	securityProvider.validateAction(RepositoryOperation.READ_TRANSFORMATION);
     		return transDelegate.existsTransMeta(name, repositoryDirectory, objectType);
 

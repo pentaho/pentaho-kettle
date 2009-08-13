@@ -5637,6 +5637,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 				//
 				transMeta.setFilename(exportFileName);
 				
+				// All objects get re-located to the root folder
+				//
+				transMeta.setRepositoryDirectory(new RepositoryDirectory());
+				
 				// Set a number of parameters for all the data files referenced so far...
 				//
 				Map<String, String> directoryMap = resourceNamingInterface.getDirectoryMap();
