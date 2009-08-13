@@ -297,7 +297,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 						if(!Const.isEmpty(SFullLine))
 						{
 							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSQL.Log.SQlStatement",SFullLine));
-							db.execStatement(SFullLine);
+							db.execStatements(SFullLine);
 						}
 					}catch (Exception e)
 					{
