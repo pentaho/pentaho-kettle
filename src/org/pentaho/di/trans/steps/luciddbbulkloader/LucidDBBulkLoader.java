@@ -388,9 +388,19 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 		    			data.fifoStream.write(data.quote);
 		    			if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
 		    				// We had a string, just dump it back.
+		    				// TODO: escape " in binary strings as well
 		    				data.fifoStream.write((byte[])valueData);
 		    			} else {
-		    				data.fifoStream.write(valueMeta.getString(valueData).getBytes());
+		    				// Replace all " in string with "" (default FlatFile ESCAPE_CHAR option)
+		    				String s = valueMeta.getString(valueData);
+		    				String sub = s;
+		    				if ( s.contains("\"")) {
+		    					sub = s.replace("\"", "\"\"");
+		    				}
+		    				//Temporary put this out to create intentinal erorrs
+		    				//data.fifoStream.write(sub.getBytes());
+		    				//End temprorary
+		    				data.fifoStream.write(sub.getBytes());
 		    			}
 		    			data.fifoStream.write(data.quote);
 		    			break;
