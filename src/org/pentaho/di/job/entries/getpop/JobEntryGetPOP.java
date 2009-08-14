@@ -332,8 +332,20 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			delete          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "delete") );
 			
 			protocol      = Const.NVL(XMLHandler.getTagValue(entrynode, "protocol"),PROTOCOL_STRING_POP3);
-			savemessage      = "Y".equalsIgnoreCase(Const.NVL(XMLHandler.getTagValue(entrynode, "savemessage"),"Y"));
-			saveattachment      = "Y".equalsIgnoreCase(Const.NVL(XMLHandler.getTagValue(entrynode, "saveattachment"),"Y"));
+
+			String sm = XMLHandler.getTagValue(entrynode, "savemessage");	
+			if(Const.isEmpty(sm)) 
+				savemessage = true;
+			else
+				savemessage = "Y".equalsIgnoreCase(sm);
+			
+
+			String sa = XMLHandler.getTagValue(entrynode, "saveattachment");	
+			if(Const.isEmpty(sa)) 
+				saveattachment = true;
+			else
+				saveattachment = "Y".equalsIgnoreCase(sa);
+			
 			usedifferentfolderforattachment          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "usedifferentfolderforattachment") );
 			attachmentfolder      = XMLHandler.getTagValue(entrynode, "attachmentfolder");
 			attachmentwildcard      = XMLHandler.getTagValue(entrynode, "attachmentwildcard");
@@ -430,8 +442,19 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			delete          = rep.getJobEntryAttributeBoolean(id_jobentry, "delete");
 			
 			protocol        = Const.NVL(rep.getJobEntryAttributeString(id_jobentry, "protocol"),PROTOCOL_STRING_POP3);
-			savemessage  = rep.getJobEntryAttributeBoolean(id_jobentry, "savemessage");
-			saveattachment  = rep.getJobEntryAttributeBoolean(id_jobentry, "saveattachment");
+		
+		    String sv=rep.getStepAttributeString (id_jobentry, "savemessage");
+			if(Const.isEmpty(sv)) 
+				savemessage = true;
+			else
+				savemessage =  rep.getStepAttributeBoolean(id_jobentry, "savemessage");
+			
+		    String sa=rep.getStepAttributeString (id_jobentry, "saveattachment");
+			if(Const.isEmpty(sa)) 
+				saveattachment = true;
+			else
+				saveattachment =  rep.getStepAttributeBoolean(id_jobentry, "saveattachment");
+			
 			usedifferentfolderforattachment  = rep.getJobEntryAttributeBoolean(id_jobentry, "usedifferentfolderforattachment");
 			attachmentfolder        = rep.getJobEntryAttributeString(id_jobentry, "attachmentfolder");
 			attachmentwildcard        = rep.getJobEntryAttributeString(id_jobentry, "attachmentwildcard");
@@ -1124,18 +1147,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   {
 	   try {
 		   // open folder
-		   // but before make sure to close the previous one
-		    mailConn.closeFolder(true); 
 			if(!usePOP3 && !Const.isEmpty(realIMAPFolder)) {
 				mailConn.openFolder(realIMAPFolder, !(getActionType()==ACTION_TYPE_GET && getAfterGetIMAP()==AFTER_GET_IMAP_NOTHING));
 			} else {
 				mailConn.openFolder(!(getActionType()==ACTION_TYPE_GET && getAfterGetIMAP()==AFTER_GET_IMAP_NOTHING));
 			}
-			
-			// retrieve messages	
-			//if(usePOP3 && retrievemails==1)
-			//	mailConn.retrieveUnreadMessages();
-			//else
+
 			mailConn.retrieveMessages();
 			
 			int messagesCount=mailConn.getMessagesCount();

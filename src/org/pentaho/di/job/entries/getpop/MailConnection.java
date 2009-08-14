@@ -264,6 +264,13 @@ public class MailConnection {
     public void openFolder(String foldername, boolean defaultFolder, boolean write) throws KettleException  {
 	    this.write=write;  
     	try {
+     		  if(getFolder()!=null) {
+    			  // A folder is already opened
+    			  //before make sure to close it
+    			  closeFolder(true);
+    		  }
+  		    
+     		  
 	    	  if(defaultFolder) {
 	          	// get the default folder
 	          	this.folder = this.store.getDefaultFolder().getFolder(INBOX_FOLDER);
