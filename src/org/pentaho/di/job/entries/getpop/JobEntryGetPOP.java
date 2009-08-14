@@ -168,6 +168,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	private String password;
 	private boolean usessl;
 	private String sslport;
+	private boolean useproxy;
+	private String proxyusername;
 	private String outputdirectory;
 	private String filenamepattern;
 	private String firstmails;
@@ -223,6 +225,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		password=null;
 		usessl=false;
 		sslport=null;
+		useproxy=false;
+		proxyusername=null;
 		outputdirectory=null;
 		filenamepattern=DEFAULT_FILE_NAME_PATTERN;
 		retrievemails=0;
@@ -307,6 +311,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		retval.append("      ").append(XMLHandler.addTagValue("createlocalfolder",       createlocalfolder));
 		retval.append("      ").append(XMLHandler.addTagValue("aftergetimap",getAfterGetIMAPCode(aftergetimap)));
 		retval.append("      ").append(XMLHandler.addTagValue("includesubfolders",       includesubfolders));
+		retval.append("      ").append(XMLHandler.addTagValue("useproxy",       useproxy));
+		retval.append("      ").append(XMLHandler.addTagValue("proxyusername",     proxyusername));
 		return retval.toString();
 	}
 
@@ -369,6 +375,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			createlocalfolder          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "createlocalfolder") );
 			aftergetimap = getAfterGetIMAPByCode(Const.NVL(XMLHandler.getTagValue(entrynode,	"aftergetimap"), ""));
 			includesubfolders          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "includesubfolders") );
+			useproxy          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "useproxy") );
+			proxyusername      = XMLHandler.getTagValue(entrynode, "proxyusername");
 		}
 		catch(KettleXMLException xe)
 		{
@@ -478,6 +486,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			createlocalfolder          = rep.getJobEntryAttributeBoolean(id_jobentry, "createlocalfolder");
 			aftergetimap = getAfterGetIMAPByCode(Const.NVL(rep.getJobEntryAttributeString(id_jobentry,"aftergetimap"), ""));
 			includesubfolders          = rep.getJobEntryAttributeBoolean(id_jobentry, "includesubfolders");
+			useproxy          = rep.getJobEntryAttributeBoolean(id_jobentry, "useproxy");
+			proxyusername        = rep.getJobEntryAttributeString(id_jobentry, "proxyusername");
 		}
 		catch(KettleException dbe) {
 			throw new KettleException("Unable to load job entry of type 'get pop' exists from the repository for id_jobentry="+id_jobentry, dbe);
@@ -534,6 +544,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "createlocalfolder",          createlocalfolder);
 			rep.saveJobEntryAttribute(id_job, getObjectId(),"aftergetimap", getAfterGetIMAPCode(aftergetimap));
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "includesubfolders",          includesubfolders);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "useproxy",          useproxy);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "proxyusername",          proxyusername);
 		}
 		catch(KettleDatabaseException dbe) {
 			throw new KettleException("Unable to save job entry of type 'get pop' to the repository for id_job="+id_job, dbe);
@@ -809,7 +821,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   public String getRealServername() {
       return environmentSubstitute(getServerName());
   }
-
+	public String getRealProxyUsername(){
+		return environmentSubstitute(geProxyUsername());
+	}
+	public String geProxyUsername(){
+		return this.proxyusername;
+	}
 	/**
 	 * @return Returns the password.
 	 */
@@ -868,11 +885,28 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	 * @return Returns the usessl.
 	 */
 	public boolean isUseSSL(){
-		return usessl;
+		return this.usessl;
 	}
-	
+	/**
+	 * @return Returns the useproxy.
+	 */
+	public boolean isUseProxy(){
+		return this.useproxy;
+	}
+
+	public void setUseProxy(boolean useprox){
+		this.useproxy=useprox;
+	}
 	public boolean isSaveAttachment(){
 		return saveattachment;
+	}
+	public void setProxyUsername(String username)
+	{
+		this.proxyusername=username;
+	}
+	public String getProxyUsername()
+	{
+		return this.proxyusername;
 	}
 	
 	public void setSaveAttachment(boolean saveattachment){
@@ -999,11 +1033,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			String realFilenamePattern=getRealFilenamePattern();
 			int realport=Const.toInt(environmentSubstitute(sslport),-1);
 			String realIMAPFolder=environmentSubstitute(getIMAPFolder());
+			String realProxyUsername=getRealProxyUsername();
 
 			initVariables();
 			// create a mail connection object			
 			mailConn= new MailConnection(usePOP3?MailConnection.PROTOCOL_POP3:MailConnection.PROTOCOL_IMAP
-					,realserver,realport, realusername, realpassword, isUseSSL(), false);
+					,realserver,realport, realusername, realpassword, isUseSSL(), isUseProxy(),realProxyUsername, false);
 			// connect
 			mailConn.connect();
 

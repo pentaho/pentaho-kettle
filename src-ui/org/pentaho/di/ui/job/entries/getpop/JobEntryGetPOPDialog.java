@@ -170,6 +170,15 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		private Button       wUseSSL;
 		private FormData     fdlUseSSL, fdUseSSL;
 		
+		private Label        wlUseProxy;
+		private Button       wUseProxy;
+		private FormData     fdlUseProxy, fdUseProxy;
+		
+		private Label        wlProxyUsername;
+		private TextVar      wProxyUsername;
+		private FormData     fdlProxyUsername, fdProxyUsername;
+
+		
 		private Label        wlIncludeSubFolders;
 		private Button       wIncludeSubFolders;
 		private FormData     fdlIncludeSubFolders, fdIncludeSubFolders;
@@ -485,6 +494,54 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 				}
 			});
 			
+			// USE proxy
+			wlUseProxy=new Label(wServerSettings, SWT.RIGHT);
+			wlUseProxy.setText(BaseMessages.getString(PKG, "JobGetPOP.UseProxyMails.Label"));
+			props.setLook(wlUseProxy);
+			fdlUseProxy=new FormData();
+			fdlUseProxy.left = new FormAttachment(0, 0);
+			fdlUseProxy.top  = new FormAttachment(wPassword, 2*margin);
+			fdlUseProxy.right= new FormAttachment(middle, -margin);
+			wlUseProxy.setLayoutData(fdlUseProxy);
+			wUseProxy=new Button(wServerSettings, SWT.CHECK);
+			props.setLook(wUseProxy);
+			fdUseProxy=new FormData();
+			wUseProxy.setToolTipText(BaseMessages.getString(PKG, "JobGetPOP.UseProxyMails.Tooltip"));
+			fdUseProxy.left = new FormAttachment(middle, 0);
+			fdUseProxy.top  = new FormAttachment(wPassword, 2*margin);
+			fdUseProxy.right= new FormAttachment(100, 0);
+			wUseProxy.setLayoutData(fdUseProxy);
+
+			wUseProxy.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					setUserProxy();
+					jobEntry.setChanged();
+				}
+			}
+			);
+			
+			// ProxyUsername line
+			wlProxyUsername=new Label(wServerSettings, SWT.RIGHT);
+			wlProxyUsername.setText(BaseMessages.getString(PKG, "JobGetPOP.ProxyUsername.Label"));
+			props.setLook(wlProxyUsername);
+			fdlProxyUsername=new FormData();
+			fdlProxyUsername.left = new FormAttachment(0, 0);
+			fdlProxyUsername.top  = new FormAttachment(wUseProxy, margin);
+			fdlProxyUsername.right= new FormAttachment(middle, -margin);
+			wlProxyUsername.setLayoutData(fdlProxyUsername);
+			wProxyUsername=new TextVar(jobMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wProxyUsername);
+			wProxyUsername.setToolTipText(BaseMessages.getString(PKG, "JobGetPOP.ProxyUsername.Tooltip"));
+			wProxyUsername.addModifyListener(lsMod);
+			fdProxyUsername=new FormData();
+			fdProxyUsername.left = new FormAttachment(middle, 0);
+			fdProxyUsername.top  = new FormAttachment(wUseProxy, margin);
+			fdProxyUsername.right= new FormAttachment(100, 0);
+			wProxyUsername.setLayoutData(fdProxyUsername);
+
+			
 		    //Protocol
 		  	wlProtocol= new Label(wServerSettings, SWT.RIGHT);
 		  	wlProtocol.setText(BaseMessages.getString(PKG, "JobGetPOP.Protocol.Label"));
@@ -492,7 +549,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		  	fdlProtocol= new FormData();
 		  	fdlProtocol.left = new FormAttachment(0, 0);
 		  	fdlProtocol.right = new FormAttachment(middle, -margin);
-		  	fdlProtocol.top = new FormAttachment(wPassword, margin);
+		  	fdlProtocol.top = new FormAttachment(wProxyUsername, margin);
 		  	wlProtocol.setLayoutData(fdlProtocol);
 		  	wProtocol= new CCombo(wServerSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 		  	wProtocol.setItems(JobEntryGetPOP.protocolCodes);
@@ -500,7 +557,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 			props.setLook(wProtocol);
 			fdProtocol= new FormData();
 			fdProtocol.left = new FormAttachment(middle, 0);
-			fdProtocol.top = new FormAttachment(wPassword, margin);
+			fdProtocol.top = new FormAttachment(wProxyUsername, margin);
 			fdProtocol.right = new FormAttachment(100, 0);
 			wProtocol.setLayoutData(fdProtocol);
 			wProtocol.addSelectionListener(new SelectionAdapter()
@@ -1594,6 +1651,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	        });
 
 	        getData();
+	        setUserProxy();
 			chooseListMails();
 			activeAttachmentFolder();
 			refreshProtocal(false);
@@ -1610,7 +1668,11 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	        }
 	        return jobEntry;
 	    }
-	    
+	    private void setUserProxy()
+	    {
+	    	wlProxyUsername.setEnabled(wUseProxy.getSelection());
+	    	wProxyUsername.setEnabled(wUseProxy.getSelection());
+	    }
 	    private boolean connect()
 	    {
 	    	String errordescription=null;
@@ -1622,10 +1684,11 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		    	String realuser=jobMeta.environmentSubstitute(wUserName.getText());
 		    	String realpass=jobMeta.environmentSubstitute(wPassword.getText());
 		    	int realport=Const.toInt(jobMeta.environmentSubstitute(wPort.getText()),-1);
-		    	
+		    	String realproxyuser=jobMeta.environmentSubstitute(wProxyUsername.getText());
 		    	try{
 		    		mailConn=new MailConnection(wProtocol.getText().equals(JobEntryGetPOP.PROTOCOL_STRING_POP3)?MailConnection.PROTOCOL_POP3:MailConnection.PROTOCOL_IMAP
-		    				,realserver,realport, realuser, realpass, wUseSSL.getSelection(), false);
+		    				,realserver,realport, realuser, realpass, wUseSSL.getSelection(), 
+		    				wUseProxy.getSelection(),realproxyuser, false);
 		    		mailConn.connect();
 		    		
 		    		retval=true;
@@ -1924,6 +1987,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 				wMoveToFolder.setText(jobEntry.getMoveToIMAPFolder());
 			wAfterGetIMAP.setText(JobEntryGetPOP.getAfterGetIMAPDesc(jobEntry.getAfterGetIMAP()));
 			wIncludeSubFolders.setSelection(jobEntry.isIncludeSubFolders());
+			wUseProxy.setSelection(jobEntry.isUseProxy());
+			if(jobEntry.getProxyUsername()!=null) wProxyUsername.setText(jobEntry.getProxyUsername());
 	    }
 
 	    private void cancel()
@@ -1981,6 +2046,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	        jobEntry.setCreateLocalFolder(wcreateLocalFolder.getSelection());
 	        jobEntry.setAfterGetIMAP(JobEntryGetPOP.getAfterGetIMAPByDesc(wAfterGetIMAP.getText()));
 	        jobEntry.setIncludeSubFolders(wIncludeSubFolders.getSelection());
+	        jobEntry.setUseProxy(wUseProxy.getSelection());
+	        jobEntry.setProxyUsername(wProxyUsername.getText());
 	        dispose();
 	    }
 

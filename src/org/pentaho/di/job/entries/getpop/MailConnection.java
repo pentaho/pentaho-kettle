@@ -73,6 +73,8 @@ public class MailConnection {
     private String password;
     private boolean usessl;
     private boolean write;
+    private boolean useproxy;
+    private String proxyusername;
     /**
 	 * Protocol used.
 	 * Should be PROTOCOL_POP3 (0) for POP3 and PROTOCOL_IMAP (1) to IMAP
@@ -132,10 +134,13 @@ public class MailConnection {
 	 * @param port port number on the server
 	 * @param password
 	 * @param usessl specify if the connection is established via SSL
+	 * @param useproxy specify if we use proxy authentication
+	 * @param proxyusername  proxy authorised user
 	 * @param debug
 	 */
     public MailConnection(int protocol, String server, int port, String username, 
-    		String password, boolean usessl, boolean debug) throws KettleException {
+    		String password, boolean usessl, boolean useproxy, String proxyusername,	
+    		boolean debug) throws KettleException {
     	
     	this.log=LogWriter.getInstance();
     	//Get system properties
@@ -156,12 +161,23 @@ public class MailConnection {
 		this.nrMovedMessages=0;
 		this.nrSavedAttachedFiles=0;
 		this.messagenr=-1;
-
+		this.useproxy=useproxy;
+		this.proxyusername=proxyusername;
+		
 		try{
+			
+			if(useproxy) {
+				// Need here to pass a proxy
+				// use SASL authentication 
+				this.prop.put("mail.imap.sasl.enable", "true");
+				this.prop.put("mail.imap.sasl.authorizationid", proxyusername);
+			}
+		        
 			if(protocol==PROTOCOL_POP3) {
 				this.prop.setProperty("mail.pop3s.rsetbeforequit","true"); 
 				this.prop.setProperty("mail.pop3.rsetbeforequit","true"); 
 			}
+			
 			String protocolString=(protocol==PROTOCOL_POP3)?"pop3":"imap";
 			if(usessl) {
 				// Supports IMAP/POP3 connection with SSL, the connection is established via SSL.
@@ -197,6 +213,26 @@ public class MailConnection {
      */
     public boolean isConnected() {
     	return (this.store!=null && this.store.isConnected());
+    }
+    /**
+     * @return Returns the use of SSL.
+     *  true if the connection use SSL
+     */
+    public boolean isUseSSL() {
+    	return this.usessl;
+    }
+    /**
+     * @return Returns the use of proxy.
+     *  true if the connection use proxy
+     */
+    public boolean isUseProxy() {
+    	return this.useproxy;
+    }
+    /**
+     * @return Returns the proxy username.
+     */
+    public String getProxyUsername() {
+    	return this.proxyusername;
     }
     /**
      * @return Returns the store
