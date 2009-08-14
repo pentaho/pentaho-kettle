@@ -424,6 +424,7 @@ public class GroupBy extends BaseStep implements StepInterface
 	}
 	
 	// Calculate the aggregates in the row...
+	@SuppressWarnings("unchecked")
 	private void calcAggregate(Object[] r) throws KettleValueException
 	{
 		for (int i=0;i<data.subjectnrs.length;i++)
