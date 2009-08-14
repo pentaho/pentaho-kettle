@@ -194,28 +194,26 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	private boolean notTermReceipientSearch;
 	private boolean notTermReceivedDateSearch;
 	private boolean includesubfolders;
-	//private String beginDate;
-	//private String endDate;
 	private String moveToIMAPFolder;
 	private boolean createmovetofolder;
 	private boolean createlocalfolder;
 	
-  public static final String PROTOCOL_STRING_IMAP="IMAP";
-  public static final String PROTOCOL_STRING_POP3="POP3";
-  public static final String[] protocolCodes = new String[]{"POP3","IMAP"};
-  
-  public static final int DEFAULT_IMAP_PORT=110;
-  public static final int DEFAULT_POP3_PORT=110;
-  public static final int DEFAULT_SSL_POP3_PORT=995;
-  public static final int DEFAULT_SSL_IMAP_PORT=993;
-  
-  private static final String DEFAULT_FILE_NAME_PATTERN="name_{SYS|hhmmss_MMddyyyy|}_#IdFile#.mail";
-  
-  private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
-  private static final String FILENAME_ID_PATTERN = "#IdFile#";
-  private static final String FILENAME_SYS_DATE_OPEN= "{SYS|";
-  private static final String FILENAME_SYS_DATE_CLOSE= "|}";
-  
+	public static final String PROTOCOL_STRING_IMAP="IMAP";
+	public static final String PROTOCOL_STRING_POP3="POP3";
+	public static final String[] protocolCodes = new String[]{"POP3","IMAP"};
+	  
+	public static final int DEFAULT_IMAP_PORT=110;
+	public static final int DEFAULT_POP3_PORT=110;
+	public static final int DEFAULT_SSL_POP3_PORT=995;
+	public static final int DEFAULT_SSL_IMAP_PORT=993;
+	  
+	private static final String DEFAULT_FILE_NAME_PATTERN="name_{SYS|hhmmss_MMddyyyy|}_#IdFile#.mail";
+	  
+	private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
+	private static final String FILENAME_ID_PATTERN = "#IdFile#";
+	private static final String FILENAME_SYS_DATE_OPEN= "{SYS|";
+	private static final String FILENAME_SYS_DATE_CLOSE= "|}";
+	 
 	private Pattern attachementPattern;
 	
 	public JobEntryGetPOP(String n){
