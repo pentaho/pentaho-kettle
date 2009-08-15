@@ -25,6 +25,7 @@ import javax.mail.Store;
 import javax.mail.URLName;
 import javax.mail.internet.MimeUtility;
 import javax.mail.search.AndTerm;
+import javax.mail.search.BodyTerm;
 import javax.mail.search.ComparisonTerm;
 import javax.mail.search.FlagTerm;
 import javax.mail.search.FromStringTerm;
@@ -136,11 +137,9 @@ public class MailConnection {
 	 * @param usessl specify if the connection is established via SSL
 	 * @param useproxy specify if we use proxy authentication
 	 * @param proxyusername  proxy authorised user
-	 * @param debug
 	 */
     public MailConnection(int protocol, String server, int port, String username, 
-    		String password, boolean usessl, boolean useproxy, String proxyusername,	
-    		boolean debug) throws KettleException {
+    		String password, boolean usessl, boolean useproxy, String proxyusername) throws KettleException {
     	
     	this.log=LogWriter.getInstance();
     	//Get system properties
@@ -188,7 +187,7 @@ public class MailConnection {
 				
 				//Create session object
 				this.session = Session.getInstance(this.prop, null );
-				this.session.setDebug(debug);	
+				this.session.setDebug(log.getLogLevel() >= LogWriter.LOG_LEVEL_DEBUG);
 				if(this.port==-1) {
 					this.port=((protocol==PROTOCOL_POP3)?DEFAULT_SSL_POP3_PORT:DEFAULT_SSL_IMAP_PORT);
 				}
@@ -197,7 +196,7 @@ public class MailConnection {
 				url=null;
 			} else {
 				this.session = Session.getInstance(this.prop, null);
-				this.session.setDebug(debug);	
+				this.session.setDebug(log.getLogLevel() >= LogWriter.LOG_LEVEL_DEBUG);
 				this.store = this.session.getStore(protocolString);
 			}
 			
@@ -414,6 +413,19 @@ public class MailConnection {
     	}
     }
     /**
+	 * Search all messages with body containing the word bodyfilter
+	 * @param bodyfilter 
+	 * @param notTerm negate condition
+	 */
+    public void setBodyTerm(String bodyfilter, boolean notTerm) {
+    	if (!Const.isEmpty(bodyfilter)) {
+    		if(notTerm)
+    			addSearchTerm(new NotTerm(new BodyTerm(bodyfilter)));
+    		else
+    			addSearchTerm(new BodyTerm(bodyfilter));
+    	}
+    }
+    /**
 	 * Set filter on message sender.
 	 * @param sender messages will be filtered on sender
 	 * @param notTerm negate condition
@@ -466,28 +478,28 @@ public class MailConnection {
     			new ReceivedDateTerm(ComparisonTerm.GT, beginDate)));
     }
     public void setFlagTermNew() {
-    	addSearchTerm(new FlagTerm(new Flags(Flags.Flag.RECENT), false));
+    	addSearchTerm(new FlagTerm(new Flags(Flags.Flag.RECENT), true));
     }
     public void setFlagTermOld() {
-    	addSearchTerm(new NotTerm(new FlagTerm(new Flags(Flags.Flag.RECENT), false)));
+    	addSearchTerm(new FlagTerm(new Flags(Flags.Flag.RECENT), false));
     }
     public void setFlagTermRead() {
-    	addSearchTerm(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+    	addSearchTerm(new FlagTerm(new Flags(Flags.Flag.SEEN), true));
     }
     public void setFlagTermUnread() {
-    	addSearchTerm(new NotTerm(new FlagTerm(new Flags(Flags.Flag.RECENT), false)));
+    	addSearchTerm(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
     }
     public void setFlagTermFlagged() {
-    	addSearchTerm(new FlagTerm(new Flags(Flags.Flag.FLAGGED), false));
+    	addSearchTerm(new FlagTerm(new Flags(Flags.Flag.FLAGGED), true));
     }
     public void setFlagTermNotFlagged() {
-    	addSearchTerm(new NotTerm(new FlagTerm(new Flags(Flags.Flag.FLAGGED), false)));
+    	addSearchTerm(new FlagTerm(new Flags(Flags.Flag.FLAGGED), false));
     }
     public void setFlagTermDraft() {
-    	addSearchTerm(new FlagTerm(new Flags(Flags.Flag.DRAFT), false));
+    	addSearchTerm(new FlagTerm(new Flags(Flags.Flag.DRAFT), true));
     }
     public void setFlagTermNotDraft() {
-    	addSearchTerm(new NotTerm(new FlagTerm(new Flags(Flags.Flag.DRAFT), false)));
+    	addSearchTerm(new FlagTerm(new Flags(Flags.Flag.DRAFT), false));
     }
     
     /**
@@ -921,15 +933,51 @@ public class MailConnection {
     	}
     	return list;
     }
+
+    /**
+	 * Returns all subfolders
+	 * of the specified folder
+	 * @param taget parent folder
+	 * @return sub folders
+	 */
+    public String[] returnAllFolders(Folder folder) throws KettleException {
+    	HashSet<String> list= new HashSet<String>();
+    	list=returnSubfolders(folder);
+    	return (String[]) list.toArray(new String[list.size()]);
+    }
     /**
 	 * Returns all subfolders
 	 * of the current folder
 	 * @return sub folders
 	 */
     public String[] returnAllFolders() throws KettleException {
-    	HashSet<String> list= new HashSet<String>();
-    	list=returnSubfolders(getFolder());
-    	return (String[]) list.toArray(new String[list.size()]);
+    	return returnAllFolders(getFolder());
+    }
+    /**
+	 * Returns all subfolders
+	 * of the folder folder
+	 * @param folder target folder
+	 * @return sub folders
+	 */
+    public String[] returnAllFolders(String folder) throws KettleException {
+    	
+    	Folder dfolder=null;
+    	String[] retval=null;
+    	try {
+    		if(Const.isEmpty(folder)) {
+    			// Default folder
+    			dfolder=getStore().getDefaultFolder();
+    		}else {
+    			dfolder = getStore().getFolder(folder);
+    		}
+    		retval= returnAllFolders(dfolder);
+    	}catch(Exception e) {
+    	} finally {
+    		try {
+    			if(dfolder!=null) dfolder.close(false);
+    		}catch(Exception e){};
+    	}
+    	return retval;
     }
     public String toString() {
 		if (getServer()!=null) return getServer();

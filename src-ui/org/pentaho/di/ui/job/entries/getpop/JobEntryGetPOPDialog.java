@@ -99,6 +99,9 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		private TextVar      wSubject;
 		private FormData     fdlSubject, fdSubject;
 
+		private Label        wlBody;
+		private TextVar      wBody;
+		private FormData     fdlBody, fdBody;
 
 		private Label        wlAttachmentFolder;
 		private TextVar      wAttachmentFolder;
@@ -201,6 +204,9 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		private Button       wNegateSubject;
 		private FormData     fdNegateSubject;
 		
+		private Button       wNegateBody;
+		private FormData     fdNegateBody;
+		
 		private Button       wNegateReceivedDate;
 		private FormData     fdNegateReceivedDate;
 
@@ -241,8 +247,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		private FormData	 fdGeneralComp, fdSettingsComp, fdSearchComp;
 		private FormData     fdTabFolder;
 		
-		private Group wServerSettings, wPOP3Settings, wIMAPSettings, wReceivedDate, wHeader;
-	    private FormData fdServerSettings, fdPOP3Settings, fdIMAPSettings, fdReceivedDate, fdHeader;
+		private Group wServerSettings, wPOP3Settings, wIMAPSettings, wReceivedDate, wHeader, wContent;
+	    private FormData fdServerSettings, fdPOP3Settings, fdIMAPSettings, fdReceivedDate, fdHeader, fdContent;
 	    
 		private Label        wlReadFrom;
 		private TextVar      wReadFrom;
@@ -1386,6 +1392,58 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		    // / END OF HEADER GROUP
 		    // ///////////////////////////////////////////////////////////
 			
+		    
+		     // ////////////////////////
+		     // START OF CONTENT GROUP///
+		     // /
+		    wContent= new Group(wSearchComp, SWT.SHADOW_NONE);
+		    props.setLook(wContent);
+		    wContent.setText(BaseMessages.getString(PKG, "JobGetPOP.Content.Group.Label"));
+
+		    FormLayout ContentgroupLayout = new FormLayout();
+		    ContentgroupLayout .marginWidth = 10;
+		    ContentgroupLayout .marginHeight = 10;
+		    wContent.setLayout(ContentgroupLayout );
+
+
+			wNegateBody=new Button(wContent, SWT.CHECK);
+			props.setLook(wNegateBody);
+			fdNegateBody=new FormData();
+			wNegateBody.setToolTipText(BaseMessages.getString(PKG, "JobGetPOP.NegateBody.Tooltip"));
+			fdNegateBody.top  = new FormAttachment(wHeader, margin);
+			fdNegateBody.right= new FormAttachment(100, -margin);
+			wNegateBody.setLayoutData(fdNegateBody);
+			
+			
+			// Body line
+			wlBody=new Label(wContent, SWT.RIGHT);
+			wlBody.setText(BaseMessages.getString(PKG, "JobGetPOP.Body.Label"));
+			props.setLook(wlBody);
+			fdlBody=new FormData();
+			fdlBody.left = new FormAttachment(0, 0);
+			fdlBody.top  = new FormAttachment(wHeader, margin);
+			fdlBody.right= new FormAttachment(middle, -margin);
+			wlBody.setLayoutData(fdlBody);
+			wBody=new TextVar(jobMeta, wContent, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wBody);
+			wBody.addModifyListener(lsMod);
+			fdBody=new FormData();
+			fdBody.left = new FormAttachment(middle, 0);
+			fdBody.top  = new FormAttachment(wHeader, margin);
+			fdBody.right= new FormAttachment(wNegateBody, -margin);
+			wBody.setLayoutData(fdBody);
+
+		    fdContent= new FormData();
+		    fdContent.left = new FormAttachment(0, margin);
+		    fdContent.top = new FormAttachment(wHeader, margin);
+		    fdContent.right = new FormAttachment(100, -margin);
+		    wContent.setLayoutData(fdContent);
+		    // ///////////////////////////////////////////////////////////
+		    // / END OF CONTENT GROUP
+		    // ///////////////////////////////////////////////////////////
+			
+		    
+		    
 		     // ////////////////////////
 		     // START OF RECEIVED DATE ROUP///
 		     // /
@@ -1402,7 +1460,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 			props.setLook(wNegateReceivedDate);
 			fdNegateReceivedDate=new FormData();
 			wNegateReceivedDate.setToolTipText(BaseMessages.getString(PKG, "JobGetPOP.NegateReceivedDate.Tooltip"));
-			fdNegateReceivedDate.top  = new FormAttachment(wHeader, margin);
+			fdNegateReceivedDate.top  = new FormAttachment(wContent, margin);
 			fdNegateReceivedDate.right= new FormAttachment(100, -margin);
 			wNegateReceivedDate.setLayoutData(fdNegateReceivedDate);
 			
@@ -1414,7 +1472,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		  	fdlConditionOnReceivedDate= new FormData();
 		  	fdlConditionOnReceivedDate.left = new FormAttachment(0, 0);
 		  	fdlConditionOnReceivedDate.right = new FormAttachment(middle, -margin);
-		  	fdlConditionOnReceivedDate.top = new FormAttachment(wHeader, margin);
+		  	fdlConditionOnReceivedDate.top = new FormAttachment(wContent, margin);
 		  	wlConditionOnReceivedDate.setLayoutData(fdlConditionOnReceivedDate);
 		  	
 		  	wConditionOnReceivedDate= new CCombo(wReceivedDate, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
@@ -1424,7 +1482,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 			props.setLook(wConditionOnReceivedDate);
 			fdConditionOnReceivedDate= new FormData();
 			fdConditionOnReceivedDate.left = new FormAttachment(middle, 0);
-			fdConditionOnReceivedDate.top = new FormAttachment(wHeader, margin);
+			fdConditionOnReceivedDate.top = new FormAttachment(wContent, margin);
 			fdConditionOnReceivedDate.right = new FormAttachment(wNegateReceivedDate, -margin);
 			wConditionOnReceivedDate.setLayoutData(fdConditionOnReceivedDate);
 			wConditionOnReceivedDate.addSelectionListener(new SelectionAdapter()
@@ -1559,7 +1617,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
 		    fdReceivedDate= new FormData();
 		    fdReceivedDate.left = new FormAttachment(0, margin);
-		    fdReceivedDate.top = new FormAttachment(wHeader, margin);
+		    fdReceivedDate.top = new FormAttachment(wContent, margin);
 		    fdReceivedDate.right = new FormAttachment(100, -margin);
 		    wReceivedDate.setLayoutData(fdReceivedDate);
 		    // ///////////////////////////////////////////////////////////
@@ -1688,7 +1746,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		    	try{
 		    		mailConn=new MailConnection(wProtocol.getText().equals(JobEntryGetPOP.PROTOCOL_STRING_POP3)?MailConnection.PROTOCOL_POP3:MailConnection.PROTOCOL_IMAP
 		    				,realserver,realport, realuser, realpass, wUseSSL.getSelection(), 
-		    				wUseProxy.getSelection(),realproxyuser, false);
+		    				wUseProxy.getSelection(),realproxyuser);
 		    		mailConn.connect();
 		    		
 		    		retval=true;
@@ -1976,6 +2034,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 			wNegateReceipient.setSelection(jobEntry.isNotTermReceipientSearch());
 			if(jobEntry.getSubjectSearch()!=null) wSubject.setText(jobEntry.getSubjectSearch());
 			wNegateSubject.setSelection(jobEntry.isNotTermSubjectSearch());
+			if(jobEntry.getBodySearch()!=null) wBody.setText(jobEntry.getBodySearch());
+			wNegateBody.setSelection(jobEntry.isNotTermBodySearch());
 			wConditionOnReceivedDate.setText(JobEntryGetPOP.getConditionDateDesc(jobEntry.getConditionOnReceivedDate()));
 			wNegateReceivedDate.setSelection(jobEntry.isNotTermReceivedDateSearch());
 			if(jobEntry.getReceivedDate1()!=null) wReadFrom.setText(jobEntry.getReceivedDate1());
@@ -2036,6 +2096,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	        jobEntry.setNotTermReceipientSearch(wNegateReceipient.getSelection());
 	        jobEntry.setSubjectSearch(wSubject.getText());
 	        jobEntry.setNotTermSubjectSearch(wNegateSubject.getSelection());
+	        jobEntry.setBodySearch(wBody.getText());
+	        jobEntry.setNotTermBodySearch(wNegateBody.getSelection());
 	        jobEntry.setConditionOnReceivedDate(JobEntryGetPOP.getConditionDateByDesc(wConditionOnReceivedDate.getText()));
 	        jobEntry.setNotTermReceivedDateSearch(wNegateReceivedDate.getSelection());
 	        jobEntry.setReceivedDate1(wReadFrom.getText());

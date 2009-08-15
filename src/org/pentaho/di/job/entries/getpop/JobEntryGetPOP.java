@@ -188,6 +188,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	private boolean notTermSenderSearch;
 	private String receipientSearch;
 	private String subjectSearch;
+	private String bodySearch;
+	private boolean notTermBodySearch;
 	private String receivedDate1;
 	private String receivedDate2;
 	private boolean notTermSubjectSearch;
@@ -244,6 +246,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		notTermSenderSearch=false;
 		notTermReceipientSearch=false;
 		notTermSubjectSearch=false;
+		bodySearch=null;
+		notTermBodySearch=false;
 		receivedDate1=null;
 		receivedDate2=null;
 		notTermReceivedDateSearch=false;
@@ -298,6 +302,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		retval.append("      ").append(XMLHandler.addTagValue("nottermreceipientsearch",     notTermReceipientSearch));
 		retval.append("      ").append(XMLHandler.addTagValue("subjectsearch",     subjectSearch));
 		retval.append("      ").append(XMLHandler.addTagValue("nottermsubjectsearch",     notTermSubjectSearch));
+		retval.append("      ").append(XMLHandler.addTagValue("bodysearch",     bodySearch));
+		retval.append("      ").append(XMLHandler.addTagValue("nottermbodysearch",     notTermBodySearch));
 		retval.append("      ").append(XMLHandler.addTagValue("conditionreceiveddate",getConditionDateCode(conditionReceivedDate)));
 		retval.append("      ").append(XMLHandler.addTagValue("nottermreceiveddatesearch",     notTermReceivedDateSearch));
 		retval.append("      ").append(XMLHandler.addTagValue("receiveddate1",     receivedDate1));
@@ -363,6 +369,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			notTermReceipientSearch= "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "nottermreceipientsearch") );
 			subjectSearch      = XMLHandler.getTagValue(entrynode, "subjectsearch");
 			notTermSubjectSearch= "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "nottermsubjectsearch") );
+			bodySearch      = XMLHandler.getTagValue(entrynode, "bodysearch");
+			notTermBodySearch= "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "nottermbodysearch") );
 			conditionReceivedDate = getConditionByCode(Const.NVL(XMLHandler.getTagValue(entrynode,	"conditionreceiveddate"), ""));
 			notTermReceivedDateSearch= "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "nottermreceiveddatesearch") );
 			receivedDate1      = XMLHandler.getTagValue(entrynode, "receivedDate1");
@@ -474,6 +482,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			notTermReceipientSearch= rep.getJobEntryAttributeBoolean(id_jobentry, "nottermreceipientsearch");
 			subjectSearch        = rep.getJobEntryAttributeString(id_jobentry, "subjectsearch");
 			notTermSubjectSearch= rep.getJobEntryAttributeBoolean(id_jobentry, "nottermsubjectsearch");
+			bodySearch        = rep.getJobEntryAttributeString(id_jobentry, "bodysearch");
+			notTermBodySearch= rep.getJobEntryAttributeBoolean(id_jobentry, "nottermbodysearch");
 			conditionReceivedDate = getConditionByCode(Const.NVL(rep.getJobEntryAttributeString(id_jobentry,"conditionreceiveddate"), ""));
 			notTermReceivedDateSearch= rep.getJobEntryAttributeBoolean(id_jobentry, "nottermreceiveddatesearch");
 			receivedDate1        = rep.getJobEntryAttributeString(id_jobentry, "receiveddate1");
@@ -532,6 +542,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "nottermreceipientsearch",        notTermReceipientSearch);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "subjectsearch",        subjectSearch);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "nottermsubjectsearch",        notTermSubjectSearch);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "bodysearch",        bodySearch);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "nottermbodysearch",        notTermBodySearch);
 			rep.saveJobEntryAttribute(id_job, getObjectId(),"conditionreceiveddate", getConditionDateCode(conditionReceivedDate));
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "nottermreceiveddatesearch",        notTermReceivedDateSearch);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "receiveddate1",        receivedDate1);
@@ -646,8 +658,14 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	public void setNotTermSubjectSearch(boolean notTermSubjectSearch){
 		this.notTermSubjectSearch=notTermSubjectSearch;
 	}
+	public void setNotTermBodySearch(boolean notTermBodySearch){
+		this.notTermBodySearch=notTermBodySearch;
+	}
 	public boolean isNotTermSubjectSearch(){
 		return this.notTermSubjectSearch;
+	}
+	public boolean isNotTermBodySearch(){
+		return this.notTermBodySearch;
 	}
 	public void setNotTermReceivedDateSearch(boolean notTermReceivedDateSearch){
 		this.notTermReceivedDateSearch=notTermReceivedDateSearch;
@@ -679,6 +697,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	}
 	public String getSubjectSearch(){
 		return this.subjectSearch;
+	}
+	public void setBodySearch(String bodySearch){
+		this.bodySearch=bodySearch;
+	}
+	public String getBodySearch(){
+		return this.bodySearch;
 	}
 	public String getReceivedDate1() {
 		return this.receivedDate1;
@@ -1036,7 +1060,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			initVariables();
 			// create a mail connection object			
 			mailConn= new MailConnection(usePOP3?MailConnection.PROTOCOL_POP3:MailConnection.PROTOCOL_IMAP
-					,realserver,realport, realusername, realpassword, isUseSSL(), isUseProxy(),realProxyUsername, false);
+					,realserver,realport, realusername, realpassword, isUseSSL(), isUseProxy(),realProxyUsername);
 			// connect
 			mailConn.connect();
 
@@ -1062,6 +1086,11 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 				// apply Subject
 				mailConn.setSubjectTerm(realSearchSubject, isNotTermSubjectSearch());
 			}
+			String realSearchBody=environmentSubstitute(getBodySearch());
+			if(!Const.isEmpty(realSearchBody)) {
+				// apply body
+				mailConn.setBodyTerm(realSearchBody, isNotTermBodySearch());
+			}
 			// Received Date
 			switch (getConditionOnReceivedDate()) {
 				case CONDITION_DATE_EQUAL: 
@@ -1084,7 +1113,9 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 				// retrieve messages	
 				if(getRetrievemails()==1) {
 					// New messages
-					mailConn.setFlagTermNew();
+					// POP doesn't support the concept of "new" messages!
+					// TODO : remove this option from the dialog
+					mailConn.setFlagTermUnread();
 				}
 			}else {
 				switch (getValueImapList()) {
@@ -1176,8 +1207,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
  private void fetchOneFolder(MailConnection mailConn, boolean usePOP3, String realIMAPFolder, 
 		   String realOutputFolder, String targetAttachmentFolder, String realMoveToIMAPFolder,
 		   String realFilenamePattern,
-		   LogWriter log, int nbrmailtoretrieve, Job parentJob, SimpleDateFormat df) throws KettleException
-  {
+		   LogWriter log, int nbrmailtoretrieve, Job parentJob, SimpleDateFormat df) throws KettleException {
 	   try {
 		   // open folder
 			if(!usePOP3 && !Const.isEmpty(realIMAPFolder)) {
@@ -1283,16 +1313,16 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 									}
 								}else {
 									switch (getAfterGetIMAP()) {
-									case AFTER_GET_IMAP_DELETE:
-										// Delete messages
-										mailConn.deleteMessage();
-										if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageDeleted", ""+messagenumber));
-									break;
-									case AFTER_GET_IMAP_MOVE:
-										// Move messages
-										mailConn.moveMessage();
-										if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageMoved", ""+messagenumber, realMoveToIMAPFolder));
-									break;
+										case AFTER_GET_IMAP_DELETE:
+											// Delete messages
+											mailConn.deleteMessage();
+											if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageDeleted", ""+messagenumber));
+										break;
+										case AFTER_GET_IMAP_MOVE:
+											// Move messages
+											mailConn.moveMessage();
+											if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageMoved", ""+messagenumber, realMoveToIMAPFolder));
+										break;
 									default:
 									}
 								}
