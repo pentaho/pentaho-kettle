@@ -2390,7 +2390,15 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     gc.setLineStyle(SWT.LINE_DASHDOT);
     gc.setLineWidth(1);
     gc.setForeground(GUIResource.getInstance().getColorDarkGray());
-    gc.drawRectangle(rect.x + offset.x, rect.y + offset.y, rect.width, rect.height);
+    // PDI-2619: SWT on Windows doesn't cater for negative rect.width/height so handle here. 
+    Point s = new Point(rect.x + offset.x, rect.y + offset.y);
+    if (rect.width < 0) {
+    	s.x = s.x + rect.width;
+    }
+    if (rect.height < 0) {
+    	s.y = s.y + rect.height;
+    }
+    gc.drawRectangle(s.x, s.y, Math.abs(rect.width), Math.abs(rect.height));   
     gc.setLineStyle(SWT.LINE_SOLID);
   }
 
