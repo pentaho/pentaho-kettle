@@ -50,6 +50,7 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
+import org.pentaho.di.job.JobEntryType;
 
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
@@ -160,6 +161,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		createmovefolder=false;
 		
 		setID(-1L);
+		setJobEntryType(JobEntryType.FTP);
 		setControlEncoding(DEFAULT_CONTROL_ENCODING);
 	}
 

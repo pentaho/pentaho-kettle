@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -41,6 +42,8 @@ public class GroupByData extends BaseStepData implements StepDataInterface
 	public int  groupnrs[];
 	public int  subjectnrs[];
 	public long counts[];
+  
+	public Set<Object> distinctObjs[];
 
     public ArrayList<Object[]> bufferList;
 

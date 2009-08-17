@@ -397,7 +397,7 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 		    				if ( s.contains("\"")) {
 		    					sub = s.replace("\"", "\"\"");
 		    				}
-		    				//Temporary put this out to create intentinal erorrs
+		    				//Temporary put this out to create intentional errors
 		    				//data.fifoStream.write(sub.getBytes());
 		    				//End temprorary
 		    				data.fifoStream.write(sub.getBytes());

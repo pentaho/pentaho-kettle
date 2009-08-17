@@ -28,6 +28,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 /**
@@ -75,7 +76,7 @@ public class ComboVar extends Composite {
     this.insertTextInterface = insertTextInterface;
     this.variables = space;
 
-    //props.setLook(this);
+    PropsUI.getInstance().setLook(this);
 
     // int margin = Const.MARGIN;
     FormLayout formLayout = new FormLayout();
@@ -93,6 +94,7 @@ public class ComboVar extends Composite {
     Image image = GUIResource.getInstance().getImageVariable();
     controlDecoration.setImage(image);
     controlDecoration.setDescriptionText(Messages.getString("TextVar.tooltip.InsertVariable"));
+    PropsUI.getInstance().setLook(controlDecoration.getControl());
 
     //props.setLook(wText);
 
