@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -15,7 +14,6 @@ import java.util.regex.Pattern;
 
 import javax.mail.Flags;
 import javax.mail.Folder;
-import javax.mail.Header;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -566,32 +564,16 @@ public class MailConnection {
      * @param foldername the parent folder of filename
      * @throws KettleException.
      */
-    @SuppressWarnings("unchecked")
+ 
 	public void saveMessageContentToFile(String filename, String foldername)
     throws KettleException {
 		File file=null;
 		OutputStream os= null;
-		InputStream is=null;
-		Enumeration<Header> enums=null;
 		try {
 			
 			file = new File(foldername,filename);
 			os = new FileOutputStream(file);
-			enums = getMessage().getAllHeaders();
-			while (enums.hasMoreElements()) {
-				Header header = (Header) enums.nextElement();
-				os.write(new StringBuilder(header.getName())
-					.append(": ").append(header.getValue())
-					.append("\r\n").toString().getBytes());
-			}
-			os.write("\r\n".getBytes());
-			is = getMessage().getInputStream();
-			byte[] buffer = new byte[1024];
-			int length = 0;
-			while ((length = is.read(buffer, 0, 1024)) != -1) {
-				os.write(buffer, 0, length);
-			}
-			os.close();
+			getMessage().writeTo(os);
 			updateSavedMessagesCounter();
 		}catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "MailConnection.Error.SavingMessageContent",
@@ -602,13 +584,7 @@ public class MailConnection {
 					os.close();os=null;
 				}catch(Exception e){};
 			}
-			if(is!=null) {
-				try{
-					is.close();is=null;
-				}catch(Exception e){};
-			}
 			if(file!=null)  file=null;
-			if(enums!=null) enums=null;
 		}
 	}
     /**
@@ -978,6 +954,42 @@ public class MailConnection {
     		}catch(Exception e){};
     	}
     	return retval;
+    }
+    public String getMessageBody() throws Exception {
+    	return  getMessageBody((Part) getMessage()); 
+    }
+    /**
+     * Return the primary text content of the message.
+     */
+    private String getMessageBody(Part p) throws
+                MessagingException, Exception {
+        if (p.isMimeType("text/*")) {
+            String s = (String)p.getContent();
+            return s;
+        }
+
+        if (p.isMimeType("multipart/alternative")) {
+            // prefer html text over plain text
+            Multipart mp = (Multipart)p.getContent();
+            String text = null;
+            for (int i = 0; i < mp.getCount(); i++) {
+                Part bp = mp.getBodyPart(i);
+                if (bp.isMimeType("text/plain")) {
+                    if (text == null)
+                        text = getMessageBody(bp);
+                } 
+            }
+            return text;
+        } else if (p.isMimeType("multipart/*")) {
+            Multipart mp = (Multipart)p.getContent();
+            for (int i = 0; i < mp.getCount(); i++) {
+                String s = getMessageBody(mp.getBodyPart(i));
+                if (s != null)
+                    return s;
+            }
+        }
+
+        return null;
     }
     public String toString() {
 		if (getServer()!=null) return getServer();
