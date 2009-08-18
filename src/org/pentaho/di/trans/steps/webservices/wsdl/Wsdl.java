@@ -159,7 +159,7 @@ public final class Wsdl implements java.io.Serializable {
 	            return wop;
         	}
         	catch(Exception e) {
-        		LogWriter.getInstance().logError("WSDL", "Could retrieve WSDL Operator for operation name: "+operationName, e);
+        		LogWriter.getInstance().logError("WSDL", "Could not retrieve WSDL Operator for operation name: "+operationName, e);
         	}
         }
         return null;
