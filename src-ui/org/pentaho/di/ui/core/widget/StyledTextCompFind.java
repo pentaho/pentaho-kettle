@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
@@ -170,7 +171,7 @@ public class StyledTextCompFind extends org.eclipse.swt.widgets.Dialog {
 				searchText.setText(text.getSelectionText());
 			}
 		}
-		
+		setSearchText();
 		sShell.open();
 		Display display = parent.getDisplay();
 		while (!parent.isDisposed() && !sShell.isDisposed() && !text.isDisposed()){
@@ -179,7 +180,10 @@ public class StyledTextCompFind extends org.eclipse.swt.widgets.Dialog {
 		sShell.dispose();
 		
 	}
-		   
+	private void setSearchText() {
+		if(this.text!=null && !Const.isEmpty(this.text.getSelectionText()))
+			searchText.setText(this.text.getSelectionText());
+	}   
 	private boolean findText() {
 		String searchString = searchText.getText();
 		String textString = text.getText();

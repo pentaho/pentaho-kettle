@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
@@ -224,7 +225,7 @@ public void open() {
 			searchText.setText(text.getSelectionText());
 			replaceText.setFocus();
 		}
-		
+		setSearchText();
 		sShell.open();
 		Display display = parent.getDisplay();
 		while (!sShell.isDisposed()){
@@ -258,7 +259,10 @@ public void open() {
 		}
 		return false;
 	}
-	
+	private void setSearchText() {
+		if(this.text!=null && !Const.isEmpty(this.text.getSelectionText()))
+			searchText.setText(this.text.getSelectionText());
+	}  
 	private void replaceText() {
 		int start = text.getSelectionRange().x;
 		text.replaceTextRange(start, text.getSelectionCount(), replaceText.getText());
