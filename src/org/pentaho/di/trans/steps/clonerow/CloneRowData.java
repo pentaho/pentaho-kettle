@@ -28,12 +28,16 @@ public class CloneRowData extends BaseStepData implements StepDataInterface
 	public long nrclones;
 	public RowMetaInterface outputRowMeta;
 	public int indexOfNrCloneField;
+	public boolean addInfosToRow;
+	public int NrPrevFields;
 	
 	public CloneRowData()
 	{
 		super();
 		nrclones=0;
 		indexOfNrCloneField=-1;
+		addInfosToRow=false;
+		NrPrevFields=0;
 	}
 
 }

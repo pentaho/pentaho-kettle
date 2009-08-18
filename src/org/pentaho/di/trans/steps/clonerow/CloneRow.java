@@ -58,6 +58,9 @@ public class CloneRow extends BaseStep implements StepInterface
 		{
 			first=false;
             data.outputRowMeta = getInputRowMeta().clone();
+			data.NrPrevFields=getInputRowMeta().size();
+            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+            data.addInfosToRow=(meta.isAddCloneFlag()|| meta.isAddCloneNum() );
 
             if(meta.isAddCloneFlag())
 			{
@@ -67,10 +70,17 @@ public class CloneRow extends BaseStep implements StepInterface
 					logError(BaseMessages.getString(PKG, "CloneRow.Error.CloneFlagFieldMissing"));
 					throw new KettleException(BaseMessages.getString(PKG, "CloneRow.Error.CloneFlagFieldMissing"));
 				}
-				
-				meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			}
-			
+            if(meta.isAddCloneNum())
+			{
+				String realnumfield=environmentSubstitute(meta.getCloneNumField());
+				if(Const.isEmpty(realnumfield))
+				{
+					logError(BaseMessages.getString(PKG, "CloneRow.Error.CloneNumFieldMissing"));
+					throw new KettleException(BaseMessages.getString(PKG, "CloneRow.Error.CloneNumFieldMissing"));
+				}
+			}
+            
             if(meta.isNrCloneInField())
 			{
 				String cloneinfieldname=meta.getNrCloneField();
@@ -98,35 +108,63 @@ public class CloneRow extends BaseStep implements StepInterface
 			}
 		}
 		
-		if (meta.isAddCloneFlag())
-		{
-		    Object[] outputRowData = RowDataUtil.addValueData(r, getInputRowMeta().size(), false);
-            putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
-		}
-		else
-		{
-            putRow(data.outputRowMeta, r);
-		}
+		Object[] outputRowData=r;
 		
+		if (data.addInfosToRow)
+		{
+			// It's the original row..
+			// We need here to add some infos in order to identify this row
+			outputRowData = RowDataUtil.createResizedCopy(r, data.outputRowMeta.size());
+			int rowIndex=data.NrPrevFields;
+			if (meta.isAddCloneFlag())
+			{
+				// This row is not a clone but the original row
+				outputRowData[rowIndex]=false;
+	    		rowIndex++;
+			}
+			if (meta.isAddCloneNum())
+			{
+				// This row is the original so let's identify it as the first one (zero)
+				outputRowData[rowIndex]=0L;
+			}
+		}
+
+		putRow(data.outputRowMeta, outputRowData);   // copy row to output rowset(s);
+		 
 		if(meta.isNrCloneInField())
 		{
 			data.nrclones=getInputRowMeta().getInteger(r,data.indexOfNrCloneField);
 			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "CloneRow.Log.NrClones",""+data.nrclones));
 		}
-		for (int i = 0; i < data.nrclones; i++)
+		for (int i = 0; i < data.nrclones && !isStopped(); i++)
 		{
-		    Object[] outputRowData = RowDataUtil.createResizedCopy(r, data.outputRowMeta.size());
-		    
-			if (meta.isAddCloneFlag())
+			// Output now all clones row
+			outputRowData=r;
+			if (data.addInfosToRow)
 			{
-				outputRowData = RowDataUtil.addValueData(outputRowData, getInputRowMeta().size(), true);
+				// We need here to add more infos about clone rows
+			    outputRowData = RowDataUtil.createResizedCopy(r, data.outputRowMeta.size());
+				int rowIndex=data.NrPrevFields;
+				if (meta.isAddCloneFlag())
+				{
+					// This row is a clone row
+					outputRowData[rowIndex]=true;
+					rowIndex++;
+				}
+				if (meta.isAddCloneNum())
+				{
+					// Let's add to clone number
+					// Clone starts at number 1 (0 is for the original row)
+					Long clonenum=new Long(i+1);
+					outputRowData[rowIndex]=clonenum;
+				}
 			}
-            putRow(data.outputRowMeta, outputRowData);
+            putRow(data.outputRowMeta, outputRowData);   // copy row to output rowset(s);
 		}
 
-        if (checkFeedback(getLinesRead())) 
+        if (log.isDetailed() && checkFeedback(getLinesRead())) 
         {
-        	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "CloneRow.Log.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+        	logDetailed(BaseMessages.getString(PKG, "CloneRow.Log.LineNumber",""+getLinesRead())); //$NON-NLS-1$
         }
 			
 		return true;

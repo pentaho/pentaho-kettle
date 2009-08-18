@@ -63,6 +63,11 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 	
 	private String nrclonefield;
 	
+	private boolean addclonenum;
+	private String clonenumfield;
+	
+	
+	
 	public CloneRowMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -75,6 +80,11 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("cloneflagfield", cloneflagfield));
         retval.append("    " + XMLHandler.addTagValue("nrcloneinfield",   nrcloneinfield));
         retval.append("    " + XMLHandler.addTagValue("nrclonefield", nrclonefield));
+        
+        
+        retval.append("    " + XMLHandler.addTagValue("addclonenum",   addclonenum));
+        retval.append("    " + XMLHandler.addTagValue("clonenumfield", clonenumfield));
+        
         return retval.toString();
     }
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
@@ -116,6 +126,22 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.nrcloneinfield=nrcloneinfield;
 	}
+	public boolean isAddCloneNum()
+	{
+		return addclonenum;
+	}
+	public void setAddCloneNum(boolean addclonenum)
+	{
+		this.addclonenum=addclonenum;
+	}
+	public String getCloneNumField()
+	{
+		return clonenumfield;
+	}
+	public void setCloneNumField(String clonenumfield)
+	{
+		this.clonenumfield=clonenumfield;
+	}
 	public String getNrCloneField()
 	{
 		return nrclonefield;
@@ -141,6 +167,10 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 			cloneflagfield = XMLHandler.getTagValue(stepnode, "cloneflagfield");
 			nrcloneinfield = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "nrcloneinfield"));
 			nrclonefield = XMLHandler.getTagValue(stepnode, "nrclonefield");
+			addclonenum = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addclonenum"));
+			clonenumfield = XMLHandler.getTagValue(stepnode, "clonenumfield");
+			
+			
 		}
 	    catch (Exception e)
         {
@@ -155,6 +185,8 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 		nrclonefield=null;
 		nrcloneinfield=false;
 		addcloneflag=false;
+		addclonenum=false;
+		clonenumfield=null;
 	}
 
 	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
@@ -166,6 +198,10 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 			cloneflagfield = rep.getStepAttributeString(id_step, "cloneflagfield");
 			nrcloneinfield =  rep.getStepAttributeBoolean(id_step, "nrcloneinfield");
 			nrclonefield = rep.getStepAttributeString(id_step, "nrclonefield");
+			addclonenum =  rep.getStepAttributeBoolean(id_step, "addclonenum");
+			
+			clonenumfield = rep.getStepAttributeString(id_step, "clonenumfield");
+			
 		}
 		 catch (Exception e)
 	     {
@@ -183,6 +219,10 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "cloneflagfield", cloneflagfield);	
 			rep.saveStepAttribute(id_transformation, id_step, "nrcloneinfield",    nrcloneinfield);
 			rep.saveStepAttribute(id_transformation, id_step, "nrclonefield", nrclonefield);
+			rep.saveStepAttribute(id_transformation, id_step, "addclonenum",    addclonenum);
+			
+			rep.saveStepAttribute(id_transformation, id_step, "clonenumfield", clonenumfield);
+			
 		}
 		catch (Exception e)
         {
@@ -195,9 +235,21 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 		 // Output field (boolean) ?
 		if(addcloneflag)
 		{
-			 if (!Const.isEmpty(cloneflagfield))
+			String realfieldValue=space.environmentSubstitute(cloneflagfield);
+			 if (!Const.isEmpty(realfieldValue))
 		     {
-				 ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(cloneflagfield), ValueMeta.TYPE_BOOLEAN);
+				 ValueMetaInterface v = new ValueMeta(realfieldValue, ValueMeta.TYPE_BOOLEAN);
+				 v.setOrigin(origin);
+				 rowMeta.addValueMeta(v);
+		     }
+		}
+		// Output clone row number
+		if(addclonenum)
+		{
+			String realfieldValue=space.environmentSubstitute(clonenumfield);
+			 if (!Const.isEmpty(realfieldValue))
+		     {
+				 ValueMetaInterface v = new ValueMeta(realfieldValue, ValueMeta.TYPE_INTEGER);
 				 v.setOrigin(origin);
 				 rowMeta.addValueMeta(v);
 		     }
@@ -231,6 +283,20 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 	        else
 	        {
 	            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldOk"); //$NON-NLS-1$
+	            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepinfo);
+	        }
+			remarks.add(cr);
+		}
+		if(addclonenum)
+		{
+			if (Const.isEmpty(clonenumfield))
+	        {
+	            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldMissing"); //$NON-NLS-1$
+	            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+	        }
+	        else
+	        {
+	            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldOk"); //$NON-NLS-1$
 	            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepinfo);
 	        }
 			remarks.add(cr);

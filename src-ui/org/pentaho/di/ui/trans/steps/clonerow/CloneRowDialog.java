@@ -32,6 +32,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -59,13 +60,17 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 	private TextVar wnrClone;
 	private FormData fdlnrClone, fdnrClone;
 	
-	private Label wlcloneFlagField;
-	private TextVar wcloneFlagField;
-	private FormData fdlcloneFlagField, fdcloneFlagField;
+	private Label wlcloneFlagField, wladdCloneNum, wlCloneNumField;
+	private TextVar wcloneFlagField, wCloneNumField;
+	private FormData fdlcloneFlagField, fdcloneFlagField, fdladdCloneNum, fdCloneNumField;
+	
+
+	private FormData fdOutpuFields;
+	private Group wOutpuFields;
 	
 	private Label        wladdCloneFlag;
-	private Button       waddCloneFlag;
-	private FormData     fdladdCloneFlag, fdaddCloneFlag;
+	private Button       waddCloneFlag, waddCloneNum;
+	private FormData     fdladdCloneFlag, fdaddCloneFlag, fdaddCloneNum;
 	
     private Label wlisNrCloneInField,wlNrCloneField;
     private CCombo wNrCloneField;
@@ -215,21 +220,34 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
         );   
 		
 		
+		// ///////////////////////////////
+		// START OF Origin files GROUP  //
+		///////////////////////////////// 
+
+		wOutpuFields= new Group(shell, SWT.SHADOW_NONE);
+		props.setLook(wOutpuFields);
+		wOutpuFields.setText(BaseMessages.getString(PKG, "CloneRowDialog.wOutpuFields.Label"));
+		
+		FormLayout OutpuFieldsgroupLayout = new FormLayout();
+		OutpuFieldsgroupLayout.marginWidth = 10;
+		OutpuFieldsgroupLayout.marginHeight = 10;
+		wOutpuFields.setLayout(OutpuFieldsgroupLayout);
+
 		// add clone flag?
-		wladdCloneFlag=new Label(shell, SWT.RIGHT);
+		wladdCloneFlag=new Label(wOutpuFields, SWT.RIGHT);
 		wladdCloneFlag.setText(BaseMessages.getString(PKG, "CloneRowDialog.addCloneFlag.Label"));
 		props.setLook(wladdCloneFlag);
 		fdladdCloneFlag=new FormData();
 		fdladdCloneFlag.left  = new FormAttachment(0, 0);
-		fdladdCloneFlag.top   = new FormAttachment(wNrCloneField, margin);
+		fdladdCloneFlag.top   = new FormAttachment(wNrCloneField, 2*margin);
 		fdladdCloneFlag.right = new FormAttachment(middle, -margin);
 		wladdCloneFlag.setLayoutData(fdladdCloneFlag);
-		waddCloneFlag=new Button(shell, SWT.CHECK);
+		waddCloneFlag=new Button(wOutpuFields, SWT.CHECK);
 		waddCloneFlag.setToolTipText(BaseMessages.getString(PKG, "CloneRowDialog.addCloneFlag.Tooltip"));
  		props.setLook(waddCloneFlag);
 		fdaddCloneFlag=new FormData();
 		fdaddCloneFlag.left  = new FormAttachment(middle, 0);
-		fdaddCloneFlag.top   = new FormAttachment(wNrCloneField, margin);
+		fdaddCloneFlag.top   = new FormAttachment(wNrCloneField, 2*margin);
 		fdaddCloneFlag.right = new FormAttachment(100, 0);
 		waddCloneFlag.setLayoutData(fdaddCloneFlag);
 		SelectionAdapter lsSelR = new SelectionAdapter()
@@ -243,7 +261,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		waddCloneFlag.addSelectionListener(lsSelR);
 		
 		// clone falg field line
-		wlcloneFlagField = new Label(shell, SWT.RIGHT);
+		wlcloneFlagField = new Label(wOutpuFields, SWT.RIGHT);
 		wlcloneFlagField.setText(BaseMessages.getString(PKG, "CloneRowDialog.cloneFlagField.Label"));
 		props.setLook(wlcloneFlagField);
 		fdlcloneFlagField = new FormData();
@@ -252,7 +270,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		fdlcloneFlagField.top = new FormAttachment(waddCloneFlag, margin*2);
 		wlcloneFlagField.setLayoutData(fdlcloneFlagField);
 
-		wcloneFlagField = new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wcloneFlagField = new TextVar(transMeta,wOutpuFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wcloneFlagField);
 		wcloneFlagField.setToolTipText(BaseMessages.getString(PKG, "CloneRowDialog.cloneFlagField.Tooltip"));
 		wcloneFlagField.addModifyListener(lsMod);
@@ -261,6 +279,69 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		fdcloneFlagField.top = new FormAttachment(waddCloneFlag, margin*2);
 		fdcloneFlagField.right = new FormAttachment(100, 0);
 		wcloneFlagField.setLayoutData(fdcloneFlagField);
+				
+		
+		// add clone num?
+		wladdCloneNum=new Label(wOutpuFields, SWT.RIGHT);
+		wladdCloneNum.setText(BaseMessages.getString(PKG, "CloneRowDialog.addCloneNum.Label"));
+		props.setLook(wladdCloneNum);
+		fdladdCloneNum=new FormData();
+		fdladdCloneNum.left  = new FormAttachment(0, 0);
+		fdladdCloneNum.top   = new FormAttachment(wcloneFlagField, margin);
+		fdladdCloneNum.right = new FormAttachment(middle, -margin);
+		wladdCloneNum.setLayoutData(fdladdCloneNum);
+		waddCloneNum=new Button(wOutpuFields, SWT.CHECK);
+		waddCloneNum.setToolTipText(BaseMessages.getString(PKG, "CloneRowDialog.addCloneNum.Tooltip"));
+ 		props.setLook(waddCloneNum);
+		fdaddCloneNum=new FormData();
+		fdaddCloneNum.left  = new FormAttachment(middle, 0);
+		fdaddCloneNum.top   = new FormAttachment(wcloneFlagField, margin);
+		fdaddCloneNum.right = new FormAttachment(100, 0);
+		waddCloneNum.setLayoutData(fdaddCloneNum);
+		waddCloneNum.addSelectionListener( new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                input.setChanged();
+                activeaddCloneNum();
+            }
+        });
+		
+		// clone num field line
+		wlCloneNumField= new Label(wOutpuFields, SWT.RIGHT);
+		wlCloneNumField.setText(BaseMessages.getString(PKG, "CloneRowDialog.cloneNumField.Label"));
+		props.setLook(wlCloneNumField);
+		fdlcloneFlagField= new FormData();
+		fdlcloneFlagField.left = new FormAttachment(0, 0);
+		fdlcloneFlagField.right = new FormAttachment(middle, -margin);
+		fdlcloneFlagField.top = new FormAttachment(waddCloneNum, margin);
+		wlCloneNumField.setLayoutData(fdlcloneFlagField);
+
+		wCloneNumField= new TextVar(transMeta,wOutpuFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wCloneNumField);
+		wCloneNumField.setToolTipText(BaseMessages.getString(PKG, "CloneRowDialog.cloneNumField.Tooltip"));
+		wCloneNumField.addModifyListener(lsMod);
+		fdCloneNumField= new FormData();
+		fdCloneNumField.left = new FormAttachment(middle, 0);
+		fdCloneNumField.top = new FormAttachment(waddCloneNum, margin);
+		fdCloneNumField.right = new FormAttachment(100, 0);
+		wCloneNumField.setLayoutData(fdCloneNumField);
+				
+		
+		
+		
+
+		fdOutpuFields= new FormData();
+		fdOutpuFields.left = new FormAttachment(0, margin);
+		fdOutpuFields.top = new FormAttachment(wNrCloneField, 2*margin);
+		fdOutpuFields.right = new FormAttachment(100, -margin);
+		wOutpuFields.setLayoutData(fdOutpuFields);
+		
+		// ///////////////////////////////////////////////////////////
+		// / END OF Origin files GROUP
+		// ///////////////////////////////////////////////////////////		
+
+		
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -268,7 +349,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wcloneFlagField);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, wOutpuFields);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -291,6 +372,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		getData();
 		activeaddCloneFlag();
 		ActiveisNrCloneInField();
+		activeaddCloneNum();
 		input.setChanged(changed);
 	
 		shell.open();
@@ -328,6 +410,11 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		wlcloneFlagField.setEnabled(waddCloneFlag.getSelection());
 		wcloneFlagField.setEnabled(waddCloneFlag.getSelection());
 	}
+	private void activeaddCloneNum()
+	{
+		wlCloneNumField.setEnabled(waddCloneNum.getSelection());
+		wCloneNumField.setEnabled(waddCloneNum.getSelection());
+	}
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
@@ -339,6 +426,8 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		if (input.getCloneFlagField() !=null)   wcloneFlagField.setText(input.getCloneFlagField());
 		wisNrCloneInField.setSelection(input.isNrCloneInField());
 		if (input.getNrCloneField() !=null)   wNrCloneField.setText(input.getNrCloneField());
+		waddCloneNum.setSelection(input.isAddCloneNum());
+		if (input.getCloneNumField() !=null)   wCloneNumField.setText(input.getCloneNumField());
 	}
 	
 	private void cancel()
@@ -358,6 +447,8 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		input.setCloneFlagField(wcloneFlagField.getText());
 		input.setNrCloneInField(wisNrCloneInField.getSelection());
 		input.setNrCloneField(wNrCloneField.getText());
+		input.setAddCloneNum(waddCloneNum.getSelection());
+		input.setCloneNumField(wCloneNumField.getText());
 		dispose();
 	}
 }
