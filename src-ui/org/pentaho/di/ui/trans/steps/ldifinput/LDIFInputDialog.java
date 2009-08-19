@@ -125,17 +125,17 @@ public class LDIFInputDialog extends BaseStepDialog implements
 
 	private FormData fdbShowFiles;
 
-	private Label wlInclFilename;
+	private Label wlInclFilename, wlInclDNField;
 
-	private Button wInclFilename,wInclContentType;
+	private Button wInclFilename,wInclContentType,wInclDN;
 
-	private FormData fdlInclFilename, fdInclFilename,fdInclContentType;
+	private FormData fdlInclFilename, fdInclFilename,fdInclContentType, fdInclDN, fdlInclDNField, fdlInclDN;
 
-	private Label wlInclFilenameField,wlInclContentType;
+	private Label wlInclFilenameField,wlInclContentType, wlInclDN;
 
-	private TextVar wInclFilenameField,wInclContentTypeField;
+	private TextVar wInclFilenameField,wInclContentTypeField, wInclDNField;
 
-	private FormData fdlInclFilenameField, fdInclFilenameField,fdlInclContentType;
+	private FormData fdlInclFilenameField, fdInclFilenameField,fdlInclContentType, fdInclDNField;
 
 	private Label wlInclRownum;
 
@@ -594,6 +594,43 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		fdInclContentTypeField.right = new FormAttachment(100, 0);
 		wInclContentTypeField.setLayoutData(fdInclContentTypeField);
 
+
+		
+		// Add content type field?
+		wlInclDN = new Label(wContentComp, SWT.RIGHT);
+		wlInclDN.setText(BaseMessages.getString(PKG, "LDIFInputDialog.InclDN.Label"));
+		props.setLook(wlInclDN);
+		fdlInclDN = new FormData();
+		fdlInclDN.left = new FormAttachment(0, 0);
+		fdlInclDN.top = new FormAttachment(wInclContentTypeField, margin);
+		fdlInclDN.right = new FormAttachment(middle, -margin);
+		wlInclDN.setLayoutData(fdlInclDN);
+		wInclDN = new Button(wContentComp, SWT.CHECK);
+		props.setLook(wInclDN);
+		wInclDN.setToolTipText(BaseMessages.getString(PKG, "LDIFInputDialog.InclDN.Tooltip"));
+		fdInclDN = new FormData();
+		fdInclDN.left = new FormAttachment(middle, 0);
+		fdInclDN.top = new FormAttachment(wInclContentTypeField, margin);
+		wInclDN.setLayoutData(fdInclDN);
+		
+		// Content type field name
+		wlInclDNField = new Label(wContentComp, SWT.LEFT);
+		wlInclDNField.setText(BaseMessages.getString(PKG, "LDIFInputDialog.InclDNField.Label"));
+		props.setLook(wlInclDNField);
+		fdlInclDNField = new FormData();
+		fdlInclDNField.left = new FormAttachment(wInclDN, margin);
+		fdlInclDNField.top = new FormAttachment(wInclContentTypeField,margin);
+		wlInclDNField.setLayoutData(fdlInclDNField);
+		wInclDNField = new TextVar(transMeta,wContentComp, SWT.SINGLE | SWT.LEFT| SWT.BORDER);
+		props.setLook(wInclDNField);
+		wInclDNField.addModifyListener(lsMod);
+		fdInclDNField = new FormData();
+		fdInclDNField.left = new FormAttachment(wlInclDNField,margin);
+		fdInclDNField.top = new FormAttachment(wInclContentTypeField, margin);
+		fdInclDNField.right = new FormAttachment(100, 0);
+		wInclDNField.setLayoutData(fdInclDNField);
+
+		
 		
 		// Limit to preview
 		wlLimit = new Label(wContentComp, SWT.RIGHT);
@@ -601,7 +638,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		props.setLook(wlLimit);
 		fdlLimit = new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
-		fdlLimit.top = new FormAttachment(wInclContentTypeField, margin);
+		fdlLimit.top = new FormAttachment(wInclDNField, margin);
 		fdlLimit.right = new FormAttachment(middle, -margin);
 		wlLimit.setLayoutData(fdlLimit);
 		wLimit = new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -609,7 +646,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		wLimit.addModifyListener(lsMod);
 		fdLimit = new FormData();
 		fdLimit.left = new FormAttachment(middle, 0);
-		fdLimit.top = new FormAttachment(wInclContentTypeField, margin);
+		fdLimit.top = new FormAttachment(wInclDNField, margin);
 		fdLimit.right = new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 		
@@ -918,6 +955,22 @@ public class LDIFInputDialog extends BaseStepDialog implements
 				setIncludeRownum();
 			}
 		});
+		
+		// Enable/disable the right fields to allow a content type to be added to
+		// each row...
+		wInclContentType.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				setContenType();
+			}
+		});
+		
+		// Enable/disable the right fields to allow a content type to be added to
+		// each row...
+		wInclDN.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				setDN();
+			}
+		});
 
 		// Whenever something changes, set the tooltip to the expanded version
 		// of the filename:
@@ -981,6 +1034,8 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		setSize();
 		getData(input);
 		ActiveFileField();
+		setContenType();
+		setDN();
 		input.setChanged(changed);
 		wFields.optWidth(true);
 
@@ -1206,6 +1261,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		wInclFilename.setSelection(in.includeFilename());
 		wInclRownum.setSelection(in.includeRowNumber());
 		wInclContentType.setSelection(in.includeContentType());
+		wInclDN.setSelection(in.IncludeDN());
 		
 		if(in.getMultiValuedSeparator()!=null)	wMultiValuedSeparator.setText(in.getMultiValuedSeparator());
 
@@ -1216,6 +1272,8 @@ public class LDIFInputDialog extends BaseStepDialog implements
 			wInclRownumField.setText(in.getRowNumberField());
 		if (in.getContentTypeField() != null)
 			wInclContentTypeField.setText(in.getContentTypeField());
+		if (in.getDNField() != null)
+			wInclDNField.setText(in.getDNField());
 		
 		wLimit.setText("" + in.getRowLimit());
 		wAddResult.setSelection(in.AddToResultFilename());
@@ -1290,7 +1348,16 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		}
 		dispose();
 	}
-
+   private void setContenType()
+   {
+	   wlInclContentTypeField.setEnabled(wInclContentType.getSelection());
+	   wInclContentTypeField.setEnabled(wInclContentType.getSelection());
+   }
+   private void setDN()
+   {
+	   wlInclDNField.setEnabled(wInclDN.getSelection());
+	   wInclDNField.setEnabled(wInclDN.getSelection());
+   }
 	private void getInfo(LDIFInputMeta in) throws KettleException {
 		stepname = wStepname.getText(); // return value
 		
@@ -1302,10 +1369,12 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		in.setFilenameField(wInclFilenameField.getText());
 		in.setRowNumberField(wInclRownumField.getText());
 		in.setContentTypeField(wInclContentTypeField.getText());
+		in.setDNField(wInclDNField.getText());
 
 		in.setIncludeFilename(wInclFilename.getSelection());
 		in.setIncludeRowNumber(wInclRownum.getSelection());
 		in.setIncludeContentType(wInclContentType.getSelection());
+		in.setIncludeDN(wInclDN.getSelection());
 		
 		in.setAddToResultFilename(wAddResult.getSelection());
 		in.setMultiValuedSeparator(wMultiValuedSeparator.getText());

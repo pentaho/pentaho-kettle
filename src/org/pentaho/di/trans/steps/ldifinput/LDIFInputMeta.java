@@ -90,6 +90,10 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	private String  contentTypeField;
 	
+	private String DNField;
+	
+	private boolean includeDN;
+	
 	/** file name from previous fields **/
 	private boolean filefield;
 	
@@ -253,7 +257,20 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.includeContentType = includeContentType;
     }
-    
+    /**
+     * @param includeDN The includeDN to set.
+     */
+    public void setIncludeDN(boolean includeDN)
+    {
+        this.includeDN = includeDN;
+    }
+    /**
+     * @return Returns the includeDN.
+     */
+    public boolean IncludeDN()
+    {
+        return includeDN;
+    }
     /**
      * @param multiValuedSeparator The multi-valued separator filed.
      */
@@ -369,7 +386,21 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.contentTypeField = contentTypeField;
     }
-        
+    /**
+     * @return Returns the DNField.
+     */
+    public String getDNField()
+    {
+        return DNField;
+    }
+    
+    /**
+     * @param DNField The DNField to set.
+     */
+    public void setDNField(String DNField)
+    {
+        this.DNField = DNField;
+    }    
     public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 	    throws KettleXMLException
 {
@@ -416,6 +447,8 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    "+XMLHandler.addTagValue("rownum_field",    rowNumberField));
         retval.append("    "+XMLHandler.addTagValue("contenttype",          includeContentType));
         retval.append("    "+XMLHandler.addTagValue("contenttype_field",    contentTypeField));
+        retval.append("    "+XMLHandler.addTagValue("dn_field",    DNField));
+        retval.append("    "+XMLHandler.addTagValue("dn",          includeDN));
         retval.append("    "+XMLHandler.addTagValue("addtoresultfilename",      addtoresultfilename));
         retval.append("    "+XMLHandler.addTagValue("multiValuedSeparator",      multiValuedSeparator));
         
@@ -453,6 +486,8 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 			includeContentType  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "contenttype"));
 			contentTypeField    = XMLHandler.getTagValue(stepnode, "contenttype_field");
+			DNField    = XMLHandler.getTagValue(stepnode, "dn_field");
+			includeDN  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "dn"));
 			addtoresultfilename   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addtoresultfilename"));
 			multiValuedSeparator     = XMLHandler.getTagValue(stepnode, "multiValuedSeparator");
 			
@@ -510,7 +545,9 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 		includeRowNumber = false;
 		rowNumberField   = "";
 		includeContentType = false;
+		includeDN=false;
 		contentTypeField   = "";
+		DNField="";
 		multiValuedSeparator=",";
 		addtoresultfilename=false;
 		
@@ -573,6 +610,13 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}
+		if (includeDN)
+		{
+			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(DNField), ValueMeta.TYPE_STRING);
+			v.setLength(100, -1);
+			v.setOrigin(name);
+			r.addValueMeta(v);
+		}
 	}
 	
 	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
@@ -591,7 +635,8 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 			rowNumberField    = rep.getStepAttributeString (id_step, "rownum_field");
 			includeContentType  = rep.getStepAttributeBoolean(id_step, "contenttype");
 			contentTypeField    = rep.getStepAttributeString (id_step, "contenttype_field");
-			
+			DNField    = rep.getStepAttributeString (id_step, "dn_field");
+			includeDN    = rep.getStepAttributeBoolean (id_step, "dn");
 			rowLimit          = rep.getStepAttributeInteger(id_step, "limit");
 	
 			int nrFiles       = rep.countNrStepAttributes(id_step, "file_name");
@@ -649,7 +694,8 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
 			rep.saveStepAttribute(id_transformation, id_step, "contenttype",      includeContentType);
 			rep.saveStepAttribute(id_transformation, id_step, "contenttype_field",    contentTypeField);
-			
+			rep.saveStepAttribute(id_transformation, id_step, "dn_field",    DNField);
+			rep.saveStepAttribute(id_transformation, id_step, "dn",      includeDN);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
 			rep.saveStepAttribute(id_transformation, id_step, "addtoresultfilename",         addtoresultfilename);
 			rep.saveStepAttribute(id_transformation, id_step, "multiValuedSeparator",           multiValuedSeparator);

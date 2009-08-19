@@ -85,34 +85,30 @@ public class LDIFInput extends BaseStep implements StepInterface
 		String contentTYPE="ATTRIBUTE_CONTENT";
 		
 
-		if(contentLDIF.getType()== LDIFContent.DELETE_CONTENT)
+		switch (contentLDIF.getType())
 		{
+		case LDIFContent.DELETE_CONTENT:
 			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","DELETE_CONTENT"));
 			contentTYPE="DELETE_CONTENT";
-		}
-		else if(contentLDIF.getType()== LDIFContent.ADD_CONTENT)
-		{
+			break;
+		case LDIFContent.ADD_CONTENT:
 			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","ADD_CONTENT"));
 			contentTYPE="ADD_CONTENT";
-		}
-		else if(contentLDIF.getType()== LDIFContent.MODDN_CONTENT)
-		{
+			break;
+		case LDIFContent.MODDN_CONTENT:
 			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","MODDN_CONTENT"));
 			contentTYPE="MODDN_CONTENT";
-		}
-		else if(contentLDIF.getType()== LDIFContent.MODIFICATION_CONTENT)
-		{
-			if(log.isDetailed())
-				log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","MODIFICATION_CONTENT"));
+			break;
+		case LDIFContent.MODIFICATION_CONTENT:
+			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","MODIFICATION_CONTENT"));
 			contentTYPE="MODIFICATION_CONTENT";
-		}
-		else 
-		{
-			if(log.isDetailed())
-				log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","ATTRIBUTE_CONTENT"));
+			break;
+		default:
+			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","ATTRIBUTE_CONTENT"));
+			break;
 		}
 		
-		
+	
 		// Get only ATTRIBUTE_CONTENT					
 		LDIFAttributeContent attrContentLDIF = (LDIFAttributeContent) contentLDIF;
 		data.attributes_LDIF = attrContentLDIF.getAttributes();
@@ -125,7 +121,6 @@ public class LDIFInput extends BaseStep implements StepInterface
 			 System.arraycopy(data.readrow, 0, outputRowData, 0, data.readrow.length);
 
 		 try{	
-			
 				// Execute for each Input field...
 				for (int i=0;i<meta.getInputFields().length;i++)
 				{
@@ -184,7 +179,13 @@ public class LDIFInput extends BaseStep implements StepInterface
 		        {
 		            outputRowData[data.totalpreviousfields+rowIndex++] = contentTYPE;
 		        }
-				
+		        
+		        // See if we need to add the DN to the row...  
+		        if (meta.IncludeDN()&& !Const.isEmpty(meta.getDNField()))
+		        {
+		            outputRowData[data.totalpreviousfields+rowIndex++] = data.recordLDIF.getDN();
+		        }
+
 				RowMetaInterface irow = getInputRowMeta();
 				
 				data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
