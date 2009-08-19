@@ -34,7 +34,6 @@ import javax.activation.URLDataSource;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
 import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -44,6 +43,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -141,6 +141,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   
   /** The reply to addresses */
   private String replyToAddresses;
+  
+  public String embeddedimages[];
+
+  public String contentids[];
 
   public JobEntryMail(String n)
   {
@@ -205,7 +209,18 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         retval.append("        ").append(XMLHandler.addTagValue("filetype", ResultFile.getTypeCode(fileType[i])));
       }
     retval.append("      </filetypes>");
-
+   
+    retval.append("      <embeddedimages>").append(Const.CR); //$NON-NLS-1$
+    if (embeddedimages != null) {
+      for (int i = 0; i < embeddedimages.length; i++) {
+        retval.append("        <embeddedimage>").append(Const.CR); //$NON-NLS-1$
+        retval.append("          ").append(XMLHandler.addTagValue("image_name", embeddedimages[i])); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("          ").append(XMLHandler.addTagValue("content_id", contentids[i])); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("        </embeddedimage>").append(Const.CR); //$NON-NLS-1$
+      }
+    }
+    retval.append("      </embeddedimages>").append(Const.CR); //$NON-NLS-1$
+    
     return retval.toString();
   }
 
@@ -262,6 +277,22 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       setZipFiles("Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "zip_files")));
       setZipFilename(XMLHandler.getTagValue(entrynode, "zip_name"));
       setReplyToAddresses(XMLHandler.getTagValue(entrynode, "replyToAddresses"));
+      
+      Node images = XMLHandler.getSubNode(entrynode, "embeddedimages"); //$NON-NLS-1$
+
+      // How many field embedded images ?
+      int nrImages = XMLHandler.countNodes(images, "embeddedimage"); //$NON-NLS-1$
+      embeddedimages = new String[nrImages];
+      contentids = new String[nrImages];
+
+      // Read them all...
+      for (int i = 0; i < nrImages; i++) {
+        Node fnode = XMLHandler.getSubNodeByNr(images, "embeddedimage", i); //$NON-NLS-1$
+
+        embeddedimages[i] = XMLHandler.getTagValue(fnode, "image_name"); //$NON-NLS-1$
+        contentids[i] = XMLHandler.getTagValue(fnode, "content_id"); //$NON-NLS-1$
+      }
+
 
     } catch (KettleException xe)
     {
@@ -314,6 +345,19 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       zipFilename = rep.getJobEntryAttributeString(id_jobentry, "zip_name");
       replyToAddresses = rep.getJobEntryAttributeString(id_jobentry, "replyToAddresses");
       
+      
+      // How many arguments?
+      int imagesnr = rep.countNrJobEntryAttributes(id_jobentry, "embeddedimage"); //$NON-NLS-1$
+      embeddedimages = new String[imagesnr];
+      contentids = new String[imagesnr];
+
+      // Read them all...
+      for (int a = 0; a < imagesnr; a++) {
+    	  embeddedimages[a] = rep.getJobEntryAttributeString(id_jobentry, a, "embeddedimage"); //$NON-NLS-1$
+    	  contentids[a] = rep.getJobEntryAttributeString(id_jobentry, a, "contentid"); //$NON-NLS-1$
+      }
+      
+      
     } catch (KettleDatabaseException dbe)
     {
       throw new KettleException("Unable to load job entry of type 'mail' from the repository with id_jobentry="
@@ -365,6 +409,14 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute(id_job, getObjectId(), "zip_files", zipFiles);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "zip_name", zipFilename);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "replyToAddresses", replyToAddresses);
+      
+      // save the arguments...
+      if (embeddedimages != null) {
+        for (int i = 0; i < embeddedimages.length; i++) {
+          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "embeddedimage", embeddedimages[i]); //$NON-NLS-1$
+          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "contentid", contentids[i]); //$NON-NLS-1$
+        }
+      }
 
     } catch (KettleDatabaseException dbe)
     {
@@ -939,8 +991,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         }
       }
 
-      Multipart parts = new MimeMultipart();
+      MimeMultipart parts = new MimeMultipart();
       MimeBodyPart part1 = new MimeBodyPart(); // put the text in the
+      // Attached files counter
+      int nrattachedFiles=0;
+      
       // 1st part
 
       if (useHTML)
@@ -991,7 +1046,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
                   files.setFileName(file.getName().getBaseName());
                   // add the part with the file in the BodyPart();
                   parts.addBodyPart(files);
-
+                  nrattachedFiles++;
                   log.logBasic(toString(), "Added file '" + fds.getName() + "' to the mail message.");
                 }
               }
@@ -1029,7 +1084,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
                   }
                   inputStream.close();
                   zipOutputStream.closeEntry();
-
+                  nrattachedFiles++;
                   log.logBasic(toString(), "Added file '" + file.getName().getURI()
                       + "' to the mail message in a zip archive.");
                 }
@@ -1065,7 +1120,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
               FileDataSource fds = new FileDataSource(masterZipfile);
               // get a data Handler to manipulate this file type;
               files.setDataHandler(new DataHandler(fds));
-              // include the file in th e data source
+              // include the file in the data source
               files.setFileName(fds.getName());
               // add the part with the file in the BodyPart();
               parts.addBodyPart(files);
@@ -1073,6 +1128,52 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
           }
         }
       }
+
+      int nrEmbeddedImages=0;
+      if(embeddedimages!=null && embeddedimages.length>0) {
+    	  FileObject imageFile=null;
+    	  for(int i=0; i<embeddedimages.length; i++) {
+    		  String realImageFile=environmentSubstitute(embeddedimages[i]);
+	    	  try {
+	    		  boolean found = false;
+		    	  imageFile=KettleVFS.getFileObject(realImageFile);
+		    	  if(imageFile.exists() && imageFile.getType()==FileType.FILE)
+		    		  found=true;
+		    	  else
+		    		  log.logError(toString(), "We can not find ["+realImageFile + "] or it is not a file");
+		    	  if(found) {
+		    		  // Create part for the image 
+		    	      MimeBodyPart messageBodyPart = new MimeBodyPart();
+		    	      //Load the image
+		    	      URLDataSource fds = new URLDataSource(imageFile.getURL());
+		    	      messageBodyPart.setDataHandler(new DataHandler(fds));
+		    	      //Setting the header
+		    	      messageBodyPart.setHeader("Content-ID","<"+ environmentSubstitute(contentids[i]) + ">");
+		    	      // Add part to multi-part
+		    	      parts.addBodyPart(messageBodyPart);
+		    	      nrEmbeddedImages++;
+		    	      log.logBasic(toString(), "Image '" + fds.getName() + "' was embedded in message.");
+		    	  }
+	    	  }catch(Exception e) {
+	              log.logError(toString(), "Error embedding image [" + realImageFile + "] in message : "
+	                      + e.toString());
+	                  log.logError(toString(), Const.getStackTracker(e));
+	                  result.setNrErrors(1);
+	    	  }finally {
+	    		  if(imageFile!=null) {
+	    			  try { imageFile.close();}catch(Exception e){};
+	    		  }
+	    	  }
+    	  }
+      }
+      
+     if(nrEmbeddedImages>0 && nrattachedFiles==0) {
+	       //If we need to embedd images... 
+	       //We need to create a "multipart/related" message.
+	       //otherwise image will appear as attached file
+	      parts.setSubType("related");
+      }
+      // put all parts together
       msg.setContent(parts);
 
       Transport transport = null;

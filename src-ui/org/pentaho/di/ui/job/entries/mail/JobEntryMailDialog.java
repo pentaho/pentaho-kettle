@@ -13,6 +13,7 @@ package org.pentaho.di.ui.job.entries.mail;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -33,12 +34,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
@@ -50,13 +53,15 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ControlSpaceKeyAdapter;
 import org.pentaho.di.ui.core.widget.LabelText;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
+import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-
 
 /**
  * Dialog that allows you to edit a JobEntryMail object.
@@ -68,6 +73,12 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 {
 	private static Class<?> PKG = JobEntryMail.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+    private static final String[] IMAGES_FILE_TYPES = new String[] {
+	    BaseMessages.getString(PKG, "JobMail.Filetype.Png"),
+	    BaseMessages.getString(PKG, "JobMail.Filetype.Jpeg"),
+	    BaseMessages.getString(PKG, "JobMail.Filetype.Gif"),
+	   	BaseMessages.getString(PKG, "JobMail.Filetype.All") };
+	
     private LabelText wName;
 
     private FormData fdName;
@@ -212,11 +223,20 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 	private FormData	 fdGeneralComp,fdContentComp,fdAttachedComp,fdMessageComp;
 	private FormData     fdTabFolder;
 	
-	private Group wDestinationGroup,wReplyGroup,wServerGroup,
-		wAuthentificationGroup,wMessageSettingsGroup,wMessageGroup,wResultFilesGroup;
-	private FormData fdDestinationGroup,fdReplyGroup,fdServerGroup,
-		fdAuthentificationGroup,fdMessageSettingsGroup,fdMessageGroup,fdResultFilesGroup;
+	
+	private Group wDestinationGroup,wReplyGroup,wServerGroup,wAuthentificationGroup,wMessageSettingsGroup,
+			wMessageGroup,wResultFilesGroup, wEmbeddedImagesGroup;
+	private FormData fdDestinationGroup,fdReplyGroup,fdServerGroup,fdAuthentificationGroup,
+		fdMessageSettingsGroup,fdMessageGroup,fdResultFilesGroup, fdEmbeddedImagesGroup;
     
+	private Label        wlImageFilename, wlContentID, wlFields;
+	private Button       wbImageFilename, wbaImageFilename, wbdImageFilename, wbeImageFilename;
+	private TextVar      wImageFilename, wContentID;
+	private FormData     fdlImageFilename, fdbImageFilename, fdImageFilename,fdlContentID, fdContentID,
+						 fdbaImageFilename, fdbdImageFilename, fdbeImageFilename, fdlFields, fdFields;
+	private TableView   wFields;
+	
+	
     public JobEntryMailDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
         super(parent, jobEntryInt, rep, jobMeta);
@@ -1042,7 +1062,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         fdResultFilesGroup = new FormData();
         fdResultFilesGroup.left = new FormAttachment(0, margin);
         fdResultFilesGroup.top = new FormAttachment(0, margin);
-    	fdResultFilesGroup.bottom = new FormAttachment(100, -margin);
+    	//fdResultFilesGroup.bottom = new FormAttachment(100, -margin);
     	fdResultFilesGroup.right = new FormAttachment(100, -margin);
       	wResultFilesGroup.setLayoutData(fdResultFilesGroup);
 		
@@ -1050,6 +1070,230 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 		// / END OF RESULT FILES   GROUP
 		// ///////////////////////////////////////
 		
+
+ 		// ////////////////////////////////////
+		// START OF Embedded Images   GROUP
+		////////////////////////////////////// 
+
+		wEmbeddedImagesGroup= new Group(wAttachedComp, SWT.SHADOW_NONE);
+		props.setLook(wEmbeddedImagesGroup);
+		wEmbeddedImagesGroup.setText(BaseMessages.getString(PKG, "JobMail.Group.EmbeddedImages.Label"));
+		
+		FormLayout attachedimagesgroupLayout = new FormLayout();
+		attachedimagesgroupLayout.marginWidth = 10;
+		attachedimagesgroupLayout.marginHeight = 10;
+		wEmbeddedImagesGroup.setLayout(attachedimagesgroupLayout);
+		
+
+		// ImageFilename line
+		wlImageFilename=new Label(wEmbeddedImagesGroup, SWT.RIGHT);
+		wlImageFilename.setText(BaseMessages.getString(PKG, "JobMail.ImageFilename.Label"));
+		props.setLook(wlImageFilename);
+		fdlImageFilename=new FormData();
+		fdlImageFilename.left = new FormAttachment(0, 0);
+		fdlImageFilename.top  = new FormAttachment(wResultFilesGroup, margin);
+		fdlImageFilename.right= new FormAttachment(middle, -margin);
+		wlImageFilename.setLayoutData(fdlImageFilename);
+		
+		
+
+		wbImageFilename=new Button(wEmbeddedImagesGroup, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbImageFilename);
+		wbImageFilename.setText(BaseMessages.getString(PKG, "JobMail.BrowseFiles.Label"));
+		fdbImageFilename=new FormData();
+		fdbImageFilename.right= new FormAttachment(100, 0);
+		fdbImageFilename.top  = new FormAttachment(wResultFilesGroup, margin);
+		fdbImageFilename.right= new FormAttachment(100, -margin);
+		wbImageFilename.setLayoutData(fdbImageFilename);
+
+		wbaImageFilename=new Button(wEmbeddedImagesGroup, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbaImageFilename);
+		wbaImageFilename.setText(BaseMessages.getString(PKG, "JobMail.ImageFilenameAdd.Button"));
+		fdbaImageFilename=new FormData();
+		fdbaImageFilename.right= new FormAttachment(wbImageFilename, -margin);
+		fdbaImageFilename.top  = new FormAttachment(wResultFilesGroup, margin);
+		wbaImageFilename.setLayoutData(fdbaImageFilename);
+
+		wImageFilename=new TextVar(jobMeta, wEmbeddedImagesGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wImageFilename);
+		wImageFilename.addModifyListener(lsMod);
+		fdImageFilename=new FormData();
+		fdImageFilename.left = new FormAttachment(middle, 0);
+		fdImageFilename.top  = new FormAttachment(wResultFilesGroup, margin);
+		fdImageFilename.right= new FormAttachment(wbImageFilename, -40);
+		wImageFilename.setLayoutData(fdImageFilename);
+
+		// Whenever something changes, set the tooltip to the expanded version:
+		wImageFilename.addModifyListener(new ModifyListener()
+		{
+			public void modifyText(ModifyEvent e)
+			{
+				wImageFilename.setToolTipText(jobMeta.environmentSubstitute( wImageFilename.getText() ) );
+			}
+		}
+		);
+
+		wbImageFilename.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e)
+				{
+					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+					dialog.setFilterExtensions(new String[] {"*png;*PNG", "*jpeg;*jpg;*JPEG;*JPG", "*gif;*GIF", "*"});
+					if (wImageFilename.getText()!=null)
+					{
+						dialog.setFileName(jobMeta.environmentSubstitute(wImageFilename.getText()) );
+					}
+					dialog.setFilterNames(IMAGES_FILE_TYPES);
+					if (dialog.open()!=null)
+					{
+						wImageFilename.setText(dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName());
+						Random randomgen = new Random();
+						wContentID.setText(Long.toString(Math.abs(randomgen.nextLong()), 32));
+					}
+				}
+			}
+		);
+		
+		// ContentID
+		wlContentID= new Label(wEmbeddedImagesGroup, SWT.RIGHT);
+		wlContentID.setText(BaseMessages.getString(PKG, "JobMail.ContentID.Label"));
+		props.setLook(wlContentID);
+		fdlContentID= new FormData();
+		fdlContentID.left = new FormAttachment(0, 0);
+		fdlContentID.top = new FormAttachment(wImageFilename, margin);
+		fdlContentID.right = new FormAttachment(middle, -margin);
+		wlContentID.setLayoutData(fdlContentID);
+		wContentID= new TextVar(jobMeta, wEmbeddedImagesGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				                BaseMessages.getString(PKG, "JobMail.ContentID.Tooltip"));
+		props.setLook(wContentID);
+		wContentID.addModifyListener(lsMod);
+		fdContentID= new FormData();
+		fdContentID.left = new FormAttachment(middle, 0);
+		fdContentID.top = new FormAttachment(wImageFilename, margin);
+		fdContentID.right= new FormAttachment(wbImageFilename, -40);
+		wContentID.setLayoutData(fdContentID);
+
+		// Buttons to the right of the screen...
+		wbdImageFilename=new Button(wEmbeddedImagesGroup, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbdImageFilename);
+		wbdImageFilename.setText(BaseMessages.getString(PKG, "JobMail.ImageFilenameDelete.Button"));
+		wbdImageFilename.setToolTipText(BaseMessages.getString(PKG, "JobMail.ImageFilenameDelete.Tooltip"));
+		fdbdImageFilename=new FormData();
+		fdbdImageFilename.right = new FormAttachment(100, 0);
+		fdbdImageFilename.top  = new FormAttachment (wContentID, 40);
+		wbdImageFilename.setLayoutData(fdbdImageFilename);
+
+		wbeImageFilename=new Button(wEmbeddedImagesGroup, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbeImageFilename);
+		wbeImageFilename.setText(BaseMessages.getString(PKG, "JobMail.ImageFilenameEdit.Button"));
+		wbeImageFilename.setToolTipText(BaseMessages.getString(PKG, "JobMail.ImageFilenameEdit.Tooltip"));
+		fdbeImageFilename=new FormData();
+		fdbeImageFilename.right = new FormAttachment(100, 0);
+		fdbeImageFilename.left = new FormAttachment(wbdImageFilename, 0, SWT.LEFT);
+		fdbeImageFilename.top  = new FormAttachment (wbdImageFilename, margin);
+		wbeImageFilename.setLayoutData(fdbeImageFilename);
+
+		wlFields = new Label(wEmbeddedImagesGroup, SWT.NONE);
+		wlFields.setText(BaseMessages.getString(PKG, "JobMail.Fields.Label"));
+		props.setLook(wlFields);
+		fdlFields = new FormData();
+		fdlFields.left = new FormAttachment(0, 0);
+		fdlFields.right= new FormAttachment(middle, -margin);
+		fdlFields.top = new FormAttachment(wContentID,margin);
+		wlFields.setLayoutData(fdlFields);
+
+		int rows = jobEntry.embeddedimages == null
+		? 1
+			: (jobEntry.embeddedimages.length == 0
+			? 0
+			: jobEntry.embeddedimages.length);
+		final int FieldsRows = rows;
+
+		ColumnInfo[] colinf=new ColumnInfo[]
+			{
+				new ColumnInfo(BaseMessages.getString(PKG, "JobMail.Fields.Image.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+				new ColumnInfo(BaseMessages.getString(PKG, "JobMail.Fields.ContentID.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+			};
+
+		colinf[0].setUsingVariables(true);
+		colinf[0].setToolTip(BaseMessages.getString(PKG, "JobMail.Fields.Image.Tooltip"));
+		colinf[1].setUsingVariables(true);
+		colinf[1].setToolTip(BaseMessages.getString(PKG, "JobMail.Fields.ContentID.Tooltip"));
+
+		wFields = new TableView(jobMeta, wEmbeddedImagesGroup, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
+			FieldsRows, lsMod, props);
+
+		fdFields = new FormData();
+		fdFields.left = new FormAttachment(0, 0);
+		fdFields.top = new FormAttachment(wlFields, margin);
+		fdFields.right = new FormAttachment(wbeImageFilename, -margin);
+		fdFields.bottom = new FormAttachment(100, -margin);
+		wFields.setLayoutData(fdFields);
+
+		// Add the file to the list of files...
+		SelectionAdapter selA = new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				wFields.add(new String[] { wImageFilename.getText(), wContentID.getText() } );
+				wImageFilename.setText("");
+				wContentID.setText("");
+				wFields.removeEmptyRows();
+				wFields.setRowNums();
+				wFields.optWidth(true);
+			}
+		};
+		wbaImageFilename.addSelectionListener(selA);
+		wImageFilename.addSelectionListener(selA);
+
+		// Delete files from the list of files...
+		wbdImageFilename.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				int idx[] = wFields.getSelectionIndices();
+				wFields.remove(idx);
+				wFields.removeEmptyRows();
+				wFields.setRowNums();
+			}
+		});
+
+		// Edit the selected file & remove from the list...
+		wbeImageFilename.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				int idx = wFields.getSelectionIndex();
+				if (idx>=0)
+				{
+					String string[] = wFields.getItem(idx);
+					wImageFilename.setText(string[0]);
+					wContentID.setText(string[1]);
+					wFields.remove(idx);
+				}
+				wFields.removeEmptyRows();
+				wFields.setRowNums();
+			}
+		});
+
+		
+		
+
+        fdEmbeddedImagesGroup= new FormData();
+        fdEmbeddedImagesGroup.left = new FormAttachment(0, margin);
+        fdEmbeddedImagesGroup.top = new FormAttachment(wResultFilesGroup, margin);
+        fdEmbeddedImagesGroup.bottom = new FormAttachment(100, -margin);
+        fdEmbeddedImagesGroup.right = new FormAttachment(100, -margin);
+        wEmbeddedImagesGroup.setLayoutData(fdEmbeddedImagesGroup);
+		
+		// //////////////////////////////////////
+		// / END OF Embedded Images   GROUP
+		// ///////////////////////////////////////
+		
+      	
+      	
 		fdAttachedComp = new FormData();
 		fdAttachedComp.left  = new FormAttachment(0, 0);
 		fdAttachedComp.top   = new FormAttachment(0, 0);
@@ -1327,6 +1571,19 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         
         if (jobEntry.getReplyToAddresses() != null)
             wReplyToAddress.setText(jobEntry.getReplyToAddresses());
+        if (jobEntry.embeddedimages != null)
+		{
+			for (int i = 0; i < jobEntry.embeddedimages.length; i++)
+			{
+				TableItem ti = wFields.table.getItem(i);
+				if (jobEntry.embeddedimages[i] != null)
+					ti.setText(1, jobEntry.embeddedimages[i]);
+					if (jobEntry.contentids[i] != null)
+						ti.setText(2, jobEntry.contentids[i]);
+			}
+			wFields.setRowNums();
+			wFields.optWidth(true);
+		}
     }
 
     private void cancel()
@@ -1409,6 +1666,31 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         jobEntry.setSecureConnectionType(wSecureConnectionType.getText());
         
         jobEntry.setReplyToAddresses(wReplyToAddress.getText());
+
+
+		int nritems = wFields.nrNonEmpty();
+		int nr = 0;
+		for (int i = 0; i < nritems; i++)
+		{
+			String arg = wFields.getNonEmpty(i).getText(1);
+			if (arg != null && arg.length() != 0)
+				nr++;
+		}
+		jobEntry.embeddedimages = new String[nr];
+		jobEntry.contentids = new String[nr];
+		nr = 0;
+		for (int i = 0; i < nritems; i++)
+		{
+			String arg = wFields.getNonEmpty(i).getText(1);
+			String wild = wFields.getNonEmpty(i).getText(2);
+			if (arg != null && arg.length() != 0)
+			{
+				jobEntry.embeddedimages[nr] = arg;
+				jobEntry.contentids[nr] = wild;
+				nr++;
+			}
+		}
+        
         
         dispose();
     }
