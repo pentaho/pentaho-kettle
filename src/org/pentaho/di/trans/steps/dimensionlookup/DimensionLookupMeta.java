@@ -78,6 +78,16 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		Messages.getString("DimensionLookupMeta.TypeDesc.DateUpdated"),          //$NON-NLS-1$
 		Messages.getString("DimensionLookupMeta.TypeDesc.LastVersion"),          //$NON-NLS-1$
 		};
+	
+	public final static String	typeCodes[]						= { // for saving to the repository
+		"Insert",               //$NON-NLS-1$ 
+		"Update",               //$NON-NLS-1$
+		"Punch through",         //$NON-NLS-1$
+		"DateInsertedOrUpdated",         //$NON-NLS-1$
+		"DateInserted",         //$NON-NLS-1$
+		"DateUpdated",          //$NON-NLS-1$
+		"LastVersion",          //$NON-NLS-1$
+		};
 
 	public final static String	typeDescLookup[]				= ValueMeta.getTypes();
 
@@ -564,6 +574,12 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		if (upd)
 		{
+			for (int i = 0; i < typeCodes.length; i++)
+			{
+				if (typeCodes[i].equalsIgnoreCase(ty))
+					return i;
+			}
+			// for compatibility:
 			for (int i = 0; i < typeDesc.length; i++)
 			{
 				if (typeDesc[i].equalsIgnoreCase(ty))
@@ -571,7 +587,6 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			}
 			if ("Y".equalsIgnoreCase(ty)) //$NON-NLS-1$
 				return TYPE_UPDATE_DIM_PUNCHTHROUGH;
-
 			return TYPE_UPDATE_DIM_INSERT; // INSERT is the default: don't lose information.
 		}
 		else
@@ -590,7 +605,15 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		else
 			return typeDesc[t];
 	}
-	
+
+	public final static String getUpdateTypeCode(boolean upd, int t)
+	{
+		if (!upd)
+			return ValueMeta.getTypeDesc(t);
+		else
+			return typeCodes[t];
+	}
+
 	public final static int getStartDateAlternative(String string)
 	{
 		for (int i = 0; i < startDateAlternativeCodes.length; i++)
@@ -870,7 +893,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 					retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
 					retval.append("          ").append(XMLHandler.addTagValue("name", fieldStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					retval.append("          ").append(XMLHandler.addTagValue("lookup", fieldLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
-					retval.append("          ").append(XMLHandler.addTagValue("update", getUpdateType(update, fieldUpdate[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+					retval.append("          ").append(XMLHandler.addTagValue("update", getUpdateTypeCode(update, fieldUpdate[i]))); //$NON-NLS-1$ //$NON-NLS-2$
 					retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
 				}
 			}
@@ -983,7 +1006,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                 {
                     rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldStream[i]); //$NON-NLS-1$
                     rep.saveStepAttribute(id_transformation, id_step, i, "field_lookup", fieldLookup[i]); //$NON-NLS-1$
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_update", getUpdateType(update, fieldUpdate[i])); //$NON-NLS-1$
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_update", getUpdateTypeCode(update, fieldUpdate[i])); //$NON-NLS-1$
                 }
             }
 
