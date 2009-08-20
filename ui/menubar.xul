@@ -14,6 +14,14 @@ align="vertical" >
                     <menuitem value="file-import-from-xml" acceltext="CTRL-I"  accesskey="ctrl-i" label="%Spoon.Menu.File.Import"/>
 					<menuitem value="file-export-to-xml" label="%Spoon.Menu.File.Export"/>
 					<menuitem value="file-export-all-to-xml" label="%Spoon.Menu.File.ExportAll"/>
+                   
+
+					
+					<menuitem value="cmdline-display" label="%Spoon.Tooltip.Menu.CmdLine.Display"/>
+                    <menuitem value="cmdline-save"  label="%Spoon.Tooltip.Menu.CmdLine.Save"/>
+                   
+                   
+                   
                     <menuitem value="file-save" acceltext="CTRL-S"  accesskey="ctrl-s" label="%Spoon.Menu.File.Save"/>
                     <menuitem value="file-save-as" label="%Spoon.Menu.File.SaveAs"/>
                     <menuitem value="file-save-as-vfs" label="%Spoon.Menu.File.SaveAsVFS"/>

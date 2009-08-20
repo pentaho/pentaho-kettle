@@ -107,6 +107,7 @@ import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.changed.PDIObserver;
 import org.pentaho.di.core.clipboard.ImageDataTransfer;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -243,6 +244,7 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+
 /**
  * This class handles the main window of the Spoon graphical transformation
  * editor.
@@ -253,13 +255,6 @@ import org.w3c.dom.Node;
 public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter, PDIObserver, LifeEventHandler {
 
 	private static Class<?>					PKG						= Spoon.class;																																						// for
-																																																										// i18n
-																																																										// purposes,
-																																																										// needed
-																																																										// by
-																																																										// //
-																																																										// Translator2!!
-																																																										// $NON-NLS-1$
 
 	public static final String				STRING_TRANSFORMATIONS	= BaseMessages.getString(PKG, "Spoon.STRING_TRANSFORMATIONS");																										// Transformations
 	public static final String				STRING_JOBS				= BaseMessages.getString(PKG, "Spoon.STRING_JOBS");																												// Jobs
@@ -3143,7 +3138,182 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public void setLastFileOpened(String inLastFileOpened) {
 		lastFileOpened = inLastFileOpened;
 	}
+	public void displayCmdLine() {
+		String cmdFile = getCmdLine();
 
+		if (Const.isEmpty(cmdFile)) {
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+			mb.setMessage(BaseMessages.getString(PKG, "ExportCmdLine.JobOrTransformationMissing.Message"));
+			mb.setText(BaseMessages.getString(PKG, "ExportCmdLine.JobOrTransformationMissing.Title"));
+			mb.open();
+		} else {
+			ShowBrowserDialog sbd = new ShowBrowserDialog(shell,BaseMessages.getString(PKG, "ExportCmdLine.CommandLine.Title"), cmdFile);
+			sbd.open();
+		}
+	}
+
+	public void createCmdLineFile() {
+		String cmdFile = getCmdLine();
+
+		if (Const.isEmpty(cmdFile)) {
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+			mb.setMessage(BaseMessages.getString(PKG, "ExportCmdLine.JobOrTransformationMissing.Message"));
+			mb.setText(BaseMessages.getString(PKG, "ExportCmdLine.JobOrTransformationMissing.Title"));
+			mb.open();
+		} else {
+			boolean export = true;
+
+			FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+			dialog.setFilterExtensions(new String[] { "*.bat", ".sh", "*.*" });
+			dialog.setFilterNames(new String[] { BaseMessages.getString(PKG, "ExportCmdLine.BatFiles"),
+					BaseMessages.getString(PKG, "ExportCmdLineShFiles"), 
+					BaseMessages.getString(PKG, "ExportCmdLine.AllFiles")});
+			String fname = dialog.open();
+
+			if (fname != null) {
+				// See if the file already exists...
+				int id = SWT.YES;
+				try {
+					FileObject f = KettleVFS.getFileObject(fname);
+					if (f.exists()) {
+						MessageBox mb = new MessageBox(shell, SWT.NO | SWT.YES| SWT.ICON_WARNING);
+						mb.setMessage(BaseMessages.getString(PKG, "ExportCmdLineShFiles.FileExistsReplace", fname));
+						mb.setText(BaseMessages.getString(PKG, "ExportCmdLineShFiles.ConfirmOverwrite"));
+						id = mb.open();
+					}
+				} catch (Exception e) {}
+				if (id == SWT.NO) {
+					export = false;
+				}
+
+				if (export) {
+					java.io.FileWriter out = null;
+					try {
+						out = new java.io.FileWriter(fname);
+						out.write(cmdFile);
+						out.flush();
+					} catch (Exception e) {
+						new ErrorDialog(
+								shell,
+								BaseMessages.getString(PKG, "ExportCmdLineShFiles.ErrorWritingFile.Title"),
+								BaseMessages.getString(PKG, "ExportCmdLineShFiles.ErrorWritingFile.Message", fname),e);
+					} finally {
+						if (out != null) {
+							try {
+								out.close();
+							} catch (Exception e) {}
+						}
+					}
+
+					MessageBox mb = new MessageBox(shell, SWT.OK| SWT.ICON_INFORMATION);
+					mb.setMessage(BaseMessages.getString(PKG, "ExportCmdLineShFiles.CmdExported.Message", fname));
+					mb.setText(BaseMessages.getString(PKG, "ExportCmdLineShFiles.CmdExported.Title"));
+					mb.open();
+				}
+			}
+		}
+	}
+	private String getCmdLine() {
+		TransMeta transMeta = getActiveTransformation();
+		JobMeta jobMeta = getActiveJob();
+		String cmdFile = "";
+
+		if (rep != null && (jobMeta != null || transMeta != null)) {
+			if (jobMeta != null) {
+				if (jobMeta.getName() != null) {
+					if (Const.isWindows()) {
+						cmdFile = "kitchen "
+								+ "/rep:\""
+								+ rep.getName()
+								+ "\""
+								+ " /user:\""
+								+ rep.getUserInfo().getLogin()
+								+ "\""
+								+ " /pass:\""
+								+ Encr.encryptPasswordIfNotUsingVariables(rep
+										.getUserInfo().getPassword()) + "\""
+								+ " /job:\"" + jobMeta.getName() + '"'
+								+ " /dir:\"" + jobMeta.getRepositoryDirectory().getPath()
+								+ "\"" + " /level:Basic";
+					} else {
+						cmdFile = "sh kitchen.sh "
+								+ "-rep='"
+								+ rep.getName()
+								+ "'"
+								+ " -user='"
+								+ rep.getUserInfo().getLogin()
+								+ "'"
+								+ " -pass='"
+								+ Encr.encryptPasswordIfNotUsingVariables(rep
+										.getUserInfo().getPassword()) + "'"
+								+ " -job='" + jobMeta.getName() + "'"
+								+ " -dir='" + jobMeta.getRepositoryDirectory().getPath()
+								+ "'" + " -level=Basic";
+					}
+				}
+			} else {
+				if (transMeta.getName() != null) {
+					if (Const.isWindows()) {
+						cmdFile = "pan "
+								+ "/rep:\""
+								+ rep.getName()
+								+ "\""
+								+ " /user:\""
+								+ rep.getUserInfo().getLogin()
+								+ "\""
+								+ " /pass:\""
+								+ Encr.encryptPasswordIfNotUsingVariables(rep
+										.getUserInfo().getPassword()) + "\""
+								+ " /trans:\"" + transMeta.getName() + "\""
+								+ " /dir:\""
+								+ transMeta.getRepositoryDirectory().getPath() + "\""
+								+ " /level:Basic";
+					} else {
+						cmdFile = "sh pan.sh "
+								+ "-rep='"
+								+ rep.getName()
+								+ "'"
+								+ " -user='"
+								+ rep.getUserInfo().getLogin()
+								+ "'"
+								+ " -pass='"
+								+ Encr.encryptPasswordIfNotUsingVariables(rep
+										.getUserInfo().getPassword()) + "'"
+								+ " -trans='" + transMeta.getName() + "'"
+								+ " -dir='"
+								+ transMeta.getRepositoryDirectory().getPath() + "'"
+								+ " -level=Basic";
+					}
+				}
+			}
+		} else if (rep == null && (jobMeta != null || transMeta != null)) {
+			if (jobMeta != null) {
+				if (jobMeta.getFilename() != null) {
+					if (Const.isWindows()) {
+						cmdFile = "kitchen " + "/file:\""
+								+ jobMeta.getFilename() + "\""
+								+ " /level:Basic";
+					} else {
+						cmdFile = "sh kitchen.sh " + "-file='"
+								+ jobMeta.getFilename() + "'" + " -level=Basic";
+					}
+				}
+			} else {
+				if (transMeta.getFilename() != null) {
+					if (Const.isWindows()) {
+						cmdFile = "pan " + "/file:\"" + transMeta.getFilename()
+								+ "\"" + " /level:Basic";
+					} else {
+						cmdFile = "sh pan.sh " + "-file:'"
+								+ transMeta.getFilename() + "'"
+								+ " -level=Basic";
+					}
+				}
+			}
+		}
+		return cmdFile;
+
+	}
 	// private String lastVfsUsername="";
 	// private String lastVfsPassword="";
 
@@ -4786,6 +4956,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		menuBar.setEnableById("file-save-as", enableTransMenu || enableJobMenu);
 		menuBar.setEnableById("file-close", enableTransMenu || enableJobMenu);
 		menuBar.setEnableById("file-print", enableTransMenu || enableJobMenu);
+		menuBar.setEnableById("cmdline-display", enableTransMenu || enableJobMenu);
+		menuBar.setEnableById("cmdline-save", enableTransMenu || enableJobMenu);
 
 		// Disable the undo and redo menus if there is no active transformation
 		// or active job
