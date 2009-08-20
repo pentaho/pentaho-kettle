@@ -83,7 +83,9 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 		loadUserInfo(userInfo, login);
 		
 		// Verify the password:
-		if ( userInfo.getObjectId()==null || !passwd.equals(userInfo.getPassword()) )
+		// decrypt password if needed and compare with the one
+		String userPass=Encr.decryptPasswordOptionallyEncrypted(passwd);
+		if ( userInfo.getObjectId()==null || !userPass.equals(userInfo.getPassword()) )
 		{
             throw new KettleDatabaseException(BaseMessages.getString(PKG, "UserInfo.Error.IncorrectPasswortLogin"));
 		}
