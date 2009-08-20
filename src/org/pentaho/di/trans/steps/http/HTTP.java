@@ -11,7 +11,7 @@
  
 package org.pentaho.di.trans.steps.http;
 
-import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -93,12 +93,22 @@ public class HTTP extends BaseStep implements StepInterface
                 // The status code
                 if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTP.Log.ResponseStatusCode", ""+result));
                 
+                // guess encoding
+                String encoding = method.getResponseHeader("Content-Type").getValue().replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim(); 
+                if (encoding == null) encoding = "ISO-8859-1"; 
+                
+                if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTP.Log.ResponseHeaderEncoding",encoding));
+                
                 // the response
-                InputStream inputStream = method.getResponseBodyAsStream();
-                StringBuffer bodyBuffer = new StringBuffer();
-                int c;
-                while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
-                inputStream.close();
+                InputStreamReader inputStreamReader = new InputStreamReader(method.getResponseBodyAsStream(),encoding); 
+                StringBuffer bodyBuffer = new StringBuffer(); 
+                 
+                 int c;
+                 while ( (c=inputStreamReader.read())!=-1) {
+                	bodyBuffer.append((char)c);
+                 }
+                
+                inputStreamReader.close(); 
                 
                 String body = bodyBuffer.toString();
                 if (log.isDebug()) log.logDebug(toString(), "Response body: "+body);
