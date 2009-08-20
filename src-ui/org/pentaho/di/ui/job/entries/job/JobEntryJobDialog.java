@@ -68,6 +68,7 @@ import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
+
 /**
  * This dialog allows you to edit the job job entry (JobEntryJob)
  * 
@@ -110,6 +111,10 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 	private Label wlLogfile;
 	private TextVar wLogfile;
 	private FormData fdlLogfile, fdLogfile;
+	
+    private Label wlCreateParentFolder;
+    private Button wCreateParentFolder;
+    private FormData fdlCreateParentFolder, fdCreateParentFolder;
 
 	private Label wlLogext;
 	private TextVar wLogext;
@@ -393,6 +398,30 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		fdLogfile.top = new FormAttachment(wAppendLogfile, margin);
 		fdLogfile.right = new FormAttachment(100, 0);
 		wLogfile.setLayoutData(fdLogfile);
+		
+		// create parent folder?
+        wlCreateParentFolder = new Label(wLogging, SWT.RIGHT);
+        wlCreateParentFolder.setText(BaseMessages.getString(PKG, "JobJob.Logfile.CreateParentFolder.Label"));
+        props.setLook(wlCreateParentFolder);
+        fdlCreateParentFolder = new FormData();
+        fdlCreateParentFolder.left = new FormAttachment(0, 0);
+        fdlCreateParentFolder.top = new FormAttachment(wLogfile, margin);
+        fdlCreateParentFolder.right = new FormAttachment(middle, -margin);
+        wlCreateParentFolder.setLayoutData(fdlCreateParentFolder);
+        wCreateParentFolder = new Button(wLogging, SWT.CHECK);
+        wCreateParentFolder.setToolTipText(BaseMessages.getString(PKG, "JobJob.Logfile.CreateParentFolder.Tooltip"));
+        props.setLook(wCreateParentFolder);
+        fdCreateParentFolder = new FormData();
+        fdCreateParentFolder.left = new FormAttachment(middle, 0);
+        fdCreateParentFolder.top = new FormAttachment(wLogfile, margin);
+        fdCreateParentFolder.right = new FormAttachment(100, 0);
+        wCreateParentFolder.setLayoutData(fdCreateParentFolder);
+        wCreateParentFolder.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+            }
+        });
 
 		// Set the logfile filename extention
 		wlLogext = new Label(wLogging, SWT.RIGHT);
@@ -400,7 +429,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		props.setLook(wlLogext);
 		fdlLogext = new FormData();
 		fdlLogext.left = new FormAttachment(0, 0);
-		fdlLogext.top = new FormAttachment(wLogfile, margin);
+		fdlLogext.top = new FormAttachment(wCreateParentFolder, margin);
 		fdlLogext.right = new FormAttachment(middle, -margin);
 		wlLogext.setLayoutData(fdlLogext);
 		wLogext = new TextVar(jobMeta, wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -408,7 +437,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		props.setLook(wLogext);
 		fdLogext = new FormData();
 		fdLogext.left = new FormAttachment(middle, 0);
-		fdLogext.top = new FormAttachment(wLogfile, margin);
+		fdLogext.top = new FormAttachment(wCreateParentFolder, margin);
 		fdLogext.right = new FormAttachment(100, 0);
 		wLogext.setLayoutData(fdLogext);
 
@@ -885,6 +914,9 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		wlLogext.setEnabled(wSetLogfile.getSelection());
 		wLogext.setEnabled(wSetLogfile.getSelection());
 
+		wlCreateParentFolder.setEnabled(wSetLogfile.getSelection());
+	    wCreateParentFolder.setEnabled(wSetLogfile.getSelection());
+	        
 		wlAddDate.setEnabled(wSetLogfile.getSelection());
 		wAddDate.setEnabled(wSetLogfile.getSelection());
 
@@ -963,6 +995,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 		wLoglevel.select(jobEntry.loglevel);
 		wAppendLogfile.setSelection(jobEntry.setAppendLogfile);
+	    wCreateParentFolder.setSelection(jobEntry.createParentFolder);
 		wWaitingToFinish.setSelection(jobEntry.isWaitingToFinish());
 		wFollowingAbortRemotely.setSelection(jobEntry.isFollowingAbortRemotely());
 	}
@@ -1065,6 +1098,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		jobEntry.setRemoteSlaveServerName( wSlaveServer.getText() );
 		jobEntry.setAppendLogfile = wAppendLogfile.getSelection();
 		jobEntry.setWaitingToFinish( wWaitingToFinish.getSelection() );
+		jobEntry.createParentFolder = wCreateParentFolder.getSelection();
 		jobEntry.setFollowingAbortRemotely( wFollowingAbortRemotely.getSelection() );
 		dispose();
 	}

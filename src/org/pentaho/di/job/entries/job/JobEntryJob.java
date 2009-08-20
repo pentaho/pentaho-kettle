@@ -22,6 +22,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -40,6 +41,7 @@ import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -96,6 +98,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	public  boolean parallel;
     private String directoryPath;
     public boolean setAppendLogfile;
+	public boolean  createParentFolder;
     
 	public  boolean waitingToFinish=true;
     public  boolean followingAbortRemotely;
@@ -218,6 +221,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServerName));
 		retval.append("      ").append(XMLHandler.addTagValue("wait_until_finished",     waitingToFinish));
 		retval.append("      ").append(XMLHandler.addTagValue("follow_abort_remote",     followingAbortRemotely));
+		retval.append("      ").append(XMLHandler.addTagValue("create_parent_folder",     createParentFolder));
 		
 		if (arguments!=null)  {
 			for (int i=0;i<arguments.length;i++)
@@ -269,6 +273,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			setAppendLogfile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "set_append_logfile"));
 			remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
 			directory = XMLHandler.getTagValue(entrynode, "directory");
+			createParentFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "create_parent_folder") );
 			
 			String wait = XMLHandler.getTagValue(entrynode, "wait_until_finished");
 			if (Const.isEmpty(wait)) waitingToFinish=true;
@@ -332,7 +337,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			remoteSlaveServerName = rep.getJobEntryAttributeString(id_jobentry, "slave_server_name");
 			waitingToFinish = rep.getJobEntryAttributeBoolean(id_jobentry, "wait_until_finished", true);
 			followingAbortRemotely = rep.getJobEntryAttributeBoolean(id_jobentry, "follow_abort_remote");
-
+			createParentFolder       = rep.getJobEntryAttributeBoolean(id_jobentry, "create_parent_folder");
+			
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
 			arguments = new String[argnr];
@@ -402,6 +408,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "slave_server_name", remoteSlaveServerName);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "wait_until_finished", waitingToFinish);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "follow_abort_remote", followingAbortRemotely);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "create_parent_folder", createParentFolder);
 
 			// save the arguments...
 			if (arguments!=null)
@@ -441,9 +448,18 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         int backupLogLevel = log.getLogLevel();
         if (setLogfile)
         {
+        	String realLogFilename=environmentSubstitute(getLogFilename());
+
+        	// create parent folder?
+        	if(!createParentFolder(realLogFilename,log)) 
+        	{
+                result.setNrErrors(1);
+                result.setResult(false);
+                return result;
+        	}
             try
             {
-                appender = LogWriter.createFileAppender(environmentSubstitute(getLogFilename()), true,setAppendLogfile);
+                appender = LogWriter.createFileAppender(realLogFilename, true,setAppendLogfile);
             }
             catch(KettleException e)
             {
@@ -915,7 +931,43 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         return result;
 	}
 	
-	
+	 private boolean createParentFolder(String filename, LogWriter log)
+		{
+			// Check for parent folder
+			FileObject parentfolder=null;
+			boolean resultat=true;
+			try{
+				// Get parent folder
+	    		parentfolder=KettleVFS.getFileObject(filename).getParent();	    		
+	    		if(!parentfolder.exists()){
+	    			if(createParentFolder){
+	    				if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderNotExist",parentfolder.getName().toString()));
+	        			parentfolder.createFolder();
+	        			if (log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderCreated",parentfolder.getName().toString()));
+	    			} else {
+	    				log.logError(toString(), BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderNotExist",parentfolder.getName().toString()));
+	    	    		resultat= false;
+	    			}
+	    		} else{
+	    			if (log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderExists",parentfolder.getName().toString()));
+	    		}
+			} catch (Exception e) {
+				resultat=false;
+				log.logError(BaseMessages.getString(PKG, "JobJob.Error.ChekingParentLogFolderTitle"), BaseMessages.getString(PKG, "JobJob.Error.ChekingParentLogFolder",parentfolder.getName().toString()),e);
+			}
+			 finally {
+	         	if ( parentfolder != null ){
+	         		try  {
+	         			parentfolder.close();
+	         			parentfolder=null;
+	         		}
+	         		catch ( Exception ex ) {};
+	         	}
+	         }		
+		
+			
+			return resultat;
+		}
 	
 	
 	/**
