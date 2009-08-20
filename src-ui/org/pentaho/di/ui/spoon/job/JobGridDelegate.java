@@ -43,6 +43,8 @@ public class JobGridDelegate extends SpoonDelegate {
 
 	public JobTracker jobTracker;
     public int previousNrItems;
+    
+    private int nrRow=0;
 	
 	/**
 	 * @param spoon
@@ -212,12 +214,14 @@ public class JobGridDelegate extends SpoonDelegate {
             if (jobTracker!=null)
             {
                 TreeItem treeItem = new TreeItem(parentItem, SWT.NONE);
+                if(nrRow%2!=0) treeItem.setBackground(GUIResource.getInstance().getColorBlueCustomGrid());
+                nrRow++;
                 if (jobTracker.nrJobTrackers()>0)
                 {
                     // This is a sub-job: display the name at the top of the list...
                     treeItem.setText( 0, BaseMessages.getString(PKG, "JobLog.Tree.JobPrefix")+jobTracker.getJobName() ); //$NON-NLS-1$
                     
-                    // then populare the sub-job entries ...
+                    // then populate the sub-job entries ...
                     for (int i=0;i<jobTracker.nrJobTrackers();i++)
                     {
                         addTrackerToTree(jobTracker.getJobTracker(i), treeItem);
@@ -252,6 +256,14 @@ public class JobGridDelegate extends SpoonDelegate {
                         {
                             treeItem.setText(2, res.getResult()?BaseMessages.getString(PKG, "JobLog.Tree.Success"):BaseMessages.getString(PKG, "JobLog.Tree.Failure")); //$NON-NLS-1$ //$NON-NLS-2$
                             treeItem.setText(5, Long.toString(res.getEntryNr())); //$NON-NLS-1$
+                            if(res.getResult())
+                            {
+                            	treeItem.setForeground(GUIResource.getInstance().getColorSuccessGreen());
+                            }
+                            else
+                            {
+                            	treeItem.setForeground(GUIResource.getInstance().getColorRed());
+                            }
                         }
                         String reason = result.getReason();
                         if (reason!=null)

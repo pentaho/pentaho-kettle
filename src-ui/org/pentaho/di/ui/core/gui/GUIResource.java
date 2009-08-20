@@ -74,6 +74,8 @@ public class GUIResource
 
 	private ManagedColor colorRed;
 	
+	private ManagedColor colorSuccessGreen;
+	
 	private ManagedColor colorBlueCustomGrid;
 
 	private ManagedColor colorGreen;
@@ -310,7 +312,7 @@ public class GUIResource
 		colorBackground = new ManagedColor(display, props.getBackgroundRGB());
 		colorGraph = new ManagedColor(display, props.getGraphColorRGB());
 		colorTab = new ManagedColor(display, props.getTabColorRGB());
-
+		colorSuccessGreen= new ManagedColor(display,0, 139, 0);
 		colorRed = new ManagedColor(display, 255, 0, 0);
 		colorGreen = new ManagedColor(display, 0, 255, 0);
 		colorBlue = new ManagedColor(display, 0, 0, 255);
@@ -348,6 +350,7 @@ public class GUIResource
 		colorTab.dispose();
 
 		colorRed.dispose();
+		colorSuccessGreen.dispose();
 		colorGreen.dispose();
 		colorBlue.dispose();
 		colorGray.dispose();
@@ -884,7 +887,14 @@ public class GUIResource
 	{
 		return colorOrange.getColor();
 	}
-
+	  /**
+     * @return Returns the colorSuccessGreen.
+     */
+    public Color getColorSuccessGreen()
+    {
+        return colorSuccessGreen.getColor();
+    }
+    
 	/**
 	 * @return Returns the colorRed.
 	 */
