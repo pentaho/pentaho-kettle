@@ -1134,36 +1134,41 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     	  FileObject imageFile=null;
     	  for(int i=0; i<embeddedimages.length; i++) {
     		  String realImageFile=environmentSubstitute(embeddedimages[i]);
-	    	  try {
-	    		  boolean found = false;
-		    	  imageFile=KettleVFS.getFileObject(realImageFile);
-		    	  if(imageFile.exists() && imageFile.getType()==FileType.FILE)
-		    		  found=true;
-		    	  else
-		    		  log.logError(toString(), "We can not find ["+realImageFile + "] or it is not a file");
-		    	  if(found) {
-		    		  // Create part for the image 
-		    	      MimeBodyPart messageBodyPart = new MimeBodyPart();
-		    	      //Load the image
-		    	      URLDataSource fds = new URLDataSource(imageFile.getURL());
-		    	      messageBodyPart.setDataHandler(new DataHandler(fds));
-		    	      //Setting the header
-		    	      messageBodyPart.setHeader("Content-ID","<"+ environmentSubstitute(contentids[i]) + ">");
-		    	      // Add part to multi-part
-		    	      parts.addBodyPart(messageBodyPart);
-		    	      nrEmbeddedImages++;
-		    	      log.logBasic(toString(), "Image '" + fds.getName() + "' was embedded in message.");
+    		  String realcontenID=environmentSubstitute(contentids[i]);
+    		  if(messageText.indexOf("cid:"+realcontenID)<0) {
+    			  if (log.isDebug()) log.logDebug(toString(), "Image ["+realImageFile + "] is not used in message body!");
+    		  }else{
+		    	  try {
+		    		  boolean found = false;
+			    	  imageFile=KettleVFS.getFileObject(realImageFile);
+			    	  if(imageFile.exists() && imageFile.getType()==FileType.FILE)
+			    		  found=true;
+			    	  else
+			    		  log.logError(toString(), "We can not find ["+realImageFile + "] or it is not a file");
+			    	  if(found) {
+			    		  // Create part for the image 
+			    	      MimeBodyPart messageBodyPart = new MimeBodyPart();
+			    	      //Load the image
+			    	      URLDataSource fds = new URLDataSource(imageFile.getURL());
+			    	      messageBodyPart.setDataHandler(new DataHandler(fds));
+			    	      //Setting the header
+			    	      messageBodyPart.setHeader("Content-ID","<"+ realcontenID + ">");
+			    	      // Add part to multi-part
+			    	      parts.addBodyPart(messageBodyPart);
+			    	      nrEmbeddedImages++;
+			    	      log.logBasic(toString(), "Image '" + fds.getName() + "' was embedded in message.");
+			    	  }
+		    	  }catch(Exception e) {
+		              log.logError(toString(), "Error embedding image [" + realImageFile + "] in message : "
+		                      + e.toString());
+		                  log.logError(toString(), Const.getStackTracker(e));
+		                  result.setNrErrors(1);
+		    	  }finally {
+		    		  if(imageFile!=null) {
+		    			  try { imageFile.close();}catch(Exception e){};
+		    		  }
 		    	  }
-	    	  }catch(Exception e) {
-	              log.logError(toString(), "Error embedding image [" + realImageFile + "] in message : "
-	                      + e.toString());
-	                  log.logError(toString(), Const.getStackTracker(e));
-	                  result.setNrErrors(1);
-	    	  }finally {
-	    		  if(imageFile!=null) {
-	    			  try { imageFile.close();}catch(Exception e){};
-	    		  }
-	    	  }
+    		  }
     	  }
       }
       
