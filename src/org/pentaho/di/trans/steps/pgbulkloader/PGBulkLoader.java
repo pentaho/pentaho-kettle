@@ -152,7 +152,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 	   }
 	   else
 	   {
-		   throw new KettleException("No psql application specified");
+		   if(log.isDetailed()) log.logDetailed(toString(), "psql defaults to system path");
+		   sb.append("psql");
 	   }
 
        DatabaseMeta dm = meta.getDatabaseMeta();
@@ -169,8 +170,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 
            // Hostname and portname
            //
-           String hostname  = Const.NVL(dm.getHostname(), "");
-           String portnum  = Const.NVL(dm.getDatabasePortNumberString(), "");
+           String hostname = environmentSubstitute(Const.NVL(dm.getHostname(), ""));
+           String portnum = environmentSubstitute(Const.NVL(dm.getDatabasePortNumberString(), ""));
            sb.append(" -h ");
            sb.append(hostname);
            sb.append(" -p ");
