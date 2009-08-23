@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.getpop.JobEntryGetPOP;
-import org.pentaho.di.job.entries.getpop.MailConnection;
+import org.pentaho.di.job.entries.getpop.MailConnectionMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -215,7 +215,7 @@ public class SelectFolderDialog extends Dialog
     	  String fullpath=ti[0].getText();
     	  while (parent != null)
   		  {
-    		fullpath=parent.getText()+MailConnection.FOLDER_SEPARATOR+fullpath;
+    		fullpath=parent.getText()+MailConnectionMeta.FOLDER_SEPARATOR+fullpath;
   			parent = parent.getParentItem();
   		  }
   		

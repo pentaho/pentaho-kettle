@@ -55,6 +55,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.getpop.JobEntryGetPOP;
 import org.pentaho.di.job.entries.getpop.MailConnection;
+import org.pentaho.di.job.entries.getpop.MailConnectionMeta;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -558,7 +559,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		  	fdlProtocol.top = new FormAttachment(wProxyUsername, margin);
 		  	wlProtocol.setLayoutData(fdlProtocol);
 		  	wProtocol= new CCombo(wServerSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		  	wProtocol.setItems(JobEntryGetPOP.protocolCodes);
+		  	wProtocol.setItems(MailConnectionMeta.protocolCodes);
 		  	wProtocol.select(0);
 			props.setLook(wProtocol);
 			fdProtocol= new FormData();
@@ -921,7 +922,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		  	wlActionType.setLayoutData(fdlActionType);
 		  	
 		  	wActionType= new CCombo(wSettingsComp, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		  	wActionType.setItems(JobEntryGetPOP.actionTypeDesc);
+		  	wActionType.setItems(MailConnectionMeta.actionTypeDesc);
 		  	wActionType.select(0); // +1: starts at -1
 		  	
 			props.setLook(wActionType);
@@ -1124,7 +1125,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 			fdlIMAPListmails.top = new FormAttachment(wIncludeSubFolders, margin);
 			wlIMAPListmails.setLayoutData(fdlIMAPListmails);
 			wIMAPListmails = new CCombo(wIMAPSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-			wIMAPListmails.setItems(JobEntryGetPOP.valueIMAPListDesc);
+			wIMAPListmails.setItems(MailConnectionMeta.valueIMAPListDesc);
 			wIMAPListmails.select(0); // +1: starts at -1
 
 			props.setLook(wIMAPListmails);
@@ -1172,7 +1173,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 			fdlAfterGetIMAP.top = new FormAttachment(wIMAPFirstmails, 2*margin);
 			wlAfterGetIMAP.setLayoutData(fdlAfterGetIMAP);
 			wAfterGetIMAP = new CCombo(wIMAPSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-			wAfterGetIMAP.setItems(JobEntryGetPOP.afterGetIMAPDesc);
+			wAfterGetIMAP.setItems(MailConnectionMeta.afterGetIMAPDesc);
 			wAfterGetIMAP.select(0); // +1: starts at -1
 
 			props.setLook(wAfterGetIMAP);
@@ -1476,7 +1477,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		  	wlConditionOnReceivedDate.setLayoutData(fdlConditionOnReceivedDate);
 		  	
 		  	wConditionOnReceivedDate= new CCombo(wReceivedDate, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		  	wConditionOnReceivedDate.setItems(JobEntryGetPOP.conditionDateDesc);
+		  	wConditionOnReceivedDate.setItems(MailConnectionMeta.conditionDateDesc);
 		  	wConditionOnReceivedDate.select(0); // +1: starts at -1
 		  	
 			props.setLook(wConditionOnReceivedDate);
@@ -1744,7 +1745,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		    	int realport=Const.toInt(jobMeta.environmentSubstitute(wPort.getText()),-1);
 		    	String realproxyuser=jobMeta.environmentSubstitute(wProxyUsername.getText());
 		    	try{
-		    		mailConn=new MailConnection(wProtocol.getText().equals(JobEntryGetPOP.PROTOCOL_STRING_POP3)?MailConnection.PROTOCOL_POP3:MailConnection.PROTOCOL_IMAP
+		    		mailConn=new MailConnection(wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_POP3)?MailConnectionMeta.PROTOCOL_POP3:MailConnectionMeta.PROTOCOL_IMAP
 		    				,realserver,realport, realuser, realpass, wUseSSL.getSelection(), 
 		    				wUseProxy.getSelection(),realproxyuser);
 		    		mailConn.connect();
@@ -1817,8 +1818,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	    }
 	    private void conditionReceivedDate()
 	    {
-	    	boolean activeReceivedDate=!(JobEntryGetPOP.getConditionDateByDesc(wConditionOnReceivedDate.getText())==JobEntryGetPOP.CONDITION_DATE_IGNORE);
-	    	boolean useBetween=(JobEntryGetPOP.getConditionDateByDesc(wConditionOnReceivedDate.getText())==JobEntryGetPOP.CONDITION_DATE_BETWEEN);
+	    	boolean activeReceivedDate=!(MailConnectionMeta.getConditionDateByDesc(wConditionOnReceivedDate.getText())==MailConnectionMeta.CONDITION_DATE_IGNORE);
+	    	boolean useBetween=(MailConnectionMeta.getConditionDateByDesc(wConditionOnReceivedDate.getText())==MailConnectionMeta.CONDITION_DATE_BETWEEN);
 			wlReadFrom.setVisible(activeReceivedDate);
 			wReadFrom.setVisible(activeReceivedDate);
 			open.setVisible(activeReceivedDate);
@@ -1828,7 +1829,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	    }
 	    private void activeAttachmentFolder()
 	    {
-	    	boolean getmessages=JobEntryGetPOP.getActionTypeByDesc(wActionType.getText())==JobEntryGetPOP.ACTION_TYPE_GET;
+	    	boolean getmessages=MailConnectionMeta.getActionTypeByDesc(wActionType.getText())==MailConnectionMeta.ACTION_TYPE_GET;
 	    	wlDifferentFolderForAttachment.setEnabled(getmessages && wGetAttachment.getSelection());
 	    	wDifferentFolderForAttachment.setEnabled(getmessages && wGetAttachment.getSelection());
 	    	boolean activeattachmentfolder=(wGetAttachment.getSelection()&&wDifferentFolderForAttachment.getSelection());
@@ -1842,29 +1843,29 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	    {
 	    	if(refreshport)
 	    	{
-	    		if(wProtocol.getText().equals(JobEntryGetPOP.PROTOCOL_STRING_POP3))
+	    		if(wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_POP3))
 	    		{
 		    		if(wUseSSL.getSelection())
 		    		{
-		    			if(Const.isEmpty(wPort.getText()) || wPort.getText().equals(""+MailConnection.DEFAULT_SSL_IMAP_PORT))
-		    				wPort.setText(""+JobEntryGetPOP.DEFAULT_SSL_POP3_PORT);
+		    			if(Const.isEmpty(wPort.getText()) || wPort.getText().equals(""+MailConnectionMeta.DEFAULT_SSL_IMAP_PORT))
+		    				wPort.setText(""+MailConnectionMeta.DEFAULT_SSL_POP3_PORT);
 		    		}
 		    		else	
 		    		{
-		    			if(Const.isEmpty(wPort.getText()) || wPort.getText().equals(MailConnection.DEFAULT_IMAP_PORT))
-		    				wPort.setText(""+JobEntryGetPOP.DEFAULT_POP3_PORT);
+		    			if(Const.isEmpty(wPort.getText()) || wPort.getText().equals(MailConnectionMeta.DEFAULT_IMAP_PORT))
+		    				wPort.setText(""+MailConnectionMeta.DEFAULT_POP3_PORT);
 		    		}
 	    		}else
 	    		{
 		    		if(wUseSSL.getSelection())
 		    		{
-		    			if(Const.isEmpty(wPort.getText()) || wPort.getText().equals(""+MailConnection.DEFAULT_SSL_POP3_PORT))
-		    				wPort.setText(""+JobEntryGetPOP.DEFAULT_SSL_IMAP_PORT);
+		    			if(Const.isEmpty(wPort.getText()) || wPort.getText().equals(""+MailConnectionMeta.DEFAULT_SSL_POP3_PORT))
+		    				wPort.setText(""+MailConnectionMeta.DEFAULT_SSL_IMAP_PORT);
 		    		}
 		    		else	
 		    		{
-		    			if(Const.isEmpty(wPort.getText()) || wPort.getText().equals(MailConnection.DEFAULT_POP3_PORT))
-		    			wPort.setText(""+JobEntryGetPOP.DEFAULT_IMAP_PORT);	
+		    			if(Const.isEmpty(wPort.getText()) || wPort.getText().equals(MailConnectionMeta.DEFAULT_POP3_PORT))
+		    			wPort.setText(""+MailConnectionMeta.DEFAULT_IMAP_PORT);	
 		    		}
 	    		}
 
@@ -1873,7 +1874,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	    private void refreshProtocal(boolean refreshport)
 	    {
 	    	checkUnavailableMode();
-	    	boolean activePOP3=wProtocol.getText().equals(JobEntryGetPOP.PROTOCOL_STRING_POP3);
+	    	boolean activePOP3=wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_POP3);
 	    	wlPOP3Message.setEnabled(activePOP3);
 	    	wlListmails.setEnabled(activePOP3);
 	    	wListmails.setEnabled(activePOP3);
@@ -1898,8 +1899,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	    	setActionType();
 	    }
 	    private void checkUnavailableMode(){
-	    	if(wProtocol.getText().equals(JobEntryGetPOP.PROTOCOL_STRING_POP3) && 
-	    			JobEntryGetPOP.getActionTypeByDesc(wActionType.getText())==JobEntryGetPOP.ACTION_TYPE_MOVE) {
+	    	if(wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_POP3) && 
+	    			MailConnectionMeta.getActionTypeByDesc(wActionType.getText())==MailConnectionMeta.ACTION_TYPE_MOVE) {
 		    	MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 				mb.setMessage("This action is not available for POP3!"+Const.CR+
 						"Only one Folder (INBOX) is available in POP3."+Const.CR+
@@ -1907,16 +1908,16 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 						"please use IMAP protocol.");
 				mb.setText("ERROR");
 				mb.open(); 
-				wActionType.setText(JobEntryGetPOP.getActionTypeDesc(JobEntryGetPOP.ACTION_TYPE_GET));
+				wActionType.setText(MailConnectionMeta.getActionTypeDesc(MailConnectionMeta.ACTION_TYPE_GET));
 	    	}	
 	    }
 	    private void setActionType()
 	    {
 	    	checkUnavailableMode();
-	    	if(JobEntryGetPOP.getActionTypeByDesc(wActionType.getText())!=JobEntryGetPOP.ACTION_TYPE_GET)
-	    		wAfterGetIMAP.setText(JobEntryGetPOP.getAfterGetIMAPDesc(JobEntryGetPOP.AFTER_GET_IMAP_NOTHING));
+	    	if(MailConnectionMeta.getActionTypeByDesc(wActionType.getText())!=MailConnectionMeta.ACTION_TYPE_GET)
+	    		wAfterGetIMAP.setText(MailConnectionMeta.getAfterGetIMAPDesc(MailConnectionMeta.AFTER_GET_IMAP_NOTHING));
 	    	
-	    	boolean getmessages=JobEntryGetPOP.getActionTypeByDesc(wActionType.getText())==JobEntryGetPOP.ACTION_TYPE_GET;
+	    	boolean getmessages=MailConnectionMeta.getActionTypeByDesc(wActionType.getText())==MailConnectionMeta.ACTION_TYPE_GET;
 	    	
 
 	    	wlOutputDirectory.setEnabled(getmessages);
@@ -1936,15 +1937,15 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	    	wGetMessage.setEnabled(getmessages);
 	    	
 	    	
-	    	wlAfterGetIMAP.setEnabled(getmessages && wProtocol.getText().equals(JobEntryGetPOP.PROTOCOL_STRING_IMAP));
-	    	wAfterGetIMAP.setEnabled(getmessages && wProtocol.getText().equals(JobEntryGetPOP.PROTOCOL_STRING_IMAP));
+	    	wlAfterGetIMAP.setEnabled(getmessages && wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_IMAP));
+	    	wAfterGetIMAP.setEnabled(getmessages && wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_IMAP));
 	    	
 	    	setAfterIMAPRetrived();
 	    }
 	    private void setAfterIMAPRetrived()
 	    {
-	    	boolean activeMoveToFolfer=(((wProtocol.getText().equals(JobEntryGetPOP.PROTOCOL_STRING_IMAP)) && (JobEntryGetPOP.getActionTypeByDesc(wActionType.getText())==JobEntryGetPOP.ACTION_TYPE_MOVE))
-	    		|| (JobEntryGetPOP.getAfterGetIMAPByDesc(wAfterGetIMAP.getText())==JobEntryGetPOP.AFTER_GET_IMAP_MOVE));
+	    	boolean activeMoveToFolfer=(((wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_IMAP)) && (MailConnectionMeta.getActionTypeByDesc(wActionType.getText())==MailConnectionMeta.ACTION_TYPE_MOVE))
+	    		|| (MailConnectionMeta.getAfterGetIMAPByDesc(wAfterGetIMAP.getText())==MailConnectionMeta.AFTER_GET_IMAP_MOVE));
 	    	wlMoveToFolder.setEnabled(activeMoveToFolfer);
 	    	wMoveToFolder.setEnabled(activeMoveToFolfer);
 	    	wTestMoveToFolder.setEnabled(activeMoveToFolfer);
@@ -1965,7 +1966,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		}
 		public void chooseListMails()
 		{
-			boolean ok=(wProtocol.getText().equals(JobEntryGetPOP.PROTOCOL_STRING_POP3) && wListmails.getSelectionIndex()==2);
+			boolean ok=(wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_POP3) && wListmails.getSelectionIndex()==2);
 			wlFirstmails.setEnabled(ok);
 			wFirstmails.setEnabled(ok);
 		}
@@ -2025,7 +2026,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
 			wDelete.setSelection(jobEntry.getDelete());
 			wProtocol.setText(jobEntry.getProtocol());
-			wIMAPListmails.setText(JobEntryGetPOP.getValueImapListDesc(jobEntry.getValueImapList()));
+			wIMAPListmails.setText(MailConnectionMeta.getValueImapListDesc(jobEntry.getValueImapList()));
 			if(jobEntry.getIMAPFolder()!=null) wIMAPFolder.setText(jobEntry.getIMAPFolder());
 			// search term
 			if(jobEntry.getSenderSearchTerm()!=null) wSender.setText(jobEntry.getSenderSearchTerm());
@@ -2036,16 +2037,16 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 			wNegateSubject.setSelection(jobEntry.isNotTermSubjectSearch());
 			if(jobEntry.getBodySearch()!=null) wBody.setText(jobEntry.getBodySearch());
 			wNegateBody.setSelection(jobEntry.isNotTermBodySearch());
-			wConditionOnReceivedDate.setText(JobEntryGetPOP.getConditionDateDesc(jobEntry.getConditionOnReceivedDate()));
+			wConditionOnReceivedDate.setText(MailConnectionMeta.getConditionDateDesc(jobEntry.getConditionOnReceivedDate()));
 			wNegateReceivedDate.setSelection(jobEntry.isNotTermReceivedDateSearch());
 			if(jobEntry.getReceivedDate1()!=null) wReadFrom.setText(jobEntry.getReceivedDate1());
 			if(jobEntry.getReceivedDate2()!=null) wReadTo.setText(jobEntry.getReceivedDate2());
-			wActionType.setText(JobEntryGetPOP.getActionTypeDesc(jobEntry.getActionType()));
+			wActionType.setText(MailConnectionMeta.getActionTypeDesc(jobEntry.getActionType()));
 			wcreateMoveToFolder.setSelection(jobEntry.isCreateMoveToFolder());
 			wcreateLocalFolder.setSelection(jobEntry.isCreateLocalFolder());
 			if (jobEntry.getMoveToIMAPFolder() != null)
 				wMoveToFolder.setText(jobEntry.getMoveToIMAPFolder());
-			wAfterGetIMAP.setText(JobEntryGetPOP.getAfterGetIMAPDesc(jobEntry.getAfterGetIMAP()));
+			wAfterGetIMAP.setText(MailConnectionMeta.getAfterGetIMAPDesc(jobEntry.getAfterGetIMAP()));
 			wIncludeSubFolders.setSelection(jobEntry.isIncludeSubFolders());
 			wUseProxy.setSelection(jobEntry.isUseProxy());
 			if(jobEntry.getProxyUsername()!=null) wProxyUsername.setText(jobEntry.getProxyUsername());
@@ -2085,7 +2086,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 			jobEntry.setDelete(wDelete.getSelection());
 	        jobEntry.setProtocol(wProtocol.getText());
 	        jobEntry.setAttachmentWildcard(wAttachmentWildcard.getText());
-	        jobEntry.setValueImapList(JobEntryGetPOP.getValueImapListByDesc(wIMAPListmails.getText()));
+	        jobEntry.setValueImapList(MailConnectionMeta.getValueImapListByDesc(wIMAPListmails.getText()));
 	        jobEntry.setFirstIMAPMails(wIMAPFirstmails.getText());
 	        jobEntry.setIMAPFolder(wIMAPFolder.getText());
 	        // search term
@@ -2098,15 +2099,15 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	        jobEntry.setNotTermSubjectSearch(wNegateSubject.getSelection());
 	        jobEntry.setBodySearch(wBody.getText());
 	        jobEntry.setNotTermBodySearch(wNegateBody.getSelection());
-	        jobEntry.setConditionOnReceivedDate(JobEntryGetPOP.getConditionDateByDesc(wConditionOnReceivedDate.getText()));
+	        jobEntry.setConditionOnReceivedDate(MailConnectionMeta.getConditionDateByDesc(wConditionOnReceivedDate.getText()));
 	        jobEntry.setNotTermReceivedDateSearch(wNegateReceivedDate.getSelection());
 	        jobEntry.setReceivedDate1(wReadFrom.getText());
 	        jobEntry.setReceivedDate2(wReadTo.getText());
-	        jobEntry.setActionType(JobEntryGetPOP.getActionTypeByDesc(wActionType.getText()));
+	        jobEntry.setActionType(MailConnectionMeta.getActionTypeByDesc(wActionType.getText()));
 	        jobEntry.setMoveToIMAPFolder(wMoveToFolder.getText());
 	        jobEntry.setCreateMoveToFolder(wcreateMoveToFolder.getSelection());
 	        jobEntry.setCreateLocalFolder(wcreateLocalFolder.getSelection());
-	        jobEntry.setAfterGetIMAP(JobEntryGetPOP.getAfterGetIMAPByDesc(wAfterGetIMAP.getText()));
+	        jobEntry.setAfterGetIMAP(MailConnectionMeta.getAfterGetIMAPByDesc(wAfterGetIMAP.getText()));
 	        jobEntry.setIncludeSubFolders(wIncludeSubFolders.getSelection());
 	        jobEntry.setUseProxy(wUseProxy.getSelection());
 	        jobEntry.setProxyUsername(wProxyUsername.getText());

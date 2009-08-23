@@ -51,17 +51,7 @@ import com.sun.mail.pop3.POP3SSLStore;
 
 public class MailConnection {
 	private static Class<?> PKG = JobEntryGetPOP.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-	  
-	public static final int PROTOCOL_POP3=0;
-	public static final int PROTOCOL_IMAP=1;
-	
-    public static final int DEFAULT_IMAP_PORT=143;
-    public static final int DEFAULT_POP3_PORT=110;
-    public static final int DEFAULT_SSL_POP3_PORT=995;
-    public static final int DEFAULT_SSL_IMAP_PORT=993;
-    public static final String INBOX_FOLDER="INBOX";
     
-    public static final String FOLDER_SEPARATOR="/";
     /**
 	 * Target mail server.
 	 */
@@ -170,12 +160,12 @@ public class MailConnection {
 				this.prop.put("mail.imap.sasl.authorizationid", proxyusername);
 			}
 		        
-			if(protocol==PROTOCOL_POP3) {
+			if(protocol==MailConnectionMeta.PROTOCOL_POP3) {
 				this.prop.setProperty("mail.pop3s.rsetbeforequit","true"); 
 				this.prop.setProperty("mail.pop3.rsetbeforequit","true"); 
 			}
 			
-			String protocolString=(protocol==PROTOCOL_POP3)?"pop3":"imap";
+			String protocolString=(protocol==MailConnectionMeta.PROTOCOL_POP3)?"pop3":"imap";
 			if(usessl) {
 				// Supports IMAP/POP3 connection with SSL, the connection is established via SSL.
 				this.prop.setProperty("mail."+protocolString+".socketFactory.class", "javax.net.ssl.SSLSocketFactory");
@@ -187,10 +177,10 @@ public class MailConnection {
 				this.session = Session.getInstance(this.prop, null );
 				this.session.setDebug(log.getLogLevel() >= LogWriter.LOG_LEVEL_DEBUG);
 				if(this.port==-1) {
-					this.port=((protocol==PROTOCOL_POP3)?DEFAULT_SSL_POP3_PORT:DEFAULT_SSL_IMAP_PORT);
+					this.port=((protocol==MailConnectionMeta.PROTOCOL_POP3)?MailConnectionMeta.DEFAULT_SSL_POP3_PORT:MailConnectionMeta.DEFAULT_SSL_IMAP_PORT);
 				}
 				URLName url = new URLName(protocolString, server, port, "", username, password);	
-				this.store = (protocol==PROTOCOL_POP3)?new POP3SSLStore(this.session, url):new IMAPSSLStore(this.session, url);
+				this.store = (protocol==MailConnectionMeta.PROTOCOL_POP3)?new POP3SSLStore(this.session, url):new IMAPSSLStore(this.session, url);
 				url=null;
 			} else {
 				this.session = Session.getInstance(this.prop, null);
@@ -306,7 +296,7 @@ public class MailConnection {
      		  
 	    	  if(defaultFolder) {
 	          	// get the default folder
-	          	this.folder = this.store.getDefaultFolder().getFolder(INBOX_FOLDER);
+	          	this.folder = this.store.getDefaultFolder().getFolder(MailConnectionMeta.INBOX_FOLDER);
 
 	  			 if(this.folder==null) throw new KettleException(BaseMessages.getString(PKG, "JobGetMailsFromPOP.InvalidDefaultFolder.Label"));  
 	  			 
@@ -314,7 +304,7 @@ public class MailConnection {
 	  				 throw new KettleException(BaseMessages.getString(PKG, "MailConnection.DefaultFolderCanNotHoldMessage"));  
 	    	  }else {
 	    		 // Open specified Folder (for IMAP)
-		    	 if(this.protocol==PROTOCOL_IMAP)  {
+		    	 if(this.protocol==MailConnectionMeta.PROTOCOL_IMAP)  {
 					this.folder=this.store.getFolder(foldername);
 		    	  }	  
 		  		 if (this.folder == null || !this.folder.exists()) 

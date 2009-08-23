@@ -1001,5 +1001,13 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ParallelGzipCsvInput</tooltip>
 		<image-uri>ui/images/TFI.png</image-uri>
 	</step>
+	
+	<step id="MailInput">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MailInput</description>
+		<class-name>org.pentaho.di.trans.steps.mailinput.MailInputMeta</class-name>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MailInput</tooltip>
+		<image-uri>ui/images/GETPOP.png</image-uri>
+	</step>
 
 </steps>
