@@ -15,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
@@ -36,7 +37,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 
 /**
- * Retrieves values from a database by calling database stored procedures or functions
+ * Make a HTTP Post call
  *  
  * @author Samatar
  * @since 15-jan-2009
@@ -137,12 +138,21 @@ public class HTTPPOST extends BaseStep implements StepInterface
                 String body=null;
                 if( statusCode != -1 )
                 {
+                	 // guess encoding
+                    String encoding = post.getResponseHeader("Content-Type").getValue().replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim(); 
+                    if (encoding == null) encoding = "ISO-8859-1"; 
+                    
+                    if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOST.Log.Encoding",encoding));
+
 	                // the response
-	                inputStream = post.getResponseBodyAsStream();
-	                StringBuffer bodyBuffer = new StringBuffer();
-	                int c;
-	                while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
-	                inputStream.close();
+                    InputStreamReader inputStreamReader = new InputStreamReader(post.getResponseBodyAsStream(),encoding); 
+                    StringBuffer bodyBuffer = new StringBuffer(); 
+                     
+                    int c;
+                    while ( (c=inputStreamReader.read())!=-1) {
+                    	bodyBuffer.append((char)c);
+                    }
+                    inputStreamReader.close(); 
 	                
 	                // Display response
 	                body = bodyBuffer.toString();
