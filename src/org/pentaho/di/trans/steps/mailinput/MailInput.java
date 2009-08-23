@@ -73,6 +73,12 @@ public class MailInput extends BaseStep implements StepInterface
 		}
 		putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 	
+		if (data.rowlimit>0 && data.rownr>=data.rowlimit)  // limit has been reached: stop now.
+	    {
+	        setOutputDone();
+	        return false;
+	    }
+		
 		return true;
 	}
 	public String[] getFolders(String realIMAPFolder) throws KettleException
@@ -398,7 +404,10 @@ public class MailInput extends BaseStep implements StepInterface
 			String realpassword=environmentSubstitute(meta.getPassword());  
 			int realport=Const.toInt(environmentSubstitute(meta.getPort()),-1);
 			String realProxyUsername=environmentSubstitute(meta.getProxyUsername());
-			
+			if(!meta.isDynamicFolder()) {
+				String reallimitrow= environmentSubstitute(meta.getRowLimit());
+				data.rowlimit=Const.toInt(reallimitrow, 0);
+			}
 			Date beginDate=null;
 			Date endDate=null;
 			SimpleDateFormat df  = new SimpleDateFormat();
@@ -448,7 +457,6 @@ public class MailInput extends BaseStep implements StepInterface
 					// return folders list
 					// including sub folders if necessary
 					data.folders=getFolders(realIMAPFolder);
-					log.logBasic(toString(),"Sous répertoire ---------------------->"+data.folders.length);
 				}
 			}catch(Exception e){
 					logError(BaseMessages.getString(PKG, "MailInput.Error.OpeningConnection",e.getMessage()));

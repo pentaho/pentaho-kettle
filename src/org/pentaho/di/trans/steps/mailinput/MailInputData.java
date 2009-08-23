@@ -42,6 +42,7 @@ public class MailInputData extends BaseStepData implements StepDataInterface
     public boolean usePOP;
     public int indexOfFolderField;
 	public Object[] readrow;
+	public int rowlimit;
 	
 	/**
 	 * 
@@ -57,6 +58,7 @@ public class MailInputData extends BaseStepData implements StepDataInterface
 		indexOfFolderField=-1;
 		readrow=null;
 		totalpreviousfields=0;
+		rowlimit=0;
 	}
 
 }

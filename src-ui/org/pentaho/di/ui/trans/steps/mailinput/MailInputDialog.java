@@ -173,6 +173,10 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 	private Group wServerSettings, wPOP3Settings, wIMAPSettings, wReceivedDate, wHeader;
     private FormData fdServerSettings, fdPOP3Settings, fdIMAPSettings, fdReceivedDate, fdHeader;
     
+	private Label        wlLimit;
+	private Text         wLimit;
+	private FormData     fdlLimit, fdLimit;
+	
 	private Label        wlReadFrom;
 	private TextVar      wReadFrom;
 	private FormData     fdlReadFrom, fdReadFrom;
@@ -1135,6 +1139,24 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 		    // / END OF RECEIVED DATE GROUP
 		    // ///////////////////////////////////////////////////////////
 			
+			
+			wlLimit=new Label(wSearchComp, SWT.RIGHT);
+			wlLimit.setText(BaseMessages.getString(PKG, "MailInput.Limit.Label"));
+	 		props.setLook(wlLimit);
+			fdlLimit=new FormData();
+			fdlLimit.left = new FormAttachment(0, 0);
+			fdlLimit.top  = new FormAttachment(wReceivedDate, 2*margin);
+			fdlLimit.right= new FormAttachment(middle, -margin);
+			wlLimit.setLayoutData(fdlLimit);
+			wLimit=new Text(wSearchComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+	 		props.setLook(wLimit);
+			wLimit.addModifyListener(lsMod);
+			fdLimit=new FormData();
+			fdLimit.left = new FormAttachment(middle, 0);
+			fdLimit.top  = new FormAttachment(wReceivedDate, 2*margin);
+			fdLimit.right= new FormAttachment(100, 0);
+			wLimit.setLayoutData(fdLimit);
+		    
 			fdSearchComp=new FormData();
 			fdSearchComp.left  = new FormAttachment(0, 0);
 			fdSearchComp.top   = new FormAttachment(wStepname, 0);
@@ -1301,6 +1323,9 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wlIMAPFolder.setEnabled(!wdynamicFolder.getSelection());
 		wIMAPFolder.setEnabled(!wdynamicFolder.getSelection());
 		wPreview.setEnabled(!wdynamicFolder.getSelection());
+		if(wdynamicFolder.getSelection()) wLimit.setText("0");
+		wlLimit.setEnabled(!wdynamicFolder.getSelection());	
+		wLimit.setEnabled(!wdynamicFolder.getSelection());	
 		boolean activePOP3=wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_POP3);
     	wlIMAPFolder.setEnabled(!wdynamicFolder.getSelection() && !activePOP3);
     	wIMAPFolder.setEnabled(!wdynamicFolder.getSelection()&&!activePOP3);
@@ -1358,7 +1383,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 			if(input.getProxyUsername()!=null) wProxyUsername.setText(input.getProxyUsername());
 			wdynamicFolder.setSelection(input.isDynamicFolder());
 			if(input.getFolderField()!=null) wFolderField.setText(input.getFolderField());
-			
+			wLimit.setText(Const.NVL(input.getRowLimit(),"0"));
 			for (int i=0;i<input.getInputFields().length;i++)
 			{
 			    MailInputField field = input.getInputFields()[i];
@@ -1431,7 +1456,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
         in.setProxyUsername(wProxyUsername.getText());
         in.setDynamicFolder(wdynamicFolder.getSelection());
         in.setFolderField(wFolderField.getText());
-        
+        in.setRowLimit(wLimit.getText());
     	int nrFields    = wFields.nrNonEmpty();
     	in.allocate(nrFields);
         for (int i=0;i<nrFields;i++)

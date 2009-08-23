@@ -81,6 +81,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 	private String proxyusername;
 	private String folderfield;
 	private boolean usedynamicfolder;
+	private String rowlimit;
 	
 	/** The fields ... */
 	private MailInputField inputFields[];
@@ -146,6 +147,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 		usedynamicfolder          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "usedynamicfolder") );
 		folderfield      = XMLHandler.getTagValue(stepnode, "folderfield");
 		
+		rowlimit      = XMLHandler.getTagValue(stepnode, "rowlimit");
 		Node fields     = XMLHandler.getSubNode(stepnode,  "fields");
 		int nrFields    = XMLHandler.countNodes(fields,    "field");
 		
@@ -189,6 +191,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 		proxyusername=null;
 		folderfield=null;
 		usedynamicfolder=false;
+		rowlimit="0";
 		
 		int nrFields =0;
 		allocate(nrFields);	
@@ -238,7 +241,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 			proxyusername        = rep.getStepAttributeString(id_step, "proxyusername");
 			usedynamicfolder          = rep.getStepAttributeBoolean(id_step, "usedynamicfolder");
 			folderfield        = rep.getStepAttributeString(id_step, "folderfield");
-			
+			rowlimit       = rep.getStepAttributeString(id_step, "rowlimit");
 			int nrFields      = rep.countNrStepAttributes(id_step, "field_name");
             
 			allocate(nrFields);
@@ -292,6 +295,8 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step,  "proxyusername",        proxyusername);
 			rep.saveStepAttribute(id_transformation, id_step,  "usedynamicfolder",          usedynamicfolder);
 			rep.saveStepAttribute(id_transformation, id_step,  "folderfield",        folderfield);
+			rep.saveStepAttribute(id_transformation, id_step,  "rowlimit",        rowlimit);
+			
 			
 			for (int i=0;i<inputFields.length;i++)
 			{
@@ -338,6 +343,8 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("      ").append(XMLHandler.addTagValue("proxyusername",     proxyusername));
 		retval.append("      ").append(XMLHandler.addTagValue("usedynamicfolder",       usedynamicfolder));
 		retval.append("      ").append(XMLHandler.addTagValue("folderfield",     folderfield));
+		retval.append("      ").append(XMLHandler.addTagValue("rowlimit",     rowlimit));
+		
 		 /*
 		 * Describe the fields to read
 		 */
@@ -419,7 +426,14 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setDynamicFolder(boolean usedynamicfolder){
 		this.usedynamicfolder=usedynamicfolder;
 	}
-
+    public void setRowLimit(String rowlimit)
+    {
+    	this.rowlimit=rowlimit;
+    }
+    public String getRowLimit()
+    {
+    	return this.rowlimit;
+    }
 	public void setFolderField(String folderfield)
 	{
 		this.folderfield=folderfield;
