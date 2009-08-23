@@ -188,6 +188,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		data.writer = data.fileWriterMap.get(filename);
 		if (data.writer==null) {
 			openNewFile(filename);
+			data.oneFileOpened = true;
 			data.fileWriterMap.put(filename, data.writer);
 		
 			// If it's the first time we open it and we have a header, we write a header...
