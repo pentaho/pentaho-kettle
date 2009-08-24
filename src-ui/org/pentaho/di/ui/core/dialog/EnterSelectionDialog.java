@@ -73,6 +73,7 @@ public class EnterSelectionDialog extends Dialog
     private boolean multi;
     private int[] indices;
     private boolean fixed;
+    private boolean quickSearch;
     
 	private ToolItem goSearch,wfilter;
 	
@@ -110,13 +111,17 @@ public class EnterSelectionDialog extends Dialog
         selectedNrs = new int[] {};
         multi=false;
         fixed=false;
+        quickSearch=true;
     }
 	
 	public void setViewOnly()
 	{
 		viewOnly = true;
 	}
-	
+	public void setAvoidQuickSearch()
+	{
+		quickSearch = false;
+	}
 	public void clearModal()
 	{
 		modal = false;
@@ -147,48 +152,59 @@ public class EnterSelectionDialog extends Dialog
 		
 		int margin = Const.MARGIN;
 		
-		ToolBar treeTb = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT);
-		props.setLook(treeTb);
-
-		ToolItem wtfilter = new ToolItem(treeTb, SWT.SEPARATOR);
-		Label wlfilter = new Label(treeTb, SWT.SEARCH);
-		props.setLook(wlfilter);
-		wlfilter.setText(BaseMessages.getString(PKG, "EnterSelectionDialog.FilterString.Label"));
-		wtfilter.setControl(wlfilter);
-		wtfilter.setWidth(60);
-		
-		wfilter = new ToolItem(treeTb, SWT.SEPARATOR);
-		searchText = new Text(treeTb, SWT.SEARCH | SWT.CANCEL);
-		props.setLook(searchText);
-		searchText.setToolTipText(BaseMessages.getString(PKG, "EnterSelectionDialog.FilterString.ToolTip"));
-		wfilter.setControl(searchText);
-		wfilter.setWidth(120);
-		
-		goSearch = new ToolItem(treeTb,SWT.PUSH);
-	    goSearch.setImage(GUIResource.getInstance().getImageSearchSmall());
-	    goSearch.setToolTipText(BaseMessages.getString(PKG, "EnterSelectionDialog.refresh.Label"));
-        FormData fd=new FormData();
-        fd.right = new FormAttachment(100, -margin);
-        fd.top  = new FormAttachment(0, margin);
-		treeTb.setLayoutData(fd);
-		
-		goSearch.addSelectionListener(new SelectionAdapter() {
-		      public void widgetSelected(SelectionEvent event) {
-		    	  updateFilter();
-		      }});
-		
-		 searchText.addSelectionListener(new SelectionAdapter() {
-			 public void widgetDefaultSelected(SelectionEvent e) { updateFilter(); } });
-
-
-		// From step line
-		wlSelection=new Label(shell, SWT.NONE);
-		wlSelection.setText(lineText);
- 		props.setLook(wlSelection);
-		fdlSelection=new FormData();
-		fdlSelection.left = new FormAttachment(0, 0);
-		fdlSelection.top  = new FormAttachment(treeTb, margin);
-		wlSelection.setLayoutData(fdlSelection);
+		if(quickSearch)
+		{
+			ToolBar treeTb = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT);
+			props.setLook(treeTb);
+	
+			ToolItem wtfilter = new ToolItem(treeTb, SWT.SEPARATOR);
+			Label wlfilter = new Label(treeTb, SWT.SEARCH);
+			props.setLook(wlfilter);
+			wlfilter.setText(BaseMessages.getString(PKG, "EnterSelectionDialog.FilterString.Label"));
+			wtfilter.setControl(wlfilter);
+			wtfilter.setWidth(60);
+			
+			wfilter = new ToolItem(treeTb, SWT.SEPARATOR);
+			searchText = new Text(treeTb, SWT.SEARCH | SWT.CANCEL);
+			props.setLook(searchText);
+			searchText.setToolTipText(BaseMessages.getString(PKG, "EnterSelectionDialog.FilterString.ToolTip"));
+			wfilter.setControl(searchText);
+			wfilter.setWidth(120);
+			
+			goSearch = new ToolItem(treeTb,SWT.PUSH);
+		    goSearch.setImage(GUIResource.getInstance().getImageSearchSmall());
+		    goSearch.setToolTipText(BaseMessages.getString(PKG, "EnterSelectionDialog.refresh.Label"));
+	        FormData fd=new FormData();
+	        fd.right = new FormAttachment(100, -margin);
+	        fd.top  = new FormAttachment(0, margin);
+			treeTb.setLayoutData(fd);
+			
+			goSearch.addSelectionListener(new SelectionAdapter() {
+			      public void widgetSelected(SelectionEvent event) {
+			    	  updateFilter();
+			      }});
+			
+			 searchText.addSelectionListener(new SelectionAdapter() {
+				 public void widgetDefaultSelected(SelectionEvent e) { updateFilter(); } });
+	
+	
+			// From step line
+			wlSelection=new Label(shell, SWT.NONE);
+			wlSelection.setText(lineText);
+	 		props.setLook(wlSelection);
+			fdlSelection=new FormData();
+			fdlSelection.left = new FormAttachment(0, 0);
+			fdlSelection.top  = new FormAttachment(treeTb, margin);
+			wlSelection.setLayoutData(fdlSelection);
+		}else{
+			// From step line
+			wlSelection=new Label(shell, SWT.NONE);
+			wlSelection.setText(lineText);
+	 		props.setLook(wlSelection);
+			fdlSelection=new FormData();
+			fdlSelection.left = new FormAttachment(0, 0);
+			wlSelection.setLayoutData(fdlSelection);
+		}
         
         int options = SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL;
         if (multi) options|=SWT.MULTI; else options|=SWT.SINGLE;  

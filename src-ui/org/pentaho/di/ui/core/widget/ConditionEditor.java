@@ -294,6 +294,7 @@ public class ConditionEditor extends Composite
 						{
 							int operator = getNrOperator(screen);
 							EnterSelectionDialog esd = new EnterSelectionDialog(shell, Condition.getRealOperators(),BaseMessages.getString(PKG, "ConditionEditor.Operator.Label"), BaseMessages.getString(PKG, "ConditionEditor.SelectOperator.Label"));
+							esd.setAvoidQuickSearch();
 							Condition selcond = active_condition.getCondition(operator);
 							String def = selcond.getOperatorDesc();
 							int defnr = esd.getSelectionNr(Const.trim(def));
@@ -321,6 +322,7 @@ public class ConditionEditor extends Composite
 						if (active_condition.isAtomic())
 						{
 							EnterSelectionDialog esd = new EnterSelectionDialog(shell, Condition.functions, BaseMessages.getString(PKG, "ConditionEditor.Functions.Label"), BaseMessages.getString(PKG, "ConditionEditor.SelectFunction.Label"));
+							esd.setAvoidQuickSearch();
 							String def = active_condition.getFunctionDesc();
 							int defnr = esd.getSelectionNr(def);
 							String selection = esd.open(defnr);
@@ -337,6 +339,7 @@ public class ConditionEditor extends Composite
 						if (active_condition.isAtomic() && fields!=null)
 						{
 							EnterSelectionDialog esd = new EnterSelectionDialog(shell, fields.getFieldNamesAndTypes(max_field_length), BaseMessages.getString(PKG, "ConditionEditor.Fields"), BaseMessages.getString(PKG, "ConditionEditor.SelectAField"));
+							esd.setAvoidQuickSearch();
 							String def = active_condition.getLeftValuename();
 							int defnr = esd.getSelectionNr(def);
 							String selection = esd.open(defnr);
@@ -353,6 +356,7 @@ public class ConditionEditor extends Composite
 						if (active_condition.isAtomic() && fields!=null)
 						{
 							EnterSelectionDialog esd = new EnterSelectionDialog(shell, fields.getFieldNamesAndTypes(max_field_length), BaseMessages.getString(PKG, "ConditionEditor.Fields"), BaseMessages.getString(PKG, "ConditionEditor.SelectAField"));
+							esd.setAvoidQuickSearch();
 							String def = active_condition.getLeftValuename();
 							int defnr = esd.getSelectionNr(def);
 							String selection = esd.open(defnr);
