@@ -110,12 +110,31 @@ public class ValueDataUtil
     	if(dataA==null) return null;
     	return dataA.toString().toLowerCase();
     }
-    public static String maskXML(ValueMetaInterface metaA, Object dataA)
+    public static String escapeXML(ValueMetaInterface metaA, Object dataA)
     {
     	if(dataA==null) return null;
-    	return Const.maskXML(dataA.toString());
+    	return Const.escapeXML(dataA.toString());
     }
- 
+    public static String unEscapeXML(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return Const.unEscapeXml(dataA.toString());
+    }
+    public static String escapeHTML(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return Const.escapeHtml(dataA.toString());
+    }
+    public static String unEscapeHTML(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return Const.unEscapeHtml(dataA.toString());
+    }
+    public static String escapeSQL(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return Const.escapeSQL(dataA.toString());
+    }
     public static String useCDATA(ValueMetaInterface metaA, Object dataA)
     {
     	if(dataA==null) return null;

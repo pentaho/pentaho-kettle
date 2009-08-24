@@ -86,6 +86,10 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_ADD_TIME_TO_DATE       =  54;
     public static final int CALC_QUARTER_OF_DATE        = 55;
     public static final int CALC_SUBSTITUTE_VARIABLE        = 56;
+    public static final int CALC_UNESCAPE_XML        = 57;
+    public static final int CALC_ESCAPE_HTML        = 58;
+    public static final int CALC_UNESCAPE_HTML        = 59;
+    public static final int CALC_ESCAPE_SQL        = 60;
     
     public static final String calc_desc[] = 
         { 
@@ -145,7 +149,11 @@ public class CalculatorMetaFunction implements Cloneable
             "LOAD_FILE_CONTENT_BINARY",
             "ADD_TIME_TO_DATE",
             "QUARTER_OF_DATE",
-            "SUBSTITUTE_VARIABLE"
+            "SUBSTITUTE_VARIABLE",
+            "UNESCAPE_XML",
+            "ESCAPE_HTML",
+            "UNESCAPE_HTML",
+            "ESCAPE_SQL"
         };
     
     public static final String calcLongDesc[] = 
@@ -206,7 +214,11 @@ public class CalculatorMetaFunction implements Cloneable
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.LoadFileContentInBinary"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.AddTimeToDate"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.QuarterOfDate"),
-            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.SubstituteVariable")
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.SubstituteVariable"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.UnescapeXML"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.EscapeHTML"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.UnescapeHTML"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.EscapeSQL")
         };
    
     private String fieldName;

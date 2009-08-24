@@ -509,9 +509,9 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_STRING; 
                 }
                 break;
-                case CalculatorMetaFunction.CALC_MASK_XML            :  // MaskXML( A )
+                case CalculatorMetaFunction.CALC_MASK_XML            :  // escapeXML( A )
                 {
-                    calcData[index] = ValueDataUtil.maskXML(metaA, dataA);
+                    calcData[index] = ValueDataUtil.escapeXML(metaA, dataA);
                     resultType=ValueMetaInterface.TYPE_STRING; 
                 }
                 break;
@@ -585,6 +585,30 @@ public class Calculator extends BaseStep implements StepInterface
                 {                   
                     calcData[index] = environmentSubstitute(dataA.toString());
                     resultType=ValueMetaInterface.TYPE_STRING;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_UNESCAPE_XML            :  // UnescapeXML( A )
+                {
+                    calcData[index] = ValueDataUtil.unEscapeXML(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING; 
+                }
+                break;
+                case CalculatorMetaFunction.CALC_ESCAPE_HTML            :  // EscapeHTML( A )
+                {
+                    calcData[index] = ValueDataUtil.escapeHTML(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING; 
+                }
+                break;
+                case CalculatorMetaFunction.CALC_UNESCAPE_HTML            :  // UnescapeHTML( A )
+                {
+                    calcData[index] = ValueDataUtil.unEscapeHTML(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING; 
+                }
+                break;
+                case CalculatorMetaFunction.CALC_ESCAPE_SQL            :  // EscapeSQL( A )
+                {
+                    calcData[index] = ValueDataUtil.escapeSQL(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING; 
                 }
                 break;
                 default:

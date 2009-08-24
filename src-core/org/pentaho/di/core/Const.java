@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -1995,31 +1996,59 @@ public class Const
 	    return calendar.getTime();
 	}
 	 /**
-	 * 	Mask XML content.
+	 * 	Escape XML content.
 	 *  i.e. replace characters with &values;
 	 * 	@param content content
-	 * 	@return masked content
+	 * 	@return escaped content
 	 */
-	public static String maskXML (String content)
+	public static String escapeXML (String content)
 	{
 		if (isEmpty(content))	return content;
-		
-		StringBuffer out = new StringBuffer();
-		char[] chars = content.toCharArray();
-		for (int i = 0; i < chars.length; i++)
-		{
-			char c = chars[i];
-			switch (c)
-			{
-				case '<':	out.append("&lt;");			break;
-				case '>':	out.append("&gt;");			break;
-				case '&':	out.append("&amp;");		break;
-				case '"':	out.append("&quot;");		break;
-				case '\'':	out.append("&apos;");		break;
-				default:	out.append(c);   			break;
-			}
-		}
-		return out.toString();
+		return StringEscapeUtils.escapeXml(content);
+	}
+	 /**
+	 * 	Escape HTML content.
+	 *  i.e. replace characters with &values;
+	 * 	@param content content
+	 * 	@return escaped content
+	 */
+	public static String escapeHtml (String content)
+	{
+		if (isEmpty(content))	return content;
+		return StringEscapeUtils.escapeHtml(content);
+	}
+	 /**
+	 * 	UnEscape HTML content.
+	 *  i.e. replace characters with &values;
+	 * 	@param content content
+	 * 	@return unescaped content
+	 */
+	public static String unEscapeHtml (String content)
+	{
+		if (isEmpty(content))	return content;
+		return StringEscapeUtils.unescapeHtml(content);
+	}
+	 /**
+	 * 	UnEscape XML content.
+	 *  i.e. replace characters with &values;
+	 * 	@param content content
+	 * 	@return unescaped content
+	 */
+	public static String unEscapeXml(String content)
+	{
+		if (isEmpty(content))	return content;
+		return StringEscapeUtils.unescapeXml(content);
+	}
+	 /**
+	 * 	Escape SQL content.
+	 *  i.e. replace characters with &values;
+	 * 	@param content content
+	 * 	@return escaped content
+	 */
+	public static String escapeSQL(String content)
+	{
+		if (isEmpty(content))	return content;
+		return StringEscapeUtils.escapeSql(content);
 	}
 	/**
 	 * 	Remove CR / LF from String

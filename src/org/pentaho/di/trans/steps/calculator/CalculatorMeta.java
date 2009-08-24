@@ -349,6 +349,18 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_SUBSTITUTE_VARIABLE       : // variable substitution in string
                 defaultResultType=ValueMetaInterface.TYPE_STRING;
                 break;
+            case CalculatorMetaFunction.CALC_ESCAPE_HTML       : // escape HTML
+            	defaultResultType=ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_ESCAPE_SQL       : // escape SQL
+            	defaultResultType=ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_UNESCAPE_HTML       : // unEscape HTML
+            	defaultResultType=ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_UNESCAPE_XML       : // unEscape XML
+            	defaultResultType=ValueMetaInterface.TYPE_STRING;
+                break;
             default:
                 break;
             }
