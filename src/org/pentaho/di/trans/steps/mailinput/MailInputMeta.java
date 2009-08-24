@@ -636,12 +636,20 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				case MailInputField.COLUMN_MESSAGE_NR:
 				case MailInputField.COLUMN_SIZE:
+				case MailInputField.COLUMN_ATTACHED_FILES_COUNT:
 					v=new ValueMeta(space.environmentSubstitute(field.getName()), ValueMeta.TYPE_INTEGER);
 					v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 					break;
 				case MailInputField.COLUMN_RECEIVED_DATE:
 				case MailInputField.COLUMN_SENT_DATE:
 					v=new ValueMeta(space.environmentSubstitute(field.getName()), ValueMeta.TYPE_DATE);
+					break;
+				case MailInputField.COLUMN_FLAG_DELETED:
+				case MailInputField.COLUMN_FLAG_DRAFT:
+				case MailInputField.COLUMN_FLAG_FLAGGED:
+				case MailInputField.COLUMN_FLAG_NEW:
+				case MailInputField.COLUMN_FLAG_READ:
+					v=new ValueMeta(space.environmentSubstitute(field.getName()), ValueMeta.TYPE_BOOLEAN);
 					break;
 				default:
 					// STRING

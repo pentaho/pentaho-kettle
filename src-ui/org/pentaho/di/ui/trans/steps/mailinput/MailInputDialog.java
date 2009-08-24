@@ -1720,19 +1720,9 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     	// Clear Fields Grid
         wFields.removeAll();
-
-        wFields.add(new String[] { MailInputField.ColumnDesc[0],MailInputField.ColumnDesc[0]});
-        wFields.add(new String[] { MailInputField.ColumnDesc[1],MailInputField.ColumnDesc[1], } );
-        wFields.add(new String[] { MailInputField.ColumnDesc[2],MailInputField.ColumnDesc[2], } );
-        wFields.add(new String[] { MailInputField.ColumnDesc[3],MailInputField.ColumnDesc[3], } );
-        wFields.add(new String[] { MailInputField.ColumnDesc[4],MailInputField.ColumnDesc[4], } );
-        wFields.add(new String[] { MailInputField.ColumnDesc[5],MailInputField.ColumnDesc[5], } );
-        wFields.add(new String[] { MailInputField.ColumnDesc[6],MailInputField.ColumnDesc[6], } );
-        wFields.add(new String[] { MailInputField.ColumnDesc[7],MailInputField.ColumnDesc[7] } );
-        wFields.add(new String[] { MailInputField.ColumnDesc[8],MailInputField.ColumnDesc[8] } );
-        wFields.add(new String[] { MailInputField.ColumnDesc[9],MailInputField.ColumnDesc[9] });
-        wFields.add(new String[] { MailInputField.ColumnDesc[10],MailInputField.ColumnDesc[10] });
-        wFields.add(new String[] { MailInputField.ColumnDesc[11],MailInputField.ColumnDesc[11] });
+        for(int i=0; i<MailInputField.ColumnDesc.length; i++) {
+        	wFields.add(new String[] { MailInputField.ColumnDesc[i],MailInputField.ColumnDesc[i]});
+        }
         
         wFields.removeEmptyRows();
 		wFields.setRowNums();

@@ -21,6 +21,7 @@ import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.URLName;
+import javax.mail.Flags.Flag;
 import javax.mail.internet.MimeUtility;
 import javax.mail.search.AndTerm;
 import javax.mail.search.BodyTerm;
@@ -981,9 +982,112 @@ public class MailConnection {
 
         return null;
     }
+    /**
+	 * Returns if message is new
+	 * @return true if new message
+	 */
+    public boolean isMessageNew() {
+      try
+      {
+        return getMessage().isSet(Flag.RECENT);
+      }
+      catch(MessagingException e) {
+         return false;
+      }
+    }
+
+    /**
+	 * Returns if message is read
+	 * @return true if message is read
+	 */
+    public boolean isMessageRead() {
+      try
+      {
+        return getMessage().isSet(Flag.SEEN);
+      }
+      catch(MessagingException e) {
+         return false;
+      }
+    }
+    
+    /**
+	 * Returns if message is read
+	 * @return true if message is flagged
+	 */
+    public boolean isMessageFlagged() {
+      try
+      {
+        return getMessage().isSet(Flag.FLAGGED);
+      }
+      catch(MessagingException e) {
+         return false;
+      }
+    }
+    /**
+	 * Returns if message is deleted
+	 * @return true if message is deleted
+	 */
+    public boolean isMessageDeleted() {
+      try
+      {
+        return getMessage().isSet(Flag.DELETED);
+      }
+      catch(MessagingException e) {
+         return false;
+      }
+    }
+    /**
+	 * Returns if message is Draft
+	 * @return true if message is Draft
+	 */
+    public boolean isMessageDraft() {
+      try
+      {
+        return getMessage().isSet(Flag.DRAFT);
+      }
+      catch(MessagingException e) {
+         return false;
+      }
+    }
     public String toString() {
 		if (getServer()!=null) return getServer();
 		else return "-";
 	}
-
+    /**
+	 * Returns attached files count for the current message
+	 * @return true if message is Draft
+	 * @param pattern (optional)
+	 */
+    public int getAttachedFilesCount(Pattern pattern) throws KettleException {
+		Object content=null;
+		int retval=0;
+		try {
+			content = getMessage().getContent();
+			if (content instanceof Multipart) {
+				Multipart multipart=(Multipart)content;
+				for (int i=0, n=multipart.getCount(); i<n; i++) {
+					Part part=multipart.getBodyPart(i);
+					String disposition = part.getDisposition();
+				
+					if ((disposition != null) && ( disposition.equalsIgnoreCase(Part.ATTACHMENT) 
+							|| disposition.equalsIgnoreCase(Part.INLINE) ) ) {
+						String MimeText=null;
+						try{
+							MimeText=MimeUtility.decodeText(part.getFileName());
+						}catch(Exception e){} // ignore this ..
+						if(MimeText!=null) {
+							String filename=MimeUtility.decodeText(part.getFileName());
+							if(isWildcardMatch(filename, pattern)) retval++;
+						}
+					} 
+				}
+			} 
+		}catch(Exception e) {
+			throw new KettleException(BaseMessages.getString(PKG, "MailConnection.Error.CountingAttachedFiles",
+					""+this.message.getMessageNumber()),e);
+		}finally {
+			if(content!=null) content=null;
+		}
+		return retval;
+	}
 }

@@ -270,6 +270,24 @@ public class MailInput extends BaseStep implements StepInterface
 					case MailInputField.COLUMN_SIZE:
 						r[index]=new Long(data.mailConn.getMessage().getSize());
 						break;
+					case MailInputField.COLUMN_FLAG_DRAFT:
+						r[index]=new Boolean(data.mailConn.isMessageDraft());
+						break;
+					case MailInputField.COLUMN_FLAG_FLAGGED:
+						r[index]=new Boolean(data.mailConn.isMessageFlagged());
+						break;
+					case MailInputField.COLUMN_FLAG_NEW:
+						r[index]=new Boolean(data.mailConn.isMessageNew());
+						break;
+					case MailInputField.COLUMN_FLAG_READ:
+						r[index]=new Boolean(data.mailConn.isMessageRead());
+						break;
+					case MailInputField.COLUMN_FLAG_DELETED:
+						r[index]=new Boolean(data.mailConn.isMessageDeleted());
+						break;
+					case MailInputField.COLUMN_ATTACHED_FILES_COUNT:
+						r[index]=new Long(data.mailConn.getAttachedFilesCount(null));
+						break;
 					default:
 						break;
 				}

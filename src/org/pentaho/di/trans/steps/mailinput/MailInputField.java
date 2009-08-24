@@ -39,9 +39,16 @@ public class MailInputField implements Cloneable
     public final static int COLUMN_CONTENT_TYPE  = 9;
     public final static int COLUMN_FOLDER_NAME  = 10;
     public final static int COLUMN_SIZE  = 11;
+    public final static int COLUMN_FLAG_NEW  = 12;
+    public final static int COLUMN_FLAG_READ  = 13;
+    public final static int COLUMN_FLAG_FLAGGED  = 14;
+    public final static int COLUMN_FLAG_DRAFT  = 15;
+    public final static int COLUMN_FLAG_DELETED  = 16;
+    public final static int COLUMN_ATTACHED_FILES_COUNT  = 17;
     
     public final static String ColumnCode[] = {"messagenumber","subject", "sender", "replyto", "recipients",
-    	"description", "body", "receiveddate", "sendeddate", "contenttype", "folder", "size"};
+    	"description", "body", "receiveddate", "sendeddate", "contenttype", "folder", "size",
+    	"flag_new","flag_read", "flag_flagged", "flag_draft", "flag_deleted", "attached_files_count" };
     
     
     public final static String ColumnDesc[] = { 
@@ -57,6 +64,12 @@ public class MailInputField implements Cloneable
     	BaseMessages.getString(PKG, "MailInputField.Column.ContentType"),
     	BaseMessages.getString(PKG, "MailInputField.Column.Folder"),
     	BaseMessages.getString(PKG, "MailInputField.Column.Size"),
+    	BaseMessages.getString(PKG, "MailInputField.Column.FlagNew"),
+    	BaseMessages.getString(PKG, "MailInputField.Column.FlagRead"),
+    	BaseMessages.getString(PKG, "MailInputField.Column.FlagFlagged"),
+    	BaseMessages.getString(PKG, "MailInputField.Column.FlagDraft"),
+    	BaseMessages.getString(PKG, "MailInputField.Column.FlagDeleted"),
+    	BaseMessages.getString(PKG, "MailInputField.Column.AttachedFilesCount"),
 };
     
 	private String 	  name;
@@ -114,8 +127,6 @@ public class MailInputField implements Cloneable
 		try
 		{
 			MailInputField retval = (MailInputField) super.clone();
-          
-            
 			return retval;
 		}
 		catch(CloneNotSupportedException e)
