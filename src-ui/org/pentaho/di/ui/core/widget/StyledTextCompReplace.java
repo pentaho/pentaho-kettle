@@ -262,6 +262,7 @@ public void open() {
 	private void setSearchText() {
 		if(this.text!=null && !Const.isEmpty(this.text.getSelectionText()))
 			searchText.setText(this.text.getSelectionText());
+		searchText.setFocus();
 	}  
 	private void replaceText() {
 		int start = text.getSelectionRange().x;

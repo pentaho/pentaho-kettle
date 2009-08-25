@@ -183,6 +183,7 @@ public class StyledTextCompFind extends org.eclipse.swt.widgets.Dialog {
 	private void setSearchText() {
 		if(this.text!=null && !Const.isEmpty(this.text.getSelectionText()))
 			searchText.setText(this.text.getSelectionText());
+		searchText.setFocus();
 	}   
 	private boolean findText() {
 		String searchString = searchText.getText();
