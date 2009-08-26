@@ -361,6 +361,9 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_UNESCAPE_XML       : // unEscape XML
             	defaultResultType=ValueMetaInterface.TYPE_STRING;
                 break;
+            case CalculatorMetaFunction.CALC_DATE_WORKING_DIFF     : // Date A - Date B
+            	defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;
             default:
                 break;
             }

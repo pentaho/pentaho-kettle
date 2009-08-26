@@ -90,6 +90,7 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_ESCAPE_HTML        = 58;
     public static final int CALC_UNESCAPE_HTML        = 59;
     public static final int CALC_ESCAPE_SQL        = 60;
+    public static final int CALC_DATE_WORKING_DIFF  =  61;
     
     public static final String calc_desc[] = 
         { 
@@ -153,7 +154,8 @@ public class CalculatorMetaFunction implements Cloneable
             "UNESCAPE_XML",
             "ESCAPE_HTML",
             "UNESCAPE_HTML",
-            "ESCAPE_SQL"
+            "ESCAPE_SQL",
+            "DATE_WORKING_DIFF"
         };
     
     public static final String calcLongDesc[] = 
@@ -218,7 +220,8 @@ public class CalculatorMetaFunction implements Cloneable
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.UnescapeXML"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.EscapeHTML"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.UnescapeHTML"),
-            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.EscapeSQL")
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.EscapeSQL"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DateDiffWorking")
         };
    
     private String fieldName;

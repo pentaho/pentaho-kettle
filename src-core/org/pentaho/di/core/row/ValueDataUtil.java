@@ -696,6 +696,41 @@ public class ValueDataUtil
 
         throw new KettleValueException("The 'DateDiff' function only works with dates");
     }
+    public static Object DateWorkingDiff(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
+    {
+        if (metaA.isDate() && metaB.isDate())
+        {
+        	 if (dataA!=null && dataB!=null)
+             {
+        		Date fromDate = metaA.getDate(dataA) ;
+             	Date toDate=metaB.getDate(dataB);
+             	boolean singminus=false;
+             	
+ 				if (fromDate.after(toDate)) {
+ 					singminus=true;
+ 					Date temp = fromDate;
+ 					fromDate = toDate;
+ 					toDate = temp;
+ 				}
+ 				Calendar calFrom = Calendar.getInstance();
+ 				calFrom.setTime(fromDate);
+ 				Calendar calTo = Calendar.getInstance();
+ 				calTo.setTime(toDate);
+ 				int iNoOfWorkingDays = 0;
+ 				do {
+ 					if (calFrom.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY
+ 					&& calFrom.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+ 						iNoOfWorkingDays += 1;
+ 					}
+ 					calFrom.add(Calendar.DATE, 1);
+ 				} while (calFrom.getTimeInMillis() < calTo.getTimeInMillis());
+ 				return new Long( singminus?-iNoOfWorkingDays:iNoOfWorkingDays);
+             }else
+            	 return null;
+        }
+
+        throw new KettleValueException("The 'DateDiff' function only works with dates");
+    }
     public static Object yearOfDate(ValueMetaInterface metaA, Object dataA) throws KettleValueException
     {
         if (dataA==null) return null;

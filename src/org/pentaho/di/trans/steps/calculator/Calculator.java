@@ -611,6 +611,12 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_STRING; 
                 }
                 break;
+                case CalculatorMetaFunction.CALC_DATE_WORKING_DIFF            :  // DateWorkingDiff( A , B)
+                {
+                    calcData[index] = ValueDataUtil.DateWorkingDiff(metaA, dataA, metaB, dataB);
+                    resultType=ValueMetaInterface.TYPE_INTEGER; 
+                }
+                break;
                 default:
                     throw new KettleValueException(BaseMessages.getString(PKG, "Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }
