@@ -21,8 +21,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Appender;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
@@ -80,8 +80,14 @@ public class StartTransServlet extends HttpServlet
             Trans trans = transformationMap.getTransformation(transName);
             if (trans!=null)
             {
+                // Remove existing appender to prevent memory leak
+                Appender appender = transformationMap.getAppender(transName);
+                if(appender != null){
+                  transformationMap.removeAppender(transName);
+                  log.removeAppender(appender);
+                }
                 // Log to a String & save appender for re-use later.
-                Log4jStringAppender appender = LogWriter.createStringAppender();
+                appender = LogWriter.createStringAppender();
                 log.addAppender(appender);
                 transformationMap.addAppender(transName, appender);
                 
