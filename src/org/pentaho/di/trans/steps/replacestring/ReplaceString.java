@@ -148,9 +148,9 @@ public class ReplaceString extends BaseStep implements StepInterface {
                         meta.getUseRegEx()[i] != ReplaceStringMeta.USE_REGEX_YES,
                         meta.getCaseSensitive()[i] == ReplaceStringMeta.CASE_SENSITIVE_YES,
                         meta.getWholeWord()[i] == ReplaceStringMeta.WHOLE_WORD_YES,
-                        meta.getReplaceString()[i]);
+                        environmentSubstitute(meta.getReplaceString()[i]));
 
-                data.replaceByString[i] = meta.getReplaceByString()[i];
+                data.replaceByString[i] = environmentSubstitute(meta.getReplaceByString()[i]);
             }
         } // end if first
 
