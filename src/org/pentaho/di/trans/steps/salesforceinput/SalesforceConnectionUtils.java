@@ -44,7 +44,8 @@ public class SalesforceConnectionUtils {
 
 	public final static int RECORDS_FILTER_DELETED = 2;
 	
-	public static final String[] modulesList = {"Account",
+	public static final String[] modulesList = {
+		"Account",
 		"AccountContactRole",
 		"AccountPartner",
 		"AccountShare",

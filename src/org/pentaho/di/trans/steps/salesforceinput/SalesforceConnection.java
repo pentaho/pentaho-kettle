@@ -129,9 +129,7 @@ public class SalesforceConnection {
 	public QueryResult getQueryResult() {
 		return this.qr;
 	}
-	public void setQueryResult(QueryResult qr) {
-		this.qr=qr;
-	}
+	
 	public SoapBindingStub getBinding(){
 		return this.binding;
 	}
@@ -286,7 +284,7 @@ public class SalesforceConnection {
 			 return null;
 	 }
 	 // Get SOQL meta data (not a Good way but i don't see any other way !)
-	 // TODO : Go back to this one after a deep search in APEX forum
+	 // TODO : Go back to this one
 	 // I am sure they have an easy way to return meta for a SOQL result
 	 public MessageElement[] getElements() {
 		 SObject con=qr.getRecords()[0];
@@ -298,7 +296,8 @@ public class SalesforceConnection {
 			// check the done attribute on the QueryResult and call QueryMore 
 			// with the QueryLocator if there are more records to be retrieved
 			if(!this.qr.isDone()) {
-				setQueryResult(this.binding.queryMore(this.qr.getQueryLocator()));
+				this.qr=this.binding.queryMore(this.qr.getQueryLocator());
+				this.sObjects=this.qr.getRecords();
 				this.queryResultSize= this.qr.getSize();
 				return true;
 			}else{
