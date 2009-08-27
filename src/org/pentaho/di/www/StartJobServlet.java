@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Appender;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
@@ -103,7 +104,14 @@ public class StartJobServlet extends HttpServlet
             		synchronized(jobMap) {
 	            		JobConfiguration jobConfiguration = jobMap.getConfiguration(jobName);
 	            		Job newJob = new Job(LogWriter.getInstance(), job.getRep(), job.getJobMeta());
+	            		
+	            		Appender appender = jobMap.getAppender(jobName);
+	            		if(appender != null){
+	            		  log.removeAppender(appender);
+	            		}
+	            		jobMap.removeAppender(jobName);	            		
 	            		jobMap.removeJob(jobName);
+	            		
 	            		jobMap.addJob(jobName, newJob, jobConfiguration);
 	            		job=newJob;
             		}
