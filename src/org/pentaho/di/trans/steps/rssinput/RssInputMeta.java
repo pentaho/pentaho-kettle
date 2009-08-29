@@ -445,7 +445,6 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface
 			for (int i=0;i<nrUrls;i++)
 			{
 				url[i] =      rep.getStepAttributeString (id_step, i, "url_name");
-			
 			}
 
 			for (int i=0;i<nrFields;i++)
@@ -488,12 +487,18 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "read_from",    readfrom);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
 
+			for (int i=0;i<url.length;i++)
+			{
+				rep.saveStepAttribute(id_transformation, id_step, i, "url_name",url[i]);
+			}
+			
+			
 			for (int i=0;i<inputFields.length;i++)
 			{
 			    RssInputField field = inputFields[i];
 			    
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",          field.getName());
-				rep.saveStepAttribute(id_transformation, id_step, i, "fied_column",         field.getColumnCode());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_column",        field.getColumnCode());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",          field.getTypeDesc());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",        field.getFormat());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",      field.getCurrencySymbol());
@@ -503,7 +508,6 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision",     field.getPrecision());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type",     field.getTrimTypeCode());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",        field.isRepeated());
-
 			}
 		}
 		catch(Exception e)

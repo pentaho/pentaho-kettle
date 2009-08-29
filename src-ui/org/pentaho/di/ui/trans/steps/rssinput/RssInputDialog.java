@@ -747,13 +747,13 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
         	// Clear Fields Grid
             wFields.removeAll();
            
-            wFields.add(new String[] { RssInputField.getColumnDesc(0), RssInputField.getColumnDesc(0), "String", "", "","","","","none", "N" } );
-            wFields.add(new String[] { RssInputField.getColumnDesc(1), RssInputField.getColumnDesc(1), "String", "", "","","","","none", "N" } );
-            wFields.add(new String[] { RssInputField.getColumnDesc(2), RssInputField.getColumnDesc(2), "String", "", "","","","","none", "N" } );
-            wFields.add(new String[] { RssInputField.getColumnDesc(3), RssInputField.getColumnDesc(3), "String", "", "","","","","none", "N" } );
-            wFields.add(new String[] { RssInputField.getColumnDesc(4), RssInputField.getColumnDesc(4), "String", "", "","","","","none", "N" } );
-            wFields.add(new String[] { RssInputField.getColumnDesc(5), RssInputField.getColumnDesc(5), "String", "", "","","","","none", "N" } );
-            wFields.add(new String[] { RssInputField.getColumnDesc(6), RssInputField.getColumnDesc(6), "String", "", "","","","","none", "N" } );
+            wFields.add(new String[] { RssInputField.getColumnDesc(0), RssInputField.getColumnDesc(0), "String", "", "","","","","", "N" } );
+            wFields.add(new String[] { RssInputField.getColumnDesc(1), RssInputField.getColumnDesc(1), "String", "", "","","","","", "N" } );
+            wFields.add(new String[] { RssInputField.getColumnDesc(2), RssInputField.getColumnDesc(2), "String", "", "","","","","", "N" } );
+            wFields.add(new String[] { RssInputField.getColumnDesc(3), RssInputField.getColumnDesc(3), "String", "", "","","","","", "N" } );
+            wFields.add(new String[] { RssInputField.getColumnDesc(4), RssInputField.getColumnDesc(4), "String", "", "","","","","", "N" } );
+            wFields.add(new String[] { RssInputField.getColumnDesc(5), RssInputField.getColumnDesc(5), "String", "", "","","","","", "N" } );
+            wFields.add(new String[] { RssInputField.getColumnDesc(6), RssInputField.getColumnDesc(6), "String", "", "","","","","", "N" } );
           
             wFields.removeEmptyRows();
 			wFields.setRowNums();
