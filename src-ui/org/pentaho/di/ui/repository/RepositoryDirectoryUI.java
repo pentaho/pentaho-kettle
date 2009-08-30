@@ -16,6 +16,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -47,7 +49,7 @@ public class RepositoryDirectoryUI {
      * @param getJobs Include jobs in the tree or not
      * @throws KettleDatabaseException
      */
-	public static void getTreeWithNames(TreeItem ti, Repository rep, Map<String, RepositoryObject> objectMap, Color dircolor, int sortPosition, boolean includeDeleted, boolean ascending, boolean getTransformations, boolean getJobs, RepositoryDirectory dir, String filterString) throws KettleDatabaseException
+	public static void getTreeWithNames(TreeItem ti, Repository rep, Map<String, RepositoryObject> objectMap, Color dircolor, int sortPosition, boolean includeDeleted, boolean ascending, boolean getTransformations, boolean getJobs, RepositoryDirectory dir, String filterString, Pattern pattern) throws KettleDatabaseException
 	{
 		ti.setText(dir.getDirectoryName());
 		ti.setForeground(dircolor);
@@ -59,7 +61,7 @@ public class RepositoryDirectoryUI {
 			RepositoryDirectory subdir = dir.getSubdirectory(i);
 			TreeItem subti = new TreeItem(ti, SWT.NONE);
 			subti.setImage(GUIResource.getInstance().getImageArrow());
-			getTreeWithNames(subti, rep, objectMap, dircolor, sortPosition, includeDeleted, ascending, getTransformations, getJobs, subdir, filterString);
+			getTreeWithNames(subti, rep, objectMap, dircolor, sortPosition, includeDeleted, ascending, getTransformations, getJobs, subdir, filterString, pattern);
 		}
 		
 		try
@@ -93,45 +95,32 @@ public class RepositoryDirectoryUI {
             	boolean add=false;
             	RepositoryObject repositoryObject = (RepositoryObject)repositoryObjects.get(i);
                 
-                if(filterString==null)
+                if(filterString==null && pattern==null)
                 	add=true;
                 else
                 {
-                	if(repositoryObject.getName()!=null)
+                	add=addItem(repositoryObject.getName(), filterString, pattern);
+                	if(!add)
                 	{
-                		if (repositoryObject.getName().toUpperCase().indexOf(filterString) >= 0) add=true;
+                		add=addItem(repositoryObject.getDescription(), filterString, pattern);
                 	}
                 	if(!add)
                 	{
-                		if(repositoryObject.getDescription()!=null)
-                		{
-                			if (repositoryObject.getDescription().toUpperCase().indexOf(filterString) >= 0)
-                				add=true;
-                		}
-                	}
-                	if(!add)
-                	{
-                		if(repositoryObject.getModifiedUser()!=null)
-                		{
-                			if (repositoryObject.getModifiedUser().toUpperCase().indexOf(filterString) >= 0)
-                				add=true;
-                		}
+                		add=addItem(repositoryObject.getModifiedUser(), filterString, pattern);
                 	}
                  	if(!add)
                 	{
                 		if(repositoryObject.getModifiedDate()!=null)
                 		{
                 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                			if (simpleDateFormat.format(repositoryObject.getModifiedDate()).indexOf(filterString) >= 0)
-                				add=true;
+                			add=addItem(simpleDateFormat.format(repositoryObject.getModifiedDate()), filterString, pattern);
                 		}
                 	}
                 	if(!add)
                 	{
                 		if(repositoryObject.getObjectType()!=null)
                 		{
-                			if (repositoryObject.getObjectType().getTypeDescription().toUpperCase().indexOf(filterString) >= 0)
-                				add=true;
+                			add=addItem(repositoryObject.getObjectType().getTypeDescription(), filterString, pattern);
                 		}
                 	}
                 }
@@ -174,7 +163,19 @@ public class RepositoryDirectoryUI {
 		
 		ti.setExpanded(dir.isRoot());
 	}
-	
+	private static boolean addItem(String name, String filter, Pattern pattern) 
+	{
+		boolean add=false;
+		if(name!=null) {
+			if(pattern!=null) {
+    			Matcher matcher = pattern.matcher(name);
+    			if(matcher.matches())  add=true;
+    		} else {
+    			if (name.toUpperCase().indexOf(filter) >= 0) add=true;
+    		}
+		}
+		return add;
+	}
 	/**
 	 * Gets a directory tree on a TreeItem to work with.
 	 * @param ti The TreeItem to set the directory tree on

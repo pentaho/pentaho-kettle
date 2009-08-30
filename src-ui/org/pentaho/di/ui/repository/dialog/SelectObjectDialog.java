@@ -14,6 +14,7 @@
 package org.pentaho.di.ui.repository.dialog;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -100,6 +101,7 @@ public class SelectObjectDialog extends Dialog
 
 	private String filterString=null;
 	private Text searchText = null;
+	private Pattern pattern = null;
 
 	private RepositoryDirectory	directoryTree;
 
@@ -108,6 +110,8 @@ public class SelectObjectDialog extends Dialog
 	private boolean	includeDeleted;
 
 	private Map<String,RepositoryObject>	objectMap;
+	
+	private ToolItem wbRegex;
 	
     public SelectObjectDialog(Shell parent, Repository rep)
     {
@@ -168,6 +172,10 @@ public class SelectObjectDialog extends Dialog
 		searchText.setToolTipText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Search.FilterString.ToolTip"));
 		wfilter.setControl(searchText);
 		wfilter.setWidth(100);
+		
+		wbRegex = new ToolItem(treeTb, SWT.CHECK);
+		wbRegex.setImage(GUIResource.getInstance().getImageRegexSmall());
+		wbRegex.setToolTipText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Search.UseRegex"));
 		
 		goSearch = new ToolItem(treeTb,SWT.PUSH);
 	    goSearch.setImage(GUIResource.getInstance().getImageSearchSmall());
@@ -296,7 +304,7 @@ public class SelectObjectDialog extends Dialog
         }
         
         getData();
-		
+        wTree.setFocus();
 		BaseStepDialog.setSize(shell);
 
 		shell.open();
@@ -316,13 +324,17 @@ public class SelectObjectDialog extends Dialog
 	}
 	protected void updateFilter() 
 	{
+		pattern=null;
 		filterString=null;
-		if (searchText != null && !searchText.isDisposed()) {
-			if(!Const.isEmpty(searchText.getText()))
+		if (searchText != null && !searchText.isDisposed() && !Const.isEmpty(searchText.getText())) {
+			if(wbRegex.getSelection()){
+				pattern = Pattern.compile(searchText.getText());
+			} else {
 				filterString=searchText.getText().toUpperCase();
+			}
 		}
 		refreshTree();
-		if(filterString!=null)
+		if((wbRegex.getSelection() && pattern!=null) || (!wbRegex.getSelection() && filterString!=null))
 		{
 			while(getNrEmptyFolders(wTree.getItems())>0){
 				removeEmptyFolders(wTree.getItems());
@@ -387,7 +399,7 @@ public class SelectObjectDialog extends Dialog
             
             objectMap = new HashMap<String, RepositoryObject>();
             
-			RepositoryDirectoryUI.getTreeWithNames(ti, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, directoryTree, filterString);
+			RepositoryDirectoryUI.getTreeWithNames(ti, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, directoryTree, filterString, pattern);
         }
         catch(KettleException e)
         {

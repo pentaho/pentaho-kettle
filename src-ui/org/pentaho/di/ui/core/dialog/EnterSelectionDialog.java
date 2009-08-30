@@ -12,6 +12,9 @@
  
 
 package org.pentaho.di.ui.core.dialog;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -40,6 +43,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
 
 /**
  * Allows the user to make a selection from a list of values.
@@ -76,8 +80,10 @@ public class EnterSelectionDialog extends Dialog
     private boolean quickSearch;
     
 	private ToolItem goSearch,wfilter;
+	private ToolItem wbRegex;
 	
 	private String filterString=null;
+	private Pattern pattern=null;
 	private Text searchText = null;
     
     /**
@@ -170,6 +176,11 @@ public class EnterSelectionDialog extends Dialog
 			searchText.setToolTipText(BaseMessages.getString(PKG, "EnterSelectionDialog.FilterString.ToolTip"));
 			wfilter.setControl(searchText);
 			wfilter.setWidth(120);
+			
+			wbRegex = new ToolItem(treeTb, SWT.CHECK);
+			wbRegex.setImage(GUIResource.getInstance().getImageRegexSmall());
+			wbRegex.setToolTipText(BaseMessages.getString(PKG, "EnterSelectionDialog.useRegEx.Tooltip"));
+			
 			
 			goSearch = new ToolItem(treeTb,SWT.PUSH);
 		    goSearch.setImage(GUIResource.getInstance().getImageSearchSmall());
@@ -381,30 +392,49 @@ public class EnterSelectionDialog extends Dialog
     {
         this.selectedNrs = selectedNrs;
     }
+
     protected void updateFilter() 
 	{
+		pattern=null;
 		filterString=null;
-		if (searchText != null && !searchText.isDisposed()) {
-			if(!Const.isEmpty(searchText.getText()))
+		if (searchText != null && !searchText.isDisposed() && !Const.isEmpty(searchText.getText())) {
+			if(wbRegex.getSelection()){
+				pattern = Pattern.compile(searchText.getText());
+			} else {
 				filterString=searchText.getText().toUpperCase();
+			}
 		}
 		refresh();
 	}
+
 	private void refresh()
 	{
 		wSelection.removeAll();
+		
 		for (int i=0;i<choices.length;i++){
-			if(filterString!=null){
-				if(choices[i].toUpperCase().contains(filterString))
+			if(wbRegex.getSelection()) {
+				// use regex
+				if(pattern!=null) {
+					Matcher matcher = pattern.matcher(choices[i]);
+					if(matcher.matches())
 						wSelection.add(choices[i]);
-			}else{
-				wSelection.add(choices[i]);
+				}else {
+					wSelection.add(choices[i]);
+				}
+			}else {
+				if(filterString!=null){
+					if(choices[i].toUpperCase().contains(filterString))
+							wSelection.add(choices[i]);
+				}else{
+					wSelection.add(choices[i]);
+				}
 			}
 		}
 		wSelection.redraw();
-		if (selectedNrs!=null){
+		selectedNrs = new int[] {};
+		/*if (selectedNrs!=null){
 			wSelection.select(selectedNrs);
 			wSelection.showSelection();
-		}
+		}*/
 	}
 }

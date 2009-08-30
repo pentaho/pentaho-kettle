@@ -232,6 +232,8 @@ public class GUIResource
     private Image imageExpandAll;
     
     private Image imageSearchSmall;
+    
+    private Image imageRegExSmall;
   
     private Image imageCollapseAll;
 
@@ -425,6 +427,7 @@ public class GUIResource
 		    imageVersionBrowser.dispose();
 		    imageExpandAll.dispose();
 		    imageSearchSmall.dispose();
+		    imageRegExSmall.dispose();
 		    imageViewPanel.dispose();
 		    imageDesignPanel.dispose();
 		    imageNew.dispose();
@@ -640,8 +643,6 @@ public class GUIResource
 
     imageDesignPanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("DesignPanel_image")); // , "ui/images/Design.png;
     imageViewPanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ViewPanel_image")); // , "ui/images/View.png;
-    
-    imageSearchSmall = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("SearchSmall_image"));
     imageExpandAll = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ExpandAll_image")); // , "ui/images/ExpandAll.png;
     imageCollapseAll = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CollapseAll_image")); // , "ui/images/CollapseAll.png;
     imageStepError = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("StepErrorLines_image")); // , "ui/images/show-error-lines.png;
@@ -700,8 +701,14 @@ public class GUIResource
 				BasePropertyHandler.getProperty("FolderConnections_image")), // , "ui/images/folder_connection.png"
 				new RGB(255, 255, 255));
 		
-		
-		
+		  imageRegExSmall = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
+					BasePropertyHandler.getProperty("RegExSmall_image")),
+					new RGB(255, 255, 255));
+		  
+		  imageSearchSmall = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
+					BasePropertyHandler.getProperty("SearchSmall_image")),
+					new RGB(255, 255, 255));
+		    
 	}
 	
 	/**
@@ -1617,6 +1624,10 @@ public class GUIResource
   public Image getImageSearchSmall(){
 	  return imageSearchSmall;
   }
+  public Image getImageRegexSmall(){
+	  return imageRegExSmall;
+  }
+  
   
   public Image getImageCollapseAll(){
     return imageCollapseAll;
