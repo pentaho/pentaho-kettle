@@ -19,7 +19,10 @@ package org.pentaho.di.ui.trans.steps.addxml;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -56,6 +59,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.addxml.AddXMLMeta;
 import org.pentaho.di.trans.steps.addxml.XMLField;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -100,10 +104,16 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
     private Listener     lsMinWidth;
     private boolean      gotEncodings = false; 
     
+    private ColumnInfo[] colinf;
+    
+	
+    private Map<String, Integer> inputFields;
+    
     public AddXMLDialog(Shell parent, Object in, TransMeta transMeta, String sname)
     {
         super(parent, (BaseStepMeta)in, transMeta, sname);
         input=(AddXMLMeta)in;
+        inputFields =new HashMap<String, Integer>();
     }
 
     public String open()
@@ -312,9 +322,9 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         for (int x=0;x<dats.length;x++) formats[x] = dats[x];
         for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
         
-        ColumnInfo[] colinf=new ColumnInfo[]
+        colinf=new ColumnInfo[]
           {
-            new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.Fieldname.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,   false),
+            new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.Fieldname.Column"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
             new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.ElementName.Column"), ColumnInfo.COLUMN_TYPE_TEXT,   false),
             new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.Type.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
             new ColumnInfo(BaseMessages.getString(PKG, "AddXMLDialog.Format.Column"),      ColumnInfo.COLUMN_TYPE_CCOMBO, formats),
@@ -341,6 +351,36 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         fdFields.right = new FormAttachment(100, 0);
         fdFields.bottom= new FormAttachment(wGet, -margin);
         wFields.setLayoutData(fdFields);
+        
+		  // 
+        // Search the fields in the background
+		
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                StepMeta stepMeta = transMeta.findStep(stepname);
+                if (stepMeta!=null)
+                {
+                    try
+                    {
+                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+                       
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        setComboBoxes();
+                    }
+                    catch(KettleException e)
+                    {
+                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
 
         fdFieldsComp=new FormData();
         fdFieldsComp.left  = new FormAttachment(0, 0);
@@ -411,7 +451,23 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         }
         return stepname;
     }
-    
+    protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+        final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+
+        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+        Const.sortStrings(fieldNames);
+        colinf[0].setComboValues(fieldNames);
+    }
     private void setEncodings()
     {
         // Encoding of the text file:
