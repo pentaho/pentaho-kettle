@@ -1009,5 +1009,13 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MailInput</tooltip>
 		<image-uri>ui/images/GETPOP.png</image-uri>
 	</step>
+	
+	<step id="GetTableNames">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetTableNames</description>
+		<class-name>org.pentaho.di.trans.steps.gettablenames.GetTableNamesMeta</class-name>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetTableNames</tooltip>
+		<image-uri>ui/images/GTN.png</image-uri>
+	</step>
 
 </steps>
