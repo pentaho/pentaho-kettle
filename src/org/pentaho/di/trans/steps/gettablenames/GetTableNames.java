@@ -94,7 +94,7 @@ public class GetTableNames extends BaseStep implements StepInterface
 	            {
 	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
 	            }
-	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DynamicSQLRow.Log.PutoutRow")+data.outputRowMeta.getString(outputRow)); //$NON-NLS-1$  
+	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRow)));
 			}
 		}
 		// Views
@@ -126,7 +126,7 @@ public class GetTableNames extends BaseStep implements StepInterface
     	            {
     	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
     	            }
-    	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DynamicSQLRow.Log.PutoutRow")+data.outputRowMeta.getString(outputRow)); //$NON-NLS-1$  
+    	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRow))); //$NON-NLS-1$  
     	        }
             }catch(Exception e){};
         }
@@ -157,7 +157,7 @@ public class GetTableNames extends BaseStep implements StepInterface
 	            {
 	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
 	            }
-	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DynamicSQLRow.Log.PutoutRow")+data.outputRowMeta.getString(outputRow)); //$NON-NLS-1$  
+	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRow))); //$NON-NLS-1$  
 	        }
 	     }
         if(meta.isIncludeSyonym())
@@ -189,7 +189,7 @@ public class GetTableNames extends BaseStep implements StepInterface
 	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
 	            }
 	            
-	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DynamicSQLRow.Log.PutoutRow")+data.outputRowMeta.getString(outputRow)); //$NON-NLS-1$   
+	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRow))); //$NON-NLS-1$   
 	        }
 	   }
 
