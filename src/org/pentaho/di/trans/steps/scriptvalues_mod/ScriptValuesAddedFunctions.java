@@ -451,7 +451,14 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				Database db=new Database(ci);
 	    		db.setQueryLimit(0);
 	    		try{
-	    			db.connect();
+	    			 if (scm.getTransMeta().isUsingUniqueConnections())
+	                 {
+	                     synchronized (scm.getTrans()) { db.connect(scm.getTrans().getThreadName(), scm.getPartitionID()); }
+	                 }
+	                 else
+	                 {
+	                     db.connect(scm.getPartitionID());
+	                 }
 	    			ResultSet rs = db.openQuery(strSQL);
 	    			ResultSetMetaData resultSetMetaData = rs.getMetaData();
 					int columnCount = resultSetMetaData.getColumnCount();
