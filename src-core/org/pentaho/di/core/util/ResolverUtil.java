@@ -202,6 +202,14 @@ public class ResolverUtil<T>
 			try
 			{
 				URL eurl = urls.nextElement();
+				
+				// on windows, spaces in urls are not encoded for certain class loaders
+				String urlVal = eurl.toString();
+				if (urlVal.indexOf(" ") >= 0) {
+					urlVal = urlVal.replaceAll(" ", "%20");
+					eurl = new URL(urlVal);
+				}
+
 				String urlPath = eurl.toURI().toString();
 
 				// strip off zip prefix
