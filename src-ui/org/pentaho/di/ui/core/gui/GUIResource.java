@@ -142,9 +142,17 @@ public class GUIResource
 	
 	private Image imageTable;
 	
+	private Image imageKeySmall;
+	
+	private Image imageColumnSmall;
+	
 	private Image imageSchema;
 	
 	private Image imageSynonym;
+	
+	private Image imageProcedure;
+	
+	private Image imageExploreDbSmall;
 
 	private Image imageView;
 	
@@ -392,6 +400,8 @@ public class GUIResource
 			imageTable.dispose();
 			imageSchema.dispose();
 			imageSynonym.dispose();
+			imageProcedure.dispose();
+			imageExploreDbSmall.dispose();
 			imageView.dispose();
 			imageLogoSmall.dispose();
 			imageKettleLogo.dispose();
@@ -437,6 +447,8 @@ public class GUIResource
 		    imageLocked.dispose();
 		    imageImport.dispose();
 		    imageExport.dispose();
+		    imageKeySmall.dispose();
+		    imageColumnSmall.dispose();
 
 		    disposeImage(imageNoteSmall);
 		    disposeImage(imageColor);
@@ -604,6 +616,9 @@ public class GUIResource
 		imageView = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("View_image")); // , "ui/images/view.png"
 		imageColor = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Color_image")); // , "ui/images/color.png.png"
 		imageNoteSmall = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Note_image")); //, "ui/images/noteSmall.png"
+		imageProcedure = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ProcedureSmall_image")); //, "ui/images/proc.png"
+		imageExploreDbSmall = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ExploreDbSmall_image")), new RGB(255, 255, 255));; //, "ui/images/exploreDbSmall.png"
+		
 		
 		imageCluster = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Cluster_image")); // , "ui/images/cluster.png"
 		imageSlave = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Slave_image")), new RGB(255, 255, 255)); // , "ui/images/slave.png"
@@ -708,6 +723,14 @@ public class GUIResource
 		  imageSearchSmall = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
 					BasePropertyHandler.getProperty("SearchSmall_image")),
 					new RGB(255, 255, 255));
+		  imageKeySmall = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
+					BasePropertyHandler.getProperty("KeySmall_image")),
+					new RGB(255, 255, 255));
+		  
+		  imageColumnSmall = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
+					BasePropertyHandler.getProperty("ColumnSmall_image")),
+					new RGB(255, 255, 255));
+		  
 		    
 	}
 	
@@ -1025,6 +1048,22 @@ public class GUIResource
 	}
 	
 	/**
+	 * @return Returns the imageKeySmall.
+	 */
+	public Image getImageKeySmall()
+	{
+		return imageKeySmall;
+	}
+	
+	
+	/**
+	 * @return Returns the imageColumnSmall.
+	 */
+	public Image getImageColumnSmall()
+	{
+		return imageColumnSmall;
+	}
+	/**
 	 * @return Returns the imageSchema.
 	 */
 	public Image getImageSchema()
@@ -1040,6 +1079,22 @@ public class GUIResource
 		return imageSynonym;
 	}
 	
+	/**
+	 * @return Returns the imageProcedure.
+	 */
+	public Image getImageProcedure()
+	{
+		return imageProcedure;
+	}
+	
+	
+	/**
+	 * @return Returns the imageExploreDbSmall.
+	 */
+	public Image getImageExploreDbSmall()
+	{
+		return imageExploreDbSmall;
+	}
 	/**
 	 * @return Returns the imageView.
 	 */

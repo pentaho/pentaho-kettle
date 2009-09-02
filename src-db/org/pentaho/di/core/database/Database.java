@@ -44,6 +44,7 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -4925,6 +4926,30 @@ public class Database implements VariableSpace
 			throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToRollbackToSavepoint"), e);
 		}
 	}
+	public HashSet<String> getPrimaryKeys(String tablename) throws KettleDatabaseException {
+	ResultSet allkeys=null;
+	HashSet<String> names = new HashSet<String>();
+	try {
+		allkeys=getDatabaseMetaData().getPrimaryKeys(null, null, tablename);
+		while (allkeys.next()) {
+			String col_name=allkeys.getString("COLUMN_NAME");
+			String keyname=allkeys.getString("PK_NAME");
+			if(!names.contains(col_name)) names.add(col_name);
+            if (log.isRowLevel()) log.logRowlevel(toString(), "getting key : "+keyname + " on column "+col_name);
+		}
+	}
+	catch(SQLException e) {
+		log.logError(toString(), "Error getting primary keys from table ["+tablename+"]");
+	}
+	finally {
+		try {
+			if (allkeys!=null) allkeys.close();
+		} catch(SQLException e) {
+            throw new KettleDatabaseException("Error closing connection while searching primary keys in table ["+tablename+"]", e);
+		}
+	}
 
+	return names;
+ }
 	
 }

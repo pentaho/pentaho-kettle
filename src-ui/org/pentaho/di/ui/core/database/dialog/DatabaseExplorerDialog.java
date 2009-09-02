@@ -15,6 +15,7 @@
 package org.pentaho.di.ui.core.database.dialog;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -51,6 +52,7 @@ import org.pentaho.di.core.database.Schema;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -93,6 +95,7 @@ public class DatabaseExplorerDialog extends Dialog
 	private static final String STRING_TABLES   = BaseMessages.getString(PKG, "DatabaseExplorerDialog.Tables.Label");
 	private static final String STRING_VIEWS    = BaseMessages.getString(PKG, "DatabaseExplorerDialog.Views.Label");
 	private static final String STRING_SYNONYMS = BaseMessages.getString(PKG, "DatabaseExplorerDialog.Synonyms.Label");
+	private static final String STRING_PROCEDURES = BaseMessages.getString(PKG, "DatabaseExplorerDialog.Procedures.Label");
 	
 	private Shell     parent, shell;
 	private Tree      wTree;
@@ -167,7 +170,7 @@ public class DatabaseExplorerDialog extends Dialog
 			shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
 		}
  		props.setLook(shell);
-		shell.setImage(GUIResource.getInstance().getImageConnection());
+		shell.setImage(GUIResource.getInstance().getImageExploreDbSmall());
 
 		shell.setText(BaseMessages.getString(PKG, "DatabaseExplorerDialog.Title", dbMeta.toString()));
 		
@@ -454,7 +457,7 @@ public class DatabaseExplorerDialog extends Dialog
 				
 			// New entry in the tree
 			tiTree = new TreeItem(wTree, SWT.NONE); 
-			tiTree.setImage(GUIResource.getInstance().getImageFolderConnections());
+			tiTree.setImage(GUIResource.getInstance().getImageExploreDbSmall());
 			tiTree.setText(dbMeta==null?"":dbMeta.getName());
 
 			// Show the catalogs...
@@ -558,6 +561,23 @@ public class DatabaseExplorerDialog extends Dialog
 				}
 			}
 				
+			// The procedures
+			TreeItem tiProc = null;
+			String[] proc = dmi.getProcedures();
+			if (proc!=null)
+			{
+				tiProc = new TreeItem(tiTree, SWT.NONE); 
+				tiProc.setImage(GUIResource.getInstance().getImageBol());
+				tiProc.setText(STRING_PROCEDURES);
+				for (int i = 0; i < proc.length; i++)
+				{
+					TreeItem newProc = new TreeItem(tiProc, SWT.NONE);
+					newProc.setImage(GUIResource.getInstance().getImageProcedure());
+					newProc.setText(proc[i]);
+				}
+			}
+				
+			
 			// Make sure the selected table is shown...
 			// System.out.println("Selecting table "+k);
 			if (!Const.isEmpty(selectedTable))
@@ -603,12 +623,15 @@ public class DatabaseExplorerDialog extends Dialog
                 String schemaName = parent.getText();
                 String tableName  = ti[0].getText();
 
-                if (ti[0].getItemCount()==0) // No children, only the tables themselves...
-                {
+                if (ti[0].getImage()==GUIResource.getInstance().getImageTable()||
+                		ti[0].getImage()==GUIResource.getInstance().getImageView()||
+                		ti[0].getImage()==GUIResource.getInstance().getImageProcedure()||
+                		ti[0].getImage()==GUIResource.getInstance().getImageSynonym()) {
                     String tab = null;
                     if (schemaName.equalsIgnoreCase(STRING_TABLES) ||
                         schemaName.equalsIgnoreCase(STRING_VIEWS) ||
                         schemaName.equalsIgnoreCase(STRING_SYNONYMS) ||
+                        schemaName.equalsIgnoreCase(STRING_PROCEDURES) ||
                         ( schemaName!=null && schemaName.length()==0 )
                         )
                     {
@@ -637,6 +660,12 @@ public class DatabaseExplorerDialog extends Dialog
                 mTree.dispose();
             }
             mTree = new Menu(shell, SWT.POP_UP);
+            mTree = new Menu(shell, SWT.POP_UP);
+            MenuItem miCol = new MenuItem(mTree, SWT.PUSH); miCol.setText(BaseMessages.getString(PKG, "DatabaseExplorerDialog.Menu.DisplayColumns",table));
+            miCol.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getColumns(table, wTree.getSelection()[0]); }});
+			
+			new MenuItem(mTree, SWT.SEPARATOR);
+			
 			MenuItem miPrev  = new MenuItem(mTree, SWT.PUSH); miPrev.setText(BaseMessages.getString(PKG, "DatabaseExplorerDialog.Menu.Preview100", table));
 			miPrev.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { previewTable(table, false); }});
 			MenuItem miPrevN  = new MenuItem(mTree, SWT.PUSH); miPrevN.setText(BaseMessages.getString(PKG, "DatabaseExplorerDialog.Menu.PreviewN", table));
@@ -671,7 +700,52 @@ public class DatabaseExplorerDialog extends Dialog
             wTree.setMenu(null);
         }
 	}
+	private void getColumns(String tablename, TreeItem newTab)
+	{
+	   newTab.removeAll();
+	   String tableName=tablename;
+		String st[] = tableName.split("\\.",2);
+		if (st.length>1) { // we have a dot in there and need to separate
+			tableName = st[1];
+		}
+		
+		if(dbMeta.isInNeedOfQuoting(tablename)) tableName=dbMeta.quoteField(tableName);
+	    String sql = dbMeta.getSQLQueryFields(tableName);
+	    Database db = new Database(dbMeta);
+		RowMetaInterface result=null;
+		HashSet<String> pk= new HashSet<String>();
 
+		try {
+			db.connect();
+    		result = db.getQueryFields(sql, false);
+    		if (result!=null) {
+    			// first return primary keys
+    			pk=db.getPrimaryKeys(tableName);
+				System.out.println("-----"+pk.toString());
+				for(int c=0; c<result.size();c++){
+					ValueMetaInterface v=result.getValueMeta(c);
+					if (v.getName()!=null)	{
+						TreeItem newCol = new TreeItem(newTab, SWT.NONE);
+						if(pk.contains(v.getName())) {
+							System.out.println("-----"+v.getName());
+							newCol.setImage(GUIResource.getInstance().getImageKeySmall());
+						}
+						else
+							newCol.setImage(GUIResource.getInstance().getImageColumnSmall());
+						newCol.setText(v.getName()+" ("+ v.getTypeDesc() + " " + (v.getLength()<0?"":""+v.getLength()) +")");
+					}
+				}
+			}
+    		newTab.setExpanded(true);
+		}catch(Exception e) {
+			new ErrorDialog(shell, "Error",
+					"Error getting colums from table [" +tablename+"]" , e);
+		}finally {
+			db.disconnect();
+			pk.clear();pk=null;
+		}
+		
+	}
 	public void previewTable(String tableName, boolean asklimit)
 	{
 		int limit = 100;

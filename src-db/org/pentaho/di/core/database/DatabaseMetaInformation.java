@@ -40,6 +40,7 @@ public class DatabaseMetaInformation
 	private String[] synonyms;
 	private Catalog[] catalogs;
 	private Schema[] schemas;
+	private String[] procedures;
 
 	private DatabaseMeta dbInfo;
 	
@@ -146,7 +147,20 @@ public class DatabaseMetaInformation
 	{
 		return synonyms;
 	}
-	
+	/**
+	 * @return Returns the procedures.
+	 */
+	public String[] getProcedures()
+	{
+		return procedures;
+	}
+	/**
+	 * @param procedures The procedures to set.
+	 */
+	public void setProcedures(String[] procedures)
+	{
+		this.procedures = procedures;
+	}
 	public void getData(ProgressMonitorListener monitor) throws KettleDatabaseException
 	{
 		if (monitor!=null)
@@ -346,6 +360,12 @@ public class DatabaseMetaInformation
 				}
 			}
 			if (monitor!=null) monitor.worked(1);
+			
+			if (monitor!=null && monitor.isCanceled()) return;
+			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingProcedures"));
+			setProcedures(db.getProcedures());
+			if (monitor!=null) monitor.worked(1);
+			
 		}
 		catch(Exception e)
 		{
