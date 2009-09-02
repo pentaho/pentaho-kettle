@@ -15,6 +15,7 @@ package org.pentaho.di.ui.trans.steps.gettablenames;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -34,6 +35,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -43,7 +46,9 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.gettablenames.GetTableNamesMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -63,6 +68,16 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 	private Label	  wlincludeTable;
 	private FormData	fdlincludeTable;
 	
+	private Button      wincludeSchema;
+	private FormData	fdincludeSchema;
+	private Label	  wlincludeSchema;
+	private FormData	fdlincludeSchema;
+	
+	private Button      wincludeCatalog;
+	private FormData	fdincludeCatalog;
+	private Label	  wlincludeCatalog;
+	private FormData	fdlincludeCatalog;
+	
 	private Button      wincludeProcedure;
 	private FormData	fdincludeProcedure;
 	private Label	  wlincludeProcedure;
@@ -72,6 +87,11 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 	private FormData	fdincludeSynonym;
 	private Label	  wlincludeSynonym;
 	private FormData	fdlincludeSynonym;
+	
+	private Button      waddSchemaInOutput;
+	private FormData	fdaddSchemaInOutput;
+	private Label	  wladdSchemaInOutput;
+	private FormData	fdladdSchemaInOutput;
 	
 	private Button      wincludeView;
 	private FormData	fdincludeView;
@@ -86,10 +106,25 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 	private Text         wisSystemObjectField;
 	private FormData     fdlisSystemObjectField, fdisSystemObjectField;
 	
+	private Label        wlschemaname;
+	private TextVar      wschemaname;
+	private FormData     fdlschemaname, fdschemaname;
+	
+	private Label wldynamicSchema;
+	private FormData fdldynamicSchema, fddynamicSchema;
+	private Button wdynamicSchema;
+	
+	private Label wlSchemaField;
+	private FormData fdlSchemaField;
+	private CCombo wSchemaField;
+	private FormData fdSchemaField;
+	
 	private GetTableNamesMeta input;
 	
 	private Group wSettings;
 	private Group wOutputFields;
+	
+	private boolean gotpreviousfields=false;
 
 	public GetTableNamesDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -151,6 +186,95 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		if (input.getDatabase()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
 		
+		// schemaname fieldname ...
+		wlschemaname=new Label(shell, SWT.RIGHT);
+		wlschemaname.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.schemanameName.Label")); //$NON-NLS-1$
+ 		props.setLook(wlschemaname);
+		fdlschemaname=new FormData();
+		fdlschemaname.left = new FormAttachment(0, 0);
+		fdlschemaname.right= new FormAttachment(middle, -margin);
+		fdlschemaname.top  = new FormAttachment(wConnection, 2*margin);
+		wlschemaname.setLayoutData(fdlschemaname);
+		wschemaname=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wschemaname.setToolTipText(BaseMessages.getString(PKG, "GetTableNamesDialog.schemanameName.Tooltip"));
+ 		props.setLook(wschemaname);
+		fdschemaname=new FormData();
+		fdschemaname.left = new FormAttachment(middle, 0);
+		fdschemaname.top  = new FormAttachment(wConnection, 2*margin);
+		fdschemaname.right= new FormAttachment(100, 0);
+		wschemaname.setLayoutData(fdschemaname);
+		ModifyListener lsModSchema = new ModifyListener() 
+		{
+			public void modifyText(ModifyEvent e) 
+			{
+				input.setChanged();
+				refreshIncludeCatalog();
+			}
+		};
+		wschemaname.addModifyListener(lsModSchema);
+
+
+		//Is schema name defined in a Field		
+		wldynamicSchema= new Label(shell, SWT.RIGHT);
+		wldynamicSchema.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.wldynamicSchema.Label"));
+		props.setLook(wldynamicSchema);
+		fdldynamicSchema= new FormData();
+		fdldynamicSchema.left = new FormAttachment(0, -margin);
+		fdldynamicSchema.top = new FormAttachment(wschemaname, margin);
+		fdldynamicSchema.right = new FormAttachment(middle, -margin);
+		wldynamicSchema.setLayoutData(fdldynamicSchema);
+		
+		wdynamicSchema= new Button(shell, SWT.CHECK);
+		props.setLook(wdynamicSchema);
+		wdynamicSchema.setToolTipText(BaseMessages.getString(PKG, "GetTableNamesDialog.wdynamicSchema.Tooltip"));
+		fddynamicSchema= new FormData();
+		fddynamicSchema.left = new FormAttachment(middle, 0);
+		fddynamicSchema.top = new FormAttachment(wschemaname, margin);
+		wdynamicSchema.setLayoutData(fddynamicSchema);		
+		SelectionAdapter lsxmlstream = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+            	ActivedynamicSchema();
+            	input.setChanged();
+            }
+        };
+        wdynamicSchema.addSelectionListener(lsxmlstream);
+        
+		
+        // If schema string defined in a Field
+		wlSchemaField=new Label(shell, SWT.RIGHT);
+        wlSchemaField.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.wlSchemaField.Label"));
+        props.setLook(wlSchemaField);
+        fdlSchemaField=new FormData();
+        fdlSchemaField.left = new FormAttachment(0, -margin);
+        fdlSchemaField.top  = new FormAttachment(wdynamicSchema, margin);
+        fdlSchemaField.right= new FormAttachment(middle, -margin);
+        wlSchemaField.setLayoutData(fdlSchemaField);
+        
+        
+        wSchemaField=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
+        wSchemaField.setEditable(true);
+        props.setLook(wSchemaField);
+        wSchemaField.addModifyListener(lsMod);
+        fdSchemaField=new FormData();
+        fdSchemaField.left = new FormAttachment(middle, 0);
+        fdSchemaField.top  = new FormAttachment(wdynamicSchema, margin);
+        fdSchemaField.right= new FormAttachment(100, -margin);
+        wSchemaField.setLayoutData(fdSchemaField);
+        wSchemaField.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                    setSchemaField();
+                    shell.setCursor(null);
+                }
+            }
+        );           	
 		
 		// ///////////////////////////////
 		// START OF SETTINGS GROUP  //
@@ -164,14 +288,67 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		SettingsgroupLayout.marginWidth = 10;
 		SettingsgroupLayout.marginHeight = 10;
 		wSettings.setLayout(SettingsgroupLayout);
-
+		
+		//Include Catalogs	
+		wlincludeCatalog = new Label(wSettings, SWT.RIGHT);
+		wlincludeCatalog.setText(BaseMessages.getString(PKG, "GetCatalogNamesDialog.includeCatalog.Label"));
+		props.setLook(wlincludeCatalog);
+		fdlincludeCatalog = new FormData();
+		fdlincludeCatalog.left = new FormAttachment(0, -margin);
+		fdlincludeCatalog.top = new FormAttachment(wSchemaField, margin);
+		fdlincludeCatalog.right = new FormAttachment(middle, -2*margin);
+		wlincludeCatalog.setLayoutData(fdlincludeCatalog);
+		
+		wincludeCatalog = new Button(wSettings, SWT.CHECK);
+		props.setLook(wincludeCatalog);
+		wincludeCatalog.setToolTipText(BaseMessages.getString(PKG, "GetCatalogNamesDialog.includeCatalog.Tooltip"));
+		fdincludeCatalog = new FormData();
+		fdincludeCatalog.left = new FormAttachment(middle, -margin);
+		fdincludeCatalog.top = new FormAttachment(wSchemaField, margin);
+		wincludeCatalog.setLayoutData(fdincludeCatalog);		
+		SelectionAdapter lincludeCatalog = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+            	input.setChanged();
+            }
+        };
+        wincludeCatalog.addSelectionListener(lincludeCatalog);
+		
+		
+		//Include Schemas	
+		wlincludeSchema = new Label(wSettings, SWT.RIGHT);
+		wlincludeSchema.setText(BaseMessages.getString(PKG, "GetSchemaNamesDialog.includeSchema.Label"));
+		props.setLook(wlincludeSchema);
+		fdlincludeSchema = new FormData();
+		fdlincludeSchema.left = new FormAttachment(0, -margin);
+		fdlincludeSchema.top = new FormAttachment(wincludeCatalog, margin);
+		fdlincludeSchema.right = new FormAttachment(middle, -2*margin);
+		wlincludeSchema.setLayoutData(fdlincludeSchema);
+		
+		wincludeSchema = new Button(wSettings, SWT.CHECK);
+		props.setLook(wincludeSchema);
+		wincludeSchema.setToolTipText(BaseMessages.getString(PKG, "GetSchemaNamesDialog.includeSchema.Tooltip"));
+		fdincludeSchema = new FormData();
+		fdincludeSchema.left = new FormAttachment(middle, -margin);
+		fdincludeSchema.top = new FormAttachment(wincludeCatalog, margin);
+		wincludeSchema.setLayoutData(fdincludeSchema);		
+		SelectionAdapter lincludeSchema = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+            	input.setChanged();
+            }
+        };
+        wincludeSchema.addSelectionListener(lincludeSchema);
+		
 		//Include tables	
 		wlincludeTable = new Label(wSettings, SWT.RIGHT);
 		wlincludeTable.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.includeTable.Label"));
 		props.setLook(wlincludeTable);
 		fdlincludeTable = new FormData();
 		fdlincludeTable.left = new FormAttachment(0, -margin);
-		fdlincludeTable.top = new FormAttachment(wSettings, margin);
+		fdlincludeTable.top = new FormAttachment(wincludeSchema, margin);
 		fdlincludeTable.right = new FormAttachment(middle, -2*margin);
 		wlincludeTable.setLayoutData(fdlincludeTable);
 		
@@ -180,7 +357,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		wincludeTable.setToolTipText(BaseMessages.getString(PKG, "GetTableNamesDialog.includeTable.Tooltip"));
 		fdincludeTable = new FormData();
 		fdincludeTable.left = new FormAttachment(middle, -margin);
-		fdincludeTable.top = new FormAttachment(wConnection, margin);
+		fdincludeTable.top = new FormAttachment(wincludeSchema, margin);
 		wincludeTable.setLayoutData(fdincludeTable);		
 		SelectionAdapter lincludeTable = new SelectionAdapter()
         {
@@ -269,11 +446,38 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
             }
         };
         wincludeSynonym.addSelectionListener(lincludeSynonym);
+    	
+        
+		//Add schema in output	
+		wladdSchemaInOutput = new Label(wSettings, SWT.RIGHT);
+		wladdSchemaInOutput.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.addSchemaInOutput.Label"));
+		props.setLook(wladdSchemaInOutput);
+		fdladdSchemaInOutput = new FormData();
+		fdladdSchemaInOutput.left = new FormAttachment(0, -margin);
+		fdladdSchemaInOutput.top = new FormAttachment(wincludeSynonym, 2*margin);
+		fdladdSchemaInOutput.right = new FormAttachment(middle, -2*margin);
+		wladdSchemaInOutput.setLayoutData(fdladdSchemaInOutput);
+        
+		waddSchemaInOutput= new Button(wSettings, SWT.CHECK);
+		props.setLook(waddSchemaInOutput);
+		waddSchemaInOutput.setToolTipText(BaseMessages.getString(PKG, "GetTableNamesDialog.addSchemaInOutput.Tooltip"));
+		fdaddSchemaInOutput= new FormData();
+		fdaddSchemaInOutput.left = new FormAttachment(middle, -margin);
+		fdaddSchemaInOutput.top = new FormAttachment(wincludeSynonym, 2*margin);
+		waddSchemaInOutput.setLayoutData(fdaddSchemaInOutput);		
+		SelectionAdapter laddSchemaInOutput= new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+            	input.setChanged();
+            }
+        };
+        waddSchemaInOutput.addSelectionListener(laddSchemaInOutput);
 
         
 		FormData fdSettings = new FormData();
 		fdSettings.left = new FormAttachment(0, margin);
-		fdSettings.top = new FormAttachment(wConnection, 2*margin);
+		fdSettings.top = new FormAttachment(wSchemaField, 2*margin);
 		fdSettings.right = new FormAttachment(100, -margin);
 		wSettings.setLayoutData(fdSettings);
 		
@@ -397,6 +601,8 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		setSize();
 		
 		getData();
+		ActivedynamicSchema();
+		refreshIncludeCatalog();
 		input.setChanged(changed);
 
 		shell.open();
@@ -406,7 +612,28 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		}
 		return stepname;
 	}
-
+	private void refreshIncludeCatalog()
+	{
+		if(!Const.isEmpty(wschemaname.getText())) {
+			wincludeCatalog.setSelection(false);
+			wlincludeCatalog.setEnabled(false);
+			wincludeCatalog.setEnabled(false);
+		}else{
+			wlincludeCatalog.setEnabled(true);
+			wincludeCatalog.setEnabled(true);
+		}
+	}
+    private void ActivedynamicSchema()
+    {
+    	wlSchemaField.setEnabled(wdynamicSchema.getSelection());
+    	wSchemaField.setEnabled(wdynamicSchema.getSelection());
+    	wPreview.setEnabled(!wdynamicSchema.getSelection());
+    	wlschemaname.setEnabled(!wdynamicSchema.getSelection());
+    	wschemaname.setEnabled(!wdynamicSchema.getSelection());
+    	if(wdynamicSchema.getSelection()) wincludeCatalog.setSelection(false);
+    	wlincludeCatalog.setEnabled(!wdynamicSchema.getSelection());
+    	wincludeCatalog.setEnabled(!wdynamicSchema.getSelection());
+    }
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
@@ -419,14 +646,21 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		{
 			wConnection.setText( transMeta.getDatabase(0).getName() );
 		}
+		if (input.getSchemaName()!=null)   wschemaname.setText(input.getSchemaName());
 		if (input.getTablenameFieldName()!=null)   wTablenameField.setText(input.getTablenameFieldName());
 		if (input.getObjectTypeFieldName()!=null)   wObjectTypeField.setText(input.getObjectTypeFieldName());
 		if (input.isSystemObjectFieldName()!=null)   wisSystemObjectField.setText(input.isSystemObjectFieldName());
-		
+		wincludeCatalog.setSelection(input.isIncludeCatalog());
+		wincludeSchema.setSelection(input.isIncludeSchema());
 		wincludeTable.setSelection(input.isIncludeTable());
 		wincludeView.setSelection(input.isIncludeView());
 		wincludeProcedure.setSelection(input.isIncludeProcedure());
-		wincludeSynonym.setSelection(input.isIncludeSyonym());
+		wincludeSynonym.setSelection(input.isIncludeSynonym());
+		waddSchemaInOutput.setSelection(input.isAddSchemaInOut());
+		
+		wdynamicSchema.setSelection(input.isDynamicSchema());
+		if (input.getSchemaFieldName()!=null)   wSchemaField.setText(input.getSchemaFieldName());
+		
 		wStepname.selectAll();
 	}
 	
@@ -436,7 +670,25 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		input.setChanged(changed);
 		dispose();
 	}
-	
+	 private void setSchemaField()
+	 {
+		 if(!gotpreviousfields) {
+			 try{
+		         String value=wSchemaField.getText();  
+				 wSchemaField.removeAll();
+					
+				 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+				 if (r!=null) {
+		             wSchemaField.setItems(r.getFieldNames());
+				 }
+				 if(value!=null) wSchemaField.setText(value);
+			 }catch(KettleException ke){
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "GetTableNamesDialog.FailedToGetFields.DialogTitle"), 
+							BaseMessages.getString(PKG, "GetTableNamesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+			 gotpreviousfields=true;
+		 }
+	 }
 	private void ok()
 	{
 		if (Const.isEmpty(wStepname.getText())) return;
@@ -455,13 +707,21 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 	private void getInfo(GetTableNamesMeta info)
 	{
 		info.setDatabase( transMeta.findDatabase(wConnection.getText()) );
+		info.setSchemaName(wschemaname.getText() );
 		info.setTablenameFieldName(wTablenameField.getText() );
 		info.setObjectTypeFieldName(wObjectTypeField.getText() );
 		info.setIsSystemObjectFieldName(wisSystemObjectField.getText() );
+		info.setIncludeCatalog(wincludeCatalog.getSelection());
+		info.setIncludeSchema(wincludeSchema.getSelection());
 		info.setIncludeTable(wincludeTable.getSelection());
 		info.setIncludeView(wincludeView.getSelection());
 		info.setIncludeProcedure(wincludeProcedure.getSelection());
-		info.setIncludeSyonym(wincludeSynonym.getSelection());
+		info.setIncludeSynonym(wincludeSynonym.getSelection());
+		info.setAddSchemaInOut(waddSchemaInOutput.getSelection());
+		
+		info.setDynamicSchema(wdynamicSchema.getSelection());
+		info.setSchemaFieldName(wSchemaField.getText());
+
 	}
 	private boolean checkUserInput(GetTableNamesMeta meta)
 	{

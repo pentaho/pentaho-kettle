@@ -4107,12 +4107,16 @@ public class Database implements VariableSpace
 	{
 		return getTablenames(false);
 	}
-	
 	public String[] getTablenames(boolean includeSchema) throws KettleDatabaseException
 	{
-		String schemaname = null;
-		if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
-
+		return getTablenames(null, includeSchema);
+	}
+	public String[] getTablenames(String schemanamein, boolean includeSchema) throws KettleDatabaseException
+	{
+		String schemaname=schemanamein;
+		if(schemaname==null) {
+			if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
+		}
 		List<String> names = new ArrayList<String>();
 		ResultSet alltables=null;
 		try
@@ -4174,14 +4178,19 @@ public class Database implements VariableSpace
 	{
 		return getViews(false);
 	}
-	
 	public String[] getViews(boolean includeSchema) throws KettleDatabaseException
+	{
+		return  getViews(null, includeSchema);
+	}
+	public String[] getViews(String schemanamein, boolean includeSchema) throws KettleDatabaseException
 	{
 		if (!databaseMeta.supportsViews()) return new String[] {};
 
-		String schemaname = null;
-		if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
-
+		String schemaname = schemanamein;
+		if(schemaname==null) {
+			if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
+		}
+		
 		ArrayList<String> names = new ArrayList<String>();
 		ResultSet alltables=null;
 		try
@@ -4243,14 +4252,19 @@ public class Database implements VariableSpace
 	{
 		return getSynonyms(false);
 	}
-	
 	public String[] getSynonyms(boolean includeSchema) throws KettleDatabaseException
+	{
+		return getSynonyms(null,includeSchema);
+	}
+	public String[] getSynonyms(String schemanamein, boolean includeSchema) throws KettleDatabaseException
 	{
 		if (!databaseMeta.supportsSynonyms()) return new String[] {};
 		
-		String schemaname = null;
-		if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
-	
+		String schemaname = schemanamein;
+		if(schemaname==null) {
+			if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
+		}
+		
 		ArrayList<String> names = new ArrayList<String>();
 		ResultSet alltables=null;
 		try
@@ -4337,6 +4351,39 @@ public class Database implements VariableSpace
 		}
 	
 		if(log.isDetailed()) log.logDetailed(toString(), "read :"+catalogList.size()+" schemas from db meta-data.");
+	
+		return catalogList.toArray(new String[catalogList.size()]);
+	}
+	public String[] getCatalogs() throws KettleDatabaseException
+	{
+		ArrayList<String> catalogList = new ArrayList<String>();
+		ResultSet catalogResultSet=null;
+		try
+		{
+			catalogResultSet =getDatabaseMetaData().getCatalogs();
+			// Grab all the catalog names and put them in an array list
+			while (catalogResultSet!=null && catalogResultSet.next())
+			{
+				catalogList.add(catalogResultSet.getString(1));
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new KettleDatabaseException("Error getting catalogs!", e);
+		}
+		finally
+		{
+			try
+			{
+				if (catalogResultSet!=null) catalogResultSet.close();
+			}
+			catch(SQLException e)
+			{
+				throw new KettleDatabaseException("Error closing resultset after getting catalogs!", e);
+			}
+		}
+	
+		if(log.isDetailed()) log.logDetailed(toString(), "read :"+catalogList.size()+" catalogs from db meta-data.");
 	
 		return catalogList.toArray(new String[catalogList.size()]);
 	}

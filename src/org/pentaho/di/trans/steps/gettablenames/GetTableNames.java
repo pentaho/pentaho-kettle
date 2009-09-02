@@ -58,75 +58,203 @@ public class GetTableNames extends BaseStep implements StepInterface
 	{
         Object[] rowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
  
-		 return rowData;
+		return rowData;
 	}
     public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
     {
         meta=(GetTableNamesMeta)smi;
         data=(GetTableNamesData)sdi;
+                
         
-        String tableNames[] = data.db.getTablenames();
-    	
-        if(meta.isIncludeTable())
+        if(meta.isDynamicSchema()) {
+        	// Grab one row from previous step ...
+        	data.readrow=getRow();
+	
+		   if (data.readrow==null) {
+	          setOutputDone();
+	          return false;
+	       }
+        }
+
+        if(first)
         {
-			String ObjectType=BaseMessages.getString(PKG, "GetTableNamesDialog.ObjectType.Table");
-			
-			for(int i=0; i<tableNames.length && !isStopped();i++)
-			{
-		        Object[] outputRow = buildEmptyRow();
-		    	int outputIndex = 0;
-		    	
-				String tableName = tableNames[i];	
-	        	outputRow[outputIndex++]=tableName;
+        	first=false;
+
+	        if(meta.isDynamicSchema()) {
+	        	data.inputRowMeta = getInputRowMeta();
+				data.outputRowMeta = data.inputRowMeta.clone();
+	        	// Get total previous fields
+	        	data.totalpreviousfields=data.inputRowMeta.size();
 	        	
-	    		if(!Const.isEmpty(data.realObjectTypeFieldName))
-	    		{
-	    			outputRow[outputIndex++]=ObjectType;
+	        	// Check is filename field is provided
+				if (Const.isEmpty(meta.getSchemaFieldName())) {
+					logError(BaseMessages.getString(PKG, "GetTableNames.Log.NoSchemaField"));
+					throw new KettleException(BaseMessages.getString(PKG, "GetTableNames.Log.NoSchemaField"));
+				}
+				
+	            
+	            // cache the position of the field			
+				if (data.indexOfSchemaField<0) {	
+					data.indexOfSchemaField =data.inputRowMeta.indexOfValue(meta.getSchemaFieldName());
+					if (data.indexOfSchemaField<0) {
+						// The field is unreachable !
+						logError(BaseMessages.getString(PKG, "GetTableNames.Log.ErrorFindingField")+ "[" + meta.getSchemaFieldName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "GetTableNames.Exception.CouldnotFindField",meta.getSchemaFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+				}   
+	        	
+	        }else{
+	        	data.outputRowMeta = new RowMeta();
+	        }
+	        
+	        meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+	        
+        }
+        
+        if(meta.isDynamicSchema()) {
+        	// Get value of dynamic schema ...
+        	data.realSchemaName=data.inputRowMeta.getString(data.readrow,data.indexOfSchemaField);
+        }
+
+        
+		Object[] outputRow = buildEmptyRow();
+		if(meta.isDynamicSchema()) {
+			System.arraycopy(data.readrow, 0, outputRow, 0, data.readrow.length);
+		}
+		
+		
+		// Catalogs
+		if(meta.isIncludeCatalog()) {
+			String ObjectType=BaseMessages.getString(PKG, "GetTableNames.ObjectType.Catalog");
+	        // Views
+			String catalogsNames[]= data.db.getCatalogs();
+
+	        
+			for(int i=0; i<catalogsNames.length && !isStopped();i++) {
+		        
+        		// Clone current input row
+				Object[] outputRowSchema = outputRow;
+    			
+		    	int outputIndex = data.totalpreviousfields;
+		    	
+				String catalogName = catalogsNames[i];	
+				outputRowSchema[outputIndex++]=catalogName;
+	        	
+	    		if(!Const.isEmpty(data.realObjectTypeFieldName)) {
+	    			outputRowSchema[outputIndex++]=ObjectType;
 	    		}	    		
-	    		if(!Const.isEmpty(data.realIsSystemObjectFieldName))
-	    		{
-	    			outputRow[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(tableName));
+	    		if(!Const.isEmpty(data.realIsSystemObjectFieldName)) {
+	    			outputRowSchema[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(catalogName));
 	    		}
 	    		data.rownr++;
-	    		putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
+	    		putRow(data.outputRowMeta, outputRowSchema);  // copy row to output rowset(s);
 	
-	            if (checkFeedback(getLinesRead())) 
-	            {
+	            if (checkFeedback(getLinesRead())) {
 	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
 	            }
-	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRow)));
+	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowSchema)));
 			}
 		}
+        
+		
+		// Schemas
+        if(meta.isIncludeSchema()) {
+			String ObjectType=BaseMessages.getString(PKG, "GetTableNamesDialog.ObjectType.Schema");
+	        // Views
+			String schemaNames[]= new String[] {};
+			if(!Const.isEmpty(data.realSchemaName))
+				schemaNames = new String[]{data.realSchemaName};
+			else
+				schemaNames = data.db.getSchemas();
+	        
+			for(int i=0; i<schemaNames.length && !isStopped();i++) {
+		        
+        		// Clone current input row
+				Object[] outputRowSchema = outputRow;
+    			
+		    	int outputIndex = data.totalpreviousfields;
+		    	
+				String schemaName = schemaNames[i];	
+				outputRowSchema[outputIndex++]=schemaName;
+	        	
+	    		if(!Const.isEmpty(data.realObjectTypeFieldName)) {
+	    			outputRowSchema[outputIndex++]=ObjectType;
+	    		}	    		
+	    		if(!Const.isEmpty(data.realIsSystemObjectFieldName)) {
+	    			outputRowSchema[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(schemaName));
+	    		}
+	    		data.rownr++;
+	    		putRow(data.outputRowMeta, outputRowSchema);  // copy row to output rowset(s);
+	
+	            if (checkFeedback(getLinesRead())) {
+	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+	            }
+	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowSchema)));
+			}
+		}
+        
+        
+        if(meta.isIncludeTable()) {
+            // Tables
+            String tableNames[] = data.db.getTablenames(data.realSchemaName, meta.isAddSchemaInOut());
+           
+			String ObjectType=BaseMessages.getString(PKG, "GetTableNamesDialog.ObjectType.Table");
+			
+			for(int i=0; i<tableNames.length && !isStopped();i++) {
+		        Object[] outputRowTable = outputRow;
+    			
+		    	int outputIndex = data.totalpreviousfields;
+		    	
+				String tableName = tableNames[i];	
+				outputRowTable[outputIndex++]=tableName;
+	        	
+	    		if(!Const.isEmpty(data.realObjectTypeFieldName)) {
+	    			outputRowTable[outputIndex++]=ObjectType;
+	    		}	    		
+	    		if(!Const.isEmpty(data.realIsSystemObjectFieldName)) {
+	    			outputRowTable[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(tableName));
+	    		}
+	    		data.rownr++;
+	    		putRow(data.outputRowMeta, outputRowTable);  // copy row to output rowset(s);
+	
+	            if (checkFeedback(getLinesRead()))  {
+	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+	            }
+	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowTable)));
+			}
+		}
+        
+        
 		// Views
 		if(meta.isIncludeView())
         {
             try{
-            	String viewNames[]=data.db.getViews();
+            	String viewNames[]=data.db.getViews(data.realSchemaName, meta.isAddSchemaInOut());
             	String ObjectType=BaseMessages.getString(PKG, "GetTableNamesDialog.ObjectType.View");
     	        for(int i=0; i<viewNames.length && !isStopped();i++)
     	        {
-    	            Object[] outputRow = buildEmptyRow();
-    	        	int outputIndex = 0;
+    	            Object[] outputRowView = outputRow;
+    	        	int outputIndex = data.totalpreviousfields;
     	        	
     	        	String viewName=viewNames[i];
-    	        	outputRow[outputIndex++]=viewName;
+    	        	outputRowView[outputIndex++]=viewName;
     	    		
     	    		if(!Const.isEmpty(data.realObjectTypeFieldName))
     	    		{
-        	        	outputRow[outputIndex++]=ObjectType;
+    	    			outputRowView[outputIndex++]=ObjectType;
     	    		}
     	    		if(!Const.isEmpty(data.realIsSystemObjectFieldName))
     	    		{
-    	    			outputRow[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(viewName));
+    	    			outputRowView[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(viewName));
     	    		}
     	    		data.rownr++;
-    	    		putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
+    	    		putRow(data.outputRowMeta, outputRowView);  // copy row to output rowset(s);
     	    		
     	            if (checkFeedback(getLinesRead())) 
     	            {
     	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
     	            }
-    	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRow))); //$NON-NLS-1$  
+    	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowView))); //$NON-NLS-1$  
     	        }
             }catch(Exception e){};
         }
@@ -136,65 +264,69 @@ public class GetTableNames extends BaseStep implements StepInterface
 	        String ObjectType=BaseMessages.getString(PKG, "GetTableNamesDialog.ObjectType.Procedure");
 	        for(int i=0; i<procNames.length && !isStopped();i++)
 	        {
-	            Object[] outputRow = buildEmptyRow();
-	        	int outputIndex = 0;
+	            Object[] outputRowProc = outputRow;
+	        	int outputIndex = data.totalpreviousfields;
 	        	
 	        	String procName=procNames[i];
-	        	outputRow[outputIndex++]=procName;
+	        	outputRowProc[outputIndex++]=procName;
 
 	    		if(!Const.isEmpty(data.realObjectTypeFieldName))
 	    		{
-	    			outputRow[outputIndex++]=ObjectType;
+	    			outputRowProc[outputIndex++]=ObjectType;
 	    		}
 	    		if(!Const.isEmpty(data.realIsSystemObjectFieldName))
 	    		{
-	    			outputRow[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(procName));
+	    			outputRowProc[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(procName));
 	    		}
 	    		data.rownr++;
-	    		putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
+	    		putRow(data.outputRowMeta, outputRowProc);  // copy row to output rowset(s);
 	    		
 	            if (checkFeedback(getLinesRead())) 
 	            {
 	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
 	            }
-	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRow))); //$NON-NLS-1$  
+	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowProc))); //$NON-NLS-1$  
 	        }
 	     }
-        if(meta.isIncludeSyonym())
+        if(meta.isIncludeSynonym())
         {
-	        String Synonyms[]=data.db.getSynonyms();
+	        String Synonyms[]=data.db.getSynonyms(data.realSchemaName, meta.isAddSchemaInOut());
 	        String ObjectType=BaseMessages.getString(PKG, "GetTableNamesDialog.ObjectType.Synonym");
 	        for(int i=0; i<Synonyms.length && !isStopped();i++)
 	        {
-	            Object[] outputRow = buildEmptyRow();
-	        	int outputIndex = 0;
+	            Object[] outputRowSyn = outputRow;
+	        	int outputIndex = data.totalpreviousfields;
 	        	
 	        	String Synonym=Synonyms[i];
 	        	
-	        	outputRow[outputIndex++]=Synonym;
+	        	outputRowSyn[outputIndex++]=Synonym;
 
 	    		if(!Const.isEmpty(data.realObjectTypeFieldName))
 	    		{
-	    			outputRow[outputIndex++]=ObjectType;
+	    			outputRowSyn[outputIndex++]=ObjectType;
 	    		}
 	    		if(!Const.isEmpty(data.realIsSystemObjectFieldName))
 	    		{
-	    			outputRow[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(Synonym));
+	    			outputRowSyn[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(Synonym));
 	    		}
 	    		data.rownr++;
-	    		putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
+	    		putRow(data.outputRowMeta, outputRowSyn);  // copy row to output rowset(s);
 	    		
 	            if (checkFeedback(getLinesRead())) 
 	            {
 	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
 	            }
 	            
-	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRow))); //$NON-NLS-1$   
+	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowSyn))); //$NON-NLS-1$   
 	        }
 	   }
 
-        setOutputDone();
-        return false;
+        if(!meta.isDynamicSchema()) {
+        	setOutputDone();
+        	return false;
+        }else {
+        	return true;
+        }
     }
     
     public boolean init(StepMetaInterface smi, StepDataInterface sdi)
@@ -209,10 +341,12 @@ public class GetTableNames extends BaseStep implements StepInterface
         		log.logError(toString(), BaseMessages.getString(PKG, "GetTableNames.Error.TablenameFieldNameMissing"));
         		return false;
         	}
+        	String realSchemaName=environmentSubstitute(meta.getSchemaName());
+        	if(!Const.isEmpty(realSchemaName)) data.realSchemaName=realSchemaName;
         	data.realTableNameFieldName=environmentSubstitute(meta.getTablenameFieldName());
         	data.realObjectTypeFieldName=environmentSubstitute(meta.getObjectTypeFieldName());
         	data.realIsSystemObjectFieldName=environmentSubstitute(meta.isSystemObjectFieldName());
-        	if(!meta.isIncludeTable() && !meta.isIncludeView() && !meta.isIncludeProcedure() && !meta.isIncludeSyonym())
+        	if(!meta.isIncludeSchema() && !meta.isIncludeTable() && !meta.isIncludeView() && !meta.isIncludeProcedure() && !meta.isIncludeSynonym())
         	{
         		log.logError(toString(), BaseMessages.getString(PKG, "GetTableNames.Error.includeAtLeastOneType"));
         		return false;

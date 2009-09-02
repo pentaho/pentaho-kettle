@@ -29,9 +29,15 @@ public class GetTableNamesData extends BaseStepData implements StepDataInterface
 	public String realTableNameFieldName;
 	public String realObjectTypeFieldName;
 	public String realIsSystemObjectFieldName;
+	public String realSchemaName;
 	
 	public RowMetaInterface outputRowMeta;
     public long                rownr;
+    public RowMetaInterface inputRowMeta;
+    public int totalpreviousfields;
+    public int indexOfSchemaField;
+    
+    public Object[] readrow;
     
 	/**
 	 * 
@@ -44,6 +50,10 @@ public class GetTableNamesData extends BaseStepData implements StepDataInterface
 		realObjectTypeFieldName=null;
 		realIsSystemObjectFieldName=null;
 		rownr=0;
+		realSchemaName=null;
+		totalpreviousfields=0;
+		readrow=null;
+		indexOfSchemaField=-1;
 	}
 
 }
