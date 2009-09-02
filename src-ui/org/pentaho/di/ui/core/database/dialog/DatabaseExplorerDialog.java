@@ -721,13 +721,11 @@ public class DatabaseExplorerDialog extends Dialog
     		if (result!=null) {
     			// first return primary keys
     			pk=db.getPrimaryKeys(tableName);
-				System.out.println("-----"+pk.toString());
 				for(int c=0; c<result.size();c++){
 					ValueMetaInterface v=result.getValueMeta(c);
 					if (v.getName()!=null)	{
 						TreeItem newCol = new TreeItem(newTab, SWT.NONE);
 						if(pk.contains(v.getName())) {
-							System.out.println("-----"+v.getName());
 							newCol.setImage(GUIResource.getInstance().getImageKeySmall());
 						}
 						else
