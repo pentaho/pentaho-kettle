@@ -15,7 +15,6 @@
 package org.pentaho.di.ui.core.database.dialog;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -713,19 +712,23 @@ public class DatabaseExplorerDialog extends Dialog
 	    String sql = dbMeta.getSQLQueryFields(tableName);
 	    Database db = new Database(dbMeta);
 		RowMetaInterface result=null;
-		HashSet<String> pk= new HashSet<String>();
 
 		try {
 			db.connect();
     		result = db.getQueryFields(sql, false);
     		if (result!=null) {
-    			// first return primary keys
-    			pk=db.getPrimaryKeys(tableName);
+    		
+	    		// first return primary key columns
+				List<String> pka=new ArrayList<String>();
+				String[] pk=db.getPrimaryKeyColumnNames(tableName);
+				for(int k=0; k<pk.length; k++) {
+					pka.add(pk[k]);
+				}
 				for(int c=0; c<result.size();c++){
 					ValueMetaInterface v=result.getValueMeta(c);
 					if (v.getName()!=null)	{
 						TreeItem newCol = new TreeItem(newTab, SWT.NONE);
-						if(pk.contains(v.getName())) {
+						if(pka.contains(v.getName())) {
 							newCol.setImage(GUIResource.getInstance().getImageKeySmall());
 						}
 						else
@@ -740,7 +743,6 @@ public class DatabaseExplorerDialog extends Dialog
 					"Error getting colums from table [" +tablename+"]" , e);
 		}finally {
 			db.disconnect();
-			pk.clear();pk=null;
 		}
 		
 	}

@@ -29,6 +29,7 @@ public class GetTableNamesData extends BaseStepData implements StepDataInterface
 	public String realTableNameFieldName;
 	public String realObjectTypeFieldName;
 	public String realIsSystemObjectFieldName;
+	public String realSQLCreationFieldName;
 	public String realSchemaName;
 	
 	public RowMetaInterface outputRowMeta;
@@ -49,6 +50,7 @@ public class GetTableNamesData extends BaseStepData implements StepDataInterface
 		realTableNameFieldName=null;
 		realObjectTypeFieldName=null;
 		realIsSystemObjectFieldName=null;
+		realSQLCreationFieldName=null;
 		rownr=0;
 		realSchemaName=null;
 		totalpreviousfields=0;

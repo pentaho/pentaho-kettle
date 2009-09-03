@@ -44,7 +44,6 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -3260,6 +3259,7 @@ public class Database implements VariableSpace
      * @param use_autoinc true if we need to use auto-increment fields for a primary key
      * @param pk the name of the primary/technical key field
      * @param semicolon append semicolon to the statement
+     * @param pkc primary key composite ( name of the key fields)
      * @return the SQL needed to create the specified table and fields.
      */
 	public String getCreateTableStatement(String tableName, RowMetaInterface fields, String tk, boolean use_autoinc, String pk, boolean semicolon)
@@ -3339,7 +3339,6 @@ public class Database implements VariableSpace
 		
 		return retval.toString();
 	}
-
 	public String getAlterTableStatement(String tableName, RowMetaInterface fields, String tk, boolean use_autoinc, String pk, boolean semicolon) throws KettleDatabaseException
 	{
 		String retval="";
@@ -4926,20 +4925,26 @@ public class Database implements VariableSpace
 			throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToRollbackToSavepoint"), e);
 		}
 	}
-	public HashSet<String> getPrimaryKeys(String tablename) throws KettleDatabaseException {
+
+	/**
+	 * Return primary key column names ...
+	 * @param tablename 
+	 * @throws KettleDatabaseException
+	 */
+	public String[] getPrimaryKeyColumnNames(String tablename) throws KettleDatabaseException {
+	List<String> names = new ArrayList<String>();
 	ResultSet allkeys=null;
-	HashSet<String> names = new HashSet<String>();
 	try {
 		allkeys=getDatabaseMetaData().getPrimaryKeys(null, null, tablename);
 		while (allkeys.next()) {
-			String col_name=allkeys.getString("COLUMN_NAME");
 			String keyname=allkeys.getString("PK_NAME");
+			String col_name=allkeys.getString("COLUMN_NAME");
 			if(!names.contains(col_name)) names.add(col_name);
             if (log.isRowLevel()) log.logRowlevel(toString(), "getting key : "+keyname + " on column "+col_name);
 		}
 	}
 	catch(SQLException e) {
-		log.logError(toString(), "Error getting primary keys from table ["+tablename+"]");
+		log.logError(toString(), "Error getting primary keys columns from table ["+tablename+"]");
 	}
 	finally {
 		try {
@@ -4948,8 +4953,6 @@ public class Database implements VariableSpace
             throw new KettleDatabaseException("Error closing connection while searching primary keys in table ["+tablename+"]", e);
 		}
 	}
-
-	return names;
- }
-	
+	return names.toArray(new String[names.size()]);
+  }
 }

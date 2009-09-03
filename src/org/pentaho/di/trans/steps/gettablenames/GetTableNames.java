@@ -133,26 +133,29 @@ public class GetTableNames extends BaseStep implements StepInterface
 			for(int i=0; i<catalogsNames.length && !isStopped();i++) {
 		        
         		// Clone current input row
-				Object[] outputRowSchema = outputRow;
+				Object[] outputRowCatalog = outputRow;
     			
 		    	int outputIndex = data.totalpreviousfields;
 		    	
 				String catalogName = catalogsNames[i];	
-				outputRowSchema[outputIndex++]=catalogName;
+				outputRowCatalog[outputIndex++]=catalogName;
 	        	
 	    		if(!Const.isEmpty(data.realObjectTypeFieldName)) {
-	    			outputRowSchema[outputIndex++]=ObjectType;
+	    			outputRowCatalog[outputIndex++]=ObjectType;
 	    		}	    		
 	    		if(!Const.isEmpty(data.realIsSystemObjectFieldName)) {
-	    			outputRowSchema[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(catalogName));
+	    			outputRowCatalog[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(catalogName));
+	    		}
+	    		if(!Const.isEmpty(data.realSQLCreationFieldName)) {
+	    			outputRowCatalog[outputIndex++]=null;
 	    		}
 	    		data.rownr++;
-	    		putRow(data.outputRowMeta, outputRowSchema);  // copy row to output rowset(s);
+	    		putRow(data.outputRowMeta, outputRowCatalog);  // copy row to output rowset(s);
 	
 	            if (checkFeedback(getLinesRead())) {
 	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
 	            }
-	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowSchema)));
+	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowCatalog)));
 			}
 		}
         
@@ -182,6 +185,9 @@ public class GetTableNames extends BaseStep implements StepInterface
 	    		}	    		
 	    		if(!Const.isEmpty(data.realIsSystemObjectFieldName)) {
 	    			outputRowSchema[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(schemaName));
+	    		}
+	    		if(!Const.isEmpty(data.realSQLCreationFieldName)) {
+	    			outputRowSchema[outputIndex++]=null;
 	    		}
 	    		data.rownr++;
 	    		putRow(data.outputRowMeta, outputRowSchema);  // copy row to output rowset(s);
@@ -214,6 +220,35 @@ public class GetTableNames extends BaseStep implements StepInterface
 	    		if(!Const.isEmpty(data.realIsSystemObjectFieldName)) {
 	    			outputRowTable[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(tableName));
 	    		}
+	    		// Get primary key
+	    		String pk=null;
+	    		String[] pkc=data.db.getPrimaryKeyColumnNames(tableName);
+	    		if(pkc!=null && pkc.length==1) {
+	    			pk=pkc[0];
+	    			pkc=null;
+	    		}
+	    		// return sql creation
+	    		// handle simple primary key (one field)
+				String sql = data.db.getCreateTableStatement(tableName, data.db.getTableFields(tableName), null, false, pk, true);
+
+				if(pkc!=null) {
+					// add composite primary key (several fields in primary key)
+					int IndexOfLastClosedBracket=sql.lastIndexOf(")");
+					if(IndexOfLastClosedBracket>-1) {
+						sql=sql.substring(0, IndexOfLastClosedBracket);
+						sql+=", PRIMARY KEY (";
+						for(int k=0; k<pkc.length; k++)
+						{
+							if(k>0) sql+=", ";
+							sql+=pkc[k];
+						}
+						sql+=")" + Const.CR+")"+ Const.CR+";";
+					}
+				}
+				if(!Const.isEmpty(data.realSQLCreationFieldName)) {
+	    			outputRowTable[outputIndex++]=sql;
+	    		}
+				
 	    		data.rownr++;
 	    		putRow(data.outputRowMeta, outputRowTable);  // copy row to output rowset(s);
 	
@@ -247,6 +282,10 @@ public class GetTableNames extends BaseStep implements StepInterface
     	    		{
     	    			outputRowView[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(viewName));
     	    		}
+    	    		
+    				if(!Const.isEmpty(data.realSQLCreationFieldName)) {
+    					outputRowView[outputIndex++]=null;
+    	    		}
     	    		data.rownr++;
     	    		putRow(data.outputRowMeta, outputRowView);  // copy row to output rowset(s);
     	    		
@@ -278,6 +317,9 @@ public class GetTableNames extends BaseStep implements StepInterface
 	    		{
 	    			outputRowProc[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(procName));
 	    		}
+	    		if(!Const.isEmpty(data.realSQLCreationFieldName)) {
+	    			outputRowProc[outputIndex++]=null;
+	    		}
 	    		data.rownr++;
 	    		putRow(data.outputRowMeta, outputRowProc);  // copy row to output rowset(s);
 	    		
@@ -308,6 +350,9 @@ public class GetTableNames extends BaseStep implements StepInterface
 	    		if(!Const.isEmpty(data.realIsSystemObjectFieldName))
 	    		{
 	    			outputRowSyn[outputIndex++]=Boolean.valueOf(data.db.isSystemTable(Synonym));
+	    		}
+	    		if(!Const.isEmpty(data.realSQLCreationFieldName)) {
+	    			outputRowSyn[outputIndex++]=null;
 	    		}
 	    		data.rownr++;
 	    		putRow(data.outputRowMeta, outputRowSyn);  // copy row to output rowset(s);
@@ -346,6 +391,7 @@ public class GetTableNames extends BaseStep implements StepInterface
         	data.realTableNameFieldName=environmentSubstitute(meta.getTablenameFieldName());
         	data.realObjectTypeFieldName=environmentSubstitute(meta.getObjectTypeFieldName());
         	data.realIsSystemObjectFieldName=environmentSubstitute(meta.isSystemObjectFieldName());
+        	data.realSQLCreationFieldName=environmentSubstitute(meta.getSQLCreationFieldName());
         	if(!meta.isIncludeSchema() && !meta.isIncludeTable() && !meta.isIncludeView() && !meta.isIncludeProcedure() && !meta.isIncludeSynonym())
         	{
         		log.logError(toString(), BaseMessages.getString(PKG, "GetTableNames.Error.includeAtLeastOneType"));

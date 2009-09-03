@@ -56,6 +56,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
     private String schemaname;
     /** function result: new value name */
     private String       tablenamefieldname;
+    private String sqlcreationfieldname;
     private String objecttypefieldname;
     private String issystemobjectfieldname;
     
@@ -108,6 +109,21 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
         this.tablenamefieldname = tablenamefieldname;
     }
     
+    /**
+     * @return Returns the resultName.
+     */
+    public String getSQLCreationFieldName()
+    {
+        return sqlcreationfieldname;
+    }
+
+    /**
+     * @param sqlcreationfieldname The sqlcreationfieldname to set.
+     */
+    public void setSQLCreationFieldName(String sqlcreationfieldname)
+    {
+        this.sqlcreationfieldname = sqlcreationfieldname;
+    }
     /**
      * @return Returns the resultName.
      */
@@ -257,6 +273,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
         includeSynonym=true;
         addSchemaInOutput=false;
         tablenamefieldname = "tablename"; //$NON-NLS-1$
+        sqlcreationfieldname=null;
         objecttypefieldname="type";
         issystemobjectfieldname="is system";
         dynamicSchema=false;
@@ -291,6 +308,16 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}
+		
+		String realSQLCreation=space.environmentSubstitute(sqlcreationfieldname);
+		if (!Const.isEmpty(realSQLCreation))
+		{
+			ValueMetaInterface v = new ValueMeta(realSQLCreation, ValueMeta.TYPE_STRING); 
+			v.setLength(500);
+			v.setPrecision(-1);
+			v.setOrigin(name);
+			r.addValueMeta(v);
+		}
     }
 
     public String getXML()
@@ -302,6 +329,8 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("tablenamefieldname", tablenamefieldname)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("objecttypefieldname", objecttypefieldname)); 
         retval.append("    " + XMLHandler.addTagValue("issystemobjectfieldname", issystemobjectfieldname)); 
+        retval.append("    " + XMLHandler.addTagValue("sqlcreationfieldname", sqlcreationfieldname)); 
+        
         
         retval.append("    " + XMLHandler.addTagValue("includeCatalog", includeCatalog));
         retval.append("    " + XMLHandler.addTagValue("includeSchema", includeSchema));
@@ -326,6 +355,8 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
             schemaname = XMLHandler.getTagValue(stepnode, "schemaname"); 
             tablenamefieldname = XMLHandler.getTagValue(stepnode, "tablenamefieldname"); //$NON-NLS-1$
             objecttypefieldname = XMLHandler.getTagValue(stepnode, "objecttypefieldname"); 
+            sqlcreationfieldname = XMLHandler.getTagValue(stepnode, "sqlcreationfieldname"); 
+            
             issystemobjectfieldname = XMLHandler.getTagValue(stepnode, "issystemobjectfieldname"); 
             includeCatalog  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "includeCatalog"));
             includeSchema  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "includeSchema"));
@@ -351,6 +382,8 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
 			schemaname = rep.getStepAttributeString(id_step, "schemaname");
 			tablenamefieldname = rep.getStepAttributeString(id_step, "tablenamefieldname"); //$NON-NLS-1$
             objecttypefieldname = rep.getStepAttributeString(id_step, "objecttypefieldname");
+            sqlcreationfieldname = rep.getStepAttributeString(id_step, "sqlcreationfieldname");
+            
             issystemobjectfieldname = rep.getStepAttributeString(id_step, "issystemobjectfieldname");
             includeCatalog = rep.getStepAttributeBoolean(id_step, "includeCatalog"); 
             includeSchema = rep.getStepAttributeBoolean(id_step, "includeSchema"); 
@@ -377,6 +410,8 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
     		rep.saveStepAttribute(id_transformation, id_step, "schemaname", schemaname);
     		rep.saveStepAttribute(id_transformation, id_step, "tablenamefieldname", tablenamefieldname); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "objecttypefieldname", objecttypefieldname);
+            rep.saveStepAttribute(id_transformation, id_step, "sqlcreationfieldname", sqlcreationfieldname);
+            
             rep.saveStepAttribute(id_transformation, id_step, "issystemobjectfieldname", issystemobjectfieldname);
             // Also, save the step-database relationship!
             if (database != null) rep.insertStepDatabase(id_transformation, id_step, database.getObjectId());

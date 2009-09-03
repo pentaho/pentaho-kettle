@@ -63,6 +63,9 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 	private Label        wlTablenameField;
 	private Text         wTablenameField;
 	private FormData     fdlTablenameField, fdTablenameField;
+	private Label        wlSQLCreationField;
+	private Text         wSQLCreationField;
+	private FormData     fdlSQLCreationField, fdSQLCreationField;
 	private Button      wincludeTable;
 	private FormData	fdincludeTable;
 	private Label	  wlincludeTable;
@@ -556,7 +559,26 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		fdisSystemObjectField.right= new FormAttachment(100, 0);
 		wisSystemObjectField.setLayoutData(fdisSystemObjectField);
 
-
+		// CreationSQL fieldname ...
+		wlSQLCreationField=new Label(wOutputFields, SWT.RIGHT);
+		wlSQLCreationField.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.CreationSQLName.Label")); //$NON-NLS-1$
+ 		props.setLook(wlSQLCreationField);
+ 		fdlSQLCreationField=new FormData();
+ 		fdlSQLCreationField.left = new FormAttachment(0, 0);
+ 		fdlSQLCreationField.right= new FormAttachment(middle, -margin);
+ 		fdlSQLCreationField.top  = new FormAttachment(wisSystemObjectField, margin);
+		wlSQLCreationField.setLayoutData(fdlSQLCreationField);
+		wSQLCreationField=new Text(wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSQLCreationField.setToolTipText(BaseMessages.getString(PKG, "GetTableNamesDialog.CreationSQLName.Tooltip"));
+ 		props.setLook(wSQLCreationField);
+ 		wSQLCreationField.addModifyListener(lsMod);
+		fdSQLCreationField=new FormData();
+		fdSQLCreationField.left = new FormAttachment(middle, 0);
+		fdSQLCreationField.top  = new FormAttachment(wisSystemObjectField, margin);
+		fdSQLCreationField.right= new FormAttachment(100, 0);
+		wSQLCreationField.setLayoutData(fdSQLCreationField);
+		
+		
 		FormData fdOutputFields = new FormData();
 		fdOutputFields.left = new FormAttachment(0, margin);
 		fdOutputFields.top = new FormAttachment(wSettings, 2*margin);
@@ -650,6 +672,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		if (input.getTablenameFieldName()!=null)   wTablenameField.setText(input.getTablenameFieldName());
 		if (input.getObjectTypeFieldName()!=null)   wObjectTypeField.setText(input.getObjectTypeFieldName());
 		if (input.isSystemObjectFieldName()!=null)   wisSystemObjectField.setText(input.isSystemObjectFieldName());
+		if (input.getSQLCreationFieldName()!=null)   wSQLCreationField.setText(input.getSQLCreationFieldName());
 		wincludeCatalog.setSelection(input.isIncludeCatalog());
 		wincludeSchema.setSelection(input.isIncludeSchema());
 		wincludeTable.setSelection(input.isIncludeTable());
@@ -709,6 +732,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		info.setDatabase( transMeta.findDatabase(wConnection.getText()) );
 		info.setSchemaName(wschemaname.getText() );
 		info.setTablenameFieldName(wTablenameField.getText() );
+		info.setSQLCreationFieldName(wSQLCreationField.getText() );
 		info.setObjectTypeFieldName(wObjectTypeField.getText() );
 		info.setIsSystemObjectFieldName(wisSystemObjectField.getText() );
 		info.setIncludeCatalog(wincludeCatalog.getSelection());
