@@ -211,6 +211,15 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         fdEachRow.right = new FormAttachment(100, 0);
         fdEachRow.bottom = new FormAttachment(wLimit, -margin);
         wEachRow.setLayoutData(fdEachRow);
+        SelectionAdapter lsSelMod = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                input.setChanged();
+            }
+        };
+        wEachRow.addSelectionListener(lsSelMod);
+
 
 
 		// Read date from...
@@ -255,7 +264,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         fdVariables.right = new FormAttachment(100, 0);
         fdVariables.bottom = new FormAttachment(wDatefrom, -margin);
         wVariables.setLayoutData(fdVariables);
-        wVariables.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setSQLToolTip(); } });
+        wVariables.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { input.setChanged();setSQLToolTip(); } });
 
         // Lazy conversion?
 		//
@@ -274,7 +283,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         fdLazyConversion.right = new FormAttachment(100, 0);
         fdLazyConversion.bottom = new FormAttachment(wVariables, -margin);
         wLazyConversion.setLayoutData(fdLazyConversion);
-        wLazyConversion.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setSQLToolTip(); } });
+        wLazyConversion.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { input.setChanged();setSQLToolTip(); } });
 
 		wlPosition=new Label(shell, SWT.NONE); 
 		props.setLook(wlPosition);
