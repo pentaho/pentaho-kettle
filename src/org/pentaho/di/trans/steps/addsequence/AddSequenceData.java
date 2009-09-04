@@ -34,6 +34,9 @@ public class AddSequenceData extends BaseStepData implements StepDataInterface
 	public long  increment;
 	public long  maximum;
 	
+	public String realSchemaName;
+	public String realSequenceName;
+	
 	/**
 	 * 
 	 */
@@ -42,6 +45,8 @@ public class AddSequenceData extends BaseStepData implements StepDataInterface
 		super();
 
 		db=null;
+		realSchemaName=null;
+		realSequenceName=null;
 	}
 
 	/**

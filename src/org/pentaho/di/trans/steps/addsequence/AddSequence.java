@@ -63,11 +63,9 @@ public class AddSequence extends BaseStep implements StepInterface
 			}
 		} else if (meta.isDatabaseUsed()) {
 			try {
-				next = data.getDb().getNextSequenceValue(environmentSubstitute(meta.getSchemaName()), 
-						                                 environmentSubstitute(meta.getSequenceName()), 
-						                                 meta.getValuename());
+				next = data.getDb().getNextSequenceValue(data.realSchemaName, data.realSequenceName, meta.getValuename());
 			} catch (KettleDatabaseException dbe) {
-				throw new KettleStepException(Messages.getString("AddSequence.Exception.ErrorReadingSequence", meta.getSequenceName()), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleStepException(Messages.getString("AddSequence.Exception.ErrorReadingSequence", data.realSequenceName), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		} else {
 			// This should never happen, but if it does, don't continue!!!
@@ -140,6 +138,8 @@ public class AddSequence extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
+			data.realSchemaName=environmentSubstitute(meta.getSchemaName());
+			data.realSequenceName=environmentSubstitute(meta.getSequenceName());
 			if (meta.isDatabaseUsed())
 			{
 				Database db = new Database(meta.getDatabase());
@@ -203,7 +203,8 @@ public class AddSequence extends BaseStep implements StepInterface
 					return false;
 				}				
 				
-                if (!Const.isEmpty(meta.getCounterName()))
+				String realCounterName=environmentSubstitute(meta.getCounterName());
+                if (!Const.isEmpty(realCounterName))
                 {
                     data.setLookup( "@@sequence:"+meta.getCounterName() ); //$NON-NLS-1$
                 }
@@ -275,4 +276,5 @@ public class AddSequence extends BaseStep implements StepInterface
 	{		
     	BaseStep.runStepThread(this, meta, data);
 	}
+	
 }
