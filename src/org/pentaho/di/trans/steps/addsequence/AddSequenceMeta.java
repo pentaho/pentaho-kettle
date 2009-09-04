@@ -385,7 +385,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			try
 			{
 				db.connect();
-				if (db.checkSequenceExists(schemaName, sequenceName))
+				if (db.checkSequenceExists(transMeta.environmentSubstitute(schemaName), transMeta.environmentSubstitute(sequenceName)))
 				{
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.SequenceExists.Title"), stepMeta); //$NON-NLS-1$
 				}
