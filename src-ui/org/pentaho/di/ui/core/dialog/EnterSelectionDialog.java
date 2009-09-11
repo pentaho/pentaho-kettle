@@ -407,34 +407,37 @@ public class EnterSelectionDialog extends Dialog
 		refresh();
 	}
 
-	private void refresh()
+    private void refresh()
 	{
 		wSelection.removeAll();
 		
 		for (int i=0;i<choices.length;i++){
-			if(wbRegex.getSelection()) {
-				// use regex
-				if(pattern!=null) {
-					Matcher matcher = pattern.matcher(choices[i]);
-					if(matcher.matches())
-						wSelection.add(choices[i]);
-				}else {
-					wSelection.add(choices[i]);
-				}
-			}else {
-				if(filterString!=null){
-					if(choices[i].toUpperCase().contains(filterString))
+			if(quickSearch) {
+				if(wbRegex.getSelection()) {
+					// use regex
+					if(pattern!=null) {
+						Matcher matcher = pattern.matcher(choices[i]);
+						if(matcher.matches())
 							wSelection.add(choices[i]);
-				}else{
-					wSelection.add(choices[i]);
+					}else {
+						wSelection.add(choices[i]);
+					}
+				}else {
+					if(filterString!=null){
+						if(choices[i].toUpperCase().contains(filterString))
+								wSelection.add(choices[i]);
+					}else{
+						wSelection.add(choices[i]);
+					}
 				}
-			}
+			}else
+				wSelection.add(choices[i]);
 		}
 		wSelection.redraw();
-		selectedNrs = new int[] {};
-		/*if (selectedNrs!=null){
+		/*selectedNrs = new int[] {};
+		if (selectedNrs!=null){
 			wSelection.select(selectedNrs);
 			wSelection.showSelection();
 		}*/
 	}
-}
+ }
