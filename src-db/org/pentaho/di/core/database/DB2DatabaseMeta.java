@@ -394,7 +394,12 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
      */
     public String getSQLSequenceExists(String sequenceName)
     {
-        return "SELECT * FROM SYSCAT.SEQUENCES WHERE SEQNAME = '"+sequenceName.toUpperCase()+"'";
+    	if (sequenceName.contains("."))
+    	{
+    		return "SELECT * FROM SYSCAT.SEQUENCES WHERE SEQSCHEMA = '"+sequenceName.substring(0, sequenceName.indexOf('.')).toUpperCase()+"' AND SEQNAME = '"+sequenceName.substring(sequenceName.indexOf('.')+1, sequenceName.length()).toUpperCase()+"'";
+    	} else {
+    		return "SELECT * FROM SYSCAT.SEQUENCES WHERE SEQNAME = '"+sequenceName.toUpperCase()+"'";
+    	}
     }
     
     /**
