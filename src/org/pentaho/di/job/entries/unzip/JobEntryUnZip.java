@@ -588,6 +588,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			String realMovetodirectory)
 	{
 		boolean retval=false;
+		String unzipToFolder=realTargetdirectory;
 		
 		try {
 			
@@ -613,6 +614,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 						 throw new Exception(Messages.getString("JobUnZip.Error.CanNotCreateRootFolder",foldername), e);
 					}
 				}
+				unzipToFolder=foldername;
 			}
 			 
 		    // Try to read the entries from the VFS object...
@@ -668,7 +670,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 						
 					  // get real destination filename
 					  //
-					  String newFileName = realTargetdirectory + Const.FILE_SEPARATOR + getTargetFilename(item.getName().getPath());
+					  String newFileName = unzipToFolder + Const.FILE_SEPARATOR + getTargetFilename(item.getName().getPath());
 					  newFileObject = KettleVFS.getFileObject(newFileName);
 						
 					  if( item.getType().equals(FileType.FOLDER))
