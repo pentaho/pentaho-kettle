@@ -285,7 +285,7 @@ public class SalesforceConnection {
 	 }
 	 // Get SOQL meta data (not a Good way but i don't see any other way !)
 	 // TODO : Go back to this one
-	 // I am sure they have an easy way to return meta for a SOQL result
+	 // I am sure there is an easy way to return meta for a SOQL result
 	 public MessageElement[] getElements() {
 		 SObject con=qr.getRecords()[0];
 		 if(con==null) return null;
