@@ -42,7 +42,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
 
-
 /*
  * Created on 03-11-2008
  * 
@@ -57,6 +56,16 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
     
     /** function result: new value name */
     private String       resultfieldname;
+    
+    /** function result: error fieldname */
+    private String       errorfieldname;
+    
+    /** function result: exit value fieldname */
+    private String       exitvaluefieldname;
+    
+    /** fail if the exit status is different from 0 **/
+    private boolean      failwhennotsuccess;
+    
     
     public ExecProcessMeta()
     {
@@ -94,7 +103,52 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.resultfieldname = resultfieldname;
     }
-    
+    /**
+     * @return Returns the errorfieldname.
+     */
+    public String getErrorFieldName()
+    {
+        return errorfieldname;
+    }
+
+    /**
+     * @param errorfieldname The errorfieldname to set.
+     */
+    public void setErrorFieldName(String errorfieldname)
+    {
+        this.errorfieldname = errorfieldname;
+    }
+    /**
+     * @return Returns the exitvaluefieldname.
+     */
+    public String getExitValueFieldName()
+    {
+        return exitvaluefieldname;
+    }
+
+    /**
+     * @param exitvaluefieldname The exitvaluefieldname to set.
+     */
+    public void setExitValueFieldName(String exitvaluefieldname)
+    {
+        this.exitvaluefieldname = exitvaluefieldname;
+    }
+    /**
+     * @return Returns the failwhennotsuccess.
+     */
+    public boolean isFailWhenNotSuccess()
+    {
+        return failwhennotsuccess;
+    }
+
+    /**
+     * @param failwhennotsuccess The failwhennotsuccess to set.
+     */
+    public void setFailWhentNoSuccess(boolean failwhennotsuccess)
+    {
+        this.failwhennotsuccess = failwhennotsuccess;
+    }
+
 
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 	throws KettleXMLException
@@ -112,17 +166,37 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
 
     public void setDefault()
     {
-        resultfieldname = "result"; //$NON-NLS-1$
+        resultfieldname = "Result output"; //$NON-NLS-1$
+        errorfieldname="Error output";
+        exitvaluefieldname="Exit value";
+        failwhennotsuccess=false;
     }
 	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{    	
         // Output fields (String)
-		 if (!Const.isEmpty(resultfieldname))
+		String realOutputFieldname=space.environmentSubstitute(resultfieldname);
+		 if (!Const.isEmpty(realOutputFieldname))
 	     {
-			 ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(resultfieldname), ValueMeta.TYPE_STRING);
+			 ValueMetaInterface v = new ValueMeta(realOutputFieldname, ValueMeta.TYPE_STRING);
 			 v.setOrigin(name);
 			 inputRowMeta.addValueMeta(v);
 	     }
+        String realerrofieldname=space.environmentSubstitute(errorfieldname);
+        if (!Const.isEmpty(realerrofieldname))
+        {
+        	ValueMetaInterface v = new ValueMeta(realerrofieldname, ValueMeta.TYPE_STRING);
+			v.setLength(100, -1);
+            v.setOrigin(name);
+            inputRowMeta.addValueMeta(v);
+        }
+        String realexitvaluefieldname=space.environmentSubstitute(exitvaluefieldname);
+        if (!Const.isEmpty(realexitvaluefieldname))
+        {
+        	ValueMetaInterface v = new ValueMeta(realexitvaluefieldname, ValueMeta.TYPE_STRING);
+            v.setLength(7, 0);
+            v.setOrigin(name);
+            inputRowMeta.addValueMeta(v);
+        }
     }
 	
 
@@ -132,6 +206,9 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
 
         retval.append("    " + XMLHandler.addTagValue("processfield", processfield)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("errorfieldname", errorfieldname));
+        retval.append("    " + XMLHandler.addTagValue("exitvaluefieldname", exitvaluefieldname));
+        retval.append("    " + XMLHandler.addTagValue("failwhennotsuccess", failwhennotsuccess));
         return retval.toString();
     }
 
@@ -141,6 +218,9 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
     	try{
 			processfield = XMLHandler.getTagValue(stepnode, "processfield"); //$NON-NLS-1$
             resultfieldname = XMLHandler.getTagValue(stepnode, "resultfieldname"); 
+            errorfieldname = XMLHandler.getTagValue(stepnode, "errorfieldname"); 
+            exitvaluefieldname = XMLHandler.getTagValue(stepnode, "exitvaluefieldname"); 
+            failwhennotsuccess     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "failwhennotsuccess"));
         }
         catch (Exception e)
         {
@@ -155,6 +235,9 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
         {
         	processfield = rep.getStepAttributeString(id_step, "processfield"); //$NON-NLS-1$
             resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$  
+            errorfieldname = rep.getStepAttributeString(id_step, "errorfieldname");    
+            exitvaluefieldname = rep.getStepAttributeString(id_step, "exitvaluefieldname"); 
+            failwhennotsuccess   =      rep.getStepAttributeBoolean(id_step, "failwhennotsuccess");
         }
         catch (Exception e)
         {
@@ -168,6 +251,9 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
         {
             rep.saveStepAttribute(id_transformation, id_step, "processfield", processfield); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "errorfieldname", errorfieldname);
+            rep.saveStepAttribute(id_transformation, id_step, "exitvaluefieldname", exitvaluefieldname);
+            rep.saveStepAttribute(id_transformation, id_step, "failwhennotsuccess",           failwhennotsuccess);
         }
         catch (Exception e)
         {
@@ -226,6 +312,6 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
 
     public boolean supportsErrorHandling()
     {
-        return true;
+        return failwhennotsuccess;
     }
 }

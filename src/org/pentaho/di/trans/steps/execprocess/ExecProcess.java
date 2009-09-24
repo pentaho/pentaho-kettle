@@ -13,6 +13,7 @@
 package org.pentaho.di.trans.steps.execprocess;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.pentaho.di.core.Const;
@@ -52,9 +53,7 @@ public class ExecProcess extends BaseStep implements StepInterface
     {
         meta=(ExecProcessMeta)smi;
         data=(ExecProcessData)sdi;
-        
-        boolean sendToErrorRow=false;
-        String errorMessage = null;
+
 
         Object[] r = getRow();      // Get row from input rowset & set row busy!
         if (r==null)  // no more input to be expected...
@@ -100,16 +99,37 @@ public class ExecProcess extends BaseStep implements StepInterface
 		// get process to execute
     	String processString= data.previousRowMeta.getString(r,data.indexOfProcess);
         
+    	ProcessResult processResult= new ProcessResult();
+    	
         try
         {
          	if(Const.isEmpty(processString)) throw new KettleException(BaseMessages.getString(PKG, "ExecProcess.ProcessEmpty"));
          	
-         	// execute and return result as String
-         	String resultString=execProcess(processString);
+         	// execute and return result
+         	execProcess(processString,processResult);
+         	
+
+         	if(meta.isFailWhenNotSuccess()) {
+         		if(processResult.getExistStatus()!=0) {
+         			String errorString=processResult.getErrorStream();
+         			if(Const.isEmpty(errorString)) {
+         				errorString=processResult.getOutputStream();
+         			}
+         			throw new KettleException(errorString);
+         		}
+         	}
          	
         	// Add result field to input stream
-    		outputRow[data.NrPrevFields]= resultString;
+    		outputRow[data.NrPrevFields]= processResult.getOutputStream();
     		int rowIndex=data.NrPrevFields;
+    		rowIndex++;
+    		
+        	// Add result field to input stream
+    		outputRow[data.NrPrevFields]= processResult.getErrorStream();
+    		rowIndex++;
+    		
+        	// Add result field to input stream
+    		outputRow[data.NrPrevFields]= processResult.getExistStatus();
     		rowIndex++;
 
 			 //	add new values to the row.
@@ -119,6 +139,10 @@ public class ExecProcess extends BaseStep implements StepInterface
         }
         catch(KettleException e)
         {
+            
+            boolean sendToErrorRow=false;
+            String errorMessage = null;
+            
         	if (getStepMeta().isDoingErrorHandling())
         	{
                  sendToErrorRow = true;
@@ -141,33 +165,57 @@ public class ExecProcess extends BaseStep implements StepInterface
             
         return true;
     }
-    private String execProcess(String process) throws KettleException
+    private void execProcess(String process,ProcessResult processresult) throws KettleException
     {
-   	String retval=null;
-   	
-   	Process p =null;
-   	try{
-   		
-   		p = Runtime.getRuntime().exec(process);
-   		BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
-   		String line;
-   		StringBuffer retvalBuff=new StringBuffer();
-   		
+    	
+	   	Process p =null;
+	   	try{
+	   		String errorMsg=null;
+	   		// execute process
+	   		try{
+	   			p = data.runtime.exec(process);
+	   		}catch(Exception e){
+	   			errorMsg=e.getMessage();
+	   		};
+   			if(p==null) {
+   				processresult.setErrorStream(errorMsg);
+   			}else{
+		   		// get output stream
+		   		processresult.setOutputStream(getOutputString(new BufferedReader(new InputStreamReader(p.getInputStream()))));
+		   		
+		   		// get error message
+		   		processresult.setErrorStream(getOutputString(new BufferedReader(new InputStreamReader(p.getErrorStream()))));
+		   		
+		   		// Wait until end
+		   		p.waitFor();
+	
+		   		// get exit status
+		   		processresult.setExistStatus(p.exitValue());
+   			}
+	   	}
+	   	catch (IOException ioe){
+	   		throw new KettleException("IO exception while running the process "+process+ "!",ioe);
+		} 
+	   	catch (InterruptedException ie){
+			throw new KettleException("Interrupted exception while running the process "+process+ "!",ie);
+		}
+	   	catch(Exception e){
+	   		throw new KettleException(e); 
+	   	}
+	   	finally	{
+	   		if(p!=null) p.destroy();
+	   	}
+   }
+    private String getOutputString(BufferedReader b) throws IOException
+    {
+   	   StringBuffer retvalBuff=new StringBuffer();
+   	   String line;	
    		while ((line = b.readLine()) != null) 
    		{
    			retvalBuff.append(line);
    		}
-   		retval=retvalBuff.toString();
-   	}catch(Exception e){
-   		throw new KettleException(e); 
-   	}
-   	finally
-   	{
-   		if(p!=null) p.destroy();
-   	}
-   	return retval;	
-   }
-    
+   		return retvalBuff.toString();
+    }
     public boolean init(StepMetaInterface smi, StepDataInterface sdi)
     {
         meta=(ExecProcessMeta)smi;
@@ -180,6 +228,7 @@ public class ExecProcess extends BaseStep implements StepInterface
         		log.logError(toString(), BaseMessages.getString(PKG, "ExecProcess.Error.ResultFieldMissing"));
         		return false;
         	}
+        	data.runtime=Runtime.getRuntime();
             return true;
         }
         return false;

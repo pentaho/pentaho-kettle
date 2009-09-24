@@ -30,6 +30,7 @@ public class ExecProcessData extends BaseStepData implements StepDataInterface
 	public RowMetaInterface previousRowMeta;
 	public RowMetaInterface outputRowMeta;
 	public int NrPrevFields;
+	public Runtime runtime;
 	/**
 	 * 
 	 */
