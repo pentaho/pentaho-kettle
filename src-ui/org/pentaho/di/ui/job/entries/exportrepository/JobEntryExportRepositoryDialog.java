@@ -1268,6 +1268,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				int idxSource[] = Const.indexsOfStrings(source, available);
 				EnterSelectionDialog dialog = new EnterSelectionDialog(shell, available, BaseMessages.getString(PKG, "JobExportRepository.SelectRepository.Title"), BaseMessages.getString(PKG, "JobExportRepository.SelectRepository.Message"));
 				dialog.setMulti(false);
+				dialog.setAvoidQuickSearch();
 				dialog.setSelectedNrs(idxSource);
 				if (dialog.open()!=null)
 				{

@@ -168,7 +168,11 @@ public class EnterSelectionDialog extends Dialog
 			props.setLook(wlfilter);
 			wlfilter.setText(BaseMessages.getString(PKG, "EnterSelectionDialog.FilterString.Label"));
 			wtfilter.setControl(wlfilter);
-			wtfilter.setWidth(60);
+			if(Const.isOSX()) {
+				wtfilter.setWidth(100);
+			} else {
+				wtfilter.setWidth(60);
+			}
 			
 			wfilter = new ToolItem(treeTb, SWT.SEPARATOR);
 			searchText = new Text(treeTb, SWT.SEARCH | SWT.CANCEL);
@@ -321,6 +325,13 @@ public class EnterSelectionDialog extends Dialog
 		{
 			selection    = wSelection.getSelection()[0];
 			selectionNr = wSelection.getSelectionIndices()[0];
+			if(quickSearch) {
+				for(int i=0; i<choices.length; i++) {
+					if(choices[i].equals(selection)) {
+						selectionNr = i;
+					}
+				}
+			}
             indices = wSelection.getSelectionIndices();
 		}
 		else

@@ -1408,6 +1408,7 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 					int idxSource[] = Const.indexsOfStrings(source, available);
 					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, available, BaseMessages.getString(PKG, "JobMssqlBulkLoad.SelectColumns.Title"), BaseMessages.getString(PKG, "JobMssqlBulkLoad.SelectColumns.Message"));
 					dialog.setMulti(true);
+					dialog.setAvoidQuickSearch();
 					dialog.setSelectedNrs(idxSource);
 					if (dialog.open()!=null)
 					{

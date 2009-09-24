@@ -432,6 +432,7 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
 					int idxSource[] = Const.indexsOfStrings(source, available);
 					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, available, BaseMessages.getString(PKG, "JobEntryConnectedToRepositoryDialog.SelectRepository.Title"), BaseMessages.getString(PKG, "JobEntryConnectedToRepositoryDialog.SelectRepository.Message"));
 					dialog.setMulti(false);
+					dialog.setAvoidQuickSearch();
 					dialog.setSelectedNrs(idxSource);
 					if (dialog.open()!=null)
 					{

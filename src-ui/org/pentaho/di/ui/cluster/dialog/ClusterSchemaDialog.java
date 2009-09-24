@@ -348,6 +348,7 @@ public class ClusterSchemaDialog extends Dialog
         
         EnterSelectionDialog dialog = new EnterSelectionDialog(shell, names, BaseMessages.getString(PKG, "ClusterSchemaDialog.SelectServers.Label"),  //$NON-NLS-1$
 						BaseMessages.getString(PKG, "ClusterSchemaDialog.SelectServersCluster.Label")); //$NON-NLS-1$
+        dialog.setAvoidQuickSearch();
         dialog.setSelectedNrs(idx);
         dialog.setMulti(true);
         if (dialog.open()!=null)

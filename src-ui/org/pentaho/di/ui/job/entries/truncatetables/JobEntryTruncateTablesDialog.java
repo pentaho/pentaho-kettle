@@ -421,7 +421,7 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
 				String Tablenames[]=database.getTablenames();
 				EnterSelectionDialog dialog = new EnterSelectionDialog(shell, Tablenames, BaseMessages.getString(PKG, "JobTruncateTables.SelectTables.Title"), BaseMessages.getString(PKG, "JobTruncateTables.SelectTables.Message"));
 				dialog.setMulti(true);
-
+				dialog.setAvoidQuickSearch();
 				if (dialog.open()!=null)
 				{
 					int idx[] = dialog.getSelectionIndeces();
