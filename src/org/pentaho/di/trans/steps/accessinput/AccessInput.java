@@ -136,19 +136,19 @@ public class AccessInput extends BaseStep implements StepInterface
 
 					// Get field value
 					Object obj = data.rw.get(environmentSubstitute(field.getColumn()));	
-					String value;
-					if (obj==null) {
-						value=null;
-					} else {
-						value=String.valueOf(obj);
-					}
 					
-					if(obj instanceof Date && field.getType()==ValueMetaInterface.TYPE_DATE)	
+					if(obj instanceof Date && field.getType()==ValueMetaInterface.TYPE_DATE
+							|| obj instanceof byte[] && field.getType()==ValueMetaInterface.TYPE_BINARY)	
 					{
 						r[data.totalpreviousfields+i]=obj;
 					}
 					else 
 					{
+						String value=null;
+						if (obj!=null) {
+							value=String.valueOf(obj);
+						}
+						
 						// DO Trimming!
 						switch (field.getTrimType())
 						{
@@ -175,7 +175,7 @@ public class AccessInput extends BaseStep implements StepInterface
 					// Do we need to repeat this field if it is null?
 					if (field.isRepeated())
 					{
-						if (data.previousRow!=null && Const.isEmpty(value))
+						if (data.previousRow!=null && obj==null)
 						{
 							r[data.totalpreviousfields+i] = data.previousRow[data.totalpreviousfields+i];
 						}
