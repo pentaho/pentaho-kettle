@@ -780,7 +780,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 				
 				if (!Const.isEmpty( wTable.getText()) )
 				{
-                    String schemaTable = ci.getQuotedSchemaTableCombination(wSchema.getText(), wTable.getText());
+                    String schemaTable = ci.getQuotedSchemaTableCombination(db.environmentSubstitute(wSchema.getText()), db.environmentSubstitute(wTable.getText()));
                     RowMetaInterface r = db.getTableFields(schemaTable);
 					if (r!=null && !r.isEmpty())
 					{

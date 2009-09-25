@@ -662,7 +662,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 					boolean error_found=false;
 					error_message = ""; //$NON-NLS-1$
 					
-                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(db.environmentSubstitute(schemaName), db.environmentSubstitute(tablename));
                     RowMetaInterface r = db.getTableFields( schemaTable );
 					if (r!=null)
 					{
