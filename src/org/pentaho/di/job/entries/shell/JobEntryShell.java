@@ -542,7 +542,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 					if(insertScript)
 						cmdline.append(realScript);
 					else
-						cmdline.append(optionallyQuoteField(KettleVFS.getFilename(fileObject), "\""));
+						cmdline.append(Const.optionallyQuoteStringByOS(KettleVFS.getFilename(fileObject)));
 					// Add the arguments from previous results...
 					for (int i = 0; i < cmdRows.size(); i++) // Normally just
 																// one row, but
@@ -557,7 +557,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 						for (int j = 0; j < r.size(); j++)
 						{
 							cmdline.append(' ');
-							cmdline.append(optionallyQuoteField(r.getString(j, null), "\""));
+							cmdline.append(Const.optionallyQuoteStringByOS(r.getString(j, null)));
 						}
 					}
 					cmdline.append('"');
@@ -577,7 +577,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 						RowMetaAndData r = (RowMetaAndData) cmdRows.get(i);
 						for (int j = 0; j < r.size(); j++)
 						{
-							cmds.add(optionallyQuoteField(r.getString(j, null), "\""));
+							cmds.add(Const.optionallyQuoteStringByOS(r.getString(j, null)));
 						}
 					}
 				}
@@ -599,12 +599,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 					if(insertScript)
 						cmdline.append(realScript);
 					else
-						cmdline.append(optionallyQuoteField(KettleVFS.getFilename(fileObject), "\""));
+						cmdline.append(Const.optionallyQuoteStringByOS(KettleVFS.getFilename(fileObject)));
 
 					for (int i = 0; i < args.length; i++)
 					{
 						cmdline.append(' ');
-						cmdline.append(optionallyQuoteField(args[i], "\""));
+						cmdline.append(Const.optionallyQuoteStringByOS(args[i]));
 					}
 					cmdline.append('"');
 					cmds.add(cmdline.toString());
@@ -712,23 +712,6 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		} else
 		{
 			result.setResult(true);
-		}
-	}
-
-	private String optionallyQuoteField(String field, String quote)
-	{
-		if (Const.isEmpty(field))
-			return "\"\"";
-
-		// If the field already contains quotes, we don't touch it anymore, just
-		// return the same string...
-		// also return it if no spaces are found
-		if (field.indexOf(quote) >= 0 || (field.indexOf(' ') < 0 && field.indexOf('=') < 0))
-		{
-			return field;
-		} else
-		{
-			return quote + field + quote;
 		}
 	}
 

@@ -810,7 +810,41 @@ public class Const
 	{
 		return System.getProperty("os.name");
 	}
+	/**
+	 * Determine the quoting character depending on the OS. 
+	 * Often used for shell calls, gives back " for Windows systems otherwise '
+	 * @return quoting character
+	 */	
+	public static String getQuoteCharByOS() {
+		if (isWindows()) {
+			return "\"";
+		} else {
+			return "'";
+		}
+	}
 
+	/**
+	 * Quote a string depending on the OS. 
+	 * Often used for shell calls.
+	 * @return quoted string
+	 */	
+	public static String optionallyQuoteStringByOS(String string) {
+		String quote=getQuoteCharByOS();
+		if (isEmpty(string))
+			return quote;
+
+		// If the field already contains quotes, we don't touch it anymore, just
+		// return the same string...
+		// also return it if no spaces are found
+		if (string.indexOf(quote) >= 0 || (string.indexOf(' ') < 0 && string.indexOf('=') < 0))
+		{
+			return string;
+		} else
+		{
+			return quote + string + quote;
+		}
+	}
+	
 	/** 
 	 * @return True if the OS is a Windows derivate. 
 	 */
@@ -2186,4 +2220,5 @@ public class Const
 	    }
 	    return FontName;
 	}
+	
 }

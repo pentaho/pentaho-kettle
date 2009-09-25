@@ -145,7 +145,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 		   try
 		   {
 	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getPsqlpath()));
-  	      	   String psqlexec = KettleVFS.getFilename(fileObject);
+  	      	   String psqlexec = Const.optionallyQuoteStringByOS(KettleVFS.getFilename(fileObject));
 		       sb.append(psqlexec);
   	       }
 	       catch ( IOException ex )
