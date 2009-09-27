@@ -45,6 +45,9 @@ import org.pentaho.di.core.Const;
 
 public class HTTPPOST extends BaseStep implements StepInterface
 {
+	private static final String CONTENT_TYPE = "Content-type";
+	private static final String CONTENT_TYPE_TEXT_XML = "text/xml";
+	
 	private HTTPPOSTMeta meta;
 	private HTTPPOSTData data;
 	
@@ -69,26 +72,41 @@ public class HTTPPOST extends BaseStep implements StepInterface
             HttpClient HTTPPOSTclient = new HttpClient();
             PostMethod post = new PostMethod(data.realUrl);
             //post.setFollowRedirects(false); 
-            
+
             // Specify content type and encoding
             // If content encoding is not explicitly specified
             // ISO-8859-1 is assumed
-            if(Const.isEmpty(data.realEncoding))
-            	post.setRequestHeader("Content-type", "text/xml");
-            else
-            	post.setRequestHeader("Content-type", "text/xml; "+data.realEncoding);
-            
+            if(!data.contentTypeHeaderOverwrite) {  // can be overwritten now
+	            if(Const.isEmpty(data.realEncoding)) {
+	            	post.setRequestHeader(CONTENT_TYPE, CONTENT_TYPE_TEXT_XML);
+	            	if(log.isDebug()) log.logDebug(toString(), Messages.getString("HTTPPOST.Log.HeaderValue",CONTENT_TYPE,CONTENT_TYPE_TEXT_XML));
+	            } else {
+	            	post.setRequestHeader(CONTENT_TYPE, CONTENT_TYPE_TEXT_XML+"; "+data.realEncoding);
+	            	if(log.isDebug()) log.logDebug(toString(), Messages.getString("HTTPPOST.Log.HeaderValue",CONTENT_TYPE,CONTENT_TYPE_TEXT_XML+"; "+data.realEncoding));
+	            }
+            }
+
+            // HEADER PARAMETERS
+            if(data.useHeaderParameters) {
+	            // set header parameters that we want to send 
+		        for (int i=0;i<data.header_parameters_nrs.length;i++)
+		        {
+	        		post.addRequestHeader(data.headerParameters[i].getName(),
+	        				data.inputRowMeta.getString(rowData,data.header_parameters_nrs[i]));
+	        		if(log.isDebug()) log.logDebug(toString(), Messages.getString("HTTPPOST.Log.HeaderValue",data.headerParameters[i].getName(),data.inputRowMeta.getString(rowData,data.header_parameters_nrs[i])));
+		        }
+	        }
             
             // BODY PARAMETERS
-            if(data.useBodyParameters)
-	         {
+            if(data.useBodyParameters) {
 	            // set body parameters that we want to send 
 		        for (int i=0;i<data.body_parameters_nrs.length;i++)
 		        {
-		        	data.bodyParameters[i].setValue(data.inputRowMeta.getString(rowData,data.body_parameters_nrs[i]));
+	        		data.bodyParameters[i].setValue(data.inputRowMeta.getString(rowData,data.body_parameters_nrs[i]));
+	        		if(log.isDebug()) log.logDebug(toString(), Messages.getString("HTTPPOST.Log.BodyValue",data.bodyParameters[i].getName(),data.inputRowMeta.getString(rowData,data.body_parameters_nrs[i])));
 		        }
-	            post.setRequestBody(data.bodyParameters);
-	         }
+	        }
+            post.setRequestBody(data.bodyParameters);
 
             // QUERY PARAMETERS
             if(data.useQueryParameters)
@@ -96,6 +114,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
             	 for (int i=0;i<data.query_parameters_nrs.length;i++)
  		         {
  		        	data.queryParameters[i].setValue(data.inputRowMeta.getString(rowData,data.query_parameters_nrs[i]));
+ 		        	if(log.isDebug()) log.logDebug(toString(), Messages.getString("HTTPPOST.Log.QueryValue",data.queryParameters[i].getName(),data.inputRowMeta.getString(rowData,data.query_parameters_nrs[i])));
  		         }
             	 post.setQueryString(data.queryParameters); 
             }
@@ -125,6 +144,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
             // Execute request
             // 
             InputStream inputStream=null;
+            Object[] newRow = null;
             try
             {
             	// Execute the POST method
@@ -147,8 +167,15 @@ public class HTTPPOST extends BaseStep implements StepInterface
 	                
 	                if(log.isDebug()) log.logDebug(toString(), Messages.getString("HTTPPOST.Log.ResponseBody",body));
                 }
-                //return new Value(meta.getFieldName(), body);
-                return RowDataUtil.addValueData(rowData, data.inputRowMeta.size(), body);
+                int returnFieldsOffset=data.inputRowMeta.size();
+                if (!Const.isEmpty(meta.getFieldName())) {
+                	newRow=RowDataUtil.addValueData(rowData, returnFieldsOffset, body);
+                	returnFieldsOffset++;
+                }
+                
+                if (!Const.isEmpty(meta.getResultCodeFieldName())) {
+                	newRow=RowDataUtil.addValueData(rowData, returnFieldsOffset, new Long(statusCode));
+                }
             }
             finally
             {
@@ -156,6 +183,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
                 // Release current connection to the connection pool once you are done
             	post.releaseConnection();
             }
+            return newRow;
         }
         catch(Exception e)
         {
@@ -212,19 +240,49 @@ public class HTTPPOST extends BaseStep implements StepInterface
 			int nrargs=meta.getArgumentField().length;
 			if(nrargs>0)
 			{
-				data.useBodyParameters=true;
-				data.body_parameters_nrs=new int[nrargs];
-				data.bodyParameters = new NameValuePair[nrargs];
+				data.useBodyParameters=false;
+				data.useHeaderParameters=false;
+				data.contentTypeHeaderOverwrite=false;
+				int nrheader=0;
+				int nrbody=0;
+				for (int i=0;i<nrargs;i++) // split into body / header
+				{
+					if (meta.getArgumentHeader()[i]) {
+						data.useHeaderParameters=true; // at least one header parameter
+						nrheader++;
+					} else {
+						data.useBodyParameters=true; // at least one body parameter
+						nrbody++;
+					}
+				}
+				data.header_parameters_nrs=new int[nrheader];
+				data.headerParameters = new NameValuePair[nrheader];
+				data.body_parameters_nrs=new int[nrbody];
+				data.bodyParameters = new NameValuePair[nrbody];
+				int posHeader=0;
+				int posBody=0;				
 				for (int i=0;i<nrargs;i++)
 				{
-					data.body_parameters_nrs[i]=data.inputRowMeta.indexOfValue(meta.getArgumentField()[i]);
-					if (data.body_parameters_nrs[i]<0)
+					int fieldIndex=data.inputRowMeta.indexOfValue(meta.getArgumentField()[i]);
+					if (fieldIndex<0)
 					{
 						logError(Messages.getString("HTTPPOST.Log.ErrorFindingField")+meta.getArgumentField()[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 						throw new KettleStepException(Messages.getString("HTTPPOST.Exception.CouldnotFindField",meta.getArgumentField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					}
-					data.bodyParameters[i]= new NameValuePair(environmentSubstitute(meta.getArgumentParameter()[i]),
-							data.outputRowMeta.getString(r,data.body_parameters_nrs[i]));
+					if (meta.getArgumentHeader()[i]) {
+						data.header_parameters_nrs[posHeader]=fieldIndex;
+						data.headerParameters[posHeader]= new NameValuePair(environmentSubstitute(meta.getArgumentParameter()[i]),
+								data.outputRowMeta.getString(r,data.header_parameters_nrs[posHeader]));
+						posHeader++;
+						if (CONTENT_TYPE.equalsIgnoreCase(meta.getArgumentField()[i])) {
+							data.contentTypeHeaderOverwrite=true; // Content-type will be overwritten
+						}
+					} else {
+						data.body_parameters_nrs[posBody]=fieldIndex;
+						data.bodyParameters[posBody]= new NameValuePair(environmentSubstitute(meta.getArgumentParameter()[i]),
+								data.outputRowMeta.getString(r,data.body_parameters_nrs[posBody]));
+						posBody++;
+					}
 				}
 			}
 			// set query parameters

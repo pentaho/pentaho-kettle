@@ -29,12 +29,16 @@ public class HTTPPOSTData extends BaseStepData implements StepDataInterface
 	public RowMetaInterface outputRowMeta;
 	public RowMetaInterface inputRowMeta;
 	public String realEncoding;
+	public int header_parameters_nrs[];
 	public int body_parameters_nrs[];
 	public int query_parameters_nrs[];
 	public int indexOfUrlField;
 	public String realUrl;
+	public NameValuePair[] headerParameters; 
 	public NameValuePair[] bodyParameters; 
-	public NameValuePair[] queryParameters; 
+	public NameValuePair[] queryParameters;
+	public boolean useHeaderParameters;
+	public boolean contentTypeHeaderOverwrite;
 	public boolean useBodyParameters;
 	public boolean useQueryParameters;
 	public int indexOfRequestEntity;
@@ -46,6 +50,8 @@ public class HTTPPOSTData extends BaseStepData implements StepDataInterface
 	{
 		super();
 		indexOfUrlField=-1;
+		useHeaderParameters=false;
+		contentTypeHeaderOverwrite=false;
 		useBodyParameters=false;
 		useQueryParameters=false;
 		indexOfRequestEntity=-1;

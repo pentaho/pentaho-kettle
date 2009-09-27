@@ -46,6 +46,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
 {
+	
+	private static final String YES = "Y"; //$NON-NLS-1$
+	
     /** URL / service to be called */
     private String  url;
 
@@ -58,12 +61,14 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
 
     /** IN / OUT / INOUT */
     private String  argumentParameter[];
+    private boolean argumentHeader[];
     
     private String  queryParameter[];
     
 
     /** function result: new value name */
     private String  fieldName;
+    private String	resultCodeFieldName;
     
     private boolean urlInField;
     
@@ -240,6 +245,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
     {
         argumentField = new String[nrargs];
         argumentParameter = new String[nrargs];
+        argumentHeader = new boolean[nrargs];
     }
     public void allocateQuery(int nrqueryparams)
     {
@@ -257,6 +263,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         {
             retval.argumentField[i] = argumentField[i];
             retval.argumentParameter[i] = argumentParameter[i];
+            retval.argumentHeader[i] = argumentHeader[i];
         }
         
         int nrqueryparams = queryField.length;
@@ -280,6 +287,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         {
             argumentField[i] = "arg" + i; //$NON-NLS-1$
             argumentParameter[i] = "arg"; //$NON-NLS-1$
+            argumentHeader[i] = false; //$NON-NLS-1$
         }
         
         int nrquery;
@@ -292,6 +300,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         }
 
         fieldName = "result"; //$NON-NLS-1$
+        resultCodeFieldName = ""; //$NON-NLS-1$
         postafile=false;
     }
     public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException    
@@ -299,6 +308,12 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         if (!Const.isEmpty(fieldName))
         {
             ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(fieldName), ValueMeta.TYPE_STRING);
+            inputRowMeta.addValueMeta(v);
+        }
+        
+        if (!Const.isEmpty(resultCodeFieldName))
+        {
+            ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(resultCodeFieldName), ValueMeta.TYPE_INTEGER);
             inputRowMeta.addValueMeta(v);
         }
     }
@@ -321,6 +336,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
             retval.append("      <arg>" + Const.CR); //$NON-NLS-1$
             retval.append("        " + XMLHandler.addTagValue("name", argumentField[i])); //$NON-NLS-1$ //$NON-NLS-2$
             retval.append("        " + XMLHandler.addTagValue("parameter", argumentParameter[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("        " + XMLHandler.addTagValue("header", argumentHeader[i], false)); //$NON-NLS-1$ //$NON-NLS-2$
             retval.append("        </arg>" + Const.CR); //$NON-NLS-1$
         }
         for (int i = 0; i < queryField.length; i++)
@@ -335,6 +351,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
 
         retval.append("    <result>" + Const.CR); //$NON-NLS-1$
         retval.append("      " + XMLHandler.addTagValue("name", fieldName)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      " + XMLHandler.addTagValue("code", resultCodeFieldName)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      </result>" + Const.CR); //$NON-NLS-1$
 
         return retval.toString();
@@ -361,6 +378,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
                 Node anode = XMLHandler.getSubNodeByNr(lookup, "arg", i); //$NON-NLS-1$
                 argumentField[i] = XMLHandler.getTagValue(anode, "name"); //$NON-NLS-1$
                 argumentParameter[i] = XMLHandler.getTagValue(anode, "parameter"); //$NON-NLS-1$
+                argumentHeader[i] = YES.equalsIgnoreCase(XMLHandler.getTagValue(anode, "header")); //$NON-NLS-1$
             }
 
             int nrquery = XMLHandler.countNodes(lookup, "query"); //$NON-NLS-1$
@@ -374,6 +392,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
             }
             
             fieldName = XMLHandler.getTagValue(stepnode, "result", "name"); // Optional, can be null //$NON-NLS-1$
+            resultCodeFieldName = XMLHandler.getTagValue(stepnode, "result", "code"); // Optional, can be null //$NON-NLS-1$
         }
         catch (Exception e)
         {
@@ -399,6 +418,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
             {
                 argumentField[i] = rep.getStepAttributeString(id_step, i, "arg_name"); //$NON-NLS-1$
                 argumentParameter[i] = rep.getStepAttributeString(id_step, i, "arg_parameter"); //$NON-NLS-1$
+                argumentHeader[i] = rep.getStepAttributeBoolean(id_step, i, "arg_header"); //$NON-NLS-1$
             }
             
             
@@ -412,6 +432,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
             }
 
             fieldName = rep.getStepAttributeString(id_step, "result_name"); //$NON-NLS-1$
+            resultCodeFieldName = rep.getStepAttributeString(id_step, "result_code"); //$NON-NLS-1$
         }
         catch (Exception e)
         {
@@ -434,6 +455,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
             {
                 rep.saveStepAttribute(id_transformation, id_step, i, "arg_name", argumentField[i]); //$NON-NLS-1$
                 rep.saveStepAttribute(id_transformation, id_step, i, "arg_parameter", argumentParameter[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "arg_header", argumentHeader[i]); //$NON-NLS-1$
             }
             for (int i = 0; i < queryField.length; i++)
             {
@@ -442,6 +464,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
             }
 
             rep.saveStepAttribute(id_transformation, id_step, "result_name", fieldName); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "result_code", resultCodeFieldName); //$NON-NLS-1$
         }
         catch (Exception e)
         {
@@ -497,4 +520,33 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
     {
         return true;
     }
+
+	/**
+	 * @return the argumentHeader
+	 */
+	public boolean[] getArgumentHeader() {
+		return argumentHeader;
+	}
+
+	/**
+	 * @param argumentHeader the argumentHeader to set
+	 */
+	public void setArgumentHeader(boolean[] argumentHeader) {
+		this.argumentHeader = argumentHeader;
+	}
+
+	/**
+	 * @return the resultCodeFieldName
+	 */
+	public String getResultCodeFieldName() {
+		return resultCodeFieldName;
+	}
+
+	/**
+	 * @param resultCodeFieldName the resultCodeFieldName to set
+	 */
+	public void setResultCodeFieldName(String resultCodeFieldName) {
+		this.resultCodeFieldName = resultCodeFieldName;
+	}
+
 }
