@@ -614,7 +614,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 
 				if (!Const.isEmpty(tablename))
 				{
-                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(db.environmentSubstitute(schemaName), db.environmentSubstitute(tablename));
 					// Check if this table exists...
 					if (db.checkTableExists(schemaTable))
 					{
