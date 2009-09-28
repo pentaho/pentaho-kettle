@@ -214,6 +214,7 @@ public class TableInput extends BaseStep implements StepInterface
         if (meta.isVariableReplacementActive()) sql = environmentSubstitute(meta.getSQL());
         else sql = meta.getSQL();
         
+        if (log.isDetailed()) logDetailed("SQL query : "+sql);
         data.rs = data.db.openQuery(sql, parametersMeta, parameters, ResultSet.FETCH_FORWARD, meta.isLazyConversionActive());
         if (data.rs == null)
         {
