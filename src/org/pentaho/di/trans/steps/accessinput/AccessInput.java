@@ -291,7 +291,6 @@ public class AccessInput extends BaseStep implements StepInterface
 							throw new KettleException(BaseMessages.getString(PKG, "AccessInput.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}   
-					handleMissingFiles();
 		        }  // End if first
 				
 				
@@ -381,13 +380,10 @@ public class AccessInput extends BaseStep implements StepInterface
 			if(!meta.isFileField())
 			{
 				data.files = meta.getFiles(this);
-				if (data.files==null || data.files.nrOfFiles()==0)
-				{
-					logError(BaseMessages.getString(PKG, "AccessInput.Log.NoFiles"));
-					return false;
-				}
 				try{
-					  // Create the output row meta-data
+					handleMissingFiles();
+					
+					// Create the output row meta-data
 		            data.outputRowMeta = new RowMeta();
 		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
 
