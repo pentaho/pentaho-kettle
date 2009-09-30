@@ -14,6 +14,8 @@ package org.pentaho.di.trans.steps.httppost;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import java.io.ByteArrayInputStream;
 
@@ -155,12 +157,21 @@ public class HTTPPOST extends BaseStep implements StepInterface
                 String body=null;
                 if( statusCode != -1 )
                 {
+               	 	// guess encoding
+                    String encoding = post.getResponseHeader("Content-Type").getValue().replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim(); 
+                    if (encoding == null) encoding = "ISO-8859-1"; 
+                    
+                    if(log.isDebug()) log.logDebug(toString(), Messages.getString("HTTPPOST.Log.Encoding",encoding));
+
 	                // the response
-	                inputStream = post.getResponseBodyAsStream();
-	                StringBuffer bodyBuffer = new StringBuffer();
-	                int c;
-	                while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
-	                inputStream.close();
+                    InputStreamReader inputStreamReader = new InputStreamReader(post.getResponseBodyAsStream(),encoding); 
+                    StringBuffer bodyBuffer = new StringBuffer(); 
+                     
+                    int c;
+                    while ( (c=inputStreamReader.read())!=-1) {
+                    	bodyBuffer.append((char)c);
+                    }
+                    inputStreamReader.close(); 
 	                
 	                // Display response
 	                body = bodyBuffer.toString();
