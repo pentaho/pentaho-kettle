@@ -60,7 +60,11 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static Class<?> PKG = HTTPPOSTMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
+	
+	private static final String[] YES_NO_COMBO = new String[] { BaseMessages.getString(PKG, "System.Combo.No"), BaseMessages.getString(PKG, "System.Combo.Yes") };
+	private static final String YES = BaseMessages.getString(PKG, "System.Combo.Yes"); //$NON-NLS-1$
+	private static final String NO = BaseMessages.getString(PKG, "System.Combo.No"); //$NON-NLS-1$
+	
 	private Label        wlUrl;
 	private TextVar      wUrl;
 	private FormData     fdlUrl, fdUrl;
@@ -68,6 +72,10 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 	private Label        wlResult;
 	private TextVar      wResult;
 	private FormData     fdlResult, fdResult;
+
+	private Label        wlResultCode;
+	private TextVar      wResultCode;
+	private FormData     fdlResultCode, fdResultCode;
 
 	private Label        wlFields;
 	private TableView    wFields;
@@ -355,12 +363,30 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		fdResult.right= new FormAttachment(100, -margin);
 		wResult.setLayoutData(fdResult);
 
+		// Resultcode line...
+		wlResultCode=new Label(shell, SWT.RIGHT);
+		wlResultCode.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ResultCode.Label")); //$NON-NLS-1$
+ 		props.setLook(wlResultCode);
+		fdlResultCode=new FormData();
+		fdlResultCode.left = new FormAttachment(0, 0);
+		fdlResultCode.right= new FormAttachment(middle, -margin);
+		fdlResultCode.top  = new FormAttachment(wResult, margin*2);
+		wlResultCode.setLayoutData(fdlResultCode);
+		wResultCode=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wResultCode);
+		wResultCode.addModifyListener(lsMod);
+		fdResultCode=new FormData();
+		fdResultCode.left = new FormAttachment(middle, 0);
+		fdResultCode.top  = new FormAttachment(wResult, margin*2);
+		fdResultCode.right= new FormAttachment(100, -margin);
+		wResultCode.setLayoutData(fdResultCode);
+		
 		wlFields=new Label(shell, SWT.NONE);
 		wlFields.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.Parameters.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wResult, margin);
+		fdlFields.top  = new FormAttachment(wResultCode, margin);
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsRows=input.getArgumentField().length;
@@ -368,6 +394,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		  colinf=new ColumnInfo[] { 
 		  new ColumnInfo(BaseMessages.getString(PKG, "HTTPPOSTDialog.ColumnInfo.Name"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), //$NON-NLS-1$
 		  new ColumnInfo(BaseMessages.getString(PKG, "HTTPPOSTDialog.ColumnInfo.Parameter"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+		  new ColumnInfo(BaseMessages.getString(PKG, "HTTPPOSTDialog.ColumnInfo.Header"),  ColumnInfo.COLUMN_TYPE_CCOMBO,   YES_NO_COMBO), //$NON-NLS-1$
 		 };
 		  colinf[1].setUsingVariables(true);
 		wFields=new TableView(transMeta, shell, 
@@ -489,6 +516,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		wStepname.addSelectionListener( lsDef );
         wUrl.addSelectionListener( lsDef );
         wResult.addSelectionListener( lsDef );
+        wResultCode.addSelectionListener( lsDef );
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -597,6 +625,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 				TableItem item = wFields.table.getItem(i);
 				if (input.getArgumentField()[i]      !=null) item.setText(1, input.getArgumentField()[i]);
 				if (input.getArgumentParameter()[i]  !=null) item.setText(2, input.getArgumentParameter()[i]);
+				item.setText(3, (input.getArgumentHeader()[i]) ? YES : NO );
 			}
 		}
 		if (input.getQueryField()!=null)
@@ -613,6 +642,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         if (input.getUrlField() !=null) wUrlField.setText(input.getUrlField());
         if (input.getRequestEntity() !=null)      wrequestEntity.setText(input.getRequestEntity());
 		if (input.getFieldName()!=null) wResult.setText(input.getFieldName());
+		if (input.getResultCodeFieldName()!=null) wResultCode.setText(input.getResultCodeFieldName());
 		if (input.getEncoding()!=null) wEncoding.setText(input.getEncoding());
 		wPostAFile.setSelection(input.isPostAFile());
 		
@@ -641,6 +671,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 			TableItem item = wFields.getNonEmpty(i);
 			input.getArgumentField()[i]       = item.getText(1);
 			input.getArgumentParameter()[i]    = item.getText(2);
+			input.getArgumentHeader()[i] = YES.equals(item.getText(3));			
 		}
 		
 		int nrqueryparams = wQuery.nrNonEmpty();
@@ -660,6 +691,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		input.setRequestEntity(wrequestEntity.getText() );
 		input.setUrlInField(wUrlInField.getSelection() );
 		input.setFieldName( wResult.getText() );
+		input.setResultCodeFieldName( wResultCode.getText() );
 		input.setEncoding( wEncoding.getText() );
 		input.setPostAFile(wPostAFile.getSelection());
 		stepname = wStepname.getText(); // return value
