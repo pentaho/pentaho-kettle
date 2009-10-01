@@ -545,7 +545,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	    	}
 	    	// The schema/table
 	    	//
-	    	sql+=" FROM "+dbMeta.getQuotedSchemaTableCombination(meta.getSchemaName(), meta.getTablename());
+	    	sql+=" FROM "+dbMeta.getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTablename()));
 	    	
 	    	// order by?
 			if (meta.getOrderByClause()!=null && meta.getOrderByClause().length()!=0)
