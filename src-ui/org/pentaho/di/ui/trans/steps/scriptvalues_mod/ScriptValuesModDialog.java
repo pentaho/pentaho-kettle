@@ -593,7 +593,13 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
                     try
                     {
                     	rowPrevStepFields = transMeta.getPrevStepFields(stepMeta);
-                        setInputOutputFields();
+                    	if(rowPrevStepFields!=null) {
+                    		setInputOutputFields();
+                    	}else{
+                      	 // Can not get fields...end of wait message
+                      	 iteminput.removeAll();
+                      	 itemoutput.removeAll();
+                       }
                     }
                     catch(KettleException e)
                     {
