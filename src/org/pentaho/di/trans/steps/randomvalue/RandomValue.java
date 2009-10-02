@@ -12,12 +12,18 @@
 
 package org.pentaho.di.trans.steps.randomvalue;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Random;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.Mac;
+import javax.crypto.SecretKey;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.UUID4Util;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -27,6 +33,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+
 
 /**
  * Get random value.
@@ -55,17 +63,19 @@ public class RandomValue extends BaseStep implements StepInterface {
 			row[i] = inputRowData[i]; // no data is changed, clone is not
 									  // needed here.
 		}
-		Random randomgen = new Random();
 
 		for (int i = 0, index = inputRowMeta.size(); i < meta.getFieldName().length; i++, index++) {
 			switch (meta.getFieldType()[i]) {
 			case RandomValueMeta.TYPE_RANDOM_NUMBER:
+				Random randomgen = new Random();
 				row[index] = randomgen.nextDouble();
 				break;
 			case RandomValueMeta.TYPE_RANDOM_INTEGER:
+				randomgen = new Random();
 				row[index] = new Long(randomgen.nextInt(2147483647)); // 2147483647 is the max value for integer (32 bits)
 				break;
 			case RandomValueMeta.TYPE_RANDOM_STRING:
+				randomgen = new Random();
 				row[index] = Long.toString(Math.abs(randomgen.nextLong()), 32);
 				break;
 			case RandomValueMeta.TYPE_RANDOM_UUID:
@@ -74,6 +84,24 @@ public class RandomValue extends BaseStep implements StepInterface {
 			case RandomValueMeta.TYPE_RANDOM_UUID4:
 				row[index] = data.u4.getUUID4AsString();
 				break;
+			case RandomValueMeta.TYPE_RANDOM_MAC_HMACMD5:
+				try {
+					row[index]=generateRandomMACHash(RandomValueMeta.TYPE_RANDOM_MAC_HMACMD5);
+				}catch(Exception e){
+					log.logError(toString(), BaseMessages.getString(PKG, "RandomValue.Log.ErrorGettingRandomHMACMD5", e.getMessage()));
+					setErrors(1);
+					stopAll();
+				}
+				break;
+			case RandomValueMeta.TYPE_RANDOM_MAC_HMACSHA1:
+				try {
+					row[index]=generateRandomMACHash(RandomValueMeta.TYPE_RANDOM_MAC_HMACSHA1);
+				}catch(Exception e){
+					log.logError(toString(), BaseMessages.getString(PKG, "RandomValue.Log.ErrorGettingRandomHMACSHA1", e.getMessage()));
+					setErrors(1);
+					stopAll();
+				}
+				break;
 			default:
 				break;
 			}
@@ -81,7 +109,39 @@ public class RandomValue extends BaseStep implements StepInterface {
 
 		return row;
 	}
+	private String generateRandomMACHash(int algorithm) throws Exception {
+        // Generates a secret key
+        SecretKey sk=null;
+		switch (algorithm) {
+		case RandomValueMeta.TYPE_RANDOM_MAC_HMACMD5:
+			sk= data.keyGenHmacMD5.generateKey();
+		break;
+		case RandomValueMeta.TYPE_RANDOM_MAC_HMACSHA1:
+			sk= data.keyGenHmacSHA1.generateKey();
+		break;
+		default:	
+		break;
+		}
+   
+		if(sk==null) throw new KettleException(BaseMessages.getString(PKG, "RandomValue.Log.SecretKeyNull"));
 
+        // Create a MAC object using HMAC and initialize with key
+        Mac mac = Mac.getInstance(sk.getAlgorithm());
+        mac.init(sk);
+        // digest 
+        byte[] hashCode = mac.doFinal();
+        StringBuffer encoded = new StringBuffer();
+        for(int i = 0; i < hashCode.length; i++) {
+            String _b = Integer.toHexString(hashCode[i]);
+            if(_b.length() == 1) {
+                _b = "0" + _b;
+            }
+            encoded.append(_b.substring(_b.length() - 2));
+        }
+
+        return encoded.toString();
+
+    }
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi)
 			throws KettleException {
 		Object[] row;
@@ -97,7 +157,6 @@ public class RandomValue extends BaseStep implements StepInterface {
 				data.outputRowMeta = getInputRowMeta().clone();
 				meta.getFields(data.outputRowMeta, getStepname(), null, null,this);
 			}
-
 		} else {
 			row = new Object[] {}; // empty row
 			incrementLinesRead();
@@ -142,7 +201,45 @@ public class RandomValue extends BaseStep implements StepInterface {
 			if (previous != null && previous.size() > 0) {
 				data.readsRows = true;
 			}
-
+			boolean genHmacMD5=false;
+			boolean genHmacSHA1=false;
+			boolean uuid4=false;
+		   
+			
+			for (int i=0;i<meta.getFieldName().length;i++) {
+				switch (meta.getFieldType()[i]) {
+				case RandomValueMeta.TYPE_RANDOM_MAC_HMACMD5:
+					genHmacMD5=true;
+					break;
+				case RandomValueMeta.TYPE_RANDOM_MAC_HMACSHA1:
+					genHmacSHA1=true;
+					break;
+				case RandomValueMeta.TYPE_RANDOM_UUID4:
+					uuid4=true;
+					break;
+				default:
+					break;
+				}
+			}
+			if(genHmacMD5) {
+				try  {
+					data.keyGenHmacMD5 = KeyGenerator.getInstance("HmacMD5");
+				}catch(NoSuchAlgorithmException s){
+					log.logError(toString(), BaseMessages.getString(PKG, "RandomValue.Log.HmacMD5AlgorithmException", s.getMessage()));
+					return false;
+				}
+			}
+			if(genHmacSHA1){
+				try  {
+					data.keyGenHmacSHA1 = KeyGenerator.getInstance("HmacSHA1");
+				}catch(NoSuchAlgorithmException s){
+					log.logError(toString(), BaseMessages.getString(PKG, "RandomValue.Log.HmacSHA1AlgorithmException", s.getMessage()));
+					return false;
+				}
+			}
+			if(uuid4) {
+				 data.u4=new UUID4Util();
+			}
 			return true;
 		}
 		return false;

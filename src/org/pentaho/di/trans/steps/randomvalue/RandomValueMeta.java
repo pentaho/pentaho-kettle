@@ -58,6 +58,10 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 	public final static int TYPE_RANDOM_UUID = 4;
 	
 	public final static int TYPE_RANDOM_UUID4 = 5;
+	
+	public final static int TYPE_RANDOM_MAC_HMACMD5   = 6;
+	
+	public final static int TYPE_RANDOM_MAC_HMACSHA1   = 7;
 
 	public static final RandomValueMetaFunction functions[] = new RandomValueMetaFunction[] {
 			null,
@@ -70,7 +74,11 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 			new RandomValueMetaFunction(TYPE_RANDOM_UUID, "random uuid",
 					BaseMessages.getString(PKG, "RandomValueMeta.TypeDesc.RandomUUID")),
 			new RandomValueMetaFunction(TYPE_RANDOM_UUID4, "random uuid4",
-					BaseMessages.getString(PKG, "RandomValueMeta.TypeDesc.RandomUUID4"))};
+					BaseMessages.getString(PKG, "RandomValueMeta.TypeDesc.RandomUUID4")),
+			new RandomValueMetaFunction(TYPE_RANDOM_MAC_HMACMD5, "random machmacmd5",
+					BaseMessages.getString(PKG, "RandomValueMeta.TypeDesc.RandomHMACMD5")),
+			new RandomValueMetaFunction(TYPE_RANDOM_MAC_HMACSHA1, "random machmacsha1",
+					BaseMessages.getString(PKG, "RandomValueMeta.TypeDesc.RandomHMACSHA1"))};
 
 	private String fieldName[];
 
@@ -206,6 +214,12 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 				break;
 			case TYPE_RANDOM_UUID4:
 				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING, 36, 0);
+				break;
+			case TYPE_RANDOM_MAC_HMACMD5:
+				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING, 100, 0);
+				break;
+			case TYPE_RANDOM_MAC_HMACSHA1:
+				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING, 100, 0);
 				break;
 			default:
 				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_NONE);
