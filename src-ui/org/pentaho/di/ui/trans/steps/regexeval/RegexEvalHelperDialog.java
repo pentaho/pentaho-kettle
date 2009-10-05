@@ -49,10 +49,12 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.regexeval.RegexEvalMeta;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
 
 /**
  * Dialog to enter a text. (descriptions etc.)
@@ -114,6 +116,8 @@ public class RegexEvalHelperDialog extends Dialog
 	
 	GUIResource guiresource = GUIResource.getInstance();
 	
+	private boolean errorDisplayed;
+	
 	
     /**
      * Dialog to allow someone to test regular expression
@@ -127,6 +131,7 @@ public class RegexEvalHelperDialog extends Dialog
         props = PropsUI.getInstance();
         this.regexscript=RegexScript;
         this.transmeta=transmeta;
+        this.errorDisplayed=false;
     }
     
     public String open()
@@ -359,7 +364,7 @@ public class RegexEvalHelperDialog extends Dialog
     	wValue2.addModifyListener(new ModifyListener() {public void modifyText(ModifyEvent e) {testValue(2,true, null);}});
     	wValue3.addModifyListener(new ModifyListener() {public void modifyText(ModifyEvent e) {testValue(3,true, null);}});
     	wValueGroup.addModifyListener(new ModifyListener() {public void modifyText(ModifyEvent e) {testValue(4,true, null);}});
-    	wRegExScript.addModifyListener(new ModifyListener() {public void modifyText(ModifyEvent e) {testValues();}});
+    	wRegExScript.addModifyListener(new ModifyListener() {public void modifyText(ModifyEvent e) {errorDisplayed=false; testValues();}});
     	
         // Detect [X] or ALT-F4 or something that kills this window...
         shell.addShellListener( new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -445,7 +450,12 @@ public class RegexEvalHelperDialog extends Dialog
 		    	wlGroups.setText(BaseMessages.getString(PKG, "RegexEvalHelperDialog.FieldsGroup",nr));
 		    }
     	}
-    	catch(Exception e){};
+    	catch(Exception e){
+    		if(!errorDisplayed) {
+    			new ErrorDialog(shell,BaseMessages.getString(PKG, "RegexEvalHelperDialog.ErrorCompiling.Title"),BaseMessages.getString(PKG, "RegexEvalHelperDialog.ErrorCompiling.Message"),e);
+    			this.errorDisplayed=true;
+    		}
+    	};
     }
     public void dispose()
     {
