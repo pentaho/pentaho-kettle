@@ -49,7 +49,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.regexeval.RegexEvalMeta;
 import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
@@ -57,7 +56,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 /**
- * Dialog to enter a text. (descriptions etc.)
+ * Dialog to test a regular expression
  * 
  * @author Samatar
  * @since 20-04-2009
@@ -104,6 +103,10 @@ public class RegexEvalHelperDialog extends Dialog
 	
 	private Group wCaptureGroups;
 	private FormData fdCaptureGroups;
+	
+	private Text      wRegExScriptCompile;
+	private FormData     fdRegExScriptCompile;
+	
 	
 	private List wGroups;
 	private FormData fdGroups;
@@ -190,6 +193,18 @@ public class RegexEvalHelperDialog extends Dialog
         fdRegExScript.bottom = new FormAttachment(40, -margin);
         wRegExScript.setLayoutData(fdRegExScript);
 		
+    	wRegExScriptCompile=new Text(wNoteContentComp, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL);
+		wRegExScriptCompile.setText("");
+        props.setLook(wRegExScriptCompile, Props.WIDGET_STYLE_FIXED);
+        fdRegExScriptCompile = new FormData();
+        fdRegExScriptCompile.left = new FormAttachment(0, 0);
+        fdRegExScriptCompile.top = new FormAttachment(wRegExScript, margin);
+        fdRegExScriptCompile.right = new FormAttachment(100, 0);
+        wRegExScriptCompile.setLayoutData(fdRegExScriptCompile);
+        wRegExScriptCompile.setEditable(false);
+        wRegExScriptCompile.setFont(guiresource.getFontNote());
+		
+        
 
 		// ////////////////////////
 		// START OF Values GROUP
@@ -210,14 +225,14 @@ public class RegexEvalHelperDialog extends Dialog
  		props.setLook(wlValue1);
 		fdlValue1=new FormData();
 		fdlValue1.left = new FormAttachment(0, 0);
-		fdlValue1.top  = new FormAttachment(wRegExScript, margin);
+		fdlValue1.top  = new FormAttachment(wRegExScriptCompile, margin);
 		fdlValue1.right= new FormAttachment(middle, -margin);
 		wlValue1.setLayoutData(fdlValue1);
 		wValue1=new Text(wValuesGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wValue1);
 		fdValue1=new FormData();
 		fdValue1.left = new FormAttachment(middle, margin);
-		fdValue1.top  = new FormAttachment(wRegExScript, margin);
+		fdValue1.top  = new FormAttachment(wRegExScriptCompile, margin);
 		fdValue1.right= new FormAttachment(100, -margin);
 		wValue1.setLayoutData(fdValue1);
 		
@@ -259,7 +274,7 @@ public class RegexEvalHelperDialog extends Dialog
 
     	fdValuesGroup = new FormData();
 		fdValuesGroup.left = new FormAttachment(0, margin);
-		fdValuesGroup.top = new FormAttachment(wRegExScript, margin);
+		fdValuesGroup.top = new FormAttachment(wRegExScriptCompile, margin);
 		fdValuesGroup.right = new FormAttachment(100, -margin);
 		wValuesGroup.setLayoutData(fdValuesGroup);
 		
@@ -449,10 +464,15 @@ public class RegexEvalHelperDialog extends Dialog
 		    	}
 		    	wlGroups.setText(BaseMessages.getString(PKG, "RegexEvalHelperDialog.FieldsGroup",nr));
 		    }
+	        wRegExScriptCompile.setForeground(guiresource.getColorBlue());
+	    	wRegExScriptCompile.setText(BaseMessages.getString(PKG, "RegexEvalHelperDialog.ScriptSuccessfullyCompiled"));
+	    	wRegExScriptCompile.setToolTipText("");
     	}
     	catch(Exception e){
     		if(!errorDisplayed) {
-    			new ErrorDialog(shell,BaseMessages.getString(PKG, "RegexEvalHelperDialog.ErrorCompiling.Title"),BaseMessages.getString(PKG, "RegexEvalHelperDialog.ErrorCompiling.Message"),e);
+    	        wRegExScriptCompile.setForeground(guiresource.getColorRed());
+    			wRegExScriptCompile.setText(e.getMessage());
+    			wRegExScriptCompile.setToolTipText(BaseMessages.getString(PKG, "RegexEvalHelperDialog.ErrorCompiling.Message")+Const.CR+e.toString());
     			this.errorDisplayed=true;
     		}
     	};
