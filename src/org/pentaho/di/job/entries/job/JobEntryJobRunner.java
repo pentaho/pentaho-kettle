@@ -19,7 +19,7 @@ package org.pentaho.di.job.entries.job;
 
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.Job;
 
 /**
@@ -32,7 +32,7 @@ public class JobEntryJobRunner implements Runnable
 {
 	private Job       job;
 	private Result    result;
-	private LogWriter log;
+	private LogChannelInterface log;
 	private int       entryNr;
 	private boolean   finished;
     
@@ -43,7 +43,7 @@ public class JobEntryJobRunner implements Runnable
     {
         this.job = job;
         this.result = result;
-        this.log = LogWriter.getInstance();
+        this.log = job.getLogChannel();
         this.entryNr = entryNr;
         finished=false;
     }
@@ -61,7 +61,7 @@ public class JobEntryJobRunner implements Runnable
 		}
 		catch(KettleException e)
 		{
-			log.logError(toString(), "An error occurred executing this job entry : "+e.getMessage());
+			log.logError("An error occurred executing this job entry : "+e.getMessage());
 			result.setResult(false);
 			result.setNrErrors(1);
 		}
@@ -87,7 +87,7 @@ public class JobEntryJobRunner implements Runnable
 	/**
 	 * @return Returns the log.
 	 */
-	public LogWriter getLog()
+	public LogChannelInterface getLog()
 	{
 		return log;
 	}
@@ -95,7 +95,7 @@ public class JobEntryJobRunner implements Runnable
 	/**
 	 * @param log The log to set.
 	 */
-	public void setLog(LogWriter log)
+	public void setLog(LogChannelInterface log)
 	{
 		this.log = log;
 	}	

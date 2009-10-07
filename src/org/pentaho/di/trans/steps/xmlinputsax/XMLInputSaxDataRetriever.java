@@ -22,7 +22,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.xml.sax.Attributes;
@@ -78,6 +78,8 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 
 	private StringBuffer charactersBuffer;
 
+	private LogChannelInterface	log;
+
 	/**
 	 * Constructor of xmlDataRetreiver class.
 	 * 
@@ -88,8 +90,9 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 	 * @param data the (temporary) data to reference
 	 * 
 	 */
-	public XMLInputSaxDataRetriever(String sourceFile, XMLInputSaxMeta meta, XMLInputSaxData data)
+	public XMLInputSaxDataRetriever(LogChannelInterface log, String sourceFile, XMLInputSaxMeta meta, XMLInputSaxData data)
 	{
+		this.log = log;
 		this.meta = meta;
 
 		this.data = data;
@@ -137,13 +140,13 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 
 		} catch (SAXException se)
 		{
-			LogWriter.getInstance().logError(toString(), Const.getStackTracker(se));
+			log.logError(Const.getStackTracker(se));
 		} catch (ParserConfigurationException pce)
 		{
-			LogWriter.getInstance().logError(toString(), Const.getStackTracker(pce));
+			log.logError(Const.getStackTracker(pce));
 		} catch (IOException ie)
 		{
-			LogWriter.getInstance().logError(toString(), Const.getStackTracker(ie));
+			log.logError(Const.getStackTracker(ie));
 		}
 	}
 

@@ -134,7 +134,7 @@ public class Append extends BaseStep implements StepInterface
 	                return true;
             	}
             	catch(Exception e) {
-            		log.logError(toString(), e.getMessage());
+            		logError(e.getMessage());
             		return false;
             	}
             }            

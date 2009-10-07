@@ -2161,7 +2161,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		if (in.getFileFormat()   !=null) wFormat.setText(in.getFileFormat());
 		wLimit.setText(""+in.getRowLimit());
 		
-		log.logDebug(toString(), "getting fields info...");
+		logDebug("getting fields info...");
 		getFieldsData(in, false);
 		
         if ( in.getEncoding()!=null ) wEncoding.setText( in.getEncoding() );
@@ -2490,7 +2490,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                         { 
                         	// Estimate the number of input fields...
                         	// Chop up the line using the delimiter
-                        	String[] fields = TextFileInput.guessStringsFromLine(line, meta);
+                        	String[] fields = TextFileInput.guessStringsFromLine(log, line, meta);
 
                             for (int i = 0; i < fields.length; i++)
                             {

@@ -120,7 +120,7 @@ public class Update extends BaseStep implements StepInterface
             }
             else
             {
-                if (log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Update.Log.KeyCouldNotFound")+data.lookupParameterRowMeta.getString(lookupRow)); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Update.Log.KeyCouldNotFound")+data.lookupParameterRowMeta.getString(lookupRow)); //$NON-NLS-1$
                 if (!Const.isEmpty( meta.getIgnoreFlagField())) // set flag field!
                 {
                     outputRow[rowMeta.size()] = Boolean.FALSE;
@@ -365,7 +365,7 @@ public class Update extends BaseStep implements StepInterface
         
         try
         {
-            if(log.isDetailed()) log.logDetailed(toString(), "Setting preparedStatement to [" + sql + "]");
+            if(log.isDetailed()) logDetailed("Setting preparedStatement to [" + sql + "]");
             data.prepStatementLookup = data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
         }
         catch (SQLException ex)
@@ -418,7 +418,7 @@ public class Update extends BaseStep implements StepInterface
 
         try
         {            
-        	if(log.isDetailed()) log.logDetailed(toString(), "Setting update preparedStatement to ["+sql+"]");
+        	if(log.isDetailed()) logDetailed("Setting update preparedStatement to ["+sql+"]");
             data.prepStatementUpdate=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
         }
         catch(SQLException ex) 
@@ -434,7 +434,7 @@ public class Update extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			data.db=new Database(meta.getDatabaseMeta());
+			data.db=new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			try 
 			{
@@ -489,7 +489,7 @@ public class Update extends BaseStep implements StepInterface
         }
         catch(KettleDatabaseException e)
         {
-            log.logError(toString(), BaseMessages.getString(PKG, "Update.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(BaseMessages.getString(PKG, "Update.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             setErrors(1);
         }
         finally

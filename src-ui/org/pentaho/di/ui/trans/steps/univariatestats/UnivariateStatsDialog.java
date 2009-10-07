@@ -242,7 +242,7 @@ public class UnivariateStatsDialog extends BaseStepDialog
 
               setComboBoxes();
             } catch (KettleException e) {
-              log.logError(toString(),
+              logError(
                 BaseMessages.getString(PKG, "UnivariateStatsDialog.Log.UnableToFindInput"));
             }
           }

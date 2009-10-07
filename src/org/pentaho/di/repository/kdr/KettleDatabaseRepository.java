@@ -33,6 +33,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleDependencyException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
@@ -52,8 +53,8 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
-import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.RepositoryVersionRegistry;
+import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryClusterSchemaDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConditionDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectionDelegate;
@@ -114,6 +115,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     public void init(RepositoryMeta repositoryMeta, UserInfo userInfo) {
 		this.repositoryMeta = (KettleDatabaseRepositoryMeta)repositoryMeta;
 		this.userInfo = userInfo;
+		this.log = new LogChannel(this);
 		init();
 	}
 	
@@ -1186,7 +1188,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	
 	public synchronized void deleteJob(ObjectId id_job) throws KettleException
 	{
-		// log.logBasic(toString(), "Deleting info in repository on ID_JOB: "+id_job);
+		// logBasic("Deleting info in repository on ID_JOB: "+id_job);
 
 		delJobNotes(id_job);
 		delJobAttributes(id_job);
@@ -1197,7 +1199,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		delJobHops(id_job);
 		delJob(id_job);
 
-		// log.logBasic(toString(), "All deleted on job with ID_JOB: "+id_job);
+		// logBasic("All deleted on job with ID_JOB: "+id_job);
 	}
 
 	public synchronized ObjectId renameDatabase(ObjectId id_database, String newname) throws KettleException {
@@ -1220,14 +1222,14 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 			try
 			{
 				execStatement("DROP TABLE " + quoteTable(repositoryTableNames[i]));
-                if (log.isDetailed()) log.logDetailed(toString(), "dropped table "+repositoryTableNames[i]);
+                if (log.isDetailed()) log.logDetailed("dropped table "+repositoryTableNames[i]);
 			}
 			catch (KettleException dbe)
 			{
-                if (log.isDetailed()) log.logDetailed(toString(), "Unable to drop table: " + repositoryTableNames[i]);
+                if (log.isDetailed()) log.logDetailed("Unable to drop table: " + repositoryTableNames[i]);
 			}
 		}
-        log.logBasic(toString(), "Dropped all "+repositoryTableNames.length+" repository tables.");
+        log.logBasic("Dropped all "+repositoryTableNames.length+" repository tables.");
         
         // perform commit, for some DB's drop is not auto commit.
         commit(); 

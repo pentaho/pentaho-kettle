@@ -228,10 +228,7 @@ public class UnivariateStats extends BaseStep
       }
     }
 
-    if (log.isRowLevel()) { 
-      log.logRowlevel(toString(), 
-                      "Read row #"+ getLinesRead() +" : "+r);
-    }
+    if (log.isRowLevel()) logRowlevel( "Read row #"+ getLinesRead() +" : "+r);
 
     if (checkFeedback(getLinesRead())) {
       logBasic("Linenr "+ getLinesRead());

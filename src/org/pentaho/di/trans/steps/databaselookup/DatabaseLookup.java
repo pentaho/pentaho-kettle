@@ -610,7 +610,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
-			data.db=new Database(meta.getDatabaseMeta());
+			data.db=new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			try
 			{

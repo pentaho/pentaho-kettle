@@ -108,7 +108,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 		
 			putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 		    
-			if(log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "LDAPInput.log.ReadRow"), data.outputRowMeta.getString(outputRowData));
+			if(log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "LDAPInput.log.ReadRow"), data.outputRowMeta.getString(outputRowData));
 			
 		    if (checkFeedback(getLinesInput()))
 		    {
@@ -428,7 +428,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 			{
 				data.ctx.close();
 				if(data.results!=null) data.results=null;
-				if(log.isBasic()) log.logBasic(toString(),BaseMessages.getString(PKG, "LDAPInput.log.Disconnection.Done"));
+				if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "LDAPInput.log.Disconnection.Done"));
 			}
 			catch (Exception e)
 			{

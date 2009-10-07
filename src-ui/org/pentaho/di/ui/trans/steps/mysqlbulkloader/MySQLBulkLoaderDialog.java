@@ -516,7 +516,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(),BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                        logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -715,7 +715,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		wEnclosure.setText(Const.NVL(input.getEnclosure(), ""));   //$NON-NLS-1$
 		wDelimiter.setText(Const.NVL(input.getDelimiter(), ""));   //$NON-NLS-1$
@@ -792,7 +792,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		inf.setIgnoringErrors( wIgnore.getSelection() );
 		inf.setBulkSize( wBulkSize.getText() );
 
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrfields; i++)
 		{
 			TableItem item = wReturn.getNonEmpty(i);
@@ -837,7 +837,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 
 		if (inf != null)
 		{
-			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
+			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
 
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());
@@ -948,7 +948,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(ci);
+						Database db = new Database(this, ci);
 						try {
 							db.connect();
 

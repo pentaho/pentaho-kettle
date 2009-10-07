@@ -74,7 +74,7 @@ public class SampleRows extends BaseStep implements StepInterface
 				if (rangePart[i].matches("\\d+")) 
 				{
 					String part=rangePart[i];
-					if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SampleRows.Log.RangeValue",part));
+					if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SampleRows.Log.RangeValue",part));
 					int vpart=Integer.valueOf(part);
 					if(vpart>data.maxLine) data.maxLine=vpart;
 					data.range.add(vpart);
@@ -84,7 +84,7 @@ public class SampleRows extends BaseStep implements StepInterface
 					String[] rangeMultiPart = rangePart[i].split("\\.\\.");
 					for (int j = Integer.valueOf(rangeMultiPart[0]).intValue(); j < Integer.valueOf(rangeMultiPart[1]).intValue() + 1; j++) 
 					{
-						if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SampleRows.Log.RangeValue",""+j));
+						if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SampleRows.Log.RangeValue",""+j));
 						int vpart=Integer.valueOf(j);
 						if(vpart>data.maxLine) data.maxLine=vpart;
 						data.range.add(vpart);
@@ -107,7 +107,7 @@ public class SampleRows extends BaseStep implements StepInterface
 			if(data.addlineField)	data.outputRow[data.NrPrevFields]=getLinesRead();
 			putRow(data.outputRowMeta, data.outputRow);      // copy row to possible alternate rowset(s).
 
-			if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "SampleRows.Log.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SampleRows.Log.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
 		}
 			
 		if(data.maxLine>0 && getLinesRead()>=data.maxLine)

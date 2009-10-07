@@ -61,7 +61,7 @@ public interface EngineMetaInterface extends RepositoryElementInterface {
     
     public String getFilename();
     
-    public boolean saveSharedObjects();
+    public void saveSharedObjects() throws KettleException;
     
     public void setInternalKettleVariables();
 }

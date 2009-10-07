@@ -18,6 +18,7 @@ package org.pentaho.di.trans.steps.regexeval;
 import java.util.List;
 
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.Variables;
@@ -36,7 +37,11 @@ import org.pentaho.di.trans.TransformationTestCase;
  */
 public class RegexEvalTest extends TransformationTestCase
 {
-    public RowMetaInterface createSourceRowMetaInterface()
+    public RegexEvalTest() throws KettleException {
+		super();
+	}
+
+	public RowMetaInterface createSourceRowMetaInterface()
     {
         return createRowMetaInterface(
                 new ValueMeta("field1", ValueMeta.TYPE_STRING)

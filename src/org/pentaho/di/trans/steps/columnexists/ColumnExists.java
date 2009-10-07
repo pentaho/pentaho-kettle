@@ -147,7 +147,7 @@ public class ColumnExists extends BaseStep implements StepInterface
 			 //	add new values to the row.
 	        putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 
-	        if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "ColumnExists.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+	        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "ColumnExists.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
         }
         catch(KettleException e)
         {
@@ -182,7 +182,7 @@ public class ColumnExists extends BaseStep implements StepInterface
         	{
         		if(Const.isEmpty(meta.getTablename()))
         		{
-            		log.logError(toString(), BaseMessages.getString(PKG, "ColumnExists.Error.TablenameMissing"));
+            		logError(BaseMessages.getString(PKG, "ColumnExists.Error.TablenameMissing"));
             		return false;
         		}
         		data.tablename=environmentSubstitute(meta.getTablename());
@@ -193,10 +193,10 @@ public class ColumnExists extends BaseStep implements StepInterface
         	
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), BaseMessages.getString(PKG, "ColumnExists.Error.ResultFieldMissing"));
+        		logError(BaseMessages.getString(PKG, "ColumnExists.Error.ResultFieldMissing"));
         		return false;
         	}
-            data.db=new Database(meta.getDatabase());
+            data.db=new Database(this, meta.getDatabase());
             data.db.shareVariablesWith(this);
             try
             {

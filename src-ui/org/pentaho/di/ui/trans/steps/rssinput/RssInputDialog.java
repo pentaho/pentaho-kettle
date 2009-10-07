@@ -812,7 +812,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		wLimit.setText(""+in.getRowLimit());
 
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "RssInputDialog.Log.GettingFieldsInfo"));
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "RssInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
 		    RssInputField field = in.getInputFields()[i];

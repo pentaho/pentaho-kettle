@@ -73,8 +73,8 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 	        	String mkFifoCmd = "mkfifo "+data.fifoFilename;
 	        	logBasic("Creating FIFO file using this command : "+mkFifoCmd);
 	        	Process mkFifoProcess = rt.exec(mkFifoCmd);
-	        	StreamLogger errorLogger = new StreamLogger(mkFifoProcess.getErrorStream(), "mkFifoError");
-	        	StreamLogger outputLogger = new StreamLogger(mkFifoProcess.getInputStream(), "mkFifoOuptut");
+	        	StreamLogger errorLogger = new StreamLogger(log, mkFifoProcess.getErrorStream(), "mkFifoError");
+	        	StreamLogger outputLogger = new StreamLogger(log, mkFifoProcess.getInputStream(), "mkFifoOuptut");
 	        	new Thread(errorLogger).start();
 	        	new Thread(outputLogger).start();
 	        	int result = mkFifoProcess.waitFor();
@@ -85,8 +85,8 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 	        	String chmodCmd = "chmod 666 "+data.fifoFilename;
 	        	logBasic("Setting FIFO file permissings using this command : "+chmodCmd);
 	        	Process chmodProcess = rt.exec(chmodCmd);
-	        	errorLogger = new StreamLogger(chmodProcess.getErrorStream(), "chmodError");
-	        	outputLogger = new StreamLogger(chmodProcess.getInputStream(), "chmodOuptut");
+	        	errorLogger = new StreamLogger(log, chmodProcess.getErrorStream(), "chmodError");
+	        	outputLogger = new StreamLogger(log, chmodProcess.getInputStream(), "chmodOuptut");
 	        	new Thread(errorLogger).start();
 	        	new Thread(outputLogger).start();
 	        	result = chmodProcess.waitFor();
@@ -99,7 +99,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
             // (Also, we need a clear cache for getting up-to-date target metadata)
             DBCache.getInstance().clear(meta.getDatabaseMeta().getName());
 
-			data.db = new Database(meta.getDatabaseMeta());
+			data.db = new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			// Connect to the database
             if (getTransMeta().isUsingUniqueConnections())

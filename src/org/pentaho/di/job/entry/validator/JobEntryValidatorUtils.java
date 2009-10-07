@@ -21,7 +21,6 @@ import org.apache.commons.validator.util.ValidatorUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
-import org.pentaho.di.core.logging.LogWriter;
 
 /**
  * Methods in this class are referenced in validator definitions within the validator resources file
@@ -201,15 +200,10 @@ public class JobEntryValidatorUtils
     remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, ValidatorMessages.getString(key), source));
   }
 
-  public static void addOkRemark(CheckResultSourceInterface source, String propertyName,
-      List<CheckResultInterface> remarks)
+  public static void addOkRemark(CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks)
   {
     final int SUBSTRING_LENGTH = 20;
-    LogWriter log = LogWriter.getInstance();
-    log.logBasic(JobEntryValidatorUtils.class.getSimpleName(), "attempting to fetch property named '" + propertyName
-        + "'");
     String value = ValidatorUtils.getValueAsString(source, propertyName);
-    log.logBasic(JobEntryValidatorUtils.class.getSimpleName(), "fetched value [" + value + "]");
     String substr = null;
     if (value != null)
     {

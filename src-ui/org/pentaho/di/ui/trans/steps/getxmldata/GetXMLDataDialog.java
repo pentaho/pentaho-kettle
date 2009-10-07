@@ -1700,7 +1700,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         	wEncoding.setText("UTF-8");        
         }
 		
-		log.logDebug(toString(), BaseMessages.getString(PKG, "GetXMLDataDialog.Log.GettingFieldsInfo"));
+		logDebug(BaseMessages.getString(PKG, "GetXMLDataDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
 		    GetXMLDataField field = in.getInputFields()[i];

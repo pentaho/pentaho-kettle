@@ -216,7 +216,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 
         boolean param=false;
 
-		Database db = new Database(databaseMeta);
+		Database db = new Database(this, databaseMeta);
         databases = new Database[] { db }; // keep track of it for canceling purposes...
 
 		// First try without connecting to the database... (can be  S L O W)
@@ -345,7 +345,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Connection exists", stepMeta);
 			remarks.add(cr);
 
-			Database db = new Database(databaseMeta);
+			Database db = new Database(this, databaseMeta);
 			db.shareVariablesWith(transMeta);
             databases = new Database[] { db }; // keep track of it for cancelling purposes...
 

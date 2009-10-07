@@ -1277,7 +1277,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		
 		wLimit.setText("" + in.getRowLimit());
 		wAddResult.setSelection(in.AddToResultFilename());
-		log.logDebug(toString(), BaseMessages.getString(PKG, "LDIFInputDialog.Log.GettingFieldsInfo"));
+		logDebug(BaseMessages.getString(PKG, "LDIFInputDialog.Log.GettingFieldsInfo"));
 		for (int i = 0; i < in.getInputFields().length; i++) {
 			LDIFInputField field = in.getInputFields()[i];
 

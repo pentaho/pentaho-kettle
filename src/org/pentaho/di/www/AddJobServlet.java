@@ -19,11 +19,9 @@ import java.util.Arrays;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Appender;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.logging.LogWriter;
@@ -37,7 +35,7 @@ import org.pentaho.di.repository.Repository;
 
 
 
-public class AddJobServlet extends HttpServlet
+public class AddJobServlet extends BaseHttpServlet implements CarteServletInterface
 {
     private static final long serialVersionUID = -6850701762586992604L;
     private static LogWriter log = LogWriter.getInstance();
@@ -62,13 +60,13 @@ public class AddJobServlet extends HttpServlet
     {
         if (!request.getRequestURI().equals(CONTEXT_PATH+"/")) return;
 
-        if (log.isDebug()) log.logDebug(toString(), "Addition of job requested");
+        if (log.isDebug()) logDebug("Addition of job requested");
 
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
         
         PrintWriter out = response.getWriter();
         BufferedReader in = request.getReader(); // read from the client
-        if (log.isDetailed()) log.logDetailed(toString(), "Encoding: "+request.getCharacterEncoding());
+        if (log.isDetailed()) logDetailed("Encoding: "+request.getCharacterEncoding());
         
         if (useXML)
         {
@@ -120,7 +118,7 @@ public class AddJobServlet extends HttpServlet
 
             // Create the transformation and store in the list...
             //
-            final Job job = new Job(LogWriter.getInstance(), repository, jobMeta);
+            final Job job = new Job(repository, jobMeta);
             
             job.setSocketRepository(socketRepository);
             
@@ -131,14 +129,6 @@ public class AddJobServlet extends HttpServlet
             		throw new Exception("A job with the same name exists and is not idle."+Const.CR+"Please stop this job first.");
             	}
             }
-
-        	// Remove the old log appender to avoid memory leaks!
-        	//
-        	Appender appender = jobMap.getAppender(job.getJobname());
-        	if (appender!=null) {
-        		log.removeAppender(appender);
-        		appender.close();
-        	}
 
             // Setting variables
             //
@@ -166,7 +156,7 @@ public class AddJobServlet extends HttpServlet
 					try {
 						job.endProcessing(Database.LOG_STATUS_END, job.getResult());
 					} catch(Exception e) {
-						log.logError(toString(), "There was an error while logging the job result to the logging table", e);
+						logError("There was an error while logging the job result to the logging table", e);
 					}
 				}
 			});
@@ -234,4 +224,7 @@ public class AddJobServlet extends HttpServlet
         return "Add Job";
     }
 
+	public String getService() {
+		return CONTEXT_PATH+" ("+toString()+")";
+	}
 }

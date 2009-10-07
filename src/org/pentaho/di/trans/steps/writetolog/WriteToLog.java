@@ -107,49 +107,49 @@ public class WriteToLog extends BaseStep implements StepInterface
 		}
 		out.append(Const.CR + "====================");
 		
-		setLog(log, data.loglevel,out);
+		setLog(data.loglevel, out);
 		
 		putRow(getInputRowMeta(), r); // copy row to output
 
 		return true;
 	}
-	private void setLog(LogWriter log, int loglevel, StringBuffer msg)
+	private void setLog(int loglevel, StringBuffer msg)
 	{
 		switch (loglevel) {
 		case LogWriter.LOG_LEVEL_ERROR:
 			// Output message to log
 			// Log level = ERREUR	
-			log.logError(toString(), msg.toString());
+			logError(msg.toString());
 			break;
 		case LogWriter.LOG_LEVEL_MINIMAL:
 			// Output message to log
 			// Log level = MINIMAL	
-			log.logMinimal(toString(), msg.toString());
+			logMinimal(msg.toString());
 			break;
 		case LogWriter.LOG_LEVEL_BASIC:
 			// Output message to log
 			// Log level = BASIC	
-			log.logBasic(toString(), msg.toString());
+			logBasic(msg.toString());
 			break;
 		case LogWriter.LOG_LEVEL_DETAILED:
 			// Output message to log
 			// Log level = DETAILED	
-			log.logDetailed(toString(), msg.toString());
+			logDetailed(msg.toString());
 			break;
 		case LogWriter.LOG_LEVEL_DEBUG:
 			// Output message to log
 			// Log level = DEBUG	
-			log.logDebug(toString(), msg.toString());
+			logDebug(msg.toString());
 			break;
 		case LogWriter.LOG_LEVEL_ROWLEVEL:
 			// Output message to log
 			// Log level = ROW LEVEL	
-			log.logRowlevel(toString(), msg.toString());
+			logRowlevel(msg.toString());
 			break;
 			default:
 				// Output message to log
 				// Log level = BASIC	
-				log.logBasic(toString(), msg.toString());
+				logBasic(msg.toString());
 				break;
 		}
 	}

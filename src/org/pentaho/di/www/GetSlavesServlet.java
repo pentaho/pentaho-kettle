@@ -17,7 +17,6 @@ import java.io.PrintStream;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,7 +25,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 
-public class GetSlavesServlet extends HttpServlet
+public class GetSlavesServlet extends BaseHttpServlet implements CarteServletInterface
 {
 	private static Class<?> PKG = GetSlavesServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -53,7 +52,7 @@ public class GetSlavesServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "GetStatusServlet.StatusRequested"));
+        if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetStatusServlet.StatusRequested"));
         response.setStatus(HttpServletResponse.SC_OK);
         
         // We always reply in XML...
@@ -77,4 +76,8 @@ public class GetSlavesServlet extends HttpServlet
     {
         return "Get list of slave servers";
     }
+
+	public String getService() {
+		return CONTEXT_PATH+" ("+toString()+")";
+	}
 }

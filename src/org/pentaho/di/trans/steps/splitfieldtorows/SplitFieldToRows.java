@@ -63,7 +63,7 @@ public class SplitFieldToRows extends BaseStep implements StepInterface
 				String realRowNumberField=environmentSubstitute(meta.getRowNumberField());
 				if(Const.isEmpty(realRowNumberField))
 				{
-					log.logError(toString(), BaseMessages.getString(PKG, "SplitFieldToRows.Exception.RownrFieldMissing"));
+					logError(BaseMessages.getString(PKG, "SplitFieldToRows.Exception.RownrFieldMissing"));
 					numErrors++;
 				}
 			}

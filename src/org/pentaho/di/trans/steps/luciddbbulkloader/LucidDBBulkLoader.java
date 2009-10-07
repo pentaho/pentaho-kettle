@@ -92,8 +92,8 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 	        	String mkFifoCmd = "mkfifo "+data.fifoFilename+"";
 	        	logBasic("Creating FIFO file using this command : "+mkFifoCmd);
 	        	Process mkFifoProcess = rt.exec(mkFifoCmd);
-	        	StreamLogger errorLogger = new StreamLogger(mkFifoProcess.getErrorStream(), "mkFifoError");
-	        	StreamLogger outputLogger = new StreamLogger(mkFifoProcess.getInputStream(), "mkFifoOuptut");
+	        	StreamLogger errorLogger = new StreamLogger(log, mkFifoProcess.getErrorStream(), "mkFifoError");
+	        	StreamLogger outputLogger = new StreamLogger(log, mkFifoProcess.getInputStream(), "mkFifoOuptut");
 	        	new Thread(errorLogger).start();
 	        	new Thread(outputLogger).start();
 	        	int result = mkFifoProcess.waitFor();
@@ -106,7 +106,7 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
             // (Also, we need a clear cache for getting up-to-date target metadata)
             DBCache.getInstance().clear(meta.getDatabaseMeta().getName());
 
-			data.db = new Database(meta.getDatabaseMeta());
+			data.db = new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			// Connect to the database
             if (getTransMeta().isUsingUniqueConnections())

@@ -170,7 +170,7 @@ public class DetectLastRowDialog extends BaseStepDialog implements StepDialogInt
 	 */ 
 	public void getData()
 	{
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "DetectLastRowDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DetectLastRowDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());
 		

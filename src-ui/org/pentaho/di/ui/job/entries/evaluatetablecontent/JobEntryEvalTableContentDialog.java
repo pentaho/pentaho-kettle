@@ -636,7 +636,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 				case SWT.CANCEL: break;
 				case SWT.NO:     wSQL.setText(sql); break;
 				case SWT.YES:
-					Database db = new Database(inf);
+					Database db = new Database(this, inf);
 					try
 					{
 						db.connect();

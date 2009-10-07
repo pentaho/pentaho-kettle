@@ -324,7 +324,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 	 */ 
 	public void getData()
 	{
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "ExecProcessDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExecProcessDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		if (input.getProcessField() !=null)   wProcess.setText(input.getProcessField());
 		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());	

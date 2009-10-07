@@ -32,7 +32,8 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -74,6 +75,8 @@ public class TextFileCSVImportProgressDialog
     private InputStreamReader reader;
     
     private TransMeta         transMeta;
+
+	private LogChannelInterface	log;
     
     /**
      * Creates a new dialog that will handle the wait while we're finding out what tables, views etc we can reach in the
@@ -90,7 +93,9 @@ public class TextFileCSVImportProgressDialog
 
         message = null;
         debug = "init";
-        rownumber = 1L;       
+        rownumber = 1L;
+        
+        this.log = new LogChannel(transMeta);
     }
 
     public String open()
@@ -132,7 +137,6 @@ public class TextFileCSVImportProgressDialog
     {
         if (samples>0) monitor.beginTask(BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Task.ScanningFile"), samples+1);
         else           monitor.beginTask(BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Task.ScanningFile"), 2);
-        LogWriter log = LogWriter.getInstance();
 
         String line = "";
         long fileLineNumber = 0;
@@ -276,7 +280,7 @@ public class TextFileCSVImportProgressDialog
             	valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
             }
             
-            Object[] r = TextFileInput.convertLineToRow(new TextFileLine(line, fileLineNumber, null), strinfo, null, 0, outputRowMeta, convertRowMeta, meta.getFilePaths(transMeta)[0], rownumber, null);
+            Object[] r = TextFileInput.convertLineToRow(log, new TextFileLine(line, fileLineNumber, null), strinfo, null, 0, outputRowMeta, convertRowMeta, meta.getFilePaths(transMeta)[0], rownumber, null);
 
             if(r == null )
             {
@@ -595,7 +599,7 @@ public class TextFileCSVImportProgressDialog
                         }
                         catch (Exception e)
                         {
-                            if (log.isDetailed()) log.logDetailed(toString(), "This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.getNumberFormats()[x] + "] did not work.");
+                            if (log.isDetailed()) log.logDetailed("This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.getNumberFormats()[x] + "] did not work.");
                         }
                     }
                 }
@@ -634,7 +638,7 @@ public class TextFileCSVImportProgressDialog
 	                        }
 	                        catch (Exception e)
 	                        {
-	                        	if (log.isDetailed()) log.logDetailed(toString(), "This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.getDateFormats()[x] + "] did not work.");
+	                        	if (log.isDetailed()) log.logDetailed("This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.getDateFormats()[x] + "] did not work.");
 	                        }
 	                    }
 	                }

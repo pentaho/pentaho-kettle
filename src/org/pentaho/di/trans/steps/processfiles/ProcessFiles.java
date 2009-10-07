@@ -102,7 +102,7 @@ public class ProcessFiles extends BaseStep implements StepInterface
 			
 			if(meta.simulate)
 			{
-				if(log.isBasic()) log.logBasic(toString(),BaseMessages.getString(PKG, "ProcessFiles.Log.SimulationModeON"));
+				if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ProcessFiles.Log.SimulationModeON"));
 			}
     	}// End If first 
         try
@@ -112,7 +112,7 @@ public class ProcessFiles extends BaseStep implements StepInterface
         	
         	if(Const.isEmpty(sourceFilename))
         	{
-        		log.logError(toString(), BaseMessages.getString(PKG, "ProcessFiles.Error.SourceFileEmpty"));
+        		logError(BaseMessages.getString(PKG, "ProcessFiles.Error.SourceFileEmpty"));
         		throw new KettleException(BaseMessages.getString(PKG, "ProcessFiles.Error.SourceFileEmpty"));
         	}
         	data.sourceFile=KettleVFS.getFileObject(sourceFilename);
@@ -120,12 +120,12 @@ public class ProcessFiles extends BaseStep implements StepInterface
         	
         	if(!data.sourceFile.exists())
         	{
-        		log.logError(toString(), BaseMessages.getString(PKG, "ProcessFiles.Error.SourceFileNotExist",sourceFilename));
+        		logError(BaseMessages.getString(PKG, "ProcessFiles.Error.SourceFileNotExist",sourceFilename));
         		throw new KettleException(BaseMessages.getString(PKG, "ProcessFiles.Error.SourceFileNotExist",sourceFilename));
         	}
         	if(data.sourceFile.getType()!=FileType.FILE)
         	{
-        		log.logError(toString(), BaseMessages.getString(PKG, "ProcessFiles.Error.SourceFileNotFile",sourceFilename));
+        		logError(BaseMessages.getString(PKG, "ProcessFiles.Error.SourceFileNotFile",sourceFilename));
         		throw new KettleException(BaseMessages.getString(PKG, "ProcessFiles.Error.SourceFileNotFile",sourceFilename));
         	}
         	String targetFilename=null;
@@ -136,13 +136,13 @@ public class ProcessFiles extends BaseStep implements StepInterface
         		
             	if(Const.isEmpty(targetFilename))
             	{
-            		log.logError(toString(), BaseMessages.getString(PKG, "ProcessFiles.Error.TargetFileEmpty"));
+            		logError(BaseMessages.getString(PKG, "ProcessFiles.Error.TargetFileEmpty"));
             		throw new KettleException(BaseMessages.getString(PKG, "ProcessFiles.Error.TargetFileEmpty"));
             	}
             	data.targetFile=KettleVFS.getFileObject(targetFilename);
 				if(data.targetFile.exists())
 				{
-					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "ProcessFiles.Log.TargetFileExists",targetFilename));
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "ProcessFiles.Log.TargetFileExists",targetFilename));
 				}
 				else
 				{
@@ -165,13 +165,13 @@ public class ProcessFiles extends BaseStep implements StepInterface
 	    			if(((meta.isOverwriteTargetFile() && targetFileExists) || !targetFileExists)&& !meta.simulate)
 	    				data.targetFile.copyFrom(data.sourceFile, new TextOneToOneFileSelector());
 	    			if(log.isDetailed()) 
-	    				log.logDetailed(toString(), BaseMessages.getString(PKG, "ProcessFiles.Log.SourceFileCopied",sourceFilename,targetFilename));
+	    				logDetailed(BaseMessages.getString(PKG, "ProcessFiles.Log.SourceFileCopied",sourceFilename,targetFilename));
 	    			break;
 	    		case ProcessFilesMeta.OPERATION_TYPE_MOVE:
 	    			if(((meta.isOverwriteTargetFile() && targetFileExists) || !targetFileExists)&& !meta.simulate)
 	    				data.sourceFile.moveTo(KettleVFS.getFileObject(targetFilename));
 	    			if(log.isDetailed()) 
-	    				log.logDetailed(toString(), BaseMessages.getString(PKG, "ProcessFiles.Log.SourceFileMoved",sourceFilename,targetFilename));
+	    				logDetailed(BaseMessages.getString(PKG, "ProcessFiles.Log.SourceFileMoved",sourceFilename,targetFilename));
 	    			break;
 	    		case ProcessFilesMeta.OPERATION_TYPE_DELETE:
 	    			if(!meta.simulate)
@@ -180,7 +180,7 @@ public class ProcessFiles extends BaseStep implements StepInterface
 	    					throw new KettleException(BaseMessages.getString(PKG, "ProcessFiles.Error.CanNotDeleteFile",data.sourceFile.toString()));
 	    			}
 	    			if(log.isDetailed()) 
-						log.logDetailed(toString(), BaseMessages.getString(PKG, "ProcessFiles.Log.SourceFileDeleted",sourceFilename));
+						logDetailed(BaseMessages.getString(PKG, "ProcessFiles.Log.SourceFileDeleted",sourceFilename));
 	    			break;
 	    		default:
 	    			
@@ -196,7 +196,7 @@ public class ProcessFiles extends BaseStep implements StepInterface
 				resultFile.setComment(BaseMessages.getString(PKG, "ProcessFiles.Log.FileAddedResult"));
 				addResultFile(resultFile);
 				
-				if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "ProcessFiles.Log.FilenameAddResult",data.sourceFile.toString()));
+				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "ProcessFiles.Log.FilenameAddResult",data.sourceFile.toString()));
 			}
 
 			putRow(getInputRowMeta(), r);     // copy row to possible alternate rowset(s).

@@ -37,7 +37,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -68,7 +67,6 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
 	public CubeOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
-		log=LogWriter.getInstance();
 		input=(CubeOutputMeta)in;
 		this.transMeta=transMeta;
 		if (sname != null) stepname=sname;

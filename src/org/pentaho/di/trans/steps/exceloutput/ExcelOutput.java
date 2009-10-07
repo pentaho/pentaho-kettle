@@ -435,7 +435,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             }
             String buildFilename=buildFilename();
             data.file = KettleVFS.getFileObject(buildFilename);
-            if(log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "ExcelOutput.Log.OpeningFile",buildFilename));
+            if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExcelOutput.Log.OpeningFile",buildFilename));
             
             if(meta.isAddToResultFiles())
             {
@@ -538,7 +538,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             }*/
             data.headerWrote=false;
             
-            if(log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "ExcelOutput.Log.FileOpened",buildFilename));
+            if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExcelOutput.Log.FileOpened",buildFilename));
 			retval=true;
 		}
 		catch(Exception e)
@@ -597,7 +597,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
                
 			}
             //data.formats.clear();
-			if(log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "ExcelOutput.Log.FileClosed",filename));
+			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExcelOutput.Log.FileClosed",filename));
             // Explicitly call garbage collect to have file handle
             // released. Bug tracker: PDI-48
 			System.gc();

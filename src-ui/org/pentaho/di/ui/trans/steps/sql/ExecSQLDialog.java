@@ -414,7 +414,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                    	logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -607,7 +607,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		int nrargs = wFields.nrNonEmpty();
 		input.allocate(nrargs);
 		if (log.isDebug())
-			log.logDebug(toString(), BaseMessages.getString(PKG, "ExecSQLDialog.Log.FoundArguments", +nrargs + "")); //$NON-NLS-1$ //$NON-NLS-2$
+			logDebug(BaseMessages.getString(PKG, "ExecSQLDialog.Log.FoundArguments", +nrargs + "")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrargs; i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);

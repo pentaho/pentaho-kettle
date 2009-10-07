@@ -43,7 +43,6 @@ import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -330,7 +329,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		return retval;
 	}
 
-	public Result execute(Result result, int nr, Repository rep, Job parentJob) throws KettleException
+	public Result execute(Result result, int nr) throws KettleException
 	{
 		LogWriter log = LogWriter.getInstance();
 
@@ -343,8 +342,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 				appender = LogWriter.createFileAppender(environmentSubstitute(getLogFilename()), true,setAppendLogfile);
 			} catch (KettleException e)
 			{
-				log.logError(toString(),BaseMessages.getString(PKG, "JobEntryShell.Error.UnableopenAppenderFile",getLogFilename(), e.toString()));
-				log.logError(toString(), Const.getStackTracker(e));
+				logError(BaseMessages.getString(PKG, "JobEntryShell.Error.UnableopenAppenderFile",getLogFilename(), e.toString()));
+				logError(Const.getStackTracker(e));
 				result.setNrErrors(1);
 				result.setResult(false);
 				return result;
@@ -373,7 +372,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		List<RowMetaAndData> rows = result.getRows();
 		
 		if(log.isDetailed())
-			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryShell.Log.FoundPreviousRows",""+(rows != null ? rows.size() : 0)));
+			logDetailed(BaseMessages.getString(PKG, "JobEntryShell.Log.FoundPreviousRows",""+(rows != null ? rows.size() : 0)));
 		
 
 		while ((first && !execPerRow)
@@ -455,7 +454,6 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
 	private void executeShell(Result result, List<RowMetaAndData> cmdRows, String[] args)
 	{
-		LogWriter log = LogWriter.getInstance();
 		FileObject fileObject = null;
 		String realScript=null;
 		FileObject tempFile=null;
@@ -466,7 +464,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			String base[] = null;
 			List<String> cmds = new ArrayList<String>();
 
-			if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "JobShell.RunningOn",Const.getOS()));
+			if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobShell.RunningOn",Const.getOS()));
 
 			if(insertScript)
 			{
@@ -507,8 +505,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 						ProcessBuilder procBuilder = new ProcessBuilder("chmod", "+x", tempFilename);
 						Process proc = procBuilder.start();
 						// Eat/log stderr/stdout all messages in a different thread...
-						StreamLogger errorLogger = new StreamLogger(proc.getErrorStream(), toString() + " (stderr)");
-						StreamLogger outputLogger = new StreamLogger(proc.getInputStream(), toString() + " (stdout)");
+						StreamLogger errorLogger = new StreamLogger(log, proc.getErrorStream(), toString() + " (stderr)");
+						StreamLogger outputLogger = new StreamLogger(log, proc.getInputStream(), toString() + " (stdout)");
 						new Thread(errorLogger).start();
 						new Thread(outputLogger).start();
 						proc.waitFor();
@@ -629,7 +627,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 					first = false;
 				command.append((String) it.next());
 			}
-			if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "JobShell.ExecCommand",command.toString()));
+			if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobShell.ExecCommand",command.toString()));
 			
 
 			// Build the environment variable list...
@@ -650,17 +648,17 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			Process proc = procBuilder.start();
 
 			// any error message?
-			StreamLogger errorLogger = new StreamLogger(proc.getErrorStream(), toString() + " (stderr)");
+			StreamLogger errorLogger = new StreamLogger(log, proc.getErrorStream(), toString() + " (stderr)");
 
 			// any output?
-			StreamLogger outputLogger = new StreamLogger(proc.getInputStream(), toString() + " (stdout)");
+			StreamLogger outputLogger = new StreamLogger(log, proc.getInputStream(), toString() + " (stdout)");
 
 			// kick them off
 			new Thread(errorLogger).start();
 			new Thread(outputLogger).start();
 
 			proc.waitFor();
-			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobShell.CommandFinished",command.toString()));
+			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobShell.CommandFinished",command.toString()));
 			
 			
 			
@@ -670,7 +668,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			if (result.getExitStatus() != 0)
 			{
 				if(log.isDetailed()) 
-					log.logDetailed(toString(), BaseMessages.getString(PKG, "JobShell.ExitStatus",environmentSubstitute(getFilename()),""+result.getExitStatus()));
+					logDetailed(BaseMessages.getString(PKG, "JobShell.ExitStatus",environmentSubstitute(getFilename()),""+result.getExitStatus()));
 
 				result.setNrErrors(1);
 			}
@@ -682,15 +680,15 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	
 		} catch (IOException ioe)
 		{
-			log.logError(toString(), BaseMessages.getString(PKG, "JobShell.ErrorRunningShell",environmentSubstitute(getFilename()),ioe.toString()));
+			logError(BaseMessages.getString(PKG, "JobShell.ErrorRunningShell",environmentSubstitute(getFilename()),ioe.toString()));
 			result.setNrErrors(1);
 		} catch (InterruptedException ie)
 		{
-			log.logError(toString(), BaseMessages.getString(PKG, "JobShell.Shellinterupted",environmentSubstitute(getFilename()),ie.toString()));
+			logError(BaseMessages.getString(PKG, "JobShell.Shellinterupted",environmentSubstitute(getFilename()),ie.toString()));
 			result.setNrErrors(1);
 		} catch (Exception e)
 		{
-			log.logError(toString(), BaseMessages.getString(PKG, "JobShell.UnexpectedError",environmentSubstitute(getFilename()),e.toString()));
+			logError(BaseMessages.getString(PKG, "JobShell.UnexpectedError",environmentSubstitute(getFilename()),e.toString()));
 			result.setNrErrors(1);
 		}
 		finally {

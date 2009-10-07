@@ -22,10 +22,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -97,7 +95,6 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   public boolean evaluate(Result result) {
-    LogWriter log = LogWriter.getInstance();
     String Returnmessage = null;
     String RealMessageabort = environmentSubstitute(getMessageabort());
 
@@ -109,12 +106,12 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
         Returnmessage = RealMessageabort;
 
       }
-      log.logError(toString(), Returnmessage);
+      logError(Returnmessage);
       result.setNrErrors(1);
       return false;
     } catch (Exception e) {
       result.setNrErrors(1);
-      log.logError(toString(), BaseMessages.getString(PKG, "JobEntryAbort.Meta.CheckResult.CouldNotExecute") + e.toString()); //$NON-NLS-1$
+      logError(BaseMessages.getString(PKG, "JobEntryAbort.Meta.CheckResult.CouldNotExecute") + e.toString()); //$NON-NLS-1$
       return false;
     }
   }
@@ -125,7 +122,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
    * @param previousResult The result of the previous execution
    * @return The Result of the execution.
    */
-  public Result execute(Result previousResult, int nr, Repository rep, Job parentJob) {
+  public Result execute(Result previousResult, int nr) {
     previousResult.setResult(evaluate(previousResult));
     // we fail so stop 
     // job execution
@@ -157,5 +154,5 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
 
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
     addOkRemark(this, "messageabort", remarks); //$NON-NLS-1$
-  }
+  }  
 }

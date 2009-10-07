@@ -22,7 +22,6 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.hash.ByteArrayHashIndex;
 import org.pentaho.di.core.hash.LongHashIndex;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -99,8 +98,7 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface
                 }
                 catch(KettleValueException e)
                 {
-                    LogWriter.getInstance().logError("Stream Lookup comparator", e.getMessage());
-                    return 0;
+                    throw new RuntimeException("Stream Lookup comparator error", e);
                 }
             }
         };

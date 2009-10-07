@@ -19,7 +19,6 @@ import java.util.Map;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -475,7 +474,6 @@ public class ClusterSchema
 						for (SlaveServerDetection detection : detections) {
 							if (detection.isActive()) {
 								dynamicSlaves.add(detection.getSlaveServer());
-								LogWriter.getInstance().logBasic(toString(), "Found dynamic slave : "+detection.getSlaveServer().getName()+" --> "+detection.getSlaveServer().getServerAndPort());
 							}
 						}
 					} catch (Exception e) {

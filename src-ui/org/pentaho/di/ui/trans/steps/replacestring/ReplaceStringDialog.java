@@ -187,7 +187,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), BaseMessages.getString(PKG, "ReplaceString.Error.CanNotGetFields"));
+                    	logError(BaseMessages.getString(PKG, "ReplaceString.Error.CanNotGetFields"));
                     }
                 }
             }
@@ -314,7 +314,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
 
 		inf.allocate(nrkeys);
 		if(log.isDebug())
-			log.logDebug(toString(), BaseMessages.getString(PKG, "ReplaceStringDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+			logDebug(BaseMessages.getString(PKG, "ReplaceStringDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrkeys; i++) {
 			TableItem item = wFields.getNonEmpty(i);
 			inf.getFieldInStream()[i] = item.getText(1);

@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Appender;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 
@@ -38,15 +37,6 @@ public class TransformationMap
     private Map<String, Appender> loggingMap;
     
     private Map<String, List<SocketPortAllocation>> hostServerSocketPortsMap; 
-    
-    /**
-     * @param parentThreadName
-     * @deprecated The parent thread name is no longer used.
-     */
-    public TransformationMap(String parentThreadName)
-    {
-    	this();
-    }
     
     public TransformationMap()
     {
@@ -79,16 +69,28 @@ public class TransformationMap
         configurationMap.remove(transformationName);
     }
     
+    /**
+     * @deprecated please approach the CentralLogStore directly
+	 */
     public synchronized Appender getAppender(String transformationName)
     {
         return loggingMap.get(transformationName);
     }
     
+    /**
+     * @deprecated please approach the CentralLogStore directly
+     * 
+     * @param transformationName
+     * @param appender
+     */
     public synchronized void addAppender(String transformationName, Appender appender)
     {
         loggingMap.put(transformationName, appender);
     }
 
+    /**
+     * @deprecated please approach the CentralLogStore directly
+	*/
     public synchronized void removeAppender(String transformationName)
     {
         loggingMap.remove(transformationName);
@@ -176,7 +178,7 @@ public class TransformationMap
 			    			socketPortAllocation = new SocketPortAllocation(spa.getPort(), new Date(), transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
 			    			serverSocketPortsMap.set(index, socketPortAllocation);
 
-				    		LogWriter.getInstance().logBasic("MASTER", "Port "+hostname+":"+socketPortAllocation.getPort()+" REUSED for slave ["+sourceSlaveName+"], transformation=["+transformationName+"]");
+				    		// LogWriter.getInstance().logBasic("MASTER", "Port "+hostname+":"+socketPortAllocation.getPort()+" REUSED for slave ["+sourceSlaveName+"], transformation=["+transformationName+"]");
 			    			break;
 		    			}
 		    		}
@@ -190,7 +192,7 @@ public class TransformationMap
 	    		socketPortAllocation = new SocketPortAllocation(maxPort+1, new Date(), transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
 	    		serverSocketPortsMap.add(socketPortAllocation);
 	    		
-	    		LogWriter.getInstance().logBasic("MASTER", "Port "+hostname+":"+socketPortAllocation.getPort()+" allocated for slave ["+sourceSlaveName+"], transformation=["+transformationName+"]");
+	    		// LogWriter.getInstance().logBasic("MASTER", "Port "+hostname+":"+socketPortAllocation.getPort()+" allocated for slave ["+sourceSlaveName+"], transformation=["+transformationName+"]");
 	    	}
 	    	
 	    	// DEBUG : Do a verification on the content of the list.

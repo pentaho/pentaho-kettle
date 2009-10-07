@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 
 /**
  * This class contains and handles all the translations for the keys specified in the Java source code.
@@ -35,14 +36,17 @@ public class TranslationsStore {
 	private String mainLocale;
 
 	private Map<String, List<KeyOccurrence>> packageOccurrences;
+
+	private LogChannelInterface	log;
 	
 	/**
 	 * @param localeList
 	 * @param messagesPackages
 	 * @param map 
 	 */
-	public TranslationsStore(List<String> localeList, List<String> messagesPackages, String mainLocale, Map<String, List<KeyOccurrence>> packageOccurrences) {
+	public TranslationsStore(LogChannelInterface log, List<String> localeList, List<String> messagesPackages, String mainLocale, Map<String, List<KeyOccurrence>> packageOccurrences) {
 		super();
+		this.log = log;
 		this.localeList = localeList;
 		this.messagesPackages = messagesPackages;
 		this.mainLocale = mainLocale;
@@ -62,7 +66,7 @@ public class TranslationsStore {
 		// The others are optional.
 		
 		for (String locale : localeList) {
-			LocaleStore localeStore = new LocaleStore(locale, messagesPackages, mainLocale, packageOccurrences);
+			LocaleStore localeStore = new LocaleStore(log, locale, messagesPackages, mainLocale, packageOccurrences);
 			localeStore.read(directories);
 			
 			translationsMap.put(locale, localeStore);
@@ -157,7 +161,7 @@ public class TranslationsStore {
 	public void storeValue(String locale, String messagesPackage, String key, String value) {
 		LocaleStore localeStore = translationsMap.get(locale);
 		if (localeStore==null) {
-			localeStore = new LocaleStore(locale, messagesPackages, mainLocale, packageOccurrences);
+			localeStore = new LocaleStore(log, locale, messagesPackages, mainLocale, packageOccurrences);
 			translationsMap.put(locale, localeStore);
 		}
 		MessagesStore messagesStore = localeStore.getLocaleMap().get(messagesPackage);

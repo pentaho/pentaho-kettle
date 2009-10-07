@@ -59,7 +59,6 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.fileinput.FileInputList;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -1221,7 +1220,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         if (meta.getEncoding()!=null) wEncoding.setText(meta.getEncoding());
         wAddResult.setSelection(meta.isAddResultFile());
 		
-		log.logDebug(toString(), "getting fields info...");
+		logDebug("getting fields info...");
 		for (int i=0;i<meta.getField().length;i++)
 		{
 			TableItem item = wFields.table.getItem(i);
@@ -1252,7 +1251,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wFields.setRowNums();
 		wFields.optWidth(true);
 
-		log.logDebug(toString(), "getting sheets info...");
+		logDebug("getting sheets info...");
 		for (int i=0;i<meta.getSheetName().length;i++)
 		{
 			TableItem item = wSheetnameList.table.getItem(i);
@@ -1991,7 +1990,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
      * @since 15-FEB-2008
      */
     private void checkAlerts() {
-    	log.println(LogWriter.LOG_LEVEL_BASIC, "checkAlerts");
+    	logBasic("checkAlerts");
     	//# Check the fields tab. At least one field is required.
     	//# Check the Sheets tab. At least one sheet is required.
     	//# Check the Files tab.

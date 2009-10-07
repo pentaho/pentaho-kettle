@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 
 /**
  * This singleton keeps a repository of all the server sockets.
@@ -18,15 +18,15 @@ import org.pentaho.di.core.logging.LogWriter;
  */
 public class SocketRepository {
 	
-	private static LogWriter log = LogWriter.getInstance();
-	
 	/**
 	 * This map contains a link between a (clustered) transformation and their used server sockets
 	 */
 	private Map<Integer, SocketRepositoryEntry> socketMap;
+	private LogChannelInterface	log;
 
 	
-	public SocketRepository() {
+	public SocketRepository(LogChannelInterface log) {
+		this.log = log;
 		socketMap = new HashMap<Integer, SocketRepositoryEntry>();
 	}
 	

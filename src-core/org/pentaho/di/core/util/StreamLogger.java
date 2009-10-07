@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 
 
 
@@ -28,15 +28,17 @@ public class StreamLogger implements Runnable
 
     private String      type;
 
-    public StreamLogger(InputStream is, String type)
+	private LogChannelInterface	log;
+
+    public StreamLogger(LogChannelInterface log, InputStream is, String type)
     {
+    	this.log = log;
         this.is = is;
         this.type = type;
     }
 
     public void run()
     {
-        LogWriter log = LogWriter.getInstance();
         try
         {
             InputStreamReader isr = new InputStreamReader(is);

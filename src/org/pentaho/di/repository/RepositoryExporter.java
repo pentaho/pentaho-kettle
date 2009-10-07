@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobMeta;
@@ -17,14 +17,14 @@ import org.pentaho.di.trans.TransMeta;
 public class RepositoryExporter {
 
 	private Repository repository;
-	private LogWriter log;
+	private LogChannelInterface log;
 
 	/**
 	 * @param repository
 	 */
 	public RepositoryExporter(Repository repository) {
+		this.log = repository.getLog();
 		this.repository = repository;
-		this.log = LogWriter.getInstance();
 	}
 	
     public synchronized void exportAllObjects(ProgressMonitorListener monitor, String xmlFilename, RepositoryDirectory root, String exportType) throws KettleException
@@ -112,8 +112,8 @@ public class RepositoryExporter {
 	                }
 	                catch(KettleException ke)
 	                {
-	                    log.logError(toString(), "An error occurred reading job ["+jobs[i]+"] from directory ["+repdir+"] : "+ke.getMessage());
-	                    log.logError(toString(), "Job ["+jobs[i]+"] from directory ["+repdir+"] was not exported because of a loading error!");
+	                    log.logError("An error occurred reading job ["+jobs[i]+"] from directory ["+repdir+"] : "+ke.getMessage());
+	                    log.logError("Job ["+jobs[i]+"] from directory ["+repdir+"] was not exported because of a loading error!");
 	                }
 	            }
 	        }
@@ -150,8 +150,8 @@ public class RepositoryExporter {
 	                }
 	                catch(KettleException ke)
 	                {
-	                    log.logError(toString(), "An error occurred reading transformation ["+trans[i]+"] from directory ["+repdir+"] : "+ke.getMessage());
-	                    log.logError(toString(), "Transformation ["+trans[i]+"] from directory ["+repdir+"] was not exported because of a loading error!");
+	                    log.logError("An error occurred reading transformation ["+trans[i]+"] from directory ["+repdir+"] : "+ke.getMessage());
+	                    log.logError("Transformation ["+trans[i]+"] from directory ["+repdir+"] was not exported because of a loading error!");
 	                }
 	            }
 	        }

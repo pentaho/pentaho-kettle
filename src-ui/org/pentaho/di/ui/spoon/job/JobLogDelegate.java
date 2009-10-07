@@ -6,20 +6,14 @@ import java.util.Properties;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Props;
-import org.pentaho.di.core.logging.BufferChangedListener;
-import org.pentaho.di.core.logging.Log4jStringAppender;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -29,6 +23,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
+import org.pentaho.di.ui.spoon.trans.LogBrowser;
 import org.pentaho.xul.swt.toolbar.Toolbar;
 
 public class JobLogDelegate extends SpoonDelegate {
@@ -37,18 +32,16 @@ public class JobLogDelegate extends SpoonDelegate {
 	private static final String XUL_FILE_TRANS_LOG_TOOLBAR = "ui/job-log-toolbar.xul";
 	public static final String XUL_FILE_TRANS_LOG_TOOLBAR_PROPERTIES = "ui/job-log-toolbar.properties";
 
-	private static final LogWriter log = LogWriter.getInstance();
-	
 	private JobGraph jobGraph;
 
 	private CTabItem jobLogTab;
 	
-	public  Text jobLogText;
+	public  StyledText jobLogText;
 	
     /**
      * The number of lines in the log tab
      */
-	private int textSize;
+	// private int textSize;
 
 	private Composite jobLogComposite;
 	private Toolbar toolbar;
@@ -87,7 +80,7 @@ public class JobLogDelegate extends SpoonDelegate {
 		addToolBar();
 		addToolBarListeners();
 		
-		jobLogText = new Text(jobLogComposite, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+		jobLogText = new StyledText(jobLogComposite, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 		spoon.props.setLook(jobLogText);
 		FormData fdText = new FormData();
 		fdText.left = new FormAttachment(0,0);
@@ -96,49 +89,12 @@ public class JobLogDelegate extends SpoonDelegate {
 		fdText.bottom = new FormAttachment(100,0);
 		jobLogText.setLayoutData(fdText);
 
+		LogBrowser logBrowser = new LogBrowser(jobLogText, jobGraph);
+		logBrowser.installLogSniffer();
+
 		jobLogTab.setControl(jobLogComposite);
 
-		// Create a new String appender to the log and capture that directly...
-		//
-		final Log4jStringAppender stringAppender = LogWriter.createStringAppender();
-		stringAppender.setMaxNrLines(Props.getInstance().getMaxNrLinesInLog());
-		stringAppender.addBufferChangedListener(new BufferChangedListener() {
-		
-			public void contentWasAdded(final StringBuffer content, final String extra, final int nrLines) {
-				spoon.getDisplay().asyncExec(new Runnable() {
-				
 
-					public void run() 
-					{
-						if (!jobLogText.isDisposed())
-						{
-							textSize++;
-							
-							// OK, now what if the number of lines gets too big?
-							// We allow for a few hundred lines buffer over-run.
-							// That way we reduce flicker...
-							//
-							if (textSize>=nrLines+200)
-							{
-								jobLogText.setText(content.toString());
-								jobLogText.setSelection(content.length());
-								jobLogText.showSelection();
-								jobLogText.clearSelection();
-								textSize=nrLines;
-							}
-							else
-							{
-								jobLogText.append(extra);
-							}
-						}
-					}
-				
-				});
-			}
-		
-		});
-		log.addAppender(stringAppender);
-		jobLogTab.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { log.removeAppender(stringAppender); } });
 		
 		jobGraph.extraViewTabFolder.setSelection(jobLogTab);
 	}
@@ -157,7 +113,7 @@ public class JobLogDelegate extends SpoonDelegate {
 			addToolBarListeners();
 	        toolBar.layout(true, true);
 		} catch (Throwable t ) {
-			log.logError(toString(), Const.getStackTracker(t));
+			log.logError(Const.getStackTracker(t));
 			new ErrorDialog(jobLogComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR), new Exception(t));
 		}
 	}

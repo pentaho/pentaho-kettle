@@ -19,9 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.Condition;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.trans.StepLoader;
 
@@ -105,7 +103,7 @@ public class StringSearcher
                     Method method = findMethod(baseClass, field.getName());
                     if (method!=null)
                     {
-                        String fullMethod = baseClass.getName()+"."+method.getName()+"()";
+                        // String fullMethod = baseClass.getName()+"."+method.getName()+"()";
                             
                         // OK, how do we get the value now?
                         try
@@ -118,7 +116,7 @@ public class StringSearcher
                         }
                         catch(Exception ex)
                         {
-                            LogWriter.getInstance().logDebug("StringSearcher", Const.rightPad(" ", level)+"    Unable to get access to method "+fullMethod+" : "+e.toString());
+                        	// Ignore this error silently.  If we can't access the method there is nothing you can do about it.
                         }
                     }
                 }

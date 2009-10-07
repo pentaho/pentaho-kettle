@@ -123,7 +123,7 @@ public class FileExists extends BaseStep implements StepInterface
         			resultFile.setComment(BaseMessages.getString(PKG, "FileExists.Log.FileAddedResult"));
         			addResultFile(resultFile);
         			
-        			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "FileExists.Log.FilenameAddResult",data.file.toString()));
+        			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "FileExists.Log.FilenameAddResult",data.file.toString()));
         		}
         	}
         	
@@ -138,7 +138,7 @@ public class FileExists extends BaseStep implements StepInterface
 			 //	add new values to the row.
 	        putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
 
-	        if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "FileExists.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+	        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "FileExists.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
         }
         catch(Exception e)
         {
@@ -174,7 +174,7 @@ public class FileExists extends BaseStep implements StepInterface
         {
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), BaseMessages.getString(PKG, "FileExists.Error.ResultFieldMissing"));
+        		logError(BaseMessages.getString(PKG, "FileExists.Error.ResultFieldMissing"));
         		return false;
         	}
             return true;

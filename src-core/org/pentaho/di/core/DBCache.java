@@ -23,7 +23,8 @@ import java.util.Hashtable;
 
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 
@@ -41,7 +42,9 @@ public class DBCache
 	
 	private Hashtable<DBCacheEntry,RowMetaInterface> cache;
 	private boolean   usecache;
-		
+	
+	private LogChannelInterface log;
+	
 	public void setActive()
 	{
 		setActive(true);
@@ -134,18 +137,17 @@ public class DBCache
 	{
 		try
 		{
-			
 			clear(null);
 			
             // Serialization support for the DB cache
             //
-            LogWriter log = LogWriter.getInstance();
+            log = new LogChannel("DBCache");
             
             String filename = getFilename();
 			File file = new File(filename);
 			if (file.canRead())
 			{
-				log.logDetailed("DBCache", "Loading database cache from file: ["+filename+"]");
+				log.logDetailed("Loading database cache from file: ["+filename+"]");
 				
 				FileInputStream fis = null;
 				DataInputStream dis = null;
@@ -166,7 +168,7 @@ public class DBCache
 					}
 					catch(KettleEOFException eof)
 					{
-						log.logDetailed("DBCache", "We read "+counter+" cached rows from the database cache!");
+						log.logDetailed("We read "+counter+" cached rows from the database cache!");
 					}
 				}
 				catch(Exception e) {
@@ -178,7 +180,7 @@ public class DBCache
 			}
 			else
 			{
-				log.logDetailed("DBCache", "The database cache doesn't exist yet.");
+				log.logDetailed("The database cache doesn't exist yet.");
 			}
 		}
 		catch(Exception e)
@@ -187,7 +189,7 @@ public class DBCache
 		}
 	}
 	
-	public void saveCache(LogWriter log) throws KettleFileException {
+	public void saveCache() throws KettleFileException {
 		try {
 			// Serialization support for the DB cache
 			//
@@ -220,7 +222,7 @@ public class DBCache
 						}
 					}
 
-					log.logDetailed("DBCache", "We wrote " + counter + " cached rows to the database cache!");
+					log.logDetailed("We wrote " + counter + " cached rows to the database cache!");
 				} catch (Exception e) {
 					throw new Exception(e);
 				} finally {

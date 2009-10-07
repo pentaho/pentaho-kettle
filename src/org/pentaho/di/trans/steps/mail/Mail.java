@@ -39,6 +39,7 @@ import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -352,7 +353,7 @@ public class Mail extends BaseStep implements StepInterface
 			
 			putRow(getInputRowMeta(), r);     // copy row to possible alternate rowset(s).);  // copy row to output rowset(s);
 
-	        if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "Mail.Log.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+	        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "Mail.Log.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
 	        
 		} catch (Exception e)
 		 {
@@ -399,7 +400,7 @@ public class Mail extends BaseStep implements StepInterface
 	      }
 	      data.props.put("mail." + protocol + ".host", server);
 	      if (port!=-1) data.props.put("mail." + protocol + ".port", port);
-	      boolean debug = log.getLogLevel() >= LogWriter.LOG_LEVEL_DEBUG;
+	      boolean debug = LogWriter.getInstance().getLogLevel() >= LogWriter.LOG_LEVEL_DEBUG;
 
 	      if (debug) data.props.put("mail.debug", "true");
 
@@ -517,7 +518,7 @@ public class Mail extends BaseStep implements StepInterface
 	      data.parts.addBodyPart(part1);
 	      
 	      // attached files
-	      if(meta.isDynamicFilename()) setAttachedFilesList(r,log);
+	      if(meta.isDynamicFilename()) setAttachedFilesList(r, log);
 	      else setAttachedFilesList(null,log);
   
 	      msg.setContent(data.parts);
@@ -543,7 +544,7 @@ public class Mail extends BaseStep implements StepInterface
 	     
 
 	  }
-	  private void setAttachedFilesList(Object[] r,LogWriter log) throws Exception
+	  private void setAttachedFilesList(Object[] r, LogChannelInterface log) throws Exception
 	  {
 		  String realSourceFileFoldername=null;
 		  String realSourceWildcard=null;
@@ -622,8 +623,8 @@ public class Mail extends BaseStep implements StepInterface
 						    	  }
 					        } // end for
 						 	if(zipFiles) {	
-						 		if(log.isDebug()) log.logDebug(toString() ,BaseMessages.getString(PKG, "Mail.Log.FileSize",""+FileSize));
-						 		if(log.isDebug()) log.logDebug(toString() ,BaseMessages.getString(PKG, "Mail.Log.LimitSize",""+data.zipFileLimit));
+						 		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "Mail.Log.FileSize",""+FileSize));
+						 		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "Mail.Log.LimitSize",""+data.zipFileLimit));
 						 		
 						 		if(data.zipFileLimit>0 && FileSize>data.zipFileLimit){
 							
@@ -660,12 +661,12 @@ public class Mail extends BaseStep implements StepInterface
 						 	}
 						}
 					}else{
-						log.logError(toString(),BaseMessages.getString(PKG, "Mail.Error.SourceFileFolderNotExists",realSourceFileFoldername));
+						logError(BaseMessages.getString(PKG, "Mail.Error.SourceFileFolderNotExists",realSourceFileFoldername));
 					}
 				}	
 			}catch(Exception e)
 			{
-				log.logError(toString(),e.getMessage());
+				logError(e.getMessage());
 			}
 			finally{
 				if(sourcefile!=null){try{sourcefile.close();}catch(Exception e){}}
@@ -677,7 +678,7 @@ public class Mail extends BaseStep implements StepInterface
 	                  zipOutputStream.close();
 	                } catch (IOException e)
 	                {
-	                  log.logError(toString(), "Unable to close attachement zip file archive : " + e.toString());
+	                  logError("Unable to close attachement zip file archive : " + e.toString());
 	                }
 	              }
 			}
@@ -696,7 +697,7 @@ public class Mail extends BaseStep implements StepInterface
           files.setFileName(file.getName().getBaseName());
           // add the part with the file in the BodyPart();
           data.parts.addBodyPart(files);
-          if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Mail.Log.AttachedFile",fds.getName()));
+          if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Mail.Log.AttachedFile",fds.getName()));
           
 	  }
 	  private class TextFileSelector implements FileSelector 
@@ -734,7 +735,7 @@ public class Mail extends BaseStep implements StepInterface
 				}
 				catch (Exception e) 
 				{
-					log.logError(toString(), BaseMessages.getString(PKG, "Mail.Error.FindingFiles", info.getFile().toString(),e.getMessage()));
+					logError(BaseMessages.getString(PKG, "Mail.Error.FindingFiles", info.getFile().toString(),e.getMessage()));
 					 returncode= false;
 				}
 				return returncode;

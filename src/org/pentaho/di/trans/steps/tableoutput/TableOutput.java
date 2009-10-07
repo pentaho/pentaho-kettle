@@ -171,7 +171,7 @@ public class TableOutput extends BaseStep implements StepInterface
                 if (data.indexOfTableNameField<0)
                 {
                     String message = "Unable to find table name field ["+realTablename+"] in input row";
-                    log.logError(toString(), message);
+                    logError(message);
                     throw new KettleStepException(message);
                 }
                 if (!meta.isTableNameInTable() && !meta.specifyFields())
@@ -551,10 +551,10 @@ public class TableOutput extends BaseStep implements StepInterface
                 if (data.batchMode && data.specialErrorHandling )
                 {
                 	data.batchMode = false;
-                	if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "TableOutput.Log.BatchModeDisabled"));
+                	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "TableOutput.Log.BatchModeDisabled"));
                 }
 
-                data.db=new Database(meta.getDatabaseMeta());
+                data.db=new Database(this, meta.getDatabaseMeta());
 				data.db.shareVariablesWith(this);
 				
                 if (getTransMeta().isUsingUniqueConnections())

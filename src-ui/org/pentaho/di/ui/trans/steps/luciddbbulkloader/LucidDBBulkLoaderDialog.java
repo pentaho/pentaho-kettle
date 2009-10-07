@@ -417,7 +417,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		logDebug(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		wMaxErrors.setText("" + input.getMaxErrors());   //$NON-NLS-1$
 
@@ -569,7 +569,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 		inf.setMaxErrors( Const.toInt(wMaxErrors.getText(), 0) );
 
-		log.logDebug(toString(), BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
+		logDebug(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrfields; i++)
 		{
 			TableItem item = wReturn.getNonEmpty(i);
@@ -615,7 +615,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 		if (inf != null)
 		{
-			log.logDebug(toString(), BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
+			logDebug(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
 
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());

@@ -33,14 +33,12 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class MailValidation {
 
 	private static Class<?> PKG = MailValidatorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
-	private static LogWriter log = LogWriter.getInstance();
 
 	public static boolean isRegExValid(String emailAdress) {
 		//Set the email pattern string
@@ -145,7 +143,7 @@ public class MailValidation {
 	 * @param deepCheck (if we want to perform a SMTP check
 	 * @return true or false
 	 */
-	public static MailValidationResult isAddressValid(String address, String senderAddress, 
+	public static MailValidationResult isAddressValid(LogChannelInterface log, String address, String senderAddress, 
 			String defaultSMTPServer, int timeout, boolean deepCheck) {
 
 		MailValidationResult result = new MailValidationResult();
@@ -194,7 +192,7 @@ public class MailValidation {
 		}
 
 		if (log.isDebug())
-			log.logDebug(className(), BaseMessages.getString(PKG, "MailValidator.ExchangersFound", "" + mxList.size()));
+			log.logDebug(BaseMessages.getString(PKG, "MailValidator.ExchangersFound", "" + mxList.size()));
 
 		// Now, do the SMTP validation, try each mail exchanger until we get
 		// a positive acceptance. It *MAY* be possible for one MX to allow

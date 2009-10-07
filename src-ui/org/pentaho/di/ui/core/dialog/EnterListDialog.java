@@ -67,7 +67,6 @@ public class EnterListDialog extends Dialog
 {
 	private static Class<?> PKG = EnterListDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private LogWriter log;
 	private PropsUI     props;
 	
 	private String    input[];
@@ -91,14 +90,12 @@ public class EnterListDialog extends Dialog
     public EnterListDialog(Shell parent, int style, LogWriter log, PropsUI props, String input[])
     {
         this(parent, style, input);
-        this.log = log;
         this.props = props;
     }
 
 	public EnterListDialog(Shell parent, int style, String input[])
 	{
 		super(parent, style);
-		this.log    = LogWriter.getInstance();
 		this.props  = PropsUI.getInstance();
 		
 		this.input  = input;
@@ -296,7 +293,6 @@ public class EnterListDialog extends Dialog
 			{
 				public void handleEvent (Event e) 
 				{
-					log.logDebug(this.getClass().getName(), "CANCEL SelectFieldsDialog");
 					dispose();
 				}
 			}

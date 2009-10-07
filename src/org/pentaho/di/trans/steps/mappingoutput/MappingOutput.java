@@ -85,7 +85,7 @@ public class MappingOutput extends BaseStep implements StepInterface
             // If not, simply eat the data...
             //
             if (data.targetSteps==null) {
-            	log.logDetailed(toString(), BaseMessages.getString(PKG, "MappingOutput.NoTargetStepSpecified", getStepname()));
+            	logDetailed(BaseMessages.getString(PKG, "MappingOutput.NoTargetStepSpecified", getStepname()));
             }
         }
         

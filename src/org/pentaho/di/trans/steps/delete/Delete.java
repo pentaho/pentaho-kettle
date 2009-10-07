@@ -205,7 +205,7 @@ public class Delete extends BaseStep implements StepInterface
 
         try
         {
-        	if (log.isDetailed()) log.logDetailed(toString(), "Setting delete preparedStatement to ["+sql+"]");
+        	if (log.isDetailed()) logDetailed("Setting delete preparedStatement to ["+sql+"]");
             data.prepStatementDelete=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
         }
         catch(SQLException ex) 
@@ -222,7 +222,7 @@ public class Delete extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			data.db=new Database(meta.getDatabaseMeta());
+			data.db=new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			try 
 			{
@@ -273,7 +273,7 @@ public class Delete extends BaseStep implements StepInterface
         }
         catch(KettleDatabaseException e)
         {
-            log.logError(toString(), BaseMessages.getString(PKG, "Delete.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(BaseMessages.getString(PKG, "Delete.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             setErrors(1);
         }
         finally 

@@ -24,7 +24,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 import org.w3c.dom.Document;
@@ -45,6 +45,7 @@ public class RepositoriesMeta
 {
 	private List<DatabaseMeta>   databases;    // Repository connections
 	private List<RepositoryMeta> repositories;   // List of repositories
+	private LogChannel	log;
 
 	public RepositoriesMeta()
 	{
@@ -54,6 +55,7 @@ public class RepositoriesMeta
 	public void clear() {
 		databases = new ArrayList<DatabaseMeta>();
 		repositories = new ArrayList<RepositoryMeta>();
+		log = new LogChannel("RepositoriesMeta");
 	}		
 	
 	public void addDatabase(DatabaseMeta ci)
@@ -142,16 +144,14 @@ public class RepositoriesMeta
 	// 
 	public void readData() throws KettleException
 	{
-		LogWriter log = LogWriter.getInstance();
-		
 		File file = new File(Const.getKettleLocalRepositoriesFile());
 		if (!file.exists() || !file.isFile())
 		{
-			log.logDetailed(toString(), "No repositories file found in the local directory: "+file.getAbsolutePath());
+			log.logDetailed("No repositories file found in the local directory: "+file.getAbsolutePath());
 			file = new File(Const.getKettleUserRepositoriesFile());
 		}
 		
-		log.logBasic(toString(), "Reading repositories XML file: "+file.getAbsoluteFile());
+		log.logBasic("Reading repositories XML file: "+file.getAbsoluteFile());
 		
 		DocumentBuilderFactory dbf;
 		DocumentBuilder db;
@@ -188,23 +188,23 @@ public class RepositoriesMeta
 		
 			// Handle connections
 			int nrconn = XMLHandler.countNodes(repsnode, "connection");
-			log.logDebug(toString(), "We have "+nrconn+" connections...");
+			log.logDebug("We have "+nrconn+" connections...");
 			for (int i=0;i<nrconn;i++)
 			{
-				log.logDebug(toString(), "Looking at connection #"+i);
+				log.logDebug("Looking at connection #"+i);
 				Node dbnode = XMLHandler.getSubNodeByNr(repsnode, "connection", i);
 				DatabaseMeta dbcon = new DatabaseMeta(dbnode);
 				addDatabase(dbcon);
-				log.logDebug(toString(), "Read connection : "+dbcon.getName());
+				log.logDebug("Read connection : "+dbcon.getName());
 			}
 
 			// Handle repositories...
 			int nrreps = XMLHandler.countNodes(repsnode, RepositoryMeta.XML_TAG);
-			log.logDebug(toString(), "We have "+nrreps+" repositories...");
+			log.logDebug("We have "+nrreps+" repositories...");
 			for (int i=0;i<nrreps;i++)
 			{
 				Node repnode = XMLHandler.getSubNodeByNr(repsnode, RepositoryMeta.XML_TAG, i);
-				log.logDebug(toString(), "Looking at repository #"+i);
+				log.logDebug("Looking at repository #"+i);
 				
 				String id = XMLHandler.getTagValue(repnode, "id");
 				if (Const.isEmpty(id)) {
@@ -216,7 +216,7 @@ public class RepositoriesMeta
 				repositoryMeta.loadXML(repnode, databases);
 
 				addRepository(repositoryMeta);
-				log.logDebug(toString(), "Read repository : "+repositoryMeta.getName());
+				log.logDebug("Read repository : "+repositoryMeta.getName());
 			}
 		}
 		catch(Exception e)

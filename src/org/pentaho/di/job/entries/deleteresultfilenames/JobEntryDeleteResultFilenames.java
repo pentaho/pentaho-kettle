@@ -39,7 +39,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -196,7 +195,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
     }
   
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
@@ -208,12 +207,12 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 			{
 				int size=previousResult.getResultFiles().size();
 				if(log.isBasic())
-					log.logBasic(toString(),BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.log.FilesFound",""+size));
+					logBasic(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.log.FilesFound",""+size));
 				if(!specifywildcard)
 				{
 					// Delete all files
 					previousResult.getResultFiles().clear();
-					if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.log.DeletedFiles",""+size));
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.log.DeletedFiles",""+size));
 				}
 				else
 				{
@@ -233,7 +232,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 			            		// Remove file from result files list
 								result.getResultFiles().remove(resultFile.getFile().toString());
 								
-			            		if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.log.DeletedFile",file.toString()));
+			            		if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.log.DeletedFile",file.toString()));
 			  				}  
 			            	 
 			              }
@@ -244,7 +243,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 			}
 			catch(Exception e)
 			{
-				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.Error",e.toString()));
+				logError(BaseMessages.getString(PKG, "JobEntryDeleteResultFilenames.Error",e.toString()));
 			}
 		}	
 		return result;

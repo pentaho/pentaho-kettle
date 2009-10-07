@@ -299,7 +299,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.ConnectionExists"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 
-			Database db = new Database(databaseMeta);
+			Database db = new Database(this, databaseMeta);
             databases = new Database[] { db }; // keep track of it for cancelling purposes...
 
 			try

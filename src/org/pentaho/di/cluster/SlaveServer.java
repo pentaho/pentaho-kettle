@@ -43,7 +43,8 @@ import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.encryption.Encr;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -83,11 +84,13 @@ public class SlaveServer
 {
 	private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	public static final String STRING_SLAVESERVER = "Slave Server"; //$NON-NLS-1$
+	
     public static final String XML_TAG = "slaveserver"; //$NON-NLS-1$
 
     public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.SLAVE_SERVER;
 
-    private static LogWriter log = LogWriter.getInstance();    
+    private LogChannelInterface log;    
     
     private String name;
     private String hostname;
@@ -112,6 +115,7 @@ public class SlaveServer
     {
     	initializeVariablesFrom(null);
         id=null;
+        this.log = new LogChannel(STRING_SLAVESERVER);
     }
     
     public SlaveServer(String name, String hostname, String port, String username, String password)
@@ -134,6 +138,7 @@ public class SlaveServer
         
         this.master = master;
         initializeVariablesFrom(null);
+        this.log = new LogChannel(this);
     }
     
     public SlaveServer(Node slaveNode)
@@ -149,6 +154,8 @@ public class SlaveServer
         this.nonProxyHosts = XMLHandler.getTagValue(slaveNode, "non_proxy_hosts"); //$NON-NLS-1$
         this.master = "Y".equalsIgnoreCase( XMLHandler.getTagValue(slaveNode, "master") ); //$NON-NLS-1$ //$NON-NLS-2$
         initializeVariablesFrom(null);
+        this.log = new LogChannel(this);
+
     }
 
     public String getXML()
@@ -350,7 +357,7 @@ public class SlaveServer
         // Prepare HTTP put
         // 
         String urlString = constructUrl(service);
-        log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
+        log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
         PutMethod putMethod = new PutMethod(urlString);
         
         // Request content will be retrieved directly from the input stream
@@ -381,7 +388,7 @@ public class SlaveServer
             int result = client.executeMethod(put);
             
             // The status code
-            log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
+            log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
             
             // the response
             InputStream inputStream = new BufferedInputStream(put.getResponseBodyAsStream(), 1000);
@@ -407,7 +414,7 @@ public class SlaveServer
             
 
             // String body = post.getResponseBodyAsString(); 
-            log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
+            log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
             
             return body;
         }
@@ -415,7 +422,7 @@ public class SlaveServer
         {
             // Release current connection to the connection pool once you are done
             put.releaseConnection();
-            log.logDetailed(toString(), BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentXmlToService", service, environmentSubstitute(hostname))); //$NON-NLS-1$
+            log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentXmlToService", service, environmentSubstitute(hostname))); //$NON-NLS-1$
         }
     }
 
@@ -435,7 +442,7 @@ public class SlaveServer
     	}
 
         String urlString = constructUrl(serviceUrl);
-        log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
+        log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
 
         PutMethod putMethod = new PutMethod(urlString);
         
@@ -460,7 +467,7 @@ public class SlaveServer
             int result = client.executeMethod(putMethod);
             
             // The status code
-            log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
+            log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
             
             // the response
             InputStream inputStream = new BufferedInputStream(putMethod.getResponseBodyAsStream(), 1000);
@@ -486,7 +493,7 @@ public class SlaveServer
             
 
             // String body = post.getResponseBodyAsString(); 
-            log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
+            log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
             
             return body;
         }
@@ -494,7 +501,7 @@ public class SlaveServer
         {
             // Release current connection to the connection pool once you are done
             putMethod.releaseConnection();
-            log.logDetailed(toString(), BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentExportToService", AddExportServlet.CONTEXT_PATH, environmentSubstitute(hostname))); //$NON-NLS-1$
+            log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentExportToService", AddExportServlet.CONTEXT_PATH, environmentSubstitute(hostname))); //$NON-NLS-1$
         }
     }
 
@@ -538,7 +545,7 @@ public class SlaveServer
             int result = client.executeMethod(method);
             
             // The status code
-            log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
+            log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
             
             // the response
             InputStream inputStream = new BufferedInputStream(method.getResponseBodyAsStream());
@@ -553,8 +560,8 @@ public class SlaveServer
             
             String body = bodyBuffer.toString();
 
-            log.logDetailed(toString(), BaseMessages.getString(PKG, "SlaveServer.DETAILED_FinishedReading", Integer.toString(bodyBuffer.length()))); //$NON-NLS-1$
-            log.logDebug(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
+            log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_FinishedReading", Integer.toString(bodyBuffer.length()))); //$NON-NLS-1$
+            log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
             
             return body;
         }
@@ -562,7 +569,7 @@ public class SlaveServer
         {
             // Release current connection to the connection pool once you are done
             method.releaseConnection();
-            log.logDetailed(toString(), BaseMessages.getString(PKG, "SlaveServer.DETAILED_ExecutedService", service, hostname) ); //$NON-NLS-1$
+            log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_ExecutedService", service, hostname) ); //$NON-NLS-1$
         }
 
     }
@@ -592,7 +599,7 @@ public class SlaveServer
             try
             {
                 if(log.isBasic())
-                	log.logBasic(toString(), BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlToUse)); //$NON-NLS-1$
+                	log.logBasic(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlToUse)); //$NON-NLS-1$
 
                 if (proxyHostname!=null) 
                 {
@@ -617,7 +624,7 @@ public class SlaveServer
                 server = new URL(urlToUse);
                 URLConnection connection = server.openConnection();
                 
-                log.logDetailed(toString(), BaseMessages.getString(PKG, "SlaveServer.StartReadingReply")); //$NON-NLS-1$
+                log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.StartReadingReply")); //$NON-NLS-1$
     
                 // Read the result from the server...
                 InputStream inputStream = new BufferedInputStream(connection.getInputStream(), 1000);
@@ -632,24 +639,24 @@ public class SlaveServer
                     bytesRead+=line.length();
                 }
                 if(log.isBasic())
-                	log.logBasic(toString(), BaseMessages.getString(PKG, "SlaveServer.FinishedReadingResponse"), bytesRead); //$NON-NLS-1$
+                	log.logBasic(BaseMessages.getString(PKG, "SlaveServer.FinishedReadingResponse"), bytesRead); //$NON-NLS-1$
                 if(log.isDebug())
-                	log.logDebug(toString(), "response from the webserver: {0}", result);
+                	log.logDebug("response from the webserver: {0}", result);
             }
             catch(MalformedURLException e)
             {
-                log.logError(toString(), BaseMessages.getString(PKG, "SlaveServer.UrlIsInvalid", urlToUse, e.getMessage())); //$NON-NLS-1$
-                log.logError(toString(), Const.getStackTracker(e));
+                log.logError(BaseMessages.getString(PKG, "SlaveServer.UrlIsInvalid", urlToUse, e.getMessage())); //$NON-NLS-1$
+                log.logError(Const.getStackTracker(e));
             }
             catch(IOException e)
             {
-                log.logError(toString(), BaseMessages.getString(PKG, "SlaveServer.CannotSaveDueToIOError", e.getMessage())); //$NON-NLS-1$
-                log.logError(toString(), Const.getStackTracker(e));
+                log.logError(BaseMessages.getString(PKG, "SlaveServer.CannotSaveDueToIOError", e.getMessage())); //$NON-NLS-1$
+                log.logError(Const.getStackTracker(e));
             }
             catch(Exception e)
             {
-                log.logError(toString(), BaseMessages.getString(PKG, "SlaveServer.ErrorReceivingFile", e.getMessage())); //$NON-NLS-1$
-                log.logError(toString(), Const.getStackTracker(e));
+                log.logError(BaseMessages.getString(PKG, "SlaveServer.ErrorReceivingFile", e.getMessage())); //$NON-NLS-1$
+                log.logError(Const.getStackTracker(e));
             }
             finally
             {
@@ -660,8 +667,8 @@ public class SlaveServer
                 }
                 catch(Exception e)
                 {
-                    log.logError(toString(), BaseMessages.getString(PKG, "SlaveServer.CannotCloseStream", e.getMessage())); //$NON-NLS-1$
-                    log.logError(toString(), Const.getStackTracker(e));
+                    log.logError(BaseMessages.getString(PKG, "SlaveServer.CannotCloseStream", e.getMessage())); //$NON-NLS-1$
+                    log.logError(Const.getStackTracker(e));
                 }
 
             }

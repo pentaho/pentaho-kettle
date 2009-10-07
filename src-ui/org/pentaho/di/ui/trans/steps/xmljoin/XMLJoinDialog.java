@@ -513,7 +513,7 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
         	wJoinCompareField.setEnabled(true);
         }
         
-        log.logDebug(toString(), BaseMessages.getString(PKG, "AddXMLDialog.Log.GettingFieldsInfo"));
+        logDebug(BaseMessages.getString(PKG, "AddXMLDialog.Log.GettingFieldsInfo"));
         
         wStepname.selectAll();
     }

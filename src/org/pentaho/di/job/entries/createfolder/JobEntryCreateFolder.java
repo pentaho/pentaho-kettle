@@ -37,7 +37,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.createfile.JobEntryCreateFile;
 import org.pentaho.di.job.entry.JobEntryBase;
@@ -146,7 +145,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
         return environmentSubstitute(getFoldername());
     }
 	
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
@@ -172,16 +171,16 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 							// Folder exists and fail flag is on.
 						    result.setResult( false );
 						    if(isFolder)
-						    	log.logError(toString(), "Folder ["+realFoldername+"] exists, failing.");
+						    	logError("Folder ["+realFoldername+"] exists, failing.");
 						    else
-						    	log.logError(toString(), "File ["+realFoldername+"] exists, failing.");
+						    	logError("File ["+realFoldername+"] exists, failing.");
 						}
 						else
 						{
 							// Folder already exists, no reason to try to create it
 						    result.setResult( true );
 						    if(log.isDetailed())
-						    	log.logDetailed(toString(), "Folder ["+realFoldername+"] already exists, not recreating.");
+						    	logDetailed("Folder ["+realFoldername+"] already exists, not recreating.");
 						}
 				
 					
@@ -191,11 +190,11 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 					//  No Folder yet, create an empty Folder.
 					FolderObject.createFolder();
 					if(log.isDetailed())
-						log.logDetailed(toString(), "Folder ["+realFoldername+"] created!");
+						logDetailed("Folder ["+realFoldername+"] created!");
 					result.setResult( true );
 				}
 			} catch (IOException e) {
-				log.logError(toString(), "Could not create Folder ["+realFoldername+"], exception: " + e.getMessage());
+				logError("Could not create Folder ["+realFoldername+"], exception: " + e.getMessage());
 				result.setResult( false );
 				result.setNrErrors(1);					
 			}
@@ -211,7 +210,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 		}
 		else
 		{			
-			log.logError(toString(), "No Foldername is defined.");
+			logError("No Foldername is defined.");
 		}
 		
 		return result;

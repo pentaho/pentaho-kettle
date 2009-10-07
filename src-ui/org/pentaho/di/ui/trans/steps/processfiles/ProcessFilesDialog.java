@@ -388,7 +388,7 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
 	 */ 
 	public void getData()
 	{
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "ProcessFilesDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ProcessFilesDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		if (input.getDynamicSourceFileNameField() !=null)   wSourceFileNameField.setText(input.getDynamicSourceFileNameField());
 		if (input.getDynamicTargetFileNameField() !=null)   wTargetFileNameField.setText(input.getDynamicTargetFileNameField());

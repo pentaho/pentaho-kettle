@@ -26,7 +26,8 @@ import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 
@@ -35,6 +36,8 @@ public class FileInputList
     private List<FileObject>    files              = new ArrayList<FileObject>();
     private List<FileObject>    nonExistantFiles   = new ArrayList<FileObject>(1);
     private List<FileObject>    nonAccessibleFiles = new ArrayList<FileObject>(1);
+    
+    private static LogChannelInterface log = new LogChannel("FileInputList");
     
     public enum FileTypeFilter
     {
@@ -262,7 +265,7 @@ public class FileInputList
                 }
                 catch (Exception e)
                 {
-                    LogWriter.getInstance().logError("FileInputList", Const.getStackTracker(e));
+                    log.logError(Const.getStackTracker(e));
                 }
             }
             else
@@ -289,7 +292,7 @@ public class FileInputList
                 }
                 catch (Exception e)
                 {
-                    LogWriter.getInstance().logError("FileInputList", Const.getStackTracker(e));
+                	log.logError(Const.getStackTracker(e));
                 }
             }
         }
@@ -370,7 +373,7 @@ public class FileInputList
 	        }
 	        catch (Exception e)
 	        {
-	            LogWriter.getInstance().logError("FileInputList", Const.getStackTracker(e));
+	        	log.logError(Const.getStackTracker(e));
 	        }finally{
 	        	try{if(directoryFileObject!=null) directoryFileObject.close();directoryFileObject=null;}catch(Exception e){};
 	        }

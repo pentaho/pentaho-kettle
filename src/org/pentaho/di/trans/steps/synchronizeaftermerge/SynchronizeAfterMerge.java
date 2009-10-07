@@ -705,7 +705,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 	                if (data.indexOfTableNameField<0)
 	                {
 	                    String message = "It was not possible to find table ["+meta.gettablenameField()+"] in the input fields.";
-	                    log.logError(toString(), message);
+	                    logError(message);
 	                    throw new KettleStepException(message);
 	                }
 	            } 
@@ -723,7 +723,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
                 if (data.indexOfOperationOrderField<0)
                 {
                     String message = "It was not possible to find operation field ["+meta.getOperationOrderField()+"] in the input stream!";
-                    log.logError(toString(), message);
+                    logError(message);
                     throw new KettleStepException(message);
                 }
             } 
@@ -882,7 +882,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		    	{
 		    		if(Const.isEmpty(meta.gettablenameField()))
 		    		{
-		    			log.logError(toString(), BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.Error.TableFieldnameEmpty"));
+		    			logError(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.Error.TableFieldnameEmpty"));
 		    			return false;
 		    		}		    		
 		    	}
@@ -900,11 +900,11 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
                 if (data.batchMode && data.specialErrorHandling )
                 {
                 	data.batchMode = false;
-                	if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.BatchModeDisabled"));
+                	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.BatchModeDisabled"));
                 }
                
 		    	
-				data.db=new Database(meta.getDatabaseMeta());
+				data.db=new Database(this, meta.getDatabaseMeta());
 				data.db.shareVariablesWith(this);
                 if (getTransMeta().isUsingUniqueConnections())
                 {

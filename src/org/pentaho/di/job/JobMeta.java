@@ -42,7 +42,6 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -692,7 +691,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		}
 	}
 
-	public JobMeta(LogWriter log, Node jobnode, Repository rep, OverwritePrompter prompter) throws KettleXMLException {
+	public JobMeta(Node jobnode, Repository rep, OverwritePrompter prompter) throws KettleXMLException {
 		loadXML(jobnode, rep, prompter);
 	}
 
@@ -771,10 +770,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				sharedObjectsFile = XMLHandler.getTagValue(jobnode, "shared_objects_file"); //$NON-NLS-1$ //$NON-NLS-2$
 				sharedObjects = rep!=null ? rep.readJobMetaSharedObjects(this) : readSharedObjects();
 			} catch (Exception e) {
-				LogWriter.getInstance().logError(toString(),
-						BaseMessages.getString(PKG, "JobMeta.ErrorReadingSharedObjects.Message", e.toString())); // $NON-NLS-1$
-																										// //$NON-NLS-1$
-				LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+				throw new KettleXMLException(BaseMessages.getString(PKG, "JobMeta.ErrorReadingSharedObjects.Message"), e); // $NON-NLS-1$ // //$NON-NLS-1$
 			}
 
             // Read the named parameters.
@@ -958,7 +954,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return sharedObjects;
 	}	
 	
-	public boolean saveSharedObjects() {
+	public void saveSharedObjects() throws KettleException {
 		try {
 			// First load all the shared objects...
 			String soFile = environmentSubstitute(sharedObjectsFile);
@@ -979,10 +975,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 			// Save the objects
 			sharedObjects.saveToFile();
-			return true;
 		} catch (Exception e) {
-			LogWriter.getInstance().logError(toString(), "Unable to save shared ojects: " + e.toString());
-			return false;
+			throw new KettleException("Unable to save shared ojects", e);
 		}
 	}
 
@@ -1057,6 +1051,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 	public void addJobEntry(JobEntryCopy je) {
 		jobcopies.add(je);
+		je.setParentJobMeta(this);
 		setChanged();
 	}
 
@@ -1785,7 +1780,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		if (monitor != null)
 			monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.GettingSQLStatementsForJobLogTables")); //$NON-NLS-1$
 		if (logConnection != null && logTable != null && logTable.length() > 0) {
-			Database db = new Database(logConnection);
+			Database db = new Database(this, logConnection);
 			try {
 				db.connect();
 				RowMetaInterface fields = Database.getJobLogrecordFields(false, useBatchId, logfieldUsed);

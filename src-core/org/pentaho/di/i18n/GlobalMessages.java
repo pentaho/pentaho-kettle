@@ -26,7 +26,8 @@ import java.util.ResourceBundle;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 
 public class GlobalMessages extends AbstractMessageHandler
 {
@@ -42,6 +43,8 @@ public class GlobalMessages extends AbstractMessageHandler
 
     protected static final Map<String,ResourceBundle>         locales               = Collections.synchronizedMap(new HashMap<String,ResourceBundle>());
 
+    protected static final LogChannelInterface log = new LogChannel("i18n");
+    
     public static final String[] localeCodes = { 
     	"en_US", 
     	"nl_NL", 
@@ -215,7 +218,7 @@ public class GlobalMessages extends AbstractMessageHandler
             }
             catch (MissingResourceException fe)
             {
-                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
+                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }
@@ -236,7 +239,7 @@ public class GlobalMessages extends AbstractMessageHandler
             }
             catch (MissingResourceException fe)
             {
-                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
+                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }
@@ -261,7 +264,7 @@ public class GlobalMessages extends AbstractMessageHandler
             }
             catch (MissingResourceException fe)
             {
-                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
+                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }
@@ -285,7 +288,7 @@ public class GlobalMessages extends AbstractMessageHandler
             }
             catch (MissingResourceException fe)
             {
-                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
+                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }
@@ -309,7 +312,7 @@ public class GlobalMessages extends AbstractMessageHandler
             }
             catch (MissingResourceException fe)
             {
-                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
+                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }
@@ -333,7 +336,7 @@ public class GlobalMessages extends AbstractMessageHandler
             }
             catch (MissingResourceException fe)
             {
-                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
+                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }
@@ -357,7 +360,7 @@ public class GlobalMessages extends AbstractMessageHandler
             }
             catch (MissingResourceException fe)
             {
-                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
+                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }
@@ -381,7 +384,7 @@ public class GlobalMessages extends AbstractMessageHandler
             }
             catch (MissingResourceException fe)
             {
-                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
+                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }
@@ -399,8 +402,8 @@ public class GlobalMessages extends AbstractMessageHandler
         catch(IllegalArgumentException e)
         {
             String message = "Format problem with key=["+key+"], locale=["+locale+"], package="+packageName+" : "+e.toString();
-            LogWriter.getInstance().logError("i18n", message);
-            LogWriter.getInstance().logError("i18n", Const.getStackTracker(e));
+            log.logError("i18n", message);
+            log.logError("i18n", Const.getStackTracker(e));
             throw new MissingResourceException(message, packageName, key);
         }
     }
@@ -427,7 +430,7 @@ public class GlobalMessages extends AbstractMessageHandler
         
         string = "!"+key+"!";
         String message = "Message not found in the preferred and failover locale: key=["+key+"], package="+packageName;
-        LogWriter.getInstance().logDetailed("i18n", Const.getStackTracker(new KettleException(message)));
+        log.logDetailed("i18n", Const.getStackTracker(new KettleException(message)));
 
         return string;
     }

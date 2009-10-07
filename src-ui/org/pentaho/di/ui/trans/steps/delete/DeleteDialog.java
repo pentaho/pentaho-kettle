@@ -319,7 +319,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(),BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                        logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -413,7 +413,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "DeleteDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DeleteDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		wCommit.setText(""+input.getCommitSize()); //$NON-NLS-1$
         
@@ -457,7 +457,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(ci);
+						Database db = new Database(this, ci);
 						try {
 							db.connect();
 
@@ -496,7 +496,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 				
 		inf.setCommitSize( Const.toInt( wCommit.getText(), 0) );
 		
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "DeleteDialog.Log.FoundKeys",String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DeleteDialog.Log.FoundKeys",String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrkeys;i++)
 		{
 			TableItem item = wKey.getNonEmpty(i);
@@ -538,7 +538,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
 		if (databaseMeta!=null)
 		{
-			Database database = new Database(databaseMeta);
+			Database database = new Database(this, databaseMeta);
 			try
 			{
 				database.connect();
@@ -589,7 +589,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		
 		if (inf!=null)
 		{
-			log.logDebug(toString(), BaseMessages.getString(PKG, "DeleteDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
+			logDebug(BaseMessages.getString(PKG, "DeleteDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
 		
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());

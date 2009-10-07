@@ -142,7 +142,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 		if (nonExistantFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
-			log.logError(BaseMessages.getString(PKG, "PropertyInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "PropertyInput.Log.RequiredFiles", message));
+			logError(BaseMessages.getString(PKG, "PropertyInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "PropertyInput.Log.RequiredFiles", message));
 
 			throw new KettleException(BaseMessages.getString(PKG, "PropertyInput.Log.RequiredFilesMissing",message));
 		}
@@ -151,7 +151,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 		if (nonAccessibleFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
-			log.logError(BaseMessages.getString(PKG, "PropertyInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "PropertyInput.Log.RequiredNotAccessibleFiles",message));
+			logError(BaseMessages.getString(PKG, "PropertyInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "PropertyInput.Log.RequiredNotAccessibleFiles",message));
 
 				throw new KettleException(BaseMessages.getString(PKG, "PropertyInput.Log.RequiredNotAccessibleFilesMissing",message));
 		}
@@ -383,7 +383,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 				
 				
 				String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
-				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "PropertyInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
+				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "PropertyInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
 
 				data.file= KettleVFS.getFileObject(filename);
 				// Check if file exists!
@@ -438,7 +438,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 	         if (log.isDetailed()) 
 	         {
 	        	 logDetailed(BaseMessages.getString(PKG, "PropertyInput.Log.FileOpened", data.file.toString()));
-	        	 log.logDetailed(toString(),BaseMessages.getString(PKG, "PropertyInput.log.TotalKey", 
+	        	 logDetailed(BaseMessages.getString(PKG, "PropertyInput.log.TotalKey", 
 	        			 ""+(data.propfiles?data.pro.size():data.iniSection.size()), KettleVFS.getFilename(data.file)));
 	         }
 		}

@@ -236,7 +236,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 	 */ 
 	public void getData()
 	{
-		log.logDebug(toString(), "getting fields info...");
+		logDebug("getting fields info...");
 		
 		wLimit.setText(input.getRowLimit());
 
@@ -246,7 +246,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 			{
 				TableItem item = wFields.table.getItem(i);
 				item.setText(1, input.getFieldName()[i]);
-				log.logDebug(toString(), "field #"+i+" --> fieldType[i]="+input.getFieldType()[i]);
+				logDebug("field #"+i+" --> fieldType[i]="+input.getFieldType()[i]);
 				String type   = input.getFieldType()[i];
 				String format = input.getFieldFormat()[i];
 				String length = input.getFieldLength()[i]<0?"":(""+input.getFieldLength()[i]);

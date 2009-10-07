@@ -71,7 +71,7 @@ public class ValueMapper extends BaseStep implements StepInterface
             if (data.keynr<0)
             {
                 String message = BaseMessages.getString(PKG, "ValueMapper.RuntimeError.FieldToUseNotFound.VALUEMAPPER0001", meta.getFieldToUse(), Const.CR, getInputRowMeta().getString(r)); //$NON-NLS-1$ 
-                log.logError(toString(), message);
+                logError(message);
                 setErrors(1);
                 stopAll();
                 return false;

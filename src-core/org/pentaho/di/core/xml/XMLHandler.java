@@ -38,6 +38,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -987,44 +988,49 @@ public class XMLHandler
      * Convert a XML encoded binary string back to binary format
      * @param string the (Byte64/GZip) encoded string
      * @return the decoded binary (byte[]) object
-     * @throws IOException In case there is a decoding error
+     * @throws KettleException In case there is a decoding error
      */
-	public static byte[] stringToBinary(String string) throws IOException {
-        byte[] bytes;
-        if (string==null)
-        {
-        	bytes = new byte[] {};
-        }
-        else
-        {
-        	bytes = Base64.decodeBase64(string.getBytes());
-        }
-        if (bytes.length>0)
-        {
-            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-            GZIPInputStream gzip = new GZIPInputStream(bais);
-            BufferedInputStream bi = new BufferedInputStream(gzip);
-        	byte[] result = new byte[] {};
-            
-            byte[] extra = new byte[1000000];
-            int nrExtra = bi.read(extra);
-            while (nrExtra>=0) {
-            	// add it to bytes...
-            	//
-            	int newSize = result.length + nrExtra;
-            	byte[] tmp = new byte[newSize];
-            	for (int i=0;i<result.length;i++) tmp[i]=result[i];
-            	for (int i=0;i<nrExtra;i++) tmp[result.length+i] = extra[i];
-            	
-            	// change the result
-            	result=tmp;
-                nrExtra = bi.read(extra);
-            }
-            bytes = result;
-            gzip.close();
-        }
-
-        return bytes;
+	public static byte[] stringToBinary(String string) throws KettleException {
+		try {
+	        byte[] bytes;
+	        if (string==null)
+	        {
+	        	bytes = new byte[] {};
+	        }
+	        else
+	        {
+	        	bytes = Base64.decodeBase64(string.getBytes());
+	        }
+	        if (bytes.length>0)
+	        {
+	            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+	            GZIPInputStream gzip = new GZIPInputStream(bais);
+	            BufferedInputStream bi = new BufferedInputStream(gzip);
+	        	byte[] result = new byte[] {};
+	            
+	            byte[] extra = new byte[1000000];
+	            int nrExtra = bi.read(extra);
+	            while (nrExtra>=0) {
+	            	// add it to bytes...
+	            	//
+	            	int newSize = result.length + nrExtra;
+	            	byte[] tmp = new byte[newSize];
+	            	for (int i=0;i<result.length;i++) tmp[i]=result[i];
+	            	for (int i=0;i<nrExtra;i++) tmp[result.length+i] = extra[i];
+	            	
+	            	// change the result
+	            	result=tmp;
+	                nrExtra = bi.read(extra);
+	            }
+	            bytes = result;
+	            gzip.close();
+	        }
+	
+	        return bytes;
+		}
+		catch(Exception e) {
+			throw new KettleException("Error converting string to binary", e);
+		}
 	}
 
 

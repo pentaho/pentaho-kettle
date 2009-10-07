@@ -20,6 +20,7 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -43,7 +44,14 @@ import org.w3c.dom.Node;
 
 public interface JobEntryInterface
 {
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
+	public Result execute(Result prev_result, int nr) throws KettleException;
+	
+	public void setParentJob(Job job);
+	public Job getParentJob();
+
+	public LogChannelInterface getLogChannel();
+	
+	public void setRepository(Repository repository);
 	
 	public void    clear();
 	public ObjectId getObjectId();
@@ -66,8 +74,8 @@ public interface JobEntryInterface
 
 	public void    loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException;
 	public String  getXML();
-	public void    loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException;
 	public void    saveRep(Repository rep, ObjectId id_job) throws KettleException;
+	public void    loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException;
 
 	public boolean isStart();
 	public boolean isDummy();

@@ -567,7 +567,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(),BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                        logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -669,7 +669,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(ci);
+						Database db = new Database(this, ci);
 						try {
 							db.connect();
 
@@ -740,7 +740,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), BaseMessages.getString(PKG, "CombinationLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		logDebug(BaseMessages.getString(PKG, "CombinationLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		if (input.getKeyField()!=null)
 		for (i=0;i<input.getKeyField().length;i++)
@@ -867,7 +867,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
 		in.allocate(nrkeys);
 
-		log.logDebug(toString(), BaseMessages.getString(PKG, "CombinationLookupDialog.Log.SomeKeysFound",String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+		logDebug(BaseMessages.getString(PKG, "CombinationLookupDialog.Log.SomeKeysFound",String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrkeys;i++)
 		{
 			TableItem item = wKey.getNonEmpty(i);
@@ -914,7 +914,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
 		if (databaseMeta!=null)
 		{
-			Database database = new Database(databaseMeta);
+			Database database = new Database(this, databaseMeta);
 			try
 			{
 				database.connect();
@@ -964,7 +964,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
 		if (inf != null)
 		{
-			log.logDebug(toString(), BaseMessages.getString(PKG, "CombinationLookupDialog.Log.LookingAtConnection", inf.toString()));
+			logDebug(BaseMessages.getString(PKG, "CombinationLookupDialog.Log.LookingAtConnection", inf.toString()));
 
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());

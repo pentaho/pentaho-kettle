@@ -442,7 +442,7 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
         repository.connectionDelegate.getDatabase().insertRow();
         repository.connectionDelegate.getDatabase().closeInsert();
         
-        if (log.isDebug()) log.logDebug(toString(), "saved database attribute ["+code+"]");
+        if (log.isDebug()) log.logDebug("saved database attribute ["+code+"]");
         
         return id;
     }

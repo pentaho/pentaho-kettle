@@ -37,13 +37,12 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -178,7 +177,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     }
   }
 
-  public Result execute(Result result, int nr, Repository rep, Job parentJob) throws KettleException {
+  public Result execute(Result result, int nr) throws KettleException {
     LogWriter log = LogWriter.getInstance();
 
     List<RowMetaAndData> rows = result.getRows();
@@ -196,13 +195,13 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
 
     if (argFromPrevious) {
       if(log.isDetailed())	
-    	  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFolders.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
+    	  logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
     }
 
     if (argFromPrevious && rows != null){
       for (int iteration = 0; iteration < rows.size() && !parentJob.isStopped(); iteration++) {
 		if(successConditionBroken){
-			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFolders.Error.SuccessConditionbroken",""+NrErrors));
+			logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.Error.SuccessConditionbroken",""+NrErrors));
 			result.setNrErrors(NrErrors);
 			result.setNrLinesDeleted(NrSuccess);
 			return result;
@@ -217,14 +216,14 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
 	        }
         }else{
         	// empty filename !
-        	log.logError(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFolders.Error.EmptyLine"));
+        	logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.Error.EmptyLine"));
         }
       }
     } else if (arguments != null) {
       for (int i = 0; i < arguments.length && !parentJob.isStopped(); i++) {
   		if(successConditionBroken)
 		{
-			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFolders.Error.SuccessConditionbroken",""+NrErrors));
+			logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.Error.SuccessConditionbroken",""+NrErrors));
 			result.setNrErrors(NrErrors);
 			result.setNrLinesDeleted(NrSuccess);
 			return result;
@@ -239,16 +238,16 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
           }  
 	    }else{
          // empty filename !
-         log.logError(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFolders.Error.EmptyLine"));
+         logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.Error.EmptyLine"));
 	   }
       }
     }
    
 	if(log.isDetailed()){
-		log.logDetailed(toString(), "=======================================");
-		log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFolders.Log.Info.NrError","" + NrErrors));
-		log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFolders.Log.Info.NrDeletedFolders","" + NrSuccess));
-		log.logDetailed(toString(), "=======================================");
+		logDetailed("=======================================");
+		logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.Log.Info.NrError","" + NrErrors));
+		logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.Log.Info.NrDeletedFolders","" + NrSuccess));
+		logDetailed("=======================================");
 	}
     
 	result.setNrErrors(NrErrors);
@@ -311,24 +310,24 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
         if (filefolder.getType() == FileType.FOLDER) {
           // It's a folder
           if (log.isDetailed())
-            log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFolders.ProcessingFolder", foldername)); //$NON-NLS-1$
+            logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.ProcessingFolder", foldername)); //$NON-NLS-1$
           // Delete Files
           int Nr = filefolder.delete(new TextFileSelector());
 
           if (log.isDetailed())
-            log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFolders.TotalDeleted", foldername,String.valueOf(Nr))); //$NON-NLS-1$
+            logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.TotalDeleted", foldername,String.valueOf(Nr))); //$NON-NLS-1$
           rcode = true;
         } else {
         	// Error...This file is not a folder!
-        	log.logError(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFolders.Error.NotFolder"));
+        	logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.Error.NotFolder"));
         }
       } else {
         // File already deleted, no reason to try to delete it
-    	  if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFolders.FolderAlreadyDeleted", foldername)); //$NON-NLS-1$
+    	  if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFolders.FolderAlreadyDeleted", foldername)); //$NON-NLS-1$
         rcode = true;
       }
     } catch (IOException e) {
-      log.logError(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFolders.CouldNotDelete", foldername, e.getMessage())); //$NON-NLS-1$
+      logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.CouldNotDelete", foldername, e.getMessage())); //$NON-NLS-1$
     } finally {
       if (filefolder != null) {
         try {

@@ -55,7 +55,8 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -113,12 +114,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     public static final String XML_TAG = "transformation";
-        
+    
+    public static final String STRING_TRANSMETA = "Transformation metadata";
+    
 	public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.TRANSFORMATION;
-
-    private static LogWriter         log = LogWriter.getInstance();
-
-    // private List                inputFiles;
 
     private List<DatabaseMeta>       databases;
 
@@ -252,6 +251,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     
     private RepositoryLock repositoryLock;
     
+    private LogChannelInterface log;
+    
     // //////////////////////////////////////////////////////////////////////////
 
     public static final int     TYPE_UNDO_CHANGE   = 1;
@@ -274,7 +275,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     public  static final String XML_TAG_CLUSTERSCHEMAS      = "clusterschemas";
     private static final String XML_TAG_STEP_ERROR_HANDLING = "step_error_handling";
     
-    
     /**
      * Builds a new empty transformation.
      */
@@ -282,6 +282,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     {
         clear();
         initializeVariablesFrom(null);
+        log = new LogChannel(STRING_TRANSMETA);
     }
     
     /**
@@ -516,6 +517,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         
         stepsFieldsCache = new HashMap<String, RowMetaInterface>();
         loopCache = new HashMap<String, Boolean>();
+        
+        log = new LogChannel(STRING_TRANSMETA);
     }
 
     public void clearUndo()
@@ -576,6 +579,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     public void addStep(StepMeta stepMeta)
     {
         steps.add(stepMeta);
+        stepMeta.setParentTransMeta(this);
         changed_steps = true;
     }
     
@@ -597,6 +601,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             StepMeta previous = getStep(index);
             previous.replaceMeta(stepMeta);
         }
+        stepMeta.setParentTransMeta(this);
         changed_steps = true;
     }
 
@@ -650,6 +655,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     public void addStep(int p, StepMeta stepMeta)
     {
         steps.add(p, stepMeta);
+        stepMeta.setParentTransMeta(this);
         changed_steps = true;
     }
 
@@ -898,6 +904,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     public void setStep(int i, StepMeta stepMeta)
     {
         steps.set(i, stepMeta);
+        stepMeta.setParentTransMeta(this);
     }
 
     /**
@@ -1324,7 +1331,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             TransHopMeta hi = getTransHop(i);
             if (hi == null || hi.getToStep() == null)
             {
-                log.logError(toString(), BaseMessages.getString(PKG, "TransMeta.Log.DestinationOfHopCannotBeNull")); //$NON-NLS-1$
+                log.logError(BaseMessages.getString(PKG, "TransMeta.Log.DestinationOfHopCannotBeNull")); //$NON-NLS-1$
             }
             if (hi != null && hi.getToStep() != null && hi.isEnabled() && hi.getToStep().equals(stepMeta))
             {
@@ -1687,7 +1694,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         
         // Resume the regular program...
 
-        if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String.valueOf(findNrPrevSteps(stepMeta)) )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String.valueOf(findNrPrevSteps(stepMeta)) )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         for (int i = 0; i < findNrPrevSteps(stepMeta); i++)
         {
             StepMeta prevStepMeta = findPrevStep(stepMeta, i);
@@ -1699,7 +1706,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
             RowMetaInterface add = getStepFields(prevStepMeta, stepMeta, monitor);
             if (add == null) add = new RowMeta();
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.FoundFieldsToAdd") + add.toString()); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.FoundFieldsToAdd") + add.toString()); //$NON-NLS-1$
             if (i == 0)
             {
                 row.addRowMeta(add);
@@ -1768,7 +1775,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
         if (stepMeta == null) { return null; }
 
-        if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String.valueOf(findNrPrevSteps(stepMeta)) )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String.valueOf(findNrPrevSteps(stepMeta)) )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         for (int i = 0; i < findNrPrevSteps(stepMeta); i++)
         {
             StepMeta prevStepMeta = findPrevStep(stepMeta, i);
@@ -1780,7 +1787,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             
             RowMetaInterface add = getStepFields(prevStepMeta, stepMeta, monitor);
             
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.FoundFieldsToAdd2") + add.toString()); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.FoundFieldsToAdd2") + add.toString()); //$NON-NLS-1$
             if (i == 0) // we expect all input streams to be of the same layout!
             {
                 row.addRowMeta(add); // recursive!
@@ -1840,7 +1847,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     public RowMetaInterface getThisStepFields(StepMeta stepMeta, StepMeta nextStep, RowMetaInterface row, ProgressMonitorListener monitor) throws KettleStepException
     {
         // Then this one.
-    	if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.GettingFieldsFromStep",stepMeta.getName(), stepMeta.getStepID())); //$NON-NLS-1$ //$NON-NLS-2$
+    	if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.GettingFieldsFromStep",stepMeta.getName(), stepMeta.getStepID())); //$NON-NLS-1$ //$NON-NLS-2$
         String name = stepMeta.getName();
 
         if (monitor != null)
@@ -2399,16 +2406,16 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             }
             catch(Exception e)
             {
-                LogWriter.getInstance().logError(toString(), BaseMessages.getString(PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString()));
-                LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+                log.logError(BaseMessages.getString(PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString()));
+                log.logError(Const.getStackTracker(e));
             }
 
             // Handle connections
             int n = XMLHandler.countNodes(transnode, DatabaseMeta.XML_TAG); //$NON-NLS-1$
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.WeHaveConnections", String.valueOf(n) )); //$NON-NLS-1$ //$NON-NLS-2$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.WeHaveConnections", String.valueOf(n) )); //$NON-NLS-1$ //$NON-NLS-2$
             for (int i = 0; i < n; i++)
             {
-            	if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.LookingAtConnection") + i); //$NON-NLS-1$
+            	if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.LookingAtConnection") + i); //$NON-NLS-1$
                 Node nodecon = XMLHandler.getSubNodeByNr(transnode, DatabaseMeta.XML_TAG, i); //$NON-NLS-1$
 
                 DatabaseMeta dbcon = new DatabaseMeta(nodecon);
@@ -2459,13 +2466,14 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             // Handle Steps
             int s = XMLHandler.countNodes(transnode, StepMeta.XML_TAG); //$NON-NLS-1$
 
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.ReadingSteps") + s + " steps..."); //$NON-NLS-1$ //$NON-NLS-2$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.ReadingSteps") + s + " steps..."); //$NON-NLS-1$ //$NON-NLS-2$
             for (int i = 0; i < s; i++)
             {
                 Node stepnode = XMLHandler.getSubNodeByNr(transnode, StepMeta.XML_TAG, i); //$NON-NLS-1$
 
-                if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.LookingAtStep") + i); //$NON-NLS-1$
+                if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.LookingAtStep") + i); //$NON-NLS-1$
                 StepMeta stepMeta = new StepMeta(stepnode, databases, counters);
+                stepMeta.setParentTransMeta(this); // for tracing, retain hierarchy
                 
                 // Check if the step exists and if it's a shared step.
                 // If so, then we will keep the shared version, not this one.
@@ -2515,10 +2523,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             Node ordernode = XMLHandler.getSubNode(transnode, XML_TAG_ORDER); //$NON-NLS-1$
             n = XMLHandler.countNodes(ordernode, TransHopMeta.XML_TAG); //$NON-NLS-1$
 
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.WeHaveHops") + n + " hops..."); //$NON-NLS-1$ //$NON-NLS-2$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.WeHaveHops") + n + " hops..."); //$NON-NLS-1$ //$NON-NLS-2$
             for (int i = 0; i < n; i++)
             {
-            	if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.LookingAtHop") + i); //$NON-NLS-1$
+            	if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.LookingAtHop") + i); //$NON-NLS-1$
                 Node hopnode = XMLHandler.getSubNodeByNr(ordernode, TransHopMeta.XML_TAG, i); //$NON-NLS-1$
 
                 TransHopMeta hopinf = new TransHopMeta(hopnode, steps);
@@ -2769,8 +2777,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             slaveTransformation = "Y".equalsIgnoreCase(XMLHandler.getTagValue(transnode, "slave_transformation"));
             if(log.isDebug()) 
             {
-            	log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.NumberOfStepsReaded") + nrSteps()); //$NON-NLS-1$
-            	log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.NumberOfHopsReaded") + nrTransHops()); //$NON-NLS-1$
+            	log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.NumberOfStepsReaded") + nrSteps()); //$NON-NLS-1$
+            	log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.NumberOfHopsReaded") + nrTransHops()); //$NON-NLS-1$
             }
             sortSteps();
         }
@@ -2794,7 +2802,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         String soFile = environmentSubstitute(sharedObjectsFile);
         SharedObjects sharedObjects = new SharedObjects(soFile);
         if (sharedObjects.getObjectsMap().isEmpty()) {
-        	log.logDetailed(toString(), BaseMessages.getString(PKG, "TransMeta.Log.EmptySharedObjectsFile", soFile));
+        	log.logDetailed(BaseMessages.getString(PKG, "TransMeta.Log.EmptySharedObjectsFile", soFile));
         }
         
         // First read the databases...
@@ -3718,8 +3726,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         }
         catch (Exception e)
         {
-            LogWriter.getInstance().logError(toString(), BaseMessages.getString(PKG, "TransMeta.Exception.ErrorOfSortingSteps") + e); //$NON-NLS-1$
-            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+            log.logError(BaseMessages.getString(PKG, "TransMeta.Exception.ErrorOfSortingSteps") + e); //$NON-NLS-1$
+            log.logError(Const.getStackTracker(e));
         }
     }
 
@@ -3797,7 +3805,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		});
     	
     	long endTime = System.currentTimeMillis();
-    	log.logBasic(toString(), "Natural sort of steps executed in "+(endTime-startTime)+"ms ("+prevCount+" time previous steps calculated)");
+    	log.logBasic("Natural sort of steps executed in "+(endTime-startTime)+"ms ("+prevCount+" time previous steps calculated)");
 
         return stepMap;
     }
@@ -3979,7 +3987,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.GettingTheSQLForTransformationTask.Title2")); //$NON-NLS-1$
         if (logConnection != null && ( !Const.isEmpty(logTable) || !Const.isEmpty(stepPerformanceLogTable)) )
         {
-            Database db = new Database(logConnection);
+            Database db = new Database(this, logConnection);
             db.shareVariablesWith(this);
             try
             {
@@ -4215,7 +4223,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.CheckingTheLoggingTableTask.Title")); //$NON-NLS-1$
                 if (getLogConnection() != null)
                 {
-                    Database logdb = new Database(getLogConnection());
+                    Database logdb = new Database(this, getLogConnection());
                     logdb.shareVariablesWith(this);
                     try
                     {
@@ -4291,7 +4299,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         }
         catch (Exception e)
         {
-            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+            log.logError(Const.getStackTracker(e));
             throw new RuntimeException(e);
         }
     }
@@ -5255,7 +5263,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         this.sharedObjectsFile = sharedObjectsFile;
     }
 
-    public boolean saveSharedObjects()
+    public void saveSharedObjects() throws KettleException
     {
         try
         {
@@ -5282,12 +5290,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             
             // Save the objects
             sharedObjects.saveToFile();
-            return true;
         }
         catch(Exception e)
         {
-            log.logError(toString(), "Unable to save shared ojects: "+e.toString());
-            return false;
+            throw new KettleException("Unable to save shared ojects", e);
         }
     }
 
@@ -5931,5 +5937,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	
 	public ObjectRevision getObjectRevision() {
 		return objectVersion;
+	}
+	
+	public LogChannelInterface getLogChannel() {
+		return log;
 	}
 }

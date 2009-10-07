@@ -504,7 +504,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         
         wOmitXMLHeader.setSelection(input.isOmitXMLheader());
         
-        log.logDebug(toString(), BaseMessages.getString(PKG, "AddXMLDialog.Log.GettingFieldsInfo"));
+        logDebug(BaseMessages.getString(PKG, "AddXMLDialog.Log.GettingFieldsInfo"));
         
         for (int i=0;i<input.getOutputFields().length;i++)
         {

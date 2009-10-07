@@ -178,7 +178,7 @@ public class SetValueFieldDialog extends BaseStepDialog implements StepDialogInt
                   }
                   catch(KettleException e)
                   {
-                      log.logError(toString(), "It was not possible to get the list of input fields from previous steps", e);
+                      logError("It was not possible to get the list of input fields from previous steps", e);
                   }
               }
           }

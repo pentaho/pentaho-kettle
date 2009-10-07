@@ -152,7 +152,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
     return environmentSubstitute(getFilename());
   }
 
-  public Result execute(Result previousResult, int nr, Repository rep, Job parentJob) throws KettleException
+  public Result execute(Result previousResult, int nr) throws KettleException
   {
     LogWriter log = LogWriter.getInstance();
     Result result = previousResult;
@@ -172,12 +172,12 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
           {
             // File exists and fail flag is on.
             result.setResult(false);
-            log.logError(toString(), "File [" + realFilename + "] exists, failing.");
+            logError("File [" + realFilename + "] exists, failing.");
           } else
           {
             // File already exists, no reason to try to create it
             result.setResult(true);
-            log.logBasic(toString(), "File [" + realFilename + "] already exists, not recreating.");
+            logBasic("File [" + realFilename + "] already exists, not recreating.");
           }
           // add filename to result filenames if needed
           if(isAddFilenameToResult())
@@ -186,7 +186,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
         {
           //  No file yet, create an empty file.
           fileObject.createFile();
-          log.logBasic(toString(), "File [" + realFilename + "] created!");
+          logBasic("File [" + realFilename + "] created!");
           // add filename to result filenames if needed
           if(isAddFilenameToResult())
         	  addFilenameToResult(realFilename,log,result, parentJob);
@@ -194,7 +194,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
         }
       } catch (IOException e)
       {
-        log.logError(toString(), "Could not create file [" + realFilename + "], exception: " + e.getMessage());
+        logError("Could not create file [" + realFilename + "], exception: " + e.getMessage());
         result.setResult(false);
         result.setNrErrors(1);
       } finally
@@ -212,7 +212,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
       }
     } else
     {
-      log.logError(toString(), "No filename is defined.");
+      logError("No filename is defined.");
     }
 
     return result;
@@ -229,7 +229,7 @@ private void addFilenameToResult(String targetFilename,LogWriter log,Result resu
         resultFile.setComment(""); //$NON-NLS-1$
 		result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 		
-        if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCreateFile.FileAddedToResult",targetFilename)); //$NON-NLS-1$
+        if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryCreateFile.FileAddedToResult",targetFilename)); //$NON-NLS-1$
 	} catch(Exception e)
 	{
 		throw new KettleException(e);

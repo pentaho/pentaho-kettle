@@ -37,7 +37,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.laf.BasePropertyHandler;
@@ -57,7 +58,7 @@ import org.pentaho.di.ui.util.ImageUtil;
  */
 public class GUIResource
 {
-	private static LogWriter log = LogWriter.getInstance();
+	private static LogChannelInterface log = new LogChannel("GUIResource");
 
 	private static GUIResource guiResource;
 

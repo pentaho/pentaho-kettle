@@ -36,6 +36,7 @@ import javax.mail.search.SubjectTerm;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 
@@ -114,8 +115,8 @@ public class MailConnection {
 	 * IMAP folder if user want to move some messages
 	 */
 	private Folder destinationIMAPFolder=null;
-	
-	private LogWriter log;
+
+	private LogChannelInterface	log;
 	
 	/**
 	 * Construct a new Database MailConnection
@@ -127,10 +128,11 @@ public class MailConnection {
 	 * @param useproxy specify if we use proxy authentication
 	 * @param proxyusername  proxy authorised user
 	 */
-    public MailConnection(int protocol, String server, int port, String username, 
+    public MailConnection(LogChannelInterface log, int protocol, String server, int port, String username, 
     		String password, boolean usessl, boolean useproxy, String proxyusername) throws KettleException {
     	
-    	this.log=LogWriter.getInstance();
+    	this.log=log;
+    	
     	//Get system properties
     	try {
     		this.prop = System.getProperties();
@@ -176,7 +178,7 @@ public class MailConnection {
 				
 				//Create session object
 				this.session = Session.getInstance(this.prop, null );
-				this.session.setDebug(log.getLogLevel() >= LogWriter.LOG_LEVEL_DEBUG);
+				this.session.setDebug(LogWriter.getInstance().isDebug());
 				if(this.port==-1) {
 					this.port=((protocol==MailConnectionMeta.PROTOCOL_POP3)?MailConnectionMeta.DEFAULT_SSL_POP3_PORT:MailConnectionMeta.DEFAULT_SSL_IMAP_PORT);
 				}
@@ -185,7 +187,7 @@ public class MailConnection {
 				url=null;
 			} else {
 				this.session = Session.getInstance(this.prop, null);
-				this.session.setDebug(log.getLogLevel() >= LogWriter.LOG_LEVEL_DEBUG);
+				this.session.setDebug(LogWriter.getInstance().isDebug());
 				this.store = this.session.getStore(protocolString);
 			}
 			
@@ -312,10 +314,10 @@ public class MailConnection {
 		  			 throw new KettleException(BaseMessages.getString(PKG, "JobGetMailsFromPOP.InvalidFolder.Label"));       
 	    	  }
 	        if(this.write) {
-	        	if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "MailConnection.OpeningFolderInWriteMode.Label", getFolderName()));
+	        	if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "MailConnection.OpeningFolderInWriteMode.Label", getFolderName()));
 	        	this.folder.open(Folder.READ_WRITE);
 	        }else {
-	        	if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "MailConnection.OpeningFolderInReadMode.Label", getFolderName()));
+	        	if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "MailConnection.OpeningFolderInReadMode.Label", getFolderName()));
 	        	this.folder.open(Folder.READ_ONLY); 
 	        }
 	        

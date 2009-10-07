@@ -389,7 +389,7 @@ public class Mapping extends BaseStep implements StepInterface
             }
             catch(KettleException e)
             {
-                log.logError(toString(), BaseMessages.getString(PKG, "Mapping.Log.UnableToLogEndOfTransformation")+e.toString()); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "Mapping.Log.UnableToLogEndOfTransformation")+e.toString()); //$NON-NLS-1$
             }
             
             // See if there was an error in the sub-transformation, in that case, flag error etc.

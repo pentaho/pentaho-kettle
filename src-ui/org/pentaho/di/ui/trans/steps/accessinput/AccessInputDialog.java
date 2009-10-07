@@ -1258,7 +1258,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wResetRownum.setSelection(in.resetRowNumber());
 		wLimit.setText(""+in.getRowLimit());
 
-		log.logDebug(toString(), BaseMessages.getString(PKG, "AccessInputDialog.Log.GettingFieldsInfo"));
+		logDebug(BaseMessages.getString(PKG, "AccessInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
 		    AccessInputField field = in.getInputFields()[i];

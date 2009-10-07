@@ -18,7 +18,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -57,6 +57,8 @@ public class Result implements Cloneable
 	
 	public boolean stopped;
     private long nrLinesRejected;
+    
+    private String logChannelId;
 	
 	public Result()
 	{
@@ -397,6 +399,7 @@ public class Result implements Cloneable
         xml.append(XMLHandler.addTagValue("result", result));;
         xml.append(XMLHandler.addTagValue("exit_status", exitStatus));
         xml.append(XMLHandler.addTagValue("is_stopped", stopped));
+        xml.append(XMLHandler.addTagValue("log_channel_id", logChannelId));
                 
         // Export the result files
         //
@@ -427,7 +430,7 @@ public class Result implements Cloneable
         return xml.toString();
     }
     
-    public Result(Node node) throws IOException
+    public Result(Node node) throws KettleException
     {
     	this();
     	
@@ -449,7 +452,9 @@ public class Result implements Cloneable
         result  = "Y".equalsIgnoreCase( XMLHandler.getTagValue(node, "result"));
         exitStatus = Integer.parseInt( XMLHandler.getTagValue(node, "exit_status") );
         stopped = "Y".equalsIgnoreCase( XMLHandler.getTagValue(node, "is_stopped" ));
-        
+
+    	logChannelId = XMLHandler.getTagValue(node, "log_channel_id");
+
     	// Now read back the result files...
     	//
     	Node resultFilesNode = XMLHandler.getSubNode(node, XML_FILES_TAG);
@@ -460,8 +465,7 @@ public class Result implements Cloneable
 				ResultFile resultFile = new ResultFile(XMLHandler.getSubNodeByNr(resultFilesNode, XML_FILE_TAG, i));
 				resultFiles.put(resultFile.getFile().toString(), resultFile);
 			} catch (IOException e) {
-				
-				LogWriter.getInstance().logError("Execution result", "Unexpected error reading back a ResultFile object from XML", e);
+				throw new KettleException("Unexpected error reading back a ResultFile object from XML", e);
 			} 
     	}
 
@@ -521,4 +525,18 @@ public class Result implements Cloneable
     {
         this.nrLinesRejected = nrLinesRejected;
     }
+
+	/**
+	 * @return the log channel id of the object that was executed (trans, job, job entry, etc); 
+	 */
+	public String getLogChannelId() {
+		return logChannelId;
+	}
+
+	/**
+	 * @param logChannelId the logChannelId to set
+	 */
+	public void setLogChannelId(String logChannelId) {
+		this.logChannelId = logChannelId;
+	}
 }

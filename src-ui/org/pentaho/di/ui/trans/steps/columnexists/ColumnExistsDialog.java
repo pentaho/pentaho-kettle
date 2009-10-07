@@ -364,7 +364,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 	 */ 
 	public void getData()
 	{
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "ColumnExistsDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ColumnExistsDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		
 		if (input.getDatabase()!=null)   wConnection.setText(input.getDatabase().getName());

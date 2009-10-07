@@ -265,12 +265,12 @@ public class XMLOutput extends BaseStep implements StepInterface
 			}
 			if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
 			{
-				log.logBasic(toString(), "Opening output stream in encoding: " + meta.getEncoding());
+				logBasic("Opening output stream in encoding: " + meta.getEncoding());
 				data.writer = new OutputStreamWriter(outputStream, meta.getEncoding());
 				data.writer.write(XMLHandler.getXMLHeader(meta.getEncoding()).toCharArray());
 			} else
 			{
-				log.logBasic(toString(), "Opening output stream in default encoding : " + Const.XML_ENCODING);
+				logBasic("Opening output stream in default encoding : " + Const.XML_ENCODING);
 				data.writer = new OutputStreamWriter(outputStream);
 				data.writer.write(XMLHandler.getXMLHeader(Const.XML_ENCODING).toCharArray());
 			}

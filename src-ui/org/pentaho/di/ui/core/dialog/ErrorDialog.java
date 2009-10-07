@@ -66,10 +66,17 @@ public class ErrorDialog extends Dialog
 	private SelectionAdapter lsDef;
 	private PropsUI props;
 
+	// private LogChannelInterface	log;
+
 	public ErrorDialog(Shell parent, String title, String message, Throwable throwable)
 	{
 		super(parent, SWT.NONE);
+		
+		throwable.printStackTrace();
 
+		// this.log = new LogChannel("ErrorDialog");
+		//  log.logError(message, throwable);
+		
 		if (throwable instanceof Exception) {
 			showErrorDialog(parent, title, message, (Exception)throwable);
 		} else {

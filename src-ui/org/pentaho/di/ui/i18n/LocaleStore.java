@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 
 /**
  * This class stores all the messages for a locale for all the used packages... 
@@ -38,6 +38,8 @@ public class LocaleStore {
 	private String mainLocale;
 
 	private Map<String, List<KeyOccurrence>> packageOccurrences;
+
+	private LogChannelInterface	log;
 	
 	/**
 	 * Create a new LocaleStore 
@@ -45,7 +47,8 @@ public class LocaleStore {
 	 * @param messagesPackages the packages to handle
 	 * @param packageOccurrences 
 	 */
-	public LocaleStore(String locale, List<String> messagesPackages, String mainLocale, Map<String, List<KeyOccurrence>> packageOccurrences) {
+	public LocaleStore(LogChannelInterface log, String locale, List<String> messagesPackages, String mainLocale, Map<String, List<KeyOccurrence>> packageOccurrences) {
+		this.log = log;
 		this.locale = locale;
 		this.messagesPackages = messagesPackages;
 		this.mainLocale = mainLocale;
@@ -71,7 +74,7 @@ public class LocaleStore {
 					throw new KettleException(e);
 				}
 				else {
-					LogWriter.getInstance().logDetailed("Locale store", "No translations found for locale '"+locale+"' in package '"+messagePackage+"'");
+					log.logDetailed("No translations found for locale '"+locale+"' in package '"+messagePackage+"'");
 				}
 
 			}

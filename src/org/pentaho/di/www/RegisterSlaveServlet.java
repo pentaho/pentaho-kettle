@@ -18,7 +18,6 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,7 +29,7 @@ import org.w3c.dom.Node;
 
 
 
-public class RegisterSlaveServlet extends HttpServlet
+public class RegisterSlaveServlet extends BaseHttpServlet implements CarteServletInterface
 {
 	private static final long serialVersionUID = 8513820270964866132L;
 
@@ -54,11 +53,11 @@ public class RegisterSlaveServlet extends HttpServlet
     {
         if (!request.getRequestURI().equals(CONTEXT_PATH+"/")) return;
 
-        if (log.isDebug()) log.logDebug(toString(), "Slave Server registration requested");
+        if (log.isDebug()) logDebug("Slave Server registration requested");
 
         PrintWriter out = response.getWriter();
         BufferedReader in = request.getReader();
-        if (log.isDetailed()) log.logDetailed(toString(), "Encoding: "+request.getCharacterEncoding());
+        if (log.isDetailed()) logDetailed("Encoding: "+request.getCharacterEncoding());
 
         // We always use XML to reply here...
         //
@@ -121,4 +120,7 @@ public class RegisterSlaveServlet extends HttpServlet
         return "Register slave server";
     }
 
+	public String getService() {
+		return CONTEXT_PATH+" ("+toString()+")";
+	}
 }

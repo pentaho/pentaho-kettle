@@ -24,7 +24,8 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 
 /**
  * This class was copied from Stripes -
@@ -34,8 +35,7 @@ import org.pentaho.di.core.logging.LogWriter;
  */
 public class ResolverUtil<T>
 {
-
-	private static final LogWriter log = LogWriter.getInstance();
+	private static LogChannelInterface log = new LogChannel("ResolverUtil"); 
 
 	public static interface Test
 	{
@@ -194,7 +194,7 @@ public class ResolverUtil<T>
 			urls = loader.getResources(packageName);
 		} catch (IOException ioe)
 		{
-			log.logError(toString(), "Could not read package: " + packageName, ioe);
+			log.logError("Could not read package: " + packageName, ioe);
 			return;
 		}
 		while (urls.hasMoreElements())
@@ -231,7 +231,7 @@ public class ResolverUtil<T>
 						urlPath = urlPath.substring(4);
 					eurl = new URL(urlPath);
 				}
-				log.logDetailed(toString(), "Scanning for classes in [" + urlPath + "] matching criteria: "
+				log.logDetailed("Scanning for classes in [" + urlPath + "] matching criteria: "
 						+ tests);
 
 				// is it a file?
@@ -247,10 +247,10 @@ public class ResolverUtil<T>
 			} catch (IOException e)
 			{
 				e.printStackTrace();
-				log.logError(toString(), "could not read entries", e);
+				log.logError("could not read entries", e);
 			} catch (URISyntaxException se)
 			{
-				log.logError(toString(), "could not read entries", se);
+				log.logError("could not read entries", se);
 			}
 		}
 	}
@@ -291,8 +291,7 @@ public class ResolverUtil<T>
 		} catch (IOException ioe)
 		{
 			ioe.printStackTrace();
-			log.logError(toString(), "Could not search jar file \\\'" + jarfile
-					+ "\\\' for classes matching criteria: " + tests + " due to an IOException", ioe);
+			log.logError("Could not search jar file \\\'" + jarfile + "\\\' for classes matching criteria: " + tests + " due to an IOException", ioe);
 		}
 	}
 
@@ -310,7 +309,7 @@ public class ResolverUtil<T>
 			{
 				if (log.isDebug())
 				{
-					log.logDebug(toString(), "Checking to see if class " + externalName
+					log.logDebug("Checking to see if class " + externalName
 							+ " matches criteria [" + test + "]");
 				}
 				if (test.matches(type))
@@ -320,8 +319,7 @@ public class ResolverUtil<T>
 			}
 		} catch (Throwable t)
 		{
-			log.logDetailed(toString(), "Could not examine class \\\'" + fqn + "\\\' due to a "
-					+ t.getClass().getName() + " with message: " + t.getMessage());
+			log.logDetailed("Could not examine class \\\'" + fqn + "\\\' due to a " + t.getClass().getName() + " with message: " + t.getMessage());
 		}
 	}
 }

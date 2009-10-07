@@ -30,7 +30,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -232,7 +231,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 		return false;
 	}
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
@@ -244,17 +243,17 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 		
 		if(Const.isEmpty(tablename))
 		{
-			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Error.TablenameEmpty"));
+			logError(BaseMessages.getString(PKG, "JobEntryColumnsExist.Error.TablenameEmpty"));
 			return result;
 		}
 		if(arguments == null) 
 		{
-			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Error.ColumnameEmpty"));
+			logError(BaseMessages.getString(PKG, "JobEntryColumnsExist.Error.ColumnameEmpty"));
 			return result;
 		}
 		if (connection!=null)
 		{
-			Database db = new Database(connection);
+			Database db = new Database(this, connection);
 
 			try
 			{
@@ -270,7 +269,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 
 				if (db.checkTableExists(realTablename))
 				{
-					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Log.TableExists",realTablename));
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryColumnsExist.Log.TableExists",realTablename));
 				
 					for (int i = 0; i < arguments.length && !parentJob.isStopped(); i++) 
 				     {
@@ -279,23 +278,23 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 						 
 						 if (db.checkColumnExists(realColumnname,realTablename))
 						 {
-							if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Log.ColumnExists",realColumnname,realTablename));
+							if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryColumnsExist.Log.ColumnExists",realColumnname,realTablename));
 							nrexistcolums++;
 						 }else
 						 {
-							log.logError(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Log.ColumnNotExists",realColumnname,realTablename));
+							logError(BaseMessages.getString(PKG, "JobEntryColumnsExist.Log.ColumnNotExists",realColumnname,realTablename));
 							nrnotexistcolums++;
 						 }
 				     }
 				}
 				else
 				{
-					log.logError(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Log.TableNotExists",realTablename));
+					logError(BaseMessages.getString(PKG, "JobEntryColumnsExist.Log.TableNotExists",realTablename));
 				}	
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Error.UnexpectedError",dbe.getMessage()));
+				logError(BaseMessages.getString(PKG, "JobEntryColumnsExist.Error.UnexpectedError",dbe.getMessage()));
 			}finally
 			{
 				if(db!=null) try{db.disconnect();}catch(Exception e){};
@@ -303,7 +302,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 		}
 		else
 		{
-			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryColumnsExist.Error.NoDbConnection"));
+			logError(BaseMessages.getString(PKG, "JobEntryColumnsExist.Error.NoDbConnection"));
 		}
 		
 		result.setEntryNr(nrnotexistcolums);
@@ -334,5 +333,5 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
         andValidator().validate(this, "tablename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
         andValidator().validate(this, "columnname", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
       }
-    
+
 }

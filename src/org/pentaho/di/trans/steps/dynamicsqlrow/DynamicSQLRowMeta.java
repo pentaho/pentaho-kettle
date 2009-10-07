@@ -231,7 +231,7 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (databaseMeta==null) return;
 		
-		Database db = new Database(databaseMeta);
+		Database db = new Database(this, databaseMeta);
         databases = new Database[] { db }; // Keep track of this one for cancelQuery
 		
 		// First try without connecting to the database... (can be  S L O W)
@@ -367,7 +367,7 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (databaseMeta!=null)
 		{
-			Database db = new Database(databaseMeta);
+			Database db = new Database(this, databaseMeta);
             databases = new Database[] { db }; // Keep track of this one for cancelQuery
 
 			try

@@ -202,7 +202,7 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), "getting fields info...");
+		logDebug("getting fields info...");
 
 		for (i=0;i<input.getFieldName().length;i++)
 		{
@@ -210,7 +210,7 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 			{
 				TableItem item = wFields.table.getItem(i);
 				item.setText(1, input.getFieldName()[i]);
-				log.logDebug(toString(), "field #"+i+" --> fieldType[i]="+input.getFieldType()[i]);
+				logDebug("field #"+i+" --> fieldType[i]="+input.getFieldType()[i]);
 				String type   = input.getFieldType()[i];
 				String format = input.getFieldFormat()[i];
                 String length = input.getFieldLength()[i]<0?"":(""+input.getFieldLength()[i]);

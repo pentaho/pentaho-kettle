@@ -45,8 +45,7 @@ public interface JobEntryValidator {
    * @param context any other information needed to perform the validation
    * @return validation result
    */
-  boolean validate(CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
-      ValidatorContext context);
+  boolean validate(CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks, ValidatorContext context);
 
   /**
    * Returns the name of this validator, unique among all validators.

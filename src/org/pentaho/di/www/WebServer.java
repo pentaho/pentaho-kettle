@@ -32,7 +32,7 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 
 
@@ -41,7 +41,7 @@ public class WebServer
 {
 	private static Class<?> PKG = WebServer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    private static LogWriter log = LogWriter.getInstance();
+    private LogChannelInterface log;
     
     public  static final int PORT = 80;
 
@@ -55,7 +55,7 @@ public class WebServer
     private String hostname;
     private int port;
 
-    public WebServer(TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port, boolean join) throws Exception
+    public WebServer(LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port, boolean join) throws Exception
     {
         this.transformationMap = transformationMap;
         this.jobMap = jobMap;
@@ -75,9 +75,9 @@ public class WebServer
         }
     }
 
-	public WebServer(TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository, List<SlaveServerDetection> slaveServers, String hostname, int port) throws Exception
+	public WebServer(LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository, List<SlaveServerDetection> slaveServers, String hostname, int port) throws Exception
     {
-      this(transformationMap, jobMap, socketRepository, slaveServers, hostname, port, true);
+      this(log, transformationMap, jobMap, socketRepository, slaveServers, hostname, port, true);
     }
 
     public Server getServer()
@@ -263,7 +263,7 @@ public class WebServer
         connector.setPort(port);
         connector.setHost(hostname);
         connector.setName(BaseMessages.getString(PKG, "WebServer.Log.KettleHTTPListener",hostname));
-        log.logBasic(toString(), BaseMessages.getString(PKG, "WebServer.Log.CreateListener",hostname,""+port));
+        log.logBasic(BaseMessages.getString(PKG, "WebServer.Log.CreateListener",hostname,""+port));
 
         server.setConnectors( new Connector[] { connector });
     }

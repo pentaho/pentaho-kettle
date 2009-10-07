@@ -23,10 +23,13 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
@@ -62,11 +65,18 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   private ObjectId id;
   
   protected VariableSpace variables = new Variables();
+
+  protected Repository	rep;
+  
+  protected Job parentJob;
+  
+  protected LogChannelInterface log;
  
   public JobEntryBase()
   {
     name = null;
     description = null;
+    log = LogChannel.GENERAL;
   }
 
   public JobEntryBase(String name, String description)
@@ -74,6 +84,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     setName(name);
     setDescription(description);
     setObjectId(null);
+
+    log = LogChannel.GENERAL;
   }
   
   @Override
@@ -450,4 +462,43 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     {
       return variables;
     }
+    
+    public void setRepository(Repository repository) {
+    	this.rep = repository;
+    }
+    
+    public Repository getRepository() {
+    	return rep;
+    }
+    
+    public void setParentJob(Job parentJob) {
+    	this.parentJob = parentJob;
+    	this.log = new LogChannel(this);
+    }
+    
+    public Job getParentJob() {
+    	return parentJob;
+    }
+
+    public boolean isBasic() { return log.isBasic(); }
+    public boolean isDetailed() { return log.isDetailed(); }
+    public boolean isDebug() { return log.isDebug(); }
+    public boolean isRowlevel() { return log.isRowLevel(); }
+    public void logMinimal(String message) { log.logMinimal(message); }
+    public void logMinimal(String message, Object...arguments) { log.logMinimal(message, arguments); }
+    public void logBasic(String message) { log.logBasic(message); }
+    public void logBasic(String message, Object...arguments) { log.logBasic(message, arguments); }
+    public void logDetailed(String message) { log.logDetailed(message); }
+    public void logDetailed(String message, Object...arguments) { log.logDetailed(message, arguments); }
+    public void logDebug(String message) { log.logDebug(message); }
+    public void logDebug(String message, Object...arguments) { log.logDebug(message, arguments); }
+    public void logRowlevel(String message) { log.logRowlevel(message); }
+    public void logRowlevel(String message, Object...arguments) { log.logRowlevel(message, arguments); }
+    public void logError(String message) { log.logError(message); } 
+    public void logError(String message, Throwable e) { log.logError(message, e); }
+    public void logError(String message, Object...arguments) { log.logError(message, arguments); }
+ 
+    public LogChannelInterface getLogChannel() {
+		return log;
+	}
 }

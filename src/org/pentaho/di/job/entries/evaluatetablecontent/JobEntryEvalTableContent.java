@@ -34,7 +34,6 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -283,7 +282,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		return false;
 	}
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
@@ -295,12 +294,12 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		boolean successOK=false;
 		
 		int nrRowsLimit=Const.toInt(environmentSubstitute(limit),0);
-		if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Log.nrRowsLimit",""+nrRowsLimit));
+		if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Log.nrRowsLimit",""+nrRowsLimit));
     	
 
 		if (connection!=null)
 		{ 
-			Database db = new Database(connection);
+			Database db = new Database(this, connection);
 		
 			try
 			{
@@ -310,13 +309,13 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		        {
 		        	String realCustomSQL=customSQL;
 		        	if(isUseVars) realCustomSQL=environmentSubstitute(realCustomSQL);
-		        	if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Log.EnteredCustomSQL",realCustomSQL));
+		        	if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Log.EnteredCustomSQL",realCustomSQL));
 		        	
 		        	if(!Const.isEmpty(realCustomSQL))
 		        	{
 		        		countSQLStatement=realCustomSQL;
 		        	}else
-		        		log.logError(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Error.NoCustomSQL"));
+		        		logError(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Error.NoCustomSQL"));
 		        	
 		        }else
 		        {
@@ -333,12 +332,12 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 			        		countSQLStatement=selectCount + db.getDatabaseMeta().quoteField(realTablename);
 			        	}
 		        	}else
-		        		log.logError(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Error.NoTableName"));
+		        		logError(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Error.NoTableName"));
 		        }
 		       
 				if(countSQLStatement!=null)
 				{
-					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Log.RunSQLStatement",countSQLStatement));
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Log.RunSQLStatement",countSQLStatement));
 						
 					if(iscustomSQL)
 					{
@@ -360,7 +359,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 							if(isAddRowsResult && iscustomSQL)  if(rows!=null) result.getRows().addAll(rows);	
 						}else
 						{
-							if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Log.customSQLreturnedNothing",countSQLStatement));
+							if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Log.customSQLreturnedNothing",countSQLStatement));
 						}
 						
 					}else
@@ -371,7 +370,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 							rowsCount=row.getInteger(0);
 						}
 					}
-					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Log.NrRowsReturned",""+rowsCount));
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Log.NrRowsReturned",""+rowsCount));
 					switch(successCondition)
 		             {				
 		                case JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_EQUAL: 
@@ -399,14 +398,14 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 			}
 			catch(KettleException dbe)
 			{
-				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryEvalTableContent.Error.RunningEntry",dbe.getMessage()));
+				logError(BaseMessages.getString(PKG, "JobEntryEvalTableContent.Error.RunningEntry",dbe.getMessage()));
 			}finally{
 				if(db!=null) db.disconnect();
 			}
 		}
 		else
 		{
-			log.logError(toString(),BaseMessages.getString(PKG, "JobEntryEvalTableContent.NoDbConnection"));
+			logError(BaseMessages.getString(PKG, "JobEntryEvalTableContent.NoDbConnection"));
 		}
 
 		if(successOK)

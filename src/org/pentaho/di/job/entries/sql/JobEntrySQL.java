@@ -31,16 +31,14 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -239,15 +237,13 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 		return connection;
 	}
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
-		LogWriter log = LogWriter.getInstance();
-
 		Result result = previousResult;
 
 		if (connection!=null)
 		{
-			Database db = new Database(connection);
+			Database db = new Database(this, connection);
 			FileObject SQLfile=null;
 			db.shareVariablesWith(this);
 			try

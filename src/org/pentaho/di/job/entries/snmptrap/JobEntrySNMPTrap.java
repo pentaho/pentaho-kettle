@@ -29,7 +29,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -392,7 +391,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
 		return nrretry;
 	}
     
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{		
 		LogWriter log = LogWriter.getInstance();
 		log4j.info(BaseMessages.getString(PKG, "JobEntrySNMPTrap.Started", serverName)); //$NON-NLS-1$
@@ -432,7 +431,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
 				target.setAddress(udpAddress);
 				if (target.getAddress().isValid()) 
 				{
-					if(log.isDebug()) log.logDebug(toString(),"Valid IP address");
+					if(log.isDebug()) logDebug("Valid IP address");
 				} else 
 				     throw new KettleException("Invalid IP address");
 				target.setRetries(retry);
@@ -458,7 +457,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
 				usertarget.setAddress(udpAddress);
 				if (usertarget.getAddress().isValid()) 
 				{
-					if(log.isDebug()) log.logDebug(toString(),"Valid IP address");
+					if(log.isDebug()) logDebug("Valid IP address");
 				} else 
 				     throw new KettleException("Invalid IP address");
 				
@@ -480,7 +479,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
 				if (uu == null) {
 					throw new KettleException("Null UsmUser");
 				 } else {
-					if(log.isDebug()) log.logDebug(toString(),"Valid UsmUser");
+					if(log.isDebug()) logDebug("Valid UsmUser");
 				}
 
 				USM usm = snmp.getUSM();
@@ -492,7 +491,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
 					  usm = new USM(SecurityProtocols.getInstance(), 
 					  new  OctetString(MPv3.createLocalEngineID()), 0);
 					          usm.addUser(new OctetString(userName), uu);
-					  if(log.isDebug()) log.logDebug(toString(),"Valid Usm");
+					  if(log.isDebug()) logDebug("Valid Usm");
 				   }
 
 				
@@ -512,7 +511,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
 		    	                 
 		     } else 
 		     {
-		    	  if(log.isDebug()) log.logDebug(toString(),"Received response from: " +
+		    	  if(log.isDebug()) logDebug("Received response from: " +
 		    	  response.getPeerAddress() + response.toString());                
 		     }
 
@@ -520,7 +519,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
 			result.setResult(true);
 		}
 		catch(Exception e){
-			log.logError(toString(), BaseMessages.getString(PKG, "JobEntrySNMPTrap.ErrorGetting", e.getMessage())); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "JobEntrySNMPTrap.ErrorGetting", e.getMessage())); //$NON-NLS-1$
 		}
         finally{
         	try{

@@ -88,23 +88,23 @@ public class LDIFInput extends BaseStep implements StepInterface
 		switch (contentLDIF.getType())
 		{
 		case LDIFContent.DELETE_CONTENT:
-			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","DELETE_CONTENT"));
+			if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","DELETE_CONTENT"));
 			contentTYPE="DELETE_CONTENT";
 			break;
 		case LDIFContent.ADD_CONTENT:
-			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","ADD_CONTENT"));
+			if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","ADD_CONTENT"));
 			contentTYPE="ADD_CONTENT";
 			break;
 		case LDIFContent.MODDN_CONTENT:
-			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","MODDN_CONTENT"));
+			if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","MODDN_CONTENT"));
 			contentTYPE="MODDN_CONTENT";
 			break;
 		case LDIFContent.MODIFICATION_CONTENT:
-			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","MODIFICATION_CONTENT"));
+			if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","MODIFICATION_CONTENT"));
 			contentTYPE="MODIFICATION_CONTENT";
 			break;
 		default:
-			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","ATTRIBUTE_CONTENT"));
+			if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","ATTRIBUTE_CONTENT"));
 			break;
 		}
 		

@@ -46,7 +46,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -73,8 +73,6 @@ public class BaseStepDialog extends Dialog {
   private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   protected static VariableSpace variables = new Variables();
-
-  protected LogWriter log;
 
   protected String stepname;
 
@@ -107,6 +105,8 @@ public class BaseStepDialog extends Dialog {
   protected Repository repository;
 
   protected StepMeta stepMeta;
+
+  protected LogChannel log;
   
   protected static final int BUTTON_ALIGNMENT_CENTER = 0;
 
@@ -124,7 +124,7 @@ public class BaseStepDialog extends Dialog {
   public BaseStepDialog(Shell parent, BaseStepMeta baseStepMeta, TransMeta transMeta, String stepname) {
     super(parent, SWT.NONE);
 
-    this.log = LogWriter.getInstance();
+    this.log = new LogChannel(baseStepMeta);
     this.transMeta = transMeta;
     this.stepname = stepname;
     this.stepMeta = transMeta.findStep(stepname);
@@ -815,5 +815,25 @@ public class BaseStepDialog extends Dialog {
 			fieldMapping.addAll(newMapping);
 		}
 	}
+
+    public boolean isBasic() { return log.isBasic(); }
+    public boolean isDetailed() { return log.isDetailed(); }
+    public boolean isDebug() { return log.isDebug(); }
+    public boolean isRowLevel() { return log.isRowLevel(); }
+    public void logMinimal(String message) { log.logMinimal(message); }
+    public void logMinimal(String message, Object...arguments) { log.logMinimal(message, arguments); }
+    public void logBasic(String message) { log.logBasic(message); }
+    public void logBasic(String message, Object...arguments) { log.logBasic(message, arguments); }
+    public void logDetailed(String message) { log.logDetailed(message); }
+    public void logDetailed(String message, Object...arguments) { log.logDetailed(message, arguments); }
+    public void logDebug(String message) { log.logDebug(message); }
+    public void logDebug(String message, Object...arguments) { log.logDebug(message, arguments); }
+    public void logRowlevel(String message) { log.logRowlevel(message); }
+    public void logRowlevel(String message, Object...arguments) { log.logRowlevel(message, arguments); }
+    public void logError(String message) { log.logError(message); } 
+    public void logError(String message, Throwable e) { log.logError(message, e); }
+    public void logError(String message, Object...arguments) { log.logError(message, arguments); }
+    
+
 
 }

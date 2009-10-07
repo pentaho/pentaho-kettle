@@ -12,7 +12,6 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -113,7 +112,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			// First of all we need to verify that all database connections are
 			// saved.
 			//
-			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobMeta.Log.SavingDatabaseConnections")); //$NON-NLS-1$
+			if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobMeta.Log.SavingDatabaseConnections")); //$NON-NLS-1$
 			for (int i = 0; i < jobMeta.nrDatabases(); i++) {
 				if (monitor != null)
 					monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + jobMeta.nrDatabases()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -133,7 +132,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			// entries to the save job. (retry)
 			if (monitor != null)
 				monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingJobDetails")); //$NON-NLS-1$
-			if(log.isDetailed()) log.logDetailed(toString(), "Saving job info to repository..."); //$NON-NLS-1$
+			if(log.isDetailed()) log.logDetailed("Saving job info to repository..."); //$NON-NLS-1$
 			
 			insertJob(jobMeta);
 			
@@ -150,7 +149,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			//
 			// Save the notes
 			//
-			if(log.isDetailed()) log.logDetailed(toString(), "Saving notes to repository..."); //$NON-NLS-1$
+			if(log.isDetailed()) log.logDetailed("Saving notes to repository..."); //$NON-NLS-1$
 			for (int i = 0; i < jobMeta.nrNotes(); i++) {
 				if (monitor != null)
 					monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingNoteNr") + (i + 1) + "/" + jobMeta.nrNotes()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -166,7 +165,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			//
 			// Save the job entries
 			//
-			if(log.isDetailed()) log.logDetailed(toString(), "Saving " + jobMeta.nrJobEntries() + " Job enty copies to repository..."); //$NON-NLS-1$ //$NON-NLS-2$
+			if(log.isDetailed()) log.logDetailed("Saving " + jobMeta.nrJobEntries() + " Job enty copies to repository..."); //$NON-NLS-1$ //$NON-NLS-2$
 			repository.updateJobEntryTypes();
 			for (int i = 0; i < jobMeta.nrJobEntries(); i++) {
 				if (monitor != null)
@@ -177,7 +176,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 					monitor.worked(1);
 			}
 
-			if(log.isDetailed()) log.logDetailed(toString(), "Saving job hops to repository..."); //$NON-NLS-1$
+			if(log.isDetailed()) log.logDetailed("Saving job hops to repository..."); //$NON-NLS-1$
 			for (int i = 0; i < jobMeta.nrJobHops(); i++) {
 				if (monitor != null)
 					monitor.subTask("Saving job hop #" + (i + 1) + "/" + jobMeta.nrJobHops()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -327,15 +326,14 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 						jobMeta.setSharedObjectsFile( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_SHARED_FILE, null) );
 						jobMeta.setSharedObjects( repository!=null ? repository.readJobMetaSharedObjects(jobMeta) : jobMeta.readSharedObjects() );
 					} catch (Exception e) {
-						LogWriter.getInstance().logError(toString(),
-								BaseMessages.getString(PKG, "JobMeta.ErrorReadingSharedObjects.Message", e.toString())); // $NON-NLS-1$
+						log.logError(BaseMessages.getString(PKG, "JobMeta.ErrorReadingSharedObjects.Message", e.toString())); // $NON-NLS-1$
 																												// //$NON-NLS-1$
-						LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+						log.logError(Const.getStackTracker(e));
 					}
 					if (monitor != null)
 						monitor.worked(1);
 	
-					if(log.isDetailed()) log.logDetailed(toString(), "Loading " + noteids.length + " notes"); //$NON-NLS-1$ //$NON-NLS-2$
+					if(log.isDetailed()) log.logDetailed("Loading " + noteids.length + " notes"); //$NON-NLS-1$ //$NON-NLS-2$
 					for (int i = 0; i < noteids.length; i++) {
 						if (monitor != null)
 							monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingNoteNr") + (i + 1) + "/" + noteids.length); //$NON-NLS-1$ //$NON-NLS-2$
@@ -353,7 +351,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 					//
 					List<JobEntryInterface> jobentries = new ArrayList<JobEntryInterface>();
 					
-					if(log.isDetailed()) log.logDetailed(toString(), "Loading " + jecids.length + " job entries"); //$NON-NLS-1$ //$NON-NLS-2$
+					if(log.isDetailed()) log.logDetailed("Loading " + jecids.length + " job entries"); //$NON-NLS-1$ //$NON-NLS-2$
 					for (int i = 0; i < jecids.length; i++) {
 						if (monitor != null)
 							monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingJobEntryNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -384,7 +382,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 					}
 	
 					// Load the hops...
-					if(log.isDetailed()) log.logDetailed(toString(), "Loading " + hopid.length + " job hops"); //$NON-NLS-1$ //$NON-NLS-2$
+					if(log.isDetailed()) log.logDetailed("Loading " + hopid.length + " job hops"); //$NON-NLS-1$ //$NON-NLS-2$
 					for (int i = 0; i < hopid.length; i++) {
 						if (monitor != null)
 							monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingJobHopNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -760,7 +758,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
         repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOB);
 		repository.connectionDelegate.getDatabase().setValuesInsert(table);
 		repository.connectionDelegate.getDatabase().insertRow();
-        if (log.isDebug()) log.logDebug(toString(), "Inserted new record into table "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" with data : " + table);
+        if (log.isDebug()) log.logDebug("Inserted new record into table "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" with data : " + table);
         repository.connectionDelegate.getDatabase().closeInsert();
 		
         repository.connectionDelegate.insertJobAttribute(jobMeta.getObjectId(), 0, KettleDatabaseRepository.JOB_ATTRIBUTE_LOG_SIZE_LIMIT, 0, jobMeta.getLogSizeLimit());

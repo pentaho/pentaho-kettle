@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.axis.message.MessageElement;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 
@@ -61,13 +62,16 @@ public class SalesforceConnection {
 	private String fieldsList;
 	private int queryResultSize;
 	private int recordsCount;
+
+	private LogChannelInterface	logInterface;
 	
 	
 	/**
 	 * Construct a new Salesforce Connection
 	 */
-	public SalesforceConnection(String url, String username, String password,int timeout) throws KettleException {
+	public SalesforceConnection(LogChannelInterface logInterface, String url, String username, String password, int timeout) throws KettleException {
 		this.log=LogWriter.getInstance();
+		this.logInterface = logInterface;
 		this.url=url;
 		this.username=username;
 		this.password=password;
@@ -95,7 +99,7 @@ public class SalesforceConnection {
 		// check username
 		if(Const.isEmpty(this.username)) throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.UsernameMissing.Error"));
 				
-		if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "SalesforceInput.Log.NewConnection"));
+		if(log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.NewConnection"));
 	}
 	public void setCalendar(int recordsFilter,GregorianCalendar startDate, GregorianCalendar endDate) throws KettleException {
 		 this.startDate=startDate;
@@ -138,13 +142,13 @@ public class SalesforceConnection {
 
 		try{
 			this.binding = (SoapBindingStub) new SforceServiceLocator().getSoap();
-			if (log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL", binding._getProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY)));
+			if (log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL", binding._getProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY)));
 		      
 	        //  Set timeout
 	      	if(this.timeout>0) binding.setTimeout(this.timeout);
 	        
 	      	 if (this.timeout>0 && log.isDebug()) 
-		        	log.logDebug(toString(),BaseMessages.getString(PKG, "SalesforceInput.Log.SettingTimeout",""+this.timeout));
+	      		logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SettingTimeout",""+this.timeout));
 	      	
 	      	// Set URL
 	      	this.binding._setProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY, this.url);
@@ -152,21 +156,21 @@ public class SalesforceConnection {
 	        // Attempt the login giving the user feedback
 		     
 	        if (log.isDetailed()) {
-	        	log.logDetailed(toString(),BaseMessages.getString(PKG, "SalesforceInput.Log.LoginNow"));
-	        	log.logDetailed(toString(),"----------------------------------------->");
-	        	log.logDetailed(toString(),BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL",this.url));
-	        	log.logDetailed(toString(),BaseMessages.getString(PKG, "SalesforceInput.Log.LoginUsername",username));
-	        	if(this.module!=null) log.logDetailed(toString(), BaseMessages.getString(PKG, "SalesforceInput.Log.LoginModule", this.module));
-	        	if(this.condition!=null) log.logDetailed(toString(),BaseMessages.getString(PKG, "SalesforceInput.Log.LoginCondition",this.condition));
-	        	log.logDetailed(toString(),"<-----------------------------------------");
+	        	logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginNow"));
+	        	logInterface.logDetailed("----------------------------------------->");
+	        	logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL",this.url));
+	        	logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginUsername",username));
+	        	if(this.module!=null) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginModule", this.module));
+	        	if(this.condition!=null) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginCondition",this.condition));
+	        	logInterface.logDetailed("<-----------------------------------------");
 	        }
 	        
 	        // Login
 	        this.loginResult = this.binding.login(this.username, this.password);
 	        
 	        if (log.isDebug()) {
-	        	log.logDebug(toString(),BaseMessages.getString(PKG, "SalesforceInput.Log.SessionId") + " : " + this.loginResult.getSessionId());
-	        	log.logDebug(toString(),BaseMessages.getString(PKG, "SalesforceInput.Log.NewServerURL") + " : " + this.loginResult.getServerUrl());
+	        	logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SessionId") + " : " + this.loginResult.getSessionId());
+	        	logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.NewServerURL") + " : " + this.loginResult.getServerUrl());
 	        }
 	        
 	        // set the session header for subsequent call authentication
@@ -181,20 +185,20 @@ public class SalesforceConnection {
 	        // Return the user Infos
 	        this.userInfo = this.binding.getUserInfo();
 	        if (log.isDebug()) {
-	        	log.logDebug(toString(),BaseMessages.getString(PKG, "SalesforceInput.Log.UserInfos") + " : " + this.userInfo.getUserFullName());
-	        	log.logDebug(toString(),"----------------------------------------->");
-	        	log.logDebug(toString(),BaseMessages.getString(PKG, "SalesforceInput.Log.UserName") + " : " + this.userInfo.getUserFullName());
-	        	log.logDebug(toString(),BaseMessages.getString(PKG, "SalesforceInput.Log.UserEmail") + " : " + this.userInfo.getUserEmail());
-	        	log.logDebug(toString(),BaseMessages.getString(PKG, "SalesforceInput.Log.UserLanguage") + " : " + this.userInfo.getUserLanguage());
-	        	log.logDebug(toString(),BaseMessages.getString(PKG, "SalesforceInput.Log.UserOrganization") + " : " + this.userInfo.getOrganizationName());    
-	        	log.logDebug(toString(),"<-----------------------------------------");
+	        	logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserInfos") + " : " + this.userInfo.getUserFullName());
+	        	logInterface.logDebug("----------------------------------------->");
+	        	logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserName") + " : " + this.userInfo.getUserFullName());
+	        	logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserEmail") + " : " + this.userInfo.getUserEmail());
+	        	logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserLanguage") + " : " + this.userInfo.getUserLanguage());
+	        	logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserOrganization") + " : " + this.userInfo.getOrganizationName());    
+	        	logInterface.logDebug("<-----------------------------------------");
 	        }
 	        
 	    	this.serverTimestamp= this.binding.getServerTimestamp().toString();
 	 		if(log.isDebug()) BaseMessages.getString(PKG, "SalesforceInput.Log.ServerTimestamp",""+this.serverTimestamp);
 	 		
 	        
-	       if(log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "SalesforceInput.Log.Connected"));
+	       if(log.isDebug()) logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.Connected"));
 		}catch(Exception e){
 			throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.Connection"), e);
 		}
@@ -212,7 +216,7 @@ public class SalesforceConnection {
 			    if(!describeSObjectResult.isQueryable()) throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.ObjectNotQueryable",module));
 		    }
 		    			        
-		    if (this.sql!=null && log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "SalesforceInput.Log.SQLString") + " : " +  this.sql);        
+		    if (this.sql!=null && log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.SQLString") + " : " +  this.sql);        
 		  
 			switch (this.recordsFilter) {
 				case SalesforceConnectionUtils.RECORDS_FILTER_UPDATED:

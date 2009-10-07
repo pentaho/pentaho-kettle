@@ -18,7 +18,6 @@ import java.util.List;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
-import org.pentaho.di.core.logging.LogWriter;
 
 /**
  * Fails if a field's value is <code>null</code>.
@@ -33,25 +32,20 @@ public class NotNullValidator implements JobEntryValidator {
 
   public boolean validate(CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
       ValidatorContext context) {
-    LogWriter log = LogWriter.getInstance();
     Object value = null;
     try {
       value = PropertyUtils.getProperty(source, propertyName);
       if (null == value) {
-        JobEntryValidatorUtils.addFailureRemark(source, propertyName, VALIDATOR_NAME, remarks, JobEntryValidatorUtils
-            .getLevelOnFail(context, VALIDATOR_NAME));
+        JobEntryValidatorUtils.addFailureRemark(source, propertyName, VALIDATOR_NAME, remarks, JobEntryValidatorUtils.getLevelOnFail(context, VALIDATOR_NAME));
         return false;
       } else {
         return true;
       }
     } catch (IllegalAccessException e) {
-      log.logBasic(JobEntryValidatorUtils.class.getSimpleName(), e.getMessage());
       JobEntryValidatorUtils.addExceptionRemark(source, propertyName, VALIDATOR_NAME, remarks, e);
     } catch (InvocationTargetException e) {
-      log.logBasic(JobEntryValidatorUtils.class.getSimpleName(), e.getMessage());
       JobEntryValidatorUtils.addExceptionRemark(source, propertyName, VALIDATOR_NAME, remarks, e);
     } catch (NoSuchMethodException e) {
-      log.logBasic(JobEntryValidatorUtils.class.getSimpleName(), e.getMessage());
       JobEntryValidatorUtils.addExceptionRemark(source, propertyName, VALIDATOR_NAME, remarks, e);
     }
     return false;

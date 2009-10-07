@@ -20,7 +20,8 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.i18n.LanguageChoice;
@@ -50,7 +51,7 @@ public class XulDatabaseDialog {
 
   DataOverrideHandler dataHandler = null;
   
-  private LogWriter log;
+  private LogChannelInterface log;
   
   private static final String EVENT_ID = "dataHandler"; //$NON-NLS-1$
   
@@ -73,7 +74,7 @@ public class XulDatabaseDialog {
     }
     databases = null;
     
-    log = LogWriter.getInstance();
+    log = new LogChannel("XulDatabaseDialog");
   }
 
   /**

@@ -68,7 +68,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 		// get dynamic SQL statement
 		String sql=getInputRowMeta().getString(rowData,data.indexOfSQLField);
 		
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "DynamicSQLRow.Log.SQLStatement",sql));
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DynamicSQLRow.Log.SQLStatement",sql));
 		
 		if(meta.isQueryOnlyOnChange())
 		{
@@ -272,7 +272,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
-			data.db=new Database(meta.getDatabaseMeta());
+			data.db=new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			try
 			{

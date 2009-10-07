@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -1732,6 +1733,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	    	wlProxyUsername.setEnabled(wUseProxy.getSelection());
 	    	wProxyUsername.setEnabled(wUseProxy.getSelection());
 	    }
+	    
 	    private boolean connect()
 	    {
 	    	String errordescription=null;
@@ -1745,7 +1747,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		    	int realport=Const.toInt(jobMeta.environmentSubstitute(wPort.getText()),-1);
 		    	String realproxyuser=jobMeta.environmentSubstitute(wProxyUsername.getText());
 		    	try{
-		    		mailConn=new MailConnection(wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_POP3)?MailConnectionMeta.PROTOCOL_POP3:MailConnectionMeta.PROTOCOL_IMAP
+		    		mailConn=new MailConnection(LogChannel.UI, wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_POP3)?MailConnectionMeta.PROTOCOL_POP3:MailConnectionMeta.PROTOCOL_IMAP
 		    				,realserver,realport, realuser, realpass, wUseSSL.getSelection(), 
 		    				wUseProxy.getSelection(),realproxyuser);
 		    		mailConn.connect();
@@ -2064,8 +2066,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	        if(Const.isEmpty(wName.getText())) 
 	        {
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("Veuillez svp donner un nom à cette entrée tâche!");
-				mb.setText("Entrée tâche non nommée");
+				mb.setMessage("Veuillez svp donner un nom ï¿½ cette entrï¿½e tï¿½che!");
+				mb.setText("Entrï¿½e tï¿½che non nommï¿½e");
 				mb.open(); 
 				return;
 	        }

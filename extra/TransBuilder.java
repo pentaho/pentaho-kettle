@@ -259,7 +259,7 @@ public class TransBuilder
         String sql = transMeta.getSQLStatementsString();
         
         // Execute the SQL on the target table:
-        Database targetDatabase = new Database(transMeta.findDatabase(targetDatabaseName));
+        Database targetDatabase = new Database(transMeta, transMeta.findDatabase(targetDatabaseName));
         targetDatabase.connect();
         targetDatabase.execStatements(sql);
         

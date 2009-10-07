@@ -36,7 +36,7 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -461,9 +461,9 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		
 		return retval;
 	}
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+
+	public Result execute(Result previousResult, int nr)
 	{
-		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 		result.setNrErrors(1);
 		result.setResult( false );
@@ -492,11 +492,11 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 				{
 					if(iffileexists.equals(If_FileExists_Fail))
 					{
-						log.logError(toString(),BaseMessages.getString(PKG, "JobExportRepository.Log.Failing",realoutfilename));
+						logError(BaseMessages.getString(PKG, "JobExportRepository.Log.Failing",realoutfilename));
 						return result;
 					}else if(iffileexists.equals(If_FileExists_Skip))
 					{
-						if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobExportRepository.Log.Exit",realoutfilename));
+						if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.Exit",realoutfilename));
 						result.setResult(true);
 						result.setNrErrors(0);
 						return result;
@@ -506,13 +506,13 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 						String shortFilename=file.getName().getBaseName();
 						shortFilename=buildUniqueFilename(shortFilename);
 						file=KettleVFS.getFileObject(parentFolder+Const.FILE_SEPARATOR+shortFilename);
-						if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobExportRepository.Log.NewFilename",file.toString()));
+						if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.NewFilename",file.toString()));
 					}
 				}else if(export_type.equals(Export_By_Folder))
 				{
 					if(file.getType()!=FileType.FOLDER)
 					{
-						log.logError(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.NotFolder",""+file.getName()));
+						logError(BaseMessages.getString(PKG, "JobExportRepository.Log.NotFolder",""+file.getName()));
 						return result;
 					}
 				}
@@ -521,24 +521,24 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 				if(export_type.equals(Export_By_Folder))
 				{
 					// create folder?
-					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.FolderNotExists",""+file.getName()));
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.FolderNotExists",""+file.getName()));
 					if(!createfolder)
 					{
 						return result;
 					}
 					file.createFolder();
-					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.FolderCreated",file.toString()));
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.FolderCreated",file.toString()));
 				}else if(export_type.equals(Export_All) || export_type.equals(Export_Jobs)
 						|| export_type.equals(Export_Trans) || export_type.equals(Export_One_Folder))
 				{
 					// create parent folder?
 					if(!file.getParent().exists())
 					{
-						if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.FolderNotExists",""+file.getParent().toString()));
+						if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.FolderNotExists",""+file.getParent().toString()));
 						if(createfolder)
 						{
 							file.getParent().createFolder();
-							if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.FolderCreated",file.getParent().toString()));
+							if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.FolderCreated",file.getParent().toString()));
 						}else
 						{
 							return result;
@@ -556,25 +556,25 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 			
 			if(export_type.equals(Export_All))
 			{
-				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobExportRepository.Log.StartingExportAllRep",realoutfilename));
+				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.StartingExportAllRep",realoutfilename));
 				exporter.exportAllObjects(null, realoutfilename, null,"all");
-				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobExportRepository.Log.EndExportAllRep",realoutfilename));
+				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.EndExportAllRep",realoutfilename));
 				
 				if(add_result_filesname) addFileToResultFilenames(realoutfilename,log,result,parentJob);
 			}
 			else if(export_type.equals(Export_Jobs))
 			{
-				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobExportRepository.Log.StartingExportJobsRep",realoutfilename));
+				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.StartingExportJobsRep",realoutfilename));
 				exporter.exportAllObjects(null, realoutfilename, null,"jobs");
-				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobExportRepository.Log.EndExportJobsRep",realoutfilename));
+				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.EndExportJobsRep",realoutfilename));
 				
 				if(add_result_filesname) addFileToResultFilenames(realoutfilename,log,result,parentJob);
 			}
 			else if(export_type.equals(Export_Trans))
 			{
-				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobExportRepository.Log.StartingExportTransRep",realoutfilename));
+				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.StartingExportTransRep",realoutfilename));
 				exporter.exportAllObjects(null, realoutfilename, null,"trans");
-				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobExportRepository.Log.EndExportTransRep",realoutfilename));
+				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.EndExportTransRep",realoutfilename));
 				
 				if(add_result_filesname) addFileToResultFilenames(realoutfilename,log,result,parentJob);
 			}
@@ -584,14 +584,14 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 				directory=repository.loadRepositoryDirectoryTree().findDirectory(realfoldername);
 				if(directory!=null)
 				{
-					if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobExportRepository.Log.ExpAllFolderRep",directoryPath,realoutfilename));
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.ExpAllFolderRep",directoryPath,realoutfilename));
 					exporter.exportAllObjects(null, realoutfilename, directory,"all");
-					if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobExportRepository.Log.EndExpAllFolderRep",directoryPath,realoutfilename));
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.EndExpAllFolderRep",directoryPath,realoutfilename));
 					
 					if(add_result_filesname) addFileToResultFilenames(realoutfilename,log,result,parentJob);
 				}else
 				{
-					log.logError(toString(), BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindFolderInRep",realfoldername,realrepName));
+					logError(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindFolderInRep",realfoldername,realrepName));
 					return result;
 				}
 			}
@@ -603,13 +603,13 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 				directory=this.repository.loadRepositoryDirectoryTree().findRoot();
 		        // Loop over all the directory id's
 		        ObjectId dirids[] = directory.getDirectoryIDs();
-		        if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.TotalFolders","" + dirids.length));
+		        if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.TotalFolders","" + dirids.length));
 		        for (int d=0;d<dirids.length && !parentJob.isStopped();d++)
 		        {
 		          	// Success condition broken?
                 	if(successConditionBroken)
                 	{
-						log.logError(toString(), BaseMessages.getString(PKG, "JobExportRepository.Error.SuccessConditionbroken",""+NrErrors));
+						logError(BaseMessages.getString(PKG, "JobExportRepository.Error.SuccessConditionbroken",""+NrErrors));
 						throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.SuccessConditionbroken",""+NrErrors));
 					}
                 	
@@ -625,8 +625,8 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		}catch(Exception e)
 		{
 			updateErrors();
-			log.logError(toString(), BaseMessages.getString(PKG, "JobExportRepository.UnExpectedError",e.toString()));
-			log.logError(toString(), "Stack trace: "+Const.CR+Const.getStackTracker(e));
+			logError(BaseMessages.getString(PKG, "JobExportRepository.UnExpectedError",e.toString()));
+			logError("Stack trace: "+Const.CR+Const.getStackTracker(e));
 		}finally
 		{
 			if(this.repository!=null) 
@@ -673,7 +673,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 			this.successConditionBroken=true;
 		}
 	}
-	private boolean processOneFolder(Job parentJob,Result result,LogWriter log,
+	private boolean processOneFolder(Job parentJob, Result result, LogChannelInterface log,
 			RepositoryDirectory repdir,String realoutfilename, int folderno, int totalfolders)
 	{
 		boolean retval=false;
@@ -713,14 +713,13 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 	         	//System.out.print(filename + "\n");
             	if(log.isDetailed()) 
             	{
-            		log.logDetailed(toString(),"---");
-            		log.logDetailed(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.FolderProcessing",""+folderno,""+ totalfolders));
-	            	log.logDetailed(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.OutFilename",repdir.toString(),filename));
+            		logDetailed("---");
+            		logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.FolderProcessing",""+folderno,""+ totalfolders));
+	            	logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.OutFilename",repdir.toString(),filename));
             	}
 
-        		//System.out.println("Directory ID #"+d+" : "+dirids[d]+" : "+repdir + "\n");
             	new RepositoryExporter(this.repository).exportAllObjects(null, filename, repdir, "all");
-        		if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.OutFilenameEnd",repdir.toString(),filename));
+        		if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.OutFilenameEnd",repdir.toString(),filename));
 				
 	            if(add_result_filesname) addFileToResultFilenames(filename,log,result,parentJob);
 	            
@@ -731,7 +730,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
  	{
  		// Update errors
  		updateErrors();
- 		log.logError(toString(),BaseMessages.getString(PKG, "JobExportRepository.ErrorExportingFolder",repdir.toString(),e.toString()));
+ 		logError(BaseMessages.getString(PKG, "JobExportRepository.ErrorExportingFolder",repdir.toString(),e.toString()));
  	}
  	return retval;
 }
@@ -745,19 +744,19 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		}
 		return retval;
 	}
-	private void connectRep(LogWriter log,String realrepName, String realusername, String realpassword) throws Exception
+	private void connectRep(LogChannelInterface log, String realrepName, String realusername, String realpassword) throws Exception
 	{
 		this.repsinfo = new RepositoriesMeta();
 		try {
 			this.repsinfo.readData();
 		} catch(Exception e)  {
-			log.logError(toString(),BaseMessages.getString(PKG, "JobExportRepository.Error.NoRep"));
+			logError(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRep"));
 			throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRep"));
 		}
 		this.repinfo = this.repsinfo.findRepository(realrepName);
 		if (this.repinfo==null)
 		{
-			log.logError(toString(),BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepSystem"));
+			logError(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepSystem"));
 			throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepSystem"));
 		}
 		
@@ -766,32 +765,32 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		try {
 			this.repository.connect();
 		} catch(Exception e) {
-			log.logError(toString(),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectRep"));
+			logError(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectRep"));
 			throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectRep"), e);
 		}
 		
 		// Check username, password
 		// Just for Job entry security
 		// We don't need it at all to export
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.CheckSuppliedUserPass"));
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobExportRepository.Log.CheckSuppliedUserPass"));
 		this.userinfo = this.repository.getSecurityProvider().loadUserInfo(realusername, realpassword);
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.CheckingUser",userinfo.getUsername()));
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobExportRepository.Log.CheckingUser",userinfo.getUsername()));
 		
 		if (this.userinfo.getObjectId()==null)
 		{
-			log.logError(toString(),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotVerifyUserPass"));
+			logError(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotVerifyUserPass"));
 			throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotVerifyUserPass"));
 		}
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobExportRepository.Log.SuppliedUserPassVerified"));
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobExportRepository.Log.SuppliedUserPassVerified"));
 		
 	}
-	private void addFileToResultFilenames(String fileaddentry,LogWriter log,Result result,Job parentJob)
+	private void addFileToResultFilenames(String fileaddentry, LogChannelInterface log, Result result, Job parentJob)
 	{	
 		try
 		{
 			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry), parentJob.getJobname(), toString());
 			result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-			if(log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "JobExportRepository.Log.FileAddedToResultFilesName",fileaddentry));
+			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobExportRepository.Log.FileAddedToResultFilesName",fileaddentry));
 		}catch (Exception e)
 		{
 			log.logError(BaseMessages.getString(PKG, "JobExportRepository.Error.AddingToFilenameResult"),fileaddentry + ""+e.getMessage());

@@ -581,7 +581,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(),BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                        logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -1198,7 +1198,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "DimensionLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DimensionLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		if (input.getKeyStream()!=null)
 		for (i=0;i<input.getKeyStream().length;i++)
@@ -1357,7 +1357,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
 		in.allocate(nrkeys, nrfields);
 
-		log.logDebug(toString(), BaseMessages.getString(PKG, "DimensionLookupDialog.Log.FoundKeys",String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+		logDebug(BaseMessages.getString(PKG, "DimensionLookupDialog.Log.FoundKeys",String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrkeys;i++)
 		{
 			TableItem item = wKey.getNonEmpty(i);
@@ -1365,7 +1365,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			in.getKeyStream()[i] = item.getText(2);
 		}
 
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "DimensionLookupDialog.Log.FoundFields",String.valueOf(nrfields))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DimensionLookupDialog.Log.FoundFields",String.valueOf(nrfields))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrfields;i++)
 		{
 			TableItem item        = wUpIns.getNonEmpty(i);
@@ -1433,7 +1433,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         if (connr<0) return;
 		DatabaseMeta inf = transMeta.getDatabase(connr);
 
-		log.logDebug(toString(), BaseMessages.getString(PKG, "DimensionLookupDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
+		logDebug(BaseMessages.getString(PKG, "DimensionLookupDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
 
 		DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
         std.setSelectedSchema(wSchema.getText());
@@ -1514,7 +1514,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(ci);
+						Database db = new Database(this, ci);
 						try {
 							db.connect();
 
@@ -1555,7 +1555,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
 		if (databaseMeta!=null)
 		{
-			Database db = new Database(databaseMeta);
+			Database db = new Database(this, databaseMeta);
 			db.shareVariablesWith(transMeta);
 			try
 			{
@@ -1623,7 +1623,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(ci);
+						Database db = new Database(this, ci);
 						try {
 							db.connect();
 							String schemaTable = ci	.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema.getText()), 
@@ -1794,7 +1794,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
 		if (databaseMeta!=null)
 		{
-			Database database = new Database(databaseMeta);
+			Database database = new Database(this, databaseMeta);
 			try
 			{
 				database.connect();

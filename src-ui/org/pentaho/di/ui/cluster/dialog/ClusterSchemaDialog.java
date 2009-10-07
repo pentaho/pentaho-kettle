@@ -437,11 +437,11 @@ public class ClusterSchemaDialog extends Dialog
 						for (SlaveServerDetection detection : detections) {
 							if (detection.isActive()) {
 								dynamicSlaves.add(detection.getSlaveServer());
-								log.logBasic(toString(), "Found dynamic slave : "+detection.getSlaveServer().getName()+" --> "+detection.getSlaveServer().getServerAndPort());
+								logBasic("Found dynamic slave : "+detection.getSlaveServer().getName()+" --> "+detection.getSlaveServer().getServerAndPort());
 							}
 						}
 					} catch (Exception e) {
-						log.logError(toString(), "Unable to contact master : "+slave.getName()+" --> "+slave.getServerAndPort(), e);
+						logError("Unable to contact master : "+slave.getName()+" --> "+slave.getServerAndPort(), e);
 					}
     			}
     		}

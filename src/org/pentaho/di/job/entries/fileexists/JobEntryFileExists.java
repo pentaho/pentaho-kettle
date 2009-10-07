@@ -28,17 +28,15 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -144,9 +142,8 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
         return environmentSubstitute(getFilename());
     }
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
-		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 		result.setResult( false );
 
@@ -158,24 +155,24 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
                 FileObject file = KettleVFS.getFileObject(realFilename);
                 if (file.exists() && file.isReadable())
                 {
-                    log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFileExists.File_Exists", realFilename)); //$NON-NLS-1$
+                    logDetailed(BaseMessages.getString(PKG, "JobEntryFileExists.File_Exists", realFilename)); //$NON-NLS-1$
                     result.setResult( true );
                 }
                 else
                 {
-                    log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFileExists.File_Does_Not_Exist", realFilename)); //$NON-NLS-1$
+                    logDetailed(BaseMessages.getString(PKG, "JobEntryFileExists.File_Does_Not_Exist", realFilename)); //$NON-NLS-1$
                 }
             }
             catch (IOException e)
             {
                 result.setNrErrors(1);
-                log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0004_IO_Exception", e.toString())); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0004_IO_Exception", e.toString())); //$NON-NLS-1$
             }
 		}
 		else
 		{
 			result.setNrErrors(1);
-			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0005_No_Filename_Defined")); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0005_No_Filename_Defined")); //$NON-NLS-1$
 		}
 
 		return result;

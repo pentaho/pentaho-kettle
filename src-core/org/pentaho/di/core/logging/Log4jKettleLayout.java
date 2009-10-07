@@ -56,9 +56,9 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
         }
 
         Object object = event.getMessage();
-        if (object instanceof Log4jMessage)
+        if (object instanceof LogMessage)
         {
-            Log4jMessage message = (Log4jMessage)object;
+            LogMessage message = (LogMessage)object;
 
             String parts[] = message.getMessage().split(Const.CR);
             for (int i=0;i<parts.length;i++)
@@ -69,7 +69,11 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
                 // Include the subject too on every line...
                 if (message.getSubject()!=null)
                 {
-                    line.append(message.getSubject()).append(" - ");
+                    line.append(message.getSubject());
+                    if (message.getCopy()!=null) {
+                    	line.append(".").append(message.getCopy());
+                    }
+                    line.append(" - ");
                 }
                 
                 if (message.isError())  

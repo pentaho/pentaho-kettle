@@ -31,6 +31,7 @@ import java.util.Locale;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleEOFException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -2539,7 +2540,7 @@ public class ValueMeta implements ValueMetaInterface
     	return xml.toString();
     }
     
-    public ValueMeta(Node node) throws IOException 
+    public ValueMeta(Node node) throws KettleException 
     {
     	this();
     	
@@ -2572,7 +2573,7 @@ public class ValueMeta implements ValueMetaInterface
 	                    case TYPE_BIGNUMBER: index[i] = new BigDecimal( valueString ); ; break; 
 	                    case TYPE_BOOLEAN:   index[i] = Boolean.valueOf("Y".equalsIgnoreCase( valueString)); break; 
 	                    case TYPE_BINARY:    index[i] = XMLHandler.stringToBinary( valueString ); break;
-	                    default: throw new IOException(toString()+" : Unable to de-serialize indexe storage type from XML for data type "+getType());
+	                    default: throw new KettleException(toString()+" : Unable to de-serialize indexe storage type from XML for data type "+getType());
 	                    }
         	    	}
                 }
@@ -2674,7 +2675,7 @@ public class ValueMeta implements ValueMetaInterface
      * @return the converted data value
      * @throws IOException thrown in case there is a problem with the XML to object conversion
      */
-	public Object getValue(Node node) throws IOException {
+	public Object getValue(Node node) throws KettleException {
 		
         switch(storageType)
         {
@@ -2693,7 +2694,7 @@ public class ValueMeta implements ValueMetaInterface
             case TYPE_BIGNUMBER: return new BigDecimal( valueString );
             case TYPE_BOOLEAN:   return Boolean.valueOf("Y".equalsIgnoreCase( valueString)); 
             case TYPE_BINARY:    return XMLHandler.stringToBinary( valueString );
-            default: throw new IOException(toString()+" : Unable to de-serialize '"+valueString+"' from XML for data type "+getType());
+            default: throw new KettleException(toString()+" : Unable to de-serialize '"+valueString+"' from XML for data type "+getType());
             }
             
         case STORAGE_TYPE_BINARY_STRING:
@@ -2713,7 +2714,7 @@ public class ValueMeta implements ValueMetaInterface
 
     		return Integer.parseInt(indexString); 
             
-        default: throw new IOException(toString()+" : Unknown storage type "+getStorageType());
+        default: throw new KettleException(toString()+" : Unknown storage type "+getStorageType());
         }
 
 	}

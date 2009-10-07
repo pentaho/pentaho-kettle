@@ -387,7 +387,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 
 		if (databaseMeta!=null)
 		{
-			Database db = new Database(databaseMeta);
+			Database db = new Database(this, databaseMeta);
 			db.shareVariablesWith(transMeta);
 			try
 			{
@@ -552,7 +552,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 
 				if (!Const.isEmpty(tableName))
 				{
-                    Database db = new Database(databaseMeta);
+                    Database db = new Database(this, databaseMeta);
                     db.shareVariablesWith(transMeta);
 					try
 					{
@@ -653,7 +653,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 
         if (databaseMeta!=null)
         {
-            Database db = new Database(databaseMeta);
+            Database db = new Database(this, databaseMeta);
             try
             {
                 db.connect();

@@ -462,7 +462,7 @@ public class MailInput extends BaseStep implements StepInterface
 			}
 			try {	
 				// create a mail connection object			
-				data.mailConn= new MailConnection(data.usePOP?MailConnectionMeta.PROTOCOL_POP3:MailConnectionMeta.PROTOCOL_IMAP
+				data.mailConn= new MailConnection(log, data.usePOP?MailConnectionMeta.PROTOCOL_POP3:MailConnectionMeta.PROTOCOL_IMAP
 						,realserver,realport, realusername, realpassword, meta.isUseSSL(), meta.isUseProxy(), realProxyUsername);
 				// connect
 				data.mailConn.connect();

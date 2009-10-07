@@ -296,7 +296,7 @@ public class SQLStatementsDialog extends Dialog
 				DatabaseMeta di = stat.getDatabase();
 				if (di!=null && !stat.hasError())
 				{
-					Database db = new Database(di);
+					Database db = new Database(this, di);
 					try
 					{
 						db.connect();

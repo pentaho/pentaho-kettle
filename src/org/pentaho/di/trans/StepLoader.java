@@ -36,7 +36,8 @@ import org.pentaho.di.core.config.KettleConfig;
 import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
@@ -66,6 +67,8 @@ public class StepLoader implements LoaderInputStreamProvider
     private static final int PLUGIN_TYPE_PARTIONER = 2;
     
     private StepPluginMeta[] steps;
+
+	private LogChannelInterface	log;
     
     private StepLoader(String pluginDirectory[])
     {
@@ -73,6 +76,7 @@ public class StepLoader implements LoaderInputStreamProvider
         pluginList           = new ArrayList<StepPlugin>();
         classLoaders         = new Hashtable<String[], URLClassLoader>();
         partitionerMap		 = new Hashtable<String,Partitioner>();
+        this.log = new LogChannel("StepLoader");
     }
 
     public static final StepLoader getInstance(String pluginDirectory[])
@@ -345,8 +349,7 @@ public class StepLoader implements LoaderInputStreamProvider
             	}
             	catch( Throwable e ) 
             	{
-                    LogWriter.getInstance().logError("StepLoader", BaseMessages.getString(PKG, "StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001") + e.toString()); //$NON-NLS-1$
-                    LogWriter.getInstance().logError("StepLoader", Const.getStackTracker( e )); //$NON-NLS-1$
+                    throw new KettleException(BaseMessages.getString(PKG, "StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001"), e); //$NON-NLS-1$
             	}
             }
         }
@@ -358,8 +361,6 @@ public class StepLoader implements LoaderInputStreamProvider
 
     public void readPlugins() throws KettleException
     {
-    	LogWriter log = LogWriter.getInstance();
-        
     	try {
     		// try reading plugins defined in JAR file META-INF/step_plugin.xml
     		InputStream content = getClass().getClassLoader().getResourceAsStream("META-INF/step_plugin.xml");

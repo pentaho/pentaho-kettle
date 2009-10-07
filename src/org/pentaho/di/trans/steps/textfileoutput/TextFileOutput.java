@@ -580,8 +580,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
             	Runtime r = Runtime.getRuntime();
             	data.cmdProc = r.exec(cmdstr, EnvUtil.getEnvironmentVariablesForRuntimeExec());
             	data.writer = data.cmdProc.getOutputStream();
-            	StreamLogger stdoutLogger = new StreamLogger( data.cmdProc.getInputStream(), "(stdout)" );
-            	StreamLogger stderrLogger = new StreamLogger( data.cmdProc.getErrorStream(), "(stderr)" );
+            	StreamLogger stdoutLogger = new StreamLogger(log, data.cmdProc.getInputStream(), "(stdout)" );
+            	StreamLogger stderrLogger = new StreamLogger(log, data.cmdProc.getErrorStream(), "(stderr)" );
             	new Thread(stdoutLogger).start();
             	new Thread(stderrLogger).start();
             }
@@ -598,7 +598,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
                 {
     				if (meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_ZIP))
     				{
-    					if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in zipped mode");
+    					if(log.isDetailed()) logDetailed("Opening output stream in zipped mode");
                         
     		            if(checkPreviouslyOpened(filename)){
     		            	data.fos = KettleVFS.getOutputStream(filename, true);
@@ -614,7 +614,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
     				}
     				else if (meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_GZIP))
     				{
-    					if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in gzipped mode");
+    					if(log.isDetailed()) logDetailed("Opening output stream in gzipped mode");
     		            if(checkPreviouslyOpened(filename)){
     		            	data.fos = KettleVFS.getOutputStream(filename, true);
     		            }else{
@@ -630,7 +630,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
                 }
 				else
 				{
-					if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in nocompress mode");
+					if(log.isDetailed()) logDetailed("Opening output stream in nocompress mode");
                     if(checkPreviouslyOpened(filename)){
     		            	data.fos = KettleVFS.getOutputStream(filename, true);
     		            }else{
@@ -641,12 +641,12 @@ public class TextFileOutput extends BaseStep implements StepInterface
                 
 	            if (!Const.isEmpty(meta.getEncoding()))
 	            {
-	                if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in encoding: "+meta.getEncoding());
+	                if(log.isDetailed()) logDetailed("Opening output stream in encoding: "+meta.getEncoding());
 	                data.writer = new BufferedOutputStream(outputStream, 5000);
 	            }
 	            else
 	            {
-	                if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in default encoding");
+	                if(log.isDetailed()) logDetailed("Opening output stream in default encoding");
 	                data.writer = new BufferedOutputStream(outputStream, 5000);
 	            }
 	

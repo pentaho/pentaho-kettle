@@ -222,7 +222,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 
 		if (super.init(smi, sdi)) {
 			if (Const.isEmpty(meta.getResultFieldName())) {
-				log.logError(toString(), BaseMessages.getString(PKG, "CheckSum.Error.ResultFieldMissing"));
+				logError(BaseMessages.getString(PKG, "CheckSum.Error.ResultFieldMissing"));
 				return false;
 			}
 			return true;

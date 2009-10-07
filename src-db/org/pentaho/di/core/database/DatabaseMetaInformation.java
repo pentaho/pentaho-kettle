@@ -22,7 +22,6 @@ import java.util.Collections;
 
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
@@ -168,7 +167,7 @@ public class DatabaseMetaInformation
 			monitor.beginTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingInfoFromDb"), 8);
 		}
 
-		Database db = new Database(dbInfo);	
+		Database db = new Database(this, dbInfo);	
 		
 		/*
 		ResultSet tableResultSet = null;
@@ -241,7 +240,7 @@ public class DatabaseMetaInformation
 					{
 						// Obviously, we're not allowed to snoop around in this catalog.
 						// Just ignore it!
-						LogWriter.getInstance().logError(getClass().getName(),BaseMessages.getString(PKG, "DatabaseMeta.Error.UnexpectedCatalogError"), e);
+						// LogWriter.getInstance().logError(getClass().getName(),BaseMessages.getString(PKG, "DatabaseMeta.Error.UnexpectedCatalogError"), e);
 					}
 
 					// Save the list of tables in the catalog (can be empty)
@@ -317,7 +316,7 @@ public class DatabaseMetaInformation
 				}
 				catch(Exception e)
 				{
-					LogWriter.getInstance().logError(getClass().getName(), BaseMessages.getString(PKG, "DatabaseMeta.Error.UnexpectedError"), e);
+					// LogWriter.getInstance().logError(getClass().getName(), BaseMessages.getString(PKG, "DatabaseMeta.Error.UnexpectedError"), e);
 				}
 				
 				// Save for later...

@@ -155,7 +155,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
                 int statusCode = HTTPPOSTclient.executeMethod(post);
                 
                 // Display status code
-                if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseCode",""+statusCode));
+                if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseCode",""+statusCode));
                 String body=null;
                 if( statusCode != -1 )
                 {
@@ -178,7 +178,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
 	                // Display response
 	                body = bodyBuffer.toString();
 	                
-	                if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseBody",body));
+	                if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseBody",body));
                 }
                 int returnFieldsOffset=data.inputRowMeta.size();
                 if (!Const.isEmpty(meta.getFieldName())) {

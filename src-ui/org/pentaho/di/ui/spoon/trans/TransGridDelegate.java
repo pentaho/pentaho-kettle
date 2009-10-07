@@ -20,7 +20,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -42,8 +41,6 @@ public class TransGridDelegate extends SpoonDelegate {
 	private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-grid-toolbar.xul";
 	public static final String XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES = "ui/trans-grid-toolbar.properties";
 
-	private static final LogWriter log = LogWriter.getInstance();
-	
 	public static final long REFRESH_TIME = 100L;
     public static final long UPDATE_TIME_VIEW = 1000L;
     
@@ -216,7 +213,7 @@ public class TransGridDelegate extends SpoonDelegate {
 			addToolBarListeners();
 	        toolBar.layout(true, true);
 		} catch (Throwable t ) {
-			log.logError(toString(), Const.getStackTracker(t));
+			log.logError(Const.getStackTracker(t));
 			new ErrorDialog(transGridComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
 		}
 	}

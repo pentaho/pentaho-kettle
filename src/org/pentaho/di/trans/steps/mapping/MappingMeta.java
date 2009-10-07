@@ -23,14 +23,13 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.resource.ResourceDefinition;
@@ -489,7 +488,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             {
             	// OK, load the meta-data from file...
                 mappingTransMeta = new TransMeta( realFilename, false ); // don't set internal variables: they belong to the parent thread!
-                LogWriter.getInstance().logDetailed("Loading Mapping from repository", "Mapping transformation was loaded from XML file ["+realFilename+"]");
+                mappingTransMeta.getLogChannel().logDetailed("Loading Mapping from repository", "Mapping transformation was loaded from XML file ["+realFilename+"]");
                 // mappingTransMeta.setFilename(fileName);
            }
             catch(Exception e)
@@ -511,12 +510,11 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
                     try
                     {
                         mappingTransMeta = rep.loadTransformation(realTransname, repdir, null, true, null);  // reads last version
-                        LogWriter.getInstance().logDetailed("Loading Mapping from repository", "Mapping transformation ["+realTransname+"] was loaded from the repository");
+                        mappingTransMeta.getLogChannel().logDetailed("Loading Mapping from repository", "Mapping transformation ["+realTransname+"] was loaded from the repository");
                     }
                     catch(Exception e)
                     {
-                        LogWriter.getInstance().logError("Loading Mapping from repository", "Unable to load transformation ["+realTransname+"] : "+e.toString());
-                        LogWriter.getInstance().logError("Loading Mapping from repository", Const.getStackTracker(e));
+                    	throw new KettleException("Unable to load transformation ["+realTransname+"]", e);
                     }
                 }
                 else

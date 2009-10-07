@@ -84,7 +84,7 @@ public class Delay extends BaseStep implements StepInterface
 			String timeOut=environmentSubstitute(meta.getTimeOut());
 			data.timeout =Const.toInt(timeOut, 0);  
 			
-			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "Delay.Log.TimeOut",""+data.timeout,msgScale));
+			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "Delay.Log.TimeOut",""+data.timeout,msgScale));
 		}
 
 		if ((data.Multiple<1000) && (data.timeout>0)) {
@@ -117,7 +117,7 @@ public class Delay extends BaseStep implements StepInterface
 				}
 			}
 		}
-		if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "Delay.WaitTimeIsElapsed.Label"));
+		if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "Delay.WaitTimeIsElapsed.Label"));
 	     
 		putRow(getInputRowMeta(), r);     // copy row to possible alternate rowset(s).
 		  

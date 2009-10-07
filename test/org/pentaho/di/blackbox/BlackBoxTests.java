@@ -15,9 +15,13 @@ import junit.framework.TestCase;
 
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.Log4jStringAppender;
+import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.Log4jBufferAppender;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.trans.Trans;
@@ -92,17 +96,19 @@ public class BlackBoxTests extends TestCase {
 		System.out.println("Running: "+getPath(transFile));
 		LogWriter log;
         log=LogWriter.getInstance( LogWriter.LOG_LEVEL_ERROR );
-        Log4jStringAppender stringAppender = LogWriter.createStringAppender();
-        log.addAppender(stringAppender);
+        Log4jBufferAppender bufferAppender = CentralLogStore.getAppender();
+        log.addAppender(bufferAppender);
+        
+        LogChannelInterface logChannel = new LogChannel("BlackBoxTest ["+transFile.toString()+"]");
 
-        boolean ok = false;
         int failsIn = failures;
+        Result result = new Result();
         
 		try {
 			currentFile = transFile;
 			if( !transFile.exists() ) 
 			{
-				log.logError( "BlackBoxTest", "Transformation does not exist: "+ getPath( transFile ) );
+				logChannel.logError( "Transformation does not exist: "+ getPath( transFile ) );
 				addFailure( "Transformation does not exist: "+ getPath( transFile ) );
 			}
 			if( expectedFiles.isEmpty() ) 
@@ -112,7 +118,7 @@ public class BlackBoxTests extends TestCase {
 			}
 
 			try {
-				ok = runTrans( transFile.getAbsolutePath(), log );
+				result = runTrans( transFile.getAbsolutePath(), logChannel );
 				
 				// verify all the expected output files...
 				//
@@ -126,8 +132,8 @@ public class BlackBoxTests extends TestCase {
 		    		actualFile = actualFile.replaceFirst(".expected_"+i+".", ".actual_"+i+"."); // multiple files case
 
 					File actual = new File( actualFile );
-					if( ok ) {
-						fileCompare( expected, actual, log );
+					if( !result.getResult() ) {
+						fileCompare( expected, actual, logChannel );
 					}
 		        }			
 			} catch (KettleException ke) {
@@ -139,19 +145,20 @@ public class BlackBoxTests extends TestCase {
 		} catch ( AssertionFailedError failure ) {
 			// we're going to trap these so that we can continue with the other black box tests
 			System.err.println( failure.getMessage() );
+			result.setResult(false);
 		}
-		log.removeAppender(stringAppender);
+		log.removeAppender(bufferAppender);
 		
-		if( !ok && expectedFiles.size()==1) {
+		if( !result.getResult() && expectedFiles.size()==1) {
 			
 			File expected = expectedFiles.get(0);
-			String logStr = stringAppender.getBuffer().toString();
+			String logStr = CentralLogStore.getAppender().getBuffer(result.getLogChannelId(), true).toString();
 			
 			String tmpFileName = transFile.getAbsolutePath().substring(0, transFile.getAbsolutePath().length()-4)+"-log.txt";
 			File logFile = new File( tmpFileName );
 			writeLog( logFile, logStr );
 			try {
-			if( fileCompare( expected, logFile, log ) ) {
+			if( fileCompare( expected, logFile, logChannel ) ) {
 				// we were expecting this to fail, reset any accumulated failures
 				failures = failsIn;
 			}
@@ -239,7 +246,7 @@ public class BlackBoxTests extends TestCase {
 		
 	}
 	
-	public boolean fileCompare( File expected, File actual, LogWriter log ) throws IOException {
+	public boolean fileCompare( File expected, File actual, LogChannelInterface log ) throws IOException {
 		
 		int failsIn = failures;
 		InputStream expectedStream = new FileInputStream( expected );
@@ -369,8 +376,10 @@ public class BlackBoxTests extends TestCase {
 		return files;
 	}
 	
-	public boolean runTrans(String fileName, LogWriter log) throws KettleException
+	public Result runTrans(String fileName, LogChannelInterface log) throws KettleException
 	{
+		Result result = new Result();
+		
     	// Bootstrap the Kettle API...
     	//
     	KettleEnvironment.init();
@@ -382,21 +391,23 @@ public class BlackBoxTests extends TestCase {
 		{
 			transMeta = new TransMeta(fileName);
 			trans = new Trans(transMeta);
+			result = trans.getResult();
 		}
 		catch(Exception e)
 		{
+			result = trans.getResult();
 			trans=null;
 			transMeta=null;
 			addFailure("Processing has stopped because of an error: " + getPath(fileName));
 			log.logError("BlackBoxTest", "Processing has stopped because of an error: " + getPath(fileName), e);
-			return false;
+			return result;
 		}
 
 		if (trans==null)
 		{
 			addFailure("Can't continue because the transformation couldn't be loaded." + getPath(fileName));
             log.logError("BlackBoxTest", "Can't continue because the transformation couldn't be loaded." + getPath(fileName));
-            return false;
+            return result;
             
 		}
 		
@@ -452,21 +463,21 @@ public class BlackBoxTests extends TestCase {
 			catch (Exception e) {
             	addFailure("Unable to prepare and initialize this transformation: " + getPath(fileName));
                 log.logError("BlackBoxTest", "Unable to prepare and initialize this transformation: " + getPath(fileName));
-                return false;
+                return null;
             }
 			trans.waitUntilFinished();
 			trans.endProcessing(Database.LOG_STATUS_END);
-
 			
-			return true;
+			return trans.getResult();
 		}
 		catch(KettleException ke)
 		{
 			addFailure("Unexpected error occurred: " + getPath(fileName));
             log.logError("BlackBoxTest", "Unexpected error occurred: " + getPath(fileName), ke);
+            result.setResult(false);
+            result.setNrErrors(1);
+            return result;
 		}
-
-		return false;
 	}
 
 	public static void main( String args[] ) {

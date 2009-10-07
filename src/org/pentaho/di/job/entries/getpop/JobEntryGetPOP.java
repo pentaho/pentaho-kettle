@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
@@ -38,17 +37,15 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -711,8 +708,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		this.password = password;
 	}
 	
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob){
-		LogWriter log = LogWriter.getInstance();
+	public Result execute(Result previousResult, int nr) throws KettleException {
 		Result result = previousResult;
 		result.setResult( false );
 		
@@ -736,10 +732,10 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			// Check if output folder exists
 			if (fileObject.exists()) {
 				if(fileObject.getType()!=FileType.FOLDER) throw new KettleException(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Error.NotAFolderNot",realOutputFolder));
-				if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.Log.OutputFolderExists",realOutputFolder));
+				if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Log.OutputFolderExists",realOutputFolder));
 			} else {
 				if(isCreateLocalFolder()) {
-					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.Log.OutputFolderNotExist",realOutputFolder));
+					if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Log.OutputFolderNotExist",realOutputFolder));
 					// create folder
 					fileObject.createFolder();
 				}else
@@ -816,7 +812,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
 			initVariables();
 			// create a mail connection object			
-			mailConn= new MailConnection(usePOP3?MailConnectionMeta.PROTOCOL_POP3:MailConnectionMeta.PROTOCOL_IMAP
+			mailConn= new MailConnection(log, usePOP3?MailConnectionMeta.PROTOCOL_POP3:MailConnectionMeta.PROTOCOL_IMAP
 					,realserver,realport, realusername, realpassword, isUseSSL(), isUseProxy(),realProxyUsername);
 			// connect
 			mailConn.connect();
@@ -908,7 +904,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			fetchOneFolder(mailConn, usePOP3, realIMAPFolder, 
 					   realOutputFolder, targetAttachmentFolder, realMoveToIMAPFolder,
 					   realFilenamePattern,
-					   log, nbrmailtoretrieve, parentJob, df);
+					   nbrmailtoretrieve, df);
 			
 			if(isIncludeSubFolders()) {
 				// Fetch also sub folders?
@@ -921,7 +917,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 						fetchOneFolder(mailConn, usePOP3, subfolders[i], 
 								   realOutputFolder, targetAttachmentFolder, realMoveToIMAPFolder,
 								   realFilenamePattern,
-								   log, nbrmailtoretrieve, parentJob, df);
+								   nbrmailtoretrieve, df);
 					}
 				}
 			}
@@ -964,7 +960,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
  private void fetchOneFolder(MailConnection mailConn, boolean usePOP3, String realIMAPFolder, 
 		   String realOutputFolder, String targetAttachmentFolder, String realMoveToIMAPFolder,
 		   String realFilenamePattern,
-		   LogWriter log, int nbrmailtoretrieve, Job parentJob, SimpleDateFormat df) throws KettleException {
+		   int nbrmailtoretrieve, SimpleDateFormat df) throws KettleException {
 	   try {
 		   // open folder
 			if(!usePOP3 && !Const.isEmpty(realIMAPFolder)) {

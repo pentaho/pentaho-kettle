@@ -43,7 +43,8 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
@@ -67,7 +68,6 @@ public class SQLEditor extends Dialog
 {
 	private static Class<?> PKG = SQLEditor.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private LogWriter    log;
 	private PropsUI        props;
 		
 	private Label        wlScript;
@@ -85,12 +85,14 @@ public class SQLEditor extends Dialog
 	private Shell            shell;
 	private DBCache          dbcache;
 	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
+
+	private LogChannelInterface log;
 	
 	public SQLEditor(Shell parent, int style, DatabaseMeta ci, DBCache dbc, String sql)
 	{
 			super(parent, style);
 			props=PropsUI.getInstance();
-			log=LogWriter.getInstance();
+			log=new LogChannel(ci);
 			input=sql;
 			connection=ci;
 			dbcache=dbc;
@@ -283,7 +285,7 @@ public class SQLEditor extends Dialog
 
         StringBuffer message = new StringBuffer();
 
-		Database db = new Database(ci);
+		Database db = new Database(this, ci);
         boolean first = true;
         PartitionDatabaseMeta[] partitioningInformation = ci.getPartitioningInformation();
         
@@ -335,7 +337,7 @@ public class SQLEditor extends Dialog
     						if (sql.toUpperCase().startsWith("SELECT"))
     						{
     							// A Query
-    							log.logDetailed(toString(), "launch SELECT statement: "+Const.CR+sql);
+    							log.logDetailed("launch SELECT statement: "+Const.CR+sql);
     							
     							nrstats++;
     							try
@@ -362,13 +364,13 @@ public class SQLEditor extends Dialog
     						}
     						else
     						{
-    							log.logDetailed(toString(), "launch DDL statement: "+Const.CR+sql);
+    							log.logDetailed("launch DDL statement: "+Const.CR+sql);
     
     							// A DDL statement
     							nrstats++;
     							try
     							{
-    							    log.logDetailed(toString(), "Executing SQL: "+Const.CR+sql);
+    							    log.logDetailed("Executing SQL: "+Const.CR+sql);
     								db.execStatement(sql);
                                     message.append(BaseMessages.getString(PKG, "SQLEditor.Log.SQLExecuted", sql));
                                     message.append(Const.CR);

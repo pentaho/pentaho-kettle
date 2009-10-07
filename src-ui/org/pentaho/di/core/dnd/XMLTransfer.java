@@ -16,7 +16,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 
 
 public class XMLTransfer extends ByteArrayTransfer
@@ -27,6 +28,12 @@ public class XMLTransfer extends ByteArrayTransfer
 
     private static XMLTransfer  _instance  = new XMLTransfer();
 
+	private LogChannelInterface	log;
+
+    private XMLTransfer() {
+    	this.log = new LogChannel("XML DND Transfer");
+    }
+    
     public static XMLTransfer getInstance()
     {
         return _instance;
@@ -47,8 +54,8 @@ public class XMLTransfer extends ByteArrayTransfer
         }
         catch (Exception e)
         {
-            LogWriter.getInstance().logError(toString(), "Unexpected error trying to put a string onto the XML Transfer type: " + e.toString());
-            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+            log.logError("Unexpected error trying to put a string onto the XML Transfer type: " + e.toString());
+            log.logError(Const.getStackTracker(e));
             return;
         }
     }
@@ -77,9 +84,8 @@ public class XMLTransfer extends ByteArrayTransfer
             }
             catch (Exception e)
             {
-                LogWriter.getInstance().logError(toString(),
-                        "Unexpected error trying to read a drag and drop container from the XML Transfer type: " + e.toString());
-                LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+            	log.logError("Unexpected error trying to read a drag and drop container from the XML Transfer type: " + e.toString());
+            	log.logError(Const.getStackTracker(e));
                 return null;
             }
         }

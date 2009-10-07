@@ -15,7 +15,6 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -135,7 +134,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 
             int nrWorks = 2 + transMeta.nrDatabases() + transMeta.nrNotes() + transMeta.nrSteps() + transMeta.nrTransHops();
             if (monitor != null) monitor.beginTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SavingTransformationTask.Title") + transMeta.getPathAndName(), nrWorks); //$NON-NLS-1$
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingOfTransformationStarted")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.SavingOfTransformationStarted")); //$NON-NLS-1$
 
             if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException();
 
@@ -158,13 +157,13 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
                 // If we have a valid ID, we need to make sure everything is cleared out
                 // of the database for this id_transformation, before we put it back in...
                 if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.DeletingOldVersionTransformationTask.Title")); //$NON-NLS-1$
-                if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.DeletingOldVersionTransformation")); //$NON-NLS-1$
+                if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.DeletingOldVersionTransformation")); //$NON-NLS-1$
                 repository.deleteTransformation(transMeta.getObjectId());
-                if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.OldVersionOfTransformationRemoved")); //$NON-NLS-1$
+                if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.OldVersionOfTransformationRemoved")); //$NON-NLS-1$
             }
             if (monitor != null) monitor.worked(1);
 
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingNotes")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.SavingNotes")); //$NON-NLS-1$
             for (int i = 0; i < transMeta.nrNotes(); i++)
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
@@ -178,7 +177,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
                 if (monitor != null) monitor.worked(1);
             }
 
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingDatabaseConnections")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.SavingDatabaseConnections")); //$NON-NLS-1$
             for (int i = 0; i < transMeta.nrDatabases(); i++)
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
@@ -195,10 +194,10 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 
             // Before saving the steps, make sure we have all the step-types.
             // It is possible that we received another step through a plugin.
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.CheckingStepTypes")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.CheckingStepTypes")); //$NON-NLS-1$
             repository.updateStepTypes();
 
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingSteps")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.SavingSteps")); //$NON-NLS-1$
             for (int i = 0; i < transMeta.nrSteps(); i++)
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
@@ -211,7 +210,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
             }
             repository.connectionDelegate.closeStepAttributeInsertPreparedStatement();
 
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingHops")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.SavingHops")); //$NON-NLS-1$
             for (int i = 0; i < transMeta.nrTransHops(); i++)
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
@@ -223,7 +222,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
             }
 
             if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.FinishingTask.Title")); //$NON-NLS-1$
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingTransformationInfo")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.SavingTransformationInfo")); //$NON-NLS-1$
             
             insertTransformation(transMeta); // save the top level information for the transformation
             
@@ -266,7 +265,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
                 repository.save(clusterSchema, versionComment, null, transMeta.getObjectId(), isUsedByTransformation);
             }
             
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingDependencies")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.SavingDependencies")); //$NON-NLS-1$
             for (int i = 0; i < transMeta.nrDependencies(); i++)
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
@@ -287,7 +286,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
             }
             repository.connectionDelegate.closeStepAttributeInsertPreparedStatement();
             
-            if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransMeta.Log.SavingFinished")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.SavingFinished")); //$NON-NLS-1$
 
         	if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.UnlockingRepository")); //$NON-NLS-1$
         	repository.unlockRepository();
@@ -304,7 +303,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
             // Oops, roll back!
         	repository.rollback();
 
-            log.logError(toString(), BaseMessages.getString(PKG, "TransMeta.Log.ErrorSavingTransformationToRepository") + Const.CR + dbe.getMessage()); //$NON-NLS-1$
+            log.logError(BaseMessages.getString(PKG, "TransMeta.Log.ErrorSavingTransformationToRepository") + Const.CR + dbe.getMessage()); //$NON-NLS-1$
             throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Log.ErrorSavingTransformationToRepository"), dbe); //$NON-NLS-1$
         }
         finally
@@ -361,7 +360,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	            transMeta.setRepositoryDirectory(repdir);
 	            
 	            // Get the transformation id
-	            if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "TransMeta.Log.LookingForTransformation", transname, repdir.getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	            if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "TransMeta.Log.LookingForTransformation", transname, repdir.getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	
 	            if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.ReadingTransformationInfoTask.Title")); //$NON-NLS-1$
 	            transMeta.setObjectId(getTransformationID(transname, repdir.getObjectId()));
@@ -378,7 +377,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	
 	                if (monitor != null) monitor.beginTask(BaseMessages.getString(PKG, "TransMeta.Monitor.LoadingTransformationTask.Title") + pathAndName, nrWork); //$NON-NLS-1$
 	
-	                if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "TransMeta.Log.LoadingTransformation", transMeta.getName() )); //$NON-NLS-1$ //$NON-NLS-2$
+	                if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "TransMeta.Log.LoadingTransformation", transMeta.getName() )); //$NON-NLS-1$ //$NON-NLS-2$
 	
 	                // Load the common database connections
 	                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.ReadingTheAvailableSharedObjectsTask.Title")); //$NON-NLS-1$
@@ -388,8 +387,8 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	                }
 	                catch(Exception e)
 	                {
-	                    LogWriter.getInstance().logError(toString(), BaseMessages.getString(PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString()));
-	                    LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+	                    log.logError(BaseMessages.getString(PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString()));
+	                    log.logError(Const.getStackTracker(e));
 	                }
 	
 	                if (monitor != null) monitor.worked(1);
@@ -409,7 +408,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	                repository.connectionDelegate.fillStepAttributesBuffer(transMeta.getObjectId()); // read all the attributes on one go!
 	                for (int i = 0; i < stepids.length; i++)
 	                {
-	                	if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "TransMeta.Log.LoadingStepWithID") + stepids[i]); //$NON-NLS-1$
+	                	if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "TransMeta.Log.LoadingStepWithID") + stepids[i]); //$NON-NLS-1$
 	                    if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.ReadingStepTask.Title") + (i + 1) + "/" + (stepids.length)); //$NON-NLS-1$ //$NON-NLS-2$
 	                    StepMeta stepMeta = repository.stepDelegate.loadStepMeta(stepids[i], transMeta.getDatabases(), transMeta.getCounters(), transMeta.getPartitionSchemas());
 	                    // In this case, we just add or replace the shared steps.
@@ -495,20 +494,20 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	            }
 	            if(log.isDetailed()) 
 	            {
-	            	log.logDetailed(toString(), BaseMessages.getString(PKG, "TransMeta.Log.LoadedTransformation2", transname , String.valueOf(transMeta.getRepositoryDirectory() == null))); //$NON-NLS-1$ //$NON-NLS-2$
-	            	log.logDetailed(toString(), BaseMessages.getString(PKG, "TransMeta.Log.LoadedTransformation", transname , transMeta.getRepositoryDirectory().getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	            	log.logDetailed(BaseMessages.getString(PKG, "TransMeta.Log.LoadedTransformation2", transname , String.valueOf(transMeta.getRepositoryDirectory() == null))); //$NON-NLS-1$ //$NON-NLS-2$
+	            	log.logDetailed(BaseMessages.getString(PKG, "TransMeta.Log.LoadedTransformation", transname , transMeta.getRepositoryDirectory().getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	            }
 	            
 	            return transMeta;
 	        }
 	        catch (KettleDatabaseException e)
 	        {
-	            log.logError(toString(), BaseMessages.getString(PKG, "TransMeta.Log.DatabaseErrorOccuredReadingTransformation") + Const.CR + e); //$NON-NLS-1$
+	            log.logError(BaseMessages.getString(PKG, "TransMeta.Log.DatabaseErrorOccuredReadingTransformation") + Const.CR + e); //$NON-NLS-1$
 	            throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Exception.DatabaseErrorOccuredReadingTransformation"), e); //$NON-NLS-1$
 	        }
 	        catch (Exception e)
 	        {
-	            log.logError(toString(), BaseMessages.getString(PKG, "TransMeta.Log.DatabaseErrorOccuredReadingTransformation") + Const.CR + e); //$NON-NLS-1$
+	            log.logError(BaseMessages.getString(PKG, "TransMeta.Log.DatabaseErrorOccuredReadingTransformation") + Const.CR + e); //$NON-NLS-1$
 	            throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Exception.DatabaseErrorOccuredReadingTransformation2"), e); //$NON-NLS-1$
 	        }
 	        finally
@@ -583,7 +582,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
                 long id_directory = r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY, -1L); //$NON-NLS-1$
                 if (id_directory >= 0)
                 {
-               	   if(log.isDetailed()) log.logDetailed(toString(), "ID_DIRECTORY=" + id_directory); //$NON-NLS-1$
+               	   if(log.isDetailed()) log.logDetailed("ID_DIRECTORY=" + id_directory); //$NON-NLS-1$
                    // Set right directory...
                	   transMeta.setRepositoryDirectory( repository.loadRepositoryDirectoryTree().findDirectory(new LongObjectId(id_directory)) ); // always reload the folder structure
                 }

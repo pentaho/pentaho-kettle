@@ -48,7 +48,6 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -320,14 +319,14 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
    *  In that case if (on an application server for example) several HTTP's are running at the same time,
    *  you get into problems because the System.setProperty() calls are system wide!
    */
-  public synchronized Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+  public synchronized Result execute(Result previousResult, int nr)
   {
     LogWriter log = LogWriter.getInstance();
 
     Result result = previousResult;
     result.setResult(false);
 
-    log.logBasic(toString(), "Start of HTTP job entry.");
+    logBasic("Start of HTTP job entry.");
 
     // Get previous result rows...
     List<RowMetaAndData> resultRows;
@@ -344,7 +343,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       if (resultRows == null)
       {
         result.setNrErrors(1);
-        log.logError(toString(), "Unable to get result from previous job entry : can't continue.");
+        logError("Unable to get result from previous job entry : can't continue.");
         return result;
       }
     } else
@@ -375,7 +374,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       {
         String urlToUse = environmentSubstitute(row.getString(urlFieldnameToUse, ""));
 
-        log.logBasic(toString(), "Connecting to URL: " + urlToUse);
+        logBasic("Connecting to URL: " + urlToUse);
 
         if (!Const.isEmpty(proxyHostname))
         {
@@ -427,7 +426,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         String realUploadFilename = environmentSubstitute(uploadFilename);
         if (!Const.isEmpty(realUploadFilename))
         {
-          if(log.isDetailed()) log.logDetailed(toString(), "Start sending content of file [" + realUploadFilename + "] to server.");
+          if(log.isDetailed()) logDetailed("Start sending content of file [" + realUploadFilename + "] to server.");
 
           connection.setDoOutput(true);
 
@@ -448,15 +447,15 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           fileStream.close();
           fileStream = null;
 
-          if(log.isDetailed()) log.logDetailed(toString(), "Finished sending content to server.");
+          if(log.isDetailed()) logDetailed("Finished sending content to server.");
         }
 
-        if(log.isDetailed()) log.logDetailed(toString(), "Start reading reply from webserver.");
+        if(log.isDetailed()) logDetailed("Start reading reply from webserver.");
 
         // Read the result from the server...
         input = server.openStream();
         Date date = new Date(connection.getLastModified());
-        log.logBasic(toString(), "Resource type: \"" + connection.getContentType() + "\", last modified on: \"" + date
+        logBasic("Resource type: \"" + connection.getContentType() + "\", last modified on: \"" + date
             + "\".");
 
         int oneChar;
@@ -467,7 +466,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           bytesRead++;
         }
 
-        log.logBasic(toString(), "Finished writing " + bytesRead + " bytes to result file [" + realTargetFile + "]");
+        logBasic("Finished writing " + bytesRead + " bytes to result file [" + realTargetFile + "]");
 
         // Add to the result files...
         ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realTargetFile),
@@ -478,19 +477,19 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       } catch (MalformedURLException e)
       {
         result.setNrErrors(1);
-        log.logError(toString(), "The specified URL is not valid [" + url + "] : " + e.getMessage());
-        log.logError(toString(), Const.getStackTracker(e));
+        logError("The specified URL is not valid [" + url + "] : " + e.getMessage());
+        logError(Const.getStackTracker(e));
       } catch (IOException e)
       {
         result.setNrErrors(1);
-        log.logError(toString(), "I was unable to save the HTTP result to file because of a I/O error: "
+        logError("I was unable to save the HTTP result to file because of a I/O error: "
             + e.getMessage());
-        log.logError(toString(), Const.getStackTracker(e));
+        logError(Const.getStackTracker(e));
       } catch (Exception e)
       {
         result.setNrErrors(1);
-        log.logError(toString(), "Error getting file from HTTP : " + e.getMessage());
-        log.logError(toString(), Const.getStackTracker(e));
+        logError("Error getting file from HTTP : " + e.getMessage());
+        logError(Const.getStackTracker(e));
       } finally
       {
         // Close it all
@@ -507,7 +506,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
             outputFile.close();
         } catch (Exception e)
         {
-          log.logError(toString(), "Unable to close streams : " + e.getMessage());
+          logError("Unable to close streams : " + e.getMessage());
           result.setNrErrors(1);
         }
 

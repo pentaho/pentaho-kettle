@@ -41,15 +41,16 @@ import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterListDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
@@ -66,7 +67,7 @@ public class Translator
     
     private Display display;
     private Shell shell;
-    private LogWriter log;
+    private LogChannelInterface log;
     private PropsUI props;
     private Color unusedColor;
     
@@ -89,7 +90,7 @@ public class Translator
     public Translator(Display display)
     {
         this.display = display;
-        this.log = LogWriter.getInstance();
+        this.log = new LogChannel(APP_NAME);
         this.props = PropsUI.getInstance();
 
         clear();
@@ -107,7 +108,7 @@ public class Translator
     
     public void readFiles(String directory) throws KettleFileException
     {
-        log.logBasic(toString(), "Scanning directory: "+directory);
+        log.logBasic("Scanning directory: "+directory);
         try
         {
             File file = new File(directory);
@@ -131,7 +132,7 @@ public class Translator
                         if (entry.getName().endsWith(".properties")) // Load this one!
                         {
                             String filename = directory+"/"+entry.getName(); 
-                            log.logBasic(toString(), "Reading properties file: "+filename+"  ("+entry.getAbsolutePath()+")");
+                            log.logBasic("Reading properties file: "+filename+"  ("+entry.getAbsolutePath()+")");
                             Properties properties = new Properties();
                             properties.load(new FileInputStream(entry));
                             
@@ -170,7 +171,7 @@ public class Translator
                 
                 if (locale.charAt(2)!='_')
                 {
-                    log.logError(toString(), "This i18n locale file is not conform the Kettle standard: "+filename);
+                	log.logError("This i18n locale file is not conform the Kettle standard: "+filename);
                 }
             }
         }
@@ -694,7 +695,7 @@ public class Translator
     public static void main(String[] args)
     {
         Display display = new Display();
-        LogWriter log = LogWriter.getInstance();
+        LogChannelInterface log = new LogChannel(APP_NAME);
         PropsUI.init(display, Props.TYPE_PROPERTIES_SPOON);
         
         Translator translator = new Translator(display);
@@ -709,8 +710,8 @@ public class Translator
         }
         catch(Throwable e)
         {
-            log.logError(APP_NAME, "An unexpected error occurred : "+e.getMessage());
-            log.logError(APP_NAME, Const.getStackTracker(e));
+            log.logError("An unexpected error occurred : "+e.getMessage());
+            log.logError(Const.getStackTracker(e));
         }
     }
 

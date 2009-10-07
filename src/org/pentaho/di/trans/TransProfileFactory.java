@@ -190,7 +190,7 @@ public class TransProfileFactory
     }
 
 	private RowMetaInterface getTableFields() throws KettleDatabaseException {
-		Database database = new Database(databaseMeta);
+		Database database = new Database(this, databaseMeta);
 		try {
 			database.connect();
 			return database.getTableFields(schemaTable);

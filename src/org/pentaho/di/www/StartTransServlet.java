@@ -17,20 +17,17 @@ import java.io.PrintWriter;
 import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Appender;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 
 
-public class StartTransServlet extends HttpServlet
+public class StartTransServlet extends BaseHttpServlet implements CarteServletInterface
 {
 	private static Class<?> PKG = StartTransServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -54,7 +51,7 @@ public class StartTransServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "StartTransServlet.Log.StartTransRequested"));
+        if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "StartTransServlet.Log.StartTransRequested"));
 
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -84,17 +81,6 @@ public class StartTransServlet extends HttpServlet
             Trans trans = transformationMap.getTransformation(transName);
             if (trans!=null)
             {
-                // Remove existing appender to prevent memory leak
-                Appender appender = transformationMap.getAppender(transName);
-                if(appender != null){
-                  transformationMap.removeAppender(transName);
-                  log.removeAppender(appender);
-                }
-                // Log to a String & save appender for re-use later.
-                appender = LogWriter.createStringAppender();
-                log.addAppender(appender);
-                transformationMap.addAppender(transName, appender);
-                
                 trans.execute(null);
 
                 String message = BaseMessages.getString(PKG, "StartTransServlet.Log.TransStarted",transName);
@@ -150,4 +136,8 @@ public class StartTransServlet extends HttpServlet
     {
         return "Start transformation";
     }
+
+	public String getService() {
+		return CONTEXT_PATH+" ("+toString()+")";
+	}
 }

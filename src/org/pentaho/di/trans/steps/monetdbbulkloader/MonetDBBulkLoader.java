@@ -165,10 +165,10 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
             
             // any error message?
             //
-            data.errorLogger = new StreamLogger(data.mClientlProcess.getErrorStream(), "ERROR");
+            data.errorLogger = new StreamLogger(log, data.mClientlProcess.getErrorStream(), "ERROR");
         
             // any output?
-            data.outputLogger = new StreamLogger(data.mClientlProcess.getInputStream(), "OUTPUT");
+            data.outputLogger = new StreamLogger(log, data.mClientlProcess.getInputStream(), "OUTPUT");
             
             // Where do we send the data to?  --> To STDIN of the mclient process
             //

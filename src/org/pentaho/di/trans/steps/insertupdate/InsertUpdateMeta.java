@@ -497,7 +497,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (databaseMeta!=null)
 		{
-			Database db = new Database(databaseMeta);
+			Database db = new Database(this, databaseMeta);
 			db.shareVariablesWith(transMeta);
 			try
 			{
@@ -751,7 +751,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
                 
 				if (!Const.isEmpty(tableName))
 				{
-                    Database db = new Database(databaseMeta);
+                    Database db = new Database(this, databaseMeta);
                     db.shareVariablesWith(transMeta);
 					try
 					{
@@ -889,7 +889,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
     	
         if (databaseMeta!=null)
         {
-            Database db = new Database(databaseMeta);
+            Database db = new Database(this, databaseMeta);
             try
             {
                 db.connect();

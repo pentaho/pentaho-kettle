@@ -31,7 +31,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -88,6 +89,8 @@ public class PreviewRowsDialog extends Dialog
     
     private VariableSpace variables;
 
+	private LogChannelInterface	log;
+
     public PreviewRowsDialog(Shell parent, VariableSpace space, int style, String stepName, RowMetaInterface rowMeta, List<Object[]> rowBuffer)
     {
         this(parent, space, style, stepName, rowMeta, rowBuffer, null);
@@ -108,6 +111,8 @@ public class PreviewRowsDialog extends Dialog
         vscroll = -1;
         title = null;
         message = null;
+        
+        this.log = new LogChannel("Row Preview");
     }
 
     public void setTitleMessage(String title, String message)
@@ -288,7 +293,7 @@ public class PreviewRowsDialog extends Dialog
                         	nrErrors++;
                         	if (nrErrors<25)
                         	{
-	                            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+	                            log.logError(Const.getStackTracker(e));
                         	}
                             show=null;
                         }
@@ -297,7 +302,7 @@ public class PreviewRowsDialog extends Dialog
                         	nrErrors++;
                         	if (nrErrors<25)
                         	{
-                        		LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+                        		log.logError(Const.getStackTracker(e));
                         	}
                             show=null;
                         }

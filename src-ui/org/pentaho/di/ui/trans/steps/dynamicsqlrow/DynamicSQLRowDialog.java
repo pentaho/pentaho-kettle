@@ -411,7 +411,7 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 	 */ 
 	public void getData()
 	{
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "DynamicSQLRowDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DynamicSQLRowDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		wSQL.setText( Const.NVL(input.getSql(), ""));
 		wLimit.setText(""+input.getRowLimit()); //$NON-NLS-1$

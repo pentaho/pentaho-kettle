@@ -17,7 +17,6 @@ import java.io.PrintWriter;
 import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,7 +27,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 
 
-public class StartExecutionTransServlet extends HttpServlet
+public class StartExecutionTransServlet extends BaseHttpServlet implements CarteServletInterface
 {
 	private static Class<?> PKG = StartExecutionTransServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -46,7 +45,7 @@ public class StartExecutionTransServlet extends HttpServlet
     {
         // if (!request.getServletPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), "Start execution of transformation requested");
+        if (log.isDebug()) logDebug("Start execution of transformation requested");
         response.setStatus(HttpServletResponse.SC_OK);
 
         String transName = request.getParameter("name");
@@ -142,4 +141,8 @@ public class StartExecutionTransServlet extends HttpServlet
     {
         return "Start transformation";
     }
+
+	public String getService() {
+		return CONTEXT_PATH+" ("+toString()+")";
+	}
 }

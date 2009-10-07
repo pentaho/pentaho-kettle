@@ -19,8 +19,7 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.codec.binary.Base64;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
 import org.w3c.dom.Document;
@@ -53,7 +52,7 @@ public class SlaveServerJobStatus
         this.statusDescription = statusDescription;
     }
     
-    public String getXML()
+    public String getXML() throws KettleException
     {
         StringBuffer xml = new StringBuffer();
         
@@ -70,7 +69,7 @@ public class SlaveServerJobStatus
 				String resultXML = result.getXML();
 				xml.append(resultXML);
 			} catch (IOException e) {
-				LogWriter.getInstance().logError("Slave server job status", "Unable to serialize result object as XML", e);
+				throw new KettleException("Unable to serialize result object as XML", e);
 			}
         }
 
@@ -79,7 +78,7 @@ public class SlaveServerJobStatus
         return xml.toString();
     }
     
-    public SlaveServerJobStatus(Node jobStatusNode)
+    public SlaveServerJobStatus(Node jobStatusNode) throws KettleException 
     {
         this();
         jobName = XMLHandler.getTagValue(jobStatusNode, "jobname");
@@ -121,13 +120,13 @@ public class SlaveServerJobStatus
         {
         	try {
 				result = new Result(resultNode);
-			} catch (IOException e) {
+			} catch (KettleException e) {
 				loggingString+="Unable to serialize result object as XML"+Const.CR+Const.getStackTracker(e)+Const.CR;
 			}
         }
     }
     
-    public static SlaveServerJobStatus fromXML(String xml) throws KettleXMLException
+    public static SlaveServerJobStatus fromXML(String xml) throws KettleException
     {
         Document document = XMLHandler.loadXMLString(xml);
         SlaveServerJobStatus status = new SlaveServerJobStatus(XMLHandler.getSubNode(document, XML_TAG));

@@ -558,7 +558,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 				} catch (KettleException e) {
 					prevFields = new RowMeta();
 					String msg = BaseMessages.getString(PKG, "DatabaseLookupDialog.DoMapping.UnableToFindInput");
-					log.logError(toString(), msg);
+					logError(msg);
 				}
 				String[] prevStepFieldNames = prevFields.getFieldNames();
 				Arrays.sort(prevStepFieldNames);
@@ -577,7 +577,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(ci);
+						Database db = new Database(this, ci);
 						db.shareVariablesWith(transMeta);
 						try {
 							db.connect();
@@ -633,7 +633,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		wCache.setSelection(input.isCached());
 		wCachesize.setText(""+input.getCacheSize()); //$NON-NLS-1$
@@ -701,7 +701,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		input.setCacheSize( Const.toInt(wCachesize.getText(), 0) );
 		input.setLoadingAllDataInCache( wCacheLoadAll.getSelection() );
 		
-		log.logDebug(toString(), BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.FoundKeys",String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+		logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.FoundKeys",String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrkeys;i++)
 		{
 			TableItem item = wKey.getNonEmpty(i);
@@ -711,7 +711,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 			input.getStreamKeyField2()[i]  = item.getText(4);
 		}
 
-		log.logDebug(toString(), BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.FoundFields",String.valueOf(nrfields))); //$NON-NLS-1$ //$NON-NLS-2$
+		logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.FoundFields",String.valueOf(nrfields))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrfields;i++)
 		{
 			TableItem item        = wReturn.getNonEmpty(i);
@@ -758,7 +758,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		
 		if (inf!=null)
 		{
-			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
+			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
 		
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSplitSchemaAndTable(true);
@@ -810,7 +810,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 		if (ci!=null)
 		{
-			Database db = new Database(ci);
+			Database db = new Database(this, ci);
 			db.shareVariablesWith(transMeta);
 			try
 			{
@@ -822,7 +822,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
                     RowMetaInterface r = db.getTableFields(schemaTable);
 					if (r!=null && !r.isEmpty())
 					{
-                        log.logDebug(toString(), BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.FoundTableFields")+schemaTable+" --> "+r.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$
+                        logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.FoundTableFields")+schemaTable+" --> "+r.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$
                         BaseStepDialog.getFieldsFromPrevious(r, wReturn, 1, new int[] { 1, 2}, new int[] { 4 }, -1, -1, null);
 					}
 					else
@@ -855,7 +855,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
 		if (databaseMeta!=null)
 		{
-			Database database = new Database(databaseMeta);
+			Database database = new Database(this, databaseMeta);
 			try
 			{
 				database.connect();

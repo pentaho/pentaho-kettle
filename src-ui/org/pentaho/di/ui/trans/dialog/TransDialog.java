@@ -48,7 +48,6 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -81,8 +80,6 @@ public class TransDialog extends Dialog
 
   public static enum Tabs {TRANS_TAB, PARAM_TAB, LOG_TAB, DATE_TAB, DEP_TAB, MISC_TAB, MONITOR_TAB};
   
-  private LogWriter    log;
-	
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
@@ -200,7 +197,6 @@ public class TransDialog extends Dialog
   public TransDialog(Shell parent, int style, TransMeta transMeta, Repository rep)
     {
         super(parent, style);
-        this.log      = LogWriter.getInstance();
         this.props    = PropsUI.getInstance();
         this.transMeta    = transMeta;
         this.rep      = rep;
@@ -1400,8 +1396,6 @@ public class TransDialog extends Dialog
 	 */ 
 	public void getData()
 	{
-		log.logDebug(toString(), BaseMessages.getString(PKG, "TransDialog.Log.GettingTransformationInfo")); //$NON-NLS-1$
-
 		wTransname.setText( Const.NVL(transMeta.getName(), "") );
 		wTransFilename.setText(Const.NVL(transMeta.getFilename(), "") );
 		wTransdescription.setText( Const.NVL(transMeta.getDescription(), "") );
@@ -1601,8 +1595,6 @@ public class TransDialog extends Dialog
 				transMeta.addParameterDefinition(item.getText(1), item.getText(2), item.getText(3));
 			} catch (DuplicateParamException e) {
 				// Ignore the duplicate parameter.
-				if (log.isDetailed())
-					log.logDetailed(getClass().getName(), "Duplicate parameter '" + item.getText(1) + "' detected.");
 			}
 		}
 
@@ -1621,7 +1613,6 @@ public class TransDialog extends Dialog
 				try {
 					ObjectId newId = rep.renameTransformation(transMeta.getObjectId(), newDirectory, transMeta.getName());
 					transMeta.setObjectId(newId);
-					log.logDetailed(getClass().getName(), BaseMessages.getString(PKG, "TransDialog.Log.MovedDirectoryTo", newDirectory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
 					transMeta.setRepositoryDirectory(newDirectory);
 				} catch (KettleException ke) {
 					transMeta.setRepositoryDirectory(dirFrom);
@@ -1726,7 +1717,7 @@ public class TransDialog extends Dialog
 			
 			if (!Const.isEmpty(tablename) || !Const.isEmpty(stepTablename) )
 			{
-				Database db = new Database(ci);
+				Database db = new Database(this, ci);
 				db.shareVariablesWith(transMeta);
 				try
 				{
@@ -1747,8 +1738,6 @@ public class TransDialog extends Dialog
 					
 					if (!Const.isEmpty(createTable))
 					{
-						log.logBasic(toString(), createTable);
-	
 						SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, ci, transMeta.getDbCache(), createTable);
 						sqledit.open();
 					}

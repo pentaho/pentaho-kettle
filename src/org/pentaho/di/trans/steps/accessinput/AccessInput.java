@@ -295,7 +295,7 @@ public class AccessInput extends BaseStep implements StepInterface
 				
 				
 				String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
-				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "AccessInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
+				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "AccessInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
 
 				data.file= KettleVFS.getFileObject(filename);
 				// Check if file exists!
@@ -342,7 +342,7 @@ public class AccessInput extends BaseStep implements StepInterface
 		if (nonExistantFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
-			log.logError(BaseMessages.getString(PKG, "AccessInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "AccessInput.Log.RequiredFiles", message));
+			logError(BaseMessages.getString(PKG, "AccessInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "AccessInput.Log.RequiredFiles", message));
 
 			throw new KettleException(BaseMessages.getString(PKG, "AccessInput.Log.RequiredFilesMissing",message));
 		}
@@ -351,7 +351,7 @@ public class AccessInput extends BaseStep implements StepInterface
 		if (nonAccessibleFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
-			log.logError(BaseMessages.getString(PKG, "AccessInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "AccessInput.Log.RequiredNotAccessibleFiles",message));
+			logError(BaseMessages.getString(PKG, "AccessInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "AccessInput.Log.RequiredNotAccessibleFiles",message));
 
 				throw new KettleException(BaseMessages.getString(PKG, "AccessInput.Log.RequiredNotAccessibleFilesMissing",message));
 		}

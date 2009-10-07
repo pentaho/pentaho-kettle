@@ -37,7 +37,6 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -260,7 +259,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		return true;
 	}
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
 		String ReplaceIgnore;
 		String IgnoreNbrLignes="";
@@ -307,12 +306,12 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 				{
 					// User has specified an existing file, We can continue ...
 					if(log.isDetailed())	
-						log.logDetailed(toString(), "File ["+realFilename+"] exists.");
+						logDetailed("File ["+realFilename+"] exists.");
 	
 					if (connection!=null)
 					{
 						// User has specified a connection, We can continue ...
-						Database db = new Database(connection);
+						Database db = new Database(this, connection);
 						db.shareVariablesWith(this);
 						try
 						{
@@ -326,7 +325,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 							{
 								// The table existe, We can continue ...
 								if(log.isDetailed())	
-									log.logDetailed(toString(), "Table ["+realTablename+"] exists.");
+									logDetailed("Table ["+realTablename+"] exists.");
 	
 								// Add schemaname (Most the time Schemaname.Tablename)
 								if (schemaname !=null)
@@ -439,11 +438,11 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								{
 									db.disconnect();
 									result.setNrErrors(1);
-									log.logError(toString(), "An error occurred executing this job entry : "+je.getMessage());
+									logError("An error occurred executing this job entry : "+je.getMessage());
 								}
 								catch (IOException e)
 								{
-					       			log.logError(toString(), "An error occurred executing this job entry : " + e.getMessage());
+					       			logError("An error occurred executing this job entry : " + e.getMessage());
 									result.setNrErrors(1);
 								}
 							}
@@ -453,42 +452,42 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								db.disconnect();
 								result.setNrErrors(1);
 								if(log.isDetailed())	
-									log.logDetailed(toString(), "Table ["+realTablename+"] doesn't exist!");
+									logDetailed("Table ["+realTablename+"] doesn't exist!");
 							}
 						}
 						catch(KettleDatabaseException dbe)
 						{
 							db.disconnect();
 							result.setNrErrors(1);
-							log.logError(toString(), "An error occurred executing this entry: "+dbe.getMessage());
+							logError("An error occurred executing this entry: "+dbe.getMessage());
 						}
 					}
 					else
 					{
 						// No database connection is defined
 						result.setNrErrors(1);
-						log.logError(toString(),  BaseMessages.getString(PKG, "JobMysqlBulkLoad.Nodatabase.Label"));
+						logError( BaseMessages.getString(PKG, "JobMysqlBulkLoad.Nodatabase.Label"));
 					}
 				}
 				else
 				{
 					// the file doesn't exist
 					result.setNrErrors(1);
-					log.logError(toString(), "File ["+realFilename+"] doesn't exist!");
+					logError("File ["+realFilename+"] doesn't exist!");
 				}
 			}
 			catch(Exception e)
 			{
 				// An unexpected error occurred
 				result.setNrErrors(1);
-				log.logError(toString(), BaseMessages.getString(PKG, "JobMysqlBulkLoad.UnexpectedError.Label"), e);
+				logError(BaseMessages.getString(PKG, "JobMysqlBulkLoad.UnexpectedError.Label"), e);
 			}
 		}
 		else
 		{
 			// No file was specified
 			result.setNrErrors(1);
-			log.logError(toString(), BaseMessages.getString(PKG, "JobMysqlBulkLoad.Nofilename.Label"));
+			logError(BaseMessages.getString(PKG, "JobMysqlBulkLoad.Nofilename.Label"));
 		}
 		return result;
 	}

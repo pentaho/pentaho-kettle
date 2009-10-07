@@ -19,6 +19,9 @@ import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -40,16 +43,19 @@ public class Carte
 
 	private WebServer webServer;
 	private SlaveServerConfig config;
+	private LogChannelInterface log;
 
 	public Carte(SlaveServerConfig config) throws Exception {
 		this.config = config;
 
+		this.log = new LogChannel("Carte");
+		
 		boolean allOK=true;
 		
         TransformationMap transformationMap = new TransformationMap();
         JobMap jobMap = new JobMap();
         List<SlaveServerDetection> detections = new ArrayList<SlaveServerDetection>();
-        SocketRepository socketRepository = new SocketRepository();
+        SocketRepository socketRepository = new SocketRepository(log);
         
         Trans trans = generateTestTransformation();
         transformationMap.addTransformation(trans.getName(), trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
@@ -66,7 +72,7 @@ public class Carte
             }
             catch(Exception e)
             {
-                LogWriter.getInstance().logError("Carte", BaseMessages.getString(PKG, "Carte.Error.CanNotPartPort", slaveServer.getHostname(), ""+port), e);
+                log.logError(BaseMessages.getString(PKG, "Carte.Error.CanNotPartPort", slaveServer.getHostname(), ""+port), e);
                 allOK=false;
             }
         }
@@ -84,16 +90,16 @@ public class Carte
 	        	try {
 		        	SlaveServerDetection slaveServerDetection = new SlaveServerDetection(client);
 		        	master.sendXML(slaveServerDetection.getXML(), RegisterSlaveServlet.CONTEXT_PATH+"/");
-	        		LogWriter.getInstance().logBasic("Carte", "Registered this slave server to master slave server ["+master.toString()+"] on address ["+master.getServerAndPort()+"]");
+	        		log.logBasic("Registered this slave server to master slave server ["+master.toString()+"] on address ["+master.getServerAndPort()+"]");
 	        	} catch(Exception e) {
-	        		LogWriter.getInstance().logError("Carte", "Unable to register to master slave server ["+master.toString()+"] on address ["+master.getServerAndPort()+"]");
+	        		log.logError("Unable to register to master slave server ["+master.toString()+"] on address ["+master.getServerAndPort()+"]");
 	        		allOK=false;
 	        	}
 	        }
         }
         
         if (allOK) {
-        	this.webServer = new WebServer(transformationMap, jobMap, socketRepository, detections, hostname, port, config.isJoining());
+        	this.webServer = new WebServer(log, transformationMap, jobMap, socketRepository, detections, hostname, port, config.isJoining());
         }
 	}
 	
@@ -106,7 +112,7 @@ public class Carte
     		FileObject file = KettleVFS.getFileObject(args[0]);
     		Document document = XMLHandler.loadXMLFile(file);
     		Node configNode = XMLHandler.getSubNode(document, SlaveServerConfig.XML_TAG); 
-    		config = new SlaveServerConfig(configNode);
+    		config = new SlaveServerConfig(new LogChannel("Slave server config"), configNode);
     	}
     	if (args.length==2  && !Const.isEmpty(args[0])  && !Const.isEmpty(args[1])) {
     		String hostname = args[0];
@@ -138,7 +144,9 @@ public class Carte
 
     public static void runCarte(SlaveServerConfig config) throws Exception {
     	init();
-    	        
+    	       
+    	CentralLogStore.init(config.getMaxLogLines());
+
         // Join with the process: block
         //
         config.setJoining(true);

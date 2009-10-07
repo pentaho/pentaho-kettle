@@ -306,7 +306,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), BaseMessages.getString(PKG, "DenormaliserDialog.Log.Getting.KeyInfo")); //$NON-NLS-1$
+		logDebug(BaseMessages.getString(PKG, "DenormaliserDialog.Log.Getting.KeyInfo")); //$NON-NLS-1$
 		
         if (input.getKeyField()!= null) wKeyField.setText(input.getKeyField());
 

@@ -31,7 +31,6 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -173,7 +172,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
     
 
 	
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
@@ -194,14 +193,14 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		    		    if (file.exists() && file.isReadable())
 		    		    {
 		    		    	if(log.isDetailed())
-		    		    		log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFilesExist.File_Exists", realFilefoldername)); //$NON-NLS-1$
+		    		    		logDetailed(BaseMessages.getString(PKG, "JobEntryFilesExist.File_Exists", realFilefoldername)); //$NON-NLS-1$
 		    		    }
 		                else
 		                {
 		                	missingfiles ++;
 		                	result.setNrErrors(missingfiles);
 		                	if(log.isDetailed())
-		                		log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFilesExist.File_Does_Not_Exist", realFilefoldername)); //$NON-NLS-1$
+		                		logDetailed(BaseMessages.getString(PKG, "JobEntryFilesExist.File_Does_Not_Exist", realFilefoldername)); //$NON-NLS-1$
 		                }
 		    		  
 		            }
@@ -209,7 +208,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		            {
 		    	  		missingfiles ++;
 		                result.setNrErrors(missingfiles);
-		                log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFilesExist.ERROR_0004_IO_Exception", e.toString())); //$NON-NLS-1$
+		                logError(BaseMessages.getString(PKG, "JobEntryFilesExist.ERROR_0004_IO_Exception", e.toString())); //$NON-NLS-1$
 		            }
 		    	  	finally
 		    	  	{

@@ -117,7 +117,7 @@ public class DetectLastRow extends BaseStep implements StepInterface
         {
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), BaseMessages.getString(PKG, "DetectLastRow.Error.ResultFieldMissing"));
+        		logError(BaseMessages.getString(PKG, "DetectLastRow.Error.ResultFieldMissing"));
         		return false;
         	}
 

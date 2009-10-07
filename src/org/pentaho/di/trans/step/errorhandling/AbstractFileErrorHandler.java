@@ -25,7 +25,6 @@ import java.util.Map;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStep;
@@ -36,8 +35,6 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 	private static final String DD_MMYYYY_HHMMSS = "ddMMyyyy-HHmmss"; //$NON-NLS-1$
 
 	public static final String NO_PARTS = "NO_PARTS"; //$NON-NLS-1$
-
-	private final LogWriter log = LogWriter.getInstance();
 
 	private final String destinationDirectory;
 
@@ -145,8 +142,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 			try {
 				outputStreamWriter.flush();
 			} catch (IOException exception) {
-				log.logError(BaseMessages.getString(PKG, "AbstractFileErrorHandler.Log.CouldNotFlushContentToFile"), exception //$NON-NLS-1$
-						.getLocalizedMessage());
+				baseStep.logError(BaseMessages.getString(PKG, "AbstractFileErrorHandler.Log.CouldNotFlushContentToFile"), exception.getLocalizedMessage());  //$NON-NLS-1$
 			}
 			try {
 				outputStreamWriter.close();

@@ -348,7 +348,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
         
         try
         {
-            if(log.isDetailed()) log.logDetailed(toString(), "Setting preparedStatement to [" + sql + "]");
+            if(log.isDetailed()) logDetailed("Setting preparedStatement to [" + sql + "]");
             data.prepStatementLookup = data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
         }
         catch (SQLException ex)
@@ -406,7 +406,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 
         try
         {
-        	if(log.isDetailed()) log.logDetailed(toString(), "Setting update preparedStatement to ["+sql+"]");
+        	if(log.isDetailed()) logDetailed("Setting update preparedStatement to ["+sql+"]");
             data.prepStatementUpdate=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
         }
         catch(SQLException ex) 
@@ -425,7 +425,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 		{
 		    try
 		    {
-				data.db=new Database(meta.getDatabaseMeta());
+				data.db=new Database(this, meta.getDatabaseMeta());
 				data.db.shareVariablesWith(this);
                 if (getTransMeta().isUsingUniqueConnections())
                 {
@@ -470,7 +470,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
         }
         catch(KettleDatabaseException e)
         {
-            log.logError(toString(), BaseMessages.getString(PKG, "InsertUpdate.Log.UnableToCommitConnection")+e.toString()); //$NON-NLS-1$
+            logError(BaseMessages.getString(PKG, "InsertUpdate.Log.UnableToCommitConnection")+e.toString()); //$NON-NLS-1$
             setErrors(1);
         }
         finally 

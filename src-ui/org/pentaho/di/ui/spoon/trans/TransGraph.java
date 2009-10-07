@@ -89,8 +89,13 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.Log4jKettleLayout;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogParentProvidedInterface;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -153,10 +158,10 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
  * @since 17-mei-2003
  * 
  */
-public class TransGraph extends Composite implements Redrawable, TabItemInterface {
+public class TransGraph extends Composite implements Redrawable, TabItemInterface, LogParentProvidedInterface {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-  private static final LogWriter log = LogWriter.getInstance();
+  private LogChannelInterface log;
 
   private static final int HOP_SEL_MARGIN = 9;
 
@@ -325,6 +330,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     this.spoon = spoon;
     this.transMeta = transMeta;
     this.areaOwners = new ArrayList<AreaOwner>();
+    this.log = spoon.getLog();
 
     transLogDelegate = new TransLogDelegate(spoon, this);
     transGridDelegate = new TransGridDelegate(spoon, this);
@@ -1091,7 +1097,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       addToolBarListeners();
       toolBar.layout(true, true);
     } catch (Throwable t) {
-      log.logError(toString(), Const.getStackTracker(t));
+      log.logError(Const.getStackTracker(t));
       new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
     		  BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR), new Exception(t));
     }
@@ -1250,6 +1256,11 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
         // SPACE : over a step: show output fields...
         if (e.character == ' ' && lastMove != null) {
+          
+          // TODO: debugging code, remove later on!
+          //
+          dumpLoggingRegistry();
+          
           Point real = screen2real(lastMove.x, lastMove.y);
 
           // Hide the tooltip!
@@ -2358,7 +2369,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private void editHop(TransHopMeta transHopMeta) {
     String name = transHopMeta.toString();
-    if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TransGraph.Logging.EditingHop") + name); //$NON-NLS-1$
+    if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransGraph.Logging.EditingHop") + name); //$NON-NLS-1$
     spoon.editHop(transMeta, transHopMeta);
   }
 
@@ -2907,7 +2918,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         if (trans == null || (trans != null && trans.isFinished())) {
           try {
             // Set the requested logging level.
-            log.setLogLevel(executionConfiguration.getLogLevel());
+            LogWriter.getInstance().setLogLevel(executionConfiguration.getLogLevel());
 
             transMeta.injectVariables(executionConfiguration.getVariables());
             
@@ -2933,7 +2944,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             trans.setReplayDate(executionConfiguration.getReplayDate());
             trans.setRepository(executionConfiguration.getRepository());
             trans.setMonitored(true);
-            log.logBasic(toString(), BaseMessages.getString(PKG, "TransLog.Log.TransformationOpened")); //$NON-NLS-1$
+            log.logBasic(BaseMessages.getString(PKG, "TransLog.Log.TransformationOpened")); //$NON-NLS-1$
           } catch (KettleException e) {
             trans = null;
             new ErrorDialog(
@@ -2948,7 +2959,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             else
               args = null;
 
-            log.logMinimal(Spoon.APP_NAME, BaseMessages.getString(PKG, "TransLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
+            log.logMinimal(BaseMessages.getString(PKG, "TransLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
             
             trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
 
@@ -2964,7 +2975,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
               }
             });
 
-            log.logMinimal(Spoon.APP_NAME, BaseMessages.getString(PKG, "TransLog.Log.StartedExecutionOfTransformation")); //$NON-NLS-1$
+            log.logMinimal(BaseMessages.getString(PKG, "TransLog.Log.StartedExecutionOfTransformation")); //$NON-NLS-1$
 
             setControlStates();
           }
@@ -3024,8 +3035,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       try {
         this.lastTransDebugMeta = transDebugMeta;
 
-        log.setLogLevel(executionConfiguration.getLogLevel());
-        if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "TransLog.Log.DoPreview")); //$NON-NLS-1$
+        LogWriter.getInstance().setLogLevel(executionConfiguration.getLogLevel());
+        if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "TransLog.Log.DoPreview")); //$NON-NLS-1$
         String[] args = null;
         Map<String, String> arguments = executionConfiguration.getArguments();
         if (arguments != null) {
@@ -3159,7 +3170,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       trans.stopAll();
       try {
         trans.endProcessing("stop"); //$NON-NLS-1$
-        log.logMinimal(Spoon.APP_NAME, BaseMessages.getString(PKG, "TransLog.Log.ProcessingOfTransformationStopped")); //$NON-NLS-1$
+        log.logMinimal(BaseMessages.getString(PKG, "TransLog.Log.ProcessingOfTransformationStopped")); //$NON-NLS-1$
       } catch (KettleException e) {
         new ErrorDialog(
             shell,
@@ -3296,7 +3307,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
       setControlStates();
     } catch (KettleException e) {
-      log.logError(toString(), "Error starting step threads", e);
+      log.logError("Error starting step threads", e);
   	  checkErrorVisuals();
     }
 
@@ -3319,7 +3330,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   private void checkTransEnded() {
     if (trans != null) {
       if (trans.isFinished() && (running || halted)) {
-        log.logMinimal(Spoon.APP_NAME, BaseMessages.getString(PKG, "TransLog.Log.TransformationHasFinished")); //$NON-NLS-1$
+        log.logMinimal(BaseMessages.getString(PKG, "TransLog.Log.TransformationHasFinished")); //$NON-NLS-1$
 
         running = false;
         initialized = false;
@@ -3475,18 +3486,32 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     this.halting = halting;
   }
 
-/**
- * @return the stepLogMap
- */
-public Map<StepMeta, String> getStepLogMap() {
-	return stepLogMap;
-}
+	/**
+	 * @return the stepLogMap
+	 */
+	public Map<StepMeta, String> getStepLogMap() {
+		return stepLogMap;
+	}
 
-/**
- * @param stepLogMap the stepLogMap to set
- */
-public void setStepLogMap(Map<StepMeta, String> stepLogMap) {
-	this.stepLogMap = stepLogMap;
-}
+	/**
+	 * @param stepLogMap
+	 *            the stepLogMap to set
+	 */
+	public void setStepLogMap(Map<StepMeta, String> stepLogMap) {
+		this.stepLogMap = stepLogMap;
+	}
 
+	public void dumpLoggingRegistry() {
+		LoggingRegistry registry = LoggingRegistry.getInstance();
+		Map<String, LoggingObjectInterface> loggingMap = registry.getMap();
+		
+		for (LoggingObjectInterface loggingObject : loggingMap.values()) {
+			System.out.println(loggingObject.getLogChannelId()+" - "+loggingObject.getName()+" - "+loggingObject.getObjectType());
+		}
+		
+	}
+
+	public HasLogChannelInterface getLogChannelProvider() {
+		return trans;
+	}
 }

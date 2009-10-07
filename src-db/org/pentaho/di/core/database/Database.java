@@ -63,7 +63,8 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -112,8 +113,9 @@ public class Database implements VariableSpace
 	
 	private int written;
 	
-	private LogWriter log;
-	
+	private LogChannelInterface log;
+    private Object parentObject;
+
     /**
      * Number of times a connection was opened using this object.
      * Only used in the context of a database connection map
@@ -133,14 +135,16 @@ public class Database implements VariableSpace
     
 	/**
 	 * Construct a new Database Connection
-	 * @param inf The Database Connection Info to construct the connection with.
+	 * @param databaseMeta The Database Connection Info to construct the connection with.
+	 * @deprecated Please specify the parent object so that we can see which object is initiating a database connection
 	 */
-	public Database(DatabaseMeta inf)
+	public Database(DatabaseMeta databaseMeta)
 	{
-		log=LogWriter.getInstance();
-		databaseMeta = inf;
-		shareVariablesWith(inf);
+		this.databaseMeta = databaseMeta;
+		shareVariablesWith(databaseMeta);
 		
+		log=new LogChannel(this); // In this case we don't have the parent object, so we don't know which object makes the connection. 
+
 		pstmt = null;
 		rowMeta = null;
 		dbmd = null;
@@ -149,8 +153,31 @@ public class Database implements VariableSpace
 		
 		written=0;
 				
-		if(log.isDetailed()) log.logDetailed(toString(), "New database connection defined");
+		if(log.isDetailed()) log.logDetailed("New database connection defined");
 	}
+	
+	/**
+	 * Construct a new Database Connection
+	 * @param databaseMeta The Database Connection Info to construct the connection with.
+	 */
+	public Database(Object parentObject, DatabaseMeta databaseMeta)
+	{
+		this.databaseMeta = databaseMeta;
+		shareVariablesWith(databaseMeta);
+		
+		log=new LogChannel(this); // In this case we don't have the 
+
+		pstmt = null;
+		rowMeta = null;
+		dbmd = null;
+		
+		rowlimit=0;
+		
+		written=0;
+				
+		if(log.isDetailed()) log.logDetailed("New database connection defined");
+	}
+
     
     public boolean equals(Object obj)
     {
@@ -287,7 +314,7 @@ public class Database implements VariableSpace
             {
                 try
                 {
-                    this.connection = ConnectionPoolUtil.getConnection(databaseMeta, partitionId);
+                    this.connection = ConnectionPoolUtil.getConnection(log, databaseMeta, partitionId);
                 } 
                 catch (Exception e)
                 {
@@ -297,7 +324,7 @@ public class Database implements VariableSpace
             else
             {
     			connectUsingClass(databaseMeta.getDriverClass(), partitionId );
-    			if(log.isDetailed()) log.logDetailed(toString(), "Connected to database.");
+    			if(log.isDetailed()) log.logDetailed("Connected to database.");
                 
                 // See if we need to execute extra SQL statemtent...
                 String sql = environmentSubstitute( databaseMeta.getConnectSQL() ); 
@@ -306,7 +333,7 @@ public class Database implements VariableSpace
                 if (!Const.isEmpty(sql) && !Const.onlySpaces(sql))
                 {
                     execStatements(sql);
-                    if(log.isDetailed()) log.logDetailed(toString(), "Executed connect time SQL statements:"+Const.CR+sql);
+                    if(log.isDetailed()) log.logDetailed("Executed connect time SQL statements:"+Const.CR+sql);
                 }
             }
 		}
@@ -504,13 +531,13 @@ public class Database implements VariableSpace
 		}
 		catch(SQLException ex) 
 		{
-			log.logError(toString(), "Error disconnecting from database:"+Const.CR+ex.getMessage());
-            log.logError(toString(), Const.getStackTracker(ex));
+			log.logError("Error disconnecting from database:"+Const.CR+ex.getMessage());
+            log.logError(Const.getStackTracker(ex));
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			log.logError(toString(), "Error disconnecting from database:"+Const.CR+dbe.getMessage());
-            log.logError(toString(), Const.getStackTracker(dbe));
+			log.logError("Error disconnecting from database:"+Const.CR+dbe.getMessage());
+            log.logError(Const.getStackTracker(dbe));
 		}
 	}
 	
@@ -530,7 +557,7 @@ public class Database implements VariableSpace
 				}
 			} 
 			
-			if(log.isDetailed()) log.logDetailed(toString(), "Connection to database closed!");
+			if(log.isDetailed()) log.logDetailed("Connection to database closed!");
 		}
 		catch(SQLException e) {
 			throw new KettleDatabaseException("Error disconnecting from database '"+toString()+"'", e);
@@ -560,7 +587,7 @@ public class Database implements VariableSpace
             { 
                 statement.cancel(); 
             } 
-            if(log.isDebug()) log.logDebug(toString(), "Statement canceled!");
+            if(log.isDebug()) log.logDebug("Statement canceled!");
         }
         catch(SQLException ex) 
         {
@@ -579,11 +606,11 @@ public class Database implements VariableSpace
         try
         {
             connection.setAutoCommit(commitsize<=0);
-            if(log.isDetailed()) log.logDetailed(toString(), "Auto commit "+onOff);
+            if(log.isDetailed()) log.logDetailed("Auto commit "+onOff);
         }
         catch(Exception e)
         {
-            log.logError(toString(), "Can't turn auto commit "+onOff);
+            log.logError("Can't turn auto commit "+onOff);
         }
 	}
 	
@@ -624,12 +651,12 @@ public class Database implements VariableSpace
             }
 			if (getDatabaseMetaData().supportsTransactions())
 			{
-				if (log.isDebug()) log.logDebug(toString(), "Commit on database connection ["+toString()+"]");
+				if (log.isDebug()) log.logDebug("Commit on database connection ["+toString()+"]");
 				connection.commit();
 			}
 			else
 			{
-				if(log.isDetailed()) log.logDetailed(toString(), "No commit possible on database connection ["+toString()+"]");
+				if(log.isDetailed()) log.logDetailed("No commit possible on database connection ["+toString()+"]");
 			}
 		}
 		catch(Exception e)
@@ -655,13 +682,13 @@ public class Database implements VariableSpace
             if (getDatabaseMetaData().supportsTransactions())
             {
                 if (connection!=null) {
-                	if (log.isDebug()) log.logDebug(toString(), "Rollback on database connection ["+toString()+"]");
+                	if (log.isDebug()) log.logDebug("Rollback on database connection ["+toString()+"]");
                 	connection.rollback();
                 }
             }
             else
             {
-            	if(log.isDetailed()) log.logDetailed(toString(), "No rollback possible on database connection ["+toString()+"]");
+            	if(log.isDetailed()) log.logDetailed("No rollback possible on database connection ["+toString()+"]");
             }
 			
 		}
@@ -698,7 +725,7 @@ public class Database implements VariableSpace
 		
 		String ins = getInsertStatement(schemaName, tableName, rowMeta);
 				
-		if(log.isDetailed()) log.logDetailed(toString(),"Preparing statement: "+Const.CR+ins);
+		if(log.isDetailed()) log.logDetailed("Preparing statement: "+Const.CR+ins);
 		prepStatementInsert=prepareSQL(ins);
 	}
 
@@ -1324,7 +1351,7 @@ public class Database implements VariableSpace
 		}
 		catch(SQLException ex) 
 		{
-		    // log.logError(toString(), Const.getStackTracker(ex));
+		    // log.logError(Const.getStackTracker(ex));
 			throw new KettleDatabaseException("Error inserting/updating row", ex);
 		}
 		catch(Exception e)
@@ -1525,7 +1552,7 @@ public class Database implements VariableSpace
 			else
 			{
                 String sqlStripped = databaseMeta.stripCR(sql);
-                // log.logDetailed(toString(), "Executing SQL Statement: ["+sqlStripped+"]");
+                // log.logDetailed("Executing SQL Statement: ["+sqlStripped+"]");
 				Statement stmt = connection.createStatement();
                 resultSet = stmt.execute(sqlStripped);
                 count = stmt.getUpdateCount();
@@ -1535,7 +1562,7 @@ public class Database implements VariableSpace
             {
                 // the result is a resultset, but we don't do anything with it!
                 // You should have called something else!
-                // log.logDetailed(toString(), "What to do with ResultSet??? (count="+count+")");
+                // log.logDetailed("What to do with ResultSet??? (count="+count+")");
             }
             else
             {
@@ -1632,7 +1659,7 @@ public class Database implements VariableSpace
 					if (sql.toUpperCase().startsWith("SELECT"))
 					{
 						// A Query
-						if(log.isDetailed()) log.logDetailed(toString(), "launch SELECT statement: "+Const.CR+sql);
+						if(log.isDetailed()) log.logDetailed("launch SELECT statement: "+Const.CR+sql);
 						
 						nrstats++;
 						ResultSet rs = null;
@@ -1645,14 +1672,14 @@ public class Database implements VariableSpace
 								while (row!=null)
 								{
 									result.setNrLinesRead(result.getNrLinesRead()+1);
-									if (log.isDetailed()) log.logDetailed(toString(), rowMeta.getString(row));
+									if (log.isDetailed()) log.logDetailed(rowMeta.getString(row));
                                     row = getRow(rs);
 								}
 								
 							}
 							else
 							{
-                                if (log.isDebug()) log.logDebug(toString(), "Error executing query: "+Const.CR+sql);
+                                if (log.isDebug()) log.logDebug("Error executing query: "+Const.CR+sql);
 							}
 						} catch (KettleValueException e) {
 							throw new KettleDatabaseException(e); // just pass the error upwards.
@@ -1665,13 +1692,13 @@ public class Database implements VariableSpace
 							}
 							catch (SQLException ex )
 							{
-                                if (log.isDebug()) log.logDebug(toString(), "Error closing query: "+Const.CR+sql);
+                                if (log.isDebug()) log.logDebug("Error closing query: "+Const.CR+sql);
 							}
 						}						
 					}
                     else // any kind of statement
                     {
-                    	if(log.isDetailed()) log.logDetailed(toString(), "launch DDL statement: "+Const.CR+sql);
+                    	if(log.isDetailed()) log.logDetailed("launch DDL statement: "+Const.CR+sql);
 
                         // A DDL statement
                         nrstats++;
@@ -1688,7 +1715,7 @@ public class Database implements VariableSpace
 			}
 		}
 		
-		if(log.isDetailed()) log.logDetailed(toString(), nrstats+" statement"+(nrstats==1?"":"s")+" executed");
+		if(log.isDetailed()) log.logDetailed(nrstats+" statement"+(nrstats==1?"":"s")+" executed");
         
         return result;
 	}
@@ -1787,15 +1814,15 @@ public class Database implements VariableSpace
 		}
 		catch(SQLException ex)
 		{
-			// log.logError(toString(), "ERROR executing ["+sql+"]");
-			// log.logError(toString(), "ERROR in part: ["+debug+"]");
+			// log.logError("ERROR executing ["+sql+"]");
+			// log.logError("ERROR in part: ["+debug+"]");
 			// printSQLException(ex);
             throw new KettleDatabaseException("An error occurred executing SQL: "+Const.CR+sql, ex);
 		}
 		catch(Exception e)
 		{
-			log.logError(toString(), "ERROR executing query: "+e.toString());
-			log.logError(toString(), "ERROR in part: "+debug);
+			log.logError("ERROR executing query: "+e.toString());
+			log.logError("ERROR in part: "+debug);
             throw new KettleDatabaseException("An error occurred executing SQL in part ["+debug+"]:"+Const.CR+sql, e);
 		}
 
@@ -1885,7 +1912,7 @@ public class Database implements VariableSpace
 	{
 		try
 		{
-			if(log.isDebug()) log.logDebug(toString(), "Checking if table ["+tablename+"] exists!");
+			if(log.isDebug()) log.logDebug("Checking if table ["+tablename+"] exists!");
 			
             // Just try to read from the table.
             String sql = databaseMeta.getSQLTableExists(tablename);
@@ -1914,7 +1941,7 @@ public class Database implements VariableSpace
                              ( schemaName!=null && tablename.equalsIgnoreCase( databaseMeta.getSchemaTableCombination(schemaName, name)) )
                            )
 						{
-							log.logDebug(toString(), "table ["+tablename+"] was found!");
+							log.logDebug("table ["+tablename+"] was found!");
 							found=true;
 						}
 					}
@@ -1949,7 +1976,7 @@ public class Database implements VariableSpace
 	{
 		try
 		{
-			if(log.isDebug()) log.logDebug(toString(), "Checking if column [" + columnname + "] exists in table ["+tablename+"] !");
+			if(log.isDebug()) log.logDebug("Checking if column [" + columnname + "] exists in table ["+tablename+"] !");
 
             // Just try to read from the table.
             String sql = databaseMeta.getSQLColumnExists(columnname,tablename);
@@ -2038,7 +2065,7 @@ public class Database implements VariableSpace
         String tablename = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 		if (!checkTableExists(tablename)) return false;
 		
-		if(log.isDebug()) log.logDebug(toString(), "CheckIndexExists() tablename = "+tablename+" type = "+databaseMeta.getDatabaseTypeDesc());
+		if(log.isDebug()) log.logDebug("CheckIndexExists() tablename = "+tablename+" type = "+databaseMeta.getDatabaseTypeDesc());
 		
 		boolean exists[] = new boolean[idx_fields.length];
 		for (int i=0;i<exists.length;i++) exists[i]=false;
@@ -2192,7 +2219,7 @@ public class Database implements VariableSpace
 		}
 		catch(Exception e)
 		{
-            log.logError(toString(), Const.getStackTracker(e));
+            log.logError(Const.getStackTracker(e));
 			throw new KettleDatabaseException("Unable to determine if indexes exists on table ["+tablename+"]", e);
 		}
 	}
@@ -2875,14 +2902,14 @@ public class Database implements VariableSpace
 
 	public void printSQLException(SQLException ex)
 	{
-		log.logError(toString(), "==> SQLException: ");
+		log.logError("==> SQLException: ");
 		while (ex != null) 
 		{
-			log.logError(toString(), "Message:   " + ex.getMessage ());
-			log.logError(toString(), "SQLState:  " + ex.getSQLState ());
-			log.logError(toString(), "ErrorCode: " + ex.getErrorCode ());
+			log.logError("Message:   " + ex.getMessage ());
+			log.logError("SQLState:  " + ex.getSQLState ());
+			log.logError("ErrorCode: " + ex.getErrorCode ());
 			ex = ex.getNextException();
-			log.logError(toString(), "");
+			log.logError("");
 		}
 	}
 
@@ -2954,7 +2981,7 @@ public class Database implements VariableSpace
 
 		try
 		{
-			if(log.isDetailed()) log.logDetailed(toString(), "Setting preparedStatement to ["+sql+"]");
+			if(log.isDetailed()) log.logDetailed("Setting preparedStatement to ["+sql+"]");
 			prepStatementLookup=connection.prepareStatement(databaseMeta.stripCR(sql));
 			if (!checkForMultipleResults && databaseMeta.supportsSetMaxRows())
 			{
@@ -3012,7 +3039,7 @@ public class Database implements VariableSpace
 		try
 		{
 			String s = sql.toString();
-			if(log.isDetailed()) log.logDetailed(toString(), "Setting update preparedStatement to ["+s+"]");
+			if(log.isDetailed()) log.logDetailed("Setting update preparedStatement to ["+s+"]");
 			prepStatementUpdate=connection.prepareStatement(databaseMeta.stripCR(s));
 		}
 		catch(SQLException ex) 
@@ -3074,7 +3101,7 @@ public class Database implements VariableSpace
 
         try
         {
-        	if(log.isDetailed()) log.logDetailed(toString(), "Setting update preparedStatement to ["+sql+"]");
+        	if(log.isDetailed()) log.logDetailed("Setting update preparedStatement to ["+sql+"]");
             prepStatementUpdate=connection.prepareStatement(databaseMeta.stripCR(sql));
         }
         catch(SQLException ex) 
@@ -3113,7 +3140,7 @@ public class Database implements VariableSpace
 		
 		try
 		{
-			if(log.isDetailed()) log.logDetailed(toString(), "DBA setting callableStatement to ["+sql+"]");
+			if(log.isDetailed()) log.logDetailed("DBA setting callableStatement to ["+sql+"]");
 			cstmt=connection.prepareCall(sql);
 			pos=1;
 			if (!Const.isEmpty(returnvalue))
@@ -4130,7 +4157,7 @@ public class Database implements VariableSpace
 					cat = alltables.getString("TABLE_CAT");
 				} catch (Exception e) {
 					// ignore
-					if(log.isDebug()) log.logDebug(toString(), "Error getting tables for field TABLE_CAT (ignored): "+e.toString());
+					if(log.isDebug()) log.logDebug("Error getting tables for field TABLE_CAT (ignored): "+e.toString());
 				}
 				
 				String schema = "";
@@ -4138,7 +4165,7 @@ public class Database implements VariableSpace
 					schema = alltables.getString("TABLE_SCHEM");
 				} catch (Exception e) {
 					// ignore
-					if(log.isDebug()) log.logDebug(toString(), "Error getting tables for field TABLE_SCHEM (ignored): "+e.toString());
+					if(log.isDebug()) log.logDebug("Error getting tables for field TABLE_SCHEM (ignored): "+e.toString());
 				}
 				
 				if (Const.isEmpty(schema)) schema = cat;
@@ -4155,7 +4182,7 @@ public class Database implements VariableSpace
 		}
 		catch(SQLException e)
 		{
-			log.logError(toString(), "Error getting tablenames from schema ["+schemaname+"]");
+			log.logError("Error getting tablenames from schema ["+schemaname+"]");
 		}
 		finally
 		{
@@ -4169,7 +4196,7 @@ public class Database implements VariableSpace
 			}
 		}
 
-		if(log.isDetailed()) log.logDetailed(toString(), "read :"+names.size()+" table names from db meta-data.");
+		if(log.isDetailed()) log.logDetailed("read :"+names.size()+" table names from db meta-data.");
 
 		return names.toArray(new String[names.size()]);
 	}
@@ -4204,7 +4231,7 @@ public class Database implements VariableSpace
 					cat = alltables.getString("TABLE_CAT");
 				} catch (Exception e) {
 					// ignore
-					if(log.isDebug()) log.logDebug(toString(), "Error getting views for field TABLE_CAT (ignored): "+e.toString());
+					if(log.isDebug()) log.logDebug("Error getting views for field TABLE_CAT (ignored): "+e.toString());
 				}
 				
 				String schema = "";
@@ -4212,7 +4239,7 @@ public class Database implements VariableSpace
 					schema = alltables.getString("TABLE_SCHEM");
 				} catch (Exception e) {
 					// ignore
-					if(log.isDebug()) log.logDebug(toString(), "Error getting views for field TABLE_SCHEM (ignored): "+e.toString());
+					if(log.isDebug()) log.logDebug("Error getting views for field TABLE_SCHEM (ignored): "+e.toString());
 				}
 				
 				if (Const.isEmpty(schema)) schema = cat;
@@ -4243,7 +4270,7 @@ public class Database implements VariableSpace
 			}
 		}
 
-		if(log.isDetailed()) log.logDetailed(toString(), "read :"+names.size()+" views from db meta-data.");
+		if(log.isDetailed()) log.logDetailed("read :"+names.size()+" views from db meta-data.");
 
 		return names.toArray(new String[names.size()]);
 	}
@@ -4278,7 +4305,7 @@ public class Database implements VariableSpace
 					cat = alltables.getString("TABLE_CAT");
 				} catch (Exception e) {
 					// ignore
-					if(log.isDebug()) log.logDebug(toString(), "Error getting synonyms for field TABLE_CAT (ignored): "+e.toString());
+					if(log.isDebug()) log.logDebug("Error getting synonyms for field TABLE_CAT (ignored): "+e.toString());
 				}
 				
 				String schema = "";
@@ -4286,7 +4313,7 @@ public class Database implements VariableSpace
 					schema = alltables.getString("TABLE_SCHEM");
 				} catch (Exception e) {
 					// ignore
-					if(log.isDebug()) log.logDebug(toString(), "Error getting synonyms for field TABLE_SCHEM (ignored): "+e.toString());
+					if(log.isDebug()) log.logDebug("Error getting synonyms for field TABLE_SCHEM (ignored): "+e.toString());
 				}
 				
 				if (Const.isEmpty(schema)) schema = cat;
@@ -4317,7 +4344,7 @@ public class Database implements VariableSpace
 			}
 		}
 	
-		if(log.isDetailed()) log.logDetailed(toString(), "read :"+names.size()+" views from db meta-data.");
+		if(log.isDetailed()) log.logDetailed("read :"+names.size()+" views from db meta-data.");
 	
 		return names.toArray(new String[names.size()]);
 	}
@@ -4350,7 +4377,7 @@ public class Database implements VariableSpace
 			}
 		}
 	
-		if(log.isDetailed()) log.logDetailed(toString(), "read :"+catalogList.size()+" schemas from db meta-data.");
+		if(log.isDetailed()) log.logDetailed("read :"+catalogList.size()+" schemas from db meta-data.");
 	
 		return catalogList.toArray(new String[catalogList.size()]);
 	}
@@ -4926,6 +4953,10 @@ public class Database implements VariableSpace
 		}
 	}
 
+	public Object getParentObject() {
+		return parentObject;
+	}
+	
 	/**
 	 * Return primary key column names ...
 	 * @param tablename 
@@ -4955,4 +4986,5 @@ public class Database implements VariableSpace
 	}
 	return names.toArray(new String[names.size()]);
   }
+
 }

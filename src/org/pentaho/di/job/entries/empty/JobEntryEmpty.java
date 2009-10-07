@@ -20,7 +20,6 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -29,7 +28,7 @@ import org.w3c.dom.Node;
 
 public class JobEntryEmpty extends JobEntryBase implements JobEntryInterface
 {
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException
+	public Result execute(Result prev_result, int nr) throws KettleException
 	{
 		return null;
 	}

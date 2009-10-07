@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.XulHelper;
@@ -48,7 +48,7 @@ public class SpoonBrowser implements TabItemInterface
 {
 	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private static final LogWriter log = LogWriter.getInstance();
+	private LogChannelInterface log;
 	
 	private static final String XUL_FILE_BROWSER_TOOLBAR = "ui/browser-toolbar.xul";
 	public static final String XUL_FILE_BROWSER_TOOLBAR_PROPERTIES = "ui/browser-toolbar.properties";
@@ -68,6 +68,7 @@ public class SpoonBrowser implements TabItemInterface
         this.shell = parent.getShell();
         this.spoon = spoon;
         this.stringUrl = stringUrl;
+        this.log = spoon.getLog();
         
         composite.setLayout(new FormLayout());
         
@@ -138,7 +139,7 @@ public class SpoonBrowser implements TabItemInterface
 			
 			addToolBarListeners();
 		} catch (Throwable t ) {
-			log.logError(toString(), Const.getStackTracker(t));
+			log.logError(Const.getStackTracker(t));
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_BROWSER_TOOLBAR), new Exception(t));
 		}
 	}

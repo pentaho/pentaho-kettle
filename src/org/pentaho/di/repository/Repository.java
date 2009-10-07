@@ -10,6 +10,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.shared.SharedObjects;
@@ -43,6 +44,11 @@ public interface Repository {
 	 */
 	public RepositorySecurityProvider getSecurityProvider();
 		
+	/**
+	 * @return the logging channel of this repository
+	 */
+	public LogChannelInterface getLog();
+	
 	/**
 	 * Connect to the repository.  Make sure you don't connect more than once to the same repository with this repository object. 
 	 * 

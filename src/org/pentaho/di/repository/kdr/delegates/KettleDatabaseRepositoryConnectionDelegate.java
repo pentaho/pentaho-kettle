@@ -75,7 +75,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 		super(repository);
 
 		this.databaseMeta = databaseMeta;
-		this.database = new Database(databaseMeta);
+		this.database = new Database(this, databaseMeta);
 		
 		useBatchProcessing = true; // defaults to true;
         
@@ -171,9 +171,9 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 		            //
 		            if(log.isBasic()) 
 		            {
-		            	log.logBasic(toString(), BaseMessages.getString(PKG, "Repository.Error.GettingInfoVersionTable",versionTable));
-		            	log.logBasic(toString(), BaseMessages.getString(PKG, "Repository.Error.NewTable"));
-		            	log.logBasic(toString(), "Stack trace: "+Const.getStackTracker(e));
+		            	log.logBasic(BaseMessages.getString(PKG, "Repository.Error.GettingInfoVersionTable",versionTable));
+		            	log.logBasic(BaseMessages.getString(PKG, "Repository.Error.NewTable"));
+		            	log.logBasic("Stack trace: "+Const.getStackTracker(e));
 		            }
 		            majorVersion = 2;
 		            minorVersion = 2;
@@ -226,7 +226,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 			}
 			catch (KettleException dbe)
 			{
-				log.logError(toString(), "Error disconnecting from database : " + dbe.getMessage());
+				log.logError("Error disconnecting from database : " + dbe.getMessage());
 			}
 			finally
 			{
@@ -270,7 +270,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 			}
 			catch (KettleException dbe)
 			{
-				log.logError(toString(), "Error rolling back repository.");
+				log.logError("Error rolling back repository.");
 			}
 		}
 
@@ -916,12 +916,12 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 			
 			if (id == null)
 			{
-				if (log.isDebug()) log.logDebug(toString(), "no max(" + idfield + ") found in table " + tablename);
+				if (log.isDebug()) log.logDebug("no max(" + idfield + ") found in table " + tablename);
 				retval = new LongObjectId(1);
 			}
 			else
 			{
-                if (log.isDebug()) log.logDebug(toString(), "max(" + idfield + ") found in table " + tablename + " --> " + idfield + " number: " + id);
+                if (log.isDebug()) log.logDebug("max(" + idfield + ") found in table " + tablename + " --> " + idfield + " number: " + id);
 				retval = new LongObjectId(id.longValue() + 1L);
 			}
 		}
@@ -1240,7 +1240,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 		database.setValues(table, psStepAttributesInsert);
 		database.insertRow(psStepAttributesInsert, useBatchProcessing);
 		
-        if (log.isDebug()) log.logDebug(toString(), "saved attribute ["+code+"]");
+        if (log.isDebug()) log.logDebug("saved attribute ["+code+"]");
 		
 		return id;
 	}
@@ -1270,7 +1270,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
         database.setValues(table, psTransAttributesInsert);
         database.insertRow(psTransAttributesInsert, useBatchProcessing);
         
-        if (log.isDebug()) log.logDebug(toString(), "saved transformation attribute ["+code+"]");
+        if (log.isDebug()) log.logDebug("saved transformation attribute ["+code+"]");
         
         return id;
     }
@@ -1302,7 +1302,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
         database.setValues(table, psJobAttributesInsert);
         database.insertRow(psJobAttributesInsert, useBatchProcessing);
         
-        if (log.isDebug()) log.logDebug(toString(), "saved job attribute ["+code+"]");
+        if (log.isDebug()) log.logDebug("saved job attribute ["+code+"]");
         
         return id;
     }    

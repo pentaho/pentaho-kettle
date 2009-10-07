@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.Properties;
 
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.SortedFileOutputStream;
 import org.pentaho.di.i18n.BaseMessages;
@@ -41,6 +42,8 @@ import org.pentaho.di.i18n.BaseMessages;
 public class Props implements Cloneable
 {
 	private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+	private static final String	STRING_USER_PREFERENCES	= "User preferences";
 
 	protected static Props props;
 	
@@ -133,7 +136,7 @@ public class Props implements Cloneable
     private static final String STRING_MAX_NR_LINES_IN_LOG = "MaxNrOfLinesInLog";
     private static final String STRING_MAX_NR_LINES_IN_HISTORY = "MaxNrOfLinesInHistory";
 
-    protected LogWriter log = LogWriter.getInstance();
+    protected LogChannelInterface log;
 	protected Properties properties;
 	    
     protected ArrayList<ObjectUsageCount> pluginHistory;
@@ -214,6 +217,10 @@ public class Props implements Cloneable
 		throw new RuntimeException("Properties, Kettle systems settings, not initialised!");
 	}
 	
+	protected Props() {
+		init();
+	}
+	
 	protected Props(int t)
 	{
 		type=t;
@@ -222,6 +229,7 @@ public class Props implements Cloneable
 	}
 
 	protected void init() {
+		createLogChannel();
 		properties = new Properties();
         pluginHistory = new ArrayList<ObjectUsageCount>();
 
@@ -229,6 +237,8 @@ public class Props implements Cloneable
         addDefaultEntries();
         
         loadPluginHistory();
+        
+
 	}
 	
 	protected Props(String filename)
@@ -241,7 +251,11 @@ public class Props implements Cloneable
     
     public String toString()
     {
-        return "User preferences";
+        return STRING_USER_PREFERENCES;
+    }
+    
+    protected void createLogChannel() {
+    	log = new LogChannel(STRING_USER_PREFERENCES);	
     }
 
     public String getFilename()
@@ -386,7 +400,7 @@ public class Props implements Cloneable
             fos.setLogger(log);
 			properties.store(fos, "Kettle Properties file");
             fos.close();
-            log.logDetailed(toString(), BaseMessages.getString(PKG, "Spoon.Log.SaveProperties"));
+            log.logDetailed(BaseMessages.getString(PKG, "Spoon.Log.SaveProperties"));
 		}
 		catch(IOException e)
 		{
@@ -394,15 +408,18 @@ public class Props implements Cloneable
             // config file gets created with the 'hidden' attribute set. Some Java JREs cannot open
             // FileOutputStreams on files with that attribute set. The user has to unset that attribute
             // manually.
+			//
+			// Note that we don't really want to throw an exception here, that would prevent usage of Kettle on read-only systems.
+			//
             if (spoonRc.isHidden() && filename.indexOf('\\') != -1)
             {
                 // If filename contains a backslash we consider Spoon as running on Windows
-                log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.SavePropertiesFailedWindowsBugAttr", filename));
+                log.logError(BaseMessages.getString(PKG, "Spoon.Log.SavePropertiesFailedWindowsBugAttr", filename));
             }
             else
             {
                 // Another reason why the save failed
-                log.logError(toString(), BaseMessages.getString(PKG, "Spoon.Log.SavePropertiesFailed") + e.getMessage());
+                log.logError(BaseMessages.getString(PKG, "Spoon.Log.SavePropertiesFailed") + e.getMessage());
             }
 		}
 	}

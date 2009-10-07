@@ -198,7 +198,7 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(), BaseMessages.getString(PKG, "FormulaDialog.Log.UnableToFindInput"));
+                        logError(BaseMessages.getString(PKG, "FormulaDialog.Log.UnableToFindInput"));
                     }
                 }
             }

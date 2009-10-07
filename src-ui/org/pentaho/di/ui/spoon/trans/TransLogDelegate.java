@@ -7,20 +7,14 @@ import java.util.Properties;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Props;
-import org.pentaho.di.core.logging.BufferChangedListener;
-import org.pentaho.di.core.logging.Log4jStringAppender;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -39,19 +33,12 @@ public class TransLogDelegate extends SpoonDelegate {
 	private static final String XUL_FILE_TRANS_LOG_TOOLBAR = "ui/trans-log-toolbar.xul";
 	public static final String XUL_FILE_TRANS_LOG_TOOLBAR_PROPERTIES = "ui/trans-log-toolbar.properties";
 
-	private static final LogWriter log = LogWriter.getInstance();
-	
 	private TransGraph transGraph;
 
 	private CTabItem transLogTab;
 	
-	private Text transLogText;
+	private StyledText transLogText;
 	
-    /**
-     * The number of lines in the log tab
-     */
-	private int textSize;
-
 	private XulToolbar       toolbar;
 	private Composite transLogComposite;
 	
@@ -89,7 +76,7 @@ public class TransLogDelegate extends SpoonDelegate {
 		addToolBar();
 		addToolBarListeners();
 		
-		transLogText = new Text(transLogComposite, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+		transLogText = new StyledText(transLogComposite, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 		spoon.props.setLook(transLogText);
 		FormData fdText = new FormData();
 		fdText.left = new FormAttachment(0,0);
@@ -98,49 +85,12 @@ public class TransLogDelegate extends SpoonDelegate {
 		fdText.bottom = new FormAttachment(100,0);
 		transLogText.setLayoutData(fdText);
 		
+		LogBrowser logBrowser = new LogBrowser(transLogText, transGraph);
+		logBrowser.installLogSniffer();
+		
 		transLogTab.setControl(transLogComposite);
 		
-		// Create a new String appender to the log and capture that directly...
-		//
-		final Log4jStringAppender stringAppender = LogWriter.createStringAppender();
-		stringAppender.setMaxNrLines(Props.getInstance().getMaxNrLinesInLog());
-		stringAppender.addBufferChangedListener(new BufferChangedListener() {
 		
-			public void contentWasAdded(final StringBuffer content, final String extra, final int nrLines) {
-				spoon.getDisplay().asyncExec(new Runnable() {
-				
-
-					public void run() 
-					{
-						if (!transLogText.isDisposed())
-						{
-							textSize++;
-							
-							// OK, now what if the number of lines gets too big?
-							// We allow for a few hundred lines buffer over-run.
-							// That way we reduce flicker...
-							//
-							if (textSize>=nrLines+200)
-							{
-								transLogText.setText(content.toString());
-								transLogText.setSelection(content.length());
-								transLogText.showSelection();
-								transLogText.clearSelection();
-								textSize=nrLines;
-							}
-							else
-							{
-								transLogText.append(extra);
-							}
-						}
-					}
-				
-				});
-			}
-		
-		});
-		log.addAppender(stringAppender);
-		transLogTab.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { log.removeAppender(stringAppender); } });
 		
 		transGraph.extraViewTabFolder.setSelection(transLogTab);
 	}
@@ -159,7 +109,7 @@ public class TransLogDelegate extends SpoonDelegate {
 			addToolBarListeners();
 	        toolBar.layout(true, true);
 		} catch (Throwable t ) {
-			log.logError(toString(), Const.getStackTracker(t));
+			log.logError(Const.getStackTracker(t));
 			new ErrorDialog(transLogComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR), new Exception(t));
 		}
 	}

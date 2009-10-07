@@ -75,8 +75,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 {
 	private static Class<?> PKG = JobEntryJob.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    private static final LogWriter log = LogWriter.getInstance();
-
 	private String              jobname;
 	private String              filename;
 	private String directory;
@@ -438,20 +436,18 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		}
 	}
 
-	public Result execute(Result result, int nr, Repository rep, Job parentJob) throws KettleException
+	public Result execute(Result result, int nr) throws KettleException
 	{
 	    result.setEntryNr( nr );
-
-        LogWriter logwriter = log;
         
         Log4jFileAppender appender = null;
-        int backupLogLevel = log.getLogLevel();
+        int backupLogLevel = LogWriter.getInstance().getLogLevel();
         if (setLogfile)
         {
         	String realLogFilename=environmentSubstitute(getLogFilename());
 
         	// create parent folder?
-        	if(!createParentFolder(realLogFilename,log)) 
+        	if(!createParentFolder(realLogFilename)) 
         	{
                 result.setNrErrors(1);
                 result.setResult(false);
@@ -463,16 +459,16 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             }
             catch(KettleException e)
             {
-                log.logError(toString(), "Unable to open file appender for file ["+getLogFilename()+"] : "+e.toString());
-                log.logError(toString(), Const.getStackTracker(e));
+                logError("Unable to open file appender for file ["+getLogFilename()+"] : "+e.toString());
+                logError(Const.getStackTracker(e));
                 result.setNrErrors(1);
                 result.setResult(false);
                 return result;
             }
-            log.addAppender(appender);
-            log.setLogLevel(loglevel);
+            LogWriter.getInstance().addAppender(appender);
+            LogWriter.getInstance().setLogLevel(loglevel);
 
-            logwriter = LogWriter.getInstance(environmentSubstitute(getLogFilename()), true, loglevel);
+            LogWriter.getInstance(environmentSubstitute(getLogFilename()), true, loglevel);
         }
 
         // Figure out the remote slave server...
@@ -501,14 +497,14 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             boolean fromXMLFile = !Const.isEmpty(filename);
             if (fromRepository) // load from the repository...
             {
-                if(log.isDetailed()) log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+environmentSubstitute(jobname)+"]");
+                if(log.isDetailed()) logDetailed("Loading job from repository : ["+directory+" : "+environmentSubstitute(jobname)+"]");
                 jobMeta = rep.loadJob(environmentSubstitute(jobname), rep.loadRepositoryDirectoryTree().findDirectory(environmentSubstitute(directory)), null, null); // reads last version
                 jobMeta.setParentVariableSpace(parentJob);
             }
             else // Get it from the XML file
             if (fromXMLFile)
             {
-            	if(log.isDetailed()) log.logDetailed(toString(), "Loading job from XML file : ["+environmentSubstitute(filename)+"]");
+            	if(log.isDetailed()) logDetailed("Loading job from XML file : ["+environmentSubstitute(filename)+"]");
                 jobMeta = new JobMeta(environmentSubstitute(filename), rep, null);
                 jobMeta.setParentVariableSpace(parentJob);
             }
@@ -523,12 +519,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             // Tell logging what job entry we are launching...
             if (fromRepository)
             {
-                if(log.isBasic()) log.logBasic(toString(), "Starting job, loaded from repository : ["+directory+" : "+environmentSubstitute(jobname)+"]");
+                if(log.isBasic()) logBasic("Starting job, loaded from repository : ["+directory+" : "+environmentSubstitute(jobname)+"]");
             }
             else
             if (fromXMLFile)
             {
-            	if(log.isDetailed()) log.logDetailed(toString(), "Starting job, loaded from XML file : ["+environmentSubstitute(filename)+"]");
+            	if(log.isDetailed()) logDetailed("Starting job, loaded from XML file : ["+environmentSubstitute(filename)+"]");
             }
 
             int iteration = 0;
@@ -565,7 +561,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             			try {
 							namedParam.addParameterDefinition(parameters[idx], "", "Job entry runtime");
 						} catch (DuplicateParamException e) {
-							log.logError(toString(), "Duplicate parameter definition for " + parameters[idx]);
+							logError("Duplicate parameter definition for " + parameters[idx]);
 						}
 						
             			if ( Const.isEmpty(Const.trim(parameterFieldNames[idx])) )  {
@@ -706,7 +702,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 	//
                 	
 	                // Create a new job
-	                Job job = new Job(logwriter, rep, jobMeta);
+	                Job job = new Job(rep, jobMeta);
 	
 	                job.shareVariablesWith(this);
 	                job.setInternalKettleVariables(this);
@@ -793,7 +789,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	                }
 	        		catch(KettleException je)
 	        		{
-	        			log.logError(toString(), "Unable to open job entry job with name ["+getName()+"] : "+Const.CR+je.toString());
+	        			logError("Unable to open job entry job with name ["+getName()+"] : "+Const.CR+je.toString());
 	        			result.setNrErrors(1);
 	        		}
 	        		
@@ -810,7 +806,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 	jobExecutionConfiguration.setVariables(this);
                 	jobExecutionConfiguration.setRemoteServer(remoteSlaveServer);
                 	jobExecutionConfiguration.setRepository(rep);
-                	jobExecutionConfiguration.setLogLevel(log.getLogLevel());
+                	jobExecutionConfiguration.setLogLevel(LogWriter.getInstance().getLogLevel());
 
                 	// Send the XML over to the slave server
                 	// Also start the job over there...
@@ -846,7 +842,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 							}
 						} 
                 		catch (Exception e1) {
-							log.logError(toString(), "Unable to contact slave server ["+remoteSlaveServer+"] to verify the status of job ["+jobMeta.getName()+"]");
+							logError("Unable to contact slave server ["+remoteSlaveServer+"] to verify the status of job ["+jobMeta.getName()+"]");
 							oneResult.setNrErrors(1L);
 							break; // Stop looking too, chances are too low the server will come back on-line
 						}
@@ -873,7 +869,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	                		}
                 		}
                 		catch (Exception e1) {
-							log.logError(toString(), "Unable to contact slave server ["+remoteSlaveServer+"] to stop job ["+jobMeta.getName()+"]");
+							logError("Unable to contact slave server ["+remoteSlaveServer+"] to stop job ["+jobMeta.getName()+"]");
 							oneResult.setNrErrors(1L);
 							break; // Stop looking too, chances are too low the server will come back on-line
 						}
@@ -898,8 +894,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         }
         catch(KettleException ke)
         {
-            log.logError(toString(), "Error running job entry 'job' : "+ke.toString());
-            log.logError(toString(), Const.getStackTracker(ke));
+            logError("Error running job entry 'job' : "+ke.toString());
+            logError(Const.getStackTracker(ke));
 
             result.setResult(false);
             result.setNrErrors(1L);
@@ -909,14 +905,13 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         {
             if (appender!=null)
             {
-                log.removeAppender(appender);
+            	LogWriter.getInstance().removeAppender(appender);
                 appender.close();
 
                 ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, appender.getFile(), parentJob.getJobname(), getName());
                 result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
             }
-            log.setLogLevel(backupLogLevel);
-
+            LogWriter.getInstance().setLogLevel(backupLogLevel);
         }
 
         if (result.getNrErrors() > 0)
@@ -931,7 +926,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         return result;
 	}
 	
-	 private boolean createParentFolder(String filename, LogWriter log)
+	 private boolean createParentFolder(String filename)
 		{
 			// Check for parent folder
 			FileObject parentfolder=null;
@@ -941,15 +936,15 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	    		parentfolder=KettleVFS.getFileObject(filename).getParent();	    		
 	    		if(!parentfolder.exists()){
 	    			if(createParentFolder){
-	    				if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderNotExist",parentfolder.getName().toString()));
+	    				if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderNotExist",parentfolder.getName().toString()));
 	        			parentfolder.createFolder();
-	        			if (log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderCreated",parentfolder.getName().toString()));
+	        			if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderCreated",parentfolder.getName().toString()));
 	    			} else {
-	    				log.logError(toString(), BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderNotExist",parentfolder.getName().toString()));
+	    				log.logError(BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderNotExist",parentfolder.getName().toString()));
 	    	    		resultat= false;
 	    			}
 	    		} else{
-	    			if (log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderExists",parentfolder.getName().toString()));
+	    			if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderExists",parentfolder.getName().toString()));
 	    		}
 			} catch (Exception e) {
 				resultat=false;

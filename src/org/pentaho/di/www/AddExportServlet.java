@@ -19,7 +19,6 @@ import java.io.PrintWriter;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -48,7 +47,7 @@ import org.w3c.dom.Document;
  * @author matt
  *
  */
-public class AddExportServlet extends HttpServlet
+public class AddExportServlet extends BaseHttpServlet implements CarteServletInterface
 {
 	public static final String	PARAMETER_LOAD	= "load";
 	public static final String	PARAMETER_TYPE	= "type";
@@ -78,11 +77,11 @@ public class AddExportServlet extends HttpServlet
     {
         if (!request.getRequestURI().equals(CONTEXT_PATH+"/")) return;
 
-        if (log.isDebug()) log.logDebug(toString(), "Addition of export requested");
+        if (log.isDebug()) logDebug("Addition of export requested");
 
         PrintWriter out = response.getWriter();
         BufferedReader in = request.getReader(); // read from the client
-        if (log.isDetailed()) log.logDetailed(toString(), "Encoding: "+request.getCharacterEncoding());
+        if (log.isDetailed()) logDetailed("Encoding: "+request.getCharacterEncoding());
         
         boolean isJob = TYPE_JOB.equalsIgnoreCase(request.getParameter(PARAMETER_TYPE));
         String load = request.getParameter(PARAMETER_LOAD); // the resource to load
@@ -128,7 +127,7 @@ public class AddExportServlet extends HttpServlet
             		KettleVFS.getFileObject(fileUrl);
             		
             		JobMeta jobMeta = new JobMeta(fileUrl, null); // never with a repository
-            		Job job = new Job(log, null, jobMeta);
+            		Job job = new Job(null, jobMeta);
             		
             		// Also read the execution configuration information
             		//
@@ -190,5 +189,9 @@ public class AddExportServlet extends HttpServlet
     {
         return "Add export";
     }
+
+	public String getService() {
+		return CONTEXT_PATH+" ("+toString()+")";
+	}
 
 }

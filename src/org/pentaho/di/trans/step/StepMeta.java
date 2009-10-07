@@ -27,7 +27,6 @@ import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -99,6 +98,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	private List<RemoteStep> remoteOutputSteps;
 	
 	private ObjectId id;
+	
+	private TransMeta parentTransMeta;
 
     
     /**
@@ -124,7 +125,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
             this.stepid = StepLoader.getInstance().getStepPluginID(stepMetaInterface);
         }
 		this.stepname          = stepname;
-		this.stepMetaInterface = stepMetaInterface;
+		setStepMetaInterface( stepMetaInterface );
         
 		selected    = false;
 		distributes  = true;
@@ -215,7 +216,6 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	public StepMeta(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException
 	{
         this();
-        LogWriter log = LogWriter.getInstance();
 		StepLoader steploader = StepLoader.getInstance();
 
 		try
@@ -223,13 +223,11 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 			stepname = XMLHandler.getTagValue(stepnode, "name"); //$NON-NLS-1$
 			stepid   = XMLHandler.getTagValue(stepnode, "type"); //$NON-NLS-1$
 	
-			log.logDebug("StepMeta()", BaseMessages.getString(PKG, "StepMeta.Log.LookingForTheRightStepNode",stepname)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	
 			// Create a new StepMetaInterface object...
 			StepPlugin sp = steploader.findStepPluginWithID(stepid);
             if (sp!=null)
             {
-                stepMetaInterface = BaseStep.getStepInfo(sp, steploader);
+                setStepMetaInterface( BaseStep.getStepInfo(sp, steploader) );
                 stepid=sp.getID()[0]; // revert to the default in case we loaded an alternate version
             }
             else
@@ -242,7 +240,6 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 			{
 				stepMetaInterface.loadXML(stepnode, databases, counters);
 			}
-			log.logDebug("StepMeta()", BaseMessages.getString(PKG, "StepMeta.Log.SpecificLoadedStep",stepname)); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			/* Handle info general to all step types...*/
 			description    = XMLHandler.getTagValue(stepnode, "description"); //$NON-NLS-1$
@@ -290,8 +287,6 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
             for (int i=0;i<nrOutput;i++) {
             	remoteOutputSteps.add( new RemoteStep( XMLHandler.getSubNodeByNr(outputNode, RemoteStep.XML_TAG, i) ) );
             }
-            
-			log.logDebug("StepMeta()", BaseMessages.getString(PKG, "StepMeta.Log.EndOfReadXML")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		catch(Exception e)
 		{
@@ -462,7 +457,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         this.stepname = stepMeta.stepname;
         if (stepMeta.stepMetaInterface!=null)
         {
-            this.stepMetaInterface = (StepMetaInterface) stepMeta.stepMetaInterface.clone();
+            setStepMetaInterface( (StepMetaInterface) stepMeta.stepMetaInterface.clone() );
         }
         else
         {
@@ -526,6 +521,9 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	
 	public void setStepMetaInterface(StepMetaInterface stepMetaInterface) {
 		this.stepMetaInterface = stepMetaInterface;
+		if (stepMetaInterface!=null) {
+			this.stepMetaInterface.setParentStepMeta(this);
+		}
 	}
 	
 	public String getStepID()
@@ -866,4 +864,11 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	this.clusterSchemaName = clusterSchemaName;
   }
 
+  public void setParentTransMeta(TransMeta parentTransMeta) {
+	this.parentTransMeta = parentTransMeta;
+  }
+  
+  public TransMeta getParentTransMeta() {
+	return parentTransMeta;
+  }
 }

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.UnknownParamException;
@@ -276,7 +276,7 @@ public class CommandLineOption
 	 * @param args The list of arguments to parse
 	 * @param options The command line options to use
 	 */
-	public static boolean parseArguments(List<String> args, CommandLineOption[] options, LogWriter log)
+	public static boolean parseArguments(List<String> args, CommandLineOption[] options, LogChannelInterface log)
 	{		
 		Map<String,CommandLineOption> optionMap = new HashMap<String,CommandLineOption>();
 

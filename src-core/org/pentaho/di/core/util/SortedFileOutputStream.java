@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Vector;
 
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 
 
 public class SortedFileOutputStream extends FileOutputStream
@@ -28,7 +28,7 @@ public class SortedFileOutputStream extends FileOutputStream
     private StringBuffer sb = null;
 
     /** Logger, for the few errors that may occur. */
-    private LogWriter log = null;
+    private LogChannelInterface log = null;
 
     /**
      * CT
@@ -46,7 +46,7 @@ public class SortedFileOutputStream extends FileOutputStream
      * 
      * @param log
      */
-    public void setLogger(LogWriter log)
+    public void setLogger(LogChannelInterface log)
     {
         this.log = log;
     }

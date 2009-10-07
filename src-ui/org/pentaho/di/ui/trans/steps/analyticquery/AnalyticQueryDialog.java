@@ -236,7 +236,7 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                    	logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -316,7 +316,7 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "AnalyticQueryDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "AnalyticQueryDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
         
         
 		if (input.getGroupField()!=null)

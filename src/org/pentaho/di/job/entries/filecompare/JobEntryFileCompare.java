@@ -33,17 +33,15 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -189,9 +187,8 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
         }
    	}
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
-		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 		result.setResult( false );
 
@@ -232,23 +229,23 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 				else
 				{
 					if ( ! file1.exists() )
-						log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0004_File1_Does_Not_Exist", realFilename1)); //$NON-NLS-1$
+						logError(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0004_File1_Does_Not_Exist", realFilename1)); //$NON-NLS-1$
 					if ( ! file2.exists() )
-						log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0005_File2_Does_Not_Exist", realFilename2)); //$NON-NLS-1$
+						logError(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0005_File2_Does_Not_Exist", realFilename2)); //$NON-NLS-1$
 					result.setResult( false );
 					result.setNrErrors(1);
 				}
 			}
 			else
 			{
-				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0006_Need_Two_Filenames")); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0006_Need_Two_Filenames")); //$NON-NLS-1$
 			}
 		}
 		catch ( Exception e )
 		{
 			result.setResult( false );
 			result.setNrErrors(1);
-			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0007_Comparing_Files", realFilename2, realFilename2, e.getMessage())); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0007_Comparing_Files", realFilename2, realFilename2, e.getMessage())); //$NON-NLS-1$
 		}
 		finally
 		{

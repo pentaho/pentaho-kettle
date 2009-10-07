@@ -185,7 +185,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 				DatabaseMeta dbInfo = transMeta.findDatabase(wConnection.getText());
 				if (dbInfo!=null)
 				{
-					Database db = new Database(dbInfo);
+					Database db = new Database(this, dbInfo);
 					try
 					{
 						db.connect();
@@ -352,7 +352,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                    	logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -435,7 +435,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), BaseMessages.getString(PKG, "DBProcDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		logDebug(BaseMessages.getString(PKG, "DBProcDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		if (input.getArgument()!=null)
 		for (i=0;i<input.getArgument().length;i++)
@@ -479,7 +479,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 
 		input.allocate(nrargs);
 
-		log.logDebug(toString(), BaseMessages.getString(PKG, "DBProcDialog.Log.FoundArguments",String.valueOf(nrargs))); //$NON-NLS-1$ //$NON-NLS-2$
+		logDebug(BaseMessages.getString(PKG, "DBProcDialog.Log.FoundArguments",String.valueOf(nrargs))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (i=0;i<nrargs;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);

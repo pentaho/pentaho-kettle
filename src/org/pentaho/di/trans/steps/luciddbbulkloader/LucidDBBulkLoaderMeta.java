@@ -376,7 +376,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 
 		if (databaseMeta!=null)
 		{
-			Database db = new Database(databaseMeta);
+			Database db = new Database(this, databaseMeta);
 			db.shareVariablesWith(transMeta);
 			try
 			{
@@ -541,7 +541,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 
 				if (!Const.isEmpty(tableName))
 				{
-                    Database db = new Database(databaseMeta);
+                    Database db = new Database(this, databaseMeta);
                     db.shareVariablesWith(transMeta);
 					try
 					{
@@ -642,7 +642,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 
         if (databaseMeta!=null)
         {
-            Database db = new Database(databaseMeta);
+            Database db = new Database(this, databaseMeta);
             try
             {
                 db.connect();

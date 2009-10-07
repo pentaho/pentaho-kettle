@@ -42,7 +42,6 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -358,7 +357,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	}
 
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
 		LogWriter log = LogWriter.getInstance();
 
@@ -369,14 +368,14 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		result.setResult( false );
 		long filesRetrieved = 0;
 
-		if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSFTP.Log.StartJobEntry"));
+		if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTP.Log.StartJobEntry"));
 		HashSet<String> list_previous_filenames = new HashSet<String>();
 		
 		if(copyprevious)
 		{
 			if(rows.size()==0)
 			{
-				if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSFTP.ArgsFromPreviousNothing"));
+				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTP.ArgsFromPreviousNothing"));
 				result.setResult(true);
 				return result;
 			}
@@ -392,11 +391,11 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 					if(!Const.isEmpty(file_previous))
 					{
 						list_previous_filenames.add(file_previous);
-						if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobSFTP.Log.FilenameFromResult",file_previous));
+						if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobSFTP.Log.FilenameFromResult",file_previous));
 					}
 				}
 			}catch(Exception e)	{
-				log.logError(toString(), BaseMessages.getString(PKG, "JobSFTP.Error.ArgFromPrevious"));
+				logError(BaseMessages.getString(PKG, "JobSFTP.Error.ArgFromPrevious"));
 				result.setNrErrors(1);
 				return result;
 			}
@@ -426,10 +425,10 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 				boolean TargetFolderExists=TargetFolder.exists();
 				if(TargetFolderExists)
 				{
-					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSFTP.Log.TargetFolderExists", realTargetDirectory));
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTP.Log.TargetFolderExists", realTargetDirectory));
 				}else
 				{
-					log.logError(toString(), BaseMessages.getString(PKG, "JobSFTP.Error.TargetFolderNotExists", realTargetDirectory));	
+					logError(BaseMessages.getString(PKG, "JobSFTP.Error.TargetFolderNotExists", realTargetDirectory));	
 					if(!createtargetfolder)
 					{
 						// Error..Target folder can not be found !
@@ -439,7 +438,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 					{
 						// create target folder
 						TargetFolder.createFolder();
-						if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSFTP.Log.TargetFolderCreated", realTargetDirectory));
+						if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTP.Log.TargetFolderCreated", realTargetDirectory));
 					}	
 				}
 			}
@@ -453,12 +452,12 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			
 			// Create sftp client to host ...
 			sftpclient = new SFTPClient(InetAddress.getByName(realServerName), Const.toInt(realServerPort, 22), realUsername);
-			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSFTP.Log.OpenedConnection",realServerName,realServerPort,realUsername));
+			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTP.Log.OpenedConnection",realServerName,realServerPort,realUsername));
 
 			// login to ftp host ...
 			sftpclient.login(realPassword);
 			// Passwords should not appear in log files.
-			//log.logDetailed(toString(), "logged in using password "+realPassword); // Logging this seems a bad idea! Oh well.
+			//logDetailed("logged in using password "+realPassword); // Logging this seems a bad idea! Oh well.
 
 			// move to spool dir ...
 			if (!Const.isEmpty(realSftpDirString))
@@ -468,10 +467,10 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 					sftpclient.chdir(realSftpDirString);
 				}catch(Exception e)
 				{
-					log.logError(toString(), BaseMessages.getString(PKG, "JobSFTP.Error.CanNotFindRemoteFolder",realSftpDirString));
+					logError(BaseMessages.getString(PKG, "JobSFTP.Error.CanNotFindRemoteFolder",realSftpDirString));
 					throw new Exception (e);
 				}
-				if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSFTP.Log.ChangedDirectory",realSftpDirString));
+				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTP.Log.ChangedDirectory",realSftpDirString));
 			}
 			Pattern pattern = null;
 			// Get all the files in the current directory...
@@ -480,10 +479,10 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			{
 				// Nothing was found !!! exit
 				result.setResult( true );
-				if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSFTP.Log.Found",""+0));
+				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTP.Log.Found",""+0));
 				return result;
 			}
-			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSFTP.Log.Found",""+filelist.length));
+			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTP.Log.Found",""+filelist.length));
 
 			if(!copyprevious)
 			{
@@ -515,7 +514,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 
 				if (getIt)
 				{
-					if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobSFTP.Log.GettingFiles",filelist[i],realTargetDirectory));
+					if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobSFTP.Log.GettingFiles",filelist[i],realTargetDirectory));
 
 					String targetFilename = realTargetDirectory+Const.FILE_SEPARATOR+filelist[i];
 					sftpclient.get(targetFilename, filelist[i]);
@@ -526,15 +525,15 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 						// Add to the result files...
 						ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(targetFilename), parentJob.getJobname(), toString());
 						result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-						if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSFTP.Log.FilenameAddedToResultFilenames",filelist[i]));
+						if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTP.Log.FilenameAddedToResultFilenames",filelist[i]));
 					}
-                    if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSFTP.Log.TransferedFile",filelist[i]));
+                    if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTP.Log.TransferedFile",filelist[i]));
 
 					// Delete the file if this is needed!
 					if (remove)
 					{
 						sftpclient.delete(filelist[i]);
-						if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobSFTP.Log.DeletedFile",filelist[i]));
+						if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTP.Log.DeletedFile",filelist[i]));
 					}
 				}
 			}
@@ -545,8 +544,8 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		catch(Exception e)
 		{
 			result.setNrErrors(1);
-			log.logError(toString(), BaseMessages.getString(PKG, "JobSFTP.Error.GettingFiles",e.getMessage()));
-            log.logError(toString(), Const.getStackTracker(e));
+			logError(BaseMessages.getString(PKG, "JobSFTP.Error.GettingFiles",e.getMessage()));
+            logError(Const.getStackTracker(e));
 		} finally {
 			// close connection, if possible
 			try {

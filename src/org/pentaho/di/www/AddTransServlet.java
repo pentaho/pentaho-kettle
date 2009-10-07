@@ -18,11 +18,9 @@ import java.io.PrintWriter;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Appender;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.logging.LogWriter;
@@ -36,7 +34,7 @@ import org.pentaho.di.trans.TransMeta;
 
 
 
-public class AddTransServlet extends HttpServlet
+public class AddTransServlet extends BaseHttpServlet implements CarteServletInterface
 {
     private static final long serialVersionUID = -6850701762586992604L;
     private static LogWriter log = LogWriter.getInstance();
@@ -61,13 +59,13 @@ public class AddTransServlet extends HttpServlet
     {
         if (!request.getRequestURI().equals(CONTEXT_PATH+"/")) return;
 
-        if (log.isDebug()) log.logDebug(toString(), "Addition of transformation requested");
+        if (log.isDebug()) logDebug("Addition of transformation requested");
 
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
         
         PrintWriter out = response.getWriter();
         BufferedReader in = request.getReader();
-        if (log.isDetailed()) log.logDetailed(toString(), "Encoding: "+request.getCharacterEncoding());
+        if (log.isDetailed()) logDetailed("Encoding: "+request.getCharacterEncoding());
 
         if (useXML)
         {
@@ -101,7 +99,7 @@ public class AddTransServlet extends HttpServlet
             TransExecutionConfiguration transExecutionConfiguration = transConfiguration.getTransExecutionConfiguration();
             log.setLogLevel(transExecutionConfiguration.getLogLevel());
             if (log.getLogLevel()>=LogWriter.LOG_LEVEL_DETAILED) {
-            	log.logDetailed(toString(), "Logging level set to "+log.getLogLevelDesc());
+            	logDetailed("Logging level set to "+log.getLogLevelDesc());
             }
             transMeta.injectVariables(transExecutionConfiguration.getVariables());
             
@@ -134,14 +132,6 @@ public class AddTransServlet extends HttpServlet
             	}
             }
 
-        	// Remove the old log appender to avoid memory leaks!
-        	//
-        	Appender appender = transformationMap.getAppender(trans.getName());
-        	if (appender!=null) {
-        		log.removeAppender(appender);
-        		appender.close();
-        	}
-
             transformationMap.addTransformation(transMeta.getName(), trans, transConfiguration);
 
             if (repository!=null)
@@ -163,7 +153,7 @@ public class AddTransServlet extends HttpServlet
 					try {
 						trans.endProcessing(Database.LOG_STATUS_END);
 					} catch(Exception e) {
-						log.logError(toString(), "There was an error while logging the transformation result to the logging table", e);
+						logError("There was an error while logging the transformation result to the logging table", e);
 					}
 				}
 			});
@@ -217,4 +207,7 @@ public class AddTransServlet extends HttpServlet
         return "Add Transformation";
     }
 
+	public String getService() {
+		return CONTEXT_PATH+" ("+toString()+")";
+	}
 }

@@ -23,7 +23,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.SpoonInterface;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.ObjectRevision;
@@ -235,7 +234,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			if (!ok) {
 				// Log an error
 				//
-				LogWriter.getInstance().logError(spoon.toString(), "Unable to open browser tab", e);
+				log.logError("Unable to open browser tab", e);
 				return false;
 			} else {
 				return true;

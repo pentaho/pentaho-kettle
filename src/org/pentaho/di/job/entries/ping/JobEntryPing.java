@@ -29,15 +29,13 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -250,9 +248,8 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 		this.timeout = timeout;
 	}
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
     {
-        LogWriter log = LogWriter.getInstance();
         Result result = previousResult;
         
         result.setNrErrors(1);
@@ -266,7 +263,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         if (Const.isEmpty(hostname))
         {
             // No Host was specified
-            log.logError(toString(), BaseMessages.getString(PKG, "JobPing.SpecifyHost.Label"));
+            logError(BaseMessages.getString(PKG, "JobPing.SpecifyHost.Label"));
             return result;
         }
 
@@ -275,7 +272,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         	if(ipingtype==isystemPing || ipingtype==ibothPings)
         	{
         		// Perform a system (Java) ping ...
-	        	status=systemPing(hostname, timeoutInt,log);
+	        	status=systemPing(hostname, timeoutInt);
 	        	if(status)
 	        	{
 	                if(log.isDetailed())
@@ -286,7 +283,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         	if((ipingtype==iclassicPing) || (ipingtype==ibothPings && !status))
         	{
         		// Perform a classic ping ..
-        		status=classicPing(hostname, packets,log);
+        		status=classicPing(hostname, packets);
         		if(status)
         		{
                     if(log.isDetailed())
@@ -298,16 +295,16 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 
         catch (Exception ex)
         {
-            log.logError(toString(), BaseMessages.getString(PKG, "JobPing.Error.Label") + ex.getMessage());
+            logError(BaseMessages.getString(PKG, "JobPing.Error.Label") + ex.getMessage());
         }
     	if (status)
         {
         	if(log.isDetailed())
-        		log.logDetailed(toString(), BaseMessages.getString(PKG, "JobPing.OK.Label",hostname));
+        		logDetailed(BaseMessages.getString(PKG, "JobPing.OK.Label",hostname));
             result.setNrErrors(0);
             result.setResult(true);
         }else
-        	log.logError(toString(), BaseMessages.getString(PKG, "JobPing.NOK.Label",hostname));
+        	logError(BaseMessages.getString(PKG, "JobPing.NOK.Label",hostname));
         return result;
     }
 
@@ -315,7 +312,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		return true;
 	}
-	private boolean systemPing(String hostname, int timeout,LogWriter log)
+	private boolean systemPing(String hostname, int timeout)
 	{
 		boolean retval=false;
 		
@@ -324,24 +321,24 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
     		address=InetAddress.getByName(hostname);
 	    	if(address==null)
 	    	{
-	    		log.logError(toString(),BaseMessages.getString(PKG, "JobPing.CanNotGetAddress",hostname));
+	    		logError(BaseMessages.getString(PKG, "JobPing.CanNotGetAddress",hostname));
 	    		return retval;
 	    	}
     	
 	        if(log.isDetailed()) 
 	        {
-	        	log.logDetailed(toString(),BaseMessages.getString(PKG, "JobPing.HostName",address.getHostName()));
-	        	log.logDetailed(toString(),BaseMessages.getString(PKG, "JobPing.HostAddress",address.getHostAddress()));
+	        	logDetailed(BaseMessages.getString(PKG, "JobPing.HostName",address.getHostName()));
+	        	logDetailed(BaseMessages.getString(PKG, "JobPing.HostAddress",address.getHostAddress()));
 	        }
         	
 	        retval = address.isReachable(timeout);
 	    	}catch(Exception e)
 	    	{
-	    		log.logError(toString(),BaseMessages.getString(PKG, "JobPing.ErrorSystemPing",hostname,e.getMessage()));
+	    		logError(BaseMessages.getString(PKG, "JobPing.ErrorSystemPing",hostname,e.getMessage()));
 	    	}
 			return retval;
 	}
-	private boolean classicPing(String hostname, int nrpackets,LogWriter log)
+	private boolean classicPing(String hostname, int nrpackets)
 	{
 		boolean retval=false;
 		  try
@@ -355,18 +352,18 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
               
         	  if(log.isDetailed()) 
         	  {
-        		  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobPing.NbrPackets.Label", ""+nrpackets));
-        		  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobPing.ExecClassicPing.Label", CmdPing));
+        		  logDetailed(BaseMessages.getString(PKG, "JobPing.NbrPackets.Label", ""+nrpackets));
+        		  logDetailed(BaseMessages.getString(PKG, "JobPing.ExecClassicPing.Label", CmdPing));
         	  }
         	  Process processPing = Runtime.getRuntime().exec(CmdPing);
-        	  if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobPing.Gettingresponse.Label",hostname));
+        	  if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobPing.Gettingresponse.Label",hostname));
         	  // Get ping response
               BufferedReader br = new BufferedReader(new InputStreamReader(processPing.getInputStream()));
 
               // Read response lines
               while ((lignePing = br.readLine()) != null)
               {
-                  if(log.isDetailed()) log.logDetailed(toString(), lignePing);
+                  if(log.isDetailed()) logDetailed(lignePing);
               }
               // We succeed only when 0% lost of data
               if (processPing.exitValue()==0)
@@ -377,7 +374,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 
           catch (IOException ex)
           {
-              log.logError(toString(), BaseMessages.getString(PKG, "JobPing.Error.Label") + ex.getMessage());
+              logError(BaseMessages.getString(PKG, "JobPing.Error.Label") + ex.getMessage());
           }
           return retval;
 	}

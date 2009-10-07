@@ -140,7 +140,7 @@ public class CreditCardValidator extends BaseStep implements StepInterface
 			 //	add new values to the row.
 	        putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
                 
-	        if(log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "CreditCardValidator.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+	        if(log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "CreditCardValidator.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
 	        
         }
         catch(Exception e)
@@ -177,7 +177,7 @@ public class CreditCardValidator extends BaseStep implements StepInterface
         {
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), BaseMessages.getString(PKG, "CreditCardValidator.Error.ResultFieldMissing"));
+        		logError(BaseMessages.getString(PKG, "CreditCardValidator.Error.ResultFieldMissing"));
         		return false;
         	}
             return true;

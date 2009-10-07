@@ -194,7 +194,7 @@ public class JaninoDialog extends BaseStepDialog implements StepDialogInterface
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(), BaseMessages.getString(PKG, "JaninoDialog.Log.UnableToFindInput"));
+                        logError(BaseMessages.getString(PKG, "JaninoDialog.Log.UnableToFindInput"));
                     }
                 }
             }

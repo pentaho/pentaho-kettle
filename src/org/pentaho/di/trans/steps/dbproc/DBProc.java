@@ -198,7 +198,7 @@ public class DBProc extends BaseStep implements StepInterface
 				data.readsRows = true;
 			}
 
-			data.db=new Database(meta.getDatabase());
+			data.db=new Database(this, meta.getDatabase());
 			data.db.shareVariablesWith(this);
 			try
 			{

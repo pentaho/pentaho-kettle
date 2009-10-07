@@ -31,7 +31,6 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -54,8 +53,6 @@ public class TransHistoryDelegate extends SpoonDelegate {
 	private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-history-toolbar.xul";
 	public static final String XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES = "ui/trans-history-toolbar.properties";
 
-	private static final LogWriter log = LogWriter.getInstance();
-	
 	private TransGraph transGraph;
 
 	private CTabItem transHistoryTab;
@@ -244,7 +241,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
 			addToolBarListeners();
 	        toolBar.layout(true, true);
 		} catch (Throwable t ) {
-			log.logError(toString(), Const.getStackTracker(t));
+			log.logError(Const.getStackTracker(t));
 			new ErrorDialog(transHistoryComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
 		}
 	}
@@ -290,7 +287,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
 	        mb.setMessage(BaseMessages.getString(PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", logTable)); // Nothing found that matches your criteria
 			mb.setText(BaseMessages.getString(PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title")); // Sorry!
 			if (mb.open()==SWT.YES) {
-				Database database = new Database(databaseMeta);
+				Database database = new Database(this, databaseMeta);
 				try {
 					database.connect();
 					database.truncateTable(logTable);
@@ -380,7 +377,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
                     try
                     {
                         // open a connection
-                        database = new Database(transMeta.getLogConnection());
+                        database = new Database(this, transMeta.getLogConnection());
                         database.shareVariablesWith(transMeta);
                         database.connect();
                         

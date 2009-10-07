@@ -215,7 +215,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(), BaseMessages.getString(PKG, "CalculatorDialog.Log.UnableToFindInput"));
+                        logError(BaseMessages.getString(PKG, "CalculatorDialog.Log.UnableToFindInput"));
                     }
                 }
             }

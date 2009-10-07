@@ -16,7 +16,7 @@ package org.pentaho.di.core.logging;
 /**
  * Contains a Logging message with a message and a subject
  * @author Matt
- *
+ * @deprecated refer to the more advance LogMessage object, referencing logging channels instead!
  */
 public class Log4jMessage
 {

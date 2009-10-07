@@ -17,12 +17,11 @@ import java.io.PrintWriter;
 import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.Log4jStringAppender;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -31,7 +30,7 @@ import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 
 
-public class PrepareExecutionTransServlet extends HttpServlet
+public class PrepareExecutionTransServlet extends BaseHttpServlet implements CarteServletInterface
 {
 	private static Class<?> PKG = PrepareExecutionTransServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -54,7 +53,7 @@ public class PrepareExecutionTransServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepareExecutionRequested"));
+        if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepareExecutionRequested"));
         
 
         String transName = request.getParameter("name");
@@ -94,12 +93,7 @@ public class PrepareExecutionTransServlet extends HttpServlet
                 trans.setReplayDate(executionConfiguration.getReplayDate());
                 trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
                 trans.injectVariables(executionConfiguration.getVariables());
-                
-                // Log to a String
-                Log4jStringAppender appender = LogWriter.createStringAppender();
-                log.addAppender(appender);
-                transformationMap.addAppender(transName, appender);
-                
+                                
                 try {
                 	trans.prepareExecution(null);
 
@@ -116,17 +110,17 @@ public class PrepareExecutionTransServlet extends HttpServlet
                 }
                 catch (Exception e) {
                 	
+                	String logText = CentralLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), true).toString();
                     if (useXML)
                     {
-                        out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.TransInitFailed",Const.CR+appender.getBuffer().toString()+Const.CR+e.getLocalizedMessage())));
-                        
+                        out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.TransInitFailed",Const.CR+ logText +Const.CR+e.getLocalizedMessage())));
                     }
                     else
                     {
                         out.println("<H1>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Log.TransNotInit",transName) + "</H1>");
                         
                         out.println("<pre>");
-                        out.println(appender.getBuffer().toString());
+                        out.println(logText);
                         out.println(e.getLocalizedMessage());
                         out.println("</pre>");
                         out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
@@ -174,4 +168,8 @@ public class PrepareExecutionTransServlet extends HttpServlet
     {
         return "Start transformation";
     }
+
+	public String getService() {
+		return CONTEXT_PATH+" ("+toString()+")";
+	}
 }

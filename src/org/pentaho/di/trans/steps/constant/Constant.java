@@ -206,7 +206,7 @@ public class Constant extends BaseStep implements StepInterface
 
         if (log.isRowLevel())
         {
-            log.logRowlevel(toString(), BaseMessages.getString(PKG, "Constant.Log.Wrote.Row", Long.toString(getLinesWritten()), getInputRowMeta().getString(r)) );
+            logRowlevel(BaseMessages.getString(PKG, "Constant.Log.Wrote.Row", Long.toString(getLinesWritten()), getInputRowMeta().getString(r)) );
         }
         
         if (checkFeedback(getLinesWritten())) 
@@ -238,7 +238,7 @@ public class Constant extends BaseStep implements StepInterface
                 for (int i=0;i<remarks.size();i++)
                 {
                     CheckResultInterface cr = remarks.get(i);
-                    log.logError(getStepname(), cr.getText());
+                    logError(cr.getText());
                 }
             }
 		}

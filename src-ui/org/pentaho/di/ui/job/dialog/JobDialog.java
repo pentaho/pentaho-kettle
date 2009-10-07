@@ -42,7 +42,6 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -74,8 +73,6 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class JobDialog extends Dialog
 {
 	private static Class<?> PKG = JobDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
-	private LogWriter    log;
 
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
@@ -173,7 +170,6 @@ public class JobDialog extends Dialog
 	public JobDialog(Shell parent, int style, JobMeta jobMeta, Repository rep)
 	{
 		super(parent, style);
-		this.log=LogWriter.getInstance();
 		this.jobMeta=jobMeta;
 		this.props=PropsUI.getInstance();
 		this.rep=rep;
@@ -827,8 +823,6 @@ public class JobDialog extends Dialog
 	 */ 
 	public void getData()
 	{
-		log.logDebug(toString(), "getting transformation info...");
-	
 		wJobname.setText( Const.NVL(jobMeta.getName(), "") );
 		wJobFilename.setText( Const.NVL(jobMeta.getFilename(), "") );
 		wJobdescription.setText(  Const.NVL(jobMeta.getDescription(), "") );
@@ -938,8 +932,6 @@ public class JobDialog extends Dialog
 				jobMeta.addParameterDefinition(item.getText(1), item.getText(2), item.getText(3));
 			} catch (DuplicateParamException e) {
 				// Ignore the duplicate parameter.
-				if ( log.isDetailed() ) 
-					log.logDetailed(getClass().getName(), "Duplicate parameter '" + item.getText(1) + "' detected.");
 			}
 		}		        
         
@@ -959,7 +951,6 @@ public class JobDialog extends Dialog
 				{
 					ObjectId newId = rep.renameJob(jobMeta.getObjectId(), newDirectory, jobMeta.getName() );
 					jobMeta.setObjectId(newId);
-					log.logDetailed(getClass().getName(), "Moved directory to ["+newDirectory.getPath()+"]");
 					jobMeta.setRepositoryDirectory( newDirectory );
 					wDirectory.setText(jobMeta.getRepositoryDirectory().getPath());
 				}
@@ -999,7 +990,7 @@ public class JobDialog extends Dialog
 				String tablename = wLogtable.getText();
 				if (tablename!=null && tablename.length()>0)
 				{
-					Database db = new Database(ci);
+					Database db = new Database(this, ci);
 					db.shareVariablesWith(jobMeta);
 					try
 					{
@@ -1010,8 +1001,6 @@ public class JobDialog extends Dialog
                         
                         if (!Const.isEmpty(createTable))
                         {
-    						log.logBasic(toString(), createTable);
-    	
     						SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, ci, null, createTable);
     						sqledit.open();
                         }

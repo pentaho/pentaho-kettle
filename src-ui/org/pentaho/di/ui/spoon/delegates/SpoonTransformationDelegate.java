@@ -857,7 +857,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		executionConfiguration.getUsedArguments(transMeta, spoon.getArguments());
 		executionConfiguration.setReplayDate(replayDate);
 
-		executionConfiguration.setLogLevel(spoon.getLog().getLogLevel());
+		executionConfiguration.setLogLevel(LogWriter.getInstance().getLogLevel());
 
 		boolean execConfigAnswer = true;
 		
@@ -927,7 +927,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
       //
       new Thread(new Runnable() {
 				public void run() {
-					Trans.monitorRemoteTransformation(transMeta.toString(), remoteSlaveServer);
+					Trans.monitorRemoteTransformation(spoon.getLog(), transMeta.toString(), remoteSlaveServer);
 				}
 			}).start();
 	
@@ -1002,11 +1002,10 @@ public class SpoonTransformationDelegate extends SpoonDelegate
       //
       new Thread(new Runnable() {
 				public void run() {
-					Trans.monitorClusteredTransformation(transMeta.toString(), transSplitter, null);
-					Result result = Trans.getClusteredTransformationResult(transMeta.toString(), transSplitter, null);
-					LogWriter log = LogWriter.getInstance();
-					log.logBasic(transMeta.toString(), "-----------------------------------------------------");
-					log.logBasic(transMeta.toString(), "Got result back from clustered transformation:");
+					Trans.monitorClusteredTransformation(log, transSplitter, null);
+					Result result = Trans.getClusteredTransformationResult(log, transSplitter, null);
+					log.logBasic("-----------------------------------------------------");
+					log.logBasic("Got result back from clustered transformation:");
 					log.logBasic(transMeta.toString(), "-----------------------------------------------------");
 					log.logBasic(transMeta.toString(), "Errors : "+result.getNrErrors());
 					log.logBasic(transMeta.toString(), "Input : "+result.getNrLinesInput());

@@ -709,7 +709,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				data.cache=new HashMap<RowMetaAndData, Long>();
 			}
 
-			data.db=new Database(meta.getDatabaseMeta());
+			data.db=new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			try
 			{

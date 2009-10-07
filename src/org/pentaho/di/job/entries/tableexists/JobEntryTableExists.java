@@ -29,7 +29,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -178,7 +177,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		return false;
 	}
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
 		LogWriter log = LogWriter.getInstance();
 
@@ -187,7 +186,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 
 		if (connection!=null)
 		{
-			Database db = new Database(connection);
+			Database db = new Database(this, connection);
 			db.shareVariablesWith(this);
 			try
 			{
@@ -197,24 +196,24 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
                 if(!Const.isEmpty(realSchemaname))
                 {
                 	realTablename = db.getDatabaseMeta().getQuotedSchemaTableCombination(realSchemaname, realTablename);
-                    if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "TableExists.Log.SchemaTable",realTablename));
+                    if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "TableExists.Log.SchemaTable",realTablename));
                 }else
                 	realTablename = db.getDatabaseMeta().quoteField(realTablename);
                 
 				if (db.checkTableExists(realTablename))
 				{
-					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "TableExists.Log.TableExists",realTablename));
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "TableExists.Log.TableExists",realTablename));
 					result.setResult(true);
 				}
 				else
 				{
-					if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "TableExists.Log.TableNotExists",realTablename));
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "TableExists.Log.TableNotExists",realTablename));
 				}
 			}
 			catch(KettleDatabaseException dbe)
 			{
 				result.setNrErrors(1);
-				log.logError(toString(), BaseMessages.getString(PKG, "TableExists.Error.RunningJobEntry",dbe.getMessage()));
+				logError(BaseMessages.getString(PKG, "TableExists.Error.RunningJobEntry",dbe.getMessage()));
 			}
 			finally
 			{
@@ -224,7 +223,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		else
 		{
 			result.setNrErrors(1);
-			log.logError(toString(), BaseMessages.getString(PKG, "TableExists.Error.NoConnectionDefined"));
+			logError(BaseMessages.getString(PKG, "TableExists.Error.NoConnectionDefined"));
 		}
 
 		return result;

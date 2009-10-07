@@ -880,7 +880,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
             DatabaseMeta databaseMeta = jobMeta.findDatabase(wConnection.getText());
             if (databaseMeta!=null)
             {
-                Database database = new Database(databaseMeta);
+                Database database = new Database(this, databaseMeta);
                 database.shareVariablesWith(jobMeta);
                 try
                 {

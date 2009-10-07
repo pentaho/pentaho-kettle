@@ -396,7 +396,7 @@ public class TableOutputTest extends TestCase
             DatabaseMeta dbInfo = transMeta.findDatabase("db");
 
             // Execute our setup SQLs in the database.
-            Database database = new Database(dbInfo);
+            Database database = new Database(this, dbInfo);
             database.connect();
             createTable(database, target_table, createSourceRowMetaInterface1());
 
@@ -485,7 +485,7 @@ public class TableOutputTest extends TestCase
             DatabaseMeta dbInfo = transMeta.findDatabase("db");
 
             // Execute our setup SQLs in the database.
-            Database database = new Database(dbInfo);
+            Database database = new Database(this, dbInfo);
             database.connect();
             createTable(database, target_table1, createSourceRowMetaInterface1());
             createTable(database, target_table2, createSourceRowMetaInterface1());

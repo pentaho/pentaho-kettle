@@ -49,7 +49,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.DatabaseMetaInformation;
 import org.pentaho.di.core.database.Schema;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -84,7 +85,7 @@ public class DatabaseExplorerDialog extends Dialog
 {
 	private static Class<?> PKG = DatabaseExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private LogWriter log;
+	private LogChannelInterface log;
 	private PropsUI props;
 	private DatabaseMeta dbMeta;
 	private DBCache dbcache;
@@ -149,7 +150,7 @@ public class DatabaseExplorerDialog extends Dialog
         selectedTable=null;
     
         props=PropsUI.getInstance();
-        log=LogWriter.getInstance();
+        log=new LogChannel("Database explorer dialog"); // TODO Link to database object?
         dbcache = DBCache.getInstance();
     }
 
@@ -710,7 +711,7 @@ public class DatabaseExplorerDialog extends Dialog
 		
 		if(dbMeta.isInNeedOfQuoting(tablename)) tableName=dbMeta.quoteField(tableName);
 	    String sql = dbMeta.getSQLQueryFields(tableName);
-	    Database db = new Database(dbMeta);
+	    Database db = new Database(this, dbMeta);
 		RowMetaInterface result=null;
 
 		try {
@@ -778,12 +779,6 @@ public class DatabaseExplorerDialog extends Dialog
 	    }
 	}
 
-	public void editTable(String tableName)
-	{
-		EditDatabaseTable edt = new EditDatabaseTable(shell, SWT.NONE, dbMeta, tableName, 20);
-		edt.open();
-	}
-
 	public void showTable(String tableName)
 	{
 	    String sql = dbMeta.getSQLQueryFields(tableName);
@@ -811,7 +806,7 @@ public class DatabaseExplorerDialog extends Dialog
 
 	public void getDDL(String tableName)
 	{
-		Database db = new Database(dbMeta);
+		Database db = new Database(this, dbMeta);
 		try
 		{
 			db.connect();
@@ -835,7 +830,7 @@ public class DatabaseExplorerDialog extends Dialog
 	{
         if (databases!=null)
         {
-    		Database db = new Database(dbMeta);
+    		Database db = new Database(this, dbMeta);
     		try
     		{
     			db.connect();
@@ -858,7 +853,7 @@ public class DatabaseExplorerDialog extends Dialog
     			if (target!=null)
     			{
     				DatabaseMeta targetdbi = DatabaseMeta.findDatabase(dbs, target);
-    				Database targetdb = new Database(targetdbi);
+    				Database targetdb = new Database(this, targetdbi);
     
     				String sql = targetdb.getCreateTableStatement(tableName, r, null, false, null, true);
     				SQLEditor se = new SQLEditor(shell, SWT.NONE, dbMeta, dbcache, sql);

@@ -25,7 +25,7 @@ import org.apache.commons.dbcp.PoolingDriver;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class ConnectionPoolUtil
@@ -50,9 +50,9 @@ public class ConnectionPoolUtil
         }
     }
     
-    private static void createPool(DatabaseMeta databaseMeta, String partitionId, int initialSize, int maximumSize) throws KettleDatabaseException
+    private static void createPool(LogChannelInterface log, DatabaseMeta databaseMeta, String partitionId, int initialSize, int maximumSize) throws KettleDatabaseException
     {
-    	LogWriter.getInstance().logBasic(databaseMeta.toString(), BaseMessages.getString(PKG, "Database.CreatingConnectionPool", databaseMeta.getName()));
+    	log.logBasic(BaseMessages.getString(PKG, "Database.CreatingConnectionPool", databaseMeta.getName()));
         GenericObjectPool gpool=new GenericObjectPool();
         
         gpool.setMaxIdle(-1);
@@ -122,20 +122,20 @@ public class ConnectionPoolUtil
         
         pd.registerPool(databaseMeta.getName(),gpool);
     
-        LogWriter.getInstance().logBasic(databaseMeta.toString(), BaseMessages.getString(PKG, "Database.CreatedConnectionPool", databaseMeta.getName()));
+        log.logBasic(BaseMessages.getString(PKG, "Database.CreatedConnectionPool", databaseMeta.getName()));
     }
     
     
-    public static Connection getConnection(DatabaseMeta dbMeta, String partitionId) throws Exception
+    public static Connection getConnection(LogChannelInterface log, DatabaseMeta dbMeta, String partitionId) throws Exception
     {
-        return getConnection(dbMeta, partitionId, dbMeta.getInitialPoolSize(), dbMeta.getMaximumPoolSize());
+        return getConnection(log, dbMeta, partitionId, dbMeta.getInitialPoolSize(), dbMeta.getMaximumPoolSize());
     }
     
-    public static Connection getConnection(DatabaseMeta dbMeta, String partitionId,int initialSize, int maximumSize) throws Exception
+    public static Connection getConnection(LogChannelInterface log, DatabaseMeta dbMeta, String partitionId,int initialSize, int maximumSize) throws Exception
     {
         if(!isPoolRegistered(dbMeta, partitionId))
         {
-            createPool(dbMeta, partitionId, initialSize, maximumSize);
+            createPool(log, dbMeta, partitionId, initialSize, maximumSize);
         }
         
         return DriverManager.getConnection("jdbc:apache:commons:dbcp:"+dbMeta.getName());

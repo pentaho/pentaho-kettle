@@ -31,7 +31,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -412,7 +411,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
             try {
 				inputPosition[i] = new XMLInputSaxFieldPosition("position"+(i+1),XMLInputSaxFieldPosition.XML_ELEMENT_POS);
 			} catch (KettleValueException e) {
-				LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+				log.logError(Const.getStackTracker(e));
 			}
         }
 

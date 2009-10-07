@@ -17,7 +17,6 @@ import java.util.Date;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
 
@@ -136,7 +135,7 @@ public class ValueMetaAndData
         }
         catch (KettleValueException e)
         {
-            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+            // LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
             retval.append(XMLHandler.addTagValue("text", "", false));
         }
         retval.append(XMLHandler.addTagValue("length", meta.getLength(), false));

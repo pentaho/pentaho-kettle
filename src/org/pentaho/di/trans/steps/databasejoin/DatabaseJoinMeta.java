@@ -28,7 +28,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -36,8 +35,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -296,7 +295,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (databaseMeta==null) return;
 		
-		Database db = new Database(databaseMeta);
+		Database db = new Database(this, databaseMeta);
         databases = new Database[] { db }; // Keep track of this one for cancelQuery
 		
 		// Which fields are parameters?
@@ -430,7 +429,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (databaseMeta!=null)
 		{
-			Database db = new Database(databaseMeta);
+			Database db = new Database(this, databaseMeta);
             databases = new Database[] { db }; // Keep track of this one for cancelQuery
 
 			try
@@ -544,8 +543,6 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public RowMetaInterface getTableFields()
 	{
-		LogWriter log = LogWriter.getInstance();
-		
 		// Build a dummy parameter row...
 		//
 		RowMetaInterface param = new RowMeta();
@@ -557,7 +554,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 		RowMetaInterface fields = null;
 		if (databaseMeta!=null)
 		{
-			Database db = new Database(databaseMeta);
+			Database db = new Database(this, databaseMeta);
             databases = new Database[] { db }; // Keep track of this one for cancelQuery
 
 			try
@@ -567,7 +564,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				log.logError(toString(), BaseMessages.getString(PKG, "DatabaseJoinMeta.Log.DatabaseErrorOccurred")+dbe.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DatabaseJoinMeta.Log.DatabaseErrorOccurred")+dbe.getMessage()); //$NON-NLS-1$
 			}
 			finally
 			{

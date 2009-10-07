@@ -51,6 +51,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
@@ -1616,7 +1617,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 		    	int realport=Const.toInt(transMeta.environmentSubstitute(wPort.getText()),-1);
 		    	
 		    	try{
-		    		mailConn=new MailConnection(wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_POP3)?MailConnectionMeta.PROTOCOL_POP3:MailConnectionMeta.PROTOCOL_IMAP
+		    		mailConn=new MailConnection(LogChannel.UI, wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_POP3)?MailConnectionMeta.PROTOCOL_POP3:MailConnectionMeta.PROTOCOL_IMAP
 		    				,realserver,realport, realuser, realpass, wUseSSL.getSelection(), wUseProxy.getSelection(), realProxyUsername);
 		    		mailConn.connect();
 		    		

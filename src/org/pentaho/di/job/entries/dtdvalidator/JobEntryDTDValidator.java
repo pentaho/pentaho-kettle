@@ -37,11 +37,9 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -166,9 +164,8 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
         return environmentSubstitute(dtdfilename);
     }
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
-		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 		result.setResult( false );
 
@@ -231,12 +228,12 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 						if (xmlStartDTD != -1)
 						{
 							if(log.isBasic())
-								log.logBasic(toString(),  BaseMessages.getString(PKG, "JobEntryDTDValidator.ERRORDTDFound.Label", realxmlfilename));
+								logBasic( BaseMessages.getString(PKG, "JobEntryDTDValidator.ERRORDTDFound.Label", realxmlfilename));
 						}
 						else
 						{
 							if(log.isBasic())
-								log.logBasic(toString(),  BaseMessages.getString(PKG, "JobEntryDTDValidator.ERRORDTDNotFound.Label", realxmlfilename));
+								logBasic( BaseMessages.getString(PKG, "JobEntryDTDValidator.ERRORDTDNotFound.Label", realxmlfilename));
 						}
 							
 					
@@ -302,7 +299,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 
 					if(	!xmlfile.exists())
 					{
-						log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryDTDValidator.FileDoesNotExist.Label",	realxmlfilename));
+						logError( BaseMessages.getString(PKG, "JobEntryDTDValidator.FileDoesNotExist.Label",	realxmlfilename));
 					}
 					
 					result.setResult( false );
@@ -312,7 +309,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 			}
 			else
 			{
-				log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryDTDValidator.AllFilesNotNull.Label"));
+				logError( BaseMessages.getString(PKG, "JobEntryDTDValidator.AllFilesNotNull.Label"));
 				result.setResult( false );
 				result.setNrErrors(1);
 			}

@@ -69,7 +69,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -203,7 +203,7 @@ public class RepositoryExplorerDialog extends Dialog
 	private Tree      wTree;
 	private Button    wOK;
 
-	private LogWriter log;
+	private LogChannelInterface log;
 	private PropsUI props;
 	private Repository     rep;
 	private UserInfo       userinfo;
@@ -239,8 +239,8 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		super(par, style);
 		this.props=PropsUI.getInstance();
-		this.log=LogWriter.getInstance();
 		this.rep=rep;
+		this.log=rep.getLog();
 		this.userinfo=ui;
 		this.variableSpace = variableSpace;
 

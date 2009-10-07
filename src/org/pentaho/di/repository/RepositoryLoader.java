@@ -20,7 +20,8 @@ import org.pentaho.di.core.config.ConfigManager;
 import org.pentaho.di.core.config.KettleConfig;
 import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.KettleURLClassLoader;
@@ -40,6 +41,7 @@ public class RepositoryLoader {
 	private String pluginDirectory[];
 	
     private Map<String, ClassLoader> classLoaders;
+	private LogChannelInterface	log;
 
 	
 	private RepositoryLoader() {
@@ -47,6 +49,8 @@ public class RepositoryLoader {
 		classLoaders = new HashMap<String, ClassLoader>();
 		
 		pluginDirectory = new String[] { Const.PLUGIN_REPOSITORIES_DIRECTORY_PUBLIC, Const.PLUGIN_REPOSITORIES_DIRECTORY_PRIVATE, };
+		
+		this.log = new LogChannel("RepositoryLoader");
 	}
 	
 	public static RepositoryLoader getInstance() {
@@ -190,8 +194,6 @@ public class RepositoryLoader {
 	
     public void readPlugins() throws KettleException
     {
-    	LogWriter log = LogWriter.getInstance();
-        
     	try {
     		// try reading plugins defined in JAR file META-INF/step_plugin.xml
     		InputStream content = getClass().getClassLoader().getResourceAsStream("META-INF/repository_plugin.xml");

@@ -17,18 +17,18 @@ import java.io.PrintStream;
 import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.Trans;
 
-public class GetStatusServlet extends HttpServlet
+public class GetStatusServlet extends BaseHttpServlet implements CarteServletInterface
 {
 	private static Class<?> PKG = GetStatusServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -57,7 +57,7 @@ public class GetStatusServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "GetStatusServlet.StatusRequested"));
+        if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetStatusServlet.StatusRequested"));
         response.setStatus(HttpServletResponse.SC_OK);
         
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -103,7 +103,11 @@ public class GetStatusServlet extends HttpServlet
                 serverStatus.getJobStatusList().add( new SlaveServerJobStatus(name, status) );
             }
 
-            out.println(serverStatus.getXML());
+            try {
+				out.println(serverStatus.getXML());
+			} catch (KettleException e) {
+				throw new ServletException("Unable to get the server status in XML format", e);
+			}
         }
         else
         {    
@@ -166,4 +170,8 @@ public class GetStatusServlet extends HttpServlet
     {
         return "Status Handler";
     }
+
+	public String getService() {
+		return CONTEXT_PATH+" ("+toString()+")";
+	}
 }

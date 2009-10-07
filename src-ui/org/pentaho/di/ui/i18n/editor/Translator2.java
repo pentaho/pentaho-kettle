@@ -46,7 +46,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -79,7 +80,7 @@ public class Translator2
     
     private Display display;
     private Shell shell;
-    private LogWriter log;
+    private LogChannelInterface log;
     private PropsUI props;
     
     /** The crawler that can find and contain all the keys in the source code */ 
@@ -141,7 +142,7 @@ public class Translator2
     public Translator2(Display display)
     {
         this.display = display;
-        this.log = LogWriter.getInstance();
+        this.log = new LogChannel(APP_NAME);
         this.props = PropsUI.getInstance();
     }
     
@@ -151,12 +152,12 @@ public class Translator2
     
     public void readFiles(java.util.List<String> directories) throws KettleFileException
     {
-        log.logBasic(toString(), BaseMessages.getString(PKG, "i18n.Log.ScanningSourceDirectories"));
+        log.logBasic(BaseMessages.getString(PKG, "i18n.Log.ScanningSourceDirectories"));
         try
         {
         	// crawl through the source directories...
         	//
-        	crawler = new MessagesSourceCrawler(directories, singleMessagesFile, xmlFolders);
+        	crawler = new MessagesSourceCrawler(log, directories, singleMessagesFile, xmlFolders);
         	crawler.setScanPhrases(scanPhrases);
         	crawler.setFilesToAvoid(filesToAvoid);
         	crawler.crawl();
@@ -164,7 +165,7 @@ public class Translator2
         	// get the packages...
         	//
         	messagesPackages = crawler.getMessagesPackagesList();
-        	store = new TranslationsStore(localeList, messagesPackages, referenceLocale, crawler.getPackageOccurrences()); // en_US : main locale
+        	store = new TranslationsStore(log, localeList, messagesPackages, referenceLocale, crawler.getPackageOccurrences()); // en_US : main locale
         	store.read(directories);
         	
         	// What are the statistics?
@@ -793,7 +794,7 @@ public class Translator2
 				{
 					for (MessagesStore messagesStore : changedMessagesStores) {
 						messagesStore.write();
-						LogWriter.getInstance().logBasic(toString(), BaseMessages.getString(PKG, "i18n.Log.SavedMessagesFile",messagesStore.getFilename()));	
+						log.logBasic(BaseMessages.getString(PKG, "i18n.Log.SavedMessagesFile",messagesStore.getFilename()));	
 					}
 				}
 				catch(KettleException e) {
@@ -1105,7 +1106,7 @@ public class Translator2
     public static void main(String[] args) throws Exception
     {
 		Display display = new Display();
-        LogWriter log = LogWriter.getInstance();
+        LogChannelInterface log = new LogChannel(APP_NAME);
         PropsUI.init(display, Props.TYPE_PROPERTIES_SPOON);
         
         Translator2 translator = new Translator2(display);
@@ -1121,8 +1122,8 @@ public class Translator2
         }
         catch(Throwable e)
         {
-            log.logError(APP_NAME, BaseMessages.getString(PKG, "i18n.UnexpectedError",e.getMessage()));
-            log.logError(APP_NAME, Const.getStackTracker(e));
+            log.logError(BaseMessages.getString(PKG, "i18n.UnexpectedError",e.getMessage()));
+            log.logError(Const.getStackTracker(e));
         }
     }
 

@@ -107,7 +107,7 @@ public class TableExists extends BaseStep implements StepInterface
 			 //	add new values to the row.
 	        putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 
-	        if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "TableExists.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+	        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "TableExists.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
         }
         catch(KettleException e)
         {
@@ -140,11 +140,11 @@ public class TableExists extends BaseStep implements StepInterface
         {
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), BaseMessages.getString(PKG, "TableExists.Error.ResultFieldMissing"));
+        		logError(BaseMessages.getString(PKG, "TableExists.Error.ResultFieldMissing"));
         		return false;
         	}
         	
-            data.db=new Database(meta.getDatabase());
+            data.db=new Database(this, meta.getDatabase());
             data.db.shareVariablesWith(this);
             if(!Const.isEmpty(meta.getSchemaname())) 
             	data.realSchemaname= environmentSubstitute(meta.getSchemaname());

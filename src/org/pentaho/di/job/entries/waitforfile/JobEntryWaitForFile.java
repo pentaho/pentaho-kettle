@@ -34,7 +34,6 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -172,7 +171,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
         return environmentSubstitute(getFilename());
     }
 
-    public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+    public Result execute(Result previousResult, int nr)
     {
     	LogWriter log = LogWriter.getInstance();
     	Result result = previousResult;
@@ -200,24 +199,24 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     			if ( iMaximumTimeout < 0 )
     			{
     				iMaximumTimeout = Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0);
-    				if(log.isBasic()) log.logBasic(toString(), "Maximum timeout invalid, reset to " + iMaximumTimeout);
+    				if(log.isBasic()) logBasic("Maximum timeout invalid, reset to " + iMaximumTimeout);
     			}
 
     			if ( iCycleTime < 1 )
     			{
     				// If lower than 1 set to the default
     				iCycleTime = Const.toInt(DEFAULT_CHECK_CYCLE_TIME, 1);
-    				if(log.isBasic()) log.logBasic(toString(), "Check cycle time invalid, reset to " + iCycleTime);
+    				if(log.isBasic()) logBasic("Check cycle time invalid, reset to " + iCycleTime);
     			}
 
     			if ( iMaximumTimeout == 0 )
     			{
-    				if(log.isBasic()) log.logBasic(toString(), "Waiting indefinitely for file [" +
+    				if(log.isBasic()) logBasic("Waiting indefinitely for file [" +
     						realFilename + "]");
     			}
     			else
     			{
-    				if(log.isBasic()) log.logBasic(toString(), "Waiting " + iMaximumTimeout + " seconds for file [" +
+    				if(log.isBasic()) logBasic("Waiting " + iMaximumTimeout + " seconds for file [" +
     						realFilename + "]");
     			}
 
@@ -229,7 +228,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     				if ( fileObject.exists() )
     				{
     					// file exists, we're happy to exit
-    					if(log.isBasic()) log.logBasic(toString(), "Detected file [" + realFilename + "] within timeout");
+    					if(log.isBasic()) logBasic("Detected file [" + realFilename + "] within timeout");
     					result.setResult( true );
     					continueLoop = false;
     					
@@ -252,12 +251,12 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     						// file doesn't exist after timeout, either true or false
     						if ( isSuccessOnTimeout() )
     						{
-    							if(log.isBasic()) log.logBasic(toString(), "Didn't detect file [" + realFilename + "] before timeout, success");
+    							if(log.isBasic()) logBasic("Didn't detect file [" + realFilename + "] before timeout, success");
     							result.setResult( true );
     						}
     						else
     						{
-    							if(log.isBasic()) log.logBasic(toString(), "Didn't detect file [" + realFilename + "] before timeout, failure");
+    							if(log.isBasic()) logBasic("Didn't detect file [" + realFilename + "] before timeout, failure");
     							result.setResult( false );
     						}
     					}
@@ -287,7 +286,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     						{
     							if ( log.isDetailed() )
     							{
-    								log.logDetailed(toString(), "Sleeping " + sleepTime + " seconds before next check for file [" + realFilename + "]");
+    								logDetailed("Sleeping " + sleepTime + " seconds before next check for file [" + realFilename + "]");
     							}
     							Thread.sleep(sleepTime * 1000);
     						}
@@ -306,14 +305,14 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     				long oldSize = -1;
     				long newSize = fileObject.getContent().getSize();
 
-    				if(log.isDetailed()) log.logDetailed(toString(), "File [" + realFilename + "] is " + newSize + " bytes long");
-    				if(log.isBasic()) log.logBasic(toString(), "Waiting until file [" + realFilename + "] stops growing for " + iCycleTime + " seconds");
+    				if(log.isDetailed()) logDetailed("File [" + realFilename + "] is " + newSize + " bytes long");
+    				if(log.isBasic()) logBasic("Waiting until file [" + realFilename + "] stops growing for " + iCycleTime + " seconds");
     				while ( oldSize != newSize && !parentJob.isStopped() )
     				{
     					try {
     						if ( log.isDetailed() )
     						{
-    							log.logDetailed(toString(), "Sleeping " + iCycleTime + " seconds, waiting for file [" + realFilename + "] to stop growing");
+    							logDetailed("Sleeping " + iCycleTime + " seconds, waiting for file [" + realFilename + "] to stop growing");
     						}
     						Thread.sleep(iCycleTime * 1000);
     					} catch (InterruptedException e) {
@@ -325,10 +324,10 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     					newSize = fileObject.getContent().getSize();
     					if ( log.isDetailed() )
     					{
-    						log.logDetailed(toString(), "File [" + realFilename + "] is " + newSize + " bytes long");
+    						logDetailed("File [" + realFilename + "] is " + newSize + " bytes long");
     					}
     				}
-    				if(log.isBasic()) log.logBasic(toString(), "Stopped waiting for file [" + realFilename + "] to stop growing");
+    				if(log.isBasic()) logBasic("Stopped waiting for file [" + realFilename + "] to stop growing");
     			}
 
     			if ( parentJob.isStopped() )
@@ -338,7 +337,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     		}
     		catch ( IOException e )
     		{
-    			log.logBasic(toString(), "Exception while waiting for file [" + realFilename + "] to stop growing: " + e.getMessage());
+    			logBasic("Exception while waiting for file [" + realFilename + "] to stop growing: " + e.getMessage());
     		}finally{
     			if(fileObject != null){
     				try{
@@ -349,7 +348,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     	}
     	else
     	{
-    		log.logError(toString(), "No filename is defined.");
+    		logError("No filename is defined.");
     	}
 
     	return result;

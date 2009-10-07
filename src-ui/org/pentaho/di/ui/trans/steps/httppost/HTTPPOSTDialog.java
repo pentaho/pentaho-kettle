@@ -483,7 +483,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                    	logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -616,7 +616,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOSTDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOSTDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		if (input.getArgumentField()!=null)
 		{
@@ -665,7 +665,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		int nrargs = wFields.nrNonEmpty();
 		input.allocate(nrargs);
 
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOSTDialog.Log.FoundArguments",String.valueOf(nrargs))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOSTDialog.Log.FoundArguments",String.valueOf(nrargs))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrargs;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
@@ -677,7 +677,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		int nrqueryparams = wQuery.nrNonEmpty();
 		input.allocateQuery(nrqueryparams);
 
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOSTDialog.Log.FoundQueryParameters",String.valueOf(nrqueryparams))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOSTDialog.Log.FoundQueryParameters",String.valueOf(nrqueryparams))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrqueryparams;i++)
 		{
 			TableItem item = wQuery.getNonEmpty(i);

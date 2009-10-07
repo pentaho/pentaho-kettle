@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -32,8 +33,10 @@ import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.gui.OverwritePrompter;
-import org.pentaho.di.core.logging.Log4jStringAppender;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.HasLogChannelInterface;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -64,13 +67,13 @@ import org.pentaho.di.www.WebResult;
  * @since  07-apr-2003
  * 
  */
-public class Job extends Thread implements VariableSpace, NamedParams
+public class Job extends Thread implements VariableSpace, NamedParams, HasLogChannelInterface
 {
 	private static Class<?> PKG = Job.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	public static final String	CONFIGURATION_IN_EXPORT_FILENAME	= "__job_execution_configuration__.xml";
 	
-	private LogWriter log;
+	private LogChannelInterface log;
 	private JobMeta jobMeta;
 	private Repository rep;
 	private int errors = 0;
@@ -86,7 +89,9 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	
 	private Date      startDate, endDate, currentDate, logDate, depDate;
 	
-	private boolean active, stopped;
+	private AtomicBoolean active;
+
+	private AtomicBoolean stopped;
     
     private long    batchId;
     
@@ -103,8 +108,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
      * The result of the job, after execution.
      */
     private Result result;
-    private boolean initialized;
-    private Log4jStringAppender stringAppender;
+    private AtomicBoolean initialized;
     
     private List<JobListener> jobListeners;
     
@@ -113,39 +117,39 @@ public class Job extends Thread implements VariableSpace, NamedParams
      */
     private NamedParams namedParams = new NamedParamsDefault();
     
-    private boolean finished;
+    private AtomicBoolean finished;
 	private SocketRepository	socketRepository;
     
-    public Job(LogWriter lw, String name, String file, String args[])
+    public Job(String name, String file, String args[])
     {
     	this();
-        init(lw, name, file, args);
+        init(name, file, args);
     }
     
-	public void init(LogWriter lw, String name, String file, String args[])
+	public void init(String name, String file, String args[])
 	{
-		this.log=lw;
-		
         if (name!=null) setName(name+" ("+super.getName()+")");
         
 		jobMeta = new JobMeta();
 		jobMeta.setName(name);
 		jobMeta.setFilename(file);
 		jobMeta.setArguments(args);
-		active=false;
-		stopped=false;
+		active=new AtomicBoolean(false);
+		stopped=new AtomicBoolean(false);
         jobTracker = new JobTracker(jobMeta);
-        initialized=false;
+        initialized=new AtomicBoolean(false);
         batchId = -1;
         passedBatchId = -1;
         
         result = null;
+        
+		this.log=new LogChannel(this);
 	}
 
-	public Job(LogWriter lw, Repository rep, JobMeta ti)
+	public Job(Repository rep, JobMeta ti)
 	{
 		this();
-        open(lw, rep, ti);
+        open(rep, ti);
         if (ti.getName()!=null) setName(ti.getName()+" ("+super.getName()+")");
 	}
 
@@ -153,20 +157,21 @@ public class Job extends Thread implements VariableSpace, NamedParams
     public Job()
     {
     	jobListeners = new ArrayList<JobListener>();
-    	this.log = LogWriter.getInstance();
+    	this.log = LogChannel.GENERAL;
     }
     
-    public void open(LogWriter lw, Repository rep, JobMeta ti)
+    public void open(Repository rep, JobMeta ti)
     {
-        this.log        = lw;
         this.rep        = rep;
         this.jobMeta    = ti;
         
         if (ti.getName()!=null) setName(ti.getName()+" ("+super.getName()+")");
         
-        active=false;
-        stopped=false;
+        active.set(false);
+        stopped.set(false);
         jobTracker = new JobTracker(jobMeta);
+
+        this.log = new LogChannel(this);
     }
 	
 	public void open(Repository rep, String fname, String jobname, String dirname, OverwritePrompter prompter) throws KettleException
@@ -202,8 +207,6 @@ public class Job extends Thread implements VariableSpace, NamedParams
         catch(Exception e)
         {
             String message = BaseMessages.getString(PKG, "Job.Log.ErrorAllocatingNewJob", e.toString());
-            LogWriter.getInstance().logError("Create Job in new ClassLoader", message);
-            LogWriter.getInstance().logError("Create Job in new ClassLoader", Const.getStackTracker(e));
             throw new KettleException(message, e);
         }
     }
@@ -226,9 +229,9 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	{
 		try
 		{
-			stopped=false;
-			finished=false;
-            initialized = true;
+			stopped=new AtomicBoolean(false);
+			finished=new AtomicBoolean(false);
+            initialized = new AtomicBoolean(true);
     
             // Create a new variable name space as we want jobs to have their own set of variables.
             // initialize from parentjob or null
@@ -238,14 +241,18 @@ public class Job extends Thread implements VariableSpace, NamedParams
             copyParametersFrom(jobMeta);
             activateParameters();
             
-            // Run the job, don't fire the job listeners at the end
+            // Run the job
             //
-            result = execute(false); 
+            result = execute(); 
+            
+    		// Tell the world that we've finished processing this job...
+    		//
+    		fireJobListeners();
 		}
 		catch(Throwable je)
 		{
-			log.logError(toString(), BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", je.getMessage()));
-            log.logError(toString(), Const.getStackTracker(je));
+			log.logError(BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", je.getMessage()));
+            log.logError(Const.getStackTracker(je));
             //
             // we don't have result object because execute() threw a curve-ball.
             // So we create a new error object.
@@ -254,9 +261,9 @@ public class Job extends Thread implements VariableSpace, NamedParams
             result.setNrErrors(1L);
             result.setResult(false);
             addErrors(1);  // This can be before actual execution
-            active=false;
-            finished=true;
-            stopped=false;
+            active.set(false);
+            finished.set(true);
+            stopped.set(false);
 		}
 		finally
 		{
@@ -268,17 +275,17 @@ public class Job extends Thread implements VariableSpace, NamedParams
 			} 
 			catch (KettleJobException e) 
 			{
-				log.logError(toString(), BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", e.getMessage()));
-	            log.logError(toString(), Const.getStackTracker(e));
+				log.logError(BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", e.getMessage()));
+	            log.logError(Const.getStackTracker(e));
 			}
 			
 			fireJobListeners();
 		}
 	}
 
+	
 	/**
 	 * Execute a job without previous results.  This is a job entry point (not recursive)<br>
-	 * Fire the job listeners at the end.<br>
 	 * <br>
 	 * @return the result of the execution
 	 * 
@@ -286,27 +293,16 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	 */
 	public Result execute() throws KettleException
     {
-		return execute(true);
-    }
-	
-	/**
-	 * Execute a job without previous results.  This is a job entry point (not recursive)<br>
-	 * <br>
-	 * @param fireJobListeners true if the job listeners need to be fired off
-	 * @return the result of the execution
-	 * 
-	 * @throws KettleException
-	 */
-	private Result execute(boolean fireJobListeners) throws KettleException
-    {
-		finished=false;
-		stopped=false;
+		finished.set(false);
+		stopped.set(false);
+
+        log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobStarted"));
 
         // Start the tracking...
         JobEntryResult jerStart = new JobEntryResult(null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), BaseMessages.getString(PKG, "Job.Reason.Started"), null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
 
-        active = true;
+        active.set(true);
 
         // Where do we start?
         JobEntryCopy startpoint;
@@ -324,14 +320,20 @@ public class Job extends Thread implements VariableSpace, NamedParams
         // Save this result...
         JobEntryResult jerEnd = new JobEntryResult(res, BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
-
-        active = false;
+        log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobFinished"));
+        
+        /*
+        String allLog = CentralLogStore.getAppender().getBuffer().toString();
+        System.out.println("-------------------------------\n");
+        System.out.println(allLog);
+		*/
+        
+        active.set(false);
+        finished.set(true);
         
 		// Tell the world that we've finished processing this job...
 		//
-        if (fireJobListeners) {
-        	fireJobListeners();
-        }
+        fireJobListeners();
         
 		return res;
     }
@@ -347,7 +349,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	 */
 	public Result execute(int nr, Result result) throws KettleException
 	{
-		finished=false;
+		finished.set(false);
         
         // Where do we start?
         JobEntryCopy startpoint;
@@ -365,10 +367,6 @@ public class Job extends Thread implements VariableSpace, NamedParams
         }
 
 		Result res =  execute(nr, result, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.StartOfJobentry"));
-
-		// Tell the world that we've finished processing this job...
-		//
-		fireJobListeners();
 		
 		return res;
 	}
@@ -380,7 +378,6 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	 * @see JobListener#jobFinished(Job)
 	 */
 	private void fireJobListeners() {
-		finished=true;
 		for (JobListener jobListener : jobListeners) {
 			jobListener.jobFinished(this);
 		}
@@ -402,14 +399,14 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	{
 		Result res = null;
        
-		if (stopped)
+		if (stopped.get())
 		{
 			res=new Result(nr);
 			res.stopped=true;
 			return res;
 		}
 		
-		if(log.isDetailed()) log.logDetailed(toString(), "exec("+nr+", "+(prev_result!=null?prev_result.getNrErrors():0)+", "+(startpoint!=null?startpoint.toString():"null")+")");
+		if(log.isDetailed()) log.logDetailed("exec("+nr+", "+(prev_result!=null?prev_result.getNrErrors():0)+", "+(startpoint!=null?startpoint.toString():"null")+")");
 		
 		// What entry is next?
 		JobEntryInterface jei = startpoint.getEntry();
@@ -433,7 +430,10 @@ public class Job extends Thread implements VariableSpace, NamedParams
         // Execute this entry...
         JobEntryInterface cloneJei = (JobEntryInterface)jei.clone();
         ((VariableSpace)cloneJei).copyVariablesFrom(this);
-        final Result result = cloneJei.execute(prevResult, nr, rep, this);
+        cloneJei.setRepository(rep);
+        cloneJei.setParentJob(this);
+        cloneJei.getLogChannel().logDetailed("Starting job entry");
+        final Result result = cloneJei.execute(prevResult, nr);
 
         Thread.currentThread().setContextClassLoader(cl);
 		addErrors((int)result.getNrErrors());
@@ -514,7 +514,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
             				}
             				catch(Throwable e)
                             {
-                            	log.logError(toString(), Const.getStackTracker(e));
+                            	log.logError(Const.getStackTracker(e));
                             	threadExceptions.add(new KettleException(BaseMessages.getString(PKG, "Job.Log.UnexpectedError",nextEntry.toString()), e));
                             	Result threadResult = new Result();
                             	threadResult.setResult(false);
@@ -526,7 +526,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
             		Thread thread = new Thread(runnable);
             		threads.add(thread);
             		thread.start();
-            		if(log.isBasic()) log.logBasic(jobMeta.toString(), BaseMessages.getString(PKG, "Job.Log.LaunchedJobEntryInParallel",nextEntry.getName()));
+            		if(log.isBasic()) log.logBasic(BaseMessages.getString(PKG, "Job.Log.LaunchedJobEntryInParallel",nextEntry.getName()));
             	}
             	else
             	{
@@ -538,10 +538,10 @@ public class Job extends Thread implements VariableSpace, NamedParams
                     }
                     catch(Throwable e)
                     {
-                    	log.logError(toString(), Const.getStackTracker(e));
+                    	log.logError(Const.getStackTracker(e));
                     	throw new KettleException(BaseMessages.getString(PKG, "Job.Log.UnexpectedError",nextEntry.toString()), e);
                     }
-                    if(log.isBasic()) log.logBasic(jobMeta.toString(), BaseMessages.getString(PKG, "Job.Log.FinishedJobEntry",nextEntry.getName(),res.getResult()+""));
+                    if(log.isBasic()) log.logBasic(BaseMessages.getString(PKG, "Job.Log.FinishedJobEntry",nextEntry.getName(),res.getResult()+""));
             	}
 			}
 		}
@@ -688,7 +688,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		DatabaseMeta logcon = jobMeta.getLogConnection();
 		if (logcon!=null && !Const.isEmpty(jobMeta.getLogTable()))
 		{
-			Database ldb = new Database(logcon);
+			Database ldb = new Database(this, logcon);
 			ldb.shareVariablesWith(this);
 			try
 			{
@@ -770,7 +770,8 @@ public class Job extends Thread implements VariableSpace, NamedParams
 				ldb.disconnect();
 			}
 		}
-        
+
+		/*
         if (jobMeta.isLogfieldUsed())
         {
             stringAppender = LogWriter.createStringAppender();
@@ -783,10 +784,10 @@ public class Job extends Thread implements VariableSpace, NamedParams
             }
             stringAppender.setMaxNrLines(Const.toInt(logLimit,0));
             
-            log.addAppender(stringAppender);
+            LogWriter.getInstance().addAppender(stringAppender);
             stringAppender.setBuffer(new StringBuffer("START"+Const.CR));
         }
-        
+        */
         
 		return true;
 	}
@@ -813,8 +814,8 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	        
 	        if (jobMeta.isLogfieldUsed())
 	        {
-	            log_string = stringAppender.getBuffer().append(Const.CR+"END"+Const.CR).toString();
-	            log.removeAppender(stringAppender);
+	        	StringBuffer stringBuffer = CentralLogStore.getAppender().getBuffer(log.getLogChannelId(), true);
+	        	log_string = stringBuffer.append(Const.CR+"END"+Const.CR).toString();
 	        }
 	        
 			/*
@@ -824,7 +825,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 			DatabaseMeta logcon = jobMeta.getLogConnection();
 			if (logcon!=null)
 			{
-				Database ldb = new Database(logcon);
+				Database ldb = new Database(this, logcon);
 				ldb.shareVariablesWith(this);
 				try
 				{
@@ -856,18 +857,18 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	
 	public boolean isActive()
 	{
-		return active;
+		return active.get();
 	}
 	
 	// Stop all activity!
 	public void stopAll()
 	{
-		stopped=true;
+		stopped.set(true);
 	}
 	
 	public void setStopped(boolean stopped)
 	{
-		this.stopped = stopped;
+		this.stopped.set(stopped);
 	}
 	
 	/**
@@ -875,7 +876,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	 */
 	public boolean isStopped()
 	{
-		return stopped;
+		return stopped.get();
 	}
 	
 	/**
@@ -925,15 +926,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	{
 		return jobMeta;
 	}
-	
-	/**
-	 * @return Returns the log.
-	 */
-	public LogWriter getLog()
-	{
-		return log;
-	}
-	
+		
 	/**
 	 * @return Returns the rep.
 	 */
@@ -1004,7 +997,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
      */
     public boolean isInitialized()
     {
-        return initialized;
+        return initialized.get();
     }
 
     /**
@@ -1159,15 +1152,15 @@ public class Job extends Thread implements VariableSpace, NamedParams
     {
         String message;
         
-        if (!initialized)
+        if (!initialized.get())
         {
             message = Trans.STRING_WAITING;
         }
         else
         {
-        	if (active) 
+        	if (active.get()) 
         	{
-        		if (stopped) 
+        		if (stopped.get()) 
         		{
         			message = Trans.STRING_HALTING;
         		}
@@ -1178,7 +1171,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
         	}
         	else
         	{
-        		if (stopped) 
+        		if (stopped.get()) 
         		{
         			message = Trans.STRING_STOPPED;
         		}
@@ -1226,13 +1219,7 @@ public class Job extends Thread implements VariableSpace, NamedParams
 				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
 				{
 					throw new KettleException("There was an error passing the exported job to the remote server: " + Const.CR+ webResult.getMessage());
-				}
-				
-				// The remote file name is comprised in the message
-				//
-				String remoteFile = webResult.getMessage();
-				LogWriter.getInstance().logBasic(jobMeta.getName(), "Added the remote job to slave server ["+slaveServer.getName()+"] for remote file: "+remoteFile);
-				
+				}				
 			} else {
 				String xml = new JobConfiguration(jobMeta, executionConfiguration).getXML();
 				
@@ -1285,17 +1272,14 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	 * @return the finished
 	 */
 	public boolean isFinished() {
-		return finished;
+		return finished.get();
 	}
 
 	/**
 	 * @param finished the finished to set
 	 */
 	public void setFinished(boolean finished) {
-		this.finished = finished;
-		if (finished) {
-			System.out.println("--------------------- Finished ---------------------------");
-		}
+		this.finished.set(finished);
 	}
 
 	public void addParameterDefinition(String key, String defValue, String description) throws DuplicateParamException {
@@ -1366,5 +1350,9 @@ public class Job extends Thread implements VariableSpace, NamedParams
 	
 	public SocketRepository getSocketRepository() {
 		return socketRepository;
+	}
+	
+	public LogChannelInterface getLogChannel() {
+		return log;
 	}
 }

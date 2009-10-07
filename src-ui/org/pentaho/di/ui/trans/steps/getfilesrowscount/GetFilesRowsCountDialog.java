@@ -1005,7 +1005,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		wFileField.setSelection(in.isFileField());
 		if (in.setOutputFilenameField()!=null) wFilenameField.setText(in.setOutputFilenameField());
 		
-		log.logDebug(toString(), BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Log.GettingFieldsInfo"));
+		logDebug(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Log.GettingFieldsInfo"));
 		
 		setIncludeRownum();
 

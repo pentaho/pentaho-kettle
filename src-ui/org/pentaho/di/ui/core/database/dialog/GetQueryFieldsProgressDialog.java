@@ -60,7 +60,7 @@ public class GetQueryFieldsProgressDialog
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
-			    db = new Database(dbMeta);
+			    db = new Database(this, dbMeta);
 			    try
 				{
         			db.connect();

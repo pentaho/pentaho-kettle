@@ -143,10 +143,7 @@ public class ReservoirSampling extends BaseStep
       m_data.processRow(r);
     }
 
-    if (log.isRowLevel()) { 
-      log.logRowlevel(toString(), 
-                      "Read row #" + getLinesRead() + " : "+r);
-    }
+    if (log.isRowLevel()) logRowlevel("Read row #" + getLinesRead() + " : "+r);
     
     if (checkFeedback(getLinesRead())) {
       logBasic("Line number "+getLinesRead());

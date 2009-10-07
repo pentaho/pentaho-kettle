@@ -431,7 +431,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 	 */ 
 	public void getData()
 	{
-		log.logDebug(toString(), BaseMessages.getString(PKG, "AddSequenceDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		logDebug(BaseMessages.getString(PKG, "AddSequenceDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		if (input.getValuename()!=null) wValuename.setText(input.getValuename());
 		

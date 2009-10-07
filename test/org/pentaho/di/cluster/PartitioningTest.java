@@ -1,6 +1,7 @@
 package org.pentaho.di.cluster;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -25,7 +26,7 @@ public class PartitioningTest extends BaseCluster {
 			TransMeta transMeta = loadAndModifyTestTransformation(clusterGenerator, "test/org/pentaho/di/cluster/partitioning-swimming-lanes-on-cluster.ktr");
 			TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnMaster>", transSplitter, null, 1);
+			long nrErrors = Trans.monitorClusteredTransformation(new LogChannel("cluster unit test <testParallelFileReadOnMaster>"), transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
 			
 			String[] results = new String[] { "8", "9", "9", "9", "9", "8", "8", "8", "8", "8", "8", "8", };
@@ -72,7 +73,7 @@ public class PartitioningTest extends BaseCluster {
 			TransMeta transMeta = loadAndModifyTestTransformation(clusterGenerator, "test/org/pentaho/di/cluster/partitioning-repartitioning-on-cluster.ktr");
 			TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnMaster>", transSplitter, null, 1);
+			long nrErrors = Trans.monitorClusteredTransformation(new LogChannel("cluster unit test <testParallelFileReadOnMaster>"), transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
 			
 			String[] results = new String[] { "8", "9", "9", "9", "9", "8", "8", "8", "8", "8", "8", "8", };

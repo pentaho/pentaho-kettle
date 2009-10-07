@@ -164,9 +164,9 @@ public class RssOutput extends BaseStep implements StepInterface
 		    		parentfolder=KettleVFS.getFileObject(data.filename).getParent();	    		
 		    		if(!parentfolder.exists())	
 		    		{
-		    			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "RssOutput.Log.ParentFolderExists",parentfolder.getName().toString()));
+		    			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssOutput.Log.ParentFolderExists",parentfolder.getName().toString()));
 		    			parentfolder.createFolder();
-		    			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "RssOutput.Log.CanNotCreateParentFolder",parentfolder.getName().toString()));
+		    			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssOutput.Log.CanNotCreateParentFolder",parentfolder.getName().toString()));
 		    		}
 	    		}
 	    		catch (Exception e) {					
@@ -491,7 +491,7 @@ public class RssOutput extends BaseStep implements StepInterface
 					String channelvalue= data.inputRowMeta.getString(r,data.customchannels[i]);
 					
 					if(log.isDetailed())
-						log.logDetailed(toString(),"outputting channel value <"+channelname+">"+channelvalue+"<"+channelname+"/>");
+						logDetailed("outputting channel value <"+channelname+">"+channelvalue+"<"+channelname+"/>");
 					
 					// add Channel
 					Element channeltag = data.channel.addElement(channelname);
@@ -538,7 +538,7 @@ public class RssOutput extends BaseStep implements StepInterface
 				String itemvalue= data.inputRowMeta.getString(r,data.customitems[i]);
 				
 				if(log.isDetailed())
-					log.logDetailed(toString(),"outputting item value <"+itemname+">"+itemvalue+"<"+itemname+"/>");
+					logDetailed("outputting item value <"+itemname+">"+itemvalue+"<"+itemname+"/>");
 				
 				// add Item
 				if(meta.isDisplayItem())
@@ -692,7 +692,7 @@ public class RssOutput extends BaseStep implements StepInterface
 			}
 	            
 	        if(log.isDetailed())
-	        	log.logDetailed(toString(),BaseMessages.getString(PKG, "RssOutput.Log.CreatingFileOK",fileName));
+	        	logDetailed(BaseMessages.getString(PKG, "RssOutput.Log.CreatingFileOK",fileName));
         	
 			retval=true;
 		}

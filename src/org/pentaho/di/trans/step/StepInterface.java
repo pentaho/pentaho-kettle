@@ -16,7 +16,9 @@ import java.util.List;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.trans.Trans;
 
 /*
  * Created on 12-aug-2004
@@ -27,6 +29,11 @@ import org.pentaho.di.core.row.RowMetaInterface;
 
 public interface StepInterface
 {
+	/**
+	 * @return the transformation that is executing this step
+	 */ 
+	public Trans getTrans();
+	
 	/**
 	 * Initialise and do work where other steps need to wait for...
 	 * @param stepMetaInterface The metadata to work with
@@ -258,5 +265,10 @@ public interface StepInterface
 	 * @return The metadata for this step 
 	 */
 	public StepMeta getStepMeta();
+
+	/**
+	 * @return the logging channel for this step
+	 */
+	public LogChannelInterface getLogChannel();
 		   
 }

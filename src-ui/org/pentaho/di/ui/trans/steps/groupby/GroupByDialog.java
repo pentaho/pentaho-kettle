@@ -424,7 +424,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                    	logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -517,7 +517,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), BaseMessages.getString(PKG, "GroupByDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		logDebug(BaseMessages.getString(PKG, "GroupByDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		wAllRows.setSelection(input.passAllRows());
 		

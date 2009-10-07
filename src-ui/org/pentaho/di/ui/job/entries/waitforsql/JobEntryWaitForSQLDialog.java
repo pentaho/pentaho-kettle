@@ -711,7 +711,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 				case SWT.CANCEL: break;
 				case SWT.NO:     wSQL.setText(sql); break;
 				case SWT.YES:
-					Database db = new Database(inf);
+					Database db = new Database(this, inf);
 					try
 					{
 						db.connect();

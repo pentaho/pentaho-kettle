@@ -204,7 +204,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 
 		ObjectId id_jobentry_type = getJobEntryTypeID(jobEntryBase.getTypeId());
 
-		log.logDebug(toString(), "ID_JobEntry_type = " + id_jobentry_type + " for type = [" + jobEntryBase.getTypeId() + "]");
+		log.logDebug("ID_JobEntry_type = " + id_jobentry_type + " for type = [" + jobEntryBase.getTypeId() + "]");
 
 		RowMetaAndData table = new RowMetaAndData();
 

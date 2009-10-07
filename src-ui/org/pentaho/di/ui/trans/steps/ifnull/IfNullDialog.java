@@ -458,7 +458,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 
 				} catch (KettleException e) {
 					String msg = BaseMessages.getString(PKG, "IfNullDialog.DoMapping.UnableToFindInput");
-					log.logError(toString(), msg);
+					logError(msg);
 				}
 				String[] prevStepFieldNames = prevFields.getFieldNames();
 				if(prevStepFieldNames!=null){

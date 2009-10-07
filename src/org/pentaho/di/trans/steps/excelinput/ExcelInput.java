@@ -447,7 +447,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		if (nonExistantFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
-			if(log.isBasic()) log.logBasic(BaseMessages.getString(PKG, "ExcelInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "ExcelInput.Warning.MissingFiles", message));
+			if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ExcelInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "ExcelInput.Warning.MissingFiles", message));
 			
 			if (meta.isErrorIgnored())
 				for (FileObject fileObject : nonExistantFiles)
@@ -464,7 +464,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		if (nonAccessibleFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
-			if(log.isBasic()) log.logBasic(BaseMessages.getString(PKG, "ExcelInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "ExcelInput.Log.RequiredFilesMsgNotAccessible",message));
+			if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ExcelInput.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "ExcelInput.Log.RequiredFilesMsgNotAccessible",message));
 			
 			if (meta.isErrorIgnored())
 				for (FileObject fileObject : nonAccessibleFiles)

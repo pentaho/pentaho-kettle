@@ -59,7 +59,6 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryResult;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
@@ -777,10 +776,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   
-  public Result execute(Result result, int nr, Repository rep, Job parentJob)
+  public Result execute(Result result, int nr)
   {
-    LogWriter log = LogWriter.getInstance();
-
     File masterZipfile = null;
 
     // Send an e-mail...
@@ -788,7 +785,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     Properties props = new Properties();
     if (Const.isEmpty(server))
     {
-      log.logError(toString(), BaseMessages.getString(PKG, "JobMail.Error.HostNotSpecified"));    
+      logError(BaseMessages.getString(PKG, "JobMail.Error.HostNotSpecified"));    
       
       result.setNrErrors(1L);
       result.setResult(false);
@@ -818,9 +815,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     props.put("mail." + protocol + ".host", environmentSubstitute(server));
     if (!Const.isEmpty(port))
       props.put("mail." + protocol + ".port", environmentSubstitute(port));
-    boolean debug = log.getLogLevel() >= LogWriter.LOG_LEVEL_DEBUG;
 
-    if (debug)
+    if (LogWriter.getInstance().isDebug())
       props.put("mail.debug", "true");
 
     if (usingAuthentication)
@@ -842,7 +838,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     }
 
     Session session = Session.getInstance(props);
-    session.setDebug(debug);
+    session.setDebug(LogWriter.getInstance().isDebug());
 
     try
     {
@@ -1047,7 +1043,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
                   // add the part with the file in the BodyPart();
                   parts.addBodyPart(files);
                   nrattachedFiles++;
-                  log.logBasic(toString(), "Added file '" + fds.getName() + "' to the mail message.");
+                  logBasic("Added file '" + fds.getName() + "' to the mail message.");
                 }
               }
             }
@@ -1085,15 +1081,15 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
                   inputStream.close();
                   zipOutputStream.closeEntry();
                   nrattachedFiles++;
-                  log.logBasic(toString(), "Added file '" + file.getName().getURI()
+                  logBasic("Added file '" + file.getName().getURI()
                       + "' to the mail message in a zip archive.");
                 }
               }
             } catch (Exception e)
             {
-              log.logError(toString(), "Error zipping attachement files into file [" + masterZipfile.getPath() + "] : "
+              logError("Error zipping attachement files into file [" + masterZipfile.getPath() + "] : "
                   + e.toString());
-              log.logError(toString(), Const.getStackTracker(e));
+              logError(Const.getStackTracker(e));
               result.setNrErrors(1);
             } finally
             {
@@ -1105,8 +1101,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
                   zipOutputStream.close();
                 } catch (IOException e)
                 {
-                  log.logError(toString(), "Unable to close attachement zip file archive : " + e.toString());
-                  log.logError(toString(), Const.getStackTracker(e));
+                  logError("Unable to close attachement zip file archive : " + e.toString());
+                  logError(Const.getStackTracker(e));
                   result.setNrErrors(1);
                 }
               }
@@ -1136,7 +1132,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     		  String realImageFile=environmentSubstitute(embeddedimages[i]);
     		  String realcontenID=environmentSubstitute(contentids[i]);
     		  if(messageText.indexOf("cid:"+realcontenID)<0) {
-    			  if (log.isDebug()) log.logDebug(toString(), "Image ["+realImageFile + "] is not used in message body!");
+    			  if (log.isDebug()) log.logDebug("Image ["+realImageFile + "] is not used in message body!");
     		  }else{
 		    	  try {
 		    		  boolean found = false;
@@ -1144,7 +1140,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			    	  if(imageFile.exists() && imageFile.getType()==FileType.FILE)
 			    		  found=true;
 			    	  else
-			    		  log.logError(toString(), "We can not find ["+realImageFile + "] or it is not a file");
+			    		  log.logError("We can not find ["+realImageFile + "] or it is not a file");
 			    	  if(found) {
 			    		  // Create part for the image 
 			    	      MimeBodyPart messageBodyPart = new MimeBodyPart();
@@ -1156,12 +1152,12 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			    	      // Add part to multi-part
 			    	      parts.addBodyPart(messageBodyPart);
 			    	      nrEmbeddedImages++;
-			    	      log.logBasic(toString(), "Image '" + fds.getName() + "' was embedded in message.");
+			    	      log.logBasic("Image '" + fds.getName() + "' was embedded in message.");
 			    	  }
 		    	  }catch(Exception e) {
-		              log.logError(toString(), "Error embedding image [" + realImageFile + "] in message : "
+		              log.logError("Error embedding image [" + realImageFile + "] in message : "
 		                      + e.toString());
-		                  log.logError(toString(), Const.getStackTracker(e));
+		                  log.logError(Const.getStackTracker(e));
 		                  result.setNrErrors(1);
 		    	  }finally {
 		    		  if(imageFile!=null) {
@@ -1209,11 +1205,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       }
     } catch (IOException e)
     {
-      log.logError(toString(), "Problem while sending message: " + e.toString());
+      logError("Problem while sending message: " + e.toString());
       result.setNrErrors(1);
     } catch (MessagingException mex)
     {
-      log.logError(toString(), "Problem while sending message: " + mex.toString());
+      logError("Problem while sending message: " + mex.toString());
       result.setNrErrors(1);
 
       Exception ex = mex;
@@ -1226,10 +1222,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
           Address[] invalid = sfex.getInvalidAddresses();
           if (invalid != null)
           {
-            log.logError(toString(), "    ** Invalid Addresses");
+            logError("    ** Invalid Addresses");
             for (int i = 0; i < invalid.length; i++)
             {
-              log.logError(toString(), "         " + invalid[i]);
+              logError("         " + invalid[i]);
               result.setNrErrors(1);
             }
           }
@@ -1237,10 +1233,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
           Address[] validUnsent = sfex.getValidUnsentAddresses();
           if (validUnsent != null)
           {
-            log.logError(toString(), "    ** ValidUnsent Addresses");
+            logError("    ** ValidUnsent Addresses");
             for (int i = 0; i < validUnsent.length; i++)
             {
-              log.logError(toString(), "         " + validUnsent[i]);
+              logError("         " + validUnsent[i]);
               result.setNrErrors(1);
             }
           }
@@ -1251,7 +1247,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             //System.out.println("    ** ValidSent Addresses");
             for (int i = 0; i < validSent.length; i++)
             {
-              log.logError(toString(), "         " + validSent[i]);
+              logError("         " + validSent[i]);
               result.setNrErrors(1);
             }
           }

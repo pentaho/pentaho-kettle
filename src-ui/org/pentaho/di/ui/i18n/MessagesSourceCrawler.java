@@ -34,7 +34,8 @@ import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -88,15 +89,17 @@ public class MessagesSourceCrawler {
 	private Pattern stringPkgPattern;
 	private Pattern	classPkgPattern;
 
+	private LogChannelInterface	log;
+
 	/**
 	 * @param sourceDirectories
 	 *            The source directories to crawl through
 	 * @param singleMessagesFile
 	 *            the messages file if there is only one, otherwise: null
 	 */
-	public MessagesSourceCrawler(List<String> sourceDirectories,
-			String singleMessagesFile, List<SourceCrawlerXMLFolder> xmlFolders) {
+	public MessagesSourceCrawler(LogChannelInterface log, List<String> sourceDirectories, String singleMessagesFile, List<SourceCrawlerXMLFolder> xmlFolders) {
 		super();
+		this.log = log;
 		this.sourceDirectories = sourceDirectories;
 		this.singleMessagesFile = singleMessagesFile;
 		this.occurrences = new ArrayList<KeyOccurrence>();
@@ -249,8 +252,7 @@ public class MessagesSourceCrawler {
 							);
 					}
 				} catch (KettleXMLException e) {
-					LogWriter.getInstance().logError(toString(),
-							"Unable to open XUL / XML document: " + fileObject);
+					log.logError("Unable to open XUL / XML document: " + fileObject);
 				}
 			}
 		}
@@ -593,8 +595,7 @@ public class MessagesSourceCrawler {
 				new SourceCrawlerXMLElement("toolbarbutton", null, "label"));
 		xmlFolders.add(xmlFolder);
 
-		MessagesSourceCrawler crawler = new MessagesSourceCrawler(directories,
-				null, xmlFolders);
+		MessagesSourceCrawler crawler = new MessagesSourceCrawler(new LogChannel("Source crawler"), directories, null, xmlFolders);
 		crawler.setFilesToAvoid(filesToAvoid);
 		crawler.crawl();
 		int mis = 0;

@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
@@ -71,7 +70,6 @@ public class SearchFieldsProgressDialog implements IRunnableWithProgress
 		}
 		catch(KettleStepException kse)
 		{
-			LogWriter.getInstance().logError(toString(), BaseMessages.getString(PKG, "SearchFieldsProgressDialog.Log.UnableToGetFields", stepInfo.toString(), kse.getMessage())); //"Search fields progress dialog","Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage()
 			throw new InvocationTargetException(kse, BaseMessages.getString(PKG, "SearchFieldsProgressDialog.Log.UnableToGetFields", stepInfo.toString(), kse.getMessage())); //"Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage()
 		}
 

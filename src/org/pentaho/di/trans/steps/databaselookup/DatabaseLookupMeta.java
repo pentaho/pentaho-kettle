@@ -28,15 +28,14 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
@@ -651,7 +650,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		
 		if (databaseMeta!=null)
 		{
-			Database db = new Database(databaseMeta);
+			Database db = new Database(this, databaseMeta);
 			db.shareVariablesWith(transMeta);
             databases = new Database[] { db }; // Keep track of this one for cancelQuery
 
@@ -805,11 +804,10 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
 	public RowMetaInterface getTableFields()
 	{
-		LogWriter log = LogWriter.getInstance();
-        RowMetaInterface fields = null;
+		RowMetaInterface fields = null;
 		if (databaseMeta!=null)
 		{
-			Database db = new Database(databaseMeta);
+			Database db = new Database(this, databaseMeta);
             databases = new Database[] { db }; // Keep track of this one for cancelQuery
 
 			try
@@ -820,7 +818,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				log.logError(toString(), BaseMessages.getString(PKG, "DatabaseLookupMeta.ERROR0004.ErrorGettingTableFields")+dbe.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DatabaseLookupMeta.ERROR0004.ErrorGettingTableFields")+dbe.getMessage()); //$NON-NLS-1$
 			}
 			finally
 			{

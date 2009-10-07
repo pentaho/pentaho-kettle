@@ -75,7 +75,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -1162,8 +1161,7 @@ public class TableView extends Composite
                         }
                         catch(KettleValueException e)
                         {
-                            LogWriter.getInstance().logError("TableView sort", "Error comparing rows: "+e.toString());
-                            return 0;
+                            throw new RuntimeException("Error comparing rows", e);
                         }
                     }
                 }

@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,7 +23,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 
 
-public class GetRootServlet extends HttpServlet
+public class GetRootServlet extends BaseHttpServlet implements CarteServletInterface
 {
 	private static Class<?> PKG = GetRootServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -42,7 +41,7 @@ public class GetRootServlet extends HttpServlet
     {
         if (!request.getRequestURI().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "GetRootServlet.RootRequested"));
+        if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetRootServlet.RootRequested"));
         
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
@@ -66,4 +65,8 @@ public class GetRootServlet extends HttpServlet
     {
         return "Root Handler";
     }
+
+	public String getService() {
+		return CONTEXT_PATH+" ("+toString()+")";
+	}
 }

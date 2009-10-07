@@ -451,8 +451,8 @@ public class JobExecutionConfiguration implements Cloneable
         {
         	try {
 				previousResult = new Result(resultNode);
-			} catch (IOException e) {
-				LogWriter.getInstance().logError("Job execution configuration", "Unable to hydrate previous result", e);
+			} catch (KettleException e) {
+				throw new KettleException("Unable to hydrate previous result", e);
 			}
         }
         

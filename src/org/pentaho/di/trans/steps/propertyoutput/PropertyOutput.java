@@ -150,8 +150,8 @@ public class PropertyOutput extends BaseStep implements StepInterface
             {
             	if(log.isDetailed()) 
             	{
-            		log.logDetailed(toString(),BaseMessages.getString(PKG, "PropertyOutput.Log.Key", propkey));
-            		log.logDetailed(toString(),BaseMessages.getString(PKG, "PropertyOutput.Log.Value" ,propvalue));
+            		logDetailed(BaseMessages.getString(PKG, "PropertyOutput.Log.Key", propkey));
+            		logDetailed(BaseMessages.getString(PKG, "PropertyOutput.Log.Value" ,propvalue));
             	}
                 // Update property
                 data.pro.setProperty(propkey, propvalue);
@@ -236,9 +236,9 @@ public class PropertyOutput extends BaseStep implements StepInterface
 	    		parentfolder=data.file.getParent();	    		
 	    		if(!parentfolder.exists())	
 	    		{
-	    			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "PropertyOutput.Log.ParentFolderExists",parentfolder.getName().toString()));
+	    			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "PropertyOutput.Log.ParentFolderExists",parentfolder.getName().toString()));
 	    			parentfolder.createFolder();
-	    			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "PropertyOutput.Log.CanNotCreateParentFolder",parentfolder.getName().toString()));
+	    			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "PropertyOutput.Log.CanNotCreateParentFolder",parentfolder.getName().toString()));
 	    		}		
 			}
 			catch (Exception e) {					

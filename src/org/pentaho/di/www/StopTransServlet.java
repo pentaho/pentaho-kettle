@@ -17,7 +17,6 @@ import java.io.PrintWriter;
 import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,7 +27,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 
 
-public class StopTransServlet extends HttpServlet
+public class StopTransServlet extends BaseHttpServlet implements CarteServletInterface
 {
 	private static Class<?> PKG = StopTransServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -51,7 +50,7 @@ public class StopTransServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(),  BaseMessages.getString(PKG, "StopTransServlet.StopOfTransRequested"));
+        if (log.isDebug()) logDebug( BaseMessages.getString(PKG, "StopTransServlet.StopOfTransRequested"));
 
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -136,4 +135,8 @@ public class StopTransServlet extends HttpServlet
     {
         return "Stop transformation";
     }
+
+	public String getService() {
+		return CONTEXT_PATH+" ("+toString()+")";
+	}
 }

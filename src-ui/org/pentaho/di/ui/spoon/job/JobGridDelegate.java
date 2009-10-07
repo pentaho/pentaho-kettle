@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.gui.JobTracker;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobEntryResult;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -31,8 +30,6 @@ public class JobGridDelegate extends SpoonDelegate {
 	
 	private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private static final LogWriter log = LogWriter.getInstance();
-	
 	public static final long REFRESH_TIME = 100L;
     public static final long UPDATE_TIME_VIEW = 1000L;
 	private static final String STRING_CHEF_LOG_TREE_NAME = "Job Log Tree";
@@ -282,7 +279,7 @@ public class JobGridDelegate extends SpoonDelegate {
         }
         catch(Exception e)
         {
-            log.logError(toString(), Const.getStackTracker(e));
+            log.logError(Const.getStackTracker(e));
         }
     }
 

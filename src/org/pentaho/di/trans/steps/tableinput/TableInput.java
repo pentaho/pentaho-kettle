@@ -307,7 +307,7 @@ public class TableInput extends BaseStep implements StepInterface
 			}
 			if (!passed) return false;
 
-			data.db=new Database(meta.getDatabaseMeta());
+			data.db=new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			
 			data.db.setQueryLimit(meta.getRowLimit());

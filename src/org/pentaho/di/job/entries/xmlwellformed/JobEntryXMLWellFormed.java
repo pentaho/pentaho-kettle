@@ -241,7 +241,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		}
 	}
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob) throws KettleException 
+	public Result execute(Result previousResult, int nr) throws KettleException 
 	{
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
@@ -266,7 +266,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		if (arg_from_previous)
 		{
 			if (log.isDetailed())
-				log.logDetailed(toString(), BaseMessages.getString(PKG, "JobXMLWellFormed.Log.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));
+				logDetailed(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));
 			
 		}
 		if (arg_from_previous && rows!=null) // Copy the input row to the (command line) arguments
@@ -277,7 +277,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 				{
 					if(!successConditionBrokenExit)
 					{
-						log.logError(toString(), BaseMessages.getString(PKG, "JobXMLWellFormed.Error.SuccessConditionbroken",""+NrAllErrors));
+						logError(BaseMessages.getString(PKG, "JobXMLWellFormed.Error.SuccessConditionbroken",""+NrAllErrors));
 						successConditionBrokenExit=true;
 					}
 					result.setEntryNr(NrAllErrors);
@@ -293,7 +293,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 				String vwildcard_previous = resultRow.getString(1,null);
 				
 				if(log.isDetailed())
-					log.logDetailed(toString(), BaseMessages.getString(PKG, "JobXMLWellFormed.Log.ProcessingRow",vsourcefilefolder_previous,vwildcard_previous));
+					logDetailed(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.ProcessingRow",vsourcefilefolder_previous,vwildcard_previous));
 
 				ProcessFileFolder(vsourcefilefolder_previous, vwildcard_previous,parentJob,result);
 			}
@@ -306,7 +306,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 				{
 					if(!successConditionBrokenExit)
 					{
-						log.logError(toString(), BaseMessages.getString(PKG, "JobXMLWellFormed.Error.SuccessConditionbroken",""+NrAllErrors));
+						logError(BaseMessages.getString(PKG, "JobXMLWellFormed.Error.SuccessConditionbroken",""+NrAllErrors));
 						successConditionBrokenExit=true;
 					}
 					result.setEntryNr(NrAllErrors);
@@ -316,7 +316,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 				}
 				
 				if(log.isDetailed())
-					log.logDetailed(toString(), BaseMessages.getString(PKG, "JobXMLWellFormed.Log.ProcessingRow",vsourcefilefolder[i],vwildcard[i]));
+					logDetailed(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.ProcessingRow",vsourcefilefolder[i],vwildcard[i]));
 					
 				ProcessFileFolder(vsourcefilefolder[i], vwildcard[i],parentJob,result);
 				
@@ -341,11 +341,11 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	{
 		if(log.isDetailed())
 		{
-			log.logDetailed(toString(), "=======================================");
-			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobXMLWellFormed.Log.Info.FilesInError","" + NrErrors));
-			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobXMLWellFormed.Log.Info.FilesInBadFormed","" + NrBadFormed));
-			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobXMLWellFormed.Log.Info.FilesInWellFormed","" + NrWellFormed));
-			log.logDetailed(toString(), "=======================================");
+			logDetailed("=======================================");
+			logDetailed(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.Info.FilesInError","" + NrErrors));
+			logDetailed(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.Info.FilesInBadFormed","" + NrBadFormed));
+			logDetailed(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.Info.FilesInWellFormed","" + NrWellFormed));
+			logDetailed("=======================================");
 		}
 	}
 	
@@ -402,7 +402,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 			retval=true;
 	    } catch (Exception e) {
 
-	        log.logError(toString(),BaseMessages.getString(PKG, "JobXMLWellFormed.Log.ErrorCheckingFile",file.toString(),e.getMessage()));
+	        logError(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.ErrorCheckingFile",file.toString(),e.getMessage()));
 	      
 	    }
 	  
@@ -419,7 +419,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		String realSourceFilefoldername = environmentSubstitute(sourcefilefoldername);
 		if(Const.isEmpty(realSourceFilefoldername))
 		{
-			log.logError(toString(), BaseMessages.getString(PKG, "JobXMLWellFormed.log.FileFolderEmpty",sourcefilefoldername));
+			logError(BaseMessages.getString(PKG, "JobXMLWellFormed.log.FileFolderEmpty",sourcefilefoldername));
 			// Update Errors
 			updateErrors();
 			
@@ -433,7 +433,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 			
 			if (sourcefilefolder.exists())
 			{
-				 if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobXMLWellFormed.Log.FileExists",sourcefilefolder.toString()));
+				 if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.FileExists",sourcefilefolder.toString()));
 				 if(sourcefilefolder.getType() == FileType.FILE)
 				 {
 					 entrystatus=checkOneFile(sourcefilefolder,log,result,parentJob);
@@ -483,7 +483,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
              				{
              					if(!successConditionBrokenExit)
              					{
-             						log.logError(toString(), BaseMessages.getString(PKG, "JobXMLWellFormed.Error.SuccessConditionbroken",""+NrAllErrors));
+             						logError(BaseMessages.getString(PKG, "JobXMLWellFormed.Error.SuccessConditionbroken",""+NrAllErrors));
              						successConditionBrokenExit=true;
              					}
              					return false;
@@ -514,14 +514,14 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
                      }	 
 				 }else
 				 {
-					 log.logError(toString(), BaseMessages.getString(PKG, "JobXMLWellFormed.Error.UnknowFileFormat",sourcefilefolder.toString()));					
+					 logError(BaseMessages.getString(PKG, "JobXMLWellFormed.Error.UnknowFileFormat",sourcefilefolder.toString()));					
 					 // Update Errors
 					 updateErrors(); 
 				 }
 			} 
 			else
 			{	
-				log.logError(toString(), BaseMessages.getString(PKG, "JobXMLWellFormed.Error.SourceFileNotExists",realSourceFilefoldername));					
+				logError(BaseMessages.getString(PKG, "JobXMLWellFormed.Error.SourceFileNotExists",realSourceFilefoldername));					
 				// Update Errors
 				updateErrors();
 			}
@@ -529,7 +529,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	
 		catch (IOException e) 
 		{
-			log.logError(toString(), BaseMessages.getString(PKG, "JobXMLWellFormed.Error.Exception.Processing",realSourceFilefoldername.toString(),e.getMessage()));					
+			logError(BaseMessages.getString(PKG, "JobXMLWellFormed.Error.Exception.Processing",realSourceFilefoldername.toString(),e.getMessage()));					
 			// Update Errors
 			updateErrors();
 		}
@@ -561,7 +561,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		 boolean retformed=CheckWellFormed(file,log);
 		 if(!retformed)
 		 {
-			 log.logError(toString(), BaseMessages.getString(PKG, "JobXMLWellFormed.Error.FileBadFormed",file.toString()));					
+			 logError(BaseMessages.getString(PKG, "JobXMLWellFormed.Error.FileBadFormed",file.toString()));					
 			 // Update Bad formed files number
 			 updateBadFormed(); 
 			 if(resultfilenames.equals(ADD_ALL_FILENAMES) || resultfilenames.equals(ADD_BAD_FORMED_FILES_ONLY))
@@ -570,8 +570,8 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		 {
 			 if(log.isDetailed())
 			 {
-				 log.logDetailed(toString(), "---------------------------");
-				 log.logDetailed(toString(), BaseMessages.getString(PKG, "JobXMLWellFormed.Error.FileWellFormed",file.toString()));					
+				 logDetailed("---------------------------");
+				 logDetailed(BaseMessages.getString(PKG, "JobXMLWellFormed.Error.FileWellFormed",file.toString()));					
 			 }
 			 // Update Well formed files number
 			 updateWellFormed(); 
@@ -601,12 +601,12 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	    
 			if(log.isDetailed())
 			{
-				log.logDetailed(toString(),BaseMessages.getString(PKG, "JobXMLWellFormed.Log.FileAddedToResultFilesName",fileaddentry));
+				logDetailed(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.FileAddedToResultFilesName",fileaddentry));
 			}
 			
 		}catch (Exception e)
 		{
-			log.logError(toString(),BaseMessages.getString(PKG, "JobXMLWellFormed.Error.AddingToFilenameResult",fileaddentry,e.getMessage()));
+			logError(BaseMessages.getString(PKG, "JobXMLWellFormed.Error.AddingToFilenameResult",fileaddentry,e.getMessage()));
 		}
 
 }

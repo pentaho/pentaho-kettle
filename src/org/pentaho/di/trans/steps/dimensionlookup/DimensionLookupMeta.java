@@ -27,7 +27,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -35,8 +34,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
@@ -794,9 +793,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException 
 	{
-        LogWriter log = LogWriter.getInstance();
-
-		ValueMetaInterface v = new ValueMeta(keyField, ValueMetaInterface.TYPE_INTEGER);
+        ValueMetaInterface v = new ValueMeta(keyField, ValueMetaInterface.TYPE_INTEGER);
 		if (keyRename != null && keyRename.length() > 0)
 			v.setName(keyRename);
 
@@ -815,7 +812,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                 // Get the rows from the table...
                 if (databaseMeta!=null)
                 {
-                    db = new Database(databaseMeta);
+                    db = new Database(this, databaseMeta);
                     // First try without connecting to the database... (can be  S L O W)
                     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
                     RowMetaInterface extraFields = db.getTableFields(schemaTable);
@@ -831,7 +828,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                         if (v==null)
                         {
                             String message = BaseMessages.getString(PKG, "DimensionLookupMeta.Exception.UnableToFindReturnField",fieldLookup[i]); //$NON-NLS-1$ //$NON-NLS-2$
-                            log.logError(toString(), message);
+                            logError(message);
                             throw new KettleStepException(message);
                         }
                         
@@ -847,14 +844,14 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                 else
                 {
                     String message = BaseMessages.getString(PKG, "DimensionLookupMeta.Exception.UnableToRetrieveDataTypeOfReturnField"); //$NON-NLS-1$
-                    log.logError(toString(), message);
+                    logError(message);
                     throw new KettleStepException(message);
                 }
             }
             catch(Exception e)
             {
                 String message = BaseMessages.getString(PKG, "DimensionLookupMeta.Exception.UnableToRetrieveDataTypeOfReturnField2"); //$NON-NLS-1$
-                log.logError(toString(), message);
+                logError(message);
                 throw new KettleStepException(message, e);
             }
             finally
@@ -1108,14 +1105,12 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 	private void checkUpdate(List<CheckResultInterface> remarks, StepMeta stepinfo, RowMetaInterface prev)
 	{
-		LogWriter log = LogWriter.getInstance();
-		
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$
 
 		if (databaseMeta != null)
 		{
-			Database db = new Database(databaseMeta);
+			Database db = new Database(this, databaseMeta);
 			// TODO SB: Share VariableSpace
 			try
 			{
@@ -1133,7 +1128,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 						for (int i = 0; i < fieldLookup.length; i++)
 						{
 							String lufield = fieldLookup[i];
-							log.logDebug(toString(), BaseMessages.getString(PKG, "DimensionLookupMeta.Log.CheckLookupField") + i + " --> " + lufield //$NON-NLS-1$ //$NON-NLS-2$
+							logDebug(BaseMessages.getString(PKG, "DimensionLookupMeta.Log.CheckLookupField") + i + " --> " + lufield //$NON-NLS-1$ //$NON-NLS-2$
 														+ " in lookup table..."); //$NON-NLS-1$
 							ValueMetaInterface v = r.searchValueMeta(lufield);
 							if (v == null)
@@ -1263,7 +1258,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 					for (int i = 0; i < fieldStream.length; i++)
 					{
-						log.logDebug(toString(), BaseMessages.getString(PKG, "DimensionLookupMeta.Log.CheckField" ,i + " --> " + fieldStream[i])); //$NON-NLS-1$
+						logDebug(BaseMessages.getString(PKG, "DimensionLookupMeta.Log.CheckField" ,i + " --> " + fieldStream[i])); //$NON-NLS-1$
 						ValueMetaInterface v = prev.searchValueMeta(fieldStream[i]);
 						if (v == null)
 						{
@@ -1337,7 +1332,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 		if (databaseMeta != null)
 		{
-			Database db = new Database(databaseMeta);
+			Database db = new Database(this, databaseMeta);
 			// TODO SB: share variable space
 			try
 			{
@@ -1544,12 +1539,10 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 	public RowMetaInterface getTableFields()
 	{
-		LogWriter log = LogWriter.getInstance();
-        
 		RowMetaInterface fields = null;
 		if (databaseMeta != null)
 		{
-			Database db = new Database(databaseMeta);
+			Database db = new Database(this, databaseMeta);
 			try
 			{
 				db.connect();
@@ -1557,7 +1550,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			}
 			catch (KettleDatabaseException dbe)
 			{
-				log.logError(toString(), BaseMessages.getString(PKG, "DimensionLookupMeta.Log.DatabaseErrorOccurred") + dbe.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DimensionLookupMeta.Log.DatabaseErrorOccurred") + dbe.getMessage()); //$NON-NLS-1$
 			}
 			finally
 			{
@@ -1569,12 +1562,11 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev)
 	{
-		LogWriter log = LogWriter.getInstance();
 		SQLStatement retval = new SQLStatement(stepMeta.getName(), databaseMeta, null); // default: nothing to do!
 
 		if (update) // Only bother in case of update, not lookup!
 		{
-			log.logDebug(toString(), BaseMessages.getString(PKG, "DimensionLookupMeta.Log.Update")); //$NON-NLS-1$
+			logDebug(BaseMessages.getString(PKG, "DimensionLookupMeta.Log.Update")); //$NON-NLS-1$
 			if (databaseMeta != null)
 			{
 				if (prev != null && prev.size() > 0)
@@ -1582,7 +1574,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 					String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 					if (!Const.isEmpty(schemaTable))
 					{                       
-						Database db = new Database(databaseMeta);
+						Database db = new Database(this, databaseMeta);
 						db.shareVariablesWith(transMeta);
 						try
 						{
@@ -1677,12 +1669,12 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 								retval.setError(BaseMessages.getString(PKG, "DimensionLookupMeta.ReturnValue.UnableToFindFields") + errors); //$NON-NLS-1$
 							}
 
-							log.logDebug(toString(), BaseMessages.getString(PKG, "DimensionLookupMeta.Log.GetDDLForTable") + schemaTable + "] : " //$NON-NLS-1$ //$NON-NLS-2$
+							logDebug(BaseMessages.getString(PKG, "DimensionLookupMeta.Log.GetDDLForTable") + schemaTable + "] : " //$NON-NLS-1$ //$NON-NLS-2$
 															+ fields.toStringMeta());
 
 							sql += db.getDDL(schemaTable, fields, (sequenceName != null && sequenceName.length() != 0) ? null : keyField, autoIncrement, null, true);
 
-							log.logDebug(toString(), "sql =" + sql); //$NON-NLS-1$
+							logDebug("sql =" + sql); //$NON-NLS-1$
 
 							String idx_fields[] = null;
 

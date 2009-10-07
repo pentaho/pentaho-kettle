@@ -109,7 +109,7 @@ public class RegexEval extends BaseStep implements StepInterface
 			else
 			{
 				// Matcher is missing !
-				log.logError("Error",BaseMessages.getString(PKG, "RegexEval.Log.ErrorMatcherMissing"));
+				logError(BaseMessages.getString(PKG, "RegexEval.Log.ErrorMatcherMissing"));
 				throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Exception.ErrorMatcherMissing")); 
 			}
 			
@@ -171,7 +171,7 @@ public class RegexEval extends BaseStep implements StepInterface
 						if (data.nrExtraFields != m.groupCount())
 						{
 							// Runtime exception case. The number of capture groups in the regex doesn't match the number of fields.
-							log.logError("Error",BaseMessages.getString(PKG, "RegexEval.Log.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields)));
+							logError(BaseMessages.getString(PKG, "RegexEval.Log.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields)));
 							throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Exception.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields))); 
 						}
 						values[i] = m.group(i+1);

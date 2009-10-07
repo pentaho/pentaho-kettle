@@ -2,17 +2,17 @@ package org.pentaho.di.core;
 
 import java.io.File;
 
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.exception.KettleException;
 
 public class JndiUtil {
 	
-	public static void initJNDI() {
+	public static void initJNDI() throws KettleException {
 		String path = ""; //$NON-NLS-1$
 		try {
 			File file = new File("simple-jndi"); //$NON-NLS-1$
 			path = file.getCanonicalPath();
 		} catch (Exception e) {
-			LogWriter.getInstance().logError("JNDI", "Error initializing JNDI", e);
+			throw new KettleException("Error initializing JNDI", e);
 		}
 
 		System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory"); //$NON-NLS-1$ //$NON-NLS-2$

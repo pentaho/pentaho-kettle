@@ -7,6 +7,8 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.Trans;
@@ -44,7 +46,7 @@ public class TimedTransRunner
         return runEngine(false);
     }
 
-    public void init()
+    public void init() throws KettleException
     {
         EnvUtil.environmentInit();
         LogWriter.getInstance(logLevel);
@@ -90,12 +92,13 @@ public class TimedTransRunner
         
         // OK, now run this transFormation.
         Trans trans = new Trans(transMeta);
+        LogChannelInterface log = new LogChannel(trans);
         
         try {
         	trans.prepareExecution(null);
         }
         catch (Exception e) {
-        	LogWriter.getInstance().logError(trans.getName(), "Error preparing / initializing transformation", e);
+        	log.logError("Error preparing / initializing transformation", e);
         	return false;
 		}
         

@@ -16,7 +16,8 @@ import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -35,9 +36,9 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositorySecurityProvider;
+import org.pentaho.di.repository.RepositoryVersionRegistry;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.repository.RepositoryVersionRegistry;
 import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
@@ -59,6 +60,8 @@ public class KettleFileRepository implements Repository {
 	
 	private KettleFileRepositoryMeta repositoryMeta;
 	private KettleFileRepositorySecurityProvider	securityProvider;
+	
+	private LogChannelInterface log;
 
 	public void connect() throws KettleException {}
 
@@ -67,8 +70,13 @@ public class KettleFileRepository implements Repository {
 	public void init(RepositoryMeta repositoryMeta, UserInfo userInfo) {
 		this.repositoryMeta = (KettleFileRepositoryMeta) repositoryMeta;
 		this.securityProvider = new KettleFileRepositorySecurityProvider(repositoryMeta);
+		this.log = new LogChannel(this);
 	}
 
+	public LogChannelInterface getLog() {
+		return log;
+	}
+	
 	public boolean isConnected() {
 		return true;
 	}
@@ -243,7 +251,7 @@ public class KettleFileRepository implements Repository {
 			
 			dir.setObjectId(objectId);
 			
-            LogWriter.getInstance().logDetailed(getName(), "New id of directory = "+dir.getObjectId());
+            log.logDetailed("New id of directory = "+dir.getObjectId());
 		}
 		catch(Exception e)
 		{

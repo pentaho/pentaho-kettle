@@ -231,7 +231,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 		if (nonExistantFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
-			log.logError(BaseMessages.getString(PKG, "GetXMLData.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "GetXMLData.Log.RequiredFiles", message));
+			logError(BaseMessages.getString(PKG, "GetXMLData.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "GetXMLData.Log.RequiredFiles", message));
 
 			throw new KettleException(BaseMessages.getString(PKG, "GetXMLData.Log.RequiredFilesMissing",message));
 		}
@@ -240,7 +240,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 		if (nonAccessibleFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
-			log.logError(BaseMessages.getString(PKG, "GetXMLData.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "GetXMLData.Log.RequiredNotAccessibleFiles",message));
+			logError(BaseMessages.getString(PKG, "GetXMLData.Log.RequiredFilesTitle"), BaseMessages.getString(PKG, "GetXMLData.Log.RequiredNotAccessibleFiles",message));
 
 				throw new KettleException(BaseMessages.getString(PKG, "GetXMLData.Log.RequiredNotAccessibleFilesMissing",message));
 		}
@@ -308,7 +308,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 			   // get XML field value
 			   String Fieldvalue= getInputRowMeta().getString(data.readrow,data.indexOfXmlField);
 				
-			   if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "GetXMLData.Log.XMLStream", meta.getXMLField(),Fieldvalue));
+			   if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetXMLData.Log.XMLStream", meta.getXMLField(),Fieldvalue));
 
 			   if(meta.getIsAFile())
 			   {
@@ -330,7 +330,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 
 						addFileToResultFilesname(file);
 			            
-			            if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "GetXMLData.Log.LoopFileOccurences",""+data.nodesize,file.getName().getBaseName()));
+			            if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetXMLData.Log.LoopFileOccurences",""+data.nodesize,file.getName().getBaseName()));
 						
 					}
 					catch (Exception e)
@@ -360,7 +360,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 					{
 						throw new KettleException (BaseMessages.getString(PKG, "GetXMLData.Log.UnableApplyXPath"));
 					}
-					if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "GetXMLData.Log.LoopFileOccurences",""+data.nodesize));		
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetXMLData.Log.LoopFileOccurences",""+data.nodesize));		
 			    }
 		   }
 	   }
@@ -465,7 +465,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 		   data.nodenr=0;
 	   }catch (Exception e)
 	   {
-		   log.logError(toString(),BaseMessages.getString(PKG, "GetXMLData.Log.ErrorApplyXPath",e.getMessage()));
+		   logError(BaseMessages.getString(PKG, "GetXMLData.Log.ErrorApplyXPath",e.getMessage()));
 		   return false;
 	   }
 	   return true;
@@ -493,12 +493,12 @@ public class GetXMLData extends BaseStep implements StepInterface
 			if(meta.isIgnoreEmptyFile() && fileSize==0)
 			{
 				// log only basic as a warning (was before logError)
-				log.logBasic(toString(),BaseMessages.getString(PKG, "GetXMLData.Error.FileSizeZero", ""+data.file.getName()));
+				logBasic(BaseMessages.getString(PKG, "GetXMLData.Error.FileSizeZero", ""+data.file.getName()));
 				openNextFile();
 				
 			}else
 			{
-				if (log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "GetXMLData.Log.OpeningFile", data.file.toString()));
+				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetXMLData.Log.OpeningFile", data.file.toString()));
 	            
 				//Open the XML document
 				if(!setDocument(null,data.file,false,false)) 
@@ -520,7 +520,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 	            if (log.isDetailed()) 
 	            {
 	            	logDetailed(BaseMessages.getString(PKG, "GetXMLData.Log.FileOpened", data.file.toString()));
-	               log.logDetailed(toString(),BaseMessages.getString(PKG, "GetXMLData.Log.LoopFileOccurences",""+data.nodesize,data.file.getName().getBaseName()));
+	               logDetailed(BaseMessages.getString(PKG, "GetXMLData.Log.LoopFileOccurences",""+data.nodesize,data.file.getName().getBaseName()));
 	            }   
 	         }
 		}
@@ -693,7 +693,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 							if(Tmp_xmlInputField.getName().equalsIgnoreCase(NameVarInputField))
 							{		
 								XPathValue = XPathValue.replaceAll(data.tokenStart+NameVarInputField+data.tokenEnd,"'"+ outputRowData[data.totalpreviousfields+k] +"'");
-								if (log.isDetailed() ) 	log.logDetailed(toString(),XPathValue);
+								if (log.isDetailed() ) 	logDetailed(XPathValue);
 							}
 						}	
 					}
@@ -777,7 +777,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 				 data.errorInRowButContinue = true;				 
 				 return null;
 			 } else {
-				log.logError(toString(), e.toString());
+				logError(e.toString());
 				throw new KettleException(e.toString());
 			 }
 		} 
@@ -796,7 +796,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 			data.nrInputFields=meta.getInputFields().length;
 			data.PathValue=environmentSubstitute(meta.getLoopXPath());
 			if(!data.PathValue.substring(0,1).equals("/")) data.PathValue="/" + data.PathValue;
-			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "GetXMLData.Log.LoopXPath",data.PathValue));
+			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetXMLData.Log.LoopXPath",data.PathValue));
 			
 			data.prunePath=environmentSubstitute(meta.getPrunePath());
 			if(data.prunePath!=null) {

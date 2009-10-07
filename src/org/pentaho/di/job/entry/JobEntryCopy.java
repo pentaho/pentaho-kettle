@@ -21,10 +21,10 @@ import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobEntryLoader;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -60,6 +60,8 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	private boolean draw;
 
 	private ObjectId id;
+
+	private JobMeta	parentJobMeta;
 
 	public JobEntryCopy()
 	{
@@ -117,9 +119,6 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		} catch (Throwable e)
 		{
 			String message = "Unable to read Job Entry copy info from XML node : " + e.toString();
-			LogWriter log = LogWriter.getInstance();
-			log.logError(toString(), message);
-			log.logError(toString(), Const.getStackTracker(e));
 			throw new KettleXMLException(message, e);
 		}
 	}
@@ -384,5 +383,13 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	public boolean resetErrorsBeforeExecution()
 	{
 		return entry.resetErrorsBeforeExecution();
+	}
+	
+	public JobMeta getParentJobMeta() {
+		return parentJobMeta;
+	}
+
+	public void setParentJobMeta(JobMeta parentJobMeta) {
+		this.parentJobMeta = parentJobMeta;
 	}
 }

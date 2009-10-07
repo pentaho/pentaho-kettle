@@ -35,7 +35,6 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -148,7 +147,7 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
         return environmentSubstitute(getFilename());
     }
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
@@ -168,13 +167,13 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 					{
 						// File doesn't exist and fail flag is on.
 					    result.setResult( false );
-					    log.logError(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0004_File_Does_Not_Exist", realFilename)); //$NON-NLS-1$
+					    logError(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0004_File_Does_Not_Exist", realFilename)); //$NON-NLS-1$
 					}
 					else
 					{
 						// File already deleted, no reason to try to delete it
 					    result.setResult( true );
-					    if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFile.File_Already_Deleted", realFilename)); //$NON-NLS-1$
+					    if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFile.File_Already_Deleted", realFilename)); //$NON-NLS-1$
 					}
 				}
 				else
@@ -188,16 +187,16 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 				    boolean deleted = fileObject.delete();
 				    if ( ! deleted )
 				    {
-						log.logError(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0005_Could_Not_Delete_File", realFilename)); //$NON-NLS-1$
+						logError(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0005_Could_Not_Delete_File", realFilename)); //$NON-NLS-1$
 						result.setResult( false );
 						result.setNrErrors(1);
 				    }
-				    if(log.isBasic()) log.logBasic(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFile.File_Deleted", realFilename)); //$NON-NLS-1$
+				    if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFile.File_Deleted", realFilename)); //$NON-NLS-1$
 					result.setResult( true );
 				}
 			}
             catch (IOException e) {
-				log.logError(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0006_Exception_Deleting_File", realFilename, e.getMessage())); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0006_Exception_Deleting_File", realFilename, e.getMessage())); //$NON-NLS-1$
 				result.setResult( false );
 				result.setNrErrors(1);
 			}
@@ -213,7 +212,7 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 		}
 		else
 		{
-			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0007_No_Filename_Is_Defined")); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0007_No_Filename_Is_Defined")); //$NON-NLS-1$
 		}
 
 		return result;

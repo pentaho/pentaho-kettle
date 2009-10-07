@@ -29,9 +29,8 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorAdapter;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -57,14 +56,8 @@ public class UpgradeRepositoryProgressDialog
     
     private boolean dryRun;
 
-    /**
-     * @deprecated Use the constructor version without <i>log</i> or <i>props</i>
-     */
-    public UpgradeRepositoryProgressDialog(LogWriter log, Props props, Shell shell, KettleDatabaseRepository rep, boolean upgrade)
-    {
-        this(shell, rep, upgrade);
-    }
-    
+	private LogChannelInterface	log;
+
     /**
      * Creates a new dialog that will handle the wait while upgrading or creating a repository...
      */
@@ -75,6 +68,7 @@ public class UpgradeRepositoryProgressDialog
         this.upgrade = upgrade;
         this.generatedStatements = new ArrayList<String>();
         this.dryRun = false;
+        this.log = rep.getLog();
     }
     
     
@@ -114,7 +108,7 @@ public class UpgradeRepositoryProgressDialog
                 }
                 catch (KettleException e)
                 {
-                    LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+                    log.logError(toString(), Const.getStackTracker(e));
                     throw new InvocationTargetException(e, BaseMessages.getString(PKG, "UpgradeRepositoryDialog.Error.CreateUpdate", e.getMessage()));
                 }
             }
@@ -127,16 +121,16 @@ public class UpgradeRepositoryProgressDialog
         }
         catch (InvocationTargetException e)
         {
-            LogWriter.getInstance().logError(UpgradeRepositoryProgressDialog.class.toString(), "Error creating/updating repository: " + e.toString());
-            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+            log.logError(UpgradeRepositoryProgressDialog.class.toString(), "Error creating/updating repository: " + e.toString());
+            log.logError(toString(), Const.getStackTracker(e));
             showErrorDialog(e);
 
             retval = false;
         }
         catch (InterruptedException e)
         {
-            LogWriter.getInstance().logError(UpgradeRepositoryProgressDialog.class.toString(), "Error creating/updating repository: " + e.toString());
-            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+            log.logError(UpgradeRepositoryProgressDialog.class.toString(), "Error creating/updating repository: " + e.toString());
+            log.logError(toString(), Const.getStackTracker(e));
             showErrorDialog(e);
 
             retval = false;

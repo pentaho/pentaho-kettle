@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.jar.Attributes;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -30,12 +31,13 @@ import org.pentaho.di.trans.TransMeta;
 
 public class JarfileGenerator
 {
-    private static LogWriter log = LogWriter.getInstance();
+    private static LogChannelInterface log;
     
     public static final String TRANSFORMATION_FILENAME = "transformation.xml";
     
     public static final void generateJarFile(TransMeta transMeta)
     {
+        log = new LogChannel("Jar file generator");
         KettleDependencies deps = new KettleDependencies(transMeta);
         
         File kar = new File("kar");
@@ -136,10 +138,10 @@ public class JarfileGenerator
         Process proc = runtime.exec(cmd, EnvUtil.getEnvironmentVariablesForRuntimeExec(), directory);
         
         // any error message?
-        StreamLogger errorLogger = new StreamLogger(proc.getErrorStream(), "Jar generator (stderr)");            
+        StreamLogger errorLogger = new StreamLogger(log, proc.getErrorStream(), "Jar generator (stderr)");            
         
         // any output?
-        StreamLogger outputLogger = new StreamLogger(proc.getInputStream(), "Jar generator (stdout)");
+        StreamLogger outputLogger = new StreamLogger(log, proc.getInputStream(), "Jar generator (stdout)");
             
         // kick them off
         new Thread(errorLogger).start();

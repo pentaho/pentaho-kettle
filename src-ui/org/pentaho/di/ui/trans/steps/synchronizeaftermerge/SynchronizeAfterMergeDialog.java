@@ -533,7 +533,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                        logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
 
                     }
                 }
@@ -950,7 +950,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(ci);
+						Database db = new Database(this, ci);
 						db.shareVariablesWith(transMeta);
 						try {
 							db.connect();
@@ -1040,7 +1040,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SynchronizeAfterMergeDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SynchronizeAfterMergeDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		wCommit.setText("" + input.getCommitSize()); //$NON-NLS-1$
 		wTablenameInField.setSelection(input.istablenameInField());
@@ -1126,7 +1126,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 		inf.setOrderUpdate(wOrderUpdate.getText());
 		inf.setOrderDelete(wOrderDelete.getText());
 		
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SynchronizeAfterMergeDialog.Log.FoundKeys",nrkeys + "")); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SynchronizeAfterMergeDialog.Log.FoundKeys",nrkeys + "")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrkeys; i++)
 		{
 			TableItem item = wKey.getNonEmpty(i);
@@ -1138,7 +1138,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 
 		//Table ftable = wReturn.table;
 
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SynchronizeAfterMergeDialog.Log.FoundFields", nrfields + "")); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SynchronizeAfterMergeDialog.Log.FoundFields", nrfields + "")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrfields; i++)
 		{
 			TableItem item = wReturn.getNonEmpty(i);
@@ -1182,7 +1182,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 
 		if (inf != null)
 		{
-			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SynchronizeAfterMergeDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
+			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SynchronizeAfterMergeDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
 
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());
@@ -1304,7 +1304,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
 		if (databaseMeta!=null)
 		{
-			Database database = new Database(databaseMeta);
+			Database database = new Database(this, databaseMeta);
 			try
 			{
 				database.connect();

@@ -19,7 +19,7 @@ import java.util.Date;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -40,29 +40,30 @@ import com.linuxense.javadbf.DBFReader;
 
 public class XBase
 {
-    private LogWriter   log;
+	private LogChannelInterface log;
+
     private String      dbfFile;
     private DBFReader   reader;
     private InputStream inputstream;
     private boolean     error;
     private byte        datatype[];
     
-    public XBase(String file_dbf)
+    public XBase(LogChannelInterface log, String file_dbf)
     {
-        this.log      = LogWriter.getInstance();
-        this.dbfFile = file_dbf;
+        this.log      = log;
+        this.dbfFile  = file_dbf;
         error         = false;
         reader        = null;
         inputstream   = null;
     }
     
-    public XBase(InputStream inputStream)
+    public XBase(LogChannelInterface log, InputStream inputStream)
     {
-        this.log      = LogWriter.getInstance();
-        this.dbfFile = null;
-        this.error         = false;
-        this.reader        = null;
-        this.inputstream   = inputStream;
+        this.log         = log;
+        this.dbfFile     = null;
+        this.error       = false;
+        this.reader      = null;
+        this.inputstream = inputStream;
     }
     
     public void open() throws KettleException
@@ -220,13 +221,13 @@ public class XBase
         }
         catch(DBFException e)
         {
-            log.logError(toString(), "Unable to read row : "+e.toString());
+            log.logError("Unable to read row : "+e.toString());
             error = true;
             throw new KettleException("Unable to read row from XBase file", e);
         }
         catch(Exception e)
 		{
-            log.logError(toString(), "Unexpected error while reading row: "+e.toString());
+            log.logError("Unexpected error while reading row: "+e.toString());
             error = true;
             throw new KettleException("Unable to read row from XBase file", e);
 		}
@@ -245,7 +246,7 @@ public class XBase
         }
         catch(IOException e)
         {
-            log.logError(toString(), "Couldn't close file ["+dbfFile+"] : "+e.toString());
+            log.logError("Couldn't close file ["+dbfFile+"] : "+e.toString());
             error = true;
         }
         

@@ -12,6 +12,7 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -29,7 +30,7 @@ import org.pentaho.di.trans.StepPlugin;
 public class KettleDatabaseRepositoryCreationHelper {
 
 	private KettleDatabaseRepository repository;
-	private LogWriter log;
+	private LogChannelInterface log;
 	private DatabaseMeta databaseMeta;
 	private Database database;
 	
@@ -40,7 +41,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		this.databaseMeta = this.repository.getDatabaseMeta();
 		this.database = this.repository.getDatabase();
 
-		this.log = LogWriter.getInstance();
+		this.log = repository.getLog();
 		this.stepLoader = StepLoader.getInstance();
 	}
 
@@ -66,7 +67,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 
 		int KEY = 9; // integer, no need for bigint!
 
-		log.logBasic(toString(), "Starting to create or modify the repository tables...");
+		log.logBasic("Starting to create or modify the repository tables...");
         String message = (upgrade?"Upgrading ":"Creating")+" the Kettle repository...";
 		if (monitor!=null) monitor.beginTask(message, 31);
         
@@ -94,9 +95,9 @@ public class KettleDatabaseRepositoryCreationHelper {
         	if (!dryrun) {
 	            try
 	            {
-	                if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	                if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 	                database.execStatements(sql);
-	                if (log.isDetailed()) log.logDetailed(toString(), "Created/altered table " + schemaTable);
+	                if (log.isDetailed()) log.logDetailed("Created/altered table " + schemaTable);
 	            }
 	            catch (KettleException dbe)
 	            {
@@ -106,7 +107,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
         }
 
         if (!dryrun) {
@@ -136,9 +137,9 @@ public class KettleDatabaseRepositoryCreationHelper {
         	if (!dryrun) {
 	            try
 	            {
-	                if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	                if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 	                database.execStatements(sql);
-	                if (log.isDetailed()) log.logDetailed(toString(), "Created/altered table " + schemaTable);
+	                if (log.isDetailed()) log.logDetailed("Created/altered table " + schemaTable);
 	            }
 	            catch (KettleException dbe)
 	            {
@@ -148,7 +149,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
         }
 
         // Insert an extra record in R_VERSION every time we pass here...
@@ -203,9 +204,9 @@ public class KettleDatabaseRepositoryCreationHelper {
         	if (!dryrun) {
 				try
 				{
-	                if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	                if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
-	                if (log.isDetailed()) log.logDetailed(toString(), "Created/altered table " + schemaTable);
+	                if (log.isDetailed()) log.logDetailed("Created/altered table " + schemaTable);
 				}
 				catch (KettleException dbe)
 				{
@@ -215,7 +216,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_database_type)
@@ -258,7 +259,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 				if (!dryrun) {
 					database.closeInsert();
 				}
-                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
+                if (log.isDetailed()) log.logDetailed("Populated table " + schemaTable);
 			}
 			catch (KettleException dbe)
 			{
@@ -287,14 +288,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_database_contype)
@@ -341,7 +342,7 @@ public class KettleDatabaseRepositoryCreationHelper {
                 if (!dryrun) {
                 	database.closeInsert();
                 }
-                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
+                if (log.isDetailed()) log.logDetailed("Populated table " + schemaTable);
             }
             catch(KettleException dbe)
             {
@@ -386,14 +387,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -424,14 +425,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-        		if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+        		if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
         		database.execStatements(sql);
-        		if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+        		if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -454,9 +455,9 @@ public class KettleDatabaseRepositoryCreationHelper {
         {
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 	            database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}            
             try
             {
@@ -467,9 +468,9 @@ public class KettleDatabaseRepositoryCreationHelper {
                     sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
                 	statements.add(sql);
                 	if (!dryrun) {
-	                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	                    if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 	                    database.execStatements(sql);
-	                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
+	                    if (log.isDetailed()) log.logDetailed("Created lookup index " + indexname + " on " + schemaTable);
                 	}
                 }
             }
@@ -481,7 +482,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
 
@@ -503,9 +504,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
         	
 			try
@@ -517,9 +518,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
 		        	statements.add(sql);
 		        	if (!dryrun) {
-	                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	                    if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 						database.execStatements(sql);
-	                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
+	                    if (log.isDetailed()) log.logDetailed("Created lookup index " + indexname + " on " + schemaTable);
 		        	}
 				}
 			}
@@ -531,7 +532,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -576,14 +577,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 
 		// In case of an update, the added column R_TRANSFORMATION.ID_DIRECTORY == NULL!!!
@@ -623,9 +624,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
 	        statements.add(sql);
 			if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
 			}
 			try
 			{
@@ -637,9 +638,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
 		        	statements.add(sql);
 		        	if (!dryrun) {
-	                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	                    if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 						database.execStatements(sql);
-	                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
+	                    if (log.isDetailed()) log.logDetailed("Created lookup index " + indexname + " on " + schemaTable);
 		        	}
 				}
 			}
@@ -650,7 +651,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -676,9 +677,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
 	        statements.add(sql);
 			if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
 			}
 			try
 			{
@@ -690,9 +691,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
 		        	statements.add(sql);
 		        	if (!dryrun) {
-	                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	                    if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 						database.execStatements(sql);
-	                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
+	                    if (log.isDetailed()) log.logDetailed("Created lookup index " + indexname + " on " + schemaTable);
 		        	}
 				}
 			}
@@ -703,7 +704,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);		
 		
@@ -727,14 +728,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -757,14 +758,14 @@ public class KettleDatabaseRepositoryCreationHelper {
         {
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 	            database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
         
@@ -786,14 +787,14 @@ public class KettleDatabaseRepositoryCreationHelper {
         {
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 	            database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
 
@@ -815,14 +816,14 @@ public class KettleDatabaseRepositoryCreationHelper {
         {
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 	            database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
 
@@ -849,14 +850,14 @@ public class KettleDatabaseRepositoryCreationHelper {
         {
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 	            database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
         
@@ -885,14 +886,14 @@ public class KettleDatabaseRepositoryCreationHelper {
         {
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 	            database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
 
@@ -914,14 +915,14 @@ public class KettleDatabaseRepositoryCreationHelper {
         {
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 	            database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
 
@@ -943,14 +944,14 @@ public class KettleDatabaseRepositoryCreationHelper {
         {
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 	            database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
 
@@ -973,14 +974,14 @@ public class KettleDatabaseRepositoryCreationHelper {
         {
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 	            database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
 
@@ -1003,14 +1004,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1030,14 +1031,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1062,14 +1063,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1091,14 +1092,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}		
         }
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1123,20 +1124,20 @@ public class KettleDatabaseRepositoryCreationHelper {
 			create = sql.toUpperCase().indexOf("CREATE TABLE")>=0;
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_step_type && !dryrun)
 		{
 			updateStepTypes(statements, dryrun, create);
-            if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
+            if (log.isDetailed()) log.logDetailed("Populated table " + schemaTable);
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1165,14 +1166,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1198,9 +1199,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 
 			try
@@ -1212,9 +1213,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
 					statements.add(sql);
 		        	if (!dryrun) {
-	                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	                    if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 						database.execStatements(sql);
-	                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
+	                    if (log.isDetailed()) log.logDetailed("Created lookup index " + indexname + " on " + schemaTable);
 		        	}
 				}
 			}
@@ -1225,7 +1226,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1250,9 +1251,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 
 			try
@@ -1264,9 +1265,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, false, false, false);
 		        	statements.add(sql);
 		        	if (!dryrun) {
-	                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	                    if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 						database.execStatements(sql);
-	                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
+	                    if (log.isDetailed()) log.logDetailed("Created lookup index " + indexname + " on " + schemaTable);
 		        	}
 				}
 			}
@@ -1284,9 +1285,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, false, false, false);
 		        	statements.add(sql);
 		        	if (!dryrun) {
-	                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	                    if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 						database.execStatements(sql);
-	                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
+	                    if (log.isDetailed()) log.logDetailed("Created lookup index " + indexname + " on " + schemaTable);
 		        	}
 				}
 			}
@@ -1297,7 +1298,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1318,14 +1319,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1350,14 +1351,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 			create = sql.toUpperCase().indexOf("CREATE TABLE")>=0;
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_loglevel)
@@ -1402,7 +1403,7 @@ public class KettleDatabaseRepositoryCreationHelper {
                 if (!dryrun) {
                 	database.closeInsert();
                 }
-                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
+                if (log.isDetailed()) log.logDetailed("Populated table " + schemaTable);
             }
             catch(KettleException dbe)
             {
@@ -1436,14 +1437,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1479,14 +1480,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1513,9 +1514,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 
 			try
@@ -1527,9 +1528,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, false, false, false);
 		        	statements.add(sql);
 		        	if (!dryrun) {
-	                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	                    if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 						database.execStatements(sql);
-	                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
+	                    if (log.isDetailed()) log.logDetailed("Created lookup index " + indexname + " on " + schemaTable);
 		        	}
 				}
 			}
@@ -1547,9 +1548,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, false, false, false);
 		        	statements.add(sql);
 		        	if (!dryrun) {
-	                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	                    if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 						database.execStatements(sql);
-	                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
+	                    if (log.isDetailed()) log.logDetailed("Created lookup index " + indexname + " on " + schemaTable);
 		        	}
 				}
 			}
@@ -1560,7 +1561,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1586,14 +1587,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 			create = sql.toUpperCase().indexOf("CREATE TABLE")>=0;
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_jobentry_type)
@@ -1602,7 +1603,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 			// Populate with data...
 			//
 			updateJobEntryTypes(statements, dryrun, create);
-            if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
+            if (log.isDetailed()) log.logDetailed("Populated table " + schemaTable);
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1626,14 +1627,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1661,14 +1662,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}	            
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1694,9 +1695,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 
 			try
@@ -1709,9 +1710,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
 		        	statements.add(sql);
 		        	if (!dryrun) {
-	                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	                    if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 						database.execStatements(sql);
-	                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
+	                    if (log.isDetailed()) log.logDetailed("Created lookup index " + indexname + " on " + schemaTable);
 		        	}
 				}
 			}
@@ -1722,7 +1723,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1748,14 +1749,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1776,14 +1777,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1808,14 +1809,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1838,14 +1839,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		{
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -1882,14 +1883,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 			create = sql.toUpperCase().indexOf("CREATE TABLE")>=0;
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_profile)
@@ -1925,7 +1926,7 @@ public class KettleDatabaseRepositoryCreationHelper {
                     } else {
 						database.setValuesInsert(tableData);
 						database.insertRow();
-	                    if (log.isDetailed()) log.logDetailed(toString(), "Inserted new row into table "+schemaTable+" : "+table);
+	                    if (log.isDetailed()) log.logDetailed("Inserted new row into table "+schemaTable+" : "+table);
                     }
                     profiles.put(code[i], nextid);
 				}
@@ -1936,7 +1937,7 @@ public class KettleDatabaseRepositoryCreationHelper {
                 if (!dryrun) {
                 	database.closeInsert();
                 }
-                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
+                if (log.isDetailed()) log.logDetailed("Populated table " + schemaTable);
             }
             catch(KettleException dbe)
             {
@@ -1976,14 +1977,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 			create = sql.toUpperCase().indexOf("CREATE TABLE")>=0;
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_user)
@@ -2039,7 +2040,7 @@ public class KettleDatabaseRepositoryCreationHelper {
                 if (!dryrun) {
                 	database.closeInsert();
                 }
-                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
+                if (log.isDetailed()) log.logDetailed("Populated table " + schemaTable);
             }
             catch(KettleException dbe)
             {
@@ -2070,14 +2071,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 			create = sql.toUpperCase().indexOf("CREATE TABLE")>=0;
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_permission)
@@ -2118,7 +2119,7 @@ public class KettleDatabaseRepositoryCreationHelper {
                     } else {
 						database.setValuesInsert(tableData);
 						database.insertRow();
-	                    if (log.isDetailed()) log.logDetailed(toString(), "Inserted new row into table "+schemaTable+" : "+table);
+	                    if (log.isDetailed()) log.logDetailed("Inserted new row into table "+schemaTable+" : "+table);
                     }
                     permissions.put(code[i], nextid);
 				}
@@ -2129,7 +2130,7 @@ public class KettleDatabaseRepositoryCreationHelper {
                 if (!dryrun) {
                 	database.closeInsert();
                 }
-                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
+                if (log.isDetailed()) log.logDetailed("Populated table " + schemaTable);
             }
             catch(KettleException dbe)
             {
@@ -2158,9 +2159,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 			create = sql.toUpperCase().indexOf("CREATE TABLE")>=0;
         	statements.add(sql);
         	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
+	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
         	}
 			try
 			{
@@ -2171,9 +2172,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
 		        	statements.add(sql);
 		        	if (!dryrun) {	
-	                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+	                    if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
 						database.execStatements(sql);
-	                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
+	                    if (log.isDetailed()) log.logDetailed("Created lookup index " + indexname + " on " + schemaTable);
 		        	}
 				}
 			}
@@ -2184,7 +2185,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
+            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_profile_permission)
@@ -2234,7 +2235,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 			for (int x=0;x<userCodes.length;x++) {
 	            ObjectId profileID = profiles.get(userCodes[x]);
 				
-	            if (log.isDetailed()) log.logDetailed(toString(), userCodes[x]+" profile id = "+profileID);
+	            if (log.isDetailed()) log.logDetailed(userCodes[x]+" profile id = "+profileID);
 	            
 	            Permission userPerms[] = userPermissions[x];
 	            
@@ -2242,7 +2243,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 				{
 	                ObjectId permissionID = permissions.get(userPerms[i].getCode());
 	                
-	                if (log.isDetailed()) log.logDetailed(toString(), "Permission id for '"+userCodes[i]+"' = "+permissionID);
+	                if (log.isDetailed()) log.logDetailed("Permission id for '"+userCodes[i]+"' = "+permissionID);
 	
 					RowMetaAndData lookup = null;
 	                if (upgrade) 
@@ -2250,7 +2251,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 	                    String lookupSQL = "SELECT "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+
 	                                   " FROM " + schemaTable + 
 	                                   " WHERE "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+"=" + profileID + " AND +"+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION)+"=" + permissionID;
-	                    if (log.isDetailed()) log.logDetailed(toString(), "Executing SQL: "+lookupSQL);
+	                    if (log.isDetailed()) log.logDetailed("Executing SQL: "+lookupSQL);
 	                    lookup = database.getOneRow(lookupSQL);
 	                }
 					if (lookup == null) // if the combination is not yet there, insert...
@@ -2261,11 +2262,11 @@ public class KettleDatabaseRepositoryCreationHelper {
 	                    if (!dryrun) {
 	                    	database.execStatement(insertSQL);
 	                    }
-	                    if (log.isDetailed()) log.logDetailed(toString(), "insertSQL = ["+insertSQL+"]");
+	                    if (log.isDetailed()) log.logDetailed("insertSQL = ["+insertSQL+"]");
 					}
 					else
 					{
-	                    if (log.isDetailed()) log.logDetailed(toString(), "Found id_profile="+profileID+", id_permission="+permissionID);
+	                    if (log.isDetailed()) log.logDetailed("Found id_profile="+profileID+", id_permission="+permissionID);
 					}
 				}
 			}
@@ -2275,7 +2276,7 @@ public class KettleDatabaseRepositoryCreationHelper {
                 if (!dryrun) {
                 	database.closeInsert();
                 }
-                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
+                if (log.isDetailed()) log.logDetailed("Populated table " + schemaTable);
             }
             catch(KettleException dbe)
             {
@@ -2286,7 +2287,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		if (monitor!=null) monitor.worked(1);
 		if (monitor!=null) monitor.done();
         
-        log.logBasic(toString(), (upgrade?"Upgraded":"Created")+ " "+KettleDatabaseRepository.repositoryTableNames.length+" repository tables.");
+        log.logBasic((upgrade?"Upgraded":"Created")+ " "+KettleDatabaseRepository.repositoryTableNames.length+" repository tables.");
 
 	}
 

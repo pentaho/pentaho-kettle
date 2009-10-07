@@ -24,7 +24,7 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
 
 			StringBuffer report = new StringBuffer();
        
-            Database db = new Database(databaseMeta);
+            Database db = new Database(this, databaseMeta);
             if (databaseMeta.isPartitioned())
             {
                 PartitionDatabaseMeta[] partitioningInformation = databaseMeta.getPartitioningInformation();

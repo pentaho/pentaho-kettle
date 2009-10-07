@@ -328,7 +328,7 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
 		input.setPrefix( wPrefix.getText() );
 		input.setDirectory( wSpoolDir.getText() );
         input.setCacheSize( Const.toInt( wCacheSize.getText(), BlockingStepMeta.CACHE_SIZE ) );
-        log.logDetailed("Sort rows", "Compression is set to " + wCompress.getSelection());
+        logDetailed("Compression is set to " + wCompress.getSelection());
         input.setCompress(wCompress.getSelection());
         input.setPassAllRows(wPassAllRows.getSelection());
 

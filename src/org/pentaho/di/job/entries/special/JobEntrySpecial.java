@@ -23,7 +23,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -176,7 +175,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		return dummy;
 	}
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob) throws KettleJobException
+	public Result execute(Result previousResult, int nr) throws KettleJobException
 	{
 		Result result = previousResult;
 
@@ -185,7 +184,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 			try {
 				long sleepTime = getNextExecutionTime();
 				if (sleepTime>0) {
-					parentJob.getLog().logBasic(parentJob.getJobname(), "Sleeping: " + (sleepTime/1000/60) + " minutes (sleep time="+sleepTime+")");
+					parentJob.getLogChannel().logBasic(parentJob.getJobname(), "Sleeping: " + (sleepTime/1000/60) + " minutes (sleep time="+sleepTime+")");
 					long totalSleep = 0L;
 					while (totalSleep<sleepTime && !parentJob.isStopped()) {
 						Thread.sleep(1000L);
@@ -199,8 +198,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 			result.setResult( true );
 		}
 		else
-		if (isDummy())
-		{
+		if (isDummy()) {
 			result = previousResult;
 		}
 		return result;

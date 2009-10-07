@@ -882,7 +882,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		if (input.getDateTimeFormat()!= null) wDateTimeFormat.setText( input.getDateTimeFormat() );
 		wSpecifyFormat.setSelection(input.isSpecifyFormat());
 		
-		log.logDebug(toString(), BaseMessages.getString(PKG, "XMLOutputDialog.Log.GettingFieldsInfo"));
+		logDebug(BaseMessages.getString(PKG, "XMLOutputDialog.Log.GettingFieldsInfo"));
 		
 		for (int i=0;i<input.getOutputFields().length;i++)
 		{

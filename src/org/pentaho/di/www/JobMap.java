@@ -65,16 +65,31 @@ public class JobMap
         configurationMap.remove(jobName);
     }
     
+    /**
+     * @deprecated please approach the CentralLogStore directly
+
+     * @param jobName
+     * @return
+     */
     public synchronized Appender getAppender(String jobName)
     {
         return loggingMap.get(jobName);
     }
     
+    /**
+     * @deprecated please approach the CentralLogStore directly
+     * @param jobName
+     * @param appender
+     */
     public synchronized void addAppender(String jobName, Appender appender)
     {
         loggingMap.put(jobName, appender);
     }
 
+    /**
+     * @deprecated please approach the CentralLogStore directly
+     * @param jobName
+     */
     public synchronized void removeAppender(String jobName)
     {
         loggingMap.remove(jobName);

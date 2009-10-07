@@ -126,7 +126,7 @@ public class RssInput extends BaseStep implements StepInterface
 			}
             
 
-			if (log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "RssInput.Log.ReadingUrl", data.currenturl));
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.ReadingUrl", data.currenturl));
 			
 			URL rss = new URL(data.currenturl);
 			data.feed = FeedParser.parse(rss);

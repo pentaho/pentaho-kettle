@@ -24,6 +24,7 @@ import java.util.Locale;
 
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.exception.KettleEOFException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.w3c.dom.Node;
@@ -546,9 +547,9 @@ public interface ValueMetaInterface extends Cloneable
      * This is basically String to Object conversion that is being done.
      * @param node the node to retrieve the data value from
      * @return the converted data value
-     * @throws IOException thrown in case there is a problem with the XML to object conversion
+     * @throws KettleException thrown in case there is a problem with the XML to object conversion 
      */
-	public Object getValue(Node node) throws IOException;
+	public Object getValue(Node node) throws KettleException;
 	
 	/**
 	 * @return the number of binary string to native data type conversions done with this object conversions

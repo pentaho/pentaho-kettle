@@ -110,13 +110,13 @@ public class AddSequence extends BaseStep implements StepInterface
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
         }
 
-        if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "AddSequence.Log.ReadRow")+getLinesRead()+" : "+getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
+        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "AddSequence.Log.ReadRow")+getLinesRead()+" : "+getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		try
 		{
 			putRow(data.outputRowMeta, addSequence(getInputRowMeta(), r)); 			
 			
-            if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "AddSequence.Log.WriteRow")+getLinesWritten()+" : "+getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
+            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "AddSequence.Log.WriteRow")+getLinesWritten()+" : "+getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
 			if (checkFeedback(getLinesRead())) 
 			{
 				if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "AddSequence.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
@@ -145,7 +145,7 @@ public class AddSequence extends BaseStep implements StepInterface
 			data.realSequenceName=environmentSubstitute(meta.getSequenceName());
 			if (meta.isDatabaseUsed())
 			{
-				Database db = new Database(meta.getDatabase());
+				Database db = new Database(this, meta.getDatabase());
 				db.shareVariablesWith(this);
 				data.setDb( db );			
 				try

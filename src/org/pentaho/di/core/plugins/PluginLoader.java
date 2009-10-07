@@ -46,7 +46,8 @@ import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.config.ConfigManager;
 import org.pentaho.di.core.config.KettleConfig;
 import org.pentaho.di.core.exception.KettleConfigException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -85,7 +86,7 @@ public class PluginLoader
 
 	// private static final Pattern patt = Pattern.compile("^*..(jar|zip)$");//$NON-NLS-1$
 
-	private static final LogWriter log = LogWriter.getInstance();
+	private static final LogChannelInterface log = new LogChannel("PluginLoader");
 
 	private final Set<PluginLocation> locs;
 

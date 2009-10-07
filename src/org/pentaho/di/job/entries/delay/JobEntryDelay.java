@@ -29,7 +29,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -128,7 +127,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
    * @param previousResult The result of the previous execution
    * @return The Result of the execution.
    */
-  public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+  public Result execute(Result previousResult, int nr)
   {
     LogWriter log = LogWriter.getInstance();
     Result result = previousResult;
@@ -163,7 +162,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
 
       if (log.isDetailed())
       {
-        log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryDelay.LetsWaitFor.Label", String //$NON-NLS-1$
+        logDetailed(BaseMessages.getString(PKG, "JobEntryDelay.LetsWaitFor.Label", String //$NON-NLS-1$
             .valueOf(iMaximumTimeout), String.valueOf(Waitscale)));
       }
 
@@ -174,7 +173,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
       if (iMaximumTimeout < 0)
       {
         iMaximumTimeout = Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0);
-        log.logBasic(toString(), BaseMessages.getString(PKG, "JobEntryDelay.MaximumTimeReset.Label", String.valueOf(iMaximumTimeout), String.valueOf(Waitscale))); //$NON-NLS-1$
+        logBasic(BaseMessages.getString(PKG, "JobEntryDelay.MaximumTimeReset.Label", String.valueOf(iMaximumTimeout), String.valueOf(Waitscale))); //$NON-NLS-1$
       }
 
       // Loop until the delay time has expired.
@@ -190,7 +189,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
           // We have reached the time limit
           if (log.isDetailed())
           {
-            log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryDelay.WaitTimeIsElapsed.Label")); //$NON-NLS-1$
+            logDetailed(BaseMessages.getString(PKG, "JobEntryDelay.WaitTimeIsElapsed.Label")); //$NON-NLS-1$
           }
           continueLoop = false;
           result.setResult(true);
@@ -205,7 +204,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     {
       // We get an exception
       result.setResult(false);
-      log.logError(toString(), "Error  : " + e.getMessage()); //$NON-NLS-1$
+      logError("Error  : " + e.getMessage()); //$NON-NLS-1$
     }
 
     return result;

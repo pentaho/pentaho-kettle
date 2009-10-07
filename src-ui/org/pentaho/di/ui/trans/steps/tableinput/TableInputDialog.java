@@ -524,7 +524,7 @@ public void setPosition(){
 				case SWT.CANCEL: break;
 				case SWT.NO:     wSQL.setText(sql); break;
 				case SWT.YES:
-					Database db = new Database(inf);
+					Database db = new Database(this, inf);
 					db.shareVariablesWith(transMeta);
 					try
 					{

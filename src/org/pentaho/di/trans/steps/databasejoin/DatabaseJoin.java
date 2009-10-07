@@ -207,7 +207,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
-			data.db=new Database(meta.getDatabaseMeta());
+			data.db=new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			
 			try
@@ -227,7 +227,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
                 if(meta.isVariableReplace()) sql=environmentSubstitute(sql);
 				// Prepare the SQL statement
 				data.pstmt = data.db.prepareSQL(sql);
-				if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "DatabaseJoin.Log.SQLStatement",sql));
+				if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DatabaseJoin.Log.SQLStatement",sql));
 				data.db.setQueryLimit(meta.getRowLimit());
 				
 				return true;

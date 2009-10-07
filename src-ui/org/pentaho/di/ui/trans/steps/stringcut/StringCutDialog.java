@@ -185,7 +185,7 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), "It was not possible to get the fields from the previous step(s).");
+                    	logError("It was not possible to get the fields from the previous step(s).");
                     }
                 }
             }
@@ -307,7 +307,7 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 
 		inf.allocate(nrkeys);
 		if(log.isDebug())
-			log.logDebug(toString(), BaseMessages.getString(PKG, "StringCutDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+			logDebug(BaseMessages.getString(PKG, "StringCutDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrkeys; i++) {
 			TableItem item = wFields.getNonEmpty(i);
 			inf.getFieldInStream()[i] = item.getText(1);

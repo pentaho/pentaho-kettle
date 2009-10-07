@@ -762,7 +762,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
     
         try
         {
-            log.logDetailed(toString(), "Dimension Lookup setting preparedStatement to ["+sql+"]");
+            logDetailed("Dimension Lookup setting preparedStatement to ["+sql+"]");
             data.prepStatementLookup=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
             if (databaseMeta.supportsSetMaxRows())
             {
@@ -772,7 +772,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             {
                 data.prepStatementLookup.setFetchSize(0); // Make sure to DISABLE Streaming Result sets
             }
-            log.logDetailed(toString(), "Finished preparing dimension lookup statement.");
+            logDetailed("Finished preparing dimension lookup statement.");
         }
         catch(SQLException ex) 
         {
@@ -895,12 +895,12 @@ public class DimensionLookup extends BaseStep implements StepInterface
             {
                 if (technicalKey==null)
                 {
-                    log.logDetailed(toString(), "SQL w/ return keys=["+sql+"]");
+                    logDetailed("SQL w/ return keys=["+sql+"]");
                     data.prepStatementInsert=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql), Statement.RETURN_GENERATED_KEYS);
                 }
                 else
                 {
-                    log.logDetailed(toString(), "SQL=["+sql+"]");
+                    logDetailed("SQL=["+sql+"]");
                     data.prepStatementInsert=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
                 }
                 //pstmt=con.prepareStatement(sql, new String[] { "klant_tk" } );
@@ -955,7 +955,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 
             try
             {
-                log.logDetailed(toString(), "Preparing update: "+Const.CR+sql_upd+Const.CR);
+                logDetailed("Preparing update: "+Const.CR+sql_upd+Const.CR);
                 data.prepStatementUpdate=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql_upd));
             }
             catch(SQLException ex) 
@@ -1012,13 +1012,13 @@ public class DimensionLookup extends BaseStep implements StepInterface
 			}
 		}
 
-        if (log.isDebug()) log.logDebug(toString(), "rins, size="+data.insertRowMeta.size()+", values="+data.insertRowMeta.getString(insertRow));
+        if (log.isDebug()) logDebug("rins, size="+data.insertRowMeta.size()+", values="+data.insertRowMeta.getString(insertRow));
         
         // INSERT NEW VALUE!
         data.db.setValues(data.insertRowMeta, insertRow, data.prepStatementInsert);
         data.db.insertRow(data.prepStatementInsert);
             
-        if (log.isDebug()) log.logDebug(toString(), "Row inserted!");
+        if (log.isDebug()) logDebug("Row inserted!");
         if (isAutoIncrement())
         {
             try
@@ -1074,13 +1074,13 @@ public class DimensionLookup extends BaseStep implements StepInterface
             updateRow[updateIndex] = versionNr - 1;
             updateIndex++;
             
-            if (log.isRowLevel()) log.logRowlevel(toString(), "UPDATE using rupd="+data.updateRowMeta.getString(updateRow));
+            if (log.isRowLevel()) logRowlevel("UPDATE using rupd="+data.updateRowMeta.getString(updateRow));
 
             // UPDATE VALUES
             data.db.setValues(data.updateRowMeta, updateRow, data.prepStatementUpdate);  // set values for update
-            if (log.isDebug()) log.logDebug(toString(), "Values set for update ("+data.updateRowMeta.size()+")");
+            if (log.isDebug()) logDebug("Values set for update ("+data.updateRowMeta.size()+")");
             data.db.insertRow(data.prepStatementUpdate); // do the actual update
-            if (log.isDebug()) log.logDebug(toString(), "Row updated!");
+            if (log.isDebug()) logDebug("Row updated!");
         }
         
         return technicalKey;
@@ -1135,7 +1135,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             
             try
             {
-                if (log.isDebug()) log.logDebug(toString(), "Preparing statement: ["+sql+"]");
+                if (log.isDebug()) logDebug("Preparing statement: ["+sql+"]");
                 data.prepStatementDimensionUpdate=data.db.getConnection().prepareStatement(meta.getDatabaseMeta().stripCR(sql));
             }
             catch(SQLException ex) 
@@ -1531,7 +1531,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 			data.startDateChoice = DimensionLookupMeta.START_DATE_ALTERNATIVE_NONE;
 			if (meta.isUsingStartDateAlternative()) data.startDateChoice = meta.getStartDateAlternative();
 			
-			data.db=new Database(meta.getDatabaseMeta());
+			data.db=new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			try
 			{

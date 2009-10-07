@@ -129,7 +129,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			 }
 			
 			// create a Salesforce connection
-			data.connection= new SalesforceConnection(realUrl, realUser,environmentSubstitute(meta.getPassword()), 
+			data.connection= new SalesforceConnection(log, realUrl, realUser,environmentSubstitute(meta.getPassword()), 
 					Const.toInt(environmentSubstitute(meta.getTimeOut()),0));
 			
 		    // Build query if needed
@@ -229,14 +229,14 @@ public class SalesforceInput extends BaseStep implements StepInterface
 					if(meta.getRecordsFilter()==SalesforceConnectionUtils.RECORDS_FILTER_ALL) {
 						// We retrieved all records available here
 						// maybe we need to query more again ...
-						if(log.isDetailed()) log.logDetailed(toString(), 
+						if(log.isDetailed()) logDetailed(
 								BaseMessages.getString(PKG, "SalesforceInput.Log.NeedQueryMore",""+data.rownr));
 		
 						if(data.connection.queryMore()) {
 							// We returned more result (query is not done yet)
 							int nr=data.connection.getRecordsCount();
 							data.nrRecords+=nr;
-							if(log.isDetailed()) log.logDetailed(toString(), 
+							if(log.isDetailed()) logDetailed(
 									BaseMessages.getString(PKG, "SalesforceInput.Log.QueryMoreRetrieved",""+nr));
 							
 							// We need here to initialize recordIndex

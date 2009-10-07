@@ -184,7 +184,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
     }
   }
 
-  public Result execute(Result result, int nr, Repository rep, Job parentJob) throws KettleException {
+  public Result execute(Result result, int nr) throws KettleException {
     LogWriter log = LogWriter.getInstance();
 
     result.setResult(false);
@@ -254,12 +254,12 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 	          
 	          // ok we can process this line
 	    	  if(log.isDetailed()) 
-	    		  log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntrySetVariables.Log.SetVariableToValue", varname, value)); //$NON-NLS-1$
+	    		  logDetailed(BaseMessages.getString(PKG, "JobEntrySetVariables.Log.SetVariableToValue", varname, value)); //$NON-NLS-1$
 	      }
 	    }
     }catch(Exception e)
     {
-    	log.logError(toString(),BaseMessages.getString(PKG, "JobEntrySetVariables.UnExcpectedError",e.getMessage()));
+    	logError(BaseMessages.getString(PKG, "JobEntrySetVariables.UnExcpectedError",e.getMessage()));
     }
 
     return result;

@@ -104,7 +104,7 @@ public class CloneRow extends BaseStep implements StepInterface
 			{
 				String nrclonesString=environmentSubstitute(meta.getNrClones());
 				data.nrclones=Const.toInt(nrclonesString, 0);
-				if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "CloneRow.Log.NrClones",""+data.nrclones));
+				if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "CloneRow.Log.NrClones",""+data.nrclones));
 			}
 		}
 		
@@ -134,7 +134,7 @@ public class CloneRow extends BaseStep implements StepInterface
 		if(meta.isNrCloneInField())
 		{
 			data.nrclones=getInputRowMeta().getInteger(r,data.indexOfNrCloneField);
-			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "CloneRow.Log.NrClones",""+data.nrclones));
+			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "CloneRow.Log.NrClones",""+data.nrclones));
 		}
 		for (int i = 0; i < data.nrclones && !isStopped(); i++)
 		{

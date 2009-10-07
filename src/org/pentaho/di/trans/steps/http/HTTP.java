@@ -91,7 +91,7 @@ public class HTTP extends BaseStep implements StepInterface
                 int result = httpclient.executeMethod(method);
                 
                 // The status code
-                if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTP.Log.ResponseStatusCode", ""+result));
+                if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTP.Log.ResponseStatusCode", ""+result));
                 
                 // guess encoding
                 String encoding = method.getResponseHeader("Content-Type").getValue().replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim(); 
@@ -111,7 +111,7 @@ public class HTTP extends BaseStep implements StepInterface
                 inputStreamReader.close(); 
                 
                 String body = bodyBuffer.toString();
-                if (log.isDebug()) log.logDebug(toString(), "Response body: "+body);
+                if (log.isDebug()) logDebug("Response body: "+body);
                 
                 return RowDataUtil.addValueData(rowData, rowMeta.size(), body);
             }

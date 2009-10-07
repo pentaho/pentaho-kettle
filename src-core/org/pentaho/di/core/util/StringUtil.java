@@ -177,8 +177,7 @@ public class StringUtil
 						if (recursion > 50) // for safety: avoid recursive
 						// endless loops with stack overflow
 						{
-							throw new RuntimeException("Endless loop detected for substitution of variable: "
-									+ (String) value);
+							throw new RuntimeException("Endless loop detected for substitution of variable: " + (String) value);
 						}
 						value = substitute((String) value, variablesValues, open, close, ++recursion);
 					}

@@ -37,17 +37,15 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -158,9 +156,8 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
         return environmentSubstitute(getxsdFilename());
     }
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
-		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 		result.setResult( false );
 
@@ -209,12 +206,12 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 
 					if(	!xmlfile.exists())
 					{
-						log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label") +
+						logError( BaseMessages.getString(PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label") +
 							realxmlfilename +  BaseMessages.getString(PKG, "JobEntryXSDValidator.FileDoesNotExist2.Label"));
 					}
 					if(!xsdfile.exists())
 					{
-						log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label") +
+						logError( BaseMessages.getString(PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label") +
 							realxsdfilename +  BaseMessages.getString(PKG, "JobEntryXSDValidator.FileDoesNotExist2.Label"));
 					}
 					result.setResult( false );
@@ -224,7 +221,7 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 			}
 			else
 			{
-				log.logError(toString(),  BaseMessages.getString(PKG, "JobEntryXSDValidator.AllFilesNotNull.Label"));
+				logError( BaseMessages.getString(PKG, "JobEntryXSDValidator.AllFilesNotNull.Label"));
 				result.setResult( false );
 				result.setNrErrors(1);
 			}
@@ -234,12 +231,12 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 		}
 
 		catch (SAXException ex) {
-			log.logError(toString(),"Error :" + ex.getMessage());
+			logError("Error :" + ex.getMessage());
 		}
 		catch ( Exception e )
 		{
 
-			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryXSDValidator.ErrorXSDValidator.Label") +
+			logError(BaseMessages.getString(PKG, "JobEntryXSDValidator.ErrorXSDValidator.Label") +
 				BaseMessages.getString(PKG, "JobEntryXSDValidator.ErrorXML1.Label") + realxmlfilename +
 				BaseMessages.getString(PKG, "JobEntryXSDValidator.ErrorXML2.Label") +
 				BaseMessages.getString(PKG, "JobEntryXSDValidator.ErrorXSD1.Label") + realxsdfilename +

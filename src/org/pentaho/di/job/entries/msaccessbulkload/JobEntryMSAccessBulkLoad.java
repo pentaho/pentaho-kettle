@@ -241,11 +241,11 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 	private void displayResults(LogWriter log)
 	{
 		if(log.isDetailed()){
-			log.logDetailed(toString(), "=======================================");
-			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.Info.FilesToLoad","" + NrFilesToProcess));
-			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.Info.FilesLoaded","" + NrSuccess));
-			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.Info.NrErrors","" + NrErrors));
-			log.logDetailed(toString(), "=======================================");
+			logDetailed("=======================================");
+			logDetailed(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.Info.FilesToLoad","" + NrFilesToProcess));
+			logDetailed(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.Info.FilesLoaded","" + NrSuccess));
+			logDetailed(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.Info.NrErrors","" + NrErrors));
+			logDetailed("=======================================");
 		}
 	}
 	public void setLimit(String limit)
@@ -264,15 +264,15 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 	{
 		return success_condition;
 	}
-	private void addFileToResultFilenames(String fileaddentry,LogWriter log,Result result,Job parentJob)
+	private void addFileToResultFilenames(String fileaddentry, Result result,Job parentJob)
 	{	
 		try{
 			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry), parentJob.getJobname(), toString());
 			result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 	    
 			if(log.isDebug()){
-				log.logDebug(toString()," ------ ");
-				log.logDebug(toString(),BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.FileAddedToResultFilesName",fileaddentry));
+				logDebug(" ------ ");
+				logDebug(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.FileAddedToResultFilesName",fileaddentry));
 			}
 		}catch (Exception e){
 			log.logError(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Error.AddingToFilenameResult"),fileaddentry + ""+e.getMessage());
@@ -335,13 +335,13 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 		File sourcefilefolder=new File(sourceFileFolder);
 		if(!sourcefilefolder.exists())
 		{
-			log.logError(toString(),BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Error.CanNotFindFile",sourceFileFolder));
+			logError(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Error.CanNotFindFile",sourceFileFolder));
 			return retval;
 		}
 		if(sourcefilefolder.isFile())
 		{
 			// source is a file
-			retval=importFile(sourceFileFolder, Delimiter, targetDb,targetTable,log,result,parentJob);
+			retval=importFile(sourceFileFolder, Delimiter, targetDb, targetTable, result, parentJob);
 		}else if(sourcefilefolder.isDirectory())
 		{
 			// source is a folder
@@ -357,36 +357,35 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 					if(child.isFile())
 					{
 						if(Const.isEmpty(SourceWildcard)){
-							retval=importFile(childFullName, Delimiter, targetDb,targetTable,log,result,parentJob);
+							retval=importFile(childFullName, Delimiter, targetDb, targetTable, result, parentJob);
 						}else{
 							if(GetFileWildcard(childFullName,SourceWildcard)){
-								retval=importFile(childFullName, Delimiter, targetDb,targetTable,log,result,parentJob);
+								retval=importFile(childFullName, Delimiter, targetDb, targetTable, result, parentJob);
 							}
 						}
 					}else {
 						// let's run process for this folder
 						if(include_subfolders){
-							processOneRow(log, childFullName, SourceWildcard,Delimiter, targetDb, 
-									targetTable,parentJob,result);
+							processOneRow(log, childFullName, SourceWildcard, Delimiter, targetDb, targetTable, parentJob, result);
 						}
 						
 					}
 				}
 			}else
 			{
-				log.logBasic(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.FolderEmpty",sourceFileFolder));
+				logBasic(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.FolderEmpty",sourceFileFolder));
 			}
 			
 		}else
-			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.UnknowType",sourceFileFolder));
+			logError(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.UnknowType",sourceFileFolder));
 		}catch(Exception e){
-			log.logError(toString(), e.getMessage());
+			logError(e.getMessage());
 			incrErrors();
 		}
 		return retval;
 	}
     private boolean importFile(String sourceFilename, String delimiter,String targetFilename,
-    		String tablename,LogWriter log,Result result,Job parentJob)
+    		String tablename, Result result,Job parentJob)
     {
     	boolean retval=false;
     	
@@ -401,37 +400,37 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 			if(!targetDbFile.exists()) 
 			{
 				Database.create(targetDbFile);
-				log.logBasic(toString(),BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.DbCreated",targetFilename));
+				logBasic(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.DbCreated",targetFilename));
 			}else
 			{
 				// Database exists
 				Database db=Database.open(targetDbFile);
-				log.logBasic(toString(),BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.DbOpened",targetFilename));
+				logBasic(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.DbOpened",targetFilename));
 				// Let's check table
 				if(db.getTable(tablename)!=null)
 				{
-					log.logBasic(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.TableExists",tablename));
+					logBasic(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.TableExists",tablename));
 				}
 				
 				// close database
 				if(db!=null) db.close();
-				log.logBasic(toString(),BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.DbCosed",targetFilename));
+				logBasic(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.DbCosed",targetFilename));
 			}
 			// load data from file
 			Database.open(targetDbFile).importFile(tablename, sourceDataFile, delimiter);
 			
-			log.logBasic(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.FileImported",sourceFilename,	tablename,targetFilename));
+			logBasic(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.FileImported",sourceFilename,	tablename,targetFilename));
 			
 			// add filename to result filename
 			if(add_result_filenames)
-				addFileToResultFilenames(sourceFilename,log,result,parentJob);
+				addFileToResultFilenames(sourceFilename, result, parentJob);
 		
 			
 			retval=true;
 		}
 		catch ( Exception e )
 		{
-			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Error.LoadingDataToFile",
+			logError(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Error.LoadingDataToFile",
 					sourceFilename,targetFilename,e.getMessage()));
 			
 		}	
@@ -470,7 +469,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
     }
 
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
@@ -499,7 +498,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 			
 			if (is_args_from_previous){
 				if (log.isDetailed())
-					log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));
+					logDetailed(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Log.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));
 			}
 			if (is_args_from_previous && rows!=null){
 				for (int iteration=0;iteration<rows.size() && !parentJob.isStopped() && continueProcessing;iteration++) {	
@@ -535,7 +534,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 		}
 		catch ( Exception e ){
 			incrErrors();
-			log.logError(toString(), BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.UnexpectedError",e.getMessage()));
+			logError(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.UnexpectedError",e.getMessage()));
 		}	
 		
 		// Success Condition

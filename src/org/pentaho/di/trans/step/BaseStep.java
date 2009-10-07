@@ -38,7 +38,8 @@ import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -104,7 +105,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 
     private String                       stepname;
 
-    protected LogWriter                  log;
+    protected LogChannelInterface        log;
 
     private Trans                        trans;
 
@@ -307,7 +308,6 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
      */
     public BaseStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
     {
-        log = LogWriter.getInstance();
         this.stepMeta = stepMeta;
         this.stepDataInterface = stepDataInterface;
         this.stepcopy = copyNr;
@@ -315,7 +315,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         this.trans = trans;
         this.stepname = stepMeta.getName();
         this.socketRepository = trans.getSocketRepository();
-
+        
         // Set the name of the thread
         if (stepMeta.getName() != null)
         {
@@ -327,6 +327,8 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
                     + "] doesn't have a name.  A step should always have a name to identify it by.");
         }
 
+        log = new LogChannel(this);
+        
         first = true;
         clusteredPartitioningFirst=true;
         
@@ -522,7 +524,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 		        		if (log.isDetailed()) logDetailed("Opened a server socket connection to "+copy);
 		        	}
 		        	catch(Exception e) {
-		            	log.logError(toString(), "Unable to open server socket during step initialisation: "+copy.toString(), e);
+		            	logError("Unable to open server socket during step initialisation: "+copy.toString(), e);
 		            	throw e;
 		        	}
 		        	remoteOutputSteps.add(copy);
@@ -536,7 +538,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 						ServerSocket serverSocket = remoteStep.getServerSocket();
 						getTrans().getSocketRepository().releaseSocket(serverSocket.getLocalPort());
 					} catch (IOException e1) {
-			        	log.logError(toString(), "Unable to close server socket after error during step initialisation", e);
+			        	logError("Unable to close server socket after error during step initialisation", e);
 					} 
 	        	}
 	        }
@@ -570,7 +572,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         	
         }
         catch(Exception e) {
-        	log.logError(toString(), "Unable to initialize remote input steps during step initialisation", e);
+        	logError("Unable to initialize remote input steps during step initialisation", e);
         	return false;
         }
         
@@ -590,9 +592,9 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	    		
 	    		socketRepository.releaseSocket(serverSocket.getLocalPort());
 	    		
-	    		log.logDetailed(toString(), "Released server socket on port "+serverSocket.getLocalPort());
+	    		logDetailed("Released server socket on port "+serverSocket.getLocalPort());
 	    	} catch (IOException e) {
-	    		log.logError(toString(), "Cleanup: Unable to release server socket ("+serverSocket.getLocalPort()+")", e);
+	    		logError("Cleanup: Unable to release server socket ("+serverSocket.getLocalPort()+")", e);
 	    	}
 		}
     }
@@ -2105,40 +2107,23 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.FinishedDispatching")); //$NON-NLS-1$
     }
 
-    public void logMinimal(String s)
-    {
-        log.println(LogWriter.LOG_LEVEL_MINIMAL, toString(), s); //$NON-NLS-1$
-    }
-
-    public void logBasic(String s)
-    {
-        log.println(LogWriter.LOG_LEVEL_BASIC, toString(), s); //$NON-NLS-1$
-    }
-
-    public void logError(String s)
-    {
-        log.println(LogWriter.LOG_LEVEL_ERROR, toString(), s); //$NON-NLS-1$
-    }
-
-    public void logError(String s, Throwable e)
-    {
-    	log.logError(toString(), s, e); //$NON-NLS-1$
-    }
-
-    public void logDetailed(String s)
-    {
-        log.println(LogWriter.LOG_LEVEL_DETAILED, toString(), s); //$NON-NLS-1$
-    }
-
-    public void logDebug(String s)
-    {
-        log.println(LogWriter.LOG_LEVEL_DEBUG, toString(), s); //$NON-NLS-1$
-    }
-
-    public void logRowlevel(String s)
-    {
-        log.println(LogWriter.LOG_LEVEL_ROWLEVEL, toString(), s); //$NON-NLS-1$
-    }
+    public boolean isBasic() { return log.isBasic(); }
+    public boolean isDetailed() { return log.isDetailed(); }
+    public boolean isDebug() { return log.isDebug(); }
+    public boolean isRowLevel() { return log.isRowLevel(); }
+    public void logMinimal(String message) { log.logMinimal(message); }
+    public void logMinimal(String message, Object...arguments) { log.logMinimal(message, arguments); }
+    public void logBasic(String message) { log.logBasic(message); }
+    public void logBasic(String message, Object...arguments) { log.logBasic(message, arguments); }
+    public void logDetailed(String message) { log.logDetailed(message); }
+    public void logDetailed(String message, Object...arguments) { log.logDetailed(message, arguments); }
+    public void logDebug(String message) { log.logDebug(message); }
+    public void logDebug(String message, Object...arguments) { log.logDebug(message, arguments); }
+    public void logRowlevel(String message) { log.logRowlevel(message); }
+    public void logRowlevel(String message, Object...arguments) { log.logRowlevel(message, arguments); }
+    public void logError(String message) { log.logError(message); } 
+    public void logError(String message, Throwable e) { log.logError(message, e); }
+    public void logError(String message, Object...arguments) { log.logError(message, arguments); }
 
     public int getNextClassNr()
     {
@@ -2838,10 +2823,11 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 
 	
 	public static void runStepThread(StepInterface stepInterface, StepMetaInterface meta, StepDataInterface data) {
-		LogWriter log = LogWriter.getInstance();
+		BaseStep baseStep = (BaseStep) stepInterface;
+		LogChannelInterface log = baseStep.log; 
 		try
 		{
-			if (log.isDetailed()) log.logDetailed(stepInterface.toString(), BaseMessages.getString(PKG, "System.Log.StartingToRun")); //$NON-NLS-1$
+			if (log.isDetailed()) baseStep.logDetailed(BaseMessages.getString(PKG, "System.Log.StartingToRun")); //$NON-NLS-1$
 
 			while (stepInterface.processRow(meta, data) && !stepInterface.isStopped());
 		}
@@ -2854,11 +2840,11 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 		            // Handle this different with as less overhead as possible to get an error message in the log.
 		            // Otherwise it crashes likely with another OOME in Me$$ages.getString() and does not log
 		            // nor call the setErrors() and stopAll() below.
-		            log.logError(stepInterface.toString(), "UnexpectedError: " + t.toString()); //$NON-NLS-1$
+		        	baseStep.logError("UnexpectedError: " + t.toString()); //$NON-NLS-1$
 		        } else {
-		            log.logError(stepInterface.toString(), BaseMessages.getString(PKG, "System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+		        	baseStep.logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
 		        }
-		        log.logError(stepInterface.toString(), Const.getStackTracker(t));
+		        baseStep.logError(Const.getStackTracker(t));
 		    }
 		    catch(OutOfMemoryError e)
 		    {
@@ -2882,12 +2868,12 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	            long lj = stepInterface.getLinesRejected();
 	            long e = stepInterface.getErrors();
 	            if (li > 0 || lo > 0 || lr > 0 || lw > 0 || lu > 0 || lj > 0 || e > 0)
-	                log.logBasic(stepInterface.toString(), BaseMessages.getString(PKG, "BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lu), String.valueOf(e+lj)));
+	            	baseStep.logBasic(BaseMessages.getString(PKG, "BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lu), String.valueOf(e+lj)));
 	            else
-	                log.logDetailed(stepInterface.toString(), BaseMessages.getString(PKG, "BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lu), String.valueOf(e+lj)));
+	            	baseStep.logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lu), String.valueOf(e+lj)));
 			} catch(Throwable t) {
 				// it's likely an OOME, thus no overhead by Me$$ages.getString(), see above
-				log.logError(stepInterface.toString(), "UnexpectedError: " + t.toString()); //$NON-NLS-1$
+				baseStep.logError("UnexpectedError: " + t.toString()); //$NON-NLS-1$
 			} finally {
 				stepInterface.markStop();
 			}
@@ -2932,6 +2918,10 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	 */
 	public void setSocketRepository(SocketRepository socketRepository) {
 		this.socketRepository = socketRepository;
+	}
+
+	public LogChannelInterface getLogChannel() {
+		return log;
 	}
 	
 }

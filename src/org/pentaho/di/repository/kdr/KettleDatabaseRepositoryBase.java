@@ -1,6 +1,6 @@
 package org.pentaho.di.repository.kdr;
 
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.UserInfo;
 
@@ -448,15 +448,13 @@ public class KettleDatabaseRepositoryBase {
 	public    UserInfo			userInfo;
 	protected RepositoryDirectory importBaseDirectory;
 
-	public    LogWriter			log;
+	protected LogChannelInterface log;
 
 	protected boolean			connected;
    
-    
     protected KettleDatabaseRepositoryCreationHelper creationHelper;
 
     public KettleDatabaseRepositoryBase() {
-		this.log = LogWriter.getInstance();
     }
 	
 	public KettleDatabaseRepositoryMeta getRepositoryMeta()
@@ -482,6 +480,10 @@ public class KettleDatabaseRepositoryBase {
 		if (repositoryMeta == null)
 			return null;
 		return repositoryMeta.getName();
+	}
+	
+	public LogChannelInterface getLog() {
+		return log;
 	}
 
     /**

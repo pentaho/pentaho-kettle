@@ -881,7 +881,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 			wInclRownumField.setText(in.getRowNumberField());
 		wLimit.setText("" + in.getRowLimit()); //$NON-NLS-1$
 
-		log.logDebug(toString(), "getting fields info..."); //$NON-NLS-1$
+		logDebug("getting fields info..."); //$NON-NLS-1$
 		for (int i = 0; i < in.getInputFields().length; i++)
 		{
 			XMLInputSaxField field = in.getInputFields()[i];
@@ -1063,7 +1063,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 			}
 			for (int f = 0; f < filePaths.length; f++)
 			{
-				XMLInputSaxFieldRetriever fieldRetreiver = new XMLInputSaxFieldRetriever(filePaths[f], meta);
+				XMLInputSaxFieldRetriever fieldRetreiver = new XMLInputSaxFieldRetriever(log, filePaths[f], meta);
 
 				fields = fieldRetreiver.getFields();
 

@@ -223,7 +223,7 @@ public class CombinationLookupTest extends TestCase
             DatabaseMeta lookupDBInfo = transMeta.findDatabase("lookup");
 
             // Execute our setup SQLs in the database.
-            Database lookupDatabase = new Database(lookupDBInfo);
+            Database lookupDatabase = new Database(this, lookupDBInfo);
             lookupDatabase.connect();
             createTables(lookupDatabase);
             createData(lookupDatabase);

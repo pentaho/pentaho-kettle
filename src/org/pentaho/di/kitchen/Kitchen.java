@@ -28,6 +28,8 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -96,7 +98,8 @@ public class Kitchen
 		    exitJVM(9);
 		}
         
-        LogWriter log = LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
+        LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
+        LogChannelInterface log = new LogChannel(STRING_KITCHEN);
         
         CommandLineOption.parseArguments(args, options, log);
 
@@ -119,17 +122,17 @@ public class Kitchen
         
         if (Const.isEmpty(optionLogfile))
         {
-            log=LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
+            LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
         }
         else
         {
-            log=LogWriter.getInstance( optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC );
+            LogWriter.getInstance( optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC );
         }
         
         if (!Const.isEmpty(optionLoglevel)) 
         {
-            log.setLogLevel(optionLoglevel.toString());
-            log.logMinimal(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.LogLevel",log.getLogLevelLongDesc()));
+            LogWriter.getInstance().setLogLevel(optionLoglevel.toString());
+            log.logMinimal(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.LogLevel", LogWriter.getInstance().getLogLevelLongDesc()));
         } 
 		
         if (!Const.isEmpty(optionVersion))
@@ -213,7 +216,7 @@ public class Kitchen
 									jobMeta =  repository.loadJob(optionJobname.toString(), directory, null, null); // reads last version
 									if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.AllocateJob"));
 									
-									job = new Job(log, repository, jobMeta);
+									job = new Job(repository, jobMeta);
 								}
 								else
 								// List the jobs in the repository
@@ -265,7 +268,7 @@ public class Kitchen
 				if (!Const.isEmpty(optionFilename) && job==null)
 				{
 					jobMeta = new JobMeta(optionFilename.toString(), null, null);
-					job = new Job(log, null, jobMeta);
+					job = new Job(null, jobMeta);
 				}
 			}
 			else

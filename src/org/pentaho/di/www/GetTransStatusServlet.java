@@ -19,13 +19,13 @@ import java.net.URLEncoder;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.Log4jStringAppender;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -36,7 +36,7 @@ import org.pentaho.di.trans.step.StepStatus;
 
 
 
-public class GetTransStatusServlet extends HttpServlet
+public class GetTransStatusServlet extends BaseHttpServlet implements CarteServletInterface
 {
 	private static Class<?> PKG = GetTransStatusServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -60,10 +60,11 @@ public class GetTransStatusServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(),  BaseMessages.getString(PKG, "TransStatusServlet.Log.TransStatusRequested"));
+        if (log.isDebug()) logDebug( BaseMessages.getString(PKG, "TransStatusServlet.Log.TransStatusRequested"));
 
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
+        int startLineNr = Const.toInt(request.getParameter("from"), 0);
 
         response.setStatus(HttpServletResponse.SC_OK);
 
@@ -84,7 +85,8 @@ public class GetTransStatusServlet extends HttpServlet
         if (trans!=null)
         {
             String status = trans.getStatus();
-    
+            String logText = CentralLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), true, startLineNr).toString();
+
             if (useXML)
             {
                 response.setContentType("text/xml");
@@ -103,20 +105,16 @@ public class GetTransStatusServlet extends HttpServlet
                     }
                 }
                 
-                Log4jStringAppender appender = (Log4jStringAppender) transformationMap.getAppender(transName);
-                if (appender!=null)
-                {
-                    // The log can be quite large at times, we are going to put a base64 encoding around a compressed stream
-                    // of bytes to handle this one.
-                    
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    GZIPOutputStream gzos = new GZIPOutputStream(baos);
-                    gzos.write( appender.getBuffer().toString().getBytes() );
-                    gzos.close();
-                    
-                    String loggingString = new String(Base64.encodeBase64(baos.toByteArray()));
-                    transStatus.setLoggingString( loggingString );
-                }
+                // The log can be quite large at times, we are going to put a base64 encoding around a compressed stream
+                // of bytes to handle this one.
+                
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                GZIPOutputStream gzos = new GZIPOutputStream(baos);
+                gzos.write( logText.getBytes() );
+                gzos.close();
+                
+                String loggingString = new String(Base64.encodeBase64(baos.toByteArray()));
+                transStatus.setLoggingString( loggingString );
                 
                 // Also set the result object...
                 //
@@ -128,7 +126,11 @@ public class GetTransStatusServlet extends HttpServlet
                                 
                 // Send the result back as XML
                 //
-                out.println(transStatus.getXML());
+                try {
+					out.println(transStatus.getXML());
+				} catch (KettleException e) {
+					throw new ServletException("Unable to get the transformation status in XML format", e);
+				}
             }
             else
             {
@@ -197,22 +199,14 @@ public class GetTransStatusServlet extends HttpServlet
                     out.print("<p><a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" +  BaseMessages.getString(PKG, "TransStatusServlet.Refresh")  + "</a>");
                     
                     // Put the logging below that.
-                    Log4jStringAppender appender = (Log4jStringAppender) transformationMap.getAppender(transName);
-                    if (appender!=null)
-                    {
-                        out.println("<p>");
-                        /*
-                        out.println("<pre>");
-                        out.println(appender.getBuffer().toString());
-                        out.println("</pre>");
-                        */
-                        out.println("<textarea id=\"translog\" cols=\"120\" rows=\"20\" wrap=\"off\" name=\"Transformation log\" readonly=\"readonly\">"+appender.getBuffer().toString()+"</textarea>");
-                        
-                        out.println("<script type=\"text/javascript\"> ");
-                        out.println("  translog.scrollTop=translog.scrollHeight; ");
-                        out.println("</script> ");
-                        out.println("<p>");
-                    }
+                    
+                    out.println("<p>");
+                    out.println("<textarea id=\"translog\" cols=\"120\" rows=\"20\" wrap=\"off\" name=\"Transformation log\" readonly=\"readonly\">"+logText+"</textarea>");
+                    
+                    out.println("<script type=\"text/javascript\"> ");
+                    out.println("  translog.scrollTop=translog.scrollHeight; ");
+                    out.println("</script> ");
+                    out.println("<p>");
                 }
                 catch (Exception ex)
                 {
@@ -246,4 +240,8 @@ public class GetTransStatusServlet extends HttpServlet
     {
         return "Trans Status Handler";
     }
+
+	public String getService() {
+		return CONTEXT_PATH+" ("+toString()+")";
+	}
 }

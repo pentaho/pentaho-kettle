@@ -274,5 +274,18 @@ public interface StepMetaInterface
      * @return the filename of the exported resource
      */
     public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException ;
+    
+    
+    /**
+     * @return The StepMeta object to which this metadata class belongs. 
+     * With this, we can see to which transformation metadata (etc) this metadata pertains to. (hierarchy) 
+     */
+    public StepMeta getParentStepMeta();
+    
+    /**
+     * Provide original lineage for this metadata object
+     * @param parentStepMeta the parent step metadata container object
+     */
+    public void setParentStepMeta(StepMeta parentStepMeta);
 
 }

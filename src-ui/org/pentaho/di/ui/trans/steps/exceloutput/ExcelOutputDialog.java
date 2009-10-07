@@ -1006,7 +1006,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                    	logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -1250,7 +1250,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		EnableTemplate();
 
 		if (input.getPassword() != null) wPassword.setText(input.getPassword());
-		log.logDebug(toString(), "getting fields info...");
+		logDebug("getting fields info...");
 		
 		for (int i=0;i<input.getOutputFields().length;i++)
 		{

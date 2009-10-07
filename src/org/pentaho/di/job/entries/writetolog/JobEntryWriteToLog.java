@@ -25,12 +25,11 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 
@@ -135,9 +134,6 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 	 */
 	public boolean evaluate(Result result)
 	{
-		LogWriter log = LogWriter.getInstance();
-		
-			
 		try
 		{
 			
@@ -207,7 +203,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 	 * @param prev_result The result of the previous execution
 	 * @return The Result of the execution.
 	 */
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
+	public Result execute(Result prev_result, int nr)
 	{
 		prev_result.setResult( evaluate(prev_result) );
 		return prev_result;

@@ -482,7 +482,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                    	logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -513,7 +513,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				} catch (KettleException e) {
 					prevFields = new RowMeta();
 					String msg = BaseMessages.getString(PKG, "SelectValuesDialog.DoMapping.UnableToFindInput");
-					log.logError(toString(), msg);
+					logError(msg);
 				}
 				String[] prevStepFieldNames = prevFields.getFieldNames();
 				Arrays.sort(prevStepFieldNames);
@@ -751,7 +751,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		try {
 			nextStepRequiredFields = stepMetaInterface.getRequiredFields(transMeta);
 		} catch (KettleException e) {
-			log.logError(toString(), BaseMessages.getString(PKG, "SelectValuesDialog.DoMapping.UnableToFindOutput"));
+			logError(BaseMessages.getString(PKG, "SelectValuesDialog.DoMapping.UnableToFindOutput"));
 			nextStepRequiredFields = new RowMeta();
 		}
 

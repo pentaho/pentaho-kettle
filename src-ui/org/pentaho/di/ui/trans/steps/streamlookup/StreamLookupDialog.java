@@ -411,7 +411,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(),BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                    	logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -455,7 +455,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
                     }
                     catch(KettleException e)
                     {
-                    	 log.logError(toString(), "It was not possible to retrieve the list of fields for step [" + wStep.getText() + "]!");
+                    	 logError("It was not possible to retrieve the list of fields for step [" + wStep.getText() + "]!");
                     }
                 }
 			}
@@ -469,7 +469,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "StreamLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "StreamLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		if (input.getKeystream()!=null)
 		for (i=0;i<input.getKeystream().length;i++)
@@ -520,7 +520,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		input.setUsingSortedList(wSortedList.getSelection());
         input.setUsingIntegerPair(wIntegerPair.getSelection());
         
-        if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "StreamLookupDialog.Log.FoundKeys",nrkeys+"")); //$NON-NLS-1$ //$NON-NLS-2$
+        if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "StreamLookupDialog.Log.FoundKeys",nrkeys+"")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrkeys;i++)
 		{
 			TableItem item     = wKey.getNonEmpty(i);
@@ -528,7 +528,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 			input.getKeylookup()[i] = item.getText(2);
 		}
 		
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "StreamLookupDialog.Log.FoundFields",nrvalues+"")); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "StreamLookupDialog.Log.FoundFields",nrvalues+"")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrvalues;i++)
 		{
 			TableItem item        = wReturn.getNonEmpty(i);

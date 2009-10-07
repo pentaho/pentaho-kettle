@@ -17,13 +17,10 @@ import java.io.PrintWriter;
 import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Appender;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -31,7 +28,7 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
 
 
-public class StartJobServlet extends HttpServlet
+public class StartJobServlet extends BaseHttpServlet implements CarteServletInterface
 {
 	private static Class<?> PKG = StartJobServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -55,7 +52,7 @@ public class StartJobServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "StartJobServlet.Log.StartJobRequested"));
+        if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "StartJobServlet.Log.StartJobRequested"));
 
         String jobName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -103,25 +100,15 @@ public class StartJobServlet extends HttpServlet
             		//
             		synchronized(jobMap) {
 	            		JobConfiguration jobConfiguration = jobMap.getConfiguration(jobName);
-	            		Job newJob = new Job(LogWriter.getInstance(), job.getRep(), job.getJobMeta());
+	            		Job newJob = new Job(job.getRep(), job.getJobMeta());
 	            		
-	            		Appender appender = jobMap.getAppender(jobName);
-	            		if(appender != null){
-	            		  log.removeAppender(appender);
-	            		}
-	            		jobMap.removeAppender(jobName);	            		
 	            		jobMap.removeJob(jobName);
 	            		
 	            		jobMap.addJob(jobName, newJob, jobConfiguration);
 	            		job=newJob;
             		}
             	}
-            	
-                // Log to a String & save appender for re-use later.
-                Log4jStringAppender appender = LogWriter.createStringAppender();
-                log.addAppender(appender);
-                jobMap.addAppender(jobName, appender);
-                
+            	                
                 job.start(); // runs the thread in the background...
 
                 String message = BaseMessages.getString(PKG, "StartJobServlet.Log.JobStarted",jobName);
@@ -134,8 +121,6 @@ public class StartJobServlet extends HttpServlet
                     
                     out.println("<H1>"+message+"</H1>");
                     out.println("<a href=\"/kettle/jobStatus?name="+URLEncoder.encode(jobName, "UTF-8")+"\">" +BaseMessages.getString(PKG, "JobStatusServlet.BackToJobStatusPage") +"</a><p>");
-                    
-                    
                 }
             }
             else
@@ -179,4 +164,8 @@ public class StartJobServlet extends HttpServlet
     {
         return "Start job";
     }
+
+	public String getService() {
+		return CONTEXT_PATH+" ("+toString()+")";
+	}
 }

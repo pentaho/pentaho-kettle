@@ -1088,7 +1088,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		{
 			DatabaseMeta inf = transMeta.getDatabase(connr);
 						
-			log.logDebug(toString(), BaseMessages.getString(PKG, "SQLFileOutputDialog.Log.LookingAtConnection", inf.toString()));
+			logDebug(BaseMessages.getString(PKG, "SQLFileOutputDialog.Log.LookingAtConnection", inf.toString()));
 		
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());

@@ -40,7 +40,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.Result;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
@@ -103,6 +103,8 @@ public class SpoonSlave extends Composite implements TabItemInterface
 
 	private TreeItem jobParentItem;
 
+	private LogChannelInterface	log;
+
 	public SpoonSlave(Composite parent, int style, final Spoon spoon, SlaveServer slaveServer)
 	{
 		super(parent, style);
@@ -110,6 +112,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
         this.display = shell.getDisplay();
 		this.spoon = spoon;
 		this.slaveServer = slaveServer;
+		this.log = spoon.getLog();
 
 		FormLayout formLayout = new FormLayout();
 		formLayout.marginWidth = Const.FORM_MARGIN;
@@ -492,7 +495,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		if (refreshBusy) return;
 		refreshBusy = true;
         
-        LogWriter.getInstance().logDetailed(Spoon.APP_NAME, "Refresh");
+        log.logDetailed("Refresh");
         
         transParentItem.removeAll();
         jobParentItem.removeAll();
@@ -520,9 +523,9 @@ public class SpoonSlave extends Composite implements TabItemInterface
             
             try
             {
-                LogWriter.getInstance().logDetailed(toString(), "Getting transformation status for [{0}] on server [{1}]", transStatus.getTransName(), slaveServer);
+                log.logDetailed("Getting transformation status for [{0}] on server [{1}]", transStatus.getTransName(), slaveServer);
                 SlaveServerTransStatus ts = slaveServer.getTransStatus(transStatus.getTransName());
-                LogWriter.getInstance().logDetailed(toString(), "Finished receiving transformation status for [{0}] from server [{1}]", transStatus.getTransName(), slaveServer);
+                log.logDetailed("Finished receiving transformation status for [{0}] from server [{1}]", transStatus.getTransName(), slaveServer);
                 List<StepStatus> stepStatusList = ts.getStepStatusList();
                 transStatus.setStepStatusList(stepStatusList);
                 transStatus.setLoggingString(ts.getLoggingString());
@@ -550,9 +553,9 @@ public class SpoonSlave extends Composite implements TabItemInterface
             
             try
             {
-                LogWriter.getInstance().logDetailed(toString(), "Getting job status for [{0}] on server [{1}]", jobStatus.getJobName(), slaveServer);
+                log.logDetailed("Getting job status for [{0}] on server [{1}]", jobStatus.getJobName(), slaveServer);
                 SlaveServerJobStatus ts = slaveServer.getJobStatus(jobStatus.getJobName());
-                LogWriter.getInstance().logDetailed(toString(), "Finished receiving job status for [{0}] from server [{1}]", jobStatus.getJobName(), slaveServer);
+                log.logDetailed("Finished receiving job status for [{0}] from server [{1}]", jobStatus.getJobName(), slaveServer);
                 jobStatus.setLoggingString(ts.getLoggingString());
                 Result result = ts.getResult();
                 if (result!=null)
@@ -697,8 +700,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 			public void setCreatedDate(Date date) {
 			}
 		
-			public boolean saveSharedObjects() {
-				return false;
+			public void saveSharedObjects() {
 			}
 		
 			public void nameFromFilename() {

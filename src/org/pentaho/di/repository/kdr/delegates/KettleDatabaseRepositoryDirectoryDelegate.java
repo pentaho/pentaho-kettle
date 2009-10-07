@@ -3,7 +3,6 @@ package org.pentaho.di.repository.kdr.delegates;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -147,8 +146,8 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 
 		String sql = "UPDATE "+quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY)+" SET "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME)+" = ? WHERE "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY)+" = " + id_directory;
 
-		log.logBasic(toString(), "sql = [" + sql + "]");
-		log.logBasic(toString(), "row = [" + r + "]");
+		log.logBasic("sql = [" + sql + "]");
+		log.logBasic("row = [" + r + "]");
 
 		repository.connectionDelegate.getDatabase().execStatement(sql, r.getRowMeta(), r.getData());
 	}
@@ -183,7 +182,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 			
 			dir.setObjectId(insertDirectory(id_directory_parent, dir));
 			
-            LogWriter.getInstance().logDetailed(repository.getName(), "New id of directory = "+dir.getObjectId());
+            log.logDetailed("New id of directory = "+dir.getObjectId());
                         
 			repository.commit();
 		}

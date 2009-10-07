@@ -892,7 +892,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(),BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                        logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -1136,7 +1136,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(ci);
+						Database db = new Database(this, ci);
 						try {
 							db.connect();
 
@@ -1172,7 +1172,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "OraBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		wMaxErrors.setText("" + input.getMaxErrors());   //$NON-NLS-1$
 		wCommit.setText("" + input.getCommitSize());     //$NON-NLS-1$
@@ -1248,7 +1248,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		}
 		else  
 		{
-			if(log.isDebug()) log.logDebug(toString(), "Internal error: load_method set to default 'auto at end'"); //$NON-NLS-1$
+			if(log.isDebug()) logDebug("Internal error: load_method set to default 'auto at end'"); //$NON-NLS-1$
 			wLoadMethod.select(0);
 		}		
 		
@@ -1271,7 +1271,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		}
 		else
 		{
-			if(log.isDebug()) log.logDebug(toString(), "Internal error: load_action set to default 'append'"); //$NON-NLS-1$
+			if(log.isDebug()) logDebug("Internal error: load_action set to default 'append'"); //$NON-NLS-1$
     		wLoadAction.select(0);
 		}
 		
@@ -1300,7 +1300,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		inf.setReadSize( Const.toInt(wReadSize.getText(), 0) );
 		inf.setDbNameOverride(wDbNameOverride.getText());
 
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "OraBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrfields; i++)
 		{
 			TableItem item = wReturn.getNonEmpty(i);
@@ -1348,7 +1348,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		}
 		else  
 		{
-			if(log.isDebug()) log.logDebug(toString(), "Internal error: load_method set to default 'auto concurrent', value found '" + method + "'."); //$NON-NLS-1$
+			if(log.isDebug()) logDebug("Internal error: load_method set to default 'auto concurrent', value found '" + method + "'."); //$NON-NLS-1$
 			inf.setLoadMethod(OraBulkLoaderMeta.METHOD_AUTO_END);
 		}	
 		
@@ -1374,7 +1374,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		}
 		else
 		{
-			if(log.isDebug()) log.logDebug(toString(), "Internal error: load_action set to default 'append', value found '" + action + "'."); //$NON-NLS-1$
+			if(log.isDebug()) logDebug("Internal error: load_action set to default 'append', value found '" + action + "'."); //$NON-NLS-1$
 			inf.setLoadAction(OraBulkLoaderMeta.ACTION_APPEND);	
 		}
 
@@ -1404,7 +1404,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
 		if (databaseMeta!=null)
 		{
-			Database database = new Database(databaseMeta);
+			Database database = new Database(this, databaseMeta);
 			try
 			{
 				database.connect();
@@ -1455,7 +1455,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
 		if (inf != null)
 		{
-			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "OraBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
+			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
 
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());

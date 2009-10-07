@@ -1388,7 +1388,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		executionConfiguration.setRepository(spoon.rep);
 		executionConfiguration.setSafeModeEnabled(safe);
 
-		executionConfiguration.setLogLevel(spoon.getLog().getLogLevel());
+		executionConfiguration.setLogLevel(LogWriter.getInstance().getLogLevel());
 
 		JobExecutionConfigurationDialog dialog = new JobExecutionConfigurationDialog(spoon.getShell(), executionConfiguration, jobMeta);
 		if (dialog.open()) {

@@ -65,7 +65,6 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 		}
 		catch(KettleDatabaseException dbe)
 		{
-            log.logError(toString(), BaseMessages.getString(PKG, "UserInfo.Error.UserNotLoaded", login, dbe.getMessage()));
 			throw new KettleException(BaseMessages.getString(PKG, "UserInfo.Error.UserNotLoaded", login, ""), dbe);
 		}
 	}

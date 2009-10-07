@@ -1377,7 +1377,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		wResetRownum.setSelection(in.resetRowNumber());
 		wLimit.setText(""+in.getRowLimit());
 
-		if(log.isDebug()) log.logDebug(toString(),  BaseMessages.getString(PKG, "PropertyInputDialog.Log.GettingFieldsInfo"));
+		if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "PropertyInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
 		    PropertyInputField field = in.getInputFields()[i];
@@ -1501,8 +1501,6 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
             
             PropertyInputMeta oneMeta = new PropertyInputMeta();
             getInfo(oneMeta);
-      
-
         
             TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
             

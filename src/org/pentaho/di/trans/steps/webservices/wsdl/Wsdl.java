@@ -38,7 +38,7 @@ import javax.wsdl.xml.WSDLLocator;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.exception.KettleException;
 
 /**
  * Wsdl abstraction.
@@ -141,7 +141,7 @@ public final class Wsdl implements java.io.Serializable {
      * @param operationName Name of operation to find.
      * @return A WsdlOperation instance, null if operation can not be found in WSDL.
      */
-    public WsdlOperation getOperation(String operationName) {
+    public WsdlOperation getOperation(String operationName) throws KettleException {
 
         // is the operation in the cache?
         if (_operationCache.containsKey(operationName)) {
@@ -159,7 +159,7 @@ public final class Wsdl implements java.io.Serializable {
 	            return wop;
         	}
         	catch(Exception e) {
-        		LogWriter.getInstance().logError("WSDL", "Could not retrieve WSDL Operator for operation name: "+operationName, e);
+        		throw new KettleException("Could not retrieve WSDL Operator for operation name: "+operationName, e);
         	}
         }
         return null;
@@ -171,7 +171,7 @@ public final class Wsdl implements java.io.Serializable {
      * @return List of WsdlOperations.
      */
     @SuppressWarnings("unchecked")
-	public List<WsdlOperation> getOperations() {
+	public List<WsdlOperation> getOperations() throws KettleException {
 
         List<WsdlOperation> opList = new ArrayList<WsdlOperation>();
         PortType pt = _port.getBinding().getPortType();

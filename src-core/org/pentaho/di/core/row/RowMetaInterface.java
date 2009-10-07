@@ -20,6 +20,7 @@ import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.List;
 
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.w3c.dom.Node;
@@ -402,9 +403,9 @@ public interface RowMetaInterface extends Cloneable
 	 * Convert an XML node into binary data using the row metadata supplied. 
 	 * @param rowMeta The row metadata to reference
 	 * @param node The data row node 
-	 * @throws IOException Thrown in case there is an (Base64/GZip) decoding problem
 	 * @return a row of data de-serialized from XML
+	 * @throws KettleException Thrown in case there is an (Base64/GZip) decoding problem 
 	 */
-	public Object[] getRow(Node node) throws IOException; 
+	public Object[] getRow(Node node) throws KettleException; 
 
 }

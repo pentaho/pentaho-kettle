@@ -3,14 +3,15 @@ package org.pentaho.di.core.lifecycle;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.ResolverUtil;
 
 public class LifecycleSupport implements LifecycleListener
 {
 	private Set<LifecycleListener> lifeListeners;
 
-	private static LogWriter log = LogWriter.getInstance();
+	private static LogChannelInterface log = new LogChannel("Spoon");
 
 	public LifecycleSupport()
 	{
@@ -28,7 +29,7 @@ public class LifecycleSupport implements LifecycleListener
 			} 
 			catch (Throwable e)
 			{
-				log.logError("Spoon", "Unable to init listener:" + e.getMessage(), new Object[] {});
+				log.logError("Unable to init listener:" + e.getMessage(), new Object[] {});
 				continue;
 			}
 		}

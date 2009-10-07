@@ -11,7 +11,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -141,11 +140,9 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 
 	public void saveStepMeta(StepMeta stepMeta, ObjectId id_transformation) throws KettleException
 	{
-        LogWriter log = LogWriter.getInstance();
-        
-		try
+        try
 		{
-			log.logDebug(toString(), BaseMessages.getString(PKG, "StepMeta.Log.SaveNewStep")); //$NON-NLS-1$
+			log.logDebug(BaseMessages.getString(PKG, "StepMeta.Log.SaveNewStep")); //$NON-NLS-1$
 			// Insert new Step in repository
 			stepMeta.setObjectId(insertStep(	id_transformation,
 									stepMeta.getName(), 
@@ -166,7 +163,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 			// The id_step is known, as well as the id_transformation
 			// This means we can now save the attributes of the step...
 			//
-			log.logDebug(toString(), BaseMessages.getString(PKG, "StepMeta.Log.SaveStepDetails")); //$NON-NLS-1$
+			log.logDebug(BaseMessages.getString(PKG, "StepMeta.Log.SaveStepDetails")); //$NON-NLS-1$
 			stepMeta.getStepMetaInterface().saveRep(repository, id_transformation, stepMeta.getObjectId());
             
             // Save the name of the clustering schema that was chosen.

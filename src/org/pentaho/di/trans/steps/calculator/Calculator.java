@@ -160,7 +160,7 @@ public class Calculator extends BaseStep implements StepInterface
             }
         }
 
-        if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "Calculator.Log.ReadRow")+getLinesRead()+" : "+getInputRowMeta().getString(r));
+        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "Calculator.Log.ReadRow")+getLinesRead()+" : "+getInputRowMeta().getString(r));
         boolean sendToErrorRow=false;
         String errorMessage = null;
         
@@ -168,7 +168,7 @@ public class Calculator extends BaseStep implements StepInterface
 	        Object[] row = calcFields(getInputRowMeta(), r);		
 			putRow(data.outputRowMeta, row);     // copy row to possible alternate rowset(s).
 	
-	        if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+getLinesWritten()+" : "+getInputRowMeta().getString(r));
+	        if (log.isRowLevel()) logRowlevel("Wrote row #"+getLinesWritten()+" : "+getInputRowMeta().getString(r));
 	        if (checkFeedback(getLinesRead())) 
 	        {
 	        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "Calculator.Log.Linenr",""+getLinesRead()));

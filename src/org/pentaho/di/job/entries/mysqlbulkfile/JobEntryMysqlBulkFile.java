@@ -36,7 +36,6 @@ import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -252,7 +251,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 		return false;
 	}
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
 
 		String LimitNbrLignes="";
@@ -280,7 +279,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 				// the file exists and user want to Fail
 				result.setResult( false );
 				result.setNrErrors(1);
-				log.logError(toString(),BaseMessages.getString(PKG, "JobMysqlBulkFile.FileExists1.Label") +
+				logError(BaseMessages.getString(PKG, "JobMysqlBulkFile.FileExists1.Label") +
 					realFilename + BaseMessages.getString(PKG, "JobMysqlBulkFile.FileExists2.Label"));
 
 			}
@@ -289,7 +288,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 				// the file exists and user want to do nothing
 				result.setResult( true );
 				if(log.isDetailed())	
-					log.logDetailed(toString(),BaseMessages.getString(PKG, "JobMysqlBulkFile.FileExists1.Label") +
+					logDetailed(BaseMessages.getString(PKG, "JobMysqlBulkFile.FileExists1.Label") +
 						realFilename + BaseMessages.getString(PKG, "JobMysqlBulkFile.FileExists2.Label"));
 
 			}
@@ -316,7 +315,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 						realFilename=realFilename + "_" + StringUtil.getFormattedDateTimeNow(true);
 					}
 
-					log.logDebug(toString(), BaseMessages.getString(PKG, "JobMysqlBulkFile.FileNameChange1.Label") + realFilename +
+					logDebug(BaseMessages.getString(PKG, "JobMysqlBulkFile.FileNameChange1.Label") + realFilename +
 						BaseMessages.getString(PKG, "JobMysqlBulkFile.FileNameChange1.Label"));
 
 
@@ -325,14 +324,14 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 
 				// User has specified an existing file, We can continue ...
 				if(log.isDetailed())	
-					log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMysqlBulkFile.FileExists1.Label") +
+					logDetailed(BaseMessages.getString(PKG, "JobMysqlBulkFile.FileExists1.Label") +
 									realFilename + BaseMessages.getString(PKG, "JobMysqlBulkFile.FileExists2.Label"));
 
 
 				if (connection!=null)
 				{
 					// User has specified a connection, We can continue ...
-					Database db = new Database(connection);
+					Database db = new Database(this, connection);
 					db.shareVariablesWith(this);
 					try
 					{
@@ -346,7 +345,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 						{
 							// The table existe, We can continue ...
 							if(log.isDetailed())	
-								log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMysqlBulkFile.TableExists1.Label")+realTablename+
+								logDetailed(BaseMessages.getString(PKG, "JobMysqlBulkFile.TableExists1.Label")+realTablename+
 									BaseMessages.getString(PKG, "JobMysqlBulkFile.TableExists2.Label"));
 
 
@@ -420,7 +419,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 							try
 							{
 								if(log.isDetailed())	
-									log.logDetailed(toString(), FILEBulkFile);
+									logDetailed(FILEBulkFile);
 								// Run the SQL
 								PreparedStatement ps= db.prepareSQL(FILEBulkFile);
 								ps.execute();
@@ -443,11 +442,11 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 							{
 								db.disconnect();
 								result.setNrErrors(1);
-								log.logError(toString(), BaseMessages.getString(PKG, "JobMysqlBulkFile.Error.Label") + " "+je.getMessage());
+								logError(BaseMessages.getString(PKG, "JobMysqlBulkFile.Error.Label") + " "+je.getMessage());
 							}
 							catch (IOException e)
 							{
-				       			log.logError(toString(), BaseMessages.getString(PKG, "JobMysqlBulkFile.Error.Label") + e.getMessage());
+				       			logError(BaseMessages.getString(PKG, "JobMysqlBulkFile.Error.Label") + e.getMessage());
 								result.setNrErrors(1);
 							}
 
@@ -459,7 +458,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 							db.disconnect();
 							result.setNrErrors(1);
 							if(log.isDetailed())	
-								log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMysqlBulkFile.TableNotExists1.Label") +realTablename+
+								logDetailed(BaseMessages.getString(PKG, "JobMysqlBulkFile.TableNotExists1.Label") +realTablename+
 									BaseMessages.getString(PKG, "JobMysqlBulkFile.TableNotExists2.Label"));
 						}
 
@@ -469,7 +468,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 					{
 						db.disconnect();
 						result.setNrErrors(1);
-						log.logError(toString(), BaseMessages.getString(PKG, "JobMysqlBulkFile.Error.Label")  + " " + dbe.getMessage());
+						logError(BaseMessages.getString(PKG, "JobMysqlBulkFile.Error.Label")  + " " + dbe.getMessage());
 					}
 
 
@@ -480,7 +479,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 				{
 					// No database connection is defined
 					result.setNrErrors(1);
-					log.logError(toString(),  BaseMessages.getString(PKG, "JobMysqlBulkFile.Nodatabase.Label"));
+					logError( BaseMessages.getString(PKG, "JobMysqlBulkFile.Nodatabase.Label"));
 				}
 
 
@@ -492,7 +491,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 		{
 			// No file was specified
 			result.setNrErrors(1);
-			log.logError(toString(), BaseMessages.getString(PKG, "JobMysqlBulkFile.Nofilename.Label"));
+			logError(BaseMessages.getString(PKG, "JobMysqlBulkFile.Nofilename.Label"));
 		}
 
 		return result;

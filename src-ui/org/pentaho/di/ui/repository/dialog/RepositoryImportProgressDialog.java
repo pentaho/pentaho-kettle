@@ -42,7 +42,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.SpoonFactory;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -71,7 +72,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 {
 	private static Class<?> PKG = KettleDatabaseRepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    private LogWriter log;
+    private LogChannelInterface log;
     private Shell shell, parent;
     private Display display;
     private PropsUI props;
@@ -98,7 +99,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
     {
         super(parent, style);
 
-        this.log = LogWriter.getInstance();
+        this.log = new LogChannel("Repository import");
         this.props = PropsUI.getInstance();
         this.parent = parent;
         this.rep = rep;
@@ -332,7 +333,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 	{
         // Load the job from the XML node.
         //                
-		JobMeta jobMeta = new JobMeta(log, jobnode, rep, SpoonFactory.getInstance());
+		JobMeta jobMeta = new JobMeta(jobnode, rep, SpoonFactory.getInstance());
 
         wLabel.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.ImportJob.Label", Integer.toString(nrthis), Integer.toString(nrjobs), jobMeta.getName()));
 
@@ -423,7 +424,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 			for (int ii = 0; ii < filenames.length; ++ii) {
 				
 				final String filename = ((fileDirectory != null) && (fileDirectory.length() > 0)) ? fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
-				if(log.isBasic()) log.logBasic("Repository", "Import objects from XML file [" + filename + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+				if(log.isBasic()) log.logBasic("Import objects from XML file [" + filename + "]"); //$NON-NLS-1$ //$NON-NLS-2$
 				addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.WhichFile.Log", filename));
 
 				// To where?

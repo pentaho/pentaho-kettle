@@ -228,21 +228,21 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 			}
             OutputStream outputStream;
             
-            if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in nocompress mode");
+            if(log.isDetailed()) logDetailed("Opening output stream in nocompress mode");
             OutputStream fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
             outputStream=fos;
 			
-            if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in default encoding");
+            if(log.isDetailed()) logDetailed("Opening output stream in default encoding");
             data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 5000));
         
             if (!Const.isEmpty(meta.getEncoding()))
             {
-            	if(log.isBasic()) log.logDetailed(toString(), "Opening output stream in encoding: "+meta.getEncoding());
+            	if(log.isBasic()) logDetailed("Opening output stream in encoding: "+meta.getEncoding());
                 data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 5000), environmentSubstitute(meta.getEncoding()));
             }
             else
             {
-                if(log.isBasic()) log.logDetailed(toString(), "Opening output stream in default encoding");
+                if(log.isBasic()) logDetailed("Opening output stream in default encoding");
                 data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 5000));
             }
             
@@ -307,7 +307,7 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 		            throw new KettleStepException("The connection is not defined (empty)");
 		        }	
 
-				data.db=new Database(meta.getDatabaseMeta());
+				data.db=new Database(this, meta.getDatabaseMeta());
 				data.db.shareVariablesWith(this);
                       
 				logBasic("Connected to database ["+meta.getDatabaseMeta()+"]");

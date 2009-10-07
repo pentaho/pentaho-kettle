@@ -19,7 +19,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -94,7 +93,7 @@ public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntry
 	 * @param previousResult The result of the previous execution
 	 * @return The Result of the execution.
 	 */
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
 		Result result = previousResult;
 		result.setNrErrors(0);

@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
 
@@ -21,6 +21,8 @@ public class SlaveServerConfig {
 	private boolean reportingToMasters;
 	
 	private boolean joining;
+	
+	private int maxLogLines;
 	
 	public SlaveServerConfig() {
 		masters=new ArrayList<SlaveServer>();
@@ -54,32 +56,34 @@ public class SlaveServerConfig {
         }
 
         XMLHandler.addTagValue("joining", joining);
+        XMLHandler.addTagValue("max_log_lines", maxLogLines);
 
         xml.append(XMLHandler.closeTag(XML_TAG));
 
         return xml.toString();
 	}
 	
-	public SlaveServerConfig(Node node) {
+	public SlaveServerConfig(LogChannelInterface log, Node node) {
 		this();
 		Node mastersNode = XMLHandler.getSubNode(node, XML_TAG_MASTERS);
 		int nrMasters = XMLHandler.countNodes(mastersNode, SlaveServer.XML_TAG);
 		for (int i=0;i<nrMasters;i++) {
 			Node masterSlaveNode = XMLHandler.getSubNodeByNr(mastersNode, SlaveServer.XML_TAG, i);
 			SlaveServer masterSlaveServer = new SlaveServer(masterSlaveNode);
-			checkNetworkInterfaceSetting(masterSlaveNode, masterSlaveServer);					
+			checkNetworkInterfaceSetting(log, masterSlaveNode, masterSlaveServer);					
 			masters.add(masterSlaveServer);
 		}
 		reportingToMasters = "Y".equalsIgnoreCase(XMLHandler.getTagValue(node, "report_to_masters"));
 		Node slaveNode = XMLHandler.getSubNode(node, SlaveServer.XML_TAG);
 		if (slaveNode!=null) {
 			slaveServer = new SlaveServer(slaveNode);
-			checkNetworkInterfaceSetting(slaveNode, slaveServer);					
+			checkNetworkInterfaceSetting(log, slaveNode, slaveServer);					
 		}
 		joining = "Y".equalsIgnoreCase(XMLHandler.getTagValue(node, "joining"));
+		maxLogLines = Integer.parseInt(XMLHandler.getTagValue(node, "max_log_lines"), 0);
 	}
 
-	private void checkNetworkInterfaceSetting(Node slaveNode, SlaveServer slaveServer) {
+	private void checkNetworkInterfaceSetting(LogChannelInterface log, Node slaveNode, SlaveServer slaveServer) {
 		// See if we need to grab the network interface to use and then override the host name
 		//
 		String networkInterfaceName = XMLHandler.getTagValue(slaveNode, "network_interface");
@@ -93,10 +97,10 @@ public class SlaveServerConfig {
 					// Also change the name of the slave...
 					//
 					slaveServer.setName(slaveServer.getName()+"-"+newHostname);
-					LogWriter.getInstance().logBasic("Slave server configuration", "Hostname for slave server ["+slaveServer.getName()+"] is set to ["+newHostname+"], information derived from network "+networkInterfaceName);
+					log.logBasic("Hostname for slave server ["+slaveServer.getName()+"] is set to ["+newHostname+"], information derived from network "+networkInterfaceName);
 				}
 			} catch (SocketException e) {
-				LogWriter.getInstance().logError("Slave server configuration", "Unable to get the IP address for network interface "+networkInterfaceName+" for slave server ["+slaveServer.getName()+"]", e);
+				log.logError("Unable to get the IP address for network interface "+networkInterfaceName+" for slave server ["+slaveServer.getName()+"]", e);
 			}
 		}
 	
@@ -165,6 +169,20 @@ public class SlaveServerConfig {
 	 */
 	public void setJoining(boolean joining) {
 		this.joining = joining;
+	}
+
+	/**
+	 * @return the maxLogLines
+	 */
+	public int getMaxLogLines() {
+		return maxLogLines;
+	}
+
+	/**
+	 * @param maxLogLines the maxLogLines to set
+	 */
+	public void setMaxLogLines(int maxLogLines) {
+		this.maxLogLines = maxLogLines;
 	}
 	
 }

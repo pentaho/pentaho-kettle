@@ -1173,7 +1173,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 			String realPassword=transMeta.environmentSubstitute(meta.getPassword());
 			int realTimeOut=Const.toInt(transMeta.environmentSubstitute(meta.getTimeOut()),0);
 
-			connection=new SalesforceConnection(realURL,realUsername,realPassword,realTimeOut); 
+			connection=new SalesforceConnection(log, realURL,realUsername,realPassword,realTimeOut); 
 			connection.connect();
 			
 		}
@@ -1262,7 +1262,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		String realPassword=transMeta.environmentSubstitute(meta.getPassword());
 		int realTimeOut=Const.toInt(transMeta.environmentSubstitute(meta.getTimeOut()),0);
 
-		connection=new SalesforceConnection(realURL,realUsername,realPassword,realTimeOut); 
+		connection=new SalesforceConnection(log, realURL,realUsername,realPassword,realTimeOut); 
 		if(meta.isSpecifyQuery())   {
 			// Free hand SOQL
 			String realQuery=transMeta.environmentSubstitute(meta.getQuery());
@@ -1405,7 +1405,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		wReadTo.setText(Const.NVL(in.getReadTo(),""));
 		
 		
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SalesforceInputDialog.Log.GettingFieldsInfo"));
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SalesforceInputDialog.Log.GettingFieldsInfo"));
 		for (int i = 0; i < in.getInputFields().length; i++) 
 		{
 			SalesforceInputField field = in.getInputFields()[i];

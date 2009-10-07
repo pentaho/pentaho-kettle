@@ -3,13 +3,14 @@ package org.pentaho.di.cluster;
 import java.util.Arrays;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.cluster.TransSplitter;
 
 public class MasterSlaveTest extends BaseCluster {
-
+	
 	public void testStartStopSlaveServers() throws KettleException {
 		ClusterGenerator clusterGenerator = new ClusterGenerator();
 		try {
@@ -37,7 +38,7 @@ public class MasterSlaveTest extends BaseCluster {
 			TransMeta transMeta = generateParallelFileReadOnMasterTransMeta(clusterGenerator);
 			TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnMaster>", transSplitter, null, 1);
+			long nrErrors = Trans.monitorClusteredTransformation(new LogChannel("cluster unit test <testParallelFileReadOnMaster>"), transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
 			String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-master-result.txt");
 			assertEqualsIgnoreWhitespacesAndCase("100", result);
@@ -70,7 +71,7 @@ public class MasterSlaveTest extends BaseCluster {
 			TransMeta transMeta = generateParallelFileReadOnMasterWithCopiesTransMeta(clusterGenerator);
 			TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnMasterWithCopies>", transSplitter, null, 1);
+			long nrErrors = Trans.monitorClusteredTransformation(new LogChannel("cluster unit test <testParallelFileReadOnMasterWithCopies>"), transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
 			String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-master-result-with-copies.txt");
 			assertEqualsIgnoreWhitespacesAndCase("100", result);
@@ -104,7 +105,7 @@ public class MasterSlaveTest extends BaseCluster {
 			TransMeta transMeta = generateParallelFileReadOnSlavesTransMeta(clusterGenerator);
 			TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnSlaves>", transSplitter, null, 1);
+			long nrErrors = Trans.monitorClusteredTransformation(new LogChannel("cluster unit test <testParallelFileReadOnSlaves>"), transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
 			String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-slaves.txt");
 			assertEqualsIgnoreWhitespacesAndCase("100", result);
@@ -137,7 +138,7 @@ public class MasterSlaveTest extends BaseCluster {
 			TransMeta transMeta = generateParallelFileReadOnSlavesWithPartitioningTransMeta(clusterGenerator);
 			TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnSlavesWithPartitioning>", transSplitter, null, 1);
+			long nrErrors = Trans.monitorClusteredTransformation(new LogChannel("cluster unit test <testParallelFileReadOnSlavesWithPartitioning>"), transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
 			String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-slaves-with-partitioning.txt");
 			assertEqualsIgnoreWhitespacesAndCase("100", result);
@@ -171,7 +172,7 @@ public class MasterSlaveTest extends BaseCluster {
 			TransMeta transMeta = generateParallelFileReadOnSlavesWithPartitioning2TransMeta(clusterGenerator);
 			TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnSlavesWithPartitioning2>", transSplitter, null, 1);
+			long nrErrors = Trans.monitorClusteredTransformation(new LogChannel("cluster unit test <testParallelFileReadOnSlavesWithPartitioning2>"), transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
 			String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-slaves-with-partitioning2.txt");
 			assertEqualsIgnoreWhitespacesAndCase("100", result);
@@ -203,7 +204,7 @@ public class MasterSlaveTest extends BaseCluster {
     		TransMeta transMeta = generateMultipleCopiesOnMultipleSlaves2(clusterGenerator);
     		TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
     		TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-    		long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testMultipleCopiesOnMultipleSlaves2>", transSplitter, null, 1);
+    		long nrErrors = Trans.monitorClusteredTransformation(new LogChannel("cluster unit test <testMultipleCopiesOnMultipleSlaves2>"), transSplitter, null, 1);
     		assertEquals(0L, nrErrors);
     		String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-multiple-copies-on-multiple-slaves2.txt");
     		assertEqualsIgnoreWhitespacesAndCase("90000", result);
@@ -236,7 +237,7 @@ public class MasterSlaveTest extends BaseCluster {
 			TransMeta transMeta = generateMultipleCopiesOnMultipleSlaves(clusterGenerator);
 			TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testMultipleCopiesOnMultipleSlaves>", transSplitter, null, 1);
+			long nrErrors = Trans.monitorClusteredTransformation(new LogChannel("cluster unit test <testMultipleCopiesOnMultipleSlaves>"), transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
 			String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-multiple-copies-on-multiple-slaves.txt");
 			assertEqualsIgnoreWhitespacesAndCase("100", result);

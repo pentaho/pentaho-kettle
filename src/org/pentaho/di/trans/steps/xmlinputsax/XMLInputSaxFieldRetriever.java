@@ -22,7 +22,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -58,12 +58,15 @@ public class XMLInputSaxFieldRetriever extends DefaultHandler{
     private String sourceFile;
     
     private XMLInputSaxMeta meta;
+
+	private LogChannelInterface	log;
     
     //private String tempVal;
     
     
-    public XMLInputSaxFieldRetriever(String sourceFile, XMLInputSaxMeta meta)
+    public XMLInputSaxFieldRetriever(LogChannelInterface log, String sourceFile, XMLInputSaxMeta meta)
     {
+    	this.log = log;
     	for(int i=0;i<meta.getInputPosition().length;i++)
     	{
     		this.pathToRootElement.add(meta.getInputPosition()[i]);
@@ -90,11 +93,11 @@ public class XMLInputSaxFieldRetriever extends DefaultHandler{
             sp.parse(sourceFile, this);
             
         }catch(SAXException se) {
-            LogWriter.getInstance().logError(toString(), Const.getStackTracker(se));
+        	log.logError(Const.getStackTracker(se));
         }catch(ParserConfigurationException pce) {
-            LogWriter.getInstance().logError(toString(), Const.getStackTracker(pce));
+        	log.logError(Const.getStackTracker(pce));
         }catch (IOException ie) {
-            LogWriter.getInstance().logError(toString(), Const.getStackTracker(ie));
+            log.logError(Const.getStackTracker(ie));
         }
     }
     
@@ -249,7 +252,7 @@ public class XMLInputSaxFieldRetriever extends DefaultHandler{
 			    }
 			}
 		} catch (KettleValueException e) {
-            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+            log.logError(Const.getStackTracker(e));
 			throw new SAXException(_counter+","+counter+((XMLInputSaxFieldPosition)_pathToRootElement.get(_pathToRootElement.size()-1)).toString(),e);
 			
 		}

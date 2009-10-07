@@ -148,7 +148,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         }
     };
 
-    private void selectWSDLOperation(String anOperationName) throws KettleStepException
+    private void selectWSDLOperation(String anOperationName) throws KettleException
     {
         // Tab management
     	// 
@@ -163,12 +163,6 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
             if (!inWsdlParamContainer.isArray())
             {
                 wStep.setText("1");
-                wStep.setEditable(false);
-            }
-            else
-            {
-                //wStep.setText(Integer.toString(WebServiceMeta.DEFAULT_STEP));
-                wStep.setEditable(true);
             }
             addTabFieldIn();
             setComboValues();
@@ -176,9 +170,6 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         else
         {
             wStep.setText("1");
-            wStep.setEditable(false);
-            wStep.setVisible(false);
-            wlStep.setVisible(false);
 
             removeTabField(tabItemFieldIn);
             tabItemFieldIn = null;
@@ -194,7 +185,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         }
     }
 
-    private void loadWebService(String anURI) throws KettleStepException
+    private void loadWebService(String anURI) throws KettleException
     {
         anURI = transMeta.environmentSubstitute(anURI);
 
@@ -246,7 +237,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
     }
     
-    private void loadOperation(String anOperationName) throws KettleStepException
+    private void loadOperation(String anOperationName) throws KettleException
     {
         wsdlOperation = null;
         inWsdlParamContainer = null;
@@ -380,7 +371,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
      * @throws KettleStepException 
      *
      */
-    private void initTreeTabWebService(String anURI) throws KettleStepException
+    private void initTreeTabWebService(String anURI) throws KettleException
     {
         String text = wOperation.getText();
 
@@ -447,7 +438,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                         loadWebService(wURL.getText());
                         loadOperation(wOperation.getText());
                     }
-                    catch (KettleStepException e)
+                    catch (KettleException e)
                     {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -592,7 +583,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 	                        loadWebService(wURL.getText());
 	                        loadOperation(wOperation.getText());
 	                    }
-	                    catch (KettleStepException e)
+	                    catch (KettleException e)
 	                    {
 	                        // TODO Auto-generated catch block
 	                        e.printStackTrace();
@@ -739,7 +730,6 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         if (meta.getInFieldContainerName() != null || meta.getInFieldArgumentName() != null || !meta.getFieldsIn().isEmpty())
         {
             addTabFieldIn();
-            wStep.setEditable(false);
 
             for (Iterator<WebServiceField> itr = meta.getFieldsIn().iterator(); itr.hasNext();)
             {
@@ -756,12 +746,6 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
             fieldInTableView.removeEmptyRows();
             fieldInTableView.setRowNums();
             fieldInTableView.optWidth(true);
-        }
-        else
-        {
-            wStep.setEditable(false);
-            wStep.setVisible(false);
-            wlStep.setVisible(false);
         }
         if (!meta.getFieldsOut().isEmpty())
         {
@@ -1048,7 +1032,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 {
                     selectWSDLOperation(wOperation.getText());
                 }
-                catch (KettleStepException e)
+                catch (KettleException e)
                 {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -1441,7 +1425,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 } catch (KettleException e) {
                     prevFields = new RowMeta();
                     String msg = BaseMessages.getString(PKG, "SelectValuesDialog.DoMapping.UnableToFindInput");
-                    log.logError(toString(), msg);
+                    logError(msg);
                 }
                 String[] prevStepFieldNames = prevFields.getFieldNames();
                 Arrays.sort(prevStepFieldNames);

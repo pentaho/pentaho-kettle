@@ -87,7 +87,9 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.gui.SpoonInterface;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.HasLogChannelInterface;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogParentProvidedInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -134,7 +136,7 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
  * Created on 17-may-2003
  *
  */
-public class JobGraph extends Composite implements Redrawable, TabItemInterface {
+public class JobGraph extends Composite implements Redrawable, TabItemInterface, LogParentProvidedInterface {
 	
   private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -156,7 +158,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
   protected Canvas canvas;
 
-  protected LogWriter log;
+  protected LogChannelInterface log;
 
   protected JobMeta jobMeta;
 
@@ -238,8 +240,6 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
   public JobGridDelegate jobGridDelegate;
 
-  private boolean running;
-
   private Composite mainComposite;
 
   private List<RefreshListener> refreshListeners;
@@ -263,7 +263,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
   public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     super(par, SWT.NONE);
     shell = par.getShell();
-    this.log = LogWriter.getInstance();
+    this.log = spoon.getLog();
     this.spoon = spoon;
     this.jobMeta = jobMeta;
     this.props = PropsUI.getInstance();
@@ -309,7 +309,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
           new org.pentaho.di.ui.spoon.job.XulMessages(), "job-graph-hop", "job-graph-note", "job-graph-background",
           "job-graph-entry");
     } catch (Throwable t) {
-      log.logError(toString(), Const.getStackTracker(t));
+      log.logError(Const.getStackTracker(t));
       new ErrorDialog(shell, BaseMessages.getString(PKG, "JobGraph.Exception.ErrorReadingXULFile.Title"), 
     		  BaseMessages.getString(PKG, "JobGraph.Exception.ErrorReadingXULFile.Message", Spoon.XUL_FILE_MENUS), new Exception(t));
     }
@@ -753,7 +753,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
                   newjge = (JobEntryCopy) jge.clone();
                   if (newjge != null) {
                     // newjge.setEntry(jge.getEntry());
-                    if(log.isDebug()) log.logDebug(toString(), "entry aft = " + ((Object) jge.getEntry()).toString()); //$NON-NLS-1$
+                    if(log.isDebug()) log.logDebug("entry aft = " + ((Object) jge.getEntry()).toString()); //$NON-NLS-1$
 
                     newjge.setNr(jobMeta.findUnusedNr(newjge.getName()));
 
@@ -761,10 +761,10 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
                     spoon.addUndoNew(jobMeta, new JobEntryCopy[] { newjge }, new int[] { jobMeta
                         .indexOfJobEntry(newjge) });
                   } else {
-                	  if(log.isDebug()) log.logDebug(toString(), "jge is not cloned!"); //$NON-NLS-1$
+                	  if(log.isDebug()) log.logDebug("jge is not cloned!"); //$NON-NLS-1$
                   }
                 } else {
-                	if(log.isDebug()) log.logDebug(toString(), jge.toString() + " is not drawn"); //$NON-NLS-1$
+                	if(log.isDebug()) log.logDebug(jge.toString() + " is not drawn"); //$NON-NLS-1$
                   jge_changed = true;
                 }
                 PropsUI.setLocation(newjge, p.x, p.y);
@@ -777,7 +777,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
                 spoon.refreshTree();
                 log.logBasic("DropTargetEvent", "DROP " + newjge.toString() + "!, type="+newjge.getEntry().getTypeId());
               } else {
-                log.logError(toString(), "Unknown job entry dropped onto the canvas.");
+                log.logError("Unknown job entry dropped onto the canvas.");
               }
             }
               break;
@@ -865,7 +865,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
       addToolBarListeners();
     } catch (Throwable t) {
-      log.logError(toString(), Const.getStackTracker(t));
+      log.logError(Const.getStackTracker(t));
       new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
     		  BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR), new Exception(t));
     }
@@ -2734,12 +2734,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
   }
 
   public synchronized void startJob(JobExecutionConfiguration executionConfiguration) throws KettleException {
-    if (job == null) // Not running, start the transformation...
+    if (job == null || job.isFinished() && !job.isActive()) // Not running, start the transformation...
     {
       // Auto save feature...
       if (jobMeta.hasChanged()) {
         if (spoon.props.getAutoSave()) {
-        	if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobLog.Log.AutoSaveFileBeforeRunning")); //$NON-NLS-1$
+        	if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobLog.Log.AutoSaveFileBeforeRunning")); //$NON-NLS-1$
           System.out.println(BaseMessages.getString(PKG, "JobLog.Log.AutoSaveFileBeforeRunning2")); //$NON-NLS-1$
           spoon.saveToFile(jobMeta);
         } else {
@@ -2774,7 +2774,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
             	jobLogDelegate.clearLog();
             }
         	  
-            job = new Job(log, jobMeta.getName(), jobMeta.getFilename(), null);
+            job = new Job(jobMeta.getName(), jobMeta.getFilename(), null);
             job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getRepositoryDirectory().getPath(), spoon);
             job.getJobMeta().setArguments(jobMeta.getArguments());
             job.shareVariablesWith(jobMeta);
@@ -2787,20 +2787,17 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
             } 
             job.getJobMeta().activateParameters();
             
-            log.logMinimal(Spoon.APP_NAME, BaseMessages.getString(PKG, "JobLog.Log.StartingJob")); //$NON-NLS-1$
+            log.logMinimal(BaseMessages.getString(PKG, "JobLog.Log.StartingJob")); //$NON-NLS-1$
             job.start();
             jobGridDelegate.previousNrItems = -1;
             // Link to the new jobTracker!
             jobGridDelegate.jobTracker = job.getJobTracker();
-            running = true;
 
             // Attach a listener to notify us that the transformation has finished.
             job.addJobListener(new JobListener() {
-
               public void jobFinished(Job job) {
                 JobGraph.this.jobFinished();
               }
-
             });
 
             // Show the execution results views
@@ -2846,25 +2843,23 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
   protected void jobFinished() {
     // Do a final check to see if it all ended...
     //
-    if (running && job != null && job.isInitialized() && job.isFinished()) {
-      job = null;
-      running = false;
+    if (job != null && job.isInitialized() && job.isFinished()) {
       for (RefreshListener listener : refreshListeners)
         listener.refreshNeeded();
-      log.logMinimal(Spoon.APP_NAME, BaseMessages.getString(PKG, "JobLog.Log.JobHasEnded")); //$NON-NLS-1$
+      log.logMinimal(BaseMessages.getString(PKG, "JobLog.Log.JobHasEnded")); //$NON-NLS-1$
+      System.out.println("Running = "+job.isActive());
     }
     setControlStates();
   }
 
   public synchronized void stopJob() {
     try {
-      if (job != null && running && job.isInitialized()) {
+      if (job != null && job.isActive() && job.isInitialized()) {
         job.stopAll();
         job.endProcessing("stop", new Result()); //$NON-NLS-1$
         job.waitUntilFinished(5000); // wait until everything is stopped, maximum 5 seconds...
-        job = null;
-        running = false;
-        log.logMinimal(Spoon.APP_NAME, BaseMessages.getString(PKG, "JobLog.Log.JobWasStopped")); //$NON-NLS-1$
+        
+        log.logMinimal(BaseMessages.getString(PKG, "JobLog.Log.JobWasStopped")); //$NON-NLS-1$
       }
     } catch (KettleJobException je) {
       MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
@@ -2885,6 +2880,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
       public void run() {
         // Start/Run button...
         //
+    	boolean running = job!=null && job.isActive();
         XulToolbarButton runButton = toolbar.getButtonById("job-run");
         if (runButton != null) {
           runButton.setEnable(!running);
@@ -2943,4 +2939,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
   public void addRefreshListener(RefreshListener refreshListener) {
     refreshListeners.add(refreshListener);
   }
+
+	public HasLogChannelInterface getLogChannelProvider() {
+		return job;
+	}
 }

@@ -22,6 +22,8 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -48,6 +50,8 @@ public class BaseStepMeta implements Cloneable
     
     /** The repository that is being used for this step */
     protected Repository repository;
+    
+    protected StepMeta parentStepMeta;
 
 	public BaseStepMeta()
 	{
@@ -337,4 +341,45 @@ public class BaseStepMeta implements Cloneable
     	className += "Dialog";
     	return className;
     }
+
+    public StepMeta getParentStepMeta() {
+		return parentStepMeta;
+	}
+    
+    public void setParentStepMeta(StepMeta parentStepMeta) {
+		this.parentStepMeta = parentStepMeta;
+	}
+
+    
+    // TODO find a way to factor out these methods...
+    //
+    
+    protected LogChannelInterface log;
+    
+    // Late init to prevent us from logging blank step names, etc.
+    public LogChannelInterface getLog() {
+    	if (log==null) {
+    		log = new LogChannel(this);
+    	}
+    	return log;
+    }
+    
+    public boolean isBasic() { return log.isBasic(); }
+    public boolean isDetailed() { return log.isDetailed(); }
+    public boolean isDebug() { return log.isDebug(); }
+    public boolean isRowLevel() { return log.isRowLevel(); }
+    public void logMinimal(String message) { log.logMinimal(message); }
+    public void logMinimal(String message, Object...arguments) { log.logMinimal(message, arguments); }
+    public void logBasic(String message) { log.logBasic(message); }
+    public void logBasic(String message, Object...arguments) { log.logBasic(message, arguments); }
+    public void logDetailed(String message) { log.logDetailed(message); }
+    public void logDetailed(String message, Object...arguments) { log.logDetailed(message, arguments); }
+    public void logDebug(String message) { log.logDebug(message); }
+    public void logDebug(String message, Object...arguments) { log.logDebug(message, arguments); }
+    public void logRowlevel(String message) { log.logRowlevel(message); }
+    public void logRowlevel(String message, Object...arguments) { log.logRowlevel(message, arguments); }
+    public void logError(String message) { log.logError(message); } 
+    public void logError(String message, Throwable e) { log.logError(message, e); }
+    public void logError(String message, Object...arguments) { log.logError(message, arguments); }
+    
 }

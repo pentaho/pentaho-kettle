@@ -36,16 +36,14 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 
@@ -195,9 +193,8 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
     {
     	this.includeSubfolders=includeSubfolders;
     }
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
-		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 		result.setResult( false );
 		result.setNrErrors(1);
@@ -232,16 +229,16 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 					else
 					{
 						// Not a folder, fail
-						log.logError("Found files", "[" + realFoldername+"] is not a folder, failing.");
+						log.logError("[" + realFoldername+"] is not a folder, failing.");
 					}	
 				}
 				else
 				{
 					//  No Folder found	
-					if(log.isBasic()) log.logBasic(toString(), "we can not find ["+realFoldername+"] !");
+					if(log.isBasic()) logBasic("we can not find ["+realFoldername+"] !");
 				}
 			} catch (IOException e) {
-				log.logError(toString(), "Could not create Folder ["+realFoldername+"], exception: " + e.getMessage());
+				logError("Could not create Folder ["+realFoldername+"], exception: " + e.getMessage());
 				result.setResult( false );
 				result.setNrErrors(1);					
 			}
@@ -257,7 +254,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 		}
 		else
 		{			
-			log.logError(toString(), "No Foldername is defined.");
+			logError("No Foldername is defined.");
 		}
 		
 		return result;
@@ -265,7 +262,6 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 	
 	private class TextFileSelector implements FileSelector 
 	{
-		LogWriter log = LogWriter.getInstance();
 		String root_folder=null;
 		
 		public TextFileSelector(String rootfolder) 
@@ -293,7 +289,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 							// We are in the Base folder
 							if((isSpecifyWildcard() && GetFileWildcard(info.getFile().getName().getBaseName())) || !isSpecifyWildcard())
 							{
-								if(log.isDetailed()) log.logDetailed("Found files", "We found file : " + info.getFile().toString());
+								if(log.isDetailed()) log.logDetailed("We found file : " + info.getFile().toString());
 								filescount++; 
 							}
 						 }
@@ -305,7 +301,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 							{
 								if((isSpecifyWildcard() && GetFileWildcard(info.getFile().getName().getBaseName())) || !isSpecifyWildcard())
 								{
-									if(log.isDetailed()) log.logDetailed("Found files", "We found file : " + info.getFile().toString());
+									if(log.isDetailed()) log.logDetailed("We found file : " + info.getFile().toString());
 									filescount++; 
 								}
 							}

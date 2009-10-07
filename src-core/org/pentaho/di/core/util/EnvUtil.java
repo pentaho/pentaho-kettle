@@ -22,23 +22,22 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.version.BuildVersion;
 
 public class EnvUtil
 {
-	private static LogWriter log = LogWriter.getInstance();
 	private static Properties env = null;
 
 	/**
-	 * Returns the properties from the users ketle home directory.
+	 * Returns the properties from the users kettle home directory.
 	 * 
 	 * @param fileName
 	 *            the relative name of the properties file in the users kettle
 	 *            directory.
 	 * @return the map of properties.
 	 */
-	public static Properties readProperties(String fileName)
+	public static Properties readProperties(String fileName) throws KettleException
 	{
 		Properties props = new Properties();
 		String kettlePropsFilename = Const.getKettleDirectory() + Const.FILE_SEPARATOR + fileName;
@@ -50,8 +49,7 @@ public class EnvUtil
 		}
 		catch (IOException ioe)
 		{
-			log.logDetailed("Kettle Environment", "Unable to read file '"+kettlePropsFilename+"' : "+ioe.toString());
-			log.logDetailed("Kettle Environment", Const.getStackTracker(ioe));
+			throw new KettleException("Unable to read file '"+kettlePropsFilename+"'", ioe);
 		}
 		finally
 		{
@@ -70,9 +68,10 @@ public class EnvUtil
 
 	/**
 	 * Adds the kettle properties the the global system properties.
+	 * @throws KettleException in case the properties file can't be read.
 	 */
 	@SuppressWarnings({"unchecked"})
-    public static void environmentInit()
+    public static void environmentInit() throws KettleException
 	{
         // Workaround for a Mac OS/X Leopard issue where getContextClassLoader() is returning 
         // null when run from the eclipse IDE

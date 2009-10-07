@@ -365,7 +365,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                    	logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -444,7 +444,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), BaseMessages.getString(PKG, "DatabaseJoinDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		logDebug(BaseMessages.getString(PKG, "DatabaseJoinDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		wSQL.setText( Const.NVL(input.getSql(), ""));
 		wLimit.setText(""+input.getRowLimit()); //$NON-NLS-1$
@@ -489,7 +489,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		
 		input.setOuterJoin( wOuter.getSelection() );
 		input.setVariableReplace(wuseVars.getSelection() );
-		log.logDebug(toString(), BaseMessages.getString(PKG, "DatabaseJoinDialog.Log.ParametersFound")+nrparam+" parameters"); //$NON-NLS-1$ //$NON-NLS-2$
+		logDebug(BaseMessages.getString(PKG, "DatabaseJoinDialog.Log.ParametersFound")+nrparam+" parameters"); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrparam;i++)
 		{
 			TableItem item = wParam.getNonEmpty(i);

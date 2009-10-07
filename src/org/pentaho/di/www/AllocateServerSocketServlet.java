@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,7 +31,7 @@ import org.pentaho.di.core.xml.XMLHandler;
  * @author matt
  *
  */
-public class AllocateServerSocketServlet extends HttpServlet
+public class AllocateServerSocketServlet extends BaseHttpServlet implements CarteServletInterface
 {
     private static final long serialVersionUID = 3634806745372015720L;
     
@@ -67,7 +66,7 @@ public class AllocateServerSocketServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), "Reservation of port number of step requested");
+        if (log.isDebug()) logDebug("Reservation of port number of step requested");
         response.setStatus(HttpServletResponse.SC_OK);
         
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -126,4 +125,8 @@ public class AllocateServerSocketServlet extends HttpServlet
     {
         return "Servet socket port number reservation request";
     }
+
+	public String getService() {
+		return CONTEXT_PATH+" ("+toString()+")";
+	}
 }

@@ -831,7 +831,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(),BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                    	logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -1050,7 +1050,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 			DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
 			if (databaseMeta!=null)
 			{
-				Database database = new Database(databaseMeta);
+				Database database = new Database(this, databaseMeta);
 				try
 				{
 					database.connect();
@@ -1103,7 +1103,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(ci);
+						Database db = new Database(this, ci);
 						try {
 							db.connect();
 
@@ -1347,7 +1347,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		{
 			DatabaseMeta inf = transMeta.getDatabase(connr);
 						
-			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "TableOutputDialog.Log.LookingAtConnection", inf.toString()));
+			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "TableOutputDialog.Log.LookingAtConnection", inf.toString()));
 		
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());

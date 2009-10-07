@@ -86,12 +86,12 @@ public class Janino extends BaseStep implements StepInterface
             }
         }
 
-        if (log.isRowLevel()) log.logRowlevel(toString(), "Read row #"+getLinesRead()+" : "+r);
+        if (log.isRowLevel()) logRowlevel("Read row #"+getLinesRead()+" : "+getInputRowMeta().getString(r));
 
         Object[] outputRowData = calcFields(getInputRowMeta(), r);		
 		putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
 
-        if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+getLinesWritten()+" : "+r);        
+        if (log.isRowLevel()) logRowlevel("Wrote row #"+getLinesWritten()+" : "+data.outputRowMeta.getString(outputRowData));        
         if (checkFeedback(getLinesRead())) logBasic("Linenr "+getLinesRead());
 
 		return true;

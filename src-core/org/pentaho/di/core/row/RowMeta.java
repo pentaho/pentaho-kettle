@@ -29,6 +29,7 @@ import org.pentaho.di.compatibility.Row;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleEOFException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -881,7 +882,7 @@ public class RowMeta implements RowMetaInterface
 	 * @param node the XML node to deserialize from
 	 * @throws IOException Thrown in case there is an (Base64/GZip) decoding problem
 	 */
-    public RowMeta(Node node) throws IOException {
+    public RowMeta(Node node) throws KettleException {
     	this();
     	
 		int nrValues = XMLHandler.countNodes(node, ValueMeta.XML_META_TAG); 
@@ -918,7 +919,7 @@ public class RowMeta implements RowMetaInterface
 	 * @throws IOException Thrown in case there is an (Base64/GZip) decoding problem
 	 * @return a row of data, converted from XML
 	 */
-	public Object[] getRow(Node node) throws IOException 
+	public Object[] getRow(Node node) throws KettleException 
 	{
 		Object[] rowData = RowDataUtil.allocateRowData(size());
 

@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -59,7 +59,7 @@ public class SlaveServerStatus
         this.jobStatusList = jobStatusList;
     }
 
-    public String getXML()
+    public String getXML() throws KettleException
     {
         StringBuffer xml = new StringBuffer();
 
@@ -87,7 +87,7 @@ public class SlaveServerStatus
         return xml.toString();
     }
 
-    public SlaveServerStatus(Node statusNode)
+    public SlaveServerStatus(Node statusNode) throws KettleException
     {
         this();
         statusDescription = XMLHandler.getTagValue(statusNode, "statusdesc");
@@ -110,7 +110,7 @@ public class SlaveServerStatus
         }
     }
     
-    public static SlaveServerStatus fromXML(String xml) throws KettleXMLException
+    public static SlaveServerStatus fromXML(String xml) throws KettleException
     {
         Document document = XMLHandler.loadXMLString(xml);
         return new SlaveServerStatus(XMLHandler.getSubNode(document, XML_TAG));

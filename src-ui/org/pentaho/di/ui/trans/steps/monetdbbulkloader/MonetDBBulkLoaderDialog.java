@@ -427,7 +427,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(),BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                        logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -562,7 +562,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(ci);
+						Database db = new Database(this, ci);
 						try {
 							db.connect();
 
@@ -598,7 +598,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		wBufferSize.setText("" + input.getBufferSize());   //$NON-NLS-1$
 
@@ -665,7 +665,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 		inf.setBufferSize( wBufferSize.getText() );
 
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrfields; i++)
 		{
 			TableItem item = wReturn.getNonEmpty(i);
@@ -712,7 +712,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 		if (inf != null)
 		{
-			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
+			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
 
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());

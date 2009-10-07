@@ -28,15 +28,14 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 /**
@@ -120,7 +119,6 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
    * @return The boolean result of the evaluation script.
    */
   public boolean evaluate(Result result, Job parentJob, Result prev_result) {
-    LogWriter log = LogWriter.getInstance();
     Context cx;
     Scriptable scope;
 
@@ -170,12 +168,12 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
         return retval;
       } catch (Exception e) {
         result.setNrErrors(1);
-        log.logError(toString(), BaseMessages.getString(PKG, "JobEntryEval.CouldNotCompile", e.toString())); //$NON-NLS-1$
+        logError(BaseMessages.getString(PKG, "JobEntryEval.CouldNotCompile", e.toString())); //$NON-NLS-1$
         return false;
       }
     } catch (Exception e) {
       result.setNrErrors(1);
-      log.logError(toString(), BaseMessages.getString(PKG, "JobEntryEval.ErrorEvaluating", e.toString())); //$NON-NLS-1$
+      logError(BaseMessages.getString(PKG, "JobEntryEval.ErrorEvaluating", e.toString())); //$NON-NLS-1$
       return false;
     } finally {
       Context.exit();
@@ -188,7 +186,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
    * @param prev_result The result of the previous execution
    * @return The Result of the execution.
    */
-  public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) {
+  public Result execute(Result prev_result, int nr) {
     prev_result.setResult(evaluate(prev_result, parentJob, prev_result));
 
     return prev_result;

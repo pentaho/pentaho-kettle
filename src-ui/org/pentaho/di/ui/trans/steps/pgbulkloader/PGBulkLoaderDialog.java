@@ -438,7 +438,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(),BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                        logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -549,7 +549,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), BaseMessages.getString(PKG, "PGBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		logDebug(BaseMessages.getString(PKG, "PGBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		if (input.getFieldTable() != null)
 			for (i = 0; i < input.getFieldTable().length; i++)
@@ -610,7 +610,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		}
 		else
 		{
-			log.logDebug(toString(), "Internal error: load_action set to default 'insert'"); //$NON-NLS-1$
+			logDebug("Internal error: load_action set to default 'insert'"); //$NON-NLS-1$
     		wLoadAction.select(0);
 		}
 		
@@ -754,7 +754,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
 		inf.setDbNameOverride(wDbNameOverride.getText());
 
-		log.logDebug(toString(), BaseMessages.getString(PKG, "PGBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
+		logDebug(BaseMessages.getString(PKG, "PGBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrfields; i++)
 		{
 			TableItem item = wReturn.getNonEmpty(i);
@@ -791,7 +791,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		}
 		else
 		{
-			log.logDebug(toString(), "Internal error: load_action set to default 'insert', value found '" + action + "'."); //$NON-NLS-1$
+			logDebug("Internal error: load_action set to default 'insert', value found '" + action + "'."); //$NON-NLS-1$
 			inf.setLoadAction(PGBulkLoaderMeta.ACTION_INSERT);
 		}
 
@@ -826,7 +826,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
 		if (inf != null)
 		{
-			log.logDebug(toString(), BaseMessages.getString(PKG, "PGBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
+			logDebug(BaseMessages.getString(PKG, "PGBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
 
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
             std.setSelectedSchema(wSchema.getText());
@@ -936,7 +936,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(ci);
+						Database db = new Database(this, ci);
 						try {
 							db.connect();
 

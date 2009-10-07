@@ -966,7 +966,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wIgnoreEntities.setSelection(in.isIgnoreEntities());
 		wNamespaceAware.setSelection(in.isNamespaceAware());
 
-		log.logDebug(toString(), BaseMessages.getString(PKG, "XMLInputDialog.Log.GettingFieldsInfo"));
+		logDebug(BaseMessages.getString(PKG, "XMLInputDialog.Log.GettingFieldsInfo"));
 		for (int i = 0; i < in.getInputFields().length; i++)
 		{
 			XMLInputField field = in.getInputFields()[i];

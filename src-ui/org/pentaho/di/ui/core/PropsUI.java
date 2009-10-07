@@ -64,7 +64,7 @@ public class PropsUI extends Props
 	protected List<LastUsedFile> lastUsedFiles;
 	protected List<LastUsedFile> openTabFiles;
 
-  protected String overriddenFileName;
+    protected String overriddenFileName;
   
 	private Hashtable<String,WindowProperty> screens;
 	
@@ -153,6 +153,7 @@ public class PropsUI extends Props
     }
     
 	protected synchronized void init() {
+		super.createLogChannel();
 		properties = new Properties();
         pluginHistory = new ArrayList<ObjectUsageCount>();
 

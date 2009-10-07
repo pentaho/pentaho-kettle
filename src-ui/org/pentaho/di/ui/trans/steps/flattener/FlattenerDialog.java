@@ -244,7 +244,7 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "FlattenerDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "FlattenerDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
         if (input.getFieldName()!= null) wField.setText(input.getFieldName());
 

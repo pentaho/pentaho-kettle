@@ -26,8 +26,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.Log4jStringAppender;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -125,14 +124,8 @@ public class TransPreviewProgressDialog
     
     private void doPreview(final IProgressMonitor progressMonitor)
     {
-        LogWriter log = LogWriter.getInstance();
-        
         progressMonitor.beginTask(BaseMessages.getString(PKG, "TransPreviewProgressDialog.Monitor.BeginTask.Title"), 100); //$NON-NLS-1$
-        
-        // Log preview activity to a String:
-        Log4jStringAppender stringAppender = LogWriter.createStringAppender();
-        log.addAppender(stringAppender);
-        
+                
         // This transformation is ready to run in preview!
         trans = new Trans(transMeta);
         
@@ -230,9 +223,8 @@ public class TransPreviewProgressDialog
         
         trans.stopAll();
         
-        // Log preview activity to a String:
-        log.removeAppender(stringAppender);
-        loggingText = stringAppender.getBuffer().toString();
+        // Capture preview activity to a String:
+        loggingText = CentralLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), true).toString();
         
         progressMonitor.done();
     }

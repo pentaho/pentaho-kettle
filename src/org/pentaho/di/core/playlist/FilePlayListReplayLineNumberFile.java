@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 class FilePlayListReplayLineNumberFile extends FilePlayListReplayFile
@@ -63,7 +62,7 @@ class FilePlayListReplayLineNumberFile extends FilePlayListReplayFile
             }
             catch (IOException e)
             {
-                LogWriter.getInstance().logBasic("TextFilePlayLineNumber", "Could not close line number file " + lineNumberFile.getName().getURI());
+                throw new KettleException("Could not close line number file " + lineNumberFile.getName().getURI(), e);
             }
         }
     }

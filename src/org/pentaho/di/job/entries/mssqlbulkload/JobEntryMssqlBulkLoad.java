@@ -42,7 +42,6 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -368,7 +367,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		return false;
 	}
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
 		String TakeFirstNbrLines="";
 		String LineTerminatedby="";
@@ -412,16 +411,16 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 				if (file.exists() && file.canRead())
 				{
 					// User has specified an existing file, We can continue ...
-					if (log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMssqlBulkLoad.FileExists.Label",realFilename));
+					if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobMssqlBulkLoad.FileExists.Label",realFilename));
 	
 					if (connection!=null)
 					{
 						// User has specified a connection, We can continue ...
-						Database db = new Database(connection);
+						Database db = new Database(this, connection);
 						
 						if(db.getDatabaseMeta().getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_MSSQL)
 						{
-							log.logError(toString(),BaseMessages.getString(PKG, "JobMssqlBulkLoad.Error.DbNotMSSQL",connection.getDatabaseName()));
+							logError(BaseMessages.getString(PKG, "JobMssqlBulkLoad.Error.DbNotMSSQL",connection.getDatabaseName()));
 							return result;
 						}
 						db.shareVariablesWith(this);
@@ -437,7 +436,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 							{
 								// The table existe, We can continue ...
 								if(log.isDetailed())	
-									log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMssqlBulkLoad.TableExists.Label",realTablename));
+									logDetailed(BaseMessages.getString(PKG, "JobMssqlBulkLoad.TableExists.Label",realTablename));
 	
 								// Add schemaname (Most the time Schemaname.Tablename)
 								if (schemaname !=null)	realTablename= realSchemaname + "." + realTablename;
@@ -446,7 +445,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								String Fieldterminator=getRealFieldTerminator();
 								if(Const.isEmpty(Fieldterminator) && (datafiletype.equals("char")||datafiletype.equals("widechar")))
 								{
-									log.logError(toString(), BaseMessages.getString(PKG, "JobMssqlBulkLoad.Error.FieldTerminatorMissing"));
+									logError(BaseMessages.getString(PKG, "JobMssqlBulkLoad.Error.FieldTerminatorMissing"));
 									return result;
 								}
 								else
@@ -462,7 +461,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								{
 									if(specificcodepage.length()<0)
 									{
-										log.logError(toString(), BaseMessages.getString(PKG, "JobMssqlBulkLoad.Error.SpecificCodePageMissing"));
+										logError(BaseMessages.getString(PKG, "JobMssqlBulkLoad.Error.SpecificCodePageMissing"));
 										return result;
 					
 									}else
@@ -479,7 +478,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 									if(errorfile.exists() && !adddatetime)
 									{
 										// The error file is created when the command is executed. An error occurs if the file already exists.
-										log.logError(toString(), BaseMessages.getString(PKG, "JobMssqlBulkLoad.Error.ErrorFileExists"));
+										logError(BaseMessages.getString(PKG, "JobMssqlBulkLoad.Error.ErrorFileExists"));
 										return result;
 									}
 									if(adddatetime)
@@ -555,11 +554,11 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								catch(KettleDatabaseException je)
 								{
 									result.setNrErrors(1);
-									log.logError(toString(), "An error occurred executing this job entry : "+je.getMessage());
+									logError("An error occurred executing this job entry : "+je.getMessage());
 								}
 								catch (IOException e)
 								{
-					       			log.logError(toString(), "An error occurred executing this job entry : " + e.getMessage());
+					       			logError("An error occurred executing this job entry : " + e.getMessage());
 									result.setNrErrors(1);
 								}
 								finally
@@ -577,35 +576,35 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								db.disconnect();
 								result.setNrErrors(1);
 								if(log.isDetailed())	
-									log.logDetailed(toString(), BaseMessages.getString(PKG, "JobMssqlBulkLoad.Error.TableNotExists",realTablename));
+									logDetailed(BaseMessages.getString(PKG, "JobMssqlBulkLoad.Error.TableNotExists",realTablename));
 							}
 						}
 						catch(KettleDatabaseException dbe)
 						{
 							db.disconnect();
 							result.setNrErrors(1);
-							log.logError(toString(), "An error occurred executing this entry: "+dbe.getMessage());
+							logError("An error occurred executing this entry: "+dbe.getMessage());
 						}
 					}
 					else
 					{
 						// No database connection is defined
 						result.setNrErrors(1);
-						log.logError(toString(),  BaseMessages.getString(PKG, "JobMssqlBulkLoad.Nodatabase.Label"));
+						logError( BaseMessages.getString(PKG, "JobMssqlBulkLoad.Nodatabase.Label"));
 					}
 				}
 				else
 				{
 					// the file doesn't exist
 					result.setNrErrors(1);
-					log.logError(toString(),BaseMessages.getString(PKG, "JobMssqlBulkLoad.Error.FileNotExists",realFilename));
+					logError(BaseMessages.getString(PKG, "JobMssqlBulkLoad.Error.FileNotExists",realFilename));
 				}
 			}
 			catch(Exception e)
 			{
 				// An unexpected error occurred
 				result.setNrErrors(1);
-				log.logError(toString(), BaseMessages.getString(PKG, "JobMssqlBulkLoad.UnexpectedError.Label"), e);
+				logError(BaseMessages.getString(PKG, "JobMssqlBulkLoad.UnexpectedError.Label"), e);
 			}finally{
 				try{
 				if(fileObject!=null) fileObject.close();
@@ -616,7 +615,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		{
 			// No file was specified
 			result.setNrErrors(1);
-			log.logError(toString(), BaseMessages.getString(PKG, "JobMssqlBulkLoad.Nofilename.Label"));
+			logError(BaseMessages.getString(PKG, "JobMssqlBulkLoad.Nofilename.Label"));
 		}
 		return result;
 	}

@@ -146,7 +146,7 @@ public class XMLInputSax extends BaseStep implements StepInterface
 			data.filenr++;
 
 			// Open the XML document
-			data.document = new XMLInputSaxDataRetriever(data.filename, meta, data);
+			data.document = new XMLInputSaxDataRetriever(log, data.filename, meta, data);
 			data.document.runExample();
 
 		} catch (Exception e)

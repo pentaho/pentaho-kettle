@@ -27,6 +27,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -48,6 +50,8 @@ import org.w3c.dom.Document;
 public class Pan
 {
 	private static Class<?> PKG = Pan.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+	private static final String	STRING_PAN	= "Pan";
 
 	public static void main(String[] a) throws KettleException
 	{
@@ -100,14 +104,15 @@ public class Pan
 			exitJVM(9);
 		}
 
-        LogWriter log;
-        LogWriter.setConsoleAppenderDebug();
-        // start with the default logger until we find out otherwise
-        log=LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
+		// start with the default logger until we find out otherwise
+		LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
+		LogWriter.setConsoleAppenderDebug();
 
-		// Parse the options...
+		LogChannelInterface log = new LogChannel(STRING_PAN);
+        
+        // Parse the options...
 		if( !CommandLineOption.parseArguments(args, options, log) ) {
-            log.logError("Pan",  BaseMessages.getString(PKG, "Pan.Error.CommandLineError"));
+            log.logError(STRING_PAN,  BaseMessages.getString(PKG, "Pan.Error.CommandLineError"));
            
             exitJVM(8);
 		}
@@ -130,20 +135,20 @@ public class Pan
         
         if (!Const.isEmpty(optionLogfile))
         {
-            log=LogWriter.getInstance( optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC );
+            LogWriter.getInstance( optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC );
         }
         
         if (!Const.isEmpty(optionLoglevel)) 
         {
-            log.setLogLevel(optionLoglevel.toString());
-            log.logMinimal("Pan",  BaseMessages.getString(PKG, "Pan.Log.Loglevel",log.getLogLevelLongDesc()));
+        	LogWriter.getInstance().setLogLevel(optionLoglevel.toString());
+            log.logMinimal(STRING_PAN,  BaseMessages.getString(PKG, "Pan.Log.Loglevel", LogWriter.getInstance().getLogLevelLongDesc()));
            
         }
         
         if (!Const.isEmpty(optionVersion))
         {
             BuildVersion buildVersion = BuildVersion.getInstance();
-            if(log.isBasic()) log.logBasic("Pan", BaseMessages.getString(PKG, "Pan.Log.KettleVersion", buildVersion.getVersion(), buildVersion.getRevision(), buildVersion.getBuildDate()));
+            if(log.isBasic()) log.logBasic(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.KettleVersion", buildVersion.getVersion(), buildVersion.getRevision(), buildVersion.getBuildDate()));
             
             if (a.length==1) exitJVM(6);
         }
@@ -165,7 +170,7 @@ public class Pan
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        log.logMinimal("Pan", BaseMessages.getString(PKG, "Pan.Log.StartingToRun"));       
+        log.logMinimal(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.StartingToRun"));       
 		
 		Date start, stop;
 		Calendar cal;
@@ -173,7 +178,7 @@ public class Pan
 		cal=Calendar.getInstance();
 		start=cal.getTime();
 
-		if(log.isDebug()) log.logDebug("Pan",BaseMessages.getString(PKG, "Pan.Log.AllocatteNewTrans"));
+		if(log.isDebug()) log.logDebug(STRING_PAN,BaseMessages.getString(PKG, "Pan.Log.AllocatteNewTrans"));
 		
 		TransMeta transMeta = new TransMeta();
 
@@ -181,16 +186,16 @@ public class Pan
 		Repository rep=null;
 		try
 		{
-			if(log.isDebug()) log.logDebug("Pan",BaseMessages.getString(PKG, "Pan.Log.StartingToLookOptions"));
+			if(log.isDebug()) log.logDebug(STRING_PAN,BaseMessages.getString(PKG, "Pan.Log.StartingToLookOptions"));
 			
 			// Read kettle transformation specified on command-line?
 			if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename) || !Const.isEmpty(optionJarFilename))
 			{			
-				if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.ParsingCommandline"));
+				if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.ParsingCommandline"));
 				
 				if (!Const.isEmpty(optionRepname) && !"Y".equalsIgnoreCase(optionNorep.toString()))
 				{
-					if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.LoadingAvailableRep"));
+					if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.LoadingAvailableRep"));
 					
 					RepositoriesMeta repsinfo = new RepositoriesMeta();
 					
@@ -199,13 +204,13 @@ public class Pan
 						throw new KettleException(BaseMessages.getString(PKG, "Pan.Error.NoRepsDefined"), e);
 					}
 					
-					if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.FindingRep",""+optionRepname));
+					if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.FindingRep",""+optionRepname));
 					
 					repinfo = repsinfo.findRepository(optionRepname.toString());
 					if (repinfo!=null)
 					{
 						// Define and connect to the repository...
-						if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.Allocate&ConnectRep"));
+						if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.Allocate&ConnectRep"));
 						
 						rep = RepositoryLoader.createRepository(repinfo, userinfo);
 						rep.connect();
@@ -221,7 +226,7 @@ public class Pan
 						if (directory!=null)
 						{
 							// Check username, password
-							if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.CheckSuppliedUserPass"));
+							if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.CheckSuppliedUserPass"));
 							
 							userinfo = rep.getSecurityProvider().loadUserInfo(optionUsername.toString(), optionPassword.toString());
 							if (!rep.getSecurityProvider().supportsUsers() || userinfo.getObjectId()!=null)
@@ -229,10 +234,10 @@ public class Pan
 								// Load a transformation
 								if (!Const.isEmpty(optionTransname))
 								{
-									if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.LoadTransInfo"));
+									if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.LoadTransInfo"));
 									
 									transMeta = rep.loadTransformation(optionTransname.toString(), directory, null, true, null); // reads last version
-									if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.AllocateTrans"));
+									if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.AllocateTrans"));
 									
 									trans = new Trans(transMeta);
 									trans.setRepository(rep);
@@ -241,7 +246,7 @@ public class Pan
 								// List the transformations in the repository
 								if ("Y".equalsIgnoreCase(optionListtrans.toString()))
 								{
-									if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.GettingListTransDirectory",""+directory));
+									if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.GettingListTransDirectory",""+directory));
 									
 									String transnames[] = rep.getTransformationNames(directory.getObjectId(), false);
 									for (int i=0;i<transnames.length;i++)
@@ -298,7 +303,7 @@ public class Pan
                 //
 				if (trans==null && !Const.isEmpty(optionFilename))
 				{
-					if(log.isDetailed()) log.logDetailed("Pan", BaseMessages.getString(PKG, "Pan.Log.LoadingTransXML",""+optionFilename));
+					if(log.isDetailed()) log.logDetailed(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.LoadingTransXML",""+optionFilename));
 					
 					transMeta = new TransMeta(optionFilename.toString());
 					trans = new Trans(transMeta);
@@ -310,7 +315,7 @@ public class Pan
                 {
                     try
                     {
-                    	if(log.isDetailed())  log.logDetailed("Pan", BaseMessages.getString(PKG, "Pan.Log.LoadingTransJar",""+optionJarFilename));
+                    	if(log.isDetailed())  log.logDetailed(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.LoadingTransJar",""+optionJarFilename));
                     	
                     	InputStream inputStream = Pan.class.getResourceAsStream(optionJarFilename.toString());
                         StringBuffer xml = new StringBuffer();
@@ -333,7 +338,7 @@ public class Pan
 			
 			if ("Y".equalsIgnoreCase(optionListrep.toString()))
 			{
-				if(log.isDebug()) log.logDebug("Pan", BaseMessages.getString(PKG, "Pan.Log.GettingListReps"));
+				if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.GettingListReps"));
 				
 				RepositoriesMeta ri = new RepositoriesMeta();
 				try { ri.readData(); }
@@ -440,7 +445,7 @@ public class Pan
 			trans.waitUntilFinished();
 			trans.endProcessing(Database.LOG_STATUS_END);
 
-			log.logMinimal("Pan", BaseMessages.getString(PKG, "Pan.Log.Finished"));
+			log.logMinimal(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.Finished"));
 			 
 			
 			cal=Calendar.getInstance();
@@ -448,17 +453,17 @@ public class Pan
 			String begin=df.format(start).toString();
 			String end  =df.format(stop).toString();
 
-			log.logMinimal("Pan", BaseMessages.getString(PKG, "Pan.Log.StartStop",begin,end));
+			log.logMinimal(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.StartStop",begin,end));
 			
 			long millis=stop.getTime()-start.getTime();
 	        long seconds = millis / 1000;
 	        if (seconds <= 60) {
-	            log.logMinimal("Pan",  BaseMessages.getString(PKG, "Pan.Log.ProcessingEndAfter", String.valueOf(seconds)));
+	            log.logMinimal(STRING_PAN,  BaseMessages.getString(PKG, "Pan.Log.ProcessingEndAfter", String.valueOf(seconds)));
 	        }
 	        else if (seconds <= 60 * 60) {
 	            int min = (int)(seconds / 60);
 	            int rem = (int)(seconds % 60);
-	            log.logMinimal("Pan",  BaseMessages.getString(PKG, "Pan.Log.ProcessingEndAfterLong", String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+	            log.logMinimal(STRING_PAN,  BaseMessages.getString(PKG, "Pan.Log.ProcessingEndAfterLong", String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
 	        }
 	        else if (seconds <= 60 * 60 * 24) {
 	            int rem;
@@ -466,7 +471,7 @@ public class Pan
 	            rem = (int)(seconds % (60 * 60)); 
 	            int min = rem / 60;
 	            rem = rem % 60;
-	            log.logMinimal("Pan",  BaseMessages.getString(PKG, "Pan.Log.ProcessingEndAfterLonger", String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+	            log.logMinimal(STRING_PAN,  BaseMessages.getString(PKG, "Pan.Log.ProcessingEndAfterLonger", String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
 	        }
 	        else {
 	            int rem;
@@ -476,7 +481,7 @@ public class Pan
 	            rem = rem % (60 * 60); 
 	            int min = rem / 60;
 	            rem = rem % 60;
-	            log.logMinimal("Pan",  BaseMessages.getString(PKG, "Pan.Log.ProcessingEndAfterLongest", String.valueOf(days), String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+	            log.logMinimal(STRING_PAN,  BaseMessages.getString(PKG, "Pan.Log.ProcessingEndAfterLongest", String.valueOf(days), String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
 	        }
 			
 			if (trans.getResult().getNrErrors()==0) 
@@ -493,7 +498,7 @@ public class Pan
 		{
 			System.out.println(BaseMessages.getString(PKG, "Pan.Log.ErrorOccurred",""+ke.getMessage()));
 			
-            log.logError("Pan", BaseMessages.getString(PKG, "Pan.Log.UnexpectedErrorOccurred",""+ke.getMessage()));
+            log.logError(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.UnexpectedErrorOccurred",""+ke.getMessage()));
             
 			// Close the file appender if any...
 			//

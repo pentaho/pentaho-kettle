@@ -28,15 +28,13 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.steps.mailvalidator.MailValidation;
 import org.pentaho.di.trans.steps.mailvalidator.MailValidationResult;
 import org.w3c.dom.Node;
@@ -217,17 +215,16 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
 	 * @param previousResult The result of the previous execution
 	 * @return The Result of the execution.
 	 */
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr)
 	{
 		Result result = previousResult;
 		result.setNrErrors(1);
 		result.setResult(false);
-		LogWriter log = LogWriter.getInstance();
 		
 		String realEmailAddress=environmentSubstitute(emailAddress);
 		if(Const.isEmpty(realEmailAddress))
 		{
-			log.logError(toString(),BaseMessages.getString(PKG, "JobEntryMailValidator.Error.EmailEmpty"));
+			logError(BaseMessages.getString(PKG, "JobEntryMailValidator.Error.EmailEmpty"));
 			return result;
 		}
 		String realSender=environmentSubstitute(emailSender);
@@ -236,7 +233,7 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
 			// check sender
 			if(Const.isEmpty(realSender))
 			{
-				log.logError(toString(),BaseMessages.getString(PKG, "JobEntryMailValidator.Error.EmailSenderEmpty"));
+				logError(BaseMessages.getString(PKG, "JobEntryMailValidator.Error.EmailSenderEmpty"));
 				return result;
 			}
 		}
@@ -253,11 +250,10 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
         {
         	String email = mailsCheck[i];
         	if(log.isDetailed())
-        		log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryMailValidator.CheckingMail",email));
+        		logDetailed(BaseMessages.getString(PKG, "JobEntryMailValidator.CheckingMail",email));
     		
         	// Check if address is valid
-    		MailValidationResult resultValidator=MailValidation.isAddressValid(email,
-    				realSender,	realDefaultSMTP,timeOut,smtpCheck);
+    		MailValidationResult resultValidator=MailValidation.isAddressValid(log, email, realSender,	realDefaultSMTP,timeOut,smtpCheck);
     		
     		mailIsValid=resultValidator.isValide();
     		MailError=resultValidator.getErrorMessage();
@@ -265,11 +261,11 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
         	if(log.isDetailed())
         	{
         		if(mailIsValid)
-        			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryMailValidator.MailValid",email));
+        			logDetailed(BaseMessages.getString(PKG, "JobEntryMailValidator.MailValid",email));
         		else
         		{
-        			log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryMailValidator.MailNotValid",email));
-        			log.logDetailed(toString(), MailError);
+        			logDetailed(BaseMessages.getString(PKG, "JobEntryMailValidator.MailNotValid",email));
+        			logDetailed(MailError);
         		}
     		
         	}

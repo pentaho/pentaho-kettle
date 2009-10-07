@@ -154,7 +154,7 @@ public class MailValidator extends BaseStep implements StepInterface
 	    			data.realdefaultSMTPServer= data.previousRowMeta.getString(r,data.indexOfdefaultSMTPField);
 	    		
 	    		// Check if address is valid
-	    		MailValidationResult result=MailValidation.isAddressValid(emailaddress,data.realemailSender,	
+	    		MailValidationResult result=MailValidation.isAddressValid(log, emailaddress,data.realemailSender,	
 	    				data.realdefaultSMTPServer,data.timeout,meta.isSMTPCheck());
 	    		// return result
 	    		mailvalid=result.isValide();
@@ -181,7 +181,7 @@ public class MailValidator extends BaseStep implements StepInterface
 			
 			putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
 
-			if (log.isRowLevel()) log.logRowlevel(toString(), BaseMessages.getString(PKG, "MailValidator.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "MailValidator.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
     	}
 	    catch(Exception e)
 	    {
@@ -218,7 +218,7 @@ public class MailValidator extends BaseStep implements StepInterface
         {
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), BaseMessages.getString(PKG, "MailValidator.Error.ResultFieldMissing"));
+        		logError(BaseMessages.getString(PKG, "MailValidator.Error.ResultFieldMissing"));
         		return false;
         	}
             return true;

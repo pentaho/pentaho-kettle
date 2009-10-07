@@ -19,13 +19,13 @@ import java.net.URLEncoder;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.Log4jStringAppender;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -33,7 +33,7 @@ import org.pentaho.di.job.Job;
 
 
 
-public class GetJobStatusServlet extends HttpServlet
+public class GetJobStatusServlet extends BaseHttpServlet implements CarteServletInterface
 {
 	private static Class<?> PKG = GetJobStatusServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -57,11 +57,12 @@ public class GetJobStatusServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "GetJobStatusServlet.Log.JobStatusRequested"));
+        if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetJobStatusServlet.Log.JobStatusRequested"));
        
 
         String jobName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
+        int startLineNr = Const.toInt(request.getParameter("from"), 0);
 
         response.setStatus(HttpServletResponse.SC_OK);
 
@@ -81,6 +82,7 @@ public class GetJobStatusServlet extends HttpServlet
         if (job!=null)
         {
             String status = job.getStatus();
+            String logText = CentralLogStore.getAppender().getBuffer(job.getLogChannel().getLogChannelId(), true, startLineNr).toString();
     
             if (useXML)
             {
@@ -90,26 +92,27 @@ public class GetJobStatusServlet extends HttpServlet
                 
                 SlaveServerJobStatus jobStatus = new SlaveServerJobStatus(jobName, status);
     
-                Log4jStringAppender appender = (Log4jStringAppender) jobMap.getAppender(jobName);
-                if (appender!=null)
-                {
-                    // The log can be quite large at times, we are going to put a base64 encoding around a compressed stream
-                    // of bytes to handle this one.
-                    
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    GZIPOutputStream gzos = new GZIPOutputStream(baos);
-                    gzos.write( appender.getBuffer().toString().getBytes() );
-                    gzos.close();
-                    
-                    String loggingString = new String(Base64.encodeBase64(baos.toByteArray()));
-                    jobStatus.setLoggingString( loggingString );
-                }
+
+                // The log can be quite large at times, we are going to put a base64 encoding around a compressed stream
+                // of bytes to handle this one.
+                
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                GZIPOutputStream gzos = new GZIPOutputStream(baos);
+                gzos.write( logText.getBytes() );
+                gzos.close();
+                
+                String loggingString = new String(Base64.encodeBase64(baos.toByteArray()));
+                jobStatus.setLoggingString( loggingString );
                 
                 // Also set the result object...
                 //
                 jobStatus.setResult( job.getResult() ); // might be null
                 
-                out.println(jobStatus.getXML());
+                try {
+					out.println(jobStatus.getXML());
+				} catch (KettleException e) {
+					throw new ServletException("Unable to get the job status in XML format", e);
+				}
             }
             else
             {
@@ -157,22 +160,14 @@ public class GetJobStatusServlet extends HttpServlet
                     out.print("<p><a href=\"/kettle/jobStatus?name="+URLEncoder.encode(jobName, "UTF-8")+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.Refresh")+ "</a>");
                     
                     // Put the logging below that.
-                    Log4jStringAppender appender = (Log4jStringAppender) jobMap.getAppender(jobName);
-                    if (appender!=null)
-                    {
-                        out.println("<p>");
-                        /*
-                        out.println("<pre>");
-                        out.println(appender.getBuffer().toString());
-                        out.println("</pre>");
-                        */
-                        out.println("<textarea id=\"joblog\" cols=\"120\" rows=\"20\" wrap=\"off\" name=\"Job log\" readonly=\"readonly\">"+appender.getBuffer().toString()+"</textarea>");
-                        
-                        out.println("<script type=\"text/javascript\"> ");
-                        out.println("  joblog.scrollTop=joblog.scrollHeight; ");
-                        out.println("</script> ");
-                        out.println("<p>");
-                    }
+                
+                    out.println("<p>");
+                    out.println("<textarea id=\"joblog\" cols=\"120\" rows=\"20\" wrap=\"off\" name=\"Job log\" readonly=\"readonly\">"+logText+"</textarea>");
+                    
+                    out.println("<script type=\"text/javascript\"> ");
+                    out.println("  joblog.scrollTop=joblog.scrollHeight; ");
+                    out.println("</script> ");
+                    out.println("<p>");
                 }
                 catch (Exception ex)
                 {
@@ -205,4 +200,8 @@ public class GetJobStatusServlet extends HttpServlet
     {
         return "Job Status Handler";
     }
+
+	public String getService() {
+		return CONTEXT_PATH+" ("+toString()+")";
+	}
 }

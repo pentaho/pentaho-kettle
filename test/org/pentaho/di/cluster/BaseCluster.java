@@ -39,7 +39,7 @@ public class BaseCluster extends TestCase {
 		
 		return config;
 	}
-	
+
 	
 	
 	public TransMeta loadAndModifyTestTransformation(ClusterGenerator clusterGenerator, String filename) throws KettleException {
@@ -68,7 +68,6 @@ public class BaseCluster extends TestCase {
     	// Bootstrap the Kettle API...
     	//
     	KettleEnvironment.init();
-        
         LogWriter.getInstance( LogWriter.LOG_LEVEL_ERROR);
 	}
 
