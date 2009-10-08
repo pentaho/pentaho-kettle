@@ -44,8 +44,6 @@ public class TransLogDelegate extends SpoonDelegate {
 	private Composite transLogComposite;
 
 	private LogBrowser	logBrowser;
-
-	private XulToolbarButton	pauseContinueButton;
 	
 	/**
 	 * @param spoon
@@ -105,13 +103,6 @@ public class TransLogDelegate extends SpoonDelegate {
 
 		try {
 			toolbar = XulHelper.createToolbar(XUL_FILE_TRANS_LOG_TOOLBAR, transLogComposite, TransLogDelegate.this, new XulMessages());
-
-			// Selected images are not in the XUL standard, but we can add this...
-			//
-			pauseContinueButton = toolbar.getButtonById("show-inactive");
-			if (pauseContinueButton!=null) {
-				pauseContinueButton.setSelectedImage(GUIResource.getInstance().getImageContinue());
-			}
 
 			// Add a few default key listeners
 			//
@@ -268,14 +259,20 @@ public class TransLogDelegate extends SpoonDelegate {
 	}
 	
 	public void pauseLog() {
+		XulToolbarButton pauseContinueButton = toolbar.getButtonById("log-pause");
+
 		if (logBrowser.isPaused()) {
 			logBrowser.setPaused(false);
-			pauseContinueButton.setSelection(false);
-			pauseContinueButton.setImage(GUIResource.getInstance().getImageContinue());
+			if (pauseContinueButton!=null) { 
+				pauseContinueButton.setSelection(true);
+				pauseContinueButton.setImage(GUIResource.getInstance().getImageContinueLog());
+			}
 		} else {
 			logBrowser.setPaused(true);
-			pauseContinueButton.setSelection(true);
-			pauseContinueButton.setImage(GUIResource.getInstance().getImagePause());
+			if (pauseContinueButton!=null) { 
+				pauseContinueButton.setSelection(false);
+				pauseContinueButton.setImage(GUIResource.getInstance().getImagePauseLog());
+			}
 		}
 	}
 }

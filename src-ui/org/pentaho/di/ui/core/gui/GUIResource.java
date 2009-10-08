@@ -263,8 +263,8 @@ public class GUIResource
     private Image imageDelete;
     private Image imageShowDeleted;
 
-    private Image imagePause;
-    private Image imageContinue;
+    private Image imagePauseLog;
+    private Image imageContinueLog;
 
     private Image imageImport;
     private Image imageExport;
@@ -448,8 +448,8 @@ public class GUIResource
 		    imageEdit.dispose();
 		    imageDelete.dispose();
 		    imageShowDeleted.dispose();
-		    imagePause.dispose();
-		    imageContinue.dispose();
+		    imagePauseLog.dispose();
+		    imageContinueLog.dispose();
 		    imageLocked.dispose();
 		    imageImport.dispose();
 		    imageExport.dispose();
@@ -678,8 +678,8 @@ public class GUIResource
     imageDelete = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Delete_image")); // , "ui/images/generic-delete.png;
     imageShowDeleted = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowDeleted_image")); // , "ui/images/show-deleted.png;
 
-    imagePause= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Pause_image")); // , "ui/images/pause.png;
-    imageContinue = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Continue_image")); // , "ui/images/run.png;
+    imagePauseLog= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("PauseLog_image")); // , "ui/images/pause-log.png;
+    imageContinueLog = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ContinueLog_image")); // , "ui/images/continue-log.png;
     
     imageImport = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Import_image")); // , "ui/images/import.png;
     imageExport = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Export_image")); // , "ui/images/export.png;
@@ -1736,12 +1736,12 @@ public class GUIResource
 		return imageShowDeleted;
   }
 
-  public Image getImagePause() {
-		return imagePause;
+  public Image getImagePauseLog() {
+		return imagePauseLog;
   }
 
-  public Image getImageContinue() {
-		return imageContinue;
+  public Image getImageContinueLog() {
+		return imageContinueLog;
   }
 
   public Image getImageImport() {

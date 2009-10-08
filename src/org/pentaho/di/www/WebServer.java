@@ -57,6 +57,7 @@ public class WebServer
 
     public WebServer(LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port, boolean join) throws Exception
     {
+    	this.log = log;
         this.transformationMap = transformationMap;
         this.jobMap = jobMap;
         this.socketRepository = socketRepository;
