@@ -414,7 +414,7 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
 		DatabaseMeta databaseMeta = jobMeta.findDatabase(wConnection.getText());
 		if (databaseMeta!=null)
 		{
-			Database database = new Database(this, databaseMeta);
+			Database database = new Database(loggingObject, databaseMeta);
 			try
 			{
 				database.connect();

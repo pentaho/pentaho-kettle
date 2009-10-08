@@ -318,7 +318,7 @@ public class JavaScriptSpecialTest extends TestCase
                                                               "var str = string;\n" +
                                                               "var bool = LuhnCheck(str);") };
         svm.setJSScripts(js);
-        svm.setName(new String[] { "bool" });
+        svm.setFieldname(new String[] { "bool" });
         svm.setRename(new String[] { "" });
         svm.setType(new int[] { ValueMetaInterface.TYPE_BOOLEAN });
         svm.setLength(new int[] { -1 });
@@ -425,7 +425,7 @@ public class JavaScriptSpecialTest extends TestCase
         		                                              " 	trans_Status = SKIP_TRANSFORMATION;\n" +
         		                                              "}")};
         svm.setJSScripts(js);
-        svm.setName(new String[] {});
+        svm.setFieldname(new String[] {});
         svm.setRename(new String[] { });
         svm.setType(new int[] { });
         svm.setLength(new int[] { });
@@ -535,7 +535,7 @@ public class JavaScriptSpecialTest extends TestCase
         		                                              "var string2 = Packages.org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptTest.add1ToStringStatic(getInputRowMeta().getString(row, 2));\n" 
         		                                              )};
         svm.setJSScripts(js);
-        svm.setName(new String[] { "long1", "number1", "string1", "long2", "number2", "string2"});
+        svm.setFieldname(new String[] { "long1", "number1", "string1", "long2", "number2", "string2"});
         svm.setRename(new String[] { "long1", "number1", "string1", "long2", "number2", "string2" });
         svm.setType(new int[] { ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_NUMBER, ValueMeta.TYPE_STRING,
         		                ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_NUMBER, ValueMeta.TYPE_STRING,});

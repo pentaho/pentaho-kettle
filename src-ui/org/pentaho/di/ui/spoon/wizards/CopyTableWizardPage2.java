@@ -134,7 +134,7 @@ public class CopyTableWizardPage2 extends WizardPage
 		// Get some data...
 		CopyTableWizardPage1 page1 = (CopyTableWizardPage1)getPreviousPage();
 		
-		Database sourceDb = new Database(this, page1.getSourceDatabase());
+		Database sourceDb = new Database(CopyTableWizard.loggingObject, page1.getSourceDatabase());
 		try
 		{
 			sourceDb.connect();

@@ -18,6 +18,9 @@ import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 
 /**
  * This wizard helps you extract information from tables in one database and pump it into another.
@@ -28,6 +31,8 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class RipDatabaseWizard implements IWizard
 {
+    public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Rid database wizard", LoggingObjectType.SPOON, null);
+
 	public RipDatabaseWizard()
 	{
 		super();

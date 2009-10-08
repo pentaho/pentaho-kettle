@@ -27,6 +27,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.spoon.Spoon;
 
 
 /**
@@ -66,7 +67,7 @@ public class GetPreviewTableProgressDialog
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
-				db = new Database(this, dbMeta);
+				db = new Database(Spoon.loggingObject, dbMeta);
 				try 
 				{
 					db.connect();

@@ -11,11 +11,15 @@ public enum LoggingObjectType {
 	
 	// User Interface...
 	//
-	SPOON, STEPDIALOG,
+	SPOON, STEPDIALOG, JOBENTRYDIALOG,
 	
 	// Web server + HttpServlet...
 	//
 	CARTE, SERVLET,
+	
+	// Repository
+	//
+	REPOSITORY,
 	
 	// General
 	//

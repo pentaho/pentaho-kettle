@@ -482,7 +482,7 @@ public class JavaScriptStringTest extends TestCase
                                                               "var rtrimStr = 'b' + rtrim(string.getString()) + 'e';\n" +
                                                               "var trimStr  = 'b' + trim(string.getString()) + 'e';\n") };
         svm.setJSScripts(js);
-        svm.setName(new String[] { "original", "ltrimStr", "rtrimStr", "trimStr" });
+        svm.setFieldname(new String[] { "original", "ltrimStr", "rtrimStr", "trimStr" });
         svm.setRename(new String[] { "", "", "", "" });
         svm.setType(new int[] { ValueMetaInterface.TYPE_STRING,
         		                ValueMetaInterface.TYPE_STRING,
@@ -592,7 +592,7 @@ public class JavaScriptStringTest extends TestCase
         		                                              "var upperStr = upper(string);\n" +
         		                                              "var lowerStr = lower(string);\n") };
         svm.setJSScripts(js);
-        svm.setName(new String[] { "lpadded1", "lpadded2", "rpadded1", "rpadded2", "upperStr", "lowerStr" });
+        svm.setFieldname(new String[] { "lpadded1", "lpadded2", "rpadded1", "rpadded2", "upperStr", "lowerStr" });
         svm.setRename(new String[] { "", "", "", "", "", "", "" });
         svm.setType(new int[] { ValueMetaInterface.TYPE_STRING,
         		                ValueMetaInterface.TYPE_STRING,
@@ -680,7 +680,7 @@ public class JavaScriptStringTest extends TestCase
         		                                              "var bool1 = isNum(string.getString());\n" +
         		                                              "var str1  = num2str(numb1);\n") };
         svm.setJSScripts(js);
-        svm.setName(new String[] { "numb1", "bool1", "str1" });
+        svm.setFieldname(new String[] { "numb1", "bool1", "str1" });
         svm.setRename(new String[] { "", "", "" });
         svm.setType(new int[] { ValueMetaInterface.TYPE_NUMBER,
         		                ValueMetaInterface.TYPE_BOOLEAN,
@@ -730,7 +730,7 @@ public class JavaScriptStringTest extends TestCase
         		                                              "var index2 = indexOf(string.getString(), search.getString(), offset1.getInteger());\n" +
         		                                              "var index3 = indexOf(string.getString(), search.getString(), offset2.getInteger());\n") };
         svm.setJSScripts(js);
-        svm.setName(new String[] { "index1", "index2", "index3" });
+        svm.setFieldname(new String[] { "index1", "index2", "index3" });
         svm.setRename(new String[] { "", "", "" });
         svm.setType(new int[] { ValueMetaInterface.TYPE_INTEGER,
         		                ValueMetaInterface.TYPE_INTEGER,

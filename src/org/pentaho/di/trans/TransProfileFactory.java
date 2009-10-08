@@ -16,6 +16,7 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -50,13 +51,13 @@ public class TransProfileFactory
 		this.schemaTable = schemaTable;
 	}
 	
-    public TransMeta generateTransformation() throws KettleException
+    public TransMeta generateTransformation(LoggingObjectInterface parentLoggingInterface) throws KettleException
     {
         StepLoader stepLoader = StepLoader.getInstance();
         
         // Get the list of fields from the table...
         //
-        tableLayout = getTableFields();
+        tableLayout = getTableFields(parentLoggingInterface);
 
         // Now start building the transformation...
         //
@@ -189,8 +190,8 @@ public class TransProfileFactory
         return transMeta;
     }
 
-	private RowMetaInterface getTableFields() throws KettleDatabaseException {
-		Database database = new Database(this, databaseMeta);
+	private RowMetaInterface getTableFields(LoggingObjectInterface parentLoggingObject) throws KettleDatabaseException {
+		Database database = new Database(parentLoggingObject, databaseMeta);
 		try {
 			database.connect();
 			return database.getTableFields(schemaTable);

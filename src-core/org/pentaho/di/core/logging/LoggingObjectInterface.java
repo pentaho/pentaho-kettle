@@ -8,7 +8,7 @@ public interface LoggingObjectInterface {
 	/**
 	 * @return the name
 	 */
-	public String getName();
+	public String getObjectName();
 
 	/**
 	 * @return the repositoryDirectory
@@ -34,12 +34,6 @@ public interface LoggingObjectInterface {
 	 * @return the log channel id
 	 */
 	public String getLogChannelId();
-	
-	/**
-	 * Sets the log channel id of this logging object representation
-	 * @param logChannelId the log channel id to set
-	 */
-	public void setLogChannelId(String logChannelId);
 
 	/**
 	 * @return the parent
@@ -54,5 +48,5 @@ public interface LoggingObjectInterface {
 	/**
 	 * @return A string identifying a copy in a series of steps...
 	 */
-	public String getCopy();
+	public String getObjectCopy();
 }

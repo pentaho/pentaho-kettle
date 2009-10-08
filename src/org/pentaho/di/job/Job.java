@@ -37,6 +37,8 @@ import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -49,7 +51,10 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.Trans;
@@ -67,7 +72,7 @@ import org.pentaho.di.www.WebResult;
  * @since  07-apr-2003
  * 
  */
-public class Job extends Thread implements VariableSpace, NamedParams, HasLogChannelInterface
+public class Job extends Thread implements VariableSpace, NamedParams, HasLogChannelInterface, LoggingObjectInterface
 {
 	private static Class<?> PKG = Job.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -1354,5 +1359,45 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	
 	public LogChannelInterface getLogChannel() {
 		return log;
+	}
+
+	public String getObjectName() {
+		return getJobname();
+	}
+	
+	public String getObjectCopy() {
+		return null;
+	}
+
+	public String getFilename() {
+		if (jobMeta==null) return null;
+		return jobMeta.getFilename();
+	}
+
+	public String getLogChannelId() {
+		return log.getLogChannelId();
+	}
+
+	public ObjectId getObjectId() {
+		if (jobMeta==null) return null;
+		return jobMeta.getObjectId();
+	}
+
+	public ObjectRevision getObjectRevision() {
+		if (jobMeta==null) return null;
+		return jobMeta.getObjectRevision();
+	}
+
+	public LoggingObjectType getObjectType() {
+		return LoggingObjectType.JOB;
+	}
+
+	public LoggingObjectInterface getParent() {
+		return parentJob;
+	}
+
+	public RepositoryDirectory getRepositoryDirectory() {
+		if (jobMeta==null) return null;
+		return jobMeta.getRepositoryDirectory();
 	}
 }

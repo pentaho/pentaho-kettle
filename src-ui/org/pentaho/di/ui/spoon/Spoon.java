@@ -126,6 +126,9 @@ import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.row.RowMeta;
@@ -258,6 +261,8 @@ import org.w3c.dom.Node;
 public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter, PDIObserver, LifeEventHandler {
 
 	private static Class<?>					PKG						= Spoon.class;
+
+	public static final LoggingObjectInterface loggingObject        = new SimpleLoggingObject("Spoon", LoggingObjectType.SPOON, null);
 
 	public static final String				STRING_TRANSFORMATIONS	= BaseMessages.getString(PKG, "Spoon.STRING_TRANSFORMATIONS");
 	public static final String				STRING_JOBS				= BaseMessages.getString(PKG, "Spoon.STRING_JOBS");

@@ -3506,7 +3506,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		Map<String, LoggingObjectInterface> loggingMap = registry.getMap();
 		
 		for (LoggingObjectInterface loggingObject : loggingMap.values()) {
-			System.out.println(loggingObject.getLogChannelId()+" - "+loggingObject.getName()+" - "+loggingObject.getObjectType());
+			System.out.println(loggingObject.getLogChannelId()+" - "+loggingObject.getObjectName()+" - "+loggingObject.getObjectType());
 		}
 		
 	}

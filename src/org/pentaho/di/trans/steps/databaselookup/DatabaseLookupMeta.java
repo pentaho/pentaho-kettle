@@ -650,7 +650,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		
 		if (databaseMeta!=null)
 		{
-			Database db = new Database(this, databaseMeta);
+			Database db = new Database(loggingObject, databaseMeta);
 			db.shareVariablesWith(transMeta);
             databases = new Database[] { db }; // Keep track of this one for cancelQuery
 
@@ -807,7 +807,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		RowMetaInterface fields = null;
 		if (databaseMeta!=null)
 		{
-			Database db = new Database(this, databaseMeta);
+			Database db = new Database(loggingObject, databaseMeta);
             databases = new Database[] { db }; // Keep track of this one for cancelQuery
 
 			try

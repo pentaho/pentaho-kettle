@@ -457,7 +457,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(this, ci);
+						Database db = new Database(loggingObject, ci);
 						try {
 							db.connect();
 
@@ -538,7 +538,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
 		if (databaseMeta!=null)
 		{
-			Database database = new Database(this, databaseMeta);
+			Database database = new Database(loggingObject, databaseMeta);
 			try
 			{
 				database.connect();

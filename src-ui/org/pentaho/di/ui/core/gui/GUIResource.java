@@ -263,6 +263,9 @@ public class GUIResource
     private Image imageDelete;
     private Image imageShowDeleted;
 
+    private Image imagePause;
+    private Image imageContinue;
+
     private Image imageImport;
     private Image imageExport;
 
@@ -445,6 +448,8 @@ public class GUIResource
 		    imageEdit.dispose();
 		    imageDelete.dispose();
 		    imageShowDeleted.dispose();
+		    imagePause.dispose();
+		    imageContinue.dispose();
 		    imageLocked.dispose();
 		    imageImport.dispose();
 		    imageExport.dispose();
@@ -673,6 +678,9 @@ public class GUIResource
     imageDelete = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Delete_image")); // , "ui/images/generic-delete.png;
     imageShowDeleted = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowDeleted_image")); // , "ui/images/show-deleted.png;
 
+    imagePause= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Pause_image")); // , "ui/images/pause.png;
+    imageContinue = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Continue_image")); // , "ui/images/run.png;
+    
     imageImport = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Import_image")); // , "ui/images/import.png;
     imageExport = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Export_image")); // , "ui/images/export.png;
 
@@ -1724,9 +1732,17 @@ public class GUIResource
 	    return imageDelete;
   }
 
-  public Image getImageShowDeleted(){
-	    return imageShowDeleted;
- }
+  public Image getImageShowDeleted() {
+		return imageShowDeleted;
+  }
+
+  public Image getImagePause() {
+		return imagePause;
+  }
+
+  public Image getImageContinue() {
+		return imageContinue;
+  }
 
   public Image getImageImport() {
 		return imageImport;

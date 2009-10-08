@@ -119,7 +119,7 @@ public class InjectorDialog extends BaseStepDialog implements StepDialogInterfac
         fdlFields.top  = new FormAttachment(wStepname, margin);
         wlFields.setLayoutData(fdlFields);
         
-        final int FieldsRows=input.getName().length;
+        final int FieldsRows=input.getFieldname().length;
         
         ColumnInfo[] colinf=new ColumnInfo[] 
             {
@@ -187,10 +187,10 @@ public class InjectorDialog extends BaseStepDialog implements StepDialogInterfac
 	{
 		wStepname.selectAll();
         
-        for (int i=0;i<input.getName().length;i++)
+        for (int i=0;i<input.getFieldname().length;i++)
         {
             TableItem item = wFields.table.getItem(i);
-            item.setText(1, input.getName()[i]);
+            item.setText(1, input.getFieldname()[i]);
             item.setText(2, ValueMeta.getTypeDesc(input.getType()[i]));
             int len = input.getLength()[i];
             int prc = input.getPrecision()[i];
@@ -216,7 +216,7 @@ public class InjectorDialog extends BaseStepDialog implements StepDialogInterfac
         for (int i=0;i<nrfields;i++)
         {
             TableItem item = wFields.getNonEmpty(i);
-            input.getName()[i]      = item.getText(1);
+            input.getFieldname()[i]      = item.getText(1);
             input.getType()[i]      = ValueMeta.getType( item.getText(2));
             input.getLength()[i]    = Const.toInt( item.getText(3), -1);
             input.getPrecision()[i] = Const.toInt( item.getText(4), -1);

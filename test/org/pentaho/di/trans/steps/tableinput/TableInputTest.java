@@ -309,7 +309,7 @@ public class TableInputTest extends TestCase
             DatabaseMeta dbInfo = transMeta.findDatabase("db");
 
             // Execute our setup SQLs in the database.
-            Database database = new Database(this, dbInfo);
+            Database database = new Database(transMeta, dbInfo);
             database.connect();
             createTables(database);
             createData(database);

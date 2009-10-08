@@ -45,6 +45,9 @@ import org.pentaho.di.core.database.PartitionDatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
@@ -67,6 +70,8 @@ import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 public class SQLEditor extends Dialog
 {
 	private static Class<?> PKG = SQLEditor.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("SQL Editor", LoggingObjectType.SPOON, null);
 
 	private PropsUI        props;
 		
@@ -285,7 +290,7 @@ public class SQLEditor extends Dialog
 
         StringBuffer message = new StringBuffer();
 
-		Database db = new Database(this, ci);
+		Database db = new Database(loggingObject, ci);
         boolean first = true;
         PartitionDatabaseMeta[] partitioningInformation = ci.getPartitioningInformation();
         

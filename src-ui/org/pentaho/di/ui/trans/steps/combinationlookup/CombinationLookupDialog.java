@@ -669,7 +669,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(this, ci);
+						Database db = new Database(loggingObject, ci);
 						try {
 							db.connect();
 
@@ -914,7 +914,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
 		if (databaseMeta!=null)
 		{
-			Database database = new Database(this, databaseMeta);
+			Database database = new Database(loggingObject, databaseMeta);
 			try
 			{
 				database.connect();

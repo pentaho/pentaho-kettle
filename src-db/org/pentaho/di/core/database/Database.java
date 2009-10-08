@@ -65,6 +65,8 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -73,6 +75,9 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectRevision;
+import org.pentaho.di.repository.RepositoryDirectory;
 
 
 /**
@@ -83,7 +88,7 @@ import org.pentaho.di.i18n.BaseMessages;
  * @since 05-04-2003
  *
  */
-public class Database implements VariableSpace
+public class Database implements VariableSpace, LoggingObjectInterface
 {
 	private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -114,7 +119,7 @@ public class Database implements VariableSpace
 	private int written;
 	
 	private LogChannelInterface log;
-    private Object parentObject;
+    private LoggingObjectInterface parentLoggingObject;
 
     /**
      * Number of times a connection was opened using this object.
@@ -160,8 +165,9 @@ public class Database implements VariableSpace
 	 * Construct a new Database Connection
 	 * @param databaseMeta The Database Connection Info to construct the connection with.
 	 */
-	public Database(Object parentObject, DatabaseMeta databaseMeta)
+	public Database(LoggingObjectInterface parentObject, DatabaseMeta databaseMeta)
 	{
+		this.parentLoggingObject = parentObject;
 		this.databaseMeta = databaseMeta;
 		shareVariablesWith(databaseMeta);
 		
@@ -4954,7 +4960,7 @@ public class Database implements VariableSpace
 	}
 
 	public Object getParentObject() {
-		return parentObject;
+		return parentLoggingObject;
 	}
 	
 	/**
@@ -4987,4 +4993,39 @@ public class Database implements VariableSpace
 	return names.toArray(new String[names.size()]);
   }
 
+	public String getFilename() {
+		return null;
+	}
+
+	public String getLogChannelId() {
+		return log.getLogChannelId();
+	}
+
+	public String getObjectName() {
+		return databaseMeta.getName();
+	}
+
+	public String getObjectCopy() {
+		return null;
+	}
+
+	public ObjectId getObjectId() {
+		return databaseMeta.getObjectId();
+	}
+
+	public ObjectRevision getObjectRevision() {
+		return databaseMeta.getObjectRevision();
+	}
+
+	public LoggingObjectType getObjectType() {
+		return LoggingObjectType.DATABASE;
+	}
+
+	public LoggingObjectInterface getParent() {
+		return parentLoggingObject;
+	}
+
+	public RepositoryDirectory getRepositoryDirectory() {
+		return null;
+	}
 }

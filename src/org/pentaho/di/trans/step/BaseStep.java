@@ -40,6 +40,8 @@ import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -49,6 +51,9 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectRevision;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.SlaveStepCopyPartitionDistribution;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
@@ -60,7 +65,7 @@ import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 import org.pentaho.di.www.SocketRepository;
 
-public class BaseStep extends Thread implements VariableSpace, StepInterface
+public class BaseStep extends Thread implements VariableSpace, StepInterface, LoggingObjectInterface
 {
 	private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -2919,9 +2924,45 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	public void setSocketRepository(SocketRepository socketRepository) {
 		this.socketRepository = socketRepository;
 	}
+	
+	public String getObjectName() {
+		return getStepname();
+	}
 
 	public LogChannelInterface getLogChannel() {
 		return log;
 	}
+
+	public String getFilename() {
+		return null;
+	}
+
+	public String getLogChannelId() {
+		return log.getLogChannelId();
+	}
+
+	public ObjectId getObjectId() {
+		if (stepMeta==null) return null;
+		return stepMeta.getObjectId();
+	}
+
+	public ObjectRevision getObjectRevision() {
+		return null;
+	}
+
+	public LoggingObjectType getObjectType() {
+		return LoggingObjectType.STEP;
+	}
+
+	public LoggingObjectInterface getParent() {
+		return trans;
+	}
+
+	public RepositoryDirectory getRepositoryDirectory() {
+		return null;
+	}
 	
+	public String getObjectCopy() {
+		return Integer.toString(stepcopy);
+	}
 }

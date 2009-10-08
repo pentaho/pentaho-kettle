@@ -320,7 +320,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 			// reserved words...
 			// Use metadata logic in SelectValues, use SelectValueInfo...
 			//
-			Database sourceDB = new Database(this, sourceDBInfo);
+			Database sourceDB = new Database(loggingObject, sourceDBInfo);
 			sourceDB.shareVariablesWith(meta);
 			sourceDB.connect();
 

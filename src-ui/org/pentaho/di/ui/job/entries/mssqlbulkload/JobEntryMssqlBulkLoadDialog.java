@@ -1394,7 +1394,7 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 			DatabaseMeta databaseMeta = jobMeta.findDatabase(wConnection.getText());
 			if (databaseMeta!=null)
 			{
-				Database database = new Database(this, databaseMeta);
+				Database database = new Database(loggingObject, databaseMeta);
 				database.shareVariablesWith(jobMeta);
 				try
 				{

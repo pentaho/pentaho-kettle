@@ -25,6 +25,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -35,7 +37,9 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceHolderInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -49,7 +53,7 @@ import org.w3c.dom.Node;
  * Created on 18-jun-04
  *
  */
-public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSourceInterface, ResourceHolderInterface
+public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSourceInterface, ResourceHolderInterface, LoggingObjectInterface
 { 
   private String name;
 
@@ -500,5 +504,33 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
  
     public LogChannelInterface getLogChannel() {
 		return log;
+	}
+
+	public String getLogChannelId() {
+		return log.getLogChannelId();
+	}
+
+	public String getObjectName() {
+		return getName();
+	}
+	
+	public String getObjectCopy() {
+		return null;
+	}
+
+	public ObjectRevision getObjectRevision() {
+		return null;
+	}
+
+	public LoggingObjectType getObjectType() {
+		return LoggingObjectType.JOBENTRY;
+	}
+
+	public LoggingObjectInterface getParent() {
+		return parentJob;
+	}
+
+	public RepositoryDirectory getRepositoryDirectory() {
+		return null;
 	}
 }

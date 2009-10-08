@@ -606,7 +606,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TableOutputMeta.CheckResult.ConnectionExists"), stepMeta);
 			remarks.add(cr);
 
-			Database db = new Database(this, databaseMeta);
+			Database db = new Database(loggingObject, databaseMeta);
 			db.shareVariablesWith(transMeta);
 			try
 			{
@@ -853,7 +853,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				if (!Const.isEmpty(tablename))
 				{
-					Database db = new Database(this, databaseMeta);
+					Database db = new Database(loggingObject, databaseMeta);
 					db.shareVariablesWith(transMeta);
 					try
 					{
@@ -901,7 +901,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
     	
         if (databaseMeta!=null)
         {
-            Database db = new Database(this, databaseMeta);
+            Database db = new Database(loggingObject, databaseMeta);
             try
             {
                 db.connect();

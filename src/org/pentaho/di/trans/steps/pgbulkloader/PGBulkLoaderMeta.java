@@ -381,7 +381,7 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 
 		if (databaseMeta!=null)
 		{
-			Database db = new Database(this, databaseMeta);
+			Database db = new Database(loggingObject, databaseMeta);
 			db.shareVariablesWith(transMeta);
 			try
 			{
@@ -546,7 +546,7 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 
 				if (!Const.isEmpty(tableName))
 				{
-                    Database db = new Database(this, databaseMeta);
+                    Database db = new Database(loggingObject, databaseMeta);
                     db.shareVariablesWith(transMeta);
 					try
 					{
@@ -647,7 +647,7 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 
         if (databaseMeta!=null)
         {
-            Database db = new Database(this, databaseMeta);
+            Database db = new Database(loggingObject, databaseMeta);
             try
             {
                 db.connect();

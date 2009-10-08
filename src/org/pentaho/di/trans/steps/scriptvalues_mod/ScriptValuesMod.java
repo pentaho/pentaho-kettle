@@ -153,13 +153,13 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
       
       // Get the indexes of the replaced fields...
       //
-      data.replaceIndex = new int[meta.getName().length];
-      for (int i=0;i<meta.getName().length;i++) {
+      data.replaceIndex = new int[meta.getFieldname().length];
+      for (int i=0;i<meta.getFieldname().length;i++) {
     	  if (meta.getReplace()[i]) {
-    		  data.replaceIndex[i] = rowMeta.indexOfValue(meta.getName()[i]);
+    		  data.replaceIndex[i] = rowMeta.indexOfValue(meta.getFieldname()[i]);
     		  if (data.replaceIndex[i]<0) {
-    			  if (Const.isEmpty(meta.getName()[i])) {
-    				  throw new KettleStepException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getName()[i]));
+    			  if (Const.isEmpty(meta.getFieldname()[i])) {
+    				  throw new KettleStepException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getFieldname()[i]));
     			  }
     			  data.replaceIndex[i] = rowMeta.indexOfValue(meta.getRename()[i]);
     			  if (data.replaceIndex[i]<0) {
@@ -380,8 +380,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 
       if (iTranStat == CONTINUE_TRANSFORMATION) {
         bRC = true;
-        for (int i = 0; i < meta.getName().length; i++) {
-          Object result = data.scope.get(meta.getName()[i], data.scope);
+        for (int i = 0; i < meta.getFieldname().length; i++) {
+          Object result = data.scope.get(meta.getFieldname()[i], data.scope);
           Object valueData = getValueFromJScript(result, i);
           if (data.replaceIndex[i]<0) {
         	  outputRow[outputIndex++] = valueData;
@@ -442,7 +442,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
   }
 
   public Object getValueFromJScript(Object result, int i) throws KettleValueException {
-    if (meta.getName()[i] != null && meta.getName()[i].length() > 0) {
+    if (meta.getFieldname()[i] != null && meta.getFieldname()[i].length() > 0) {
       // res.setName(meta.getRename()[i]);
       // res.setType(meta.getType()[i]);
 
@@ -608,7 +608,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
               return Context.jsToJava(result, byte[].class);
             }
             case ValueMetaInterface.TYPE_NONE: {
-              throw new RuntimeException("No data output data type was specified for new field [" + meta.getName()[i]
+              throw new RuntimeException("No data output data type was specified for new field [" + meta.getFieldname()[i]
                   + "]");
             }
             default: {

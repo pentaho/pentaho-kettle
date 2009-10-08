@@ -57,6 +57,8 @@ import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -109,7 +111,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 								  Cloneable, UndoInterface, 
 								  HasDatabasesInterface, VariableSpace, EngineMetaInterface, 
 								  ResourceExportInterface, HasSlaveServersInterface, NamedParams,
-								  RepositoryElementInterface
+								  RepositoryElementInterface, LoggingObjectInterface
 {
 	private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -5941,5 +5943,25 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	
 	public LogChannelInterface getLogChannel() {
 		return log;
+	}
+
+	public String getLogChannelId() {
+		return log.getLogChannelId();
+	}
+	
+	public String getObjectName() {
+		return getName();
+	}
+
+	public String getObjectCopy() {
+		return null;
+	}
+
+	public LoggingObjectType getObjectType() {
+		return LoggingObjectType.TRANSMETA;
+	}
+
+	public LoggingObjectInterface getParent() {
+		return null; // TODO, we could also keep a link to the parent and job metadata
 	}
 }

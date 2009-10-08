@@ -26,6 +26,7 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 import org.pentaho.xul.toolbar.XulToolbar;
+import org.pentaho.xul.toolbar.XulToolbarButton;
 
 public class TransLogDelegate extends SpoonDelegate {
 	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -41,6 +42,10 @@ public class TransLogDelegate extends SpoonDelegate {
 	
 	private XulToolbar       toolbar;
 	private Composite transLogComposite;
+
+	private LogBrowser	logBrowser;
+
+	private XulToolbarButton	pauseContinueButton;
 	
 	/**
 	 * @param spoon
@@ -85,7 +90,7 @@ public class TransLogDelegate extends SpoonDelegate {
 		fdText.bottom = new FormAttachment(100,0);
 		transLogText.setLayoutData(fdText);
 		
-		LogBrowser logBrowser = new LogBrowser(transLogText, transGraph);
+		logBrowser = new LogBrowser(transLogText, transGraph);
 		logBrowser.installLogSniffer();
 		
 		transLogTab.setControl(transLogComposite);
@@ -100,7 +105,14 @@ public class TransLogDelegate extends SpoonDelegate {
 
 		try {
 			toolbar = XulHelper.createToolbar(XUL_FILE_TRANS_LOG_TOOLBAR, transLogComposite, TransLogDelegate.this, new XulMessages());
-			
+
+			// Selected images are not in the XUL standard, but we can add this...
+			//
+			pauseContinueButton = toolbar.getButtonById("show-inactive");
+			if (pauseContinueButton!=null) {
+				pauseContinueButton.setSelectedImage(GUIResource.getInstance().getImageContinue());
+			}
+
 			// Add a few default key listeners
 			//
 			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
@@ -253,5 +265,17 @@ public class TransLogDelegate extends SpoonDelegate {
 			return null;
 		}
 
+	}
+	
+	public void pauseLog() {
+		if (logBrowser.isPaused()) {
+			logBrowser.setPaused(false);
+			pauseContinueButton.setSelection(false);
+			pauseContinueButton.setImage(GUIResource.getInstance().getImageContinue());
+		} else {
+			logBrowser.setPaused(true);
+			pauseContinueButton.setSelection(true);
+			pauseContinueButton.setImage(GUIResource.getInstance().getImagePause());
+		}
 	}
 }

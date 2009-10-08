@@ -444,7 +444,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		fdlFields.top  = new FormAttachment(wSeparator, 0);
 		wlFields.setLayoutData(fdlFields);
 		
-		final int FieldsRows=input.getName().length;
+		final int FieldsRows=input.getFieldname().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[]
            {
@@ -859,13 +859,13 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	{
 		wCompatible.setSelection(input.isCompatible());
 		
-		for (int i=0;i<input.getName().length;i++)
+		for (int i=0;i<input.getFieldname().length;i++)
 		{
-			if (input.getName()[i]!=null && input.getName()[i].length()>0)
+			if (input.getFieldname()[i]!=null && input.getFieldname()[i].length()>0)
 			{	
 				TableItem item = wFields.table.getItem(i);
-				item.setText(1, input.getName()[i]);
-				if (input.getRename()[i]!=null && !input.getName()[i].equals(input.getRename()[i]))
+				item.setText(1, input.getFieldname()[i]);
+				if (input.getRename()[i]!=null && !input.getFieldname()[i].equals(input.getRename()[i]))
 					item.setText(2, input.getRename()[i]);
 				item.setText(3, ValueMeta.getTypeDesc(input.getType()[i]));
 				if (input.getLength()[i]>=0) item.setText(4, ""+input.getLength()[i]); //$NON-NLS-1$
@@ -925,14 +925,14 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		meta.allocate(nrfields);
 		for (int i=0;i<nrfields;i++){
 			TableItem item = wFields.getNonEmpty(i);
-			meta.getName()  [i] = item.getText(1);
+			meta.getFieldname()[i] = item.getText(1);
 			meta.getRename()[i] = item.getText(2);
 			if (meta.getRename()[i]==null || 
 					meta.getRename()[i].length()==0 || 
-					meta.getRename()[i].equalsIgnoreCase(meta.getName()[i])
+					meta.getRename()[i].equalsIgnoreCase(meta.getFieldname()[i])
 			)
 			{
-				meta.getRename()[i] = meta.getName()[i];
+				meta.getRename()[i] = meta.getFieldname()[i];
 			}
 			meta.getType()  [i] = ValueMeta.getType(item.getText(3));
 			String slen = item.getText(4);

@@ -1717,7 +1717,7 @@ public class TransDialog extends Dialog
 			
 			if (!Const.isEmpty(tablename) || !Const.isEmpty(stepTablename) )
 			{
-				Database db = new Database(this, ci);
+				Database db = new Database(transMeta, ci);
 				db.shareVariablesWith(transMeta);
 				try
 				{

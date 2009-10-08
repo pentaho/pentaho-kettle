@@ -24,6 +24,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.spoon.Spoon;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while 
@@ -60,7 +61,7 @@ public class GetQueryFieldsProgressDialog
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
-			    db = new Database(this, dbMeta);
+			    db = new Database(Spoon.loggingObject, dbMeta);
 			    try
 				{
         			db.connect();

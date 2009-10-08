@@ -82,7 +82,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	private ScriptValuesAddClasses[] additionalClasses;
 	private ScriptValuesScript[]	jsScripts;
 	
-	private String  name[];
+	private String  fieldname[];
 	private String  rename[];
 	private int     type[];
 	private int     length[];
@@ -116,15 +116,15 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     /**
      * @return Returns the name.
      */
-    public String[] getName(){
-        return name;
+    public String[] getFieldname(){
+        return fieldname;
     }
     
     /**
-     * @param name The name to set.
+     * @param fieldname The name to set.
      */
-    public void setName(String[] name){
-        this.name = name;
+    public void setFieldname(String[] fieldname){
+        this.fieldname = fieldname;
     }
     
     /**
@@ -202,7 +202,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	}
 
 	public void allocate(int nrfields){
-		name      = new String [nrfields];
+		fieldname      = new String [nrfields];
 		rename    = new String [nrfields];
 		type      = new int    [nrfields];
 		length    = new int    [nrfields];
@@ -214,13 +214,13 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	{
 		ScriptValuesMetaMod retval = (ScriptValuesMetaMod)super.clone();
 		
-		int nrfields = name.length;
+		int nrfields = fieldname.length;
 		
 		retval.allocate(nrfields);
 		
 		for (int i=0;i<nrfields;i++)
 		{
-			retval.name     [i] = name[i];
+			retval.fieldname     [i] = fieldname[i];
 			retval.rename   [i] = rename[i];
 			retval.type     [i] = type[i];
 			retval.length   [i] = length[i];
@@ -276,7 +276,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			{
 				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
 				
-				name     [i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+				fieldname     [i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
 				rename   [i] = XMLHandler.getTagValue(fnode, "rename"); //$NON-NLS-1$
 				type     [i] = ValueMeta.getType(XMLHandler.getTagValue(fnode, "type")); //$NON-NLS-1$
 	
@@ -305,7 +305,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		allocate(nrfields);
 
 		for (int i=0;i<nrfields;i++){
-			name     [i] = "newvalue"; //$NON-NLS-1$
+			fieldname     [i] = "newvalue"; //$NON-NLS-1$
 			rename   [i] = "newvalue"; //$NON-NLS-1$
 			type     [i] = ValueMetaInterface.TYPE_NUMBER;
 			length   [i] = -1;
@@ -318,16 +318,16 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	
 	public void getFields(RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-		for (int i=0;i<name.length;i++)
+		for (int i=0;i<fieldname.length;i++)
 		{
-			if (!Const.isEmpty(name[i]))
+			if (!Const.isEmpty(fieldname[i]))
 			{
 				ValueMetaInterface v;
 				if (replace[i]) {
 					// Look up the field to replace...
-					v = row.searchValueMeta(name[i]);
+					v = row.searchValueMeta(fieldname[i]);
 					if (v==null && Const.isEmpty(rename[i])) {
-						throw new KettleStepException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", name[i]));
+						throw new KettleStepException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", fieldname[i]));
 					}
 					v= row.searchValueMeta(rename[i]);
 					
@@ -341,7 +341,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 					} 
 					else
 					{
-						v = new ValueMeta(this.name[i], type[i]); 
+						v = new ValueMeta(this.fieldname[i], type[i]); 
 					} 
 				}
 				v.setLength(length[i]);
@@ -371,10 +371,10 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		retval.append("    </jsScripts>"); 
 		
 		retval.append("    <fields>"); //$NON-NLS-1$
-		for (int i=0;i<name.length;i++)
+		for (int i=0;i<fieldname.length;i++)
 		{
 			retval.append("      <field>"); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("name",      name[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("name",      fieldname[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("        ").append(XMLHandler.addTagValue("rename",    rename[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("        ").append(XMLHandler.addTagValue("type",      ValueMeta.getTypeDesc(type[i]))); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("        ").append(XMLHandler.addTagValue("length",    length[i])); //$NON-NLS-1$ //$NON-NLS-2$
@@ -420,7 +420,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				name[i]        =       rep.getStepAttributeString (id_step, i, "field_name"); //$NON-NLS-1$
+				fieldname[i]        =       rep.getStepAttributeString (id_step, i, "field_name"); //$NON-NLS-1$
 				rename[i]      =       rep.getStepAttributeString (id_step, i, "field_rename"); //$NON-NLS-1$
 				type[i]        =  ValueMeta.getType( rep.getStepAttributeString (id_step, i, "field_type") ); //$NON-NLS-1$
 				length[i]      =  (int)rep.getStepAttributeInteger(id_step, i, "field_length"); //$NON-NLS-1$
@@ -447,9 +447,9 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
                 rep.saveStepAttribute(id_transformation, id_step, i, JSSCRIPT_TAG_TYPE, jsScripts[i].getScriptType());
             }
 
-            for (int i = 0; i < name.length; i++)
+            for (int i = 0; i < fieldname.length; i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_name", name[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldname[i]); //$NON-NLS-1$
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_rename", rename[i]); //$NON-NLS-1$
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc(type[i])); //$NON-NLS-1$
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_length", length[i]); //$NON-NLS-1$
@@ -633,8 +633,8 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.ScriptCompiledOK2"), stepinfo); //$NON-NLS-1$
 					remarks.add(cr);
 					
-					if (name.length>0){
-						StringBuffer message = new StringBuffer(BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.FailedToGetValues",String.valueOf(name.length))+Const.CR+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+					if (fieldname.length>0){
+						StringBuffer message = new StringBuffer(BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.FailedToGetValues",String.valueOf(fieldname.length))+Const.CR+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
 												
 						if (error_found)
 						{
@@ -714,14 +714,14 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	{
 		boolean error_found = false;
 		
-		if (name[i]!=null && name[i].length()>0)
+		if (fieldname[i]!=null && fieldname[i].length()>0)
 		{
 			res.setName(rename[i]);
 			res.setType(type[i]);
 			
 			try{
 				
-				Object result = scope.get(name[i], scope);
+				Object result = scope.get(fieldname[i], scope);
 				if (result!=null){
 					
 					String classname = result.getClass().getName();
@@ -830,12 +830,12 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			}
 			catch(Exception e)
 			{
-				message.append(BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.ErrorRetrievingValue",name[i])+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+				message.append(BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.ErrorRetrievingValue",fieldname[i])+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 				error_found=true;
 			}
 			res.setLength(length[i], precision[i]);
 				
-			message.append(BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.RetrievedValue",name[i],res.toStringMeta())); //$NON-NLS-1$ //$NON-NLS-2$
+			message.append(BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.RetrievedValue",fieldname[i],res.toStringMeta())); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		else
 		{

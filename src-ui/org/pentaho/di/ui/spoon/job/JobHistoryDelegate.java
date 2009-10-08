@@ -310,7 +310,7 @@ public class JobHistoryDelegate extends SpoonDelegate {
 	        mb.setMessage(BaseMessages.getString(PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", logTable)); // Nothing found that matches your criteria
 			mb.setText(BaseMessages.getString(PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title")); // Sorry!
 			if (mb.open()==SWT.YES) {
-				Database database = new Database(this, databaseMeta);
+				Database database = new Database(loggingObject, databaseMeta);
 				try {
 					database.connect();
 					database.truncateTable(logTable);
@@ -371,7 +371,7 @@ public class JobHistoryDelegate extends SpoonDelegate {
                     try
                     {
                         // open a connection
-                        database = new Database(this, jobMeta.getLogConnection());
+                        database = new Database(loggingObject, jobMeta.getLogConnection());
                         database.shareVariablesWith(jobMeta);
                         database.connect();
                         

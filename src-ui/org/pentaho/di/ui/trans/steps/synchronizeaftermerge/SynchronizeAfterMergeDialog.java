@@ -950,7 +950,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(this, ci);
+						Database db = new Database(loggingObject, ci);
 						db.shareVariablesWith(transMeta);
 						try {
 							db.connect();
@@ -1304,7 +1304,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
 		if (databaseMeta!=null)
 		{
-			Database database = new Database(this, databaseMeta);
+			Database database = new Database(loggingObject, databaseMeta);
 			try
 			{
 				database.connect();

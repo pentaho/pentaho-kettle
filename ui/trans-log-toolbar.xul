@@ -6,6 +6,8 @@
 			<toolbarbutton value="clear-log" label="%TransLog.Button.ClearLog" image="ui/images/clear-log.png" tooltiptext="%TransLog.Button.ClearLog"/>
 			<toolbarseparator />
 			<toolbarbutton value="log-settings" label="%TransLog.Button.LogSettings" image="ui/images/log-settings.png" tooltiptext="%TransLog.Button.LogSettings"/>
+			<toolbarseparator />
+			<toolbarbutton value="log-pause" label="%TransLog.Button.Pause" image="ui/images/pause.png" tooltiptext="%TransLog.Button.Pause"/>
 		</toolbar>
 	</toolbox>
 

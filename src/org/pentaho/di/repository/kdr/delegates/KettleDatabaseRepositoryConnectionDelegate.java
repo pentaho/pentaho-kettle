@@ -16,6 +16,9 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -31,6 +34,8 @@ import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRepositoryBaseDelegate {
 	private static Class<?> PKG = Repository.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Database repository", LoggingObjectType.REPOSITORY, null);
 
     public static final int REQUIRED_MAJOR_VERSION = 4;
     public static final int REQUIRED_MINOR_VERSION = 0;
@@ -75,7 +80,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 		super(repository);
 
 		this.databaseMeta = databaseMeta;
-		this.database = new Database(this, databaseMeta);
+		this.database = new Database(loggingObject, databaseMeta);
 		
 		useBatchProcessing = true; // defaults to true;
         

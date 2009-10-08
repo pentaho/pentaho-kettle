@@ -948,7 +948,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(this, ci);
+						Database db = new Database(loggingObject, ci);
 						try {
 							db.connect();
 

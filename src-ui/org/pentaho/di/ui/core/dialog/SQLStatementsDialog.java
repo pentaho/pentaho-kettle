@@ -34,6 +34,9 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
@@ -54,6 +57,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class SQLStatementsDialog extends Dialog
 {
 	private static Class<?> PKG = SQLStatementsDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("SQL Statements Dialog", LoggingObjectType.SPOON, null);
 
 	private List<SQLStatement>    stats;
 		
@@ -296,7 +301,7 @@ public class SQLStatementsDialog extends Dialog
 				DatabaseMeta di = stat.getDatabase();
 				if (di!=null && !stat.hasError())
 				{
-					Database db = new Database(this, di);
+					Database db = new Database(loggingObject, di);
 					try
 					{
 						db.connect();

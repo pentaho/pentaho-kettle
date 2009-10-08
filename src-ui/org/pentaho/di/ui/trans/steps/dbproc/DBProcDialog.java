@@ -185,7 +185,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 				DatabaseMeta dbInfo = transMeta.findDatabase(wConnection.getText());
 				if (dbInfo!=null)
 				{
-					Database db = new Database(this, dbInfo);
+					Database db = new Database(loggingObject, dbInfo);
 					try
 					{
 						db.connect();

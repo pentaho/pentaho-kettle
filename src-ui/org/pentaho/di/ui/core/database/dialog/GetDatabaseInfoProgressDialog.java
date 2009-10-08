@@ -28,6 +28,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.DatabaseMetaInformation;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.spoon.Spoon;
 
 
 /**
@@ -63,7 +64,7 @@ public class GetDatabaseInfoProgressDialog
 			{
 				try
 				{
-					dmi.getData(new ProgressMonitorAdapter(monitor));
+					dmi.getData(Spoon.loggingObject, new ProgressMonitorAdapter(monitor));
 				}
 				catch(Exception e)
 				{

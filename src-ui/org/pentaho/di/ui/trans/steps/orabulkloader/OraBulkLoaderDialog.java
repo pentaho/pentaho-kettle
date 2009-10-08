@@ -1136,7 +1136,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 				if (!Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
-						Database db = new Database(this, ci);
+						Database db = new Database(loggingObject, ci);
 						try {
 							db.connect();
 
@@ -1404,7 +1404,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
 		if (databaseMeta!=null)
 		{
-			Database database = new Database(this, databaseMeta);
+			Database database = new Database(loggingObject, databaseMeta);
 			try
 			{
 				database.connect();

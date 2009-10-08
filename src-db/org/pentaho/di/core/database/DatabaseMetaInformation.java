@@ -22,6 +22,7 @@ import java.util.Collections;
 
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
@@ -153,6 +154,7 @@ public class DatabaseMetaInformation
 	{
 		return procedures;
 	}
+	
 	/**
 	 * @param procedures The procedures to set.
 	 */
@@ -160,14 +162,15 @@ public class DatabaseMetaInformation
 	{
 		this.procedures = procedures;
 	}
-	public void getData(ProgressMonitorListener monitor) throws KettleDatabaseException
+	
+	public void getData(LoggingObjectInterface parentLoggingObject, ProgressMonitorListener monitor) throws KettleDatabaseException
 	{
 		if (monitor!=null)
 		{
 			monitor.beginTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingInfoFromDb"), 8);
 		}
 
-		Database db = new Database(this, dbInfo);	
+		Database db = new Database(parentLoggingObject, dbInfo);	
 		
 		/*
 		ResultSet tableResultSet = null;

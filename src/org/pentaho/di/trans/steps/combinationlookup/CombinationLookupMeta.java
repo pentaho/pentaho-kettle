@@ -569,7 +569,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
 		if (databaseMeta!=null)
 		{
-			Database db = new Database(this, databaseMeta);
+			Database db = new Database(loggingObject, databaseMeta);
 			try
 			{
 				db.connect();
@@ -755,7 +755,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 				if (!Const.isEmpty(tablename))
 				{
                     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
-					Database db = new Database(this, databaseMeta);
+					Database db = new Database(loggingObject, databaseMeta);
 					try
 					{
 						boolean doHash = false;

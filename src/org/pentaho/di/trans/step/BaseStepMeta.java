@@ -24,10 +24,16 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
@@ -42,6 +48,8 @@ import org.pentaho.di.trans.TransMeta;
 
 public class BaseStepMeta implements Cloneable
 {
+	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Step metadata", LoggingObjectType.STEPMETA, null);
+		
 	private boolean changed;
 	private long    id;
     
@@ -381,5 +389,50 @@ public class BaseStepMeta implements Cloneable
     public void logError(String message) { log.logError(message); } 
     public void logError(String message, Throwable e) { log.logError(message, e); }
     public void logError(String message, Object...arguments) { log.logError(message, arguments); }
+
+	public String getFilename() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getLogChannelId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getObjectCopy() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ObjectId getObjectId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ObjectRevision getObjectRevision() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public LoggingObjectType getObjectType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public LoggingObjectInterface getParent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public RepositoryDirectory getRepositoryDirectory() {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
 }

@@ -50,8 +50,8 @@ public class LogMessage implements LogMessageInterface {
 		if (loggingObject==null) {
 			System.out.println("!!!!!!!!!!!!!!!!!!!OOPS!!!!!!!!!!!!!!!!!!");
 		}
-		subject = loggingObject.getName();
-		copy = loggingObject.getCopy();
+		subject = loggingObject.getObjectName();
+		copy = loggingObject.getObjectCopy();
 	}
 
 	public String toString() {

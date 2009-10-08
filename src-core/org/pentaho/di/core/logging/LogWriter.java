@@ -396,7 +396,7 @@ public class LogWriter
 		if (filteredLogLevel<logLevel) return; // not for our eyes.
 		
 		LoggingObjectInterface loggingObject = registry.getLoggingObject( logMessage.getLogChannelId() );
-		String subject = loggingObject.getName();
+		String subject = loggingObject.getObjectName();
 		if (subject==null) subject="Kettle";
         
 		// Are the message filtered?

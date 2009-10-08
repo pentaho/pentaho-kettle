@@ -3,6 +3,9 @@ package org.pentaho.di.core.database;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
@@ -14,6 +17,8 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
 
 	private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Database factory", LoggingObjectType.GENERAL, null);
+    
 	public DatabaseFactory() 
 	{
 	}
@@ -23,8 +28,10 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
 		if (databaseMeta.getAccessType()!=DatabaseMeta.TYPE_ACCESS_PLUGIN) {
 
 			StringBuffer report = new StringBuffer();
+			
+			
        
-            Database db = new Database(this, databaseMeta);
+            Database db = new Database(loggingObject, databaseMeta);
             if (databaseMeta.isPartitioned())
             {
                 PartitionDatabaseMeta[] partitioningInformation = databaseMeta.getPartitioningInformation();

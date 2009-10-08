@@ -656,7 +656,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SQLFileOutputMeta.CheckResult.ConnectionExists"), stepMeta);
 			remarks.add(cr);
 
-			Database db = new Database(this, databaseMeta);
+			Database db = new Database(loggingObject, databaseMeta);
 			try
 			{
 				db.connect();
@@ -850,7 +850,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				if (!Const.isEmpty(tablename))
 				{
-					Database db = new Database(this, databaseMeta);
+					Database db = new Database(loggingObject, databaseMeta);
 					db.shareVariablesWith(transMeta);
 					try
 					{
@@ -896,7 +896,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 		String realSchemaName = space.environmentSubstitute(schemaName);
 
 		if (databaseMeta != null) {
-			Database db = new Database(this, databaseMeta);
+			Database db = new Database(loggingObject, databaseMeta);
 			try {
 				db.connect();
 

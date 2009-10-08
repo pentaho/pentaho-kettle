@@ -378,7 +378,7 @@ public class RipDatabaseWizardPage2 extends WizardPage
 		// Get some data...
 		RipDatabaseWizardPage1 page1 = (RipDatabaseWizardPage1)getPreviousPage();
 		
-		Database sourceDb = new Database(this, page1.getSourceDatabase());
+		Database sourceDb = new Database(RipDatabaseWizard.loggingObject, page1.getSourceDatabase());
 		try
 		{
 			sourceDb.connect();

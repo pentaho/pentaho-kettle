@@ -483,7 +483,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 			DatabaseMeta databaseMeta = jobMeta.findDatabase(wConnection.getText());
 			if (databaseMeta!=null)
 			{
-				Database database = new Database(this, databaseMeta);
+				Database database = new Database(loggingObject, databaseMeta);
 				database.shareVariablesWith(jobMeta);
 				try
 				{

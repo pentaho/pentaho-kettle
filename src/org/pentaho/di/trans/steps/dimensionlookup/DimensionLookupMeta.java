@@ -812,7 +812,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                 // Get the rows from the table...
                 if (databaseMeta!=null)
                 {
-                    db = new Database(this, databaseMeta);
+                    db = new Database(loggingObject, databaseMeta);
                     // First try without connecting to the database... (can be  S L O W)
                     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
                     RowMetaInterface extraFields = db.getTableFields(schemaTable);
@@ -1110,7 +1110,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 		if (databaseMeta != null)
 		{
-			Database db = new Database(this, databaseMeta);
+			Database db = new Database(loggingObject, databaseMeta);
 			// TODO SB: Share VariableSpace
 			try
 			{
@@ -1332,7 +1332,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 		if (databaseMeta != null)
 		{
-			Database db = new Database(this, databaseMeta);
+			Database db = new Database(loggingObject, databaseMeta);
 			// TODO SB: share variable space
 			try
 			{
@@ -1542,7 +1542,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		RowMetaInterface fields = null;
 		if (databaseMeta != null)
 		{
-			Database db = new Database(this, databaseMeta);
+			Database db = new Database(loggingObject, databaseMeta);
 			try
 			{
 				db.connect();
@@ -1574,7 +1574,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 					String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 					if (!Const.isEmpty(schemaTable))
 					{                       
-						Database db = new Database(this, databaseMeta);
+						Database db = new Database(loggingObject, databaseMeta);
 						db.shareVariablesWith(transMeta);
 						try
 						{

@@ -47,6 +47,9 @@ import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -71,6 +74,8 @@ import org.pentaho.di.ui.core.widget.TableView;
 
 public class BaseStepDialog extends Dialog {
   private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Step dialog", LoggingObjectType.STEPDIALOG, null);
 
   protected static VariableSpace variables = new Variables();
 

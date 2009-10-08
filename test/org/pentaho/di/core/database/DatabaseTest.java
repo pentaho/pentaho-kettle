@@ -56,7 +56,7 @@ public class DatabaseTest extends TestCase
 
             DatabaseMeta dbInfo = transMeta.findDatabase("db");
 
-            database = new Database(this, dbInfo);
+            database = new Database(transMeta, dbInfo);
             database.connect();
         }
         finally { };
@@ -123,7 +123,7 @@ public class DatabaseTest extends TestCase
 
             DatabaseMeta dbInfo = transMeta.findDatabase("db");
 
-            database = new Database(this, dbInfo);
+            database = new Database(transMeta, dbInfo);
             database.connect();
             
             assertNull(dbInfo.quoteField(null));

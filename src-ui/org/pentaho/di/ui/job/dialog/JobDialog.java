@@ -990,7 +990,7 @@ public class JobDialog extends Dialog
 				String tablename = wLogtable.getText();
 				if (tablename!=null && tablename.length()>0)
 				{
-					Database db = new Database(this, ci);
+					Database db = new Database(jobMeta, ci);
 					db.shareVariablesWith(jobMeta);
 					try
 					{

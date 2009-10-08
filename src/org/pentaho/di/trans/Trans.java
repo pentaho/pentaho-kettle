@@ -42,6 +42,8 @@ import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -55,6 +57,8 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceUtil;
@@ -89,7 +93,7 @@ import org.pentaho.di.www.WebResult;
  * @since 07-04-2003
  *
  */
-public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
+public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface, LoggingObjectInterface
 {
 	private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -3068,5 +3072,49 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	
 	public SocketRepository getSocketRepository() {
 		return socketRepository;
+	}
+	
+	public String getObjectName() {
+		return getName();
+	}
+
+	public String getObjectCopy() {
+		return null;
+	}
+
+	public String getFilename() {
+		if (transMeta==null) return null;
+		return transMeta.getFilename();
+	}
+
+	public String getLogChannelId() {
+		return log.getLogChannelId();
+	}
+
+	public ObjectId getObjectId() {
+		if (transMeta==null) return null;
+		return transMeta.getObjectId();
+	}
+
+	public ObjectRevision getObjectRevision() {
+		if (transMeta==null) return null;
+		return transMeta.getObjectRevision();
+	}
+
+	public LoggingObjectType getObjectType() {
+		return LoggingObjectType.TRANS;
+	}
+
+	public LoggingObjectInterface getParent() {
+		if (parentTrans!=null) {
+			return parentTrans;
+		} else {
+			return parentJob;
+		}
+	}
+
+	public RepositoryDirectory getRepositoryDirectory() {
+		if (transMeta==null) return null;
+		return transMeta.getRepositoryDirectory();
 	}
 }

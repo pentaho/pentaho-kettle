@@ -42,6 +42,8 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -88,7 +90,7 @@ import org.w3c.dom.Node;
  */
 public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMeta>, XMLInterface, UndoInterface,
 		HasDatabasesInterface, VariableSpace, EngineMetaInterface, ResourceExportInterface, HasSlaveServersInterface, NamedParams, 
-		RepositoryElementInterface {
+		RepositoryElementInterface, LoggingObjectInterface {
 	
 	private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -2653,5 +2655,25 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		}
 		
 		return list;
+	}
+
+	public String getLogChannelId() {
+		return null;
+	}
+
+	public String getObjectName() {
+		return getName();
+	}
+
+	public String getObjectCopy() {
+		return null;
+	}
+
+	public LoggingObjectType getObjectType() {
+		return LoggingObjectType.JOBMETA;
+	}
+
+	public LoggingObjectInterface getParent() {
+		return null; // TODO return parent job metadata
 	}
 }

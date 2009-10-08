@@ -21,8 +21,8 @@ import org.w3c.dom.Node;
 
 /**
  * This class defines the location of a transformation, job or schema in the repository.
- * That means that it's just an extra parameter for recognising a transformation, job or schema.
- * It allows for subdirectories by linking back to itself.
+ * That means that it's just an extra parameter for recognizing a transformation, job or schema.
+ * It allows for sub-directories by linking back to itself.
  * 
  * @author Matt
  * @since  09-nov-2004

@@ -1,6 +1,7 @@
 package org.pentaho.di.core.logging;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +21,11 @@ public class LoggingRegistry {
 	
 	private Map<String,LoggingObjectInterface> map;
 	
+	private Date lastModificationTime;
+	
 	private LoggingRegistry() {
 		map = new HashMap<String, LoggingObjectInterface>();	
+		lastModificationTime = new Date();
 	}
 	
 	public static LoggingRegistry getInstance() {
@@ -42,7 +46,7 @@ public class LoggingRegistry {
 		
 		// Extract the core logging information from the object itself, including the hierarchy.
 		//
-		LoggingObjectInterface loggingSource = new LoggingObject(object);
+		LoggingObject loggingSource = new LoggingObject(object);
 		
 		// First do a sanity check to see if the object is not already present in the registry
 		// This will prevent excessive memory leakage in the registry map too... 
@@ -58,6 +62,7 @@ public class LoggingRegistry {
 		loggingSource.setLogChannelId(logChannelId);
 
 		map.put(logChannelId, loggingSource);
+		lastModificationTime = new Date();
 		return logChannelId;
 	}
 	
@@ -168,5 +173,9 @@ public class LoggingRegistry {
 		}
 		
 		return children;
+	}
+	
+	public Date getLastModificationTime() {
+		return lastModificationTime;
 	}
 }

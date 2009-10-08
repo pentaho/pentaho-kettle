@@ -49,7 +49,7 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
 {
 	private static Class<?> PKG = RowsFromResult.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    private String name[];
+    private String fieldname[];
     private int    type[];
     private int    length[];
     private int    precision[];
@@ -73,17 +73,17 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
     /**
      * @return Returns the name.
      */
-    public String[] getName()
+    public String[] getFieldname()
     {
-        return name;
+        return fieldname;
     }
 
     /**
      * @param name The name to set.
      */
-    public void setName(String[] name)
+    public void setFieldname(String[] name)
     {
-        this.name = name;
+        this.fieldname = name;
     }
 
     /**
@@ -137,7 +137,7 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
 	
     public void allocate(int nrFields)
     {
-        name = new String[nrFields];
+        fieldname = new String[nrFields];
         type = new int[nrFields];
         length = new int[nrFields];
         precision = new int[nrFields];
@@ -147,10 +147,10 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
     {
         StringBuffer retval=new StringBuffer();
         retval.append("    <fields>"); //$NON-NLS-1$
-        for (int i=0;i<name.length;i++)
+        for (int i=0;i<fieldname.length;i++)
         {
             retval.append("      <field>"); //$NON-NLS-1$
-            retval.append("        "+XMLHandler.addTagValue("name",      name[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("        "+XMLHandler.addTagValue("name",      fieldname[i])); //$NON-NLS-1$ //$NON-NLS-2$
             retval.append("        "+XMLHandler.addTagValue("type",      ValueMeta.getTypeDesc(type[i]))); //$NON-NLS-1$ //$NON-NLS-2$
             retval.append("        "+XMLHandler.addTagValue("length",    length[i])); //$NON-NLS-1$ //$NON-NLS-2$
             retval.append("        "+XMLHandler.addTagValue("precision", precision[i])); //$NON-NLS-1$ //$NON-NLS-2$
@@ -171,7 +171,7 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
         for (int i=0;i<nrfields;i++)
         {
             Node line = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
-            name     [i] = XMLHandler.getTagValue(line, "name"); //$NON-NLS-1$
+            fieldname     [i] = XMLHandler.getTagValue(line, "name"); //$NON-NLS-1$
             type     [i] = ValueMeta.getType(XMLHandler.getTagValue(line, "type")); //$NON-NLS-1$
             length   [i] = Const.toInt(XMLHandler.getTagValue(line, "length"), -2); //$NON-NLS-1$
             precision[i] = Const.toInt(XMLHandler.getTagValue(line, "precision"), -2); //$NON-NLS-1$
@@ -194,7 +194,7 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
     
             for (int i=0;i<nrfields;i++)
             {
-                name[i]      =      rep.getStepAttributeString (id_step, i, "field_name"); //$NON-NLS-1$
+                fieldname[i]      =      rep.getStepAttributeString (id_step, i, "field_name"); //$NON-NLS-1$
                 type[i]      = ValueMeta.getType( rep.getStepAttributeString (id_step, i, "field_type")); //$NON-NLS-1$
                 length[i]    = (int)rep.getStepAttributeInteger(id_step, i, "field_length"); //$NON-NLS-1$
                 precision[i] = (int)rep.getStepAttributeInteger(id_step, i, "field_precision"); //$NON-NLS-1$
@@ -212,9 +212,9 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
 	{
         try
         {
-            for (int i=0;i<name.length;i++)
+            for (int i=0;i<fieldname.length;i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      name[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      fieldname[i]); //$NON-NLS-1$
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      ValueMeta.getTypeDesc(type[i])); //$NON-NLS-1$
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    length[i]); //$NON-NLS-1$
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", precision[i]); //$NON-NLS-1$
@@ -228,9 +228,9 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
     
     public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
     {
-        for (int i=0;i<this.name.length;i++)
+        for (int i=0;i<this.fieldname.length;i++)
         {
-        	ValueMeta v = new ValueMeta(name[i], type[i], length[i], precision[i]);
+        	ValueMeta v = new ValueMeta(fieldname[i], type[i], length[i], precision[i]);
             v.setOrigin(origin);
             r.addValueMeta(v);
         }

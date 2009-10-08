@@ -25,6 +25,9 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -35,6 +38,8 @@ import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 
 public class JobEntryDialog extends Dialog {
 	private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Job entry dialog", LoggingObjectType.JOBENTRYDIALOG, null);
 
 	protected JobEntryInterface jobEntryInt;
 	protected Repository rep;

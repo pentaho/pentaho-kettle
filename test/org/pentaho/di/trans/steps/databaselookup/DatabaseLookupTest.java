@@ -26,6 +26,9 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -60,6 +63,8 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
  */
 public class DatabaseLookupTest extends TestCase
 {
+	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Database Lookup test", LoggingObjectType.GENERAL, null);
+    
     public static final String[] databasesXML = {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<connection>" +
@@ -315,7 +320,7 @@ public class DatabaseLookupTest extends TestCase
             DatabaseMeta dbInfo = transMeta.findDatabase("db");
 
             // Execute our setup SQLs in the database.
-            Database database = new Database(this, dbInfo);
+            Database database = new Database(loggingObject, dbInfo);
             database.connect();
             createTables(database);
             createData(database);

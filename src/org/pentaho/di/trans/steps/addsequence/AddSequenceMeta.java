@@ -380,7 +380,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (useDatabase)
 		{
-			Database db = new Database(this, database);
+			Database db = new Database(loggingObject, database);
 			db.shareVariablesWith(transMeta);
 			try
 			{
@@ -426,7 +426,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (database!=null)
 			{
-				Database db = new Database(this, database);
+				Database db = new Database(loggingObject, database);
 				db.shareVariablesWith(transMeta);
 				try
 				{

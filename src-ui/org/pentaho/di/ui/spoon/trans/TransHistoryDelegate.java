@@ -287,7 +287,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
 	        mb.setMessage(BaseMessages.getString(PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", logTable)); // Nothing found that matches your criteria
 			mb.setText(BaseMessages.getString(PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title")); // Sorry!
 			if (mb.open()==SWT.YES) {
-				Database database = new Database(this, databaseMeta);
+				Database database = new Database(loggingObject, databaseMeta);
 				try {
 					database.connect();
 					database.truncateTable(logTable);
@@ -377,7 +377,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
                     try
                     {
                         // open a connection
-                        database = new Database(this, transMeta.getLogConnection());
+                        database = new Database(loggingObject, transMeta.getLogConnection());
                         database.shareVariablesWith(transMeta);
                         database.connect();
                         

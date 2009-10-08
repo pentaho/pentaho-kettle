@@ -545,7 +545,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (databaseMeta!=null)
 		{
-			Database db = new Database(this, databaseMeta);
+			Database db = new Database(loggingObject, databaseMeta);
 			db.shareVariablesWith(transMeta);
 			try
 			{
@@ -765,7 +765,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 				{
                     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 
-					Database db = new Database(this, databaseMeta);
+					Database db = new Database(loggingObject, databaseMeta);
 					db.shareVariablesWith(transMeta);
 					try
 					{

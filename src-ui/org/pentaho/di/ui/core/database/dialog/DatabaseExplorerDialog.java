@@ -51,6 +51,9 @@ import org.pentaho.di.core.database.Schema;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -85,6 +88,8 @@ public class DatabaseExplorerDialog extends Dialog
 {
 	private static Class<?> PKG = DatabaseExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Database explorer", LoggingObjectType.SPOON, null);
+    
 	private LogChannelInterface log;
 	private PropsUI props;
 	private DatabaseMeta dbMeta;
@@ -711,7 +716,7 @@ public class DatabaseExplorerDialog extends Dialog
 		
 		if(dbMeta.isInNeedOfQuoting(tablename)) tableName=dbMeta.quoteField(tableName);
 	    String sql = dbMeta.getSQLQueryFields(tableName);
-	    Database db = new Database(this, dbMeta);
+	    Database db = new Database(loggingObject, dbMeta);
 		RowMetaInterface result=null;
 
 		try {
@@ -806,7 +811,7 @@ public class DatabaseExplorerDialog extends Dialog
 
 	public void getDDL(String tableName)
 	{
-		Database db = new Database(this, dbMeta);
+		Database db = new Database(loggingObject, dbMeta);
 		try
 		{
 			db.connect();
@@ -830,7 +835,7 @@ public class DatabaseExplorerDialog extends Dialog
 	{
         if (databases!=null)
         {
-    		Database db = new Database(this, dbMeta);
+    		Database db = new Database(loggingObject, dbMeta);
     		try
     		{
     			db.connect();
@@ -853,7 +858,7 @@ public class DatabaseExplorerDialog extends Dialog
     			if (target!=null)
     			{
     				DatabaseMeta targetdbi = DatabaseMeta.findDatabase(dbs, target);
-    				Database targetdb = new Database(this, targetdbi);
+    				Database targetdb = new Database(loggingObject, targetdbi);
     
     				String sql = targetdb.getCreateTableStatement(tableName, r, null, false, null, true);
     				SQLEditor se = new SQLEditor(shell, SWT.NONE, dbMeta, dbcache, sql);
@@ -896,7 +901,7 @@ public class DatabaseExplorerDialog extends Dialog
 	{
 		try {
 			TransProfileFactory profileFactory = new TransProfileFactory(dbMeta, tableName);
-			TransMeta transMeta = profileFactory.generateTransformation();
+			TransMeta transMeta = profileFactory.generateTransformation(loggingObject);
 			TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, 
 					transMeta, 
 					new String[] { TransProfileFactory.RESULT_STEP_NAME, }, new int[] { 25000, } );
