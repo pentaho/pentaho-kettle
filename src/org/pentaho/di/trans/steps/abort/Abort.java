@@ -83,12 +83,12 @@ public class Abort extends BaseStep implements StepInterface {
         	   //
         	   // Here we abort!!
         	   //
-        	   logMinimal(BaseMessages.getString(PKG, "Abort.Log.Wrote.AbortRow", Long.toString(nrInputRows), getInputRowMeta().getString(r)) );
+        	   logError(BaseMessages.getString(PKG, "Abort.Log.Wrote.AbortRow", Long.toString(nrInputRows), getInputRowMeta().getString(r)) );
         		
         	   String message = environmentSubstitute(meta.getMessage());
         	   if ( message == null || message.length() == 0 )
         	   {
-        		   logMinimal(BaseMessages.getString(PKG, "Abort.Log.DefaultAbortMessage", "" + nrInputRows));
+        		   logError(BaseMessages.getString(PKG, "Abort.Log.DefaultAbortMessage", "" + nrInputRows));
         	   }
         	   else
         	   {
