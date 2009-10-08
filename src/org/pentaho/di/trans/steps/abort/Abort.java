@@ -92,7 +92,7 @@ public class Abort extends BaseStep implements StepInterface {
         	   }
         	   else
         	   {
-        		   logMinimal(message);
+        		   logError(message);
         	   }
                setErrors(1);
                stopAll();        	   
