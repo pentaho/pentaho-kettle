@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -68,6 +69,7 @@ public class BaseCluster extends TestCase {
     	// Bootstrap the Kettle API...
     	//
     	KettleEnvironment.init();
+    	CentralLogStore.init(0); // Keep all log rows
         LogWriter.getInstance( LogWriter.LOG_LEVEL_ERROR);
 	}
 
