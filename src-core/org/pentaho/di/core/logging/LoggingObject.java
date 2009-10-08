@@ -45,7 +45,11 @@ public class LoggingObject implements LoggingObjectInterface {
 			// See if the name & type and parent name & type is the same.
 			// This will catch most matches except for the most exceptional use-case.
 			//
-			if (loggingObject.getObjectName().equals(getObjectName()) && loggingObject.getObjectType().equals(getObjectType())) {
+			if ( (loggingObject.getObjectName()==null && getObjectName()!=null ) || (loggingObject.getObjectName()!=null && getObjectName()==null )) {
+				return false;
+			}
+			
+			if ( ( (loggingObject.getObjectName()==null && getObjectName()==null ) || (loggingObject.getObjectName().equals(getObjectName()))) && loggingObject.getObjectType().equals(getObjectType())) {
 				
 				// If there are multiple copies of this object, they both need their own channel
 				//

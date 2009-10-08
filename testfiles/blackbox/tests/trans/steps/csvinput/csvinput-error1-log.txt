@@ -1,0 +1,6 @@
+datafile.0 : Unexpected error : 
+datafile.0 : org.pentaho.di.core.exception.KettleException: 
+datafile.0 : java.io.IOException: Unable to get VFS File object for filename 'ftp://bogus/testfiles/customer-dimension-test.csv' : org.apache.commons.vfs.FileSystemException: Could not connect to FTP server on "bogus".
+datafile.0 : Unable to get VFS File object for filename 'ftp://bogus/testfiles/customer-dimension-test.csv' : org.apache.commons.vfs.FileSystemException: Could not connect to FTP server on "bogus".
+datafile.0 : 
+datafile.0 : Caused by: java.io.IOException: Unable to get VFS File object for filename 'ftp://bogus/testfiles/customer-dimension-test.csv' : org.apache.commons.vfs.FileSystemException: Could not connect to FTP server on "bogus".
