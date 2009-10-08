@@ -106,7 +106,7 @@ public class LoggingObject implements LoggingObjectInterface {
 		LoggingObject check = new LoggingObject(parentObject);
 		LoggingObjectInterface loggingObject = registry.findExistingLoggingSource(check);
 		if (loggingObject==null) {
-			String logChannelId = registry.registerLoggingSource(loggingObject)+"";
+			String logChannelId = registry.registerLoggingSource(check);
 			loggingObject = check;
 			check.setLogChannelId(logChannelId);
 		}

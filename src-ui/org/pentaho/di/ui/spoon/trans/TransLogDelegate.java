@@ -264,14 +264,12 @@ public class TransLogDelegate extends SpoonDelegate {
 		if (logBrowser.isPaused()) {
 			logBrowser.setPaused(false);
 			if (pauseContinueButton!=null) { 
-				pauseContinueButton.setSelection(true);
-				pauseContinueButton.setImage(GUIResource.getInstance().getImageContinueLog());
+				pauseContinueButton.setImage(GUIResource.getInstance().getImagePauseLog());
 			}
 		} else {
 			logBrowser.setPaused(true);
 			if (pauseContinueButton!=null) { 
-				pauseContinueButton.setSelection(false);
-				pauseContinueButton.setImage(GUIResource.getInstance().getImagePauseLog());
+				pauseContinueButton.setImage(GUIResource.getInstance().getImageContinueLog());
 			}
 		}
 	}
