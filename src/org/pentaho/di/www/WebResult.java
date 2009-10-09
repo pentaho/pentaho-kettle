@@ -34,18 +34,25 @@ public class WebResult
     
     private String result;
     private String message;
+    private String id;
     
     public WebResult(String result)
     {
-        this.result = result;
+        this(result, null, null);
     }    
     
     public WebResult(String result, String message)
     {
-        this.result = result;
-        this.message = message;
+        this(result, message, null);
     }
 
+    public WebResult(String result, String message, String id)
+    {
+        this.result = result;
+        this.message = message;
+        this.id = id;
+    }
+    
     public String getXML()
     {
         StringBuffer xml = new StringBuffer();
@@ -54,6 +61,7 @@ public class WebResult
         
         xml.append("  ").append(XMLHandler.addTagValue("result", result));
         xml.append("  ").append(XMLHandler.addTagValue("message", message));
+        xml.append("  ").append(XMLHandler.addTagValue("id", id));
 
         xml.append("</"+XML_TAG+">").append(Const.CR);
 
@@ -69,6 +77,7 @@ public class WebResult
     {
         result = XMLHandler.getTagValue(webResultNode, "result");
         message = XMLHandler.getTagValue(webResultNode, "message");
+        id = XMLHandler.getTagValue(webResultNode, "id");
     }
     
     public String getResult()
@@ -105,4 +114,18 @@ public class WebResult
             throw new KettleXMLException(BaseMessages.getString(PKG, "WebResult.Error.UnableCreateResult"), e);
         }
     }
+
+	/**
+	 * @return the id
+	 */
+	public String getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(String id) {
+		this.id = id;
+	}
 }

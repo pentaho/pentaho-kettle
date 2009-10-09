@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -115,6 +116,13 @@ public class AddJobServlet extends BaseHttpServlet implements CarteServletInterf
             // If there was a repository, we know about it at this point in time.
             //
             final Repository repository = jobConfiguration.getJobExecutionConfiguration().getRepository();
+
+            Job oldJob = jobMap.getJob(jobMeta.getName());
+            if (oldJob!=null) {
+            	// To prevent serious memory leaks in the logging sub-system, we clear out the rows from the previous execution...
+            	//
+            	CentralLogStore.discardLines(oldJob.getLogChannelId(), true);
+            }
 
             // Create the transformation and store in the list...
             //

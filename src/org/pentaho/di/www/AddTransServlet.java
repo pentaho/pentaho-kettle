@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
@@ -115,6 +116,13 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
             //
             final Repository repository = transConfiguration.getTransExecutionConfiguration().getRepository();
             
+            Trans oldTrans = transformationMap.getTransformation(transMeta.getName());
+            if (oldTrans!=null) {
+            	// To prevent serious memory leaks in the logging sub-system, we clear out the rows from the previous execution...
+            	//
+            	CentralLogStore.discardLines(oldTrans.getLogChannelId(), true);
+            }
+            
             // Create the transformation and store in the list...
             //
             final Trans trans = new Trans(transMeta);
@@ -171,7 +179,9 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
             
             if (useXML)
             {
-                out.println(new WebResult(WebResult.STRING_OK, message));
+            	// Return the log channel id as well
+            	//
+                out.println(new WebResult(WebResult.STRING_OK, message, trans.getLogChannelId()));
             }
             else
             {
