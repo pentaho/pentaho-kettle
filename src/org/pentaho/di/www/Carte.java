@@ -145,7 +145,7 @@ public class Carte
     public static void runCarte(SlaveServerConfig config) throws Exception {
     	init();
     	       
-    	CentralLogStore.init(config.getMaxLogLines());
+    	CentralLogStore.init(config.getMaxLogLines(), config.getMaxLogTimeoutHours());
 
         // Join with the process: block
         //

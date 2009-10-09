@@ -1,6 +1,11 @@
 package org.pentaho.di.core.logging;
 
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.spi.LoggingEvent;
 
@@ -8,24 +13,66 @@ public class CentralLogStore {
 	private static CentralLogStore store;
 	
 	private Log4jBufferAppender appender;
+
+	private Timer logCleanerTimer;
 	
 	/**
 	 * Create the central log store with optional limitation to the size
 	 * 
 	 * @param maxSize the maximum size
+	 * @param maxLogTimeoutMinutes The maximum time that a log line times out in Minutes.
 	 */
-	private CentralLogStore(int maxSize) {
+	private CentralLogStore(int maxSize, int maxLogTimeoutMinutes) {
 		this.appender = new Log4jBufferAppender(maxSize);
 		LogWriter.getInstance().addAppender(this.appender);
+		replaceLogCleaner(maxLogTimeoutMinutes);
 	}
 	
+	public void replaceLogCleaner(final int maxLogTimeoutMinutes) {
+		if (logCleanerTimer!=null) {
+			logCleanerTimer.cancel();
+		}
+		logCleanerTimer = new Timer();
+		final AtomicBoolean busy = new AtomicBoolean(false);
+		TimerTask timerTask = new TimerTask() {
+			public void run() {
+				if (!busy.get()) {
+					busy.set(true);
+					int nrRemovedLines = 0;
+					long minTimeBoundary = new Date().getTime() - maxLogTimeoutMinutes*60*1000;
+					synchronized(appender) {
+						Iterator<BufferLine> i = appender.getBufferIterator();
+						while (i.hasNext()) {
+							BufferLine bufferLine = i.next();
+
+							if (bufferLine.getEvent().timeStamp < minTimeBoundary) {
+								i.remove();
+								nrRemovedLines++;
+							} else {
+								break;
+							}
+						}
+					}
+					// System.out.println("Nr of purged log lines: "+nrRemovedLines);
+					busy.set(false);
+				}
+			}
+		};
+
+		// Clean out the rows every 10 seconds to get a nice steady purge operation...
+		//
+		logCleanerTimer.schedule(timerTask, 10000, 10000);
+
+	}
+
 	/**
 	 * Initialize the central log store with optional limitation to the size
 	 * 
 	 * @param maxSize the maximum size
+	 * @param maxLogTimeoutHours The maximum time that a log line times out in hours.
 	 */
-	public static void init(int maxSize) {
-		store = new CentralLogStore(maxSize);
+	public static void init(int maxSize, int maxLogTimeoutMinutes) {
+		store = new CentralLogStore(maxSize, maxLogTimeoutMinutes);
 	}
 	
 	private static CentralLogStore getInstance() {

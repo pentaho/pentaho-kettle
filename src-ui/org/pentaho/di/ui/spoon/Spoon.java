@@ -409,7 +409,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 			PropsUI.init(display, Props.TYPE_PROPERTIES_SPOON); 
 
-			CentralLogStore.init(PropsUI.getInstance().getMaxNrLinesInLog());
+			CentralLogStore.init(PropsUI.getInstance().getMaxNrLinesInLog(), PropsUI.getInstance().getMaxLogLineTimeoutMinutes());
 
 			// remember...
 

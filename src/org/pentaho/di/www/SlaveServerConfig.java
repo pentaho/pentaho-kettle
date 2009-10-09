@@ -24,6 +24,8 @@ public class SlaveServerConfig {
 	
 	private int maxLogLines;
 	
+	private int maxLogTimeoutHours;
+	
 	public SlaveServerConfig() {
 		masters=new ArrayList<SlaveServer>();
 	}
@@ -57,6 +59,7 @@ public class SlaveServerConfig {
 
         XMLHandler.addTagValue("joining", joining);
         XMLHandler.addTagValue("max_log_lines", maxLogLines);
+        XMLHandler.addTagValue("max_log_timeout_hours", maxLogTimeoutHours);
 
         xml.append(XMLHandler.closeTag(XML_TAG));
 
@@ -81,6 +84,7 @@ public class SlaveServerConfig {
 		}
 		joining = "Y".equalsIgnoreCase(XMLHandler.getTagValue(node, "joining"));
 		maxLogLines = Integer.parseInt(XMLHandler.getTagValue(node, "max_log_lines"), 0);
+		maxLogTimeoutHours = Integer.parseInt(XMLHandler.getTagValue(node, "max_log_timeout_hours"), 0);
 	}
 
 	private void checkNetworkInterfaceSetting(LogChannelInterface log, Node slaveNode, SlaveServer slaveServer) {
@@ -183,6 +187,20 @@ public class SlaveServerConfig {
 	 */
 	public void setMaxLogLines(int maxLogLines) {
 		this.maxLogLines = maxLogLines;
+	}
+
+	/**
+	 * @return the maxLogTimeoutHours
+	 */
+	public int getMaxLogTimeoutHours() {
+		return maxLogTimeoutHours;
+	}
+
+	/**
+	 * @param maxLogTimeoutHours the maxLogTimeoutHours to set
+	 */
+	public void setMaxLogTimeoutHours(int maxLogTimeoutHours) {
+		this.maxLogTimeoutHours = maxLogTimeoutHours;
 	}
 	
 }

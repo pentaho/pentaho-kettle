@@ -37,11 +37,10 @@ import org.pentaho.di.core.database.map.DatabaseConnectionMap;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleTransException;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
-import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.parameters.DuplicateParamException;
@@ -181,8 +180,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 	private boolean safeModeEnabled;
 
-    private Log4jStringAppender stringAppender;
-    
     private String threadName;
     
     private boolean preparing;
@@ -597,14 +594,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         StepInitThread initThreads[] = new StepInitThread[steps.size()];
         Thread[] threads = new Thread[steps.size()];
 
-        // Grab the error code in case we're doing a preview
-        // In that case we're going to propagate the log to the exception...
-        //
-        Log4jStringAppender initAppender = null;
-        if (preview) {
-        	LogWriter.getInstance().addAppender(initAppender);
-        }
-        
         // Initialize all the threads...
         //
 		for (int i=0;i<steps.size();i++)
@@ -651,12 +640,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             }
         }
         
-        // That's all the log we need
-        //
-        if (initAppender!=null) {
-        	LogWriter.getInstance().removeAppender(initAppender);
-        }
-        
 		if (!ok)
 		{
             // Halt the other threads as well, signal end-of-the line to the outside world...
@@ -689,8 +672,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             
             // Pass along the log during preview.  Otherwise it becomes hard to see what went wrong.
             //
-            if (initAppender!=null) {
-            	throw new KettleException(BaseMessages.getString(PKG, "Trans.Log.FailToInitializeAtLeastOneStep")+Const.CR+initAppender.getBuffer()); //$NON-NLS-1
+            if (preview) {
+            	String logText = CentralLogStore.getAppender().getBuffer(getLogChannelId(), true).toString();
+            	throw new KettleException(BaseMessages.getString(PKG, "Trans.Log.FailToInitializeAtLeastOneStep")+Const.CR+logText); //$NON-NLS-1
             } else {
             	throw new KettleException(BaseMessages.getString(PKG, "Trans.Log.FailToInitializeAtLeastOneStep")+Const.CR); //$NON-NLS-1
             }
@@ -1531,10 +1515,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 		// Change the logging back to stream...
 		String log_string = null;
-		if (transMeta.isLogfieldUsed() && stringAppender!=null)
+		if (transMeta.isLogfieldUsed())
 		{
-            log_string = stringAppender.getBuffer().append(Const.CR+"END"+Const.CR).toString();
-            LogWriter.getInstance().removeAppender(stringAppender);
+            StringBuffer buffer = CentralLogStore.getAppender().getBuffer(log.getLogChannelId(), true);
+            log_string = buffer.append(Const.CR+"END"+Const.CR).toString();
 		}
 
 		// OK, we have some logging to do...

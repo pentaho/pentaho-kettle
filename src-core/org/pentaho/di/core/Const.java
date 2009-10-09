@@ -457,6 +457,9 @@ public class Const
     /** The default maximum for the nr of lines in the history views */
     public static final int MAX_NR_HISTORY_LINES = 50;
 
+    /** The default log line timeout in minutes : 12 hours */
+    public static final int MAX_LOG_LINE_TIMEOUT_MINUTES = 12*60;
+
     /** UI-agnostic flag for warnings */
     public static final int WARNING = 1;
     

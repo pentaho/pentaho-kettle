@@ -98,155 +98,87 @@ public class EnterOptionsDialog extends Dialog
 
 	private Color background, graphColor, tabColor;
 
-	private Label wlFFont;
-
 	private Canvas wFFont;
 
 	private Button wbFFont, wdFFont;
-
-	private Label wlGFont;
 
 	private Canvas wGFont;
 
 	private Button wbGFont, wdGFont;
 
-	private Label wlNFont;
-
 	private Canvas wNFont;
 
 	private Button wbNFont, wdNFont;
-
-	private Label wlBGColor;
 
 	private Canvas wBGColor;
 
 	private Button wbBGColor, wdBGcolor;
 
-	private Label wlGrColor;
-
 	private Canvas wGrColor;
 
 	private Button wbGrColor, wdGrColor;
-
-	private Label wlTabColor;
 
 	private Canvas wTabColor;
 
 	private Button wbTabColor, wdTabColor;
 
-	private Label wlIconsize;
-
 	private Text wIconsize;
-
-	private Label wlLineWidth;
 
 	private Text wLineWidth;
 
-	private Label wlShadowSize;
-
 	private Text wShadowSize;
-
-	private Label wlMaxUndo;
 
 	private Text wMaxUndo;
 
-	private Label wlDefaultPreview;
-
 	private Text wDefaultPreview;
 
-	private Label wlMaxNrLogLines;
-
 	private Text wMaxNrLogLines;
-	
-	private Label wlMaxNrHistLines;
+
+	private Text wMaxLogLineTimeout;
 
 	private Text wMaxNrHistLines;
 
-	private Label wlMiddlePct;
-
 	private Text wMiddlePct;
-
-	private Label wlGridSize;
 
 	private Text wGridSize;
 
-	private Label wlAntiAlias;
-
 	private Button wAntiAlias;
-
-	private Label wlOriginalLook;
 
 	private Button wOriginalLook;
 
-	private Label wlBranding;
-
 	private Button wBranding;
-
-	private Label wlShowTips;
 
 	private Button wShowTips;
 
-	private Label wlShowWelcome;
-
 	private Button wShowWelcome;
-
-	private Label wlUseCache;
 
 	private Button wUseCache;
 
-	private Label wlOpenLast;
-
 	private Button wOpenLast;
-
-	private Label wlAutoSave;
 
 	private Button wAutoSave;
 
-	private Label wlOnlyActiveFile;
-
 	private Button wOnlyActiveFile;
-
-	private Label wlDBConnXML;
 
 	private Button wDBConnXML;
 
-	private Label wlAskReplaceDB;
-
 	private Button wAskReplaceDB;
-
-	private Label wlReplaceDB;
 
 	private Button wReplaceDB;
 
-	private Label wlSaveConf;
-
 	private Button wSaveConf;
-
-	private Label wlAutoSplit;
 
 	private Button wAutoSplit;
 
-	private Label wlCopyDistrib;
-
 	private Button wCopyDistrib;
-
-	private Label wlShowRep;
 
 	private Button wShowRep;
 
-	private Label wlExitWarning;
-
 	private Button wExitWarning;
-
-	private Label wlClearCustom;
 
 	private Button wClearCustom;
 
-	private Label wlDefaultLocale;
-
 	private Combo wDefaultLocale;
-
-	private Label wlFailoverLocale;
 
 	private Combo wFailoverLocale;
 
@@ -266,9 +198,9 @@ public class EnterOptionsDialog extends Dialog
 
 	private Button tooltipBtn;
 
-  private Button helptipBtn;
+    private Button helptipBtn;
 
-  private Button autoCollapseBtn;
+    private Button autoCollapseBtn;
 
 
 	/**
@@ -366,6 +298,7 @@ public class EnterOptionsDialog extends Dialog
 		wMiddlePct.addSelectionListener(lsDef);
 		wDefaultPreview.addSelectionListener(lsDef);
 		wMaxNrLogLines.addSelectionListener(lsDef);
+		wMaxLogLineTimeout.addSelectionListener(lsDef);
 		wMaxNrHistLines.addSelectionListener(lsDef);
 		wGridSize.addSelectionListener(lsDef);
 
@@ -414,7 +347,7 @@ public class EnterOptionsDialog extends Dialog
 
 		// Fixed font
 		int nr = 0;
-		wlFFont = new Label(wLookComp, SWT.RIGHT);
+		Label wlFFont = new Label(wLookComp, SWT.RIGHT);
 		wlFFont.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.FixedWidthFont.Label"));
 		props.setLook(wlFFont);
 		FormData fdlFFont = new FormData();
@@ -491,7 +424,7 @@ public class EnterOptionsDialog extends Dialog
 
 		// Graph font
 		nr++;
-		wlGFont = new Label(wLookComp, SWT.RIGHT);
+		Label wlGFont = new Label(wLookComp, SWT.RIGHT);
 		wlGFont.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.GraphFont.Label"));
 		props.setLook(wlGFont);
 		FormData fdlGFont = new FormData();
@@ -568,7 +501,7 @@ public class EnterOptionsDialog extends Dialog
 
 		// Note font
 		nr++;
-		wlNFont = new Label(wLookComp, SWT.RIGHT);
+		Label wlNFont = new Label(wLookComp, SWT.RIGHT);
 		wlNFont.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.NoteFont.Label"));
 		props.setLook(wlNFont);
 		FormData fdlNFont = new FormData();
@@ -644,7 +577,7 @@ public class EnterOptionsDialog extends Dialog
 
 		// Background color
 		nr++;
-		wlBGColor = new Label(wLookComp, SWT.RIGHT);
+		Label wlBGColor = new Label(wLookComp, SWT.RIGHT);
 		wlBGColor.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.BackgroundColor.Label"));
 		props.setLook(wlBGColor);
 		FormData fdlBGColor = new FormData();
@@ -718,7 +651,7 @@ public class EnterOptionsDialog extends Dialog
 
 		// Graph background color
 		nr++;
-		wlGrColor = new Label(wLookComp, SWT.RIGHT);
+		Label wlGrColor = new Label(wLookComp, SWT.RIGHT);
 		wlGrColor.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.BackgroundColorGraph.Label"));
 		props.setLook(wlGrColor);
 		FormData fdlGrColor = new FormData();
@@ -787,7 +720,7 @@ public class EnterOptionsDialog extends Dialog
 
 		// Tab selected color
 		nr++;
-		wlTabColor = new Label(wLookComp, SWT.RIGHT);
+		Label wlTabColor = new Label(wLookComp, SWT.RIGHT);
 		wlTabColor.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.TabColor.Label"));
 		props.setLook(wlTabColor);
 		FormData fdlTabColor = new FormData();
@@ -854,7 +787,7 @@ public class EnterOptionsDialog extends Dialog
 		wTabColor.setLayoutData(fdTabColor);
 
 		// Iconsize line
-		wlIconsize = new Label(wLookComp, SWT.RIGHT);
+		Label wlIconsize = new Label(wLookComp, SWT.RIGHT);
 		wlIconsize.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.IconSize.Label"));
 		props.setLook(wlIconsize);
 		FormData fdlIconsize = new FormData();
@@ -872,7 +805,7 @@ public class EnterOptionsDialog extends Dialog
 		wIconsize.setLayoutData(fdIconsize);
 
 		// LineWidth line
-		wlLineWidth = new Label(wLookComp, SWT.RIGHT);
+		Label wlLineWidth = new Label(wLookComp, SWT.RIGHT);
 		wlLineWidth.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.LineWidth.Label"));
 		props.setLook(wlLineWidth);
 		FormData fdlLineWidth = new FormData();
@@ -890,7 +823,7 @@ public class EnterOptionsDialog extends Dialog
 		wLineWidth.setLayoutData(fdLineWidth);
 
 		// ShadowSize line
-		wlShadowSize = new Label(wLookComp, SWT.RIGHT);
+		Label wlShadowSize = new Label(wLookComp, SWT.RIGHT);
 		wlShadowSize.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.ShadowSize.Label"));
 		props.setLook(wlShadowSize);
 		FormData fdlShadowSize = new FormData();
@@ -908,7 +841,7 @@ public class EnterOptionsDialog extends Dialog
 		wShadowSize.setLayoutData(fdShadowSize);
 
 		// MiddlePct line
-		wlMiddlePct = new Label(wLookComp, SWT.RIGHT);
+		Label wlMiddlePct = new Label(wLookComp, SWT.RIGHT);
 		wlMiddlePct.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.DialogMiddlePercentage.Label"));
 		props.setLook(wlMiddlePct);
 		FormData fdlMiddlePct = new FormData();
@@ -926,7 +859,7 @@ public class EnterOptionsDialog extends Dialog
 		wMiddlePct.setLayoutData(fdMiddlePct);
 
 		// GridSize line
-		wlGridSize = new Label(wLookComp, SWT.RIGHT);
+		Label wlGridSize = new Label(wLookComp, SWT.RIGHT);
 		wlGridSize.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.GridSize.Label"));
 		wlGridSize.setToolTipText(BaseMessages.getString(PKG, "EnterOptionsDialog.GridSize.ToolTip"));
 		props.setLook(wlGridSize);
@@ -946,7 +879,7 @@ public class EnterOptionsDialog extends Dialog
 		wGridSize.setLayoutData(fdGridSize);
 
 		// Enable anti-aliasing
-		wlAntiAlias = new Label(wLookComp, SWT.RIGHT);
+		Label wlAntiAlias = new Label(wLookComp, SWT.RIGHT);
 		wlAntiAlias.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.CanvasAntiAliasing.Label"));
 		props.setLook(wlAntiAlias);
 		FormData fdlAntiAlias = new FormData();
@@ -964,7 +897,7 @@ public class EnterOptionsDialog extends Dialog
 		wAntiAlias.setLayoutData(fdAntiAlias);
 
 		// Show original look
-		wlOriginalLook = new Label(wLookComp, SWT.RIGHT);
+		Label wlOriginalLook = new Label(wLookComp, SWT.RIGHT);
 		wlOriginalLook.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.UseOSLook.Label"));
 		props.setLook(wlOriginalLook);
 		FormData fdlOriginalLook = new FormData();
@@ -982,7 +915,7 @@ public class EnterOptionsDialog extends Dialog
 		wOriginalLook.setLayoutData(fdOriginalLook);
 
 		// Show branding graphics
-		wlBranding = new Label(wLookComp, SWT.RIGHT);
+		Label wlBranding = new Label(wLookComp, SWT.RIGHT);
 		wlBranding.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.Branding.Label"));
 		props.setLook(wlBranding);
 		FormData fdlBranding = new FormData();
@@ -1000,7 +933,7 @@ public class EnterOptionsDialog extends Dialog
 		wBranding.setLayoutData(fdBranding);
 
 		// DefaultLocale line
-		wlDefaultLocale = new Label(wLookComp, SWT.RIGHT);
+		Label wlDefaultLocale = new Label(wLookComp, SWT.RIGHT);
 		wlDefaultLocale.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.DefaultLocale.Label"));
 		props.setLook(wlDefaultLocale);
 		FormData fdlDefaultLocale = new FormData();
@@ -1023,7 +956,7 @@ public class EnterOptionsDialog extends Dialog
 			wDefaultLocale.select(idxDefault);
 
 		// FailoverLocale line
-		wlFailoverLocale = new Label(wLookComp, SWT.RIGHT);
+		Label wlFailoverLocale = new Label(wLookComp, SWT.RIGHT);
 		wlFailoverLocale.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.FailoverLocale.Label"));
 		props.setLook(wlFailoverLocale);
 		FormData fdlFailoverLocale = new FormData();
@@ -1087,7 +1020,7 @@ public class EnterOptionsDialog extends Dialog
 		wGeneralComp.setLayout(generalLayout);
 
 		// MaxUndo line
-		wlMaxUndo = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlMaxUndo = new Label(wGeneralComp, SWT.RIGHT);
 		wlMaxUndo.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.MaximumUndo.Label"));
 		props.setLook(wlMaxUndo);
 		FormData fdlMaxUndo = new FormData();
@@ -1105,7 +1038,7 @@ public class EnterOptionsDialog extends Dialog
 		wMaxUndo.setLayoutData(fdMaxUndo);
 
 		// Default preview size
-		wlDefaultPreview = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlDefaultPreview = new Label(wGeneralComp, SWT.RIGHT);
 		wlDefaultPreview.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.DefaultPreviewSize.Label"));
 		props.setLook(wlDefaultPreview);
 		FormData fdlDefaultPreview = new FormData();
@@ -1123,7 +1056,7 @@ public class EnterOptionsDialog extends Dialog
 		wDefaultPreview.setLayoutData(fdDefaultPreview);
 
 		// Max Nr of log lines
-		wlMaxNrLogLines = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlMaxNrLogLines = new Label(wGeneralComp, SWT.RIGHT);
 		wlMaxNrLogLines.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.MaxNrLogLinesSize.Label"));
 		props.setLook(wlMaxNrLogLines);
 		FormData fdlMaxNrLogLines = new FormData();
@@ -1140,14 +1073,32 @@ public class EnterOptionsDialog extends Dialog
 		fdMaxNrLogLines.top = new FormAttachment(wDefaultPreview, margin);
 		wMaxNrLogLines.setLayoutData(fdMaxNrLogLines);
 
+		// Max log line timeout (minutes)
+		Label wlMaxLogLineTimeout = new Label(wGeneralComp, SWT.RIGHT);
+		wlMaxLogLineTimeout.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.MaxLogLineTimeout.Label"));
+		props.setLook(wlMaxLogLineTimeout);
+		FormData fdlMaxLogLineTimeout = new FormData();
+		fdlMaxLogLineTimeout.left = new FormAttachment(0, 0);
+		fdlMaxLogLineTimeout.right = new FormAttachment(middle, -margin);
+		fdlMaxLogLineTimeout.top = new FormAttachment(wMaxNrLogLines, margin);
+		wlMaxLogLineTimeout.setLayoutData(fdlMaxLogLineTimeout);
+		wMaxLogLineTimeout = new Text(wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wMaxLogLineTimeout.setText(Integer.toString(props.getMaxLogLineTimeoutMinutes()));
+		props.setLook(wMaxLogLineTimeout);
+		FormData fdMaxLogLineTimeout = new FormData();
+		fdMaxLogLineTimeout.left = new FormAttachment(middle, 0);
+		fdMaxLogLineTimeout.right = new FormAttachment(100, -margin);
+		fdMaxLogLineTimeout.top = new FormAttachment(wMaxNrLogLines, margin);
+		wMaxLogLineTimeout.setLayoutData(fdMaxLogLineTimeout);
+
 		// Max Nr of history lines
-		wlMaxNrHistLines = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlMaxNrHistLines = new Label(wGeneralComp, SWT.RIGHT);
 		wlMaxNrHistLines.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.MaxNrHistLinesSize.Label"));
 		props.setLook(wlMaxNrHistLines);
 		FormData fdlMaxNrHistLines = new FormData();
 		fdlMaxNrHistLines.left = new FormAttachment(0, 0);
 		fdlMaxNrHistLines.right = new FormAttachment(middle, -margin);
-		fdlMaxNrHistLines.top = new FormAttachment(wMaxNrLogLines, margin);
+		fdlMaxNrHistLines.top = new FormAttachment(wMaxLogLineTimeout, margin);
 		wlMaxNrHistLines.setLayoutData(fdlMaxNrHistLines);
 		wMaxNrHistLines = new Text(wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wMaxNrHistLines.setText(Integer.toString(props.getMaxNrLinesInHistory()));
@@ -1155,11 +1106,11 @@ public class EnterOptionsDialog extends Dialog
 		FormData fdMaxNrHistLines = new FormData();
 		fdMaxNrHistLines.left = new FormAttachment(middle, 0);
 		fdMaxNrHistLines.right = new FormAttachment(100, -margin);
-		fdMaxNrHistLines.top = new FormAttachment(wMaxNrLogLines, margin);
+		fdMaxNrHistLines.top = new FormAttachment(wMaxLogLineTimeout, margin);
 		wMaxNrHistLines.setLayoutData(fdMaxNrHistLines);
 
 		// Show tips on startup?
-		wlShowTips = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlShowTips = new Label(wGeneralComp, SWT.RIGHT);
 		wlShowTips.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.ShowTipsStartup.Label"));
 		props.setLook(wlShowTips);
 		FormData fdlShowTips = new FormData();
@@ -1177,7 +1128,7 @@ public class EnterOptionsDialog extends Dialog
 		wShowTips.setLayoutData(fdShowTips);
 
 		// Show welcome page on startup?
-		wlShowWelcome = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlShowWelcome = new Label(wGeneralComp, SWT.RIGHT);
 		wlShowWelcome.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.ShowWelcomePage.Label"));
 		props.setLook(wlShowWelcome);
 		FormData fdlShowWelcome = new FormData();
@@ -1195,7 +1146,7 @@ public class EnterOptionsDialog extends Dialog
 		wShowWelcome.setLayoutData(fdShowWelcome);
 
 		// Use DB Cache?
-		wlUseCache = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlUseCache = new Label(wGeneralComp, SWT.RIGHT);
 		wlUseCache.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.UseDatabaseCache.Label"));
 		props.setLook(wlUseCache);
 		FormData fdlUseCache = new FormData();
@@ -1213,7 +1164,7 @@ public class EnterOptionsDialog extends Dialog
 		wUseCache.setLayoutData(fdUseCache);
 
 		// Auto load last file at startup?
-		wlOpenLast = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlOpenLast = new Label(wGeneralComp, SWT.RIGHT);
 		wlOpenLast.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.OpenLastFileStartup.Label"));
 		props.setLook(wlOpenLast);
 		FormData fdlOpenLast = new FormData();
@@ -1231,7 +1182,7 @@ public class EnterOptionsDialog extends Dialog
 		wOpenLast.setLayoutData(fdOpenLast);
 
 		// Auto save changed files?
-		wlAutoSave = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlAutoSave = new Label(wGeneralComp, SWT.RIGHT);
 		wlAutoSave.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.AutoSave.Label"));
 		props.setLook(wlAutoSave);
 		FormData fdlAutoSave = new FormData();
@@ -1249,7 +1200,7 @@ public class EnterOptionsDialog extends Dialog
 		wAutoSave.setLayoutData(fdAutoSave);
 
 		// Auto save changed files?
-		wlOnlyActiveFile = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlOnlyActiveFile = new Label(wGeneralComp, SWT.RIGHT);
 		wlOnlyActiveFile.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.OnlyActiveFile.Label"));
 		props.setLook(wlOnlyActiveFile);
 		FormData fdlOnlyActiveFile = new FormData();
@@ -1267,7 +1218,7 @@ public class EnterOptionsDialog extends Dialog
 		wOnlyActiveFile.setLayoutData(fdOnlyActiveFile);
 
 		// Only save used connections to XML?
-		wlDBConnXML = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlDBConnXML = new Label(wGeneralComp, SWT.RIGHT);
 		wlDBConnXML.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.OnlySaveUsedConnections.Label"));
 		props.setLook(wlDBConnXML);
 		FormData fdlDBConnXML = new FormData();
@@ -1285,7 +1236,7 @@ public class EnterOptionsDialog extends Dialog
 		wDBConnXML.setLayoutData(fdDBConnXML);
 
 		// Ask about replacing existing connections?
-		wlAskReplaceDB = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlAskReplaceDB = new Label(wGeneralComp, SWT.RIGHT);
 		wlAskReplaceDB.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.ReplaceDBAsk.Label"));
 		props.setLook(wlAskReplaceDB);
 		FormData fdlAskReplaceDB = new FormData();
@@ -1304,7 +1255,7 @@ public class EnterOptionsDialog extends Dialog
 		wAskReplaceDB.setLayoutData(fdAskReplaceDB);
 
 		// Only save used connections to XML?
-		wlReplaceDB = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlReplaceDB = new Label(wGeneralComp, SWT.RIGHT);
 		wlReplaceDB.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.ReplaceDB.Label"));
 		props.setLook(wlReplaceDB);
 		FormData fdlReplaceDB = new FormData();
@@ -1323,7 +1274,7 @@ public class EnterOptionsDialog extends Dialog
 		wReplaceDB.setLayoutData(fdReplaceDB);
 
 		// Show confirmation after save?
-		wlSaveConf = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlSaveConf = new Label(wGeneralComp, SWT.RIGHT);
 		wlSaveConf.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.ShowSaveConfirmation.Label"));
 		props.setLook(wlSaveConf);
 		FormData fdlSaveConf = new FormData();
@@ -1341,7 +1292,7 @@ public class EnterOptionsDialog extends Dialog
 		wSaveConf.setLayoutData(fdSaveConf);
 
 		// Automatically split hops?
-		wlAutoSplit = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlAutoSplit = new Label(wGeneralComp, SWT.RIGHT);
 		wlAutoSplit.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.AutoSplitHops.Label"));
 		props.setLook(wlAutoSplit);
 		FormData fdlAutoSplit = new FormData();
@@ -1360,7 +1311,7 @@ public class EnterOptionsDialog extends Dialog
 		wAutoSplit.setLayoutData(fdAutoSplit);
 
 		// Show warning for copy / distribute...
-		wlCopyDistrib = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlCopyDistrib = new Label(wGeneralComp, SWT.RIGHT);
 		wlCopyDistrib.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.CopyOrDistributeDialog.Label"));
 		props.setLook(wlCopyDistrib);
 		FormData fdlCopyDistrib = new FormData();
@@ -1379,7 +1330,7 @@ public class EnterOptionsDialog extends Dialog
 		wCopyDistrib.setLayoutData(fdCopyDistrib);
 
 		// Show repository dialog at startup?
-		wlShowRep = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlShowRep = new Label(wGeneralComp, SWT.RIGHT);
 		wlShowRep.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.ShowRepoDialog.Label"));
 		props.setLook(wlShowRep);
 		FormData fdlShowRep = new FormData();
@@ -1397,7 +1348,7 @@ public class EnterOptionsDialog extends Dialog
 		wShowRep.setLayoutData(fdShowRep);
 
 		// Show exit warning?
-		wlExitWarning = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlExitWarning = new Label(wGeneralComp, SWT.RIGHT);
 		wlExitWarning.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.AskOnExit.Label"));
 		props.setLook(wlExitWarning);
 		FormData fdlExitWarning = new FormData();
@@ -1415,7 +1366,7 @@ public class EnterOptionsDialog extends Dialog
 		wExitWarning.setLayoutData(fdExitWarning);
 
 		// Clear custom parameters. (from step)
-		wlClearCustom = new Label(wGeneralComp, SWT.RIGHT);
+		Label wlClearCustom = new Label(wGeneralComp, SWT.RIGHT);
 		wlClearCustom.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.ClearCustomParameters.Label"));
 		props.setLook(wlClearCustom);
 		FormData fdlClearCustom = new FormData();
@@ -1687,6 +1638,7 @@ public class EnterOptionsDialog extends Dialog
 		props.setDefaultPreviewSize(Const.toInt(wDefaultPreview.getText(), props.getDefaultPreviewSize()));
 
 		props.setMaxNrLinesInLog(Const.toInt(wMaxNrLogLines.getText(), Const.MAX_NR_LOG_LINES));
+		props.setMaxLogLineTimeoutMinutes(Const.toInt(wMaxLogLineTimeout.getText(), Const.MAX_LOG_LINE_TIMEOUT_MINUTES));
 		props.setMaxNrLinesInHistory(Const.toInt(wMaxNrHistLines.getText(), Const.MAX_NR_HISTORY_LINES));
 		props.setMaxUndo(Const.toInt(wMaxUndo.getText(), props.getMaxUndo()));
 

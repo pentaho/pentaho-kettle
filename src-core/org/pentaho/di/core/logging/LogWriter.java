@@ -556,7 +556,7 @@ public class LogWriter
             Appender appender = (Appender) appenders.nextElement();
             if (appender instanceof Log4jConsoleAppender  ||
                 appender instanceof Log4jFileAppender ||
-                appender instanceof Log4jStringAppender
+                appender instanceof Log4jBufferAppender
                )
             {
                 appender.setLayout(layout);

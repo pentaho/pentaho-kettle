@@ -22,6 +22,13 @@ import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 import org.pentaho.di.core.Const;
 
+/**
+ * @deprecated please use the centralized CentralLogStore to get your log lines from.
+ * Pass the log channel id of the parent object that you want the log for.
+ * 
+ * @author matt
+ *
+ */
 public class Log4jStringAppender implements Appender
 {
     private Layout layout;

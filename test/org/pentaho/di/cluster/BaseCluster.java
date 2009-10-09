@@ -69,7 +69,7 @@ public class BaseCluster extends TestCase {
     	// Bootstrap the Kettle API...
     	//
     	KettleEnvironment.init();
-    	CentralLogStore.init(0); // Keep all log rows
+    	CentralLogStore.init(0, 60); // Keep all log rows for at least 60 minutes
         LogWriter.getInstance( LogWriter.LOG_LEVEL_ERROR);
 	}
 

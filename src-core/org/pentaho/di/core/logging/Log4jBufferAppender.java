@@ -294,4 +294,8 @@ public class Log4jBufferAppender implements Appender
     		}
 		}
 	}
+	
+	public Iterator<BufferLine> getBufferIterator() {
+		return buffer.iterator();
+	}
 }

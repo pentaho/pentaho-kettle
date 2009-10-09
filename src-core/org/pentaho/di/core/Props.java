@@ -135,6 +135,7 @@ public class Props implements Cloneable
 
     private static final String STRING_MAX_NR_LINES_IN_LOG = "MaxNrOfLinesInLog";
     private static final String STRING_MAX_NR_LINES_IN_HISTORY = "MaxNrOfLinesInHistory";
+    private static final String STRING_MAX_LOG_LINE_TIMEOUT_MINUTES = "MaxLogLineTimeOutMinutes";
 
     protected LogChannelInterface log;
 	protected Properties properties;
@@ -717,6 +718,17 @@ public class Props implements Cloneable
     public void setMaxNrLinesInHistory(int maxNrLinesInHistory)
     {
         properties.setProperty(STRING_MAX_NR_LINES_IN_HISTORY, Integer.toString(maxNrLinesInHistory));
+    }
+
+    public int getMaxLogLineTimeoutMinutes()
+    {
+        String minutes = properties.getProperty(STRING_MAX_LOG_LINE_TIMEOUT_MINUTES);
+        return Const.toInt(minutes, Const.MAX_LOG_LINE_TIMEOUT_MINUTES);
+    }
+    
+    public void setMaxLogLineTimeoutMinutes(int maxLogLineTimeoutMinutes)
+    {
+        properties.setProperty(STRING_MAX_LOG_LINE_TIMEOUT_MINUTES, Integer.toString(maxLogLineTimeoutMinutes));
     }
 
 }
