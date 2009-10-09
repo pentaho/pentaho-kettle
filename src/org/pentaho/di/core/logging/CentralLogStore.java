@@ -77,4 +77,39 @@ public class CentralLogStore {
     public static Log4jBufferAppender getAppender() {
 		return getInstance().appender;
 	}
+
+    /**
+     * Discard all the lines for the specified log channel id AND all the children.
+     *  
+     * @param parentLogChannelId the parent log channel id to be removed along with all its children.
+     */
+	public static void discardLines(String parentLogChannelId, boolean includeGeneralMessages) {
+		LoggingRegistry registry = LoggingRegistry.getInstance();
+		List<String> ids = registry.getLogChannelChildren(parentLogChannelId);
+
+		// Remove all the rows for these ids
+		//
+		Log4jBufferAppender bufferAppender = getInstance().appender;
+		int beforeSize = bufferAppender.size();
+		for (String id : ids) {
+			// Remove it from the central log buffer
+			//
+			bufferAppender.removeChannelFromBuffer(id);
+			
+			// Also remove the item from the registry.
+			//
+			registry.getMap().remove(id);
+		}
+		
+		// Now discard the general lines if this is required
+		//
+		if (includeGeneralMessages) {
+			bufferAppender.removeGeneralMessages();
+		}
+		
+		int afterSize = bufferAppender.size();
+		System.out.println("Bufferlines discarded for parent log channel id ["+parentLogChannelId+"], before="+beforeSize+", after="+afterSize);
+		System.out.println("Left over lines:");
+		System.out.println(bufferAppender.getBuffer().toString());
+	}
 }

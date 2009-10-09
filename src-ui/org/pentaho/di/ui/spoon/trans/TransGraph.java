@@ -89,6 +89,7 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.Log4jKettleLayout;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -445,7 +446,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     	}
       }
     });
-
+    
     selected_steps = null;
     lastclick = null;
 
@@ -2936,6 +2937,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             if (executionConfiguration.isClearingLog()) {
             	transLogDelegate.clearLog();
             }
+            
+            // Also make sure to clear the log entries in the central log store & registry 
+            //
+			if (trans!=null) {
+				CentralLogStore.discardLines(trans.getLogChannelId(), true);
+			}
             
             // Important: even though transMeta is passed to the Trans constructor, it is not the same object as is in memory
             // To be able to completely test this, we need to run it as we would normally do in pan

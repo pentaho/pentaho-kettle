@@ -59,7 +59,7 @@ public class LogBrowser {
 					public void run() {
 						HasLogChannelInterface provider = logProvider.getLogChannelProvider();
 						
-						if (provider!=null && !text.isDisposed() && !busy.get() && !paused.get()) {
+						if (provider!=null && !text.isDisposed() && !busy.get() && !paused.get() && text.isVisible()) {
 							busy.set(true);
 
 							LogChannelInterface logChannel = provider.getLogChannel();
@@ -135,9 +135,9 @@ public class LogBrowser {
 			}
 		};
 		
-		// Refresh every couple of seconds!
+		// Refresh every often enough
 		//
-		logRefreshTimer.schedule(timerTask, 2000, 2000);
+		logRefreshTimer.schedule(timerTask, 1000, 1000);
 		
 		// Make sure the timer goes down when the widget is disposed
 		//

@@ -8,6 +8,8 @@ import java.util.Properties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -15,6 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -90,6 +93,16 @@ public class TransLogDelegate extends SpoonDelegate {
 		
 		logBrowser = new LogBrowser(transLogText, transGraph);
 		logBrowser.installLogSniffer();
+
+		// If the transformation is closed, we should dispose of all the logging information in the buffer and registry for this transformation
+		//
+		transGraph.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent event) {
+				if (transGraph.trans!=null) {
+					CentralLogStore.discardLines(transGraph.trans.getLogChannelId(), true);
+				}
+			}
+		});
 		
 		transLogTab.setControl(transLogComposite);
 		
@@ -272,5 +285,9 @@ public class TransLogDelegate extends SpoonDelegate {
 				pauseContinueButton.setImage(GUIResource.getInstance().getImageContinueLog());
 			}
 		}
+	}
+	
+	public LogBrowser getLogBrowser() {
+		return logBrowser;
 	}
 }

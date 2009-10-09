@@ -87,6 +87,7 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
@@ -162,7 +163,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
 
   protected JobMeta jobMeta;
 
-  private Job job;
+  public Job job;
 
   protected PropsUI props;
 
@@ -2773,6 +2774,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
             if (executionConfiguration.isClearingLog()) {
             	jobLogDelegate.clearLog();
             }
+            
+            // Also make sure to clear the log entries in the central log store & registry 
+            //
+			if (job!=null) {
+				CentralLogStore.discardLines(job.getLogChannelId(), true);
+			}
         	  
             job = new Job(jobMeta.getName(), jobMeta.getFilename(), null);
             job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getRepositoryDirectory().getPath(), spoon);
@@ -2864,8 +2871,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
     } catch (KettleJobException je) {
       MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
       m.setText(BaseMessages.getString(PKG, "JobLog.Dialog.UnableToSaveStopLineInLoggingTable.Title")); //$NON-NLS-1$
-      m
-          .setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.UnableToSaveStopLineInLoggingTable.Message") + Const.CR + je.toString()); //$NON-NLS-1$
+      m.setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.UnableToSaveStopLineInLoggingTable.Message") + Const.CR + je.toString()); //$NON-NLS-1$
       m.open();
     } finally {
       setControlStates();

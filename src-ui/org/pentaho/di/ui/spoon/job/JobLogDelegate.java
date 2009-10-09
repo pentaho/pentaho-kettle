@@ -7,6 +7,8 @@ import java.util.Properties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -14,6 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -91,6 +94,16 @@ public class JobLogDelegate extends SpoonDelegate {
 
 		LogBrowser logBrowser = new LogBrowser(jobLogText, jobGraph);
 		logBrowser.installLogSniffer();
+		
+		// If the job is closed, we should dispose of all the logging information in the buffer and registry for it
+		//
+		jobGraph.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent event) {
+				if (jobGraph.job!=null) {
+					CentralLogStore.discardLines(jobGraph.job.getLogChannelId(), true);
+				}
+			}
+		});
 
 		jobLogTab.setControl(jobLogComposite);
 

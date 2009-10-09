@@ -14,6 +14,7 @@ package org.pentaho.di.core.logging;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -251,5 +252,46 @@ public class Log4jBufferAppender implements Appender
 	 */
 	public int getNrLines() {
 		return buffer.size();
+	}
+
+	/**
+	 * Removes all rows for the channel with the specified id
+	 * @param id the id of the logging channel to remove
+	 */
+	public void removeChannelFromBuffer(String id) {
+		synchronized(buffer) {
+			Iterator<BufferLine> iterator = buffer.iterator();
+			while (iterator.hasNext()) {
+				BufferLine bufferLine = iterator.next();
+    			Object payload = bufferLine.getEvent().getMessage();
+    			if (payload instanceof LogMessage) {
+    				LogMessage message = (LogMessage) payload;
+    				if (id.equals(message.getLogChannelId())) {
+    					iterator.remove();
+    				}
+    			}
+    		}
+		}
+	}
+
+	public int size() {
+		return buffer.size();
+	}
+
+	public void removeGeneralMessages() {
+		synchronized(buffer) {
+			Iterator<BufferLine> iterator = buffer.iterator();
+			while (iterator.hasNext()) {
+				BufferLine bufferLine = iterator.next();
+    			Object payload = bufferLine.getEvent().getMessage();
+    			if (payload instanceof LogMessage) {
+    				LogMessage message = (LogMessage) payload;
+    				LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject(message.getLogChannelId());
+					if (LoggingObjectType.GENERAL.equals(loggingObject.getObjectType())) {
+						iterator.remove();
+					}
+    			}
+    		}
+		}
 	}
 }
