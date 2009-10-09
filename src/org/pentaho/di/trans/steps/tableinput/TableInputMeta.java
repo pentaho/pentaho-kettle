@@ -52,7 +52,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private DatabaseMeta databaseMeta;
 	private String sql;
-	private int rowLimit;
+	private String rowLimit;
 
 	/** Which step is providing the date, just the name?*/
 	private String lookupFromStepname;
@@ -107,7 +107,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	/**
 	 * @return Returns the rowLimit.
 	 */
-	public int getRowLimit()
+	public String getRowLimit()
 	{
 		return rowLimit;
 	}
@@ -115,7 +115,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	/**
 	 * @param rowLimit The rowLimit to set.
 	 */
-	public void setRowLimit(int rowLimit)
+	public void setRowLimit(String rowLimit)
 	{
 		this.rowLimit = rowLimit;
 	}
@@ -171,7 +171,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			databaseMeta              = DatabaseMeta.findDatabase(databases, XMLHandler.getTagValue(stepnode, "connection"));
 			sql                       = XMLHandler.getTagValue(stepnode, "sql");
-			rowLimit                  = Const.toInt(XMLHandler.getTagValue(stepnode, "limit"), 0);
+			rowLimit                  = XMLHandler.getTagValue(stepnode, "limit");
 			lookupFromStepname        = XMLHandler.getTagValue(stepnode, "lookup");
             executeEachInputRow       = "Y".equals(XMLHandler.getTagValue(stepnode, "execute_each_row"));
             variableReplacementActive = "Y".equals(XMLHandler.getTagValue(stepnode, "variables_active"));
@@ -187,7 +187,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		databaseMeta = null;
 		sql        = "SELECT <values> FROM <table name> WHERE <conditions>";
-		rowLimit   = 0;
+		rowLimit   = "0";
 	}
 
 	/**
@@ -303,7 +303,10 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  //$NON-NLS-1$
 			
 			sql                       =      rep.getStepAttributeString (id_step, "sql");
-			rowLimit                  = (int)rep.getStepAttributeInteger(id_step, "limit");
+			String rowLimit = rep.getStepAttributeString(id_step, "limit");
+			if (rowLimit==null) {
+				rowLimit = Long.toString( rep.getStepAttributeInteger(id_step, "limit") );
+			}
 			lookupFromStepname        =      rep.getStepAttributeString (id_step, "lookup"); 
             executeEachInputRow       =      rep.getStepAttributeBoolean(id_step, "execute_each_row");
             variableReplacementActive =      rep.getStepAttributeBoolean(id_step, "variables_active");

@@ -61,6 +61,7 @@ import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -81,7 +82,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
     private Listener     lsDateform;
 
 	private Label        wlLimit;
-	private Text         wLimit;
+	private TextVar      wLimit;
 	private FormData     fdlLimit, fdLimit;
     
     private Label        wlEachRow;
@@ -186,7 +187,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdlLimit.right= new FormAttachment(middle, -margin);
 		fdlLimit.bottom = new FormAttachment(wOK, -2*margin);
 		wlLimit.setLayoutData(fdlLimit);
-		wLimit=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wLimit=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wLimit);
 		wLimit.addModifyListener(lsMod);
 		fdLimit=new FormData();
@@ -421,7 +422,7 @@ public void setPosition(){
 	{
 		if (input.getSQL() != null) wSQL.setText(input.getSQL());
 		if (input.getDatabaseMeta() != null) wConnection.setText(input.getDatabaseMeta().getName());
-		wLimit.setText(""+(int)input.getRowLimit()); //$NON-NLS-1$
+		wLimit.setText(input.getRowLimit()); //$NON-NLS-1$
 		
         if (input.getLookupStepname() != null)
         {
@@ -476,7 +477,7 @@ public void setPosition(){
     {
         meta.setSQL(preview && !Const.isEmpty(wSQL.getSelectionText())?wSQL.getSelectionText():wSQL.getText());
         meta.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
-        meta.setRowLimit( Const.toInt(wLimit.getText(), 0) );
+        meta.setRowLimit( wLimit.getText() );
         meta.setLookupFromStep( transMeta.findStep( wDatefrom.getText() ) );
         meta.setExecuteEachInputRow(wEachRow.getSelection());
         meta.setVariableReplacementActive(wVariables.getSelection());

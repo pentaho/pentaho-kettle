@@ -310,7 +310,7 @@ public class TableInput extends BaseStep implements StepInterface
 			data.db=new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			
-			data.db.setQueryLimit(meta.getRowLimit());
+			data.db.setQueryLimit(Const.toInt(environmentSubstitute(meta.getRowLimit()),0));
 
 			try
 			{
