@@ -364,6 +364,9 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_DATE_WORKING_DIFF     : // Date A - Date B
             	defaultResultType=ValueMetaInterface.TYPE_INTEGER;
                 break;
+            case CalculatorMetaFunction.CALC_ADD_MONTHS     : // Date A - B Months
+            	defaultResultType=ValueMetaInterface.TYPE_DATE;
+                break;
             default:
                 break;
             }

@@ -617,6 +617,11 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_INTEGER; 
                 }
                 break;
+                case CalculatorMetaFunction.CALC_ADD_MONTHS           : // Add B months to date field A
+                {
+                    calcData[index] = ValueDataUtil.addMonths(metaA, dataA, metaB, dataB);
+                }
+                break;
                 default:
                     throw new KettleValueException(BaseMessages.getString(PKG, "Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }

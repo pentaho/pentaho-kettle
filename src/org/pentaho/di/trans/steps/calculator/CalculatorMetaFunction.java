@@ -23,6 +23,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.w3c.dom.Node;
 
+
 public class CalculatorMetaFunction implements Cloneable
 {
 	private static Class<?> PKG = CalculatorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -91,6 +92,7 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_UNESCAPE_HTML        = 59;
     public static final int CALC_ESCAPE_SQL        = 60;
     public static final int CALC_DATE_WORKING_DIFF  =  61;
+    public static final int CALC_ADD_MONTHS             = 62;
     
     public static final String calc_desc[] = 
         { 
@@ -155,7 +157,8 @@ public class CalculatorMetaFunction implements Cloneable
             "ESCAPE_HTML",
             "UNESCAPE_HTML",
             "ESCAPE_SQL",
-            "DATE_WORKING_DIFF"
+            "DATE_WORKING_DIFF",
+            "ADD_MONTHS"
         };
     
     public static final String calcLongDesc[] = 
@@ -221,7 +224,8 @@ public class CalculatorMetaFunction implements Cloneable
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.EscapeHTML"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.UnescapeHTML"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.EscapeSQL"),
-            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DateDiffWorking")
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DateDiffWorking"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DatePlusMonths"),
         };
    
     private String fieldName;

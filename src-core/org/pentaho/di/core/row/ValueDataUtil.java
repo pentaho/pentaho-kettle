@@ -32,7 +32,6 @@ import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 
-
 public class ValueDataUtil
 {
     /**
@@ -681,6 +680,35 @@ public class ValueDataUtil
 
         throw new KettleValueException("The 'addDays' function only works with a date and an integer");
     }
+
+    public static Object addMonths(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
+    {
+    	if (metaA.isDate() && metaB.isInteger())
+		{
+    		if (dataA!=null && dataB!=null)
+			{
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(metaA.getDate(dataA));
+				int year  = cal.get(Calendar.YEAR);
+				int month = cal.get(Calendar.MONTH);
+				int day   = cal.get(Calendar.DAY_OF_MONTH);
+				
+				month+=metaB.getInteger(dataB).intValue();
+				
+				int newyear =  year+(int)Math.floor(month/12);
+				int newmonth   = month%12;
+				
+				cal.set(newyear, newmonth, 1);
+				int newday = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+				if (newday<day) cal.set(Calendar.DAY_OF_MONTH, newday);
+				else            cal.set(Calendar.DAY_OF_MONTH, day);
+
+				return( cal.getTime() );
+			}
+		}
+
+    	throw new KettleValueException("The 'add_months' function only works on a dates");
+	}
     public static Object DateDiff(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
     {
         if (metaA.isDate() && metaB.isDate())
