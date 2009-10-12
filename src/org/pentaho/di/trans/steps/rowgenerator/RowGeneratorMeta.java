@@ -37,6 +37,8 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepIOMeta;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -499,4 +501,12 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new RowGeneratorData();
 	}
+	
+	/**
+     * Returns the Input/Output metadata for this step.
+     * The generator step only produces output, does not accept input!
+     */
+    public StepIOMetaInterface getStepIOMeta() {
+    	return new StepIOMeta(false, true, false, false);
+    }
 }

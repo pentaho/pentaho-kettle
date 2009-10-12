@@ -1060,7 +1060,7 @@ public class TransSplitter
                                     	
                                     	// Set the master target step as an info step... (use the cloned copy)
                                 		//
-                                        String infoStepNames[] = masterTargetStep.getStepMetaInterface().getInfoSteps();
+                                        String infoStepNames[] = masterTargetStep.getStepMetaInterface().getStepIOMeta().getInfoStepnames();
                                         if (infoStepNames!=null)
                                         {
                                             StepMeta is[] = new StepMeta[infoStepNames.length];
@@ -1073,7 +1073,7 @@ public class TransSplitter
                                                     infoSteps[n] = readerStep;
                                                 }
                                             }
-                                            masterTargetStep.getStepMetaInterface().setInfoSteps(infoSteps);
+                                            masterTargetStep.getStepMetaInterface().getStepIOMeta().setInfoSteps(infoSteps);
                                         }
                                     }
                                     
@@ -1155,7 +1155,7 @@ public class TransSplitter
                                     // 
                                     // Now we have to explain to the slaveStep that it has to source from previous
                                     // 
-                                    String infoStepNames[] = slaveStep.getStepMetaInterface().getInfoSteps();
+                                    String infoStepNames[] = slaveStep.getStepMetaInterface().getStepIOMeta().getInfoStepnames();
                                     if (infoStepNames!=null)
                                     {
                                         StepMeta is[] = new StepMeta[infoStepNames.length];
@@ -1168,7 +1168,7 @@ public class TransSplitter
                                                 infoSteps[n] = readerStep;
                                             }
                                         }
-                                        slaveStep.getStepMetaInterface().setInfoSteps(infoSteps);
+                                        slaveStep.getStepMetaInterface().getStepIOMeta().setInfoSteps(infoSteps);
                                     }
                                 }
                             }
@@ -1191,7 +1191,7 @@ public class TransSplitter
                                 {
                                     TransMeta slave = getSlaveTransformation(clusterSchema, slaveServer);
                                     StepMeta slaveStep = slave.findStep(originalStep.getName());
-                                    String infoStepNames[] = slaveStep.getStepMetaInterface().getInfoSteps();
+                                    String infoStepNames[] = slaveStep.getStepMetaInterface().getStepIOMeta().getInfoStepnames();
                                     if (infoStepNames!=null)
                                     {
                                         StepMeta is[] = new StepMeta[infoStepNames.length];
@@ -1206,7 +1206,7 @@ public class TransSplitter
                                                 slave.addTransHop(infoHop);
                                             }
                                         }
-                                        slaveStep.getStepMetaInterface().setInfoSteps(infoSteps);
+                                        slaveStep.getStepMetaInterface().getStepIOMeta().setInfoSteps(infoSteps);
                                     }
                                 }
                             }

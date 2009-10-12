@@ -48,6 +48,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.PaintEvent;
@@ -118,6 +119,7 @@ import org.pentaho.di.trans.debug.BreakPointListener;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.RemoteStep;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
@@ -159,7 +161,7 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
  * @since 17-mei-2003
  * 
  */
-public class TransGraph extends Composite implements Redrawable, TabItemInterface, LogParentProvidedInterface {
+public class TransGraph extends Composite implements Redrawable, TabItemInterface, LogParentProvidedInterface, MouseListener, MouseMoveListener {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private LogChannelInterface log;
@@ -204,15 +206,19 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private Point previous_note_locations[];
 
-  private StepMeta selected_steps[];
+  private StepMeta selectedSteps[];
 
-  private StepMeta selected_step;
+  private StepMeta selectedStep;
+  
+  private StepMeta mouseOverStep;
 
-  private NotePadMeta selected_notes[];
+  private NotePadMeta selectedNotes[];
 
-  private NotePadMeta selected_note;
+  private NotePadMeta selectedNote;
 
   private TransHopMeta candidate;
+  
+  private boolean showHopInputIcons;
 
   private Point drop_candidate;
 
@@ -232,7 +238,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private TransHopMeta last_hop_split;
 
-  private Rectangle selrect;
+  private Rectangle selectionRegion;
 
   /**
    * A list of remarks on the current Transformation...
@@ -300,6 +306,11 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   
   /** A map that keeps track of which log line was written by which step */
   private Map<StepMeta, String> stepLogMap;
+
+  private StepMeta	startHopStep;
+  private Point     endHopLocation;
+
+  private StepMeta	noInputStep;
 
   public void setCurrentNote(NotePadMeta ni) {
     this.ni = ni;
@@ -447,430 +458,15 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       }
     });
     
-    selected_steps = null;
+    selectedSteps = null;
     lastclick = null;
 
     /*
      * Handle the mouse...
      */
 
-    canvas.addMouseListener(new MouseAdapter() {
-      public void mouseDoubleClick(MouseEvent e) {
-        clearSettings();
-
-        Point real = screen2real(e.x, e.y);
-
-        // Hide the tooltip!
-        hideToolTips();
-
-        StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
-        if (stepMeta != null) {
-          if (e.button == 1)
-            editStep(stepMeta);
-          else
-            editDescription(stepMeta);
-        } else {
-          // Check if point lies on one of the many hop-lines...
-          TransHopMeta online = findHop(real.x, real.y);
-          if (online != null) {
-            editHop(online);
-          } else {
-            NotePadMeta ni = transMeta.getNote(real.x, real.y);
-            if (ni != null) {
-              selected_note = null;
-              editNote(ni);
-            } else {
-              // See if the double click was in one of the area's...
-              //
-              for (AreaOwner areaOwner : areaOwners) {
-                if (areaOwner.contains(real.x, real.y)) {
-                  if (areaOwner.getParent() instanceof StepMeta
-                      && areaOwner.getOwner().equals(TransPainter.STRING_PARTITIONING_CURRENT_STEP)) {
-                    StepMeta step = (StepMeta) areaOwner.getParent();
-                    spoon.editPartitioning(transMeta, step);
-                    break;
-                  }
-                }
-              }
-
-            }
-          }
-        }
-      }
-
-      public void mouseDown(MouseEvent e) {
-        clearSettings();
-        boolean alt = (e.stateMask & SWT.ALT) != 0;
-        boolean control = (e.stateMask & SWT.CONTROL) != 0;
-
-        last_button = e.button;
-        Point real = screen2real(e.x, e.y);
-        lastclick = new Point(real.x, real.y);
-
-        // Hide the tooltip!
-        hideToolTips();
-
-        // Set the pop-up menu
-        if (e.button == 3) {
-          setMenu(real.x, real.y);
-          return;
-        }
-
-        // Did we click on a step?
-        StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
-        if (stepMeta != null) {
-          // ALT-Click: edit error handling
-          if (e.button == 1 && alt && stepMeta.supportsErrorHandling()) {
-            spoon.editStepErrorHandling(transMeta, stepMeta);
-            return;
-          }
-
-          selected_steps = transMeta.getSelectedSteps();
-          selected_step = stepMeta;
-          // 
-          // When an icon is moved that is not selected, it gets
-          // selected too late.
-          // It is not captured here, but in the mouseMoveListener...
-          previous_step_locations = transMeta.getSelectedStepLocations();
-
-          Point p = stepMeta.getLocation();
-          iconoffset = new Point(real.x - p.x, real.y - p.y);
-        } else {
-          // Dit we hit a note?
-          NotePadMeta ni = transMeta.getNote(real.x, real.y);
-          if (ni != null && last_button == 1) {
-            selected_notes = transMeta.getSelectedNotes();
-            selected_note = ni;
-            Point loc = ni.getLocation();
-
-            previous_note_locations = transMeta.getSelectedNoteLocations();
-
-            noteoffset = new Point(real.x - loc.x, real.y - loc.y);
-          } else {
-            if (!control)
-              selrect = new Rectangle(real.x, real.y, 0, 0);
-          }
-        }
-        redraw();
-      }
-
-      public void mouseUp(MouseEvent e) {
-        boolean control = (e.stateMask & SWT.CONTROL) != 0;
-
-        if (iconoffset == null)
-          iconoffset = new Point(0, 0);
-        Point real = screen2real(e.x, e.y);
-        Point icon = new Point(real.x - iconoffset.x, real.y - iconoffset.y);
-
-        // Quick new hop option? (drag from one step to another)
-        //
-        if (candidate != null) {
-          if (transMeta.findTransHop(candidate) == null) {
-            spoon.newHop(transMeta, candidate);
-          }
-          candidate = null;
-          selected_steps = null;
-          redraw();
-        }
-        // Did we select a region on the screen? Mark steps in region as
-        // selected
-        //
-        else {
-          if (selrect != null) {
-            selrect.width = real.x - selrect.x;
-            selrect.height = real.y - selrect.y;
-
-            transMeta.unselectAll();
-            selectInRect(transMeta, selrect);
-            selrect = null;
-            redraw();
-          }
-          // Clicked on an icon?
-          //
-          else {
-            if (selected_step != null) {
-              if (e.button == 1) {
-                Point realclick = screen2real(e.x, e.y);
-                if (lastclick.x == realclick.x && lastclick.y == realclick.y) {
-                  // Flip selection when control is pressed!
-                  if (control) {
-                    selected_step.flipSelected();
-                  } else {
-                    // Otherwise, select only the icon clicked on!
-                    transMeta.unselectAll();
-                    selected_step.setSelected(true);
-                  }
-                } else {
-                  // Find out which Steps & Notes are selected
-                  selected_steps = transMeta.getSelectedSteps();
-                  selected_notes = transMeta.getSelectedNotes();
-
-                  // We moved around some items: store undo info...
-                  boolean also = false;
-                  if (selected_notes != null && previous_note_locations != null) {
-                    int indexes[] = transMeta.getNoteIndexes(selected_notes);
-                    addUndoPosition(selected_notes, indexes, previous_note_locations, transMeta
-                        .getSelectedNoteLocations(), also);
-                    also = selected_steps != null && selected_steps.length > 0;
-                  }
-                  if (selected_steps != null && previous_step_locations != null) {
-                    int indexes[] = transMeta.getStepIndexes(selected_steps);
-                    addUndoPosition(selected_steps, indexes, previous_step_locations, transMeta
-                        .getSelectedStepLocations(), also);
-                  }
-                }
-              }
-
-              // OK, we moved the step, did we move it across a hop?
-              // If so, ask to split the hop!
-              if (split_hop) {
-                TransHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2, selected_step);
-                if (hi != null) {
-                  int id = 0;
-                  if (!spoon.props.getAutoSplit()) {
-                    MessageDialogWithToggle md = new MessageDialogWithToggle(
-                        shell,
-                        BaseMessages.getString(PKG, "TransGraph.Dialog.SplitHop.Title"), null, //$NON-NLS-1$
-                        BaseMessages.getString(PKG, "TransGraph.Dialog.SplitHop.Message") + Const.CR + hi.toString(), MessageDialog.QUESTION, new String[] { //$NON-NLS-1$
-                        BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") }, 0, BaseMessages.getString(PKG, "TransGraph.Dialog.Option.SplitHop.DoNotAskAgain"), spoon.props.getAutoSplit()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-                    id = md.open();
-                    spoon.props.setAutoSplit(md.getToggleState());
-                  }
-
-                  if ((id & 0xFF) == 0) // Means: "Yes" button clicked!
-                  {
-                    // Only split A-->--B by putting C in between IF...
-                    // C-->--A or B-->--C don't exists...
-                    // A ==> hi.getFromStep()
-                    // B ==> hi.getToStep();
-                    // C ==> selected_step
-                    //
-                    if (transMeta.findTransHop(selected_step, hi.getFromStep()) == null
-                        && transMeta.findTransHop(hi.getToStep(), selected_step) == null) {
-                      TransHopMeta newhop1 = new TransHopMeta(hi.getFromStep(), selected_step);
-                      transMeta.addTransHop(newhop1);
-                      spoon.addUndoNew(transMeta, new TransHopMeta[] { newhop1 }, new int[] { transMeta
-                          .indexOfTransHop(newhop1) }, true);
-                      TransHopMeta newhop2 = new TransHopMeta(selected_step, hi.getToStep());
-                      transMeta.addTransHop(newhop2);
-                      spoon.addUndoNew(transMeta, new TransHopMeta[] { newhop2 }, new int[] { transMeta
-                          .indexOfTransHop(newhop2) }, true);
-                      int idx = transMeta.indexOfTransHop(hi);
-                      spoon.addUndoDelete(transMeta, new TransHopMeta[] { hi }, new int[] { idx }, true);
-                      transMeta.removeTransHop(idx);
-                      spoon.refreshTree();
-                    } else {
-                      // Silently discard this hop-split attempt. 
-                    }
-                  }
-                }
-                split_hop = false;
-              }
-
-              selected_steps = null;
-              selected_notes = null;
-              selected_step = null;
-              selected_note = null;
-              redraw();
-            }
-
-            // Notes?
-            else {
-              if (selected_note != null) {
-                if (e.button == 1) {
-                  if (lastclick.x == e.x && lastclick.y == e.y) {
-                    // Flip selection when control is pressed!
-                    if (control) {
-                      selected_note.flipSelected();
-                    } else {
-                      // Otherwise, select only the note clicked on!
-                      transMeta.unselectAll();
-                      selected_note.setSelected(true);
-                    }
-                  } else {
-                    // Find out which Steps & Notes are selected
-                    selected_steps = transMeta.getSelectedSteps();
-                    selected_notes = transMeta.getSelectedNotes();
-
-                    // We moved around some items: store undo info...
-                    boolean also = false;
-                    if (selected_notes != null && previous_note_locations != null) {
-                      int indexes[] = transMeta.getNoteIndexes(selected_notes);
-                      addUndoPosition(selected_notes, indexes, previous_note_locations, transMeta
-                          .getSelectedNoteLocations(), also);
-                      also = selected_steps != null && selected_steps.length > 0;
-                    }
-                    if (selected_steps != null && previous_step_locations != null) {
-                      int indexes[] = transMeta.getStepIndexes(selected_steps);
-                      addUndoPosition(selected_steps, indexes, previous_step_locations, transMeta
-                          .getSelectedStepLocations(), also);
-                    }
-                  }
-                }
-
-                selected_notes = null;
-                selected_steps = null;
-                selected_step = null;
-                selected_note = null;
-              }
-            }
-          }
-        }
-
-        last_button = 0;
-      }
-    });
-
-    canvas.addMouseMoveListener(new MouseMoveListener() {
-      public void mouseMove(MouseEvent e) {
-        boolean shift = (e.stateMask & SWT.SHIFT) != 0;
-
-        // disable the tooltip
-        //
-        toolTip.hide();
-
-        // Remember the last position of the mouse for paste with keyboard
-        lastMove = new Point(e.x, e.y);
-        Point real = screen2real(e.x, e.y);
-
-        if (iconoffset == null)
-          iconoffset = new Point(0, 0);
-        Point icon = new Point(real.x - iconoffset.x, real.y - iconoffset.y);
-
-        if (noteoffset == null)
-          noteoffset = new Point(0, 0);
-        Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
-
-        if (last_button == 0 && !helpTip.isVisible())
-          setToolTip(real.x, real.y, e.x, e.y);
-
-        // 
-        // First see if the icon we clicked on was selected.
-        // If the icon was not selected, we should unselect all other
-        // icons,
-        // selected and move only the one icon
-        if (selected_step != null && !selected_step.isSelected()) {
-          // System.out.println("STEPS: Unselected all");
-          transMeta.unselectAll();
-          selected_step.setSelected(true);
-          selected_steps = new StepMeta[] { selected_step };
-          previous_step_locations = new Point[] { selected_step.getLocation() };
-        }
-        if (selected_note != null && !selected_note.isSelected()) {
-          // System.out.println("NOTES: Unselected all");
-          transMeta.unselectAll();
-          selected_note.setSelected(true);
-          selected_notes = new NotePadMeta[] { selected_note };
-          previous_note_locations = new Point[] { selected_note.getLocation() };
-        }
-
-        // Did we select a region...?
-        if (selrect != null) {
-          selrect.width = real.x - selrect.x;
-          selrect.height = real.y - selrect.y;
-          redraw();
-        }
-        // Move around steps & notes
-        else if (selected_step != null) {
-          if (last_button == 1 && !shift) {
-            /*
-             * One or more icons are selected and moved around...
-             * 
-             * new : new position of the ICON (not the mouse pointer) dx : difference with previous
-             * position
-             */
-            int dx = icon.x - selected_step.getLocation().x;
-            int dy = icon.y - selected_step.getLocation().y;
-
-            // See if we have a hop-split candidate
-            //
-            TransHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2, selected_step);
-            if (hi != null) {
-              // OK, we want to split the hop in 2
-              // 
-              if (!hi.getFromStep().equals(selected_step) && !hi.getToStep().equals(selected_step)) {
-                split_hop = true;
-                last_hop_split = hi;
-                hi.split = true;
-              }
-            } else {
-              if (last_hop_split != null) {
-                last_hop_split.split = false;
-                last_hop_split = null;
-                split_hop = false;
-              }
-            }
-
-            selected_notes = transMeta.getSelectedNotes();
-            selected_steps = transMeta.getSelectedSteps();
-
-            // Adjust location of selected steps...
-            if (selected_steps != null) {
-              for (int i = 0; i < selected_steps.length; i++) {
-                StepMeta stepMeta = selected_steps[i];
-                PropsUI.setLocation(stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
-              }
-            }
-            // Adjust location of selected hops...
-            if (selected_notes != null) {
-              for (int i = 0; i < selected_notes.length; i++) {
-                NotePadMeta ni = selected_notes[i];
-                PropsUI.setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
-              }
-            }
-
-            redraw();
-          }
-          // The middle button perhaps?
-          else if (last_button == 2 || (last_button == 1 && shift)) {
-            StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
-            if (stepMeta != null && !selected_step.equals(stepMeta)) {
-              if (candidate == null) {
-                candidate = new TransHopMeta(selected_step, stepMeta);
-                redraw();
-              }
-            } else {
-              if (candidate != null) {
-                candidate = null;
-                redraw();
-              }
-            }
-          }
-        }
-        // Move around notes & steps
-        else if (selected_note != null) {
-          if (last_button == 1 && !shift) {
-            /*
-             * One or more notes are selected and moved around...
-             * 
-             * new : new position of the note (not the mouse pointer) dx : difference with previous
-             * position
-             */
-            int dx = note.x - selected_note.getLocation().x;
-            int dy = note.y - selected_note.getLocation().y;
-
-            selected_notes = transMeta.getSelectedNotes();
-            selected_steps = transMeta.getSelectedSteps();
-
-            // Adjust location of selected steps...
-            if (selected_steps != null)
-              for (int i = 0; i < selected_steps.length; i++) {
-                StepMeta stepMeta = selected_steps[i];
-                PropsUI.setLocation(stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
-              }
-            // Adjust location of selected hops...
-            if (selected_notes != null)
-              for (int i = 0; i < selected_notes.length; i++) {
-                NotePadMeta ni = selected_notes[i];
-                PropsUI.setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
-              }
-
-            redraw();
-          }
-        }
-      }
-    });
+    canvas.addMouseListener(this);
+    canvas.addMouseMoveListener(this);
 
     // Drag & Drop for steps
     Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
@@ -1056,7 +652,501 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		}
 	});
   }
+  
+  public void mouseDoubleClick(MouseEvent e) {
+      clearSettings();
 
+      Point real = screen2real(e.x, e.y);
+
+      // Hide the tooltip!
+      hideToolTips();
+
+      StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
+      if (stepMeta != null) {
+        if (e.button == 1)
+          editStep(stepMeta);
+        else
+          editDescription(stepMeta);
+      } else {
+        // Check if point lies on one of the many hop-lines...
+        TransHopMeta online = findHop(real.x, real.y);
+        if (online != null) {
+          editHop(online);
+        } else {
+          NotePadMeta ni = transMeta.getNote(real.x, real.y);
+          if (ni != null) {
+            selectedNote = null;
+            editNote(ni);
+          } else {
+            // See if the double click was in one of the area's...
+            //
+            for (AreaOwner areaOwner : areaOwners) {
+              if (areaOwner.contains(real.x, real.y)) {
+                if (areaOwner.getParent() instanceof StepMeta
+                    && areaOwner.getOwner().equals(TransPainter.STRING_PARTITIONING_CURRENT_STEP)) {
+                  StepMeta step = (StepMeta) areaOwner.getParent();
+                  spoon.editPartitioning(transMeta, step);
+                  break;
+                }
+              }
+            }
+
+          }
+        }
+      }
+    }
+
+    public void mouseDown(MouseEvent e) {
+
+      boolean alt = (e.stateMask & SWT.ALT) != 0;
+      boolean control = (e.stateMask & SWT.CONTROL) != 0;
+      boolean shift = (e.stateMask & SWT.SHIFT) != 0;
+
+      last_button = e.button;
+      Point real = screen2real(e.x, e.y);
+      lastclick = new Point(real.x, real.y);
+
+      // Hide the tooltip!
+      hideToolTips();
+
+      // Set the pop-up menu
+      if (e.button == 3) {
+        setMenu(real.x, real.y);
+        return;
+      }
+      
+      // A single left click on one of the area owners...
+      //
+      startHopStep=null;
+      if (e.button==1) {
+	      List<AreaOwner> areaOwners = findAreaOwners(real.x, real.y);
+	      for(AreaOwner areaOwner : areaOwners) {
+	    	  if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_OUTPUT_HOP_ICON)) {
+		    	 // Click on the output icon means: start of drag
+	    		 // Action: We show the input icons on the other steps...
+	    		 //
+	    		 showHopInputIcons = true;
+    			 selectedStep = null;
+	    		 startHopStep = (StepMeta)areaOwner.getParent();
+	    	  }
+	      }
+      }
+      
+      if (candidate!=null) {
+    	  addCandidateAsHop();
+      }
+      
+      // Did we click on a step?
+      StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
+      if (stepMeta != null) {
+        // ALT-Click: edit error handling
+        if (e.button == 1 && alt && stepMeta.supportsErrorHandling()) {
+          spoon.editStepErrorHandling(transMeta, stepMeta);
+          return;
+        } 
+        // SHIFT CLICK is start of drag to create a new hop
+        //
+        else if (e.button== 2 || (e.button==1 && shift)) {
+        	startHopStep = stepMeta;
+        } else {
+	        selectedSteps = transMeta.getSelectedSteps();
+	        selectedStep = stepMeta;
+	        // 
+	        // When an icon is moved that is not selected, it gets
+	        // selected too late.
+	        // It is not captured here, but in the mouseMoveListener...
+	        previous_step_locations = transMeta.getSelectedStepLocations();
+	
+	        Point p = stepMeta.getLocation();
+	        iconoffset = new Point(real.x - p.x, real.y - p.y);
+        }
+      } else {
+        // Did we hit a note?
+        NotePadMeta ni = transMeta.getNote(real.x, real.y);
+        if (ni != null && last_button == 1) {
+          selectedNotes = transMeta.getSelectedNotes();
+          selectedNote = ni;
+          Point loc = ni.getLocation();
+
+          previous_note_locations = transMeta.getSelectedNoteLocations();
+
+          noteoffset = new Point(real.x - loc.x, real.y - loc.y);
+        } else {
+          if (!control)
+            selectionRegion = new Rectangle(real.x, real.y, 0, 0);
+        }
+      }
+      redraw();
+    }
+
+    /**
+     * Find the area owners that match the given coordinates.
+     * @param x
+     * @param y
+     * @return The list of area owners
+     */
+    private List<AreaOwner> findAreaOwners(int x, int y) {
+    	List<AreaOwner> list = new ArrayList<AreaOwner>();
+        for (AreaOwner areaOwner : areaOwners) {
+            if (areaOwner.contains(x, y)) {
+            	list.add(areaOwner);
+            }
+        }
+        return list;
+	}
+
+	public void mouseUp(MouseEvent e) {
+      boolean control = (e.stateMask & SWT.CONTROL) != 0;
+
+      if (iconoffset == null)
+        iconoffset = new Point(0, 0);
+      Point real = screen2real(e.x, e.y);
+      Point icon = new Point(real.x - iconoffset.x, real.y - iconoffset.y);
+
+      // Quick new hop option? (drag from one step to another)
+      //
+      if (candidate != null) {
+    	addCandidateAsHop();
+      }
+      // Did we select a region on the screen? Mark steps in region as
+      // selected
+      //
+      else {
+        if (selectionRegion != null) {
+          selectionRegion.width = real.x - selectionRegion.x;
+          selectionRegion.height = real.y - selectionRegion.y;
+
+          transMeta.unselectAll();
+          selectInRect(transMeta, selectionRegion);
+          selectionRegion = null;
+          redraw();
+        }
+        // Clicked on an icon?
+        //
+        else {
+          if (selectedStep != null && startHopStep==null) {
+            if (e.button == 1) {
+              Point realclick = screen2real(e.x, e.y);
+              if (lastclick.x == realclick.x && lastclick.y == realclick.y) {
+                // Flip selection when control is pressed!
+                if (control) {
+                  selectedStep.flipSelected();
+                } else {
+                  // Otherwise, select only the icon clicked on!
+                  transMeta.unselectAll();
+                  selectedStep.setSelected(true);
+                }
+              } else {
+                // Find out which Steps & Notes are selected
+                selectedSteps = transMeta.getSelectedSteps();
+                selectedNotes = transMeta.getSelectedNotes();
+
+                // We moved around some items: store undo info...
+                // 
+                boolean also = false;
+                if (selectedNotes != null && previous_note_locations != null) {
+                  int indexes[] = transMeta.getNoteIndexes(selectedNotes);
+                  addUndoPosition(selectedNotes, indexes, previous_note_locations, transMeta
+                      .getSelectedNoteLocations(), also);
+                  also = selectedSteps != null && selectedSteps.length > 0;
+                }
+                if (selectedSteps != null && previous_step_locations != null) {
+                  int indexes[] = transMeta.getStepIndexes(selectedSteps);
+                  addUndoPosition(selectedSteps, indexes, previous_step_locations, transMeta.getSelectedStepLocations(), also);
+                }
+              }
+            }
+
+            // OK, we moved the step, did we move it across a hop?
+            // If so, ask to split the hop!
+            if (split_hop) {
+              TransHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2, selectedStep);
+              if (hi != null) {
+                int id = 0;
+                if (!spoon.props.getAutoSplit()) {
+                  MessageDialogWithToggle md = new MessageDialogWithToggle(
+                      shell,
+                      BaseMessages.getString(PKG, "TransGraph.Dialog.SplitHop.Title"), null, //$NON-NLS-1$
+                      BaseMessages.getString(PKG, "TransGraph.Dialog.SplitHop.Message") + Const.CR + hi.toString(), MessageDialog.QUESTION, new String[] { //$NON-NLS-1$
+                      BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") }, 0, BaseMessages.getString(PKG, "TransGraph.Dialog.Option.SplitHop.DoNotAskAgain"), spoon.props.getAutoSplit()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                  MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
+                  id = md.open();
+                  spoon.props.setAutoSplit(md.getToggleState());
+                }
+
+                if ((id & 0xFF) == 0) // Means: "Yes" button clicked!
+                {
+                  // Only split A-->--B by putting C in between IF...
+                  // C-->--A or B-->--C don't exists...
+                  // A ==> hi.getFromStep()
+                  // B ==> hi.getToStep();
+                  // C ==> selected_step
+                  //
+                  if (transMeta.findTransHop(selectedStep, hi.getFromStep()) == null && transMeta.findTransHop(hi.getToStep(), selectedStep) == null) {
+                	  
+                    TransHopMeta newhop1 = new TransHopMeta(hi.getFromStep(), selectedStep);
+                    transMeta.addTransHop(newhop1);
+                    spoon.addUndoNew(transMeta, new TransHopMeta[] { newhop1 }, new int[] { transMeta.indexOfTransHop(newhop1) }, true);
+                    TransHopMeta newhop2 = new TransHopMeta(selectedStep, hi.getToStep());
+                    transMeta.addTransHop(newhop2);
+                    spoon.addUndoNew(transMeta, new TransHopMeta[] { newhop2 }, new int[] { transMeta.indexOfTransHop(newhop2) }, true);
+                    int idx = transMeta.indexOfTransHop(hi);
+                    spoon.addUndoDelete(transMeta, new TransHopMeta[] { hi }, new int[] { idx }, true);
+                    transMeta.removeTransHop(idx);
+                    spoon.refreshTree();
+                    
+                  } else {
+                    // Silently discard this hop-split attempt. 
+                  }
+                }
+              }
+              split_hop = false;
+            }
+
+            selectedSteps = null;
+            selectedNotes = null;
+            selectedStep = null;
+            selectedNote = null;
+            startHopStep = null;
+            endHopLocation = null;
+            redraw();
+          }
+
+          // Notes?
+          else {
+            if (selectedNote != null) {
+              if (e.button == 1) {
+                if (lastclick.x == e.x && lastclick.y == e.y) {
+                  // Flip selection when control is pressed!
+                  if (control) {
+                    selectedNote.flipSelected();
+                  } else {
+                    // Otherwise, select only the note clicked on!
+                    transMeta.unselectAll();
+                    selectedNote.setSelected(true);
+                  }
+                } else {
+                  // Find out which Steps & Notes are selected
+                  selectedSteps = transMeta.getSelectedSteps();
+                  selectedNotes = transMeta.getSelectedNotes();
+
+                  // We moved around some items: store undo info...
+                  boolean also = false;
+                  if (selectedNotes != null && previous_note_locations != null) {
+                    int indexes[] = transMeta.getNoteIndexes(selectedNotes);
+                    addUndoPosition(selectedNotes, indexes, previous_note_locations, transMeta.getSelectedNoteLocations(), also);
+                    also = selectedSteps != null && selectedSteps.length > 0;
+                  }
+                  if (selectedSteps != null && previous_step_locations != null) {
+                    int indexes[] = transMeta.getStepIndexes(selectedSteps);
+                    addUndoPosition(selectedSteps, indexes, previous_step_locations, transMeta.getSelectedStepLocations(), also);
+                  }
+                }
+              }
+
+              selectedNotes = null;
+              selectedSteps = null;
+              selectedStep = null;
+              selectedNote = null;
+              startHopStep = null;
+              endHopLocation = null;
+            }
+          }
+        }
+      }
+
+      last_button = 0;
+    }
+  
+    private void addCandidateAsHop() {
+      if (transMeta.findTransHop(candidate) == null) {
+        spoon.newHop(transMeta, candidate);
+      }
+      candidate = null;
+      selectedSteps = null;
+      startHopStep = null;
+      endHopLocation = null;
+      redraw();
+	}
+
+	public void mouseMove(MouseEvent e) {
+        boolean shift = (e.stateMask & SWT.SHIFT) != 0;
+        noInputStep = null;
+
+        // disable the tooltip
+        //
+        toolTip.hide();
+
+        // Remember the last position of the mouse for paste with keyboard
+        //
+        lastMove = new Point(e.x, e.y);
+        Point real = screen2real(e.x, e.y);
+
+        if (iconoffset == null) {
+          iconoffset = new Point(0, 0);
+        }
+        Point icon = new Point(real.x - iconoffset.x, real.y - iconoffset.y);
+
+        if (noteoffset == null) {
+          noteoffset = new Point(0, 0);
+        }
+        Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
+
+        // Show a tool tip upon mouse-over of an object on the canvas
+        //
+        if (last_button == 0 && !helpTip.isVisible()) {
+          setToolTip(real.x, real.y, e.x, e.y);
+        }
+
+        // 
+        // First see if the icon we clicked on was selected.
+        // If the icon was not selected, we should un-select all other
+        // icons, selected and move only the one icon
+        //
+        if (selectedStep != null && !selectedStep.isSelected()) {
+          transMeta.unselectAll();
+          selectedStep.setSelected(true);
+          selectedSteps = new StepMeta[] { selectedStep };
+          previous_step_locations = new Point[] { selectedStep.getLocation() };
+          redraw();
+        } 
+        else if (selectedNote != null && !selectedNote.isSelected()) {
+          transMeta.unselectAll();
+          selectedNote.setSelected(true);
+          selectedNotes = new NotePadMeta[] { selectedNote };
+          previous_note_locations = new Point[] { selectedNote.getLocation() };
+          redraw();
+        }
+        
+        // Did we select a region...?
+        //
+        else if (selectionRegion != null && startHopStep==null) {
+          selectionRegion.width = real.x - selectionRegion.x;
+          selectionRegion.height = real.y - selectionRegion.y;
+          redraw();
+        }
+        // Move around steps & notes
+        //
+        else if (selectedStep != null && last_button == 1 && !shift && startHopStep==null) {
+            /*
+             * One or more icons are selected and moved around...
+             * 
+             * new : new position of the ICON (not the mouse pointer) dx : difference with previous
+             * position
+             */
+            int dx = icon.x - selectedStep.getLocation().x;
+            int dy = icon.y - selectedStep.getLocation().y;
+
+            // See if we have a hop-split candidate
+            //
+            TransHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2, selectedStep);
+            if (hi != null) {
+              // OK, we want to split the hop in 2
+              // 
+              if (!hi.getFromStep().equals(selectedStep) && !hi.getToStep().equals(selectedStep)) {
+                split_hop = true;
+                last_hop_split = hi;
+                hi.split = true;
+              }
+            } else {
+              if (last_hop_split != null) {
+                last_hop_split.split = false;
+                last_hop_split = null;
+                split_hop = false;
+              }
+            }
+
+            selectedNotes = transMeta.getSelectedNotes();
+            selectedSteps = transMeta.getSelectedSteps();
+
+            // Adjust location of selected steps...
+            if (selectedSteps != null) {
+              for (int i = 0; i < selectedSteps.length; i++) {
+                StepMeta stepMeta = selectedSteps[i];
+                PropsUI.setLocation(stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
+              }
+            }
+            // Adjust location of selected hops...
+            if (selectedNotes != null) {
+              for (int i = 0; i < selectedNotes.length; i++) {
+                NotePadMeta ni = selectedNotes[i];
+                PropsUI.setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
+              }
+            }
+
+            redraw();
+        }
+    	
+        // Are we creating a new hop with the middle button or pressing SHIFT?
+        //
+        else if (startHopStep!=null) {
+        	StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
+            endHopLocation = new Point(real.x, real.y);
+            if (stepMeta != null && !startHopStep.equals(stepMeta)) {
+            	StepIOMetaInterface ioMeta = stepMeta.getStepMetaInterface().getStepIOMeta();
+            	if (candidate == null) {
+            		// See if the step accepts input.  If not, we can't create a new hop...
+            		//
+            		if (ioMeta.isInputAcceptor()) {
+		                candidate = new TransHopMeta(startHopStep, stepMeta);
+		                endHopLocation=null;
+            		} else {
+            			noInputStep=stepMeta;
+            			toolTip.setImage(null);
+            			toolTip.setText("This step does not accept any input from other steps");
+            			toolTip.show(new org.eclipse.swt.graphics.Point(real.x, real.y));
+            		}
+                }
+            } else {
+              if (candidate != null) {
+                candidate = null;
+                redraw();
+              } else {
+            	  if (!showHopInputIcons) {
+            		  showHopInputIcons=true;
+            	  }
+              }
+          }
+            
+      	  redraw();
+        } else {
+        	  showHopInputIcons = false;
+        	  redraw();
+        }
+        // Move around notes & steps
+        //
+        if (selectedNote != null) {
+          if (last_button == 1 && !shift) {
+            /*
+             * One or more notes are selected and moved around...
+             * 
+             * new : new position of the note (not the mouse pointer) dx : difference with previous
+             * position
+             */
+            int dx = note.x - selectedNote.getLocation().x;
+            int dy = note.y - selectedNote.getLocation().y;
+
+            selectedNotes = transMeta.getSelectedNotes();
+            selectedSteps = transMeta.getSelectedSteps();
+
+            // Adjust location of selected steps...
+            if (selectedSteps != null)
+              for (int i = 0; i < selectedSteps.length; i++) {
+                StepMeta stepMeta = selectedSteps[i];
+                PropsUI.setLocation(stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
+              }
+            // Adjust location of selected hops...
+            if (selectedNotes != null)
+              for (int i = 0; i < selectedNotes.length; i++) {
+                NotePadMeta ni = selectedNotes[i];
+                PropsUI.setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
+              }
+
+            redraw();
+          }
+        }
+      }
+    
   private void addToolBar() {
 
     try {
@@ -1214,6 +1304,11 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         if (e.keyCode == SWT.F2) {
           renameStep();
         }
+
+        if (e.keyCode == SWT.ESC) {
+            clearSettings();
+            redraw();
+          }
 
         if (e.keyCode == SWT.DEL) {
           StepMeta stepMeta[] = transMeta.getSelectedSteps();
@@ -1375,14 +1470,18 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public void clearSettings() {
-    selected_step = null;
-    selected_note = null;
-    selected_steps = null;
-    selrect = null;
+    selectedStep = null;
+    noInputStep = null;
+    selectedNote = null;
+    selectedSteps = null;
+    selectionRegion = null;
     candidate = null;
     last_hop_split = null;
     last_button = 0;
     iconoffset = null;
+    startHopStep = null;
+    endHopLocation = null;
+    showHopInputIcons =false;
     for (int i = 0; i < transMeta.nrTransHops(); i++)
       transMeta.getTransHop(i).split = false;
   }
@@ -1514,7 +1613,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   public void detachStep() {
     detach(getCurrentStep());
-    selected_steps = null;
+    selectedSteps = null;
   }
 
   public void generateMappingToThisStep() {
@@ -1539,12 +1638,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public void newHopChoice() {
-    selected_steps = null;
+    selectedSteps = null;
     newHop();
   }
 
   public void editStep() {
-    selected_steps = null;
+    selectedSteps = null;
     editStep(getCurrentStep());
   }
 
@@ -1566,7 +1665,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   public void copies() {
     final boolean multipleOK = checkNumberOfCopies(transMeta, getCurrentStep());
-    selected_steps = null;
+    selectedSteps = null;
     String tt = BaseMessages.getString(PKG, "TransGraph.Dialog.NrOfCopiesOfStep.Title"); //$NON-NLS-1$
     String mt = BaseMessages.getString(PKG, "TransGraph.Dialog.NrOfCopiesOfStep.Message"); //$NON-NLS-1$
     EnterNumberDialog nd = new EnterNumberDialog(shell, getCurrentStep().getCopies(), tt, mt);
@@ -1620,12 +1719,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public void fieldsBefore() {
-    selected_steps = null;
+    selectedSteps = null;
     inputOutputFields(getCurrentStep(), true);
   }
 
   public void fieldsAfter() {
-    selected_steps = null;
+    selectedSteps = null;
     inputOutputFields(getCurrentStep(), false);
   }
   
@@ -1640,12 +1739,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public void editHop() {
-    selrect = null;
+    selectionRegion = null;
     editHop(getCurrentHop());
   }
 
   public void flipHopDirection() {
-    selrect = null;
+    selectionRegion = null;
     TransHopMeta hi = getCurrentHop();
 
     hi.flip();
@@ -1668,7 +1767,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public void enableHop() {
-    selrect = null;
+    selectionRegion = null;
     TransHopMeta hi = getCurrentHop();
     TransHopMeta before = (TransHopMeta) hi.clone();
     hi.setEnabled(!hi.isEnabled());
@@ -1688,7 +1787,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public void deleteHop() {
-    selrect = null;
+    selectionRegion = null;
     TransHopMeta hi = getCurrentHop();
     int idx = transMeta.indexOfTransHop(hi);
     spoon.addUndoDelete(transMeta, new TransHopMeta[] { (TransHopMeta) hi.clone() }, new int[] { idx });
@@ -1698,12 +1797,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public void editNote() {
-    selrect = null;
+    selectionRegion = null;
     editNote(getCurrentNote());
   }
 
   public void deleteNote() {
-    selrect = null;
+    selectionRegion = null;
     int idx = transMeta.indexOfNote(ni);
     if (idx >= 0) {
       transMeta.removeNote(idx);
@@ -1713,7 +1812,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public void raiseNote() {
-    selrect = null;
+    selectionRegion = null;
     int idx = transMeta.indexOfNote(getCurrentNote());
     if (idx >= 0) {
       transMeta.raiseNote(idx);
@@ -1723,7 +1822,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public void lowerNote() {
-    selrect = null;
+    selectionRegion = null;
     int idx = transMeta.indexOfNote(getCurrentNote());
     if (idx >= 0) {
       transMeta.lowerNote(idx);
@@ -1733,7 +1832,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public void newNote() {
-    selrect = null;
+    selectionRegion = null;
     String title = BaseMessages.getString(PKG, "TransGraph.Dialog.NoteEditor.Title"); //$NON-NLS-1$
     NotePadDialog dd = new NotePadDialog(shell, title); //$NON-NLS-1$
     NotePadMeta n = dd.open();
@@ -1963,7 +2062,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       // See what the target steps are.  
       // If one of the target steps is our original step, we can't start multiple copies
       // 
-      String[] targetSteps = prevStep.getStepMetaInterface().getTargetSteps();
+      String[] targetSteps = prevStep.getStepMetaInterface().getStepIOMeta().getTargetStepnames();
       if (targetSteps != null) {
         for (int t = 0; t < targetSteps.length && enabled; t++) {
           if (targetSteps[t].equalsIgnoreCase(stepMeta.getName()))
@@ -1978,15 +2077,19 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     if (!spoon.getProperties().showToolTips())
       return;
 
-    canvas.setToolTipText("'"); // Some stupid bug in GTK+ causes a phantom tool tip to pop up, even if the tip is null
+    canvas.setToolTipText(""); // Some stupid bug in GTK+ causes a phantom tool tip to pop up, even if the tip is null
     canvas.setToolTipText(null);
 
     String newTip = null;
     Image tipImage = null;
 
     final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);
-    if (stepMeta != null) // We clicked on a Step!
+    if (stepMeta != null) // We mouse over a Step!
     {
+      mouseOverStep = stepMeta;
+      redraw();
+      /*
+    	
       // Also: set the tooltip!
       // 
       if (stepMeta.getDescription() != null) {
@@ -2020,7 +2123,11 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         newTip += Const.CR + Const.CR + BaseMessages.getString(PKG, "TransGraph.Step.Tooltip.NextPartitioning")
             + stepMeta.getTargetStepPartitioningMeta().toString();
       }
+      */
     } else {
+    	mouseOverStep=null; // Not mousing over a step...
+    }
+    	
         final TransHopMeta hi = findHop(x, y);
         // check the area owner list...
         //
@@ -2090,25 +2197,35 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 tip.append(BaseMessages.getString(PKG, "TransGraph.Locked.Tooltip", Const.CR, lock.getLogin(), lock.getUsername(), lock.getMessage(), XMLHandler.date2string(lock.getLockDate())));
                 tipImage = GUIResource.getInstance().getImageLocked();
             }
-            
-            if (hi != null) // We clicked on a HOP!
-            {
-              // Set the tooltip for the hop:
-              tip.append(Const.CR).append("Hop information: ").append(newTip = hi.toString()).append(Const.CR);
+            if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_INPUT_HOP_ICON)) {
+            	StepMeta subjectStep = (StepMeta)(areaOwner.getParent());
+                tip.append("INPUT HOP ICON FOR STEP '"+subjectStep.getName()+"'");
+                tipImage = GUIResource.getInstance().getImageHopInput();
+            }
+            if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_OUTPUT_HOP_ICON)) {
+            	StepMeta subjectStep = (StepMeta)(areaOwner.getParent());
+                tip.append("OUTPUT HOP ICON FOR STEP '"+subjectStep.getName()+"'");
+                tipImage = GUIResource.getInstance().getImageHopOutput();
             }
           }
         }
+  
+            
+        if (hi != null) // We clicked on a HOP!
+        {
+          // Set the tooltip for the hop:
+          tip.append(Const.CR).append("Hop information: ").append(newTip = hi.toString()).append(Const.CR);
+        }
+
         if (tip.length() == 0) {
           newTip = null;
         } else {
           newTip = tip.toString();
         }
-    }
     
 
     if (newTip == null) {
       toolTip.hide();
-      final TransHopMeta hi = findHop(x, y);
       if (hi != null) // We clicked on a HOP!
       {
           // Set the tooltip for the hop:
@@ -2265,9 +2382,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   public Image getTransformationImage(Device device, int x, int y, boolean branded, float magnificationFactor) {
     TransPainter transPainter = new TransPainter(transMeta, new Point(x, y), hori, vert, candidate, drop_candidate,
-        selrect, areaOwners);
+        selectionRegion, areaOwners, mouseOverStep);
     transPainter.setMagnification(magnificationFactor);
     transPainter.setStepLogMap(stepLogMap);
+    transPainter.setShowingHopInputIcons(showHopInputIcons);
+    transPainter.setStartHopStep(startHopStep);
+    transPainter.setEndHopLocation(endHopLocation);
+    transPainter.setNoInputStep(noInputStep);
     Image img = transPainter.getTransformationImage(device, PropsUI.getInstance().isBrandingActive());
 
     return img;

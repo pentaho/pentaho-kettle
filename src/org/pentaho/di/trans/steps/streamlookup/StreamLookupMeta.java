@@ -33,15 +33,20 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepIOMeta;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.w3c.dom.Node;
 
 
@@ -263,26 +268,6 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 		return retval;
 	}
 	
-	/**
-	 * @return the informational source steps, if any. Null is the default: none.
-	 */
-	public String[] getInfoSteps()
-	{
-	    if (getLookupStepname()!=null) return new String[] { getLookupStepname() };
-	    return null;
-	}
-    
-    /**
-     * @param infoSteps The info-step(s) to set
-     */
-    public void setInfoSteps(StepMeta[] infoSteps)
-    {
-        if (infoSteps!=null && infoSteps.length>0)
-        {
-            lookupFromStep = infoSteps[0];
-        }
-    }
-
 	private void readData(Node stepnode)
 		throws KettleXMLException
 	{
@@ -712,5 +697,17 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
     {
         return true;
     }
-
+	
+	/**
+     * Returns the Input/Output metadata for this step.
+     * The generator step only produces output, does not accept input!
+     */
+    public StepIOMetaInterface getStepIOMeta() {
+    	StepIOMeta ioMeta = new StepIOMeta(true, true, false, false);
+    	
+    	StreamInterface stream = new Stream(StreamType.INFO, lookupFromStepname, lookupFromStep, BaseMessages.getString(PKG, "StreamLookupMeta.InfoStream.Description"));
+    	ioMeta.addStream(stream);
+    	
+    	return ioMeta;
+    }
 }

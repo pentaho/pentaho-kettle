@@ -119,26 +119,6 @@ public interface StepMetaInterface
 	public RowMetaInterface getTableFields();
 
 	/**
-	 * @return the informational source steps, if any. Null is the default: none.
-	 */
-	public String[] getInfoSteps();
-
-	/**
-	 * @return the chosen target steps, if any. Null is the default: automatically chosen target steps.
-	 */
-	public String[] getTargetSteps();
-
-    /**
-     * @param infoSteps The infostep(s) to set
-     */
-    public void setInfoSteps(StepMeta[] infoSteps);
-    
-    /**
-     * @param targetSteps The target step(s) to set
-     */
-    public void setTargetSteps(StepMeta[] targetSteps);
-
-	/**
 	 * @param steps optionally search the info step in a list of steps
 	 */
 	public void searchInfoAndTargetSteps(List<StepMeta> steps);
@@ -218,19 +198,6 @@ public interface StepMetaInterface
      * To help out here, we supply information to the transformation meta-data model about which fields are required for a step.
      * This allows us to automate certain tasks like the mapping to pre-defined tables.
      * The Table Output step in this case will output the fields in the target table using this method. 
-     *   
-     * @return the required fields for this steps metadata.
-     * @throws KettleException in case the required fields can't be determined.
-     * @deprecated please use the method with the variable space in it so we can do variable substitution.
-     */
-    public RowMetaInterface getRequiredFields() throws KettleException;
-    
-    /**
-     * The natural way of data flow in a transformation is source-to-target.
-     * However, this makes mapping to target tables difficult to do.
-     * To help out here, we supply information to the transformation meta-data model about which fields are required for a step.
-     * This allows us to automate certain tasks like the mapping to pre-defined tables.
-     * The Table Output step in this case will output the fields in the target table using this method. 
      * 
      * @param space the variable space to reference
      * @return the required fields for this steps metadata.
@@ -275,7 +242,6 @@ public interface StepMetaInterface
      */
     public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException ;
     
-    
     /**
      * @return The StepMeta object to which this metadata class belongs. 
      * With this, we can see to which transformation metadata (etc) this metadata pertains to. (hierarchy) 
@@ -287,5 +253,9 @@ public interface StepMetaInterface
      * @param parentStepMeta the parent step metadata container object
      */
     public void setParentStepMeta(StepMeta parentStepMeta);
-
+    
+    /**
+     * Returns the Input/Output metadata for this step.
+     */
+    public StepIOMetaInterface getStepIOMeta();
 }

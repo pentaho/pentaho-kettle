@@ -1114,7 +1114,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public boolean isStepInformative(StepMeta this_step, StepMeta prev_step)
     {
-        String[] infoSteps = this_step.getStepMetaInterface().getInfoSteps();
+        String[] infoSteps = this_step.getStepMetaInterface().getStepIOMeta().getInfoStepnames();
         if (infoSteps == null) return false;
         for (int i = 0; i < infoSteps.length; i++)
         {
@@ -1304,7 +1304,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public StepMeta[] getInfoStep(StepMeta stepMeta)
     {
-        String[] infoStepName = stepMeta.getStepMetaInterface().getInfoSteps();
+        String[] infoStepName = stepMeta.getStepMetaInterface().getStepIOMeta().getInfoStepnames();
         if (infoStepName == null) return null;
 
         StepMeta[] infoStep = new StepMeta[infoStepName.length];

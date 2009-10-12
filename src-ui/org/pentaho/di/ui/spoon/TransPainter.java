@@ -33,9 +33,11 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
@@ -53,10 +55,14 @@ public class TransPainter
 	public static final String STRING_HOP_TYPE_INFO             = "HopTypeInfo";             // $NON-NLS-1$
 	public static final String STRING_HOP_TYPE_ERROR            = "HopTypeError";            // $NON-NLS-1$
 	public static final String STRING_INFO_STEP_COPIES          = "InfoStepMultipleCopies";  // $NON-NLS-1$
+	public static final String STRING_INPUT_HOP_ICON            = "InputHopIcon";            // $NON-NLS-1$
+	public static final String STRING_OUTPUT_HOP_ICON           = "OutputHopIcon";           // $NON-NLS-1$
 	
 	public static final String[] magnificationDescriptions = 
 		new String[] { "  200% ", "  150% ", "  100% ", "  75% ", "  50% ", "  25% "};
 
+	public final double theta = Math.toRadians(11); // arrowhead sharpness
+	
 /*	
 	public static final float[] magnifications = 
 		new float[] { 0.10f, 0.15f, 0.20f, 0.25f, 0.30f, 0.35f, 0.40f, 0.45f, 0.50f, 0.55f, 0.60f, 0.65f, 0.70f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.00f, 1.25f, 1.50f, 2.00f, 3.00f, 4.00f, 5.00f, 7.50f, 10.00f, };
@@ -100,25 +106,31 @@ public class TransPainter
     private float           magnification;
     private float           translationX;
     private float           translationY;
-	private boolean shadow;
+	private boolean 		shadow;
 	
 	private Map<StepMeta, String> stepLogMap;
+	private StepMeta	mouseOverStep;
+	private StepMeta    startHopStep;
+	private Point       endHopLocation;
+	private StepMeta       noInputStep;
+	private boolean     showingHopInputIcons;
 
     public TransPainter(TransMeta transMeta)
     {
-        this(transMeta, transMeta.getMaximum(), null, null, null, null, null, new ArrayList<AreaOwner>());
+        this(transMeta, transMeta.getMaximum(), null, null, null, null, null, new ArrayList<AreaOwner>(), null);
     }
 
     public TransPainter(TransMeta transMeta, Point area)
     {
-        this(transMeta, area, null, null, null, null, null, new ArrayList<AreaOwner>());
+        this(transMeta, area, null, null, null, null, null, new ArrayList<AreaOwner>(), null);
     }
 
     public TransPainter(TransMeta transMeta, 
                         Point area, 
                         ScrollBar hori, ScrollBar vert, 
                         TransHopMeta candidate, Point drop_candidate, Rectangle selrect,
-                        List<AreaOwner> areaOwners
+                        List<AreaOwner> areaOwners, 
+                        StepMeta mouseOverStep
                         )
     {
         this.transMeta      = transMeta;
@@ -146,6 +158,8 @@ public class TransPainter
         this.drop_candidate = drop_candidate;
         
         this.areaOwners     = areaOwners;
+        
+        this.mouseOverStep  = mouseOverStep;
         
         props = PropsUI.getInstance();
         iconsize = props.getIconSize(); 
@@ -253,12 +267,29 @@ public class TransPainter
         if (candidate != null)
         {
             drawHop(gc, candidate, true);
+        } else {
+	        if (startHopStep!=null && endHopLocation!=null) {
+	        	Point fr = startHopStep.getLocation();
+	        	Point to = endHopLocation;
+	        	gc.setForeground(GUIResource.getInstance().getColorGray());
+	        	drawArrow(gc, fr.x+iconsize/2, fr.y+iconsize/2, to.x, to.y, theta, 1, 1.5, startHopStep, endHopLocation);
+	        }
         }
-
+        
         for (int i = 0; i < transMeta.nrSteps(); i++)
         {
             StepMeta stepMeta = transMeta.getStep(i);
             if (stepMeta.isDrawn()) drawStep(gc, stepMeta);
+        }
+
+        // Display an icon on the indicated location signaling to the user that the step in question does not accept input 
+        //
+        if (noInputStep!=null) {
+        	gc.setLineWidth(2);	
+        	gc.setForeground(GUIResource.getInstance().getColorRed());
+        	Point n = noInputStep.getLocation();
+        	gc.drawLine(n.x-5, n.y-5, n.x+iconsize+10, n.y+iconsize+10);
+        	gc.drawLine(n.x-5, n.y+iconsize+5, n.x+iconsize+5, n.y-5);
         }
 
         if (drop_candidate != null)
@@ -297,6 +328,7 @@ public class TransPainter
     {
         drawHop(gc, hi, false);
     }
+	
 	protected void drawNote(GC gc, NotePadMeta notePadMeta)
     {
 
@@ -392,6 +424,13 @@ public class TransPainter
     private void drawStep(GC gc, StepMeta stepMeta)
     {
         if (stepMeta == null) return;
+        int alpha = gc.getAlpha();
+        
+        StepIOMetaInterface ioMeta = stepMeta.getStepMetaInterface().getStepIOMeta();
+        
+        if (startHopStep!=null && !ioMeta.isInputAcceptor()) {
+        	gc.setAlpha(100);
+        }
 
         Point pt = stepMeta.getLocation();
 
@@ -603,6 +642,35 @@ public class TransPainter
     			areaOwners.add(new AreaOwner(pt.x + iconsize-5, pt.y + iconsize-5, image.getBounds().width, image.getBounds().height, log, STRING_STEP_ERROR_LOG));
     		}
         }
+        
+        // Optionally drawn the mouse-over information
+        //
+        if (ioMeta.isInputAcceptor() && candidate==null && mouseOverStep!=null && mouseOverStep.equals(stepMeta)) {
+        	// Draw the input hop icon next to the step...
+        	//
+        	Image hopInput = GUIResource.getInstance().getImageHopInput();
+        	Rectangle inputBounds = hopInput.getBounds();
+        	int xIcon = x-inputBounds.width/2;
+        	int yIcon = y+iconsize-inputBounds.height/2;
+        	gc.drawImage(hopInput, xIcon, yIcon);
+        	areaOwners.add(new AreaOwner(xIcon, yIcon, inputBounds.width, inputBounds.height, stepMeta, STRING_INPUT_HOP_ICON));
+         }
+        
+         if (ioMeta.isOutputProducer() && candidate==null && mouseOverStep!=null && mouseOverStep.equals(stepMeta)) {
+        	Image hopOutput= GUIResource.getInstance().getImageHopOutput(); 
+        	Rectangle outputBounds = hopOutput.getBounds();
+        	int xIcon = x+iconsize-outputBounds.width/2;
+        	int yIcon = y+iconsize-outputBounds.height/2;
+        	gc.drawImage(hopOutput, xIcon, yIcon);
+        	areaOwners.add(new AreaOwner(xIcon, yIcon, outputBounds.width, outputBounds.height, stepMeta, STRING_OUTPUT_HOP_ICON));
+         }
+
+         // Restore the previous alpha value
+         //
+         if (startHopStep!=null && !ioMeta.isInputAcceptor()) {
+         	gc.setAlpha(alpha);
+         }
+
     }
 
     public static final Point getNamePosition(GC gc, String string, Point screen, int iconsize)
@@ -634,9 +702,7 @@ public class TransPainter
         {
             if (hi.isEnabled())
             {
-                String[] targetSteps = fsii.getTargetSteps();
-                // String[] infoSteps = tsii.getInfoSteps();
-
+                String[] targetSteps = fsii.getStepIOMeta().getTargetStepnames();
                 if (fs.isSendingErrorRowsToStep(ts))
                 {
                     col = red;
@@ -645,7 +711,7 @@ public class TransPainter
                 }
                 else
                 {
-                    if (targetSteps == null) // Normal link: distribute or copy data...
+                    if (Const.isEmpty(targetSteps)) // Normal link: distribute or copy data...
                     {
                     	col = black;
                     }
@@ -693,12 +759,13 @@ public class TransPainter
 
         // Check to see if the source step is an info step for the target step.
         //
-        String[] infoSteps = ts.getStepMetaInterface().getInfoSteps();
-        if (!Const.isEmpty(infoSteps)) {
+        StepIOMetaInterface ioMeta = ts.getStepMetaInterface().getStepIOMeta();
+        StreamInterface[] infoStreams = ioMeta.getInfoStreams();
+        if (!Const.isEmpty(infoStreams)) {
         	// Check this situation, the source step can't run in multiple copies!
         	//
-        	for (String infoStep : infoSteps) {
-        		if (fs.getName().equalsIgnoreCase(infoStep)) {
+        	for (StreamInterface stream : infoStreams) {
+        		if (fs.getName().equalsIgnoreCase(stream.getStepname())) {
         			// This is the info step over this hop!
         			//
         			if (fs.getCopies()>1) {
@@ -804,8 +871,7 @@ public class TransPainter
 
     private void drawArrow(GC gc, int line[], Object startObject, Object endObject)
     {
-    	double theta = Math.toRadians(11); // arrowhead sharpness
-        int size = 19 + (linewidth - 1) * 5; // arrowhead length
+    	int size = 19 + (linewidth - 1) * 5; // arrowhead length
 
         Point screen_from = real2screen(line[0], line[1], offset);
         Point screen_to = real2screen(line[2], line[3], offset);
@@ -890,7 +956,10 @@ public class TransPainter
 		        mx+=16;
             }
 	        
-	        if (Const.indexOfString(fs.getName(), ts.getStepMetaInterface().getInfoSteps()) >= 0) {
+	        StepIOMetaInterface ioMeta = ts.getStepMetaInterface().getStepIOMeta();
+	        String[] infoStepnames = ioMeta.getInfoStepnames();
+	        
+	        if (Const.indexOfString(fs.getName(), infoStepnames) >= 0) {
 	        	Image copyHopsIcon = GUIResource.getInstance().getImageInfoHop();
 	        	gc.drawImage(copyHopsIcon, mx, my);
 	        	if (!shadow) {
@@ -901,11 +970,10 @@ public class TransPainter
 	        
 	        // Check to see if the source step is an info step for the target step.
 	        //
-	        String[] infoSteps = ts.getStepMetaInterface().getInfoSteps();
-	        if (!Const.isEmpty(infoSteps)) {
+	        if (!Const.isEmpty(infoStepnames)) {
 	        	// Check this situation, the source step can't run in multiple copies!
 	        	//
-	        	for (String infoStep : infoSteps) {
+	        	for (String infoStep : infoStepnames) {
 	        		if (fs.getName().equalsIgnoreCase(infoStep)) {
 	        			// This is the info step over this hop!
 	        			//
@@ -985,6 +1053,62 @@ public class TransPainter
 	 */
 	public void setStepLogMap(Map<StepMeta, String> stepLogMap) {
 		this.stepLogMap = stepLogMap;
+	}
+
+	/**
+	 * @return the showingHopInputIcons
+	 */
+	public boolean isShowingHopInputIcons() {
+		return showingHopInputIcons;
+	}
+
+	/**
+	 * @param showingHopInputIcons the showingHopInputIcons to set
+	 */
+	public void setShowingHopInputIcons(boolean showingHopInputIcons) {
+		this.showingHopInputIcons = showingHopInputIcons;
+	}
+
+	/**
+	 * @return the startHopStep
+	 */
+	public StepMeta getStartHopStep() {
+		return startHopStep;
+	}
+
+	/**
+	 * @param startHopStep the startHopStep to set
+	 */
+	public void setStartHopStep(StepMeta startHopStep) {
+		this.startHopStep = startHopStep;
+	}
+
+	/**
+	 * @return the endHopLocation
+	 */
+	public Point getEndHopLocation() {
+		return endHopLocation;
+	}
+
+	/**
+	 * @param endHopLocation the endHopLocation to set
+	 */
+	public void setEndHopLocation(Point endHopLocation) {
+		this.endHopLocation = endHopLocation;
+	}
+
+	/**
+	 * @return the noInputStep
+	 */
+	public StepMeta getNoInputStep() {
+		return noInputStep;
+	}
+
+	/**
+	 * @param noInputStep the noInputStep to set
+	 */
+	public void setNoInputStep(StepMeta noInputStep) {
+		this.noInputStep = noInputStep;
 	}
 
 }

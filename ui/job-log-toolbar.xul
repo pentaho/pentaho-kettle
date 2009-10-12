@@ -6,6 +6,8 @@
 			<toolbarbutton value="clear-log" label="%JobLog.Button.ClearLog" image="ui/images/clear-log.png" tooltiptext="%JobLog.Button.ClearLog"/>
 			<toolbarseparator />
 			<toolbarbutton value="log-settings" label="%JobLog.Button.LogSettings" image="ui/images/log-settings.png" tooltiptext="%JobLog.Button.LogSettings"/>
+			<toolbarseparator />
+			<toolbarbutton value="log-pause" label="%JobLog.Button.Pause" image="ui/images/pause-log.png" tooltiptext="%JobLog.Button.Pause"/>
 		</toolbar>
 	</toolbox>
 

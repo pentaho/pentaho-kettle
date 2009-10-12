@@ -28,6 +28,7 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 import org.pentaho.di.ui.spoon.trans.LogBrowser;
 import org.pentaho.xul.swt.toolbar.Toolbar;
+import org.pentaho.xul.toolbar.XulToolbarButton;
 
 public class JobLogDelegate extends SpoonDelegate {
 	private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -48,6 +49,8 @@ public class JobLogDelegate extends SpoonDelegate {
 
 	private Composite jobLogComposite;
 	private Toolbar toolbar;
+
+	private LogBrowser	logBrowser;
 	
 	/**
 	 * @param spoon
@@ -92,7 +95,7 @@ public class JobLogDelegate extends SpoonDelegate {
 		fdText.bottom = new FormAttachment(100,0);
 		jobLogText.setLayoutData(fdText);
 
-		LogBrowser logBrowser = new LogBrowser(jobLogText, jobGraph);
+		logBrowser = new LogBrowser(jobLogText, jobGraph);
 		logBrowser.installLogSniffer();
 		
 		// If the job is closed, we should dispose of all the logging information in the buffer and registry for it
@@ -229,5 +232,21 @@ public class JobLogDelegate extends SpoonDelegate {
 	public CTabItem getJobLogTab() {
 		return jobLogTab;
 	}
-	
+
+	public void pauseLog() {
+		XulToolbarButton pauseContinueButton = toolbar.getButtonById("log-pause");
+
+		if (logBrowser.isPaused()) {
+			logBrowser.setPaused(false);
+			if (pauseContinueButton!=null) { 
+				pauseContinueButton.setImage(GUIResource.getInstance().getImagePauseLog());
+			}
+		} else {
+			logBrowser.setPaused(true);
+			if (pauseContinueButton!=null) { 
+				pauseContinueButton.setImage(GUIResource.getInstance().getImageContinueLog());
+			}
+		}
+	}
+
 }

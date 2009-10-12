@@ -6055,16 +6055,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 * @param stepMeta
 	 *            The target step to map against.
 	 */
-	@SuppressWarnings("deprecation")
 	// retry of required fields acquisition
 	public void generateFieldMapping(TransMeta transMeta, StepMeta stepMeta) {
 		try {
 			if (stepMeta != null) {
 				StepMetaInterface smi = stepMeta.getStepMetaInterface();
 				RowMetaInterface targetFields = smi.getRequiredFields(transMeta);
-				if (targetFields.isEmpty())
-					smi.getRequiredFields(); // retry, get rid of this method in
-				// 4.x
 				RowMetaInterface sourceFields = transMeta.getPrevStepFields(stepMeta);
 
 				// Build the mapping: let the user decide!!

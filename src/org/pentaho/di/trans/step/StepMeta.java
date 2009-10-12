@@ -43,6 +43,7 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.w3c.dom.Node;
 
 
@@ -436,7 +437,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	{
 	    if (getStepMetaInterface()!=null)
 	    {
-	        return getStepMetaInterface().getTargetSteps()!=null;
+	    	StreamInterface[] targetStreams = getStepMetaInterface().getStepIOMeta().getTargetStreams();
+	        return !Const.isEmpty(targetStreams);
 	    }
 	    return false;
 	}

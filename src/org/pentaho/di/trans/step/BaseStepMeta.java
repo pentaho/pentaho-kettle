@@ -434,5 +434,13 @@ public class BaseStepMeta implements Cloneable
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	/**
+     * Returns the Input/Output metadata for this step.
+     * By default, each step produces and accepts optional input.
+     */
+    public StepIOMetaInterface getStepIOMeta() {
+    	return new StepIOMeta(true, true, true, false);
+    }
     
 }
