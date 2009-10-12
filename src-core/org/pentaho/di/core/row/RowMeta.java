@@ -41,6 +41,7 @@ public class RowMeta implements RowMetaInterface
 	public static final String XML_DATA_TAG = "row-data"; //$NON-NLS-1$
     
     private List<ValueMetaInterface> valueMetaList;
+	private List<Integer>	valuesThatNeedRealClone;
 
     public RowMeta()
     {
@@ -307,16 +308,23 @@ public class RowMeta implements RowMetaInterface
      * @return a cloned Object[] object.
      * @throws KettleValueException in case something is not quite right with the expected data
      */
-    public Object[] cloneRow(Object[] objects) throws KettleValueException
-    {
-        Object[] newObjects = RowDataUtil.allocateRowData(size());
-        for (int i=0;i<valueMetaList.size();i++)
-        {
-            ValueMetaInterface valueMeta = getValueMeta(i);
-            newObjects[i] = valueMeta.cloneValueData(objects[i]);
-        }
-        return newObjects;
-    }
+    public Object[] cloneRow(Object[] objects) throws KettleValueException {
+		if (valuesThatNeedRealClone == null) {
+			valuesThatNeedRealClone = new ArrayList<Integer>();
+			for (int i = 0; i < size(); i++) {
+				ValueMetaInterface valueMeta = getValueMeta(i);
+				if (valueMeta.requiresRealClone()) {
+					valuesThatNeedRealClone.add(i);
+				}
+			}
+		}
+		Object[] newObjects = objects.clone();
+		for (Integer i : valuesThatNeedRealClone) {
+			ValueMetaInterface valueMeta = getValueMeta(i);
+			newObjects[i] = valueMeta.cloneValueData(objects[i]);
+		}
+		return newObjects;
+	} 
 
     
     public String getString(Object[] dataRow, String valueName, String defaultValue) throws KettleValueException
