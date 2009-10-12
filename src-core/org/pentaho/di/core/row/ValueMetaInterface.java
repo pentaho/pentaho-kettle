@@ -561,4 +561,9 @@ public interface ValueMetaInterface extends Cloneable
 	 */
 	public void setNumberOfBinaryStringConversions(long numberOfBinaryStringConversions);
 	
+	/**
+	 * @return true if the data type requires a real copy. Usually a binary or Serializable object
+	 */
+	public boolean requiresRealClone();
+	
 }

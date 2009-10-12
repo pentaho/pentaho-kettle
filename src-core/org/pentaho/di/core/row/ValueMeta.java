@@ -3645,4 +3645,8 @@ public class ValueMeta implements ValueMetaInterface
 	public static String[] getTrimTypeDescriptions() {
 		return trimTypeDesc;
 	}
+	
+	public boolean requiresRealClone() {
+		return type==TYPE_BINARY || type==TYPE_SERIALIZABLE;
+	}
 }
