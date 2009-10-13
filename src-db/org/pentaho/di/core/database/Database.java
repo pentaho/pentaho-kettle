@@ -2607,15 +2607,21 @@ public class Database implements VariableSpace, LoggingObjectInterface
                         length=-1;
                   	}
                 }
+                // if the length or precision needs a BIGNUMBER
+                if (length>15 || precision>15) valtype=ValueMetaInterface.TYPE_BIGNUMBER;
             }
             else
             {
-                if (precision==0 && length<18 && length>0)  // Among others Oracle is affected here.  
-                {
-                    valtype=ValueMetaInterface.TYPE_INTEGER;
+                if (precision==0) {
+                	if (length<=18 && length>0) { // Among others Oracle is affected here.
+                		valtype=ValueMetaInterface.TYPE_INTEGER;  // Long can hold up to 18 significant digits
+                	} else if (length>18) {
+                		valtype=ValueMetaInterface.TYPE_BIGNUMBER;
+                	}
+                } else { // we have a precision: keep NUMBER or change to BIGNUMBER?
+                    if (length>15 || precision>15) valtype=ValueMetaInterface.TYPE_BIGNUMBER;
                 }
             }
-            if (length>18 || precision>18) valtype=ValueMetaInterface.TYPE_BIGNUMBER;
             
             if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE)
             {
