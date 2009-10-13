@@ -486,7 +486,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		fdReturn = new FormData();
 		fdReturn.left = new FormAttachment(0, 0);
 		fdReturn.top = new FormAttachment(wlReturn, margin);
-		fdReturn.right = new FormAttachment(wGetLU, -margin);
+		fdReturn.right = new FormAttachment(wDoMapping, -margin);
 		fdReturn.bottom = new FormAttachment(wOK, -2*margin);
 		wReturn.setLayoutData(fdReturn);
 		
