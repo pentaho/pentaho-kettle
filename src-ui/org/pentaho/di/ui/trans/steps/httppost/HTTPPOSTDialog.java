@@ -47,8 +47,10 @@ import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -706,7 +708,15 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
 			if (r!=null && !r.isEmpty())
 			{
-                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1, 2 }, new int[] { 3 }, -1, -1, null);
+				TableItemInsertListener listener = new TableItemInsertListener()
+                {
+                    public boolean tableItemInserted(TableItem tableItem, ValueMetaInterface v)
+                    {
+                        tableItem.setText(3, NO); // default is "N"
+                        return true;
+                    }
+                };				
+                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1, 2 }, null, -1, -1, listener);
 			}
 		}
 		catch(KettleException ke)
