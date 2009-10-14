@@ -319,6 +319,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   private StepMeta	endHopStep;
 
   private StreamType candidateHopType;
+
+  private StreamInterface	startTargetHopStream;
   
   
 
@@ -742,6 +744,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
  	    		 startHopStep = (StepMeta)areaOwner.getParent();
  	    		 candidateHopType = null;
  	    		 startErrorHopStep = false;
+ 	    		 startTargetHopStream= null;
  	    		 break;
     		  case STEP_INFO_HOP_ICON:
     			  // See if we have a start hop step set...
@@ -771,6 +774,14 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
      				  startErrorHopStep = true;
      			  }
    	    		 break;
+    		  case STEP_TARGET_HOP_ICON:
+    		      // Click on the target icon means: create a new target hop 
+    	    	  //
+      			  if (startHopStep==null) {
+      				 startHopStep = (StepMeta)areaOwner.getParent();
+      				 startTargetHopStream = (StreamInterface)areaOwner.getOwner();
+      			  }
+    	    		 break;
     		  default:
     		      startHopStep=null;
     		  }
@@ -778,18 +789,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       }
       
       if (candidate!=null) {
-    	  if (startErrorHopStep) {
-    		  // Automatically configure the step error handling too!
-    		  //
-    		  StepErrorMeta errorMeta = candidate.getFromStep().getStepErrorMeta();
-    		  if (errorMeta==null) {
-    			  errorMeta=new StepErrorMeta(transMeta, candidate.getFromStep());
-    		  }
-    		  errorMeta.setEnabled(true);
-    		  errorMeta.setTargetStep(candidate.getToStep());
-    		  candidate.getFromStep().setStepErrorMeta(errorMeta);
-    		  startErrorHopStep=false;
-    	  }
     	  addCandidateAsHop();
       }
       
@@ -1004,6 +1003,26 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       if (transMeta.findTransHop(candidate) == null) {
         spoon.newHop(transMeta, candidate);
       }
+	  if (startErrorHopStep) {
+		  // Automatically configure the step error handling too!
+		  //
+		  StepErrorMeta errorMeta = candidate.getFromStep().getStepErrorMeta();
+		  if (errorMeta==null) {
+			  errorMeta=new StepErrorMeta(transMeta, candidate.getFromStep());
+		  }
+		  errorMeta.setEnabled(true);
+		  errorMeta.setTargetStep(candidate.getToStep());
+		  candidate.getFromStep().setStepErrorMeta(errorMeta);
+		  startErrorHopStep=false;
+	  }
+	  if (startTargetHopStream!=null) {
+		  // Auto-configure the target in the source step...
+		  //
+		  startTargetHopStream.setStepMeta(candidate.getToStep());
+		  startTargetHopStream.setStepname(candidate.getToStep().getName());
+		  startTargetHopStream=null;
+	  }
+	  
       candidate = null;
       selectedSteps = null;
       startHopStep = null;
@@ -1226,7 +1245,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     
   private void addStepMouseOverDelayTimer(final StepMeta stepMeta) {
 	  mouseOverSteps.add(stepMeta);
-		new Thread(new DelayTimer(3, new DelayListener() {
+		new Thread(new DelayTimer(5, new DelayListener() {
 			public void expired() {
 				mouseOverSteps.remove(stepMeta);
 				asyncRedraw();
@@ -1237,7 +1256,9 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	protected void asyncRedraw() {
 		getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				TransGraph.this.redraw();
+				if (!TransGraph.this.isDisposed()) {
+					TransGraph.this.redraw();
+				}
 			}
 		});
 	}
@@ -2246,19 +2267,29 @@ private void addToolBar() {
 				tipImage = GUIResource.getInstance().getImageLocked();
 				break;
 			case STEP_INPUT_HOP_ICON:
-				StepMeta subjectStep = (StepMeta) (areaOwner.getParent());
-				tip.append("INPUT HOP ICON FOR STEP '" + subjectStep.getName() + "'");
+				// StepMeta subjectStep = (StepMeta) (areaOwner.getParent());
+				tip.append(BaseMessages.getString(PKG, "TransGraph.StepInputConnector.Tooltip"));
 				tipImage = GUIResource.getInstance().getImageHopInput();
 				break;
 			case STEP_OUTPUT_HOP_ICON:
-				subjectStep = (StepMeta) (areaOwner.getParent());
-				tip.append("OUTPUT HOP ICON FOR STEP '" + subjectStep.getName() + "'");
+				//subjectStep = (StepMeta) (areaOwner.getParent());
+				tip.append(BaseMessages.getString(PKG, "TransGraph.StepOutputConnector.Tooltip"));
 				tipImage = GUIResource.getInstance().getImageHopOutput();
 				break;
 			case STEP_INFO_HOP_ICON:
-				subjectStep = (StepMeta) (areaOwner.getParent());
+				// subjectStep = (StepMeta) (areaOwner.getParent());
 				StreamInterface stream = (StreamInterface) areaOwner.getOwner();
-				tip.append(stream.toString() + " (" + subjectStep.toString() + ")");
+				tip.append(BaseMessages.getString(PKG, "TransGraph.StepInfoConnector.Tooltip")+Const.CR+stream.toString());
+				tipImage = GUIResource.getInstance().getImageHopOutput();
+				break;
+			case STEP_TARGET_HOP_ICON:
+				// subjectStep = (StepMeta) (areaOwner.getParent());
+				stream = (StreamInterface) areaOwner.getOwner();
+				tip.append(BaseMessages.getString(PKG, "TransGraph.StepTargetConnector.Tooltip")+Const.CR+stream.toString());
+				tipImage = GUIResource.getInstance().getImageHopOutput();
+				break;
+			case STEP_ERROR_HOP_ICON:
+				tip.append(BaseMessages.getString(PKG, "TransGraph.StepSupportsErrorHandling.Tooltip"));
 				tipImage = GUIResource.getInstance().getImageHopOutput();
 				break;
 			}
@@ -2302,7 +2333,7 @@ private void addToolBar() {
 			}
 			toolTip.setText(newTip);
 			toolTip.hide();
-			toolTip.show(new org.eclipse.swt.graphics.Point(screenX, screenY));
+			toolTip.show(new org.eclipse.swt.graphics.Point(x, y));
 		}
 
 		return subject;

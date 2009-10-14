@@ -25,6 +25,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 /**
  * Merge rows from 2 sorted streams to detect changes.
@@ -61,8 +62,10 @@ public class MergeRows extends BaseStep implements StepInterface
             
             // Find the appropriate RowSet 
             //
-            data.oneRowSet = findInputRowSet(meta.getReferenceStepName());
-            data.twoRowSet = findInputRowSet(meta.getCompareStepName());
+            StreamInterface[] infoStreams = meta.getStepIOMeta().getInfoStreams();
+            
+            data.oneRowSet = findInputRowSet(infoStreams[0].getStepname());
+            data.twoRowSet = findInputRowSet(infoStreams[1].getStepname());
             
     		data.one=getRowFrom(data.oneRowSet);
             data.two=getRowFrom(data.twoRowSet);
@@ -219,7 +222,9 @@ public class MergeRows extends BaseStep implements StepInterface
 
         if (super.init(smi, sdi))
         {
-            if (meta.getReferenceStepName()!=null ^ meta.getCompareStepName()!=null)
+            StreamInterface[] infoStreams = meta.getStepIOMeta().getInfoStreams();
+
+            if (infoStreams[0].getStepMeta()!=null ^ infoStreams[1].getStepMeta()!=null)
             {
                 logError(BaseMessages.getString(PKG, "MergeRows.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
             }

@@ -34,9 +34,14 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepIOMeta;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.w3c.dom.Node;
 
 /*
@@ -47,12 +52,6 @@ import org.w3c.dom.Node;
 public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = MergeRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
-	private String referenceStepName;
-	private StepMeta referenceStepMeta;
-
-	private String compareStepName;  
-	private StepMeta compareStepMeta;
 
     private String flagField;
 
@@ -102,81 +101,6 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 		readData(stepnode);
 	}
 
-	/**
-     * @return Returns the sendFalseStepname.
-     */
-    public String getCompareStepName()
-    {
-		if (compareStepMeta!=null && 
-		        compareStepMeta.getName()!=null &&
-		        compareStepMeta.getName().length()>0
-			   ) 
-				return compareStepMeta.getName();
-			return null;
-   }
- 
-	/**
-     * @return Returns the sendTrueStepname.
-     */
-    public String getReferenceStepName()
-    {
-		if (referenceStepMeta!=null && 
-		        referenceStepMeta.getName()!=null &&
-		        referenceStepMeta.getName().length()>0
-			   ) 
-				return referenceStepMeta.getName();
-			return null;
-   }
-    
-
-    /**
-     * @param sendFalseStepname The sendFalseStepname to set.
-     */
-    public void setCompareStepName(String sendFalseStepname)
-    {
-        this.compareStepName = sendFalseStepname;
-    }
-    
-    /**
-     * @param sendTrueStepname The sendTrueStepname to set.
-     */
-    public void setReferenceStepName(String sendTrueStepname)
-    {
-        this.referenceStepName = sendTrueStepname;
-    }
-    
-    /**
-     * @return Returns the sendFalseStep.
-     */
-    public StepMeta getCompareStepMeta()
-    {
-        return compareStepMeta;
-    }
-    
-    /**
-     * @return Returns the sendTrueStep.
-     */
-    public StepMeta getReferenceStepMeta()
-    {
-        return referenceStepMeta;
-    }
-    
-    /**
-     * @param sendFalseStep The sendFalseStep to set.
-     */
-    public void setCompareStepMeta(StepMeta sendFalseStep)
-    {
-        this.compareStepMeta = sendFalseStep;
-    }
-	
-    /**
-     * @param sendTrueStep The sendTrueStep to set.
-     */
-    public void setReferenceStepMeta(StepMeta sendTrueStep)
-    {
-        this.referenceStepMeta = sendTrueStep;
-    }
-	
     /**
      * @return Returns the flagField.
      */
@@ -226,8 +150,9 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 
         retval.append(XMLHandler.addTagValue("flag_field", flagField));         //$NON-NLS-1$
 
-		retval.append(XMLHandler.addTagValue("reference", getReferenceStepName()));		 //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("compare", getCompareStepName()));		 //$NON-NLS-1$
+        StreamInterface[] infoStreams = getStepIOMeta().getInfoStreams();
+		retval.append(XMLHandler.addTagValue("reference", infoStreams[0].getStepname()));		 //$NON-NLS-1$
+		retval.append(XMLHandler.addTagValue("compare", infoStreams[1].getStepname()));		 //$NON-NLS-1$
 		retval.append("    <compare>"+Const.CR); //$NON-NLS-1$
 				
 		retval.append("    </compare>"+Const.CR); //$NON-NLS-1$
@@ -263,8 +188,12 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
             
             flagField = XMLHandler.getTagValue(stepnode, "flag_field"); //$NON-NLS-1$
             
-			compareStepName = XMLHandler.getTagValue(stepnode, "compare"); //$NON-NLS-1$
-			referenceStepName = XMLHandler.getTagValue(stepnode, "reference"); //$NON-NLS-1$
+            StreamInterface[] infoStreams = getStepIOMeta().getInfoStreams();
+            StreamInterface referenceStream = infoStreams[0];
+            StreamInterface compareStream = infoStreams[1];
+
+			compareStream.setStepname( XMLHandler.getTagValue(stepnode, "compare") ); //$NON-NLS-1$
+			referenceStream.setStepname( XMLHandler.getTagValue(stepnode, "reference") ); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -277,33 +206,8 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
         flagField = "flagfield";
         allocate(0,0);
 	}
-    
-    public String[] getInfoSteps()
-    {
-        if (referenceStepMeta!=null && compareStepMeta!=null)
-        {
-            return new String[] { referenceStepMeta.getName(), compareStepMeta.getName(), };
-        }
-        else
-        {
-            return null;
-        }
-    }
 
-    /**
-     * @param infoSteps The info-step(s) to set
-     */
-    public void setInfoSteps(StepMeta[] infoSteps)
-    {
-        if (infoSteps!=null && infoSteps.length==2)
-        {
-            referenceStepMeta = infoSteps[0];
-            compareStepMeta = infoSteps[1];
-        }
-    }
-
-	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
-		throws KettleException
+	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
 	{
 		try
 		{
@@ -323,8 +227,12 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 
             flagField  =   rep.getStepAttributeString (id_step, "flag_field");  //$NON-NLS-1$
 
-			referenceStepName  =   rep.getStepAttributeString (id_step, "reference");  //$NON-NLS-1$
-			compareStepName =      rep.getStepAttributeString (id_step, "compare");  //$NON-NLS-1$
+            StreamInterface[] infoStreams = getStepIOMeta().getInfoStreams();
+            StreamInterface referenceStream = infoStreams[0];
+            StreamInterface compareStream = infoStreams[1];
+
+			referenceStream.setStepname( rep.getStepAttributeString (id_step, "reference") );  //$NON-NLS-1$
+			compareStream.setStepname( rep.getStepAttributeString (id_step, "compare") );  //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -332,8 +240,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
-		throws KettleException
+	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
 	{
 		try
 		{
@@ -349,8 +256,12 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 
             rep.saveStepAttribute(id_transformation, id_step, "flag_field", flagField); //$NON-NLS-1$
 
-			rep.saveStepAttribute(id_transformation, id_step, "reference", getReferenceStepName()); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "compare", getCompareStepName()); //$NON-NLS-1$
+            StreamInterface[] infoStreams = getStepIOMeta().getInfoStreams();
+            StreamInterface referenceStream = infoStreams[0];
+            StreamInterface compareStream = infoStreams[1];
+
+			rep.saveStepAttribute(id_transformation, id_step, "reference", referenceStream.getStepname()); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "compare", compareStream.getStepname()); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -358,15 +269,6 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	/**
-	 * @param steps optionally search the info step in a list of steps
-	 */
-	public void searchInfoAndTargetSteps(List<StepMeta> steps)
-	{
-		referenceStepMeta  = StepMeta.findStep(steps, referenceStepName);
-		compareStepMeta = StepMeta.findStep(steps, compareStepName);
-	}
-
 	public boolean chosesTargetSteps()
 	{
 	    return false;
@@ -406,13 +308,17 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		CheckResult cr;
 		
-		if (getReferenceStepName()!=null && getCompareStepName()!=null)
+        StreamInterface[] infoStreams = getStepIOMeta().getInfoStreams();
+        StreamInterface referenceStream = infoStreams[0];
+        StreamInterface compareStream = infoStreams[1];
+
+		if (referenceStream.getStepname()!=null && compareStream.getStepname()!=null)
 		{
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MergeRowsMeta.CheckResult.SourceStepsOK"), stepinfo);
 			remarks.add(cr);
 		}
 		else
-		if (getReferenceStepName()==null && getCompareStepName()==null)
+		if (referenceStream.getStepname()==null && compareStream.getStepname()==null)
 		{
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MergeRowsMeta.CheckResult.SourceStepsMissing"), stepinfo);
 			remarks.add(cr);
@@ -433,5 +339,20 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new MergeRowsData();
 	}
+
+	/**
+     * Returns the Input/Output metadata for this step.
+     */
+    public StepIOMetaInterface getStepIOMeta() {
+    	if (ioMeta==null) {
+
+    		ioMeta = new StepIOMeta(true, true, false, false);
+    	
+	    	ioMeta.addStream( new Stream(StreamType.INFO, BaseMessages.getString(PKG, "MergeRowsMeta.InfoStream.FirstStream.Description")));
+	    	ioMeta.addStream(new Stream(StreamType.INFO, BaseMessages.getString(PKG, "MergeRowsMeta.InfoStream.SecondStream.Description")));
+    	}
+    	
+    	return ioMeta;
+    }
 
 }

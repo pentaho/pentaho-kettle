@@ -655,52 +655,55 @@ public class TransPainter
         
         // Optionally drawn the mouse-over information
         //
-        if (ioMeta.isInputAcceptor() && candidate==null && ((mouseOverSteps.contains(stepMeta)) || showingHopInputIcons) ) {
+        if (ioMeta.isInputAcceptor() && /*candidate==null && */ !stepMeta.equals(startHopStep) && ((mouseOverSteps.contains(stepMeta)) || showingHopInputIcons) ) {
         	// Draw the input hop icon next to the step...
         	//
         	Image hopInput = GUIResource.getInstance().getImageHopInput();
         	Rectangle inputBounds = hopInput.getBounds();
         	int xIcon = x-inputBounds.width-3;
-        	int yIcon = y+iconsize/2-inputBounds.height/2;
+        	int yIcon = y-inputBounds.height/2;
         	gc.drawImage(hopInput, xIcon, yIcon);
         	areaOwners.add(new AreaOwner(AreaType.STEP_INPUT_HOP_ICON, xIcon, yIcon, inputBounds.width, inputBounds.height, stepMeta, ioMeta));
          }
         
+        int rightIconIndex=0;
          if (ioMeta.isOutputProducer() && candidate==null && mouseOverSteps.contains(stepMeta) && !showingHopInputIcons) {
         	Image hopOutput= GUIResource.getInstance().getImageHopOutput(); 
         	Rectangle outputBounds = hopOutput.getBounds();
         	int xIcon = x+iconsize+3;
-        	int yIcon = y+iconsize/2-outputBounds.height/2;
+        	int yIcon = y-outputBounds.height/2;
         	gc.drawImage(hopOutput, xIcon, yIcon);
         	areaOwners.add(new AreaOwner(AreaType.STEP_OUTPUT_HOP_ICON, xIcon, yIcon, outputBounds.width, outputBounds.height, stepMeta, ioMeta));
+        	rightIconIndex++;
          }
 
-         if (ioMeta.isOutputProducer() && candidate==null && mouseOverSteps.contains(stepMeta) && !showingHopInputIcons) {
-         	Image hopOutput= GUIResource.getInstance().getImageHopOutput(); 
-         	Rectangle outputBounds = hopOutput.getBounds();
-         	int xIcon = x+iconsize+3;
-         	int yIcon = y+iconsize/2-outputBounds.height/2;
-         	gc.drawImage(hopOutput, xIcon, yIcon);
-         	areaOwners.add(new AreaOwner(AreaType.STEP_OUTPUT_HOP_ICON, xIcon, yIcon, outputBounds.width, outputBounds.height, stepMeta, ioMeta));
-          }
-         
          // In case of a step with info streams coming in, we should display all info icons at the top of the step 
          //
          int topIconIndex = 0;
-         if ((mouseOverSteps.contains(stepMeta)) || showingHopInputIcons) {
+         if ((mouseOverSteps.contains(stepMeta) || showingHopInputIcons) && !stepMeta.equals(startHopStep)) {
 	         StreamInterface[] infoStreams = ioMeta.getInfoStreams();
-	         if (!Const.isEmpty(infoStreams)) {
-	        	 for (int i=0;i<infoStreams.length;i++) {
-	        		 StreamInterface stream = infoStreams[i];
-	        		 Image infoImage = GUIResource.getInstance().getImageInfoHop();
-	        		 Rectangle bounds = infoImage.getBounds();
-	        		 int xIcon = x+i*(bounds.width+5);
-	        		 int yIcon = y-bounds.height-3;
-	        		 gc.drawImage(infoImage, xIcon, yIcon);
-	             	 areaOwners.add(new AreaOwner(AreaType.STEP_INFO_HOP_ICON, xIcon, yIcon, bounds.width, bounds.height, stepMeta, stream));
-	             	 topIconIndex++;
-	        	 }
-	         }
+        	 for (int i=0;i<infoStreams.length;i++) {
+        		 StreamInterface stream = infoStreams[i];
+        		 Image infoImage = GUIResource.getInstance().getImageInfoHop();
+        		 Rectangle bounds = infoImage.getBounds();
+        		 int xIcon = x+i*(bounds.width+5);
+        		 int yIcon = y-bounds.height-3;
+        		 gc.drawImage(infoImage, xIcon, yIcon);
+             	 areaOwners.add(new AreaOwner(AreaType.STEP_INFO_HOP_ICON, xIcon, yIcon, bounds.width, bounds.height, stepMeta, stream));
+             	 topIconIndex++;
+        	 }
+
+	         StreamInterface[] targetStreams = ioMeta.getTargetStreams();
+        	 for (int i=0;i<targetStreams.length;i++) {
+        		 StreamInterface stream = targetStreams[i];
+        		 Image targetImage = GUIResource.getInstance().getImageHopTarget();
+        		 Rectangle bounds = targetImage.getBounds();
+        		 int xIcon = x+iconsize+3;
+        		 int yIcon = (y-(bounds.height/2))+((i+rightIconIndex)*(bounds.height+3));
+        		 gc.drawImage(targetImage, xIcon, yIcon);
+        		 gc.drawText(stream.getDescription(), xIcon+bounds.width+5, yIcon);
+        		 areaOwners.add(new AreaOwner(AreaType.STEP_TARGET_HOP_ICON, xIcon, yIcon, bounds.width, bounds.height, stepMeta, stream));
+        	 }
          }
 
          if (stepMeta.supportsErrorHandling() && candidate==null && mouseOverSteps.contains(stepMeta) && !showingHopInputIcons) {
@@ -988,9 +991,10 @@ public class TransPainter
 	        mx = (int) (x1 + factor * (x2 - x1) / 2) - 8;
 	        my = (int) (y1 + factor * (y2 - y1) / 2) - 8;
 	        
-	        boolean errorHop = fs.isSendingErrorRowsToStep(ts) || (startErrorHopStep && fs.equals(startHopStep)); 
+	        boolean errorHop = fs.isSendingErrorRowsToStep(ts) || (startErrorHopStep && fs.equals(startHopStep));
+	        boolean targetHop = Const.indexOfString(ts.getName(), fs.getStepMetaInterface().getStepIOMeta().getTargetStepnames())>=0;
 
-	        if (!fs.isDistributes() && !ts.getStepPartitioningMeta().isMethodMirror() && !errorHop) {
+	        if (!fs.isDistributes() && !ts.getStepPartitioningMeta().isMethodMirror() && !errorHop && !targetHop) {
 		        
 	        	Image copyHopsIcon = GUIResource.getInstance().getImageCopyHop();
 	        	gc.drawImage(copyHopsIcon, mx, my);

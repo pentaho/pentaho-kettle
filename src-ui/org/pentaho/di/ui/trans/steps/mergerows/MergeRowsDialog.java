@@ -44,6 +44,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.mergerows.MergeRowsMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -340,8 +341,10 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 	 */ 
 	public void getData()
 	{
-		if (input.getReferenceStepName() != null) wReference.setText(input.getReferenceStepName());
-		if (input.getCompareStepName() != null) wCompare.setText(input.getCompareStepName());
+		StreamInterface[] infoStreams = input.getStepIOMeta().getInfoStreams();
+		
+		wReference.setText(Const.NVL(infoStreams[0].getStepname(), ""));
+		wCompare.setText(Const.NVL(infoStreams[1].getStepname(), ""));
         if (input.getFlagField() !=null ) wFlagfield.setText(input.getFlagField() ); 
         
         for (int i=0;i<input.getKeyFields().length;i++)
@@ -369,8 +372,9 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 	{		
 		if (Const.isEmpty(wStepname.getText())) return;
 
-		input.setReferenceStepMeta( transMeta.findStep( wReference.getText() ) );
-		input.setCompareStepMeta( transMeta.findStep( wCompare.getText() ) );
+		StreamInterface[] infoStreams = input.getStepIOMeta().getInfoStreams();
+		infoStreams[0].setStepMeta( transMeta.findStep( wReference.getText() ) );
+		infoStreams[1].setStepMeta( transMeta.findStep( wCompare.getText() ) );
         input.setFlagField( wFlagfield.getText());
 
         int nrKeys   = wKeys.nrNonEmpty();

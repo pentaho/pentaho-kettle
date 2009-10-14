@@ -34,5 +34,41 @@ public interface StepIOMetaInterface {
 	 * Change step names into step objects for the info and target streams.  We do this to allow them to be name-changed etc.
 	 * @param steps the steps to reference
 	 */
-	public void searchInfoAndTargetSteps(List<StepMeta> steps);	
+	public void searchInfoAndTargetSteps(List<StepMeta> steps);
+	
+	/**
+	 * Set the general info stream description
+	 * @param string the info streams description
+	 */
+	public void setGeneralInfoDescription(String string);	
+
+	/**
+	 * Set the general target stream description
+	 * @param string the target streams description
+	 */
+	public void setGeneralTargetDescription(String string);
+	
+	/**
+	 * Utility method : add an info stream with the default description, referencing the specified step name and step
+	 * 
+	 * @param stepname
+	 * @param stepMeta
+	 * @param extraInfo extra text to be added to the general info stream description
+	 */
+	public void addInfoStream(String stepname, StepMeta stepMeta, String extraInfo);	
+
+	/**
+	 * Utility method : add a target stream with the default description, referencing the specified step name and step
+	 * 
+	 * @param stepname
+	 * @param stepMeta
+	 * @param extraInfo extra text to be added to the general info stream description
+	 */
+	public void addTargetStream(String stepname, StepMeta stepMeta, String extraInfo);	
+	
+	/**
+	 * Remove all defined streams
+	 */
+	public void clearStreams();
+
 }

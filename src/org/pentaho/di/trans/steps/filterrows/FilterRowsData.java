@@ -31,6 +31,8 @@ public class FilterRowsData extends BaseStepData implements StepDataInterface
 	public RowSet trueRowSet;
 	public RowSet falseRowSet;
 	public boolean chosesTargetSteps;
+	public String	trueStepname;
+	public String	falseStepname;
 
     /**
 	 * 

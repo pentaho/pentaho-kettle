@@ -5,8 +5,9 @@
     <description/>
     <extended_description/>
     <trans_version/>
-  <filename>&#47;home&#47;matt&#47;workspace&#47;Kettle trunk&#47;samples&#47;transformations&#47;Merge rows - mergs 2 streams of data and add a flag.ktr</filename>
     <directory>&#47;</directory>
+    <parameters>
+    </parameters>
     <log>
       <read/>
       <write/>
@@ -16,8 +17,10 @@
       <rejected/>
       <connection/>
       <table/>
+      <step_performance_table/>
       <use_batchid>Y</use_batchid>
       <use_logfield>N</use_logfield>
+      <size_limit_lines/>
     </log>
     <maxdate>
       <connection/>
@@ -34,11 +37,20 @@
     <feedback_size>5000</feedback_size>
     <using_thread_priorities>Y</using_thread_priorities>
     <shared_objects_file/>
+    <capture_step_performance>N</capture_step_performance>
+    <step_performance_capturing_delay>1000</step_performance_capturing_delay>
     <dependencies>
     </dependencies>
     <partitionschemas>
     </partitionschemas>
     <slaveservers>
+         <slaveserver><name>localhost:8081</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080 master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>Cluster Master</name><hostname>${MASTER_HOST}</hostname><port>${MASTER_PORT}</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>localhost:8080</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8084</name><hostname>localhost</hostname><port>8084</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8083</name><hostname>localhost</hostname><port>8083</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8082</name><hostname>localhost</hostname><port>8082</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
@@ -48,7 +60,7 @@
   <notepads>
   </notepads>
   <order>
-  <hop> <from>Text file input</from><to>Merge Rows</to><enabled>Y</enabled> </hop>  <hop> <from>Text file input 2</from><to>Merge Rows</to><enabled>Y</enabled> </hop>  <hop> <from>Merge Rows</from><to>Text file output</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Merge Rows</from><to>Text file output</to><enabled>Y</enabled> </hop>  <hop> <from>Text file input</from><to>Merge Rows</to><enabled>Y</enabled> </hop>  <hop> <from>Text file input 2</from><to>Merge Rows</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>Merge Rows</name>
     <type>MergeRows</type>
@@ -89,6 +101,7 @@
            <schema_name/>
            </partitioning>
     <accept_filenames>N</accept_filenames>
+    <passing_through_fields>N</passing_through_fields>
     <accept_field/>
     <accept_stepname/>
     <separator>;</separator>
@@ -112,10 +125,12 @@
     <rownum_field/>
     <format>DOS</format>
     <encoding/>
+    <add_to_result_filenames>Y</add_to_result_filenames>
     <file>
       <name>${Internal.Transformation.Filename.Directory}\files\merge1.txt</name>
       <filemask/>
       <file_required/>
+      <include_subfolders/>
       <type>CSV</type>
       <compression>None</compression>
     </file>
@@ -186,6 +201,7 @@
            <schema_name/>
            </partitioning>
     <accept_filenames>N</accept_filenames>
+    <passing_through_fields>N</passing_through_fields>
     <accept_field/>
     <accept_stepname/>
     <separator>;</separator>
@@ -209,10 +225,12 @@
     <rownum_field/>
     <format>DOS</format>
     <encoding/>
+    <add_to_result_filenames>Y</add_to_result_filenames>
     <file>
       <name>${Internal.Transformation.Filename.Directory}\files\merge2.txt</name>
       <filemask/>
       <file_required/>
+      <include_subfolders/>
       <type>CSV</type>
       <compression>None</compression>
     </file>
@@ -291,21 +309,27 @@
     <compression>None</compression>
     <encoding/>
     <endedLine/>
+    <fileNameInField>N</fileNameInField>
+    <fileNameField/>
     <file>
       <name>${java.io.tmpdir}&#47;merge</name>
       <is_command>N</is_command>
+      <do_not_open_new_file_init>N</do_not_open_new_file_init>
       <extention>txt</extention>
       <append>N</append>
       <split>N</split>
       <haspartno>N</haspartno>
       <add_date>N</add_date>
       <add_time>N</add_time>
+      <SpecifyFormat>N</SpecifyFormat>
+      <date_time_format/>
+      <add_to_result_filenames>Y</add_to_result_filenames>
       <pad>N</pad>
       <fast_dump>N</fast_dump>
       <splitevery>0</splitevery>
-      </file>
+    </file>
     <fields>
-      </fields>
+    </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>560</xloc>

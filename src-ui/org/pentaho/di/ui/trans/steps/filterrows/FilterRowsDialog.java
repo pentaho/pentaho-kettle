@@ -47,6 +47,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.filterrows.FilterRowsMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ConditionEditor;
@@ -263,8 +264,10 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 	 */ 
 	public void getData()
 	{
-		if (input.getSendTrueStepname() != null) wTrueTo.setText(input.getSendTrueStepname());
-		if (input.getSendFalseStepname() != null) wFalseTo.setText(input.getSendFalseStepname());
+    	StreamInterface[] targetStreams = input.getStepIOMeta().getTargetStreams();
+
+		wTrueTo.setText(Const.NVL(targetStreams[0].getStepname(), ""));
+		wFalseTo.setText(Const.NVL(targetStreams[1].getStepname(), ""));
 		wStepname.selectAll();
 	}
 	
@@ -292,11 +295,13 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
             String falseStepname = wFalseTo.getText();
             if (falseStepname.length() == 0) falseStepname = null;
 
-            input.setSendTrueStepname(trueStepname);
-			input.setSendTrueStep( transMeta.findStep( trueStepname ) );
+            StreamInterface[] targetStreams = input.getStepIOMeta().getTargetStreams();
+
+            targetStreams[0].setStepname(trueStepname);
+            targetStreams[0].setStepMeta(transMeta.findStep( trueStepname ) );
+            targetStreams[1].setStepname(falseStepname);
+            targetStreams[1].setStepMeta(transMeta.findStep( falseStepname ) );
             
-			input.setSendFalseStepname(falseStepname);
-			input.setSendFalseStep( transMeta.findStep( falseStepname ) );
 			stepname = wStepname.getText(); // return value
 			input.setCondition( condition );
 			

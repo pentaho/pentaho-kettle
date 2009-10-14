@@ -22,6 +22,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 /**
  * Filters input rows base on conditions.
@@ -82,16 +83,17 @@ public class FilterRows extends BaseStep implements StepInterface
             //
             if (data.chosesTargetSteps)
             {
-            	data.trueRowSet = findOutputRowSet(getStepname(), getCopy(), meta.getSendTrueStepname(), 0);
+            	StreamInterface[] targetStreams = meta.getStepIOMeta().getTargetStreams();
+            	data.trueRowSet = findOutputRowSet(getStepname(), getCopy(), targetStreams[0].getStepname(), 0);
             	if ( data.trueRowSet == null )
             	{
-            		throw new KettleException(BaseMessages.getString(PKG, "FilterRows.Log.TargetStepInvalid", meta.getSendTrueStepname()));
+            		throw new KettleException(BaseMessages.getString(PKG, "FilterRows.Log.TargetStepInvalid", targetStreams[0].getStepname()));
             	}
             	
-            	data.falseRowSet = findOutputRowSet(getStepname(), getCopy(), meta.getSendFalseStepname(), 0);
+            	data.falseRowSet = findOutputRowSet(getStepname(), getCopy(), targetStreams[1].getStepname(), 0);
             	if ( data.falseRowSet == null )
             	{
-            		throw new KettleException(BaseMessages.getString(PKG, "FilterRows.Log.TargetStepInvalid", meta.getSendFalseStepname()));
+            		throw new KettleException(BaseMessages.getString(PKG, "FilterRows.Log.TargetStepInvalid", targetStreams[1].getStepname()));
             	}            	
             }
         }
@@ -108,12 +110,12 @@ public class FilterRows extends BaseStep implements StepInterface
 		{
 		    if (keep)
 		    {
-		        if (log.isRowLevel()) logRowlevel("Sending row to true  :"+meta.getSendTrueStepname()+" : "+getInputRowMeta().getString(r));
+		        if (log.isRowLevel()) logRowlevel("Sending row to true  :"+data.trueStepname+" : "+getInputRowMeta().getString(r));
 		        putRowTo(data.outputRowMeta, r, data.trueRowSet);
 		    }
 		    else
 		    {
-		        if (log.isRowLevel()) logRowlevel("Sending row to false :"+meta.getSendFalseStepname()+" : "+getInputRowMeta().getString(r));
+		        if (log.isRowLevel()) logRowlevel("Sending row to false :"+data.falseStepname+" : "+getInputRowMeta().getString(r));
 		        putRowTo(data.outputRowMeta, r, data.falseRowSet);
 		    }
 		}
@@ -136,13 +138,17 @@ public class FilterRows extends BaseStep implements StepInterface
 
         if (super.init(smi, sdi))
         {
-            if (meta.getSendTrueStepname()!=null ^ meta.getSendFalseStepname()!=null)
+        	StreamInterface[] targetStreams = meta.getStepIOMeta().getTargetStreams();
+        	data.trueStepname = targetStreams[0].getStepname();
+        	data.falseStepname = targetStreams[1].getStepname();
+        	
+            if (targetStreams[0].getStepMeta()!=null ^ targetStreams[1].getStepMeta()!=null)
             {
                 logError(BaseMessages.getString(PKG, "FilterRows.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
             }
             else
             {
-            	data.chosesTargetSteps = meta.getSendTrueStepname()!=null && meta.getSendFalseStepname()!=null;
+            	data.chosesTargetSteps = targetStreams[0].getStepMeta()!=null && targetStreams[1].getStepMeta()!=null;
             	
                 return true;
             } 

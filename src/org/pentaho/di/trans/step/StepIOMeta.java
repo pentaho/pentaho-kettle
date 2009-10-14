@@ -3,6 +3,7 @@ package org.pentaho.di.trans.step;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 
@@ -12,6 +13,9 @@ public class StepIOMeta implements StepIOMetaInterface {
 	private boolean	inputOptional;
 	private List<StreamInterface> streams;
 	private boolean	sortedDataRequired;
+	
+	private String generalInfoDescription;
+	private String generalTargetDescription;
 	
 	/**
 	 * @param inputAcceptor
@@ -156,5 +160,46 @@ public class StepIOMeta implements StepIOMetaInterface {
 				stream.searchInfoAndTargetSteps(steps);
 			}
 		}
+	}
+
+	/**
+	 * @return the generalInfoDescription
+	 */
+	public String getGeneralInfoDescription() {
+		return generalInfoDescription;
+	}
+
+	/**
+	 * @param generalInfoDescription the generalInfoDescription to set
+	 */
+	public void setGeneralInfoDescription(String generalInfoDescription) {
+		this.generalInfoDescription = generalInfoDescription;
+	}
+
+	/**
+	 * @return the generalTargetDescription
+	 */
+	public String getGeneralTargetDescription() {
+		return generalTargetDescription;
+	}
+
+	/**
+	 * @param generalTargetDescription the generalTargetDescription to set
+	 */
+	public void setGeneralTargetDescription(String generalTargetDescription) {
+		this.generalTargetDescription = generalTargetDescription;
+	}
+
+	public void addInfoStream(String stepname, StepMeta stepMeta, String extraInfo) {
+		streams.add(new Stream(StreamType.INFO, stepname, stepMeta, generalInfoDescription+extraInfo));
+		
+	}
+
+	public void addTargetStream(String stepname, StepMeta stepMeta, String extraInfo) {
+		streams.add(new Stream(StreamType.TARGET, stepname, stepMeta, generalTargetDescription+extraInfo));
+	}
+	
+	public void clearStreams() {
+		streams.clear();
 	}
 }

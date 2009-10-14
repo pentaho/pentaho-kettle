@@ -16,6 +16,7 @@ public class Stream implements StreamInterface {
 	/**
 	 * @param streamType
 	 * @param stepname
+	 * @param stepMeta
 	 * @param description
 	 */
 	public Stream(StreamType streamType, String stepname, StepMeta stepMeta, String description) {
@@ -24,7 +25,15 @@ public class Stream implements StreamInterface {
 		this.stepMeta = stepMeta;
 		this.description = description;
 	}
-	
+
+	/**
+	 * @param streamType
+	 * @param description
+	 */
+	public Stream(StreamType streamType, String description) {
+		this(streamType, null, null, description);
+	}
+
 	public String toString() {
 		if (Const.isEmpty(getStepname())) {
 			return "Stream type "+streamType+Const.CR+description;

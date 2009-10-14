@@ -271,6 +271,7 @@ public class GUIResource
 
     private Image imageHopInput;
     private Image imageHopOutput;
+    private Image imageHopTarget;
 
     private Image imageLocked;
     
@@ -458,6 +459,7 @@ public class GUIResource
 		    imageExport.dispose();
 		    imageHopInput.dispose();
 		    imageHopOutput.dispose();
+		    imageHopTarget.dispose();
 		    imageKeySmall.dispose();
 		    imageColumnSmall.dispose();
 
@@ -691,6 +693,7 @@ public class GUIResource
 
     imageHopInput  = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HopInput_image")); // , "ui/images/hop-input.png;
     imageHopOutput = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HopOutput_image")); // , "ui/images/hop-output.png;
+    imageHopTarget = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HopTarget_image")); // , "ui/images/hop-target.png;
 
     imageLocked = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Locked_image")); // , "ui/images/locked.png;
 
@@ -1767,6 +1770,10 @@ public class GUIResource
   public Image getImageHopOutput() {
 		return imageHopOutput;
   }
+
+  public Image getImageHopTarget() {
+		return imageHopTarget;
+}
 
   public Image getImageLocked(){
 	    return imageLocked;

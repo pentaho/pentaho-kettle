@@ -57,6 +57,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.validator.Validation;
 import org.pentaho.di.trans.steps.validator.ValidatorMeta;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
@@ -155,10 +157,18 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
 		input=(ValidatorMeta)in;
-		
+
+		// Just to make sure everything is nicely in sync...
+		//
+		StreamInterface[] infoStreams = input.getStepIOMeta().getInfoStreams();
+		for (int i=0;i<infoStreams.length;i++) {
+			input.getValidations()[i].setSourcingStepName(infoStreams[i].getStepname());
+			input.getValidations()[i].setSourcingStep(infoStreams[i].getStepMeta());
+		}
+
 		selectedField = null;
 		selectionList = new ArrayList<Validation>();
-		
+
 		// Copy the data from the input into the map...
 		//
 		for (Validation field : input.getValidations()) {
@@ -1154,7 +1164,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wValidateAll.setSelection(input.isValidatingAll());
 		wConcatErrors.setSelection(input.isConcatenatingErrors());
 		wConcatSeparator.setText(Const.NVL(input.getConcatenationSeparator(), ""));
-		
+
 		// Select the first available field...
 		//
 		if (input.getValidations().length>0) {
@@ -1200,6 +1210,12 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		Validation[] fields = selectionList.toArray(new Validation[selectionList.size()]);
 		input.setValidations(fields);
+		
+		StepIOMetaInterface ioMeta = input.getStepIOMeta();
+		ioMeta.clearStreams();
+		for (Validation validation : fields) {
+			ioMeta.addInfoStream(validation.getSourcingStepName(), validation.getSourcingStep(), validation.getName());
+		}
 		
 		dispose();
 	}
