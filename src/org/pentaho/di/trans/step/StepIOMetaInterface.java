@@ -1,5 +1,7 @@
 package org.pentaho.di.trans.step;
 
+import java.util.List;
+
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 public interface StepIOMetaInterface {
@@ -21,4 +23,16 @@ public interface StepIOMetaInterface {
      */
 	public void setInfoSteps(StepMeta[] infoSteps);
 	
+	/**
+	 * Add a stream to the steps I/O interface
+	 * 
+	 * @param stream The stream to add
+	 */
+	public void addStream(StreamInterface stream);
+	
+	/**
+	 * Change step names into step objects for the info and target streams.  We do this to allow them to be name-changed etc.
+	 * @param steps the steps to reference
+	 */
+	public void searchInfoAndTargetSteps(List<StepMeta> steps);	
 }

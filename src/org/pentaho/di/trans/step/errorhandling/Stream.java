@@ -1,5 +1,8 @@
 package org.pentaho.di.trans.step.errorhandling;
 
+import java.util.List;
+
+import org.pentaho.di.core.Const;
 import org.pentaho.di.trans.step.StepMeta;
 
 
@@ -20,6 +23,18 @@ public class Stream implements StreamInterface {
 		this.stepname = stepname;
 		this.stepMeta = stepMeta;
 		this.description = description;
+	}
+	
+	public String toString() {
+		if (Const.isEmpty(getStepname())) {
+			return "Stream type "+streamType+Const.CR+description;
+		} else {
+			return "Stream type "+streamType+" for step '"+getStepname()+"'"+Const.CR+description;
+		}
+	}
+	
+	public void searchInfoAndTargetSteps(List<StepMeta> steps) {
+		stepMeta = StepMeta.findStep(steps, stepname);
 	}
 	
 	/**

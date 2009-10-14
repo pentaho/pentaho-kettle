@@ -2517,7 +2517,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             {
                 StepMeta stepMeta = getStep(i);
                 StepMetaInterface sii = stepMeta.getStepMetaInterface();
-                if (sii != null) sii.searchInfoAndTargetSteps(steps);
+                if (sii != null) sii.getStepIOMeta().searchInfoAndTargetSteps(steps);
             }
 
             // Handle Hops

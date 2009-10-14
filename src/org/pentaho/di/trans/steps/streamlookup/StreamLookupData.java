@@ -25,6 +25,7 @@ import org.pentaho.di.core.hash.LongHashIndex;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 
 
@@ -77,6 +78,8 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface
 	
 	// Did we read rows from the lookup hop.
 	public boolean hasLookupRows;
+
+	public StreamInterface	infoStream;
 	
 	public StreamLookupData()
 	{

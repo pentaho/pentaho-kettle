@@ -119,8 +119,11 @@ import org.pentaho.di.trans.debug.BreakPointListener;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.RemoteStep;
+import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.ui.core.ConstUI;
@@ -210,7 +213,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private StepMeta selectedStep;
   
-  private StepMeta mouseOverStep;
+  private List<StepMeta> mouseOverSteps;
 
   private NotePadMeta selectedNotes[];
 
@@ -309,8 +312,15 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private StepMeta	startHopStep;
   private Point     endHopLocation;
-
+  private boolean	startErrorHopStep;
+  
   private StepMeta	noInputStep;
+
+  private StepMeta	endHopStep;
+
+  private StreamType candidateHopType;
+  
+  
 
   public void setCurrentNote(NotePadMeta ni) {
     this.ni = ni;
@@ -344,6 +354,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     this.areaOwners = new ArrayList<AreaOwner>();
     this.log = spoon.getLog();
 
+    this.mouseOverSteps = new ArrayList<StepMeta>();
+    
     transLogDelegate = new TransLogDelegate(spoon, this);
     transGridDelegate = new TransGridDelegate(spoon, this);
     transHistoryDelegate = new TransHistoryDelegate(spoon, this);
@@ -717,22 +729,67 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       
       // A single left click on one of the area owners...
       //
-      startHopStep=null;
       if (e.button==1) {
-	      List<AreaOwner> areaOwners = findAreaOwners(real.x, real.y);
-	      for(AreaOwner areaOwner : areaOwners) {
-	    	  if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_OUTPUT_HOP_ICON)) {
-		    	 // Click on the output icon means: start of drag
-	    		 // Action: We show the input icons on the other steps...
-	    		 //
-	    		 showHopInputIcons = true;
-    			 selectedStep = null;
-	    		 startHopStep = (StepMeta)areaOwner.getParent();
-	    	  }
-	      }
+    	  AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
+    	  if (areaOwner!=null) {
+    		  switch(areaOwner.getAreaType()) {
+    		  case STEP_OUTPUT_HOP_ICON:
+ 		    	 // Click on the output icon means: start of drag
+ 	    		 // Action: We show the input icons on the other steps...
+ 	    		 //
+ 	    		 showHopInputIcons = true;
+     			 selectedStep = null;
+ 	    		 startHopStep = (StepMeta)areaOwner.getParent();
+ 	    		 candidateHopType = null;
+ 	    		 startErrorHopStep = false;
+ 	    		 break;
+    		  case STEP_INFO_HOP_ICON:
+    			  // See if we have a start hop step set...
+    			  // If so, we can create a new info hop...
+    			  //
+    			  if (startHopStep!=null) {
+    				  StepMeta stepMeta = (StepMeta)areaOwner.getParent();
+    				  StreamInterface stream = (StreamInterface)areaOwner.getOwner();
+    				  candidate = new TransHopMeta(startHopStep, stepMeta);
+    				  stream.setStepMeta(startHopStep);
+    			  }
+    		      startHopStep=null;
+    		      break;
+    		  case STEP_INPUT_HOP_ICON:
+  		    	 // Click on the input icon means: create a new hop
+  	    		 //
+    			  if (startHopStep!=null) {
+    				  StepMeta stepMeta = (StepMeta)areaOwner.getParent();
+    				  candidate = new TransHopMeta(startHopStep, stepMeta);
+    			  }
+  	    		 break;
+    		  case STEP_ERROR_HOP_ICON:
+   		    	 // Click on the error icon means: create a new error hop 
+   	    		 //
+     			  if (startHopStep==null) {
+     				 startHopStep = (StepMeta)areaOwner.getParent();
+     				  startErrorHopStep = true;
+     			  }
+   	    		 break;
+    		  default:
+    		      startHopStep=null;
+    		  }
+    	  }
       }
       
       if (candidate!=null) {
+    	  if (startErrorHopStep) {
+    		  // Automatically configure the step error handling too!
+    		  //
+    		  StepErrorMeta errorMeta = candidate.getFromStep().getStepErrorMeta();
+    		  if (errorMeta==null) {
+    			  errorMeta=new StepErrorMeta(transMeta, candidate.getFromStep());
+    		  }
+    		  errorMeta.setEnabled(true);
+    		  errorMeta.setTargetStep(candidate.getToStep());
+    		  candidate.getFromStep().setStepErrorMeta(errorMeta);
+    		  startErrorHopStep=false;
+    	  }
     	  addCandidateAsHop();
       }
       
@@ -779,22 +836,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       redraw();
     }
 
-    /**
-     * Find the area owners that match the given coordinates.
-     * @param x
-     * @param y
-     * @return The list of area owners
-     */
-    private List<AreaOwner> findAreaOwners(int x, int y) {
-    	List<AreaOwner> list = new ArrayList<AreaOwner>();
-        for (AreaOwner areaOwner : areaOwners) {
-            if (areaOwner.contains(x, y)) {
-            	list.add(areaOwner);
-            }
-        }
-        return list;
-	}
-
 	public void mouseUp(MouseEvent e) {
       boolean control = (e.stateMask & SWT.CONTROL) != 0;
 
@@ -807,6 +848,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       //
       if (candidate != null) {
     	addCandidateAsHop();
+    	redraw();
       }
       // Did we select a region on the screen? Mark steps in region as
       // selected
@@ -966,7 +1008,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       selectedSteps = null;
       startHopStep = null;
       endHopLocation = null;
-      redraw();
+      // redraw();
 	}
 
 	public void mouseMove(MouseEvent e) {
@@ -994,8 +1036,43 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
         // Show a tool tip upon mouse-over of an object on the canvas
         //
-        if (last_button == 0 && !helpTip.isVisible()) {
+        if (!helpTip.isVisible()) {
           setToolTip(real.x, real.y, e.x, e.y);
+        }
+        
+        // Moved over an area?
+        //
+        endHopStep=null;
+        AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
+        if (areaOwner!=null) {
+        	endHopStep = null;
+        	switch (areaOwner.getAreaType()) {
+        	case STEP_ICON :
+        		final StepMeta stepMeta = (StepMeta) areaOwner.getOwner(); 
+        		if (!mouseOverSteps.contains(stepMeta)) {
+        			addStepMouseOverDelayTimer(stepMeta);
+        			redraw();
+        		}
+    			break;
+        	case STEP_INFO_HOP_ICON :
+        		if (startHopStep!=null) {
+					candidateHopType = StreamType.INFO;
+					endHopStep = (StepMeta)areaOwner.getParent();
+					redraw();
+        		}
+        		break;
+        	case STEP_INPUT_HOP_ICON :
+        		if (startHopStep!=null) {
+        			 endHopStep = (StepMeta)areaOwner.getParent();
+        			 redraw();
+        			 candidateHopType = null;
+        		}
+        		break;
+        	case STEP_OUTPUT_HOP_ICON :
+        		break;
+            default:
+            	break;
+        	}
         }
 
         // 
@@ -1147,7 +1224,25 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         }
       }
     
-  private void addToolBar() {
+  private void addStepMouseOverDelayTimer(final StepMeta stepMeta) {
+	  mouseOverSteps.add(stepMeta);
+		new Thread(new DelayTimer(3, new DelayListener() {
+			public void expired() {
+				mouseOverSteps.remove(stepMeta);
+				asyncRedraw();
+			}
+		})).start();
+	}
+
+	protected void asyncRedraw() {
+		getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				TransGraph.this.redraw();
+			}
+		});
+	}
+
+private void addToolBar() {
 
     try {
       toolbar = XulHelper.createToolbar(XUL_FILE_TRANS_TOOLBAR, TransGraph.this, TransGraph.this, new XulMessages());
@@ -1482,6 +1577,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     startHopStep = null;
     endHopLocation = null;
     showHopInputIcons =false;
+    mouseOverSteps.clear();
     for (int i = 0; i < transMeta.nrTransHops(); i++)
       transMeta.getTransHop(i).split = false;
   }
@@ -2073,188 +2169,153 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     return enabled;
   }
 
-  private void setToolTip(int x, int y, int screenX, int screenY) {
-    if (!spoon.getProperties().showToolTips())
-      return;
+  private AreaOwner setToolTip(int x, int y, int screenX, int screenY) {
+		AreaOwner subject = null;
 
-    canvas.setToolTipText(""); // Some stupid bug in GTK+ causes a phantom tool tip to pop up, even if the tip is null
-    canvas.setToolTipText(null);
+		if (!spoon.getProperties().showToolTips())
+			return subject;
 
-    String newTip = null;
-    Image tipImage = null;
+		canvas.setToolTipText(""); // Some stupid bug in GTK+ causes a phantom
+									// tool tip to pop up, even if the tip is
+									// null
+		canvas.setToolTipText(null);
 
-    final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);
-    if (stepMeta != null) // We mouse over a Step!
-    {
-      mouseOverStep = stepMeta;
-      redraw();
-      /*
-    	
-      // Also: set the tooltip!
-      // 
-      if (stepMeta.getDescription() != null) {
-        String desc = stepMeta.getDescription();
-        int le = desc.length() >= 200 ? 200 : desc.length();
-        newTip = desc.substring(0, le);
-      } else {
-        newTip = stepMeta.getName();
-      }
+		String newTip = null;
+		Image tipImage = null;
 
-      // Add the steps description
-      //
-      StepPlugin stepPlugin = StepLoader.getInstance().getStepPlugin(stepMeta.getStepMetaInterface());
-      if (stepPlugin != null) {
-        newTip += Const.CR + Const.CR
-            + stepPlugin.getTooltip(LanguageChoice.getInstance().getDefaultLocale().toString());
-        tipImage = GUIResource.getInstance().getImagesSteps().get(stepPlugin.getID()[0]);
-      } else {
-        //System.out.println("WTF!!");
-      }
+		final TransHopMeta hi = findHop(x, y);
+		// check the area owner list...
+		//
+		StringBuffer tip = new StringBuffer();
+		AreaOwner areaOwner = getVisibleAreaOwner(x, y);
+		if (areaOwner!=null) {
+			switch (areaOwner.getAreaType()) {
+			case REMOTE_INPUT_STEP:
+				StepMeta step = (StepMeta) areaOwner.getParent();
+				tip.append("Remote input steps:").append(Const.CR).append("-----------------------").append(Const.CR);
+				for (RemoteStep remoteStep : step.getRemoteInputSteps()) {
+					tip.append(remoteStep.toString()).append(Const.CR);
+				}
+				break;
+			case REMOTE_OUTPUT_STEP:
+				step = (StepMeta) areaOwner.getParent();
+				tip.append("Remote output steps:").append(Const.CR).append("-----------------------").append(Const.CR);
+				for (RemoteStep remoteStep : step.getRemoteOutputSteps()) {
+					tip.append(remoteStep.toString()).append(Const.CR);
+				}
+				break;
+			case STEP_PARTITIONING:
+				step = (StepMeta) areaOwner.getParent();
+				tip.append("Step partitioning:").append(Const.CR).append("-----------------------").append(Const.CR);
+				tip.append(step.getStepPartitioningMeta().toString()).append(Const.CR);
+				if (step.getTargetStepPartitioningMeta() != null) {
+					tip.append(Const.CR).append(Const.CR).append("TARGET: " + step.getTargetStepPartitioningMeta().toString()).append(Const.CR);
+				}
+				break;
+			case STEP_ERROR_ICON:
+				String log = (String) areaOwner.getParent();
+				tip.append(log);
+				tipImage = GUIResource.getInstance().getImageStepError();
+				break;
+			case HOP_COPY_ICON:
+				step = (StepMeta) areaOwner.getParent();
+				tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.HopTypeCopy", step.getName(), Const.CR));
+				tipImage = GUIResource.getInstance().getImageCopyHop();
+				break;
+			case HOP_INFO_ICON:
+				StepMeta from = ((StepMeta[]) (areaOwner.getParent()))[0];
+				StepMeta to = ((StepMeta[]) (areaOwner.getParent()))[1];
+				tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.HopTypeInfo", to.getName(), from.getName(), Const.CR));
+				tipImage = GUIResource.getInstance().getImageInfoHop();
+				break;
+			case HOP_ERROR_ICON:
+				from = ((StepMeta[]) (areaOwner.getParent()))[0];
+				to = ((StepMeta[]) (areaOwner.getParent()))[1];
+				tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.HopTypeError", from.getName(), to.getName(), Const.CR));
+				tipImage = GUIResource.getInstance().getImageErrorHop();
+				break;
+			case HOP_INFO_STEP_COPIES_ERROR:
+				from = ((StepMeta[]) (areaOwner.getParent()))[0];
+				to = ((StepMeta[]) (areaOwner.getParent()))[1];
+				tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.InfoStepCopies", from.getName(), to.getName(), Const.CR));
+				tipImage = GUIResource.getInstance().getImageStepError();
+				break;
+			case REPOSITORY_LOCK_IMAGE:
+				RepositoryLock lock = (RepositoryLock) areaOwner.getOwner();
+				tip.append(BaseMessages.getString(PKG, "TransGraph.Locked.Tooltip", Const.CR, lock.getLogin(), lock.getUsername(), lock.getMessage(), XMLHandler.date2string(lock.getLockDate())));
+				tipImage = GUIResource.getInstance().getImageLocked();
+				break;
+			case STEP_INPUT_HOP_ICON:
+				StepMeta subjectStep = (StepMeta) (areaOwner.getParent());
+				tip.append("INPUT HOP ICON FOR STEP '" + subjectStep.getName() + "'");
+				tipImage = GUIResource.getInstance().getImageHopInput();
+				break;
+			case STEP_OUTPUT_HOP_ICON:
+				subjectStep = (StepMeta) (areaOwner.getParent());
+				tip.append("OUTPUT HOP ICON FOR STEP '" + subjectStep.getName() + "'");
+				tipImage = GUIResource.getInstance().getImageHopOutput();
+				break;
+			case STEP_INFO_HOP_ICON:
+				subjectStep = (StepMeta) (areaOwner.getParent());
+				StreamInterface stream = (StreamInterface) areaOwner.getOwner();
+				tip.append(stream.toString() + " (" + subjectStep.toString() + ")");
+				tipImage = GUIResource.getInstance().getImageHopOutput();
+				break;
+			}
+		}
 
-      // Add the partitioning info
-      //
-      if (stepMeta.isPartitioned()) {
-        newTip += Const.CR + Const.CR + BaseMessages.getString(PKG, "TransGraph.Step.Tooltip.CurrentPartitioning")
-            + stepMeta.getStepPartitioningMeta().toString();
-      }
-      // Add the partitioning info
-      //
-      if (stepMeta.getTargetStepPartitioningMeta() != null) {
-        newTip += Const.CR + Const.CR + BaseMessages.getString(PKG, "TransGraph.Step.Tooltip.NextPartitioning")
-            + stepMeta.getTargetStepPartitioningMeta().toString();
-      }
-      */
-    } else {
-    	mouseOverStep=null; // Not mousing over a step...
-    }
-    	
-        final TransHopMeta hi = findHop(x, y);
-        // check the area owner list...
-        //
-        StringBuffer tip = new StringBuffer();
-        for (AreaOwner areaOwner : areaOwners) {
-          if (areaOwner.contains(x, y)) {
-            if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_REMOTE_INPUT_STEPS)) {
-              StepMeta step = (StepMeta) areaOwner.getParent();
-              tip.append("Remote input steps:").append(Const.CR).append("-----------------------").append(Const.CR);
-              for (RemoteStep remoteStep : step.getRemoteInputSteps()) {
-                tip.append(remoteStep.toString()).append(Const.CR);
-              }
+		if (hi != null) // We clicked on a HOP!
+		{
+			// Set the tooltip for the hop:
+			tip.append(Const.CR).append("Hop information: ").append(newTip = hi.toString()).append(Const.CR);
+		}
 
-            }
-            if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_REMOTE_OUTPUT_STEPS)) {
-              StepMeta step = (StepMeta) areaOwner.getParent();
-              tip.append("Remote output steps:").append(Const.CR).append("-----------------------").append(Const.CR);
-              for (RemoteStep remoteStep : step.getRemoteOutputSteps()) {
-                tip.append(remoteStep.toString()).append(Const.CR);
-              }
-            }
-            if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_PARTITIONING_CURRENT_STEP)) {
-              StepMeta step = (StepMeta) areaOwner.getParent();
-              tip.append("Step partitioning:").append(Const.CR).append("-----------------------").append(Const.CR);
-              tip.append(step.getStepPartitioningMeta().toString()).append(Const.CR);
-              if (step.getTargetStepPartitioningMeta() != null) {
-                tip.append(Const.CR).append(Const.CR).append(
-                    "TARGET: " + step.getTargetStepPartitioningMeta().toString()).append(Const.CR);
-              }
-            }
-            if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_PARTITIONING_CURRENT_NEXT)) {
-              StepMeta step = (StepMeta) areaOwner.getParent();
-              tip.append("Target partitioning:").append(Const.CR).append("-----------------------").append(Const.CR);
-              tip.append(step.getStepPartitioningMeta().toString()).append(Const.CR);
-            }
-            if (areaOwner.getParent() instanceof String && areaOwner.getOwner().equals(TransPainter.STRING_STEP_ERROR_LOG)) {
-              String log = (String)areaOwner.getParent();
-              tip.append(log);
-              tipImage = GUIResource.getInstance().getImageStepError();
-            }
-            if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_HOP_TYPE_COPY)) {
-                  StepMeta step = (StepMeta) areaOwner.getParent();
-                  tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.HopTypeCopy", step.getName(), Const.CR));
-                  tipImage = GUIResource.getInstance().getImageCopyHop();
-            }
-            if (areaOwner.getParent() instanceof StepMeta[] && areaOwner.getOwner().equals(TransPainter.STRING_HOP_TYPE_INFO)) {
-                  StepMeta from = ((StepMeta[])(areaOwner.getParent()))[0];
-                  StepMeta to   = ((StepMeta[])(areaOwner.getParent()))[1];
-                  tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.HopTypeInfo", to.getName(), from.getName(), Const.CR));
-                  tipImage = GUIResource.getInstance().getImageInfoHop();
-            }
-            if (areaOwner.getParent() instanceof StepMeta[] && areaOwner.getOwner().equals(TransPainter.STRING_HOP_TYPE_ERROR)) {
-                StepMeta from = ((StepMeta[])(areaOwner.getParent()))[0];
-                StepMeta to   = ((StepMeta[])(areaOwner.getParent()))[1];
-                tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.HopTypeError", from.getName(), to.getName(), Const.CR));
-                tipImage = GUIResource.getInstance().getImageErrorHop();
-            }
-            if (areaOwner.getParent() instanceof StepMeta[] && areaOwner.getOwner().equals(TransPainter.STRING_INFO_STEP_COPIES)) {
-                StepMeta from = ((StepMeta[])(areaOwner.getParent()))[0];
-                StepMeta to   = ((StepMeta[])(areaOwner.getParent()))[1];
-                tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.InfoStepCopies", from.getName(), to.getName(), Const.CR));
-                tipImage = GUIResource.getInstance().getImageStepError();
-            }
-            if (areaOwner.getParent() instanceof TransMeta && areaOwner.getOwner() instanceof RepositoryLock) {
-                RepositoryLock lock = (RepositoryLock) areaOwner.getOwner();
-                
-                tip.append(BaseMessages.getString(PKG, "TransGraph.Locked.Tooltip", Const.CR, lock.getLogin(), lock.getUsername(), lock.getMessage(), XMLHandler.date2string(lock.getLockDate())));
-                tipImage = GUIResource.getInstance().getImageLocked();
-            }
-            if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_INPUT_HOP_ICON)) {
-            	StepMeta subjectStep = (StepMeta)(areaOwner.getParent());
-                tip.append("INPUT HOP ICON FOR STEP '"+subjectStep.getName()+"'");
-                tipImage = GUIResource.getInstance().getImageHopInput();
-            }
-            if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_OUTPUT_HOP_ICON)) {
-            	StepMeta subjectStep = (StepMeta)(areaOwner.getParent());
-                tip.append("OUTPUT HOP ICON FOR STEP '"+subjectStep.getName()+"'");
-                tipImage = GUIResource.getInstance().getImageHopOutput();
-            }
-          }
-        }
+		if (tip.length() == 0) {
+			newTip = null;
+		} else {
+			newTip = tip.toString();
+		}
+
+		if (newTip == null) {
+			toolTip.hide();
+			if (hi != null) // We clicked on a HOP!
+			{
+				// Set the tooltip for the hop:
+				newTip = BaseMessages.getString(PKG, "TransGraph.Dialog.HopInfo") + Const.CR + BaseMessages.getString(PKG, "TransGraph.Dialog.HopInfo.SourceStep") + " " + hi.getFromStep().getName() + Const.CR
+						+ BaseMessages.getString(PKG, "TransGraph.Dialog.HopInfo.TargetStep") + " " + hi.getToStep().getName() + Const.CR + BaseMessages.getString(PKG, "TransGraph.Dialog.HopInfo.Status") + " "
+						+ (hi.isEnabled() ? BaseMessages.getString(PKG, "TransGraph.Dialog.HopInfo.Enable") : BaseMessages.getString(PKG, "TransGraph.Dialog.HopInfo.Disable"));
+				toolTip.setText(newTip);
+				if (hi.isEnabled())
+					toolTip.setImage(GUIResource.getInstance().getImageHop());
+				else
+					toolTip.setImage(GUIResource.getInstance().getImageDisabledHop());
+				toolTip.show(new org.eclipse.swt.graphics.Point(screenX, screenY));
+			} else {
+				newTip = null;
+			}
+
+		} else if (!newTip.equalsIgnoreCase(getToolTipText())) {
+			if (tipImage != null) {
+				toolTip.setImage(tipImage);
+			} else {
+				toolTip.setImage(GUIResource.getInstance().getImageSpoon());
+			}
+			toolTip.setText(newTip);
+			toolTip.hide();
+			toolTip.show(new org.eclipse.swt.graphics.Point(screenX, screenY));
+		}
+
+		return subject;
+	}
   
-            
-        if (hi != null) // We clicked on a HOP!
-        {
-          // Set the tooltip for the hop:
-          tip.append(Const.CR).append("Hop information: ").append(newTip = hi.toString()).append(Const.CR);
-        }
-
-        if (tip.length() == 0) {
-          newTip = null;
-        } else {
-          newTip = tip.toString();
-        }
-    
-
-    if (newTip == null) {
-      toolTip.hide();
-      if (hi != null) // We clicked on a HOP!
-      {
-          // Set the tooltip for the hop:
-          newTip = BaseMessages.getString(PKG, "TransGraph.Dialog.HopInfo")+ Const.CR 
-          + BaseMessages.getString(PKG, "TransGraph.Dialog.HopInfo.SourceStep") + " " + hi.getFromStep().getName() + Const.CR 
-          + BaseMessages.getString(PKG, "TransGraph.Dialog.HopInfo.TargetStep") + " " + hi.getToStep().getName() + Const.CR  
-          + BaseMessages.getString(PKG, "TransGraph.Dialog.HopInfo.Status")+ " " + (hi.isEnabled()?BaseMessages.getString(PKG, "TransGraph.Dialog.HopInfo.Enable"):BaseMessages.getString(PKG, "TransGraph.Dialog.HopInfo.Disable")); 
-          toolTip.setText(newTip);
-          if(hi.isEnabled())
-        	  toolTip.setImage(GUIResource.getInstance().getImageHop());
-          else
-        	  toolTip.setImage(GUIResource.getInstance().getImageDisabledHop()); 
-          toolTip.show(new org.eclipse.swt.graphics.Point(screenX, screenY));
-      }
-      else
-      {
-          newTip = null;
-      }
-
-    } else if (!newTip.equalsIgnoreCase(getToolTipText())) {
-      if (tipImage != null) {
-        toolTip.setImage(tipImage);
-      } else {
-        toolTip.setImage(GUIResource.getInstance().getImageSpoon());
-      }
-      toolTip.setText(newTip);
-      toolTip.hide();
-      toolTip.show(new org.eclipse.swt.graphics.Point(screenX, screenY));
-    }
+  public AreaOwner getVisibleAreaOwner(int x, int y) {
+		for (int i=areaOwners.size()-1;i>=0;i--) {
+			AreaOwner areaOwner = areaOwners.get(i);
+			if (areaOwner.contains(x, y)) {
+				return areaOwner;
+			}
+		}
+		return null;
   }
 
   public void delSelected(StepMeta stMeta) {
@@ -2382,13 +2443,16 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   public Image getTransformationImage(Device device, int x, int y, boolean branded, float magnificationFactor) {
     TransPainter transPainter = new TransPainter(transMeta, new Point(x, y), hori, vert, candidate, drop_candidate,
-        selectionRegion, areaOwners, mouseOverStep);
+        selectionRegion, areaOwners, mouseOverSteps);
     transPainter.setMagnification(magnificationFactor);
     transPainter.setStepLogMap(stepLogMap);
     transPainter.setShowingHopInputIcons(showHopInputIcons);
     transPainter.setStartHopStep(startHopStep);
     transPainter.setEndHopLocation(endHopLocation);
     transPainter.setNoInputStep(noInputStep);
+    transPainter.setEndHopStep(endHopStep);
+    transPainter.setCandidateHopType(candidateHopType);
+    transPainter.setStartErrorHopStep(startErrorHopStep);
     Image img = transPainter.getTransformationImage(device, PropsUI.getInstance().isBrandingActive());
 
     return img;

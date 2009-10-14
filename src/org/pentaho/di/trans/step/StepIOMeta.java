@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 
 public class StepIOMeta implements StepIOMetaInterface {
 	private boolean inputAcceptor;
@@ -90,6 +91,7 @@ public class StepIOMeta implements StepIOMetaInterface {
 		
 		return list.toArray(new StreamInterface[list.size()]);
 	}
+	
 
 	/**
 	 * @return the sortedDataRequired
@@ -145,6 +147,14 @@ public class StepIOMeta implements StepIOMetaInterface {
 				throw new RuntimeException("We expect all possible info streams to be pre-populated!");
 			}
 			streams.get(i).setStepMeta(infoSteps[i]);
+		}
+	}
+	
+	public void searchInfoAndTargetSteps(List<StepMeta> steps) {
+		for (StreamInterface stream : streams) {
+			if (stream.getStreamType()==StreamType.INFO || stream.getStreamType()==StreamType.TARGET) {
+				stream.searchInfoAndTargetSteps(steps);
+			}
 		}
 	}
 }

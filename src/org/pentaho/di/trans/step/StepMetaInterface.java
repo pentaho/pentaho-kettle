@@ -117,11 +117,6 @@ public interface StepMetaInterface
 	 * @return The fields used by this step, this is being used for the Impact analyses.
 	 */
 	public RowMetaInterface getTableFields();
-
-	/**
-	 * @param steps optionally search the info step in a list of steps
-	 */
-	public void searchInfoAndTargetSteps(List<StepMeta> steps);
     
     /**
      * This method is added to exclude certain steps from layout checking.  

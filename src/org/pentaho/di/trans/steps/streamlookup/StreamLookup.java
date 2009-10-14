@@ -121,14 +121,13 @@ public class StreamLookup extends BaseStep implements StepInterface
 
 	private boolean readLookupValues() throws KettleException
 	{
-		// data.firstrow=null;
-			
-		if (meta.getLookupFromStep()==null)
+		data.infoStream = meta.getStepIOMeta().getInfoStreams()[0];
+		if (data.infoStream.getStepMeta()==null)
 		{
 			logError(BaseMessages.getString(PKG, "StreamLookup.Log.NoLookupStepSpecified")); //$NON-NLS-1$
 			return false;
 		}
-		if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "StreamLookup.Log.ReadingFromStream")+meta.getLookupFromStep().getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+		if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "StreamLookup.Log.ReadingFromStream")+data.infoStream.getStepname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 
         int[] keyNrs = new int[meta.getKeylookup().length];
         int[] valueNrs = new int[meta.getValue().length];
@@ -136,7 +135,7 @@ public class StreamLookup extends BaseStep implements StepInterface
         
         // Which row set do we read from?
         //
-        RowSet rowSet = findInputRowSet(meta.getLookupFromStep().getName());
+        RowSet rowSet = findInputRowSet(data.infoStream.getStepname());
         Object[] rowData=getRowFrom(rowSet); // rows are originating from "lookup_from"
 		while (rowData!=null)
 		{
@@ -403,7 +402,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 	    {
 	        data.readLookupValues = false;
 	        
-			if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "StreamLookup.Log.ReadingLookupValuesFromStep")+meta.getLookupFromStep()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+			if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "StreamLookup.Log.ReadingLookupValuesFromStep")+data.infoStream.getStepname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 			if (! readLookupValues()) // Read values in lookup table (look)
 			{
 				logError(BaseMessages.getString(PKG, "StreamLookup.Log.UnableToReadDataFromLookupStream")); //$NON-NLS-1$

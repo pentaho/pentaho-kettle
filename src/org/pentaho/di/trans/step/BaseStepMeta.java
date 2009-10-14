@@ -60,7 +60,9 @@ public class BaseStepMeta implements Cloneable
     protected Repository repository;
     
     protected StepMeta parentStepMeta;
-
+    
+    protected StepIOMetaInterface ioMeta;
+	
 	public BaseStepMeta()
 	{
 		changed    = false;
@@ -440,7 +442,9 @@ public class BaseStepMeta implements Cloneable
      * By default, each step produces and accepts optional input.
      */
     public StepIOMetaInterface getStepIOMeta() {
-    	return new StepIOMeta(true, true, true, false);
+    	if (ioMeta==null) {
+    		ioMeta = new StepIOMeta(true, true, true, false);
+    	}
+    	return ioMeta;
     }
-    
 }

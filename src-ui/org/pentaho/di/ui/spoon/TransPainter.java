@@ -38,14 +38,17 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.spoon.AreaOwner.AreaType;
 
 
 
 
 public class TransPainter
 {
+	
     public static final String STRING_PARTITIONING_CURRENT_STEP = "PartitioningCurrentStep"; // $NON-NLS-1$
     public static final String STRING_PARTITIONING_CURRENT_NEXT = "PartitioningNextStep";    // $NON-NLS-1$
 	public static final String STRING_REMOTE_INPUT_STEPS        = "RemoteInputSteps";        // $NON-NLS-1$
@@ -109,11 +112,14 @@ public class TransPainter
 	private boolean 		shadow;
 	
 	private Map<StepMeta, String> stepLogMap;
-	private StepMeta	mouseOverStep;
+	private List<StepMeta>	mouseOverSteps;
 	private StepMeta    startHopStep;
 	private Point       endHopLocation;
+	private StepMeta    endHopStep;
 	private StepMeta       noInputStep;
 	private boolean     showingHopInputIcons;
+	private StreamType	candidateHopType;
+	private boolean 	startErrorHopStep;
 
     public TransPainter(TransMeta transMeta)
     {
@@ -130,7 +136,7 @@ public class TransPainter
                         ScrollBar hori, ScrollBar vert, 
                         TransHopMeta candidate, Point drop_candidate, Rectangle selrect,
                         List<AreaOwner> areaOwners, 
-                        StepMeta mouseOverStep
+                        List<StepMeta> mouseOverSteps
                         )
     {
         this.transMeta      = transMeta;
@@ -159,7 +165,7 @@ public class TransPainter
         
         this.areaOwners     = areaOwners;
         
-        this.mouseOverStep  = mouseOverStep;
+        this.mouseOverSteps  = mouseOverSteps;
         
         props = PropsUI.getInstance();
         iconsize = props.getIconSize(); 
@@ -271,8 +277,12 @@ public class TransPainter
 	        if (startHopStep!=null && endHopLocation!=null) {
 	        	Point fr = startHopStep.getLocation();
 	        	Point to = endHopLocation;
-	        	gc.setForeground(GUIResource.getInstance().getColorGray());
-	        	drawArrow(gc, fr.x+iconsize/2, fr.y+iconsize/2, to.x, to.y, theta, 1, 1.5, startHopStep, endHopLocation);
+	        	if (endHopStep==null) {
+	        		gc.setForeground(GUIResource.getInstance().getColorGray());
+	        	} else {
+	        		gc.setForeground(GUIResource.getInstance().getColorBlue());
+	        	}
+	        	drawArrow(gc, fr.x+iconsize/2, fr.y+iconsize/2, to.x, to.y, theta, calcArrowLength(), 1.2, startHopStep, endHopStep==null ? endHopLocation : endHopStep);
 	        }
         }
         
@@ -311,7 +321,7 @@ public class TransPainter
         	Image lockImage = GUIResource.getInstance().getImageLocked();
         	Rectangle lockBounds = lockImage.getBounds();
         	gc.drawImage(lockImage, area.x - lockBounds.width, 0);
-        	areaOwners.add(new AreaOwner(area.x - lockBounds.width, 0, lockBounds.width, lockBounds.height, transMeta, lock));
+        	areaOwners.add(new AreaOwner(AreaType.REPOSITORY_LOCK_IMAGE, area.x - lockBounds.width, 0, lockBounds.width, lockBounds.height, transMeta, lock));
         }
     }
 
@@ -406,7 +416,7 @@ public class TransPainter
         // Add to the list of areas...
         //
         if (!shadow) {
-        	areaOwners.add(new AreaOwner(note.x, note.y, width, height, transMeta, notePadMeta));
+        	areaOwners.add(new AreaOwner(AreaType.NOTE, note.x, note.y, width, height, transMeta, notePadMeta));
         }
     }
 
@@ -483,7 +493,7 @@ public class TransPainter
          	
             // Add to the list of areas...
             if (!shadow) {
-            	areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_REMOTE_INPUT_STEPS));
+            	areaOwners.add(new AreaOwner(AreaType.REMOTE_INPUT_STEP, point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_REMOTE_INPUT_STEPS));
             }
         }
 
@@ -514,7 +524,7 @@ public class TransPainter
 
          	// Add to the list of areas...
             if (!shadow) {
-            	areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_REMOTE_OUTPUT_STEPS));
+            	areaOwners.add(new AreaOwner(AreaType.REMOTE_OUTPUT_STEP, point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_REMOTE_OUTPUT_STEPS));
             }
         }
         
@@ -564,7 +574,7 @@ public class TransPainter
 	            // Add to the list of areas...
 	         	//
 	            if (!shadow) {
-	            	areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_PARTITIONING_CURRENT_STEP));
+	            	areaOwners.add(new AreaOwner(AreaType.STEP_PARTITIONING, point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_PARTITIONING_CURRENT_STEP));
 	            }
             }
         }
@@ -578,7 +588,7 @@ public class TransPainter
         
         // Add to the list of areas...
         if (!shadow) {
-        	areaOwners.add(new AreaOwner(screen.x, screen.y, iconsize, iconsize, transMeta, stepMeta));
+        	areaOwners.add(new AreaOwner(AreaType.STEP_ICON, screen.x, screen.y, iconsize, iconsize, transMeta, stepMeta));
         }
         
         // Draw a blank rectangle to prevent alpha channel problems...
@@ -639,31 +649,69 @@ public class TransPainter
     		Image image = GUIResource.getInstance().getImageStepError();
     		gc.drawImage(image, xError, yError);
     		if (!shadow) {
-    			areaOwners.add(new AreaOwner(pt.x + iconsize-5, pt.y + iconsize-5, image.getBounds().width, image.getBounds().height, log, STRING_STEP_ERROR_LOG));
+    			areaOwners.add(new AreaOwner(AreaType.STEP_ERROR_ICON, pt.x + iconsize-5, pt.y + iconsize-5, image.getBounds().width, image.getBounds().height, log, STRING_STEP_ERROR_LOG));
     		}
         }
         
         // Optionally drawn the mouse-over information
         //
-        if (ioMeta.isInputAcceptor() && candidate==null && mouseOverStep!=null && mouseOverStep.equals(stepMeta)) {
+        if (ioMeta.isInputAcceptor() && candidate==null && ((mouseOverSteps.contains(stepMeta)) || showingHopInputIcons) ) {
         	// Draw the input hop icon next to the step...
         	//
         	Image hopInput = GUIResource.getInstance().getImageHopInput();
         	Rectangle inputBounds = hopInput.getBounds();
-        	int xIcon = x-inputBounds.width/2;
-        	int yIcon = y+iconsize-inputBounds.height/2;
+        	int xIcon = x-inputBounds.width-3;
+        	int yIcon = y+iconsize/2-inputBounds.height/2;
         	gc.drawImage(hopInput, xIcon, yIcon);
-        	areaOwners.add(new AreaOwner(xIcon, yIcon, inputBounds.width, inputBounds.height, stepMeta, STRING_INPUT_HOP_ICON));
+        	areaOwners.add(new AreaOwner(AreaType.STEP_INPUT_HOP_ICON, xIcon, yIcon, inputBounds.width, inputBounds.height, stepMeta, ioMeta));
          }
         
-         if (ioMeta.isOutputProducer() && candidate==null && mouseOverStep!=null && mouseOverStep.equals(stepMeta)) {
+         if (ioMeta.isOutputProducer() && candidate==null && mouseOverSteps.contains(stepMeta) && !showingHopInputIcons) {
         	Image hopOutput= GUIResource.getInstance().getImageHopOutput(); 
         	Rectangle outputBounds = hopOutput.getBounds();
-        	int xIcon = x+iconsize-outputBounds.width/2;
-        	int yIcon = y+iconsize-outputBounds.height/2;
+        	int xIcon = x+iconsize+3;
+        	int yIcon = y+iconsize/2-outputBounds.height/2;
         	gc.drawImage(hopOutput, xIcon, yIcon);
-        	areaOwners.add(new AreaOwner(xIcon, yIcon, outputBounds.width, outputBounds.height, stepMeta, STRING_OUTPUT_HOP_ICON));
+        	areaOwners.add(new AreaOwner(AreaType.STEP_OUTPUT_HOP_ICON, xIcon, yIcon, outputBounds.width, outputBounds.height, stepMeta, ioMeta));
          }
+
+         if (ioMeta.isOutputProducer() && candidate==null && mouseOverSteps.contains(stepMeta) && !showingHopInputIcons) {
+         	Image hopOutput= GUIResource.getInstance().getImageHopOutput(); 
+         	Rectangle outputBounds = hopOutput.getBounds();
+         	int xIcon = x+iconsize+3;
+         	int yIcon = y+iconsize/2-outputBounds.height/2;
+         	gc.drawImage(hopOutput, xIcon, yIcon);
+         	areaOwners.add(new AreaOwner(AreaType.STEP_OUTPUT_HOP_ICON, xIcon, yIcon, outputBounds.width, outputBounds.height, stepMeta, ioMeta));
+          }
+         
+         // In case of a step with info streams coming in, we should display all info icons at the top of the step 
+         //
+         int topIconIndex = 0;
+         if ((mouseOverSteps.contains(stepMeta)) || showingHopInputIcons) {
+	         StreamInterface[] infoStreams = ioMeta.getInfoStreams();
+	         if (!Const.isEmpty(infoStreams)) {
+	        	 for (int i=0;i<infoStreams.length;i++) {
+	        		 StreamInterface stream = infoStreams[i];
+	        		 Image infoImage = GUIResource.getInstance().getImageInfoHop();
+	        		 Rectangle bounds = infoImage.getBounds();
+	        		 int xIcon = x+i*(bounds.width+5);
+	        		 int yIcon = y-bounds.height-3;
+	        		 gc.drawImage(infoImage, xIcon, yIcon);
+	             	 areaOwners.add(new AreaOwner(AreaType.STEP_INFO_HOP_ICON, xIcon, yIcon, bounds.width, bounds.height, stepMeta, stream));
+	             	 topIconIndex++;
+	        	 }
+	         }
+         }
+
+         if (stepMeta.supportsErrorHandling() && candidate==null && mouseOverSteps.contains(stepMeta) && !showingHopInputIcons) {
+           	Image hopError = GUIResource.getInstance().getImageErrorHop(); 
+          	Rectangle bounds = hopError.getBounds();
+          	int xIcon = x+topIconIndex*(bounds.width+5);
+          	int yIcon = y-bounds.height-3;
+          	gc.drawImage(hopError, xIcon, yIcon);
+          	areaOwners.add(new AreaOwner(AreaType.STEP_ERROR_HOP_ICON, xIcon, yIcon, bounds.width, bounds.height, stepMeta, ioMeta));
+          }
+
 
          // Restore the previous alpha value
          //
@@ -871,12 +919,14 @@ public class TransPainter
 
     private void drawArrow(GC gc, int line[], Object startObject, Object endObject)
     {
-    	int size = 19 + (linewidth - 1) * 5; // arrowhead length
-
-        Point screen_from = real2screen(line[0], line[1], offset);
+    	Point screen_from = real2screen(line[0], line[1], offset);
         Point screen_to = real2screen(line[2], line[3], offset);
         
-        drawArrow(gc, screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, size, -1, startObject, endObject);
+        drawArrow(gc, screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, calcArrowLength(), -1, startObject, endObject);
+    }
+    
+    private int calcArrowLength() {
+    	return 19 + (linewidth - 1) * 5; // arrowhead length;
     }
 
     private void drawArrow(GC gc, int x1, int y1, int x2, int y2, double theta, int size, double factor, Object startObject, Object endObject)
@@ -904,7 +954,7 @@ public class TransPainter
         if (factor<0)
         {
 	        if (dist >= 2 * iconsize)
-	             factor = 1.5;
+	             factor = 1.3;
 	        else
 	             factor = 1.2;
         }
@@ -937,21 +987,25 @@ public class TransPainter
 	        // in between 2 points
 	        mx = (int) (x1 + factor * (x2 - x1) / 2) - 8;
 	        my = (int) (y1 + factor * (y2 - y1) / 2) - 8;
+	        
+	        boolean errorHop = fs.isSendingErrorRowsToStep(ts) || (startErrorHopStep && fs.equals(startHopStep)); 
 
-	        if (!fs.isDistributes() && !ts.getStepPartitioningMeta().isMethodMirror()) {
+	        if (!fs.isDistributes() && !ts.getStepPartitioningMeta().isMethodMirror() && !errorHop) {
 		        
 	        	Image copyHopsIcon = GUIResource.getInstance().getImageCopyHop();
 	        	gc.drawImage(copyHopsIcon, mx, my);
 	        	
 	        	if (!shadow) {
-	    			areaOwners.add(new AreaOwner(mx, my, copyHopsIcon.getBounds().width, copyHopsIcon.getBounds().height, fs, STRING_HOP_TYPE_COPY));
+	    			areaOwners.add(new AreaOwner(AreaType.HOP_COPY_ICON, mx, my, copyHopsIcon.getBounds().width, copyHopsIcon.getBounds().height, fs, STRING_HOP_TYPE_COPY));
 	    		}
 		        mx+=16;
-	        } else if (fs.isSendingErrorRowsToStep(ts)) {
+	        } 
+	        
+	        if (errorHop) {
 	        	Image copyHopsIcon = GUIResource.getInstance().getImageErrorHop();
 		        gc.drawImage(copyHopsIcon, mx, my);
 	        	if (!shadow) {
-	    			areaOwners.add(new AreaOwner(mx, my, copyHopsIcon.getBounds().width, copyHopsIcon.getBounds().height, new StepMeta[] { fs, ts, }, STRING_HOP_TYPE_ERROR));
+	    			areaOwners.add(new AreaOwner(AreaType.HOP_ERROR_ICON, mx, my, copyHopsIcon.getBounds().width, copyHopsIcon.getBounds().height, new StepMeta[] { fs, ts, }, STRING_HOP_TYPE_ERROR));
 	    		}
 		        mx+=16;
             }
@@ -959,11 +1013,11 @@ public class TransPainter
 	        StepIOMetaInterface ioMeta = ts.getStepMetaInterface().getStepIOMeta();
 	        String[] infoStepnames = ioMeta.getInfoStepnames();
 	        
-	        if (Const.indexOfString(fs.getName(), infoStepnames) >= 0) {
-	        	Image copyHopsIcon = GUIResource.getInstance().getImageInfoHop();
-	        	gc.drawImage(copyHopsIcon, mx, my);
+	        if ( (candidateHopType==StreamType.INFO && ts.equals(endHopStep) && fs.equals(startHopStep)) || Const.indexOfString(fs.getName(), infoStepnames) >= 0) {
+	        	Image hopIcon = GUIResource.getInstance().getImageInfoHop();
+        		gc.drawImage(hopIcon, mx, my);
 	        	if (!shadow) {
-	    			areaOwners.add(new AreaOwner(mx, my, copyHopsIcon.getBounds().width, copyHopsIcon.getBounds().height, new StepMeta[] { fs, ts, }, STRING_HOP_TYPE_INFO));
+	    			areaOwners.add(new AreaOwner(AreaType.HOP_INFO_ICON, mx, my, hopIcon.getBounds().width, hopIcon.getBounds().height, new StepMeta[] { fs, ts, }, STRING_HOP_TYPE_INFO));
 	    		}
 		        mx+=16;
 	        }
@@ -985,7 +1039,7 @@ public class TransPainter
 	        	        	Image errorHopsIcon = GUIResource.getInstance().getImageErrorHop();
 	        	        	gc.drawImage(errorHopsIcon, mx, my);
 	        	        	if (!shadow) {
-	        	    			areaOwners.add(new AreaOwner(mx, my, errorHopsIcon.getBounds().width, errorHopsIcon.getBounds().height, new StepMeta[] { fs, ts, }, STRING_INFO_STEP_COPIES));
+	        	    			areaOwners.add(new AreaOwner(AreaType.HOP_INFO_STEP_COPIES_ERROR, mx, my, errorHopsIcon.getBounds().width, errorHopsIcon.getBounds().height, new StepMeta[] { fs, ts, }, STRING_INFO_STEP_COPIES));
 	        	    		}
 	        		        mx+=16;
 	        				
@@ -1054,26 +1108,12 @@ public class TransPainter
 	public void setStepLogMap(Map<StepMeta, String> stepLogMap) {
 		this.stepLogMap = stepLogMap;
 	}
-
-	/**
-	 * @return the showingHopInputIcons
-	 */
-	public boolean isShowingHopInputIcons() {
-		return showingHopInputIcons;
-	}
-
+	
 	/**
 	 * @param showingHopInputIcons the showingHopInputIcons to set
 	 */
 	public void setShowingHopInputIcons(boolean showingHopInputIcons) {
 		this.showingHopInputIcons = showingHopInputIcons;
-	}
-
-	/**
-	 * @return the startHopStep
-	 */
-	public StepMeta getStartHopStep() {
-		return startHopStep;
 	}
 
 	/**
@@ -1084,24 +1124,10 @@ public class TransPainter
 	}
 
 	/**
-	 * @return the endHopLocation
-	 */
-	public Point getEndHopLocation() {
-		return endHopLocation;
-	}
-
-	/**
 	 * @param endHopLocation the endHopLocation to set
 	 */
 	public void setEndHopLocation(Point endHopLocation) {
 		this.endHopLocation = endHopLocation;
-	}
-
-	/**
-	 * @return the noInputStep
-	 */
-	public StepMeta getNoInputStep() {
-		return noInputStep;
 	}
 
 	/**
@@ -1111,4 +1137,19 @@ public class TransPainter
 		this.noInputStep = noInputStep;
 	}
 
+	/**
+	 * @param endHopStep the endHopStep to set
+	 */
+	public void setEndHopStep(StepMeta endHopStep) {
+		this.endHopStep = endHopStep;
+	}
+
+	public void setCandidateHopType(StreamType candidateHopType) {
+		this.candidateHopType = candidateHopType;
+	}
+
+	public void setStartErrorHopStep(boolean startErrorHopStep) {
+		this.startErrorHopStep = startErrorHopStep;
+	}
+	
 }

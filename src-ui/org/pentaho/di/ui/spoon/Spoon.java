@@ -2623,7 +2623,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			// Set the source and target steps ...
 			for (int i = 0; i < steps.length; i++) {
 				StepMetaInterface smi = steps[i].getStepMetaInterface();
-				smi.searchInfoAndTargetSteps(transMeta.getSteps());
+				smi.getStepIOMeta().searchInfoAndTargetSteps(transMeta.getSteps());
 			}
 
 			// Save undo information too...

@@ -24,9 +24,19 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class AreaOwner {
 
+	public enum AreaType {
+		REPOSITORY_LOCK_IMAGE, NOTE, REMOTE_INPUT_STEP, REMOTE_OUTPUT_STEP, STEP_PARTITIONING, 
+		STEP_ICON, STEP_ERROR_ICON, STEP_INPUT_HOP_ICON, STEP_OUTPUT_HOP_ICON, STEP_INFO_HOP_ICON, STEP_ERROR_HOP_ICON, 
+		HOP_COPY_ICON, HOP_ERROR_ICON, HOP_INFO_ICON, HOP_INFO_STEP_COPIES_ERROR, 
+		
+		
+		
+	};
+	
 	private Rectangle area;
 	private Object parent;
 	private Object owner;
+	private AreaType	areaType;
 
 	/**
 	 * @param x
@@ -35,8 +45,9 @@ public class AreaOwner {
 	 * @param heigth
 	 * @param owner
 	 */
-	public AreaOwner(int x, int y, int width, int heigth, Object parent, Object owner) {
+	public AreaOwner(AreaType areaType, int x, int y, int width, int heigth, Object parent, Object owner) {
 		super();
+		this.areaType = areaType;
 		this.area = new Rectangle(x, y, width, heigth);
 		this.parent = parent;
 		this.owner = owner;
@@ -92,6 +103,20 @@ public class AreaOwner {
 	 */
 	public void setParent(Object parent) {
 		this.parent = parent;
+	}
+
+	/**
+	 * @return the areaType
+	 */
+	public AreaType getAreaType() {
+		return areaType;
+	}
+
+	/**
+	 * @param areaType the areaType to set
+	 */
+	public void setAreaType(AreaType areaType) {
+		this.areaType = areaType;
 	}
 
 	

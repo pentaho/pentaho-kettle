@@ -53,6 +53,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.streamlookup.StreamLookupMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -468,11 +469,10 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 	 */ 
 	public void getData()
 	{
-		int i;
 		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "StreamLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		if (input.getKeystream()!=null)
-		for (i=0;i<input.getKeystream().length;i++)
+		for (int i=0;i<input.getKeystream().length;i++)
 		{
 			TableItem item = wKey.table.getItem(i);
 			if (input.getKeystream()[i]     !=null) item.setText(1, input.getKeystream()[i]);
@@ -480,7 +480,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		}
 		
 		if (input.getValue()!=null)
-		for (i=0;i<input.getValue().length;i++)
+		for (int i=0;i<input.getValue().length;i++)
 		{
 			TableItem item = wReturn.table.getItem(i);
 			if (input.getValue()[i]!=null     ) item.setText(1, input.getValue()[i]);
@@ -490,7 +490,8 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 			item.setText(4, ValueMeta.getTypeDesc(input.getValueDefaultType()[i]));
 		}
 		
-		if (input.getLookupFromStep()!=null && input.getLookupFromStep().getName()!=null) wStep.setText( input.getLookupFromStep().getName() );
+		StreamInterface infoStream = input.getStepIOMeta().getInfoStreams()[0];
+		wStep.setText( Const.NVL(infoStream.getStepname(), "") );
 		wPreserveMemory.setSelection(input.isMemoryPreservationActive());
         wSortedList.setSelection(input.isUsingSortedList());
         wIntegerPair.setSelection(input.isUsingIntegerPair());
@@ -540,8 +541,9 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 			input.getValueDefaultType()[i] = ValueMeta.getType(item.getText(4));
 		}
 		
-		input.setLookupFromStep( transMeta.findStep( wStep.getText() ) );
-		if (input.getLookupFromStep()==null)
+		StreamInterface infoStream = input.getStepIOMeta().getInfoStreams()[0];
+		infoStream.setStepMeta( transMeta.findStep( wStep.getText() ) );
+		if (infoStream.getStepMeta()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 			if(Const.isEmpty(wStep.getText()))
