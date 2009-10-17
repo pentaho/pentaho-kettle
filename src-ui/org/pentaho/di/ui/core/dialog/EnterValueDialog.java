@@ -154,7 +154,7 @@ public class EnterValueDialog extends Dialog {
       }
     });
 
-    // Iconsize line
+    // Value line
     wlInputString = new Label(shell, SWT.RIGHT);
     wlInputString.setText(BaseMessages.getString(PKG, "EnterValueDialog.Value.Label"));
     props.setLook(wlInputString);
@@ -307,8 +307,8 @@ public class EnterValueDialog extends Dialog {
     int type = ValueMeta.getType(wValueType.getText());
     String string = wInputString.getText();
 
-    // remove white spaces if needed
-    if (string.startsWith(" ") || string.endsWith(" ")) {
+    // remove white spaces if not a string field    
+    if ((type != ValueMetaInterface.TYPE_STRING) && (string.startsWith(" ") || string.endsWith(" "))) {
       string = Const.trim(string);
       wInputString.setText(string);
     }
