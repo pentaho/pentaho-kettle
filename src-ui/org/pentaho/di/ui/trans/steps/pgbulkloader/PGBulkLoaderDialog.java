@@ -593,8 +593,8 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
         if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
 		if (input.getTableName() != null) wTable.setText(input.getTableName());
 		if (input.getPsqlpath() != null) wPsqlPath.setText(input.getPsqlpath());
-		if (input.getDelimiter() != null) wEnclosure.setText(input.getDelimiter());
-		if (input.getEnclosure() != null) wDelimiter.setText(input.getEnclosure());
+		if (input.getDelimiter() != null) wDelimiter.setText(input.getDelimiter());
+		if (input.getEnclosure() != null) wEnclosure.setText(input.getEnclosure());
 		if (input.getDbNameOverride() != null ) wDbNameOverride.setText(input.getDbNameOverride());
 		
 		String action = input.getLoadAction();
@@ -771,8 +771,8 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		inf.setTableName( wTable.getText() );
 		inf.setDatabaseMeta(  transMeta.findDatabase(wConnection.getText()) );
 		inf.setPsqlpath( wPsqlPath.getText() );
-		inf.setDelimiter( wEnclosure.getText() );
-		inf.setEnclosure( wDelimiter.getText() );
+		inf.setDelimiter( wDelimiter.getText() );
+		inf.setEnclosure( wEnclosure.getText() );
 
 		/*
 		/*
