@@ -165,8 +165,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 
            // The username
            // 
-    	   // String user = Const.NVL(dm.getUsername(), "");
-           // sb.append(" -U ").append(environmentSubstitute(user));
+    	   String user = Const.NVL(dm.getUsername(), "");
+           sb.append(" -U ").append(environmentSubstitute(user));
 
            // Hostname and portname
            //
