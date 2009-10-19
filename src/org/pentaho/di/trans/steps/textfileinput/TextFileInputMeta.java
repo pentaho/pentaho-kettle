@@ -36,6 +36,7 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -268,7 +269,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public String getEnclosure()
 	{
-		return enclosure;
+		return StringUtil.substituteHex(enclosure);
 	}
 
 	/**
@@ -559,7 +560,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public String getSeparator()
 	{
-		return separator;
+		return StringUtil.substituteHex(separator);
 	}
 
 	/**
@@ -1361,7 +1362,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public String getEscapeCharacter()
 	{
-		return escapeCharacter;
+		return StringUtil.substituteHex(escapeCharacter);
 	}
 
 	/**
