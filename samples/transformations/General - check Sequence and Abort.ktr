@@ -89,14 +89,21 @@ and enable this hop to work.</note>
       <note>Instead of the Filter rows step you can also
 use the Merge rows (diff) step similar.
 See sample &quot;Merge rows - mergs 2 streams of data and add a flag&quot;</note>
-      <xloc>280</xloc>
-      <yloc>280</yloc>
+      <xloc>60</xloc>
+      <yloc>300</yloc>
       <width>336</width>
       <heigth>47</heigth>
     </notepad>
+    <notepad>
+      <note>Enable this hop to abort the transformation.</note>
+      <xloc>500</xloc>
+      <yloc>280</yloc>
+      <width>220</width>
+      <heigth>22</heigth>
+    </notepad>
   </notepads>
   <order>
-  <hop> <from>CSV file input</from><to>Add sequence</to><enabled>Y</enabled> </hop>  <hop> <from>Add sequence</from><to>Filter rows</to><enabled>Y</enabled> </hop>  <hop> <from>Filter rows</from><to>Abort</to><enabled>Y</enabled> </hop>  <hop> <from>Filter rows</from><to>correct</to><enabled>Y</enabled> </hop>  <hop> <from>correct</from><to>Table output</to><enabled>N</enabled> </hop>  </order>
+  <hop> <from>CSV file input</from><to>Add sequence</to><enabled>Y</enabled> </hop>  <hop> <from>Add sequence</from><to>Filter rows</to><enabled>Y</enabled> </hop>  <hop> <from>Filter rows</from><to>correct</to><enabled>Y</enabled> </hop>  <hop> <from>correct</from><to>Table output</to><enabled>N</enabled> </hop>  <hop> <from>Filter rows</from><to>wrong sequence</to><enabled>Y</enabled> </hop>  <hop> <from>wrong sequence</from><to>Abort</to><enabled>N</enabled> </hop>  </order>
   <step>
     <name>CSV file input</name>
     <type>CsvInput</type>
@@ -190,7 +197,7 @@ See sample &quot;Merge rows - mergs 2 streams of data and add a flag&quot;</note
            <schema_name/>
            </partitioning>
 <send_true_to>correct</send_true_to>
-<send_false_to>Abort</send_false_to>
+<send_false_to>wrong sequence</send_false_to>
     <compare>
 <condition>
  <negated>N</negated>
@@ -223,7 +230,7 @@ See sample &quot;Merge rows - mergs 2 streams of data and add a flag&quot;</note
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>460</xloc>
-      <yloc>220</yloc>
+      <yloc>300</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -279,6 +286,24 @@ See sample &quot;Merge rows - mergs 2 streams of data and add a flag&quot;</note
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>580</xloc>
       <yloc>120</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>wrong sequence</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>460</xloc>
+      <yloc>200</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
