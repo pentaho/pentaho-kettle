@@ -596,7 +596,7 @@ public class EnterMappingDialog extends Dialog
     private void delete()
     {
         String[] result = wResult.getSelection();
-        for (int i=0;i<result.length;i++)
+        for (int i=result.length-1;i>=0;i--)
         {
             int idx = wResult.indexOf(result[i]);
             if (idx>=0 && idx<mappings.size())
