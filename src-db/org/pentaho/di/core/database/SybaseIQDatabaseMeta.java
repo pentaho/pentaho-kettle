@@ -111,7 +111,7 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 */
 	public String getSchemaTableCombination(String schema_name, String table_part)
 	{
-		return table_part;
+		return schema_name+"."+table_part;
 	}
 	
 	/**
@@ -254,4 +254,25 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
     {
         return new String[] { "jtds-1.2.jar" };
     }
+	
+    /**
+	 * @return true if we need to supply the schema-name to getTables in order to get a correct list of items.
+	 */
+	public boolean useSchemaNameForTableList()
+	{
+		return true;
+	}
+	
+	/**
+	 * Returns the minimal SQL to launch in order to determine the layout of the resultset for a given database table
+	 * Note: added WHERE clause in SQL (just to make sure in case the sql is exec'd it will not clatter the db)
+	 * 
+	 * @param tableName The name of the table to determine the layout for
+	 * @return The SQL to launch.
+	 */
+	// 
+	public String getSQLQueryFields(String tableName)
+	{
+	    return "SELECT * FROM "+tableName+" WHERE 1=2";
+	}
 }

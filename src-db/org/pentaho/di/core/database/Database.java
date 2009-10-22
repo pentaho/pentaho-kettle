@@ -2314,7 +2314,9 @@ public class Database implements VariableSpace
 		//
 		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE ||
 			databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_H2 ||
-			databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GENERIC)
+			databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GENERIC ||
+			databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_SYBASEIQ
+		  )
 		{
 			fields=getQueryFieldsFallback(sql, param, inform, data);
 		}
@@ -4069,6 +4071,10 @@ public class Database implements VariableSpace
 		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_NEOVIEW)
 		{
 			sql+=" [FIRST " + limit +"]";
+		}
+		else if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_SYBASEIQ)  // improve support Sybase IQ
+		{
+			sql+=" TOP " + limit +" ";
 		}
 		sql += " * FROM "+table_name;
 		
