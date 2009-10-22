@@ -1,26 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name/>
+    <name>XML Add - creating multi level XML files</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
     <directory>&#47;</directory>
+    <parameters>
+    </parameters>
     <log>
       <read/>
       <write/>
       <input/>
       <output/>
       <update/>
+      <rejected/>
       <connection/>
       <table/>
+      <step_performance_table/>
       <use_batchid>Y</use_batchid>
       <use_logfield>N</use_logfield>
-      </log>
+      <size_limit_lines/>
+    </log>
     <maxdate>
       <connection/>
       <table/>
       <field/>
       <offset>0.0</offset>
       <maxdiff>0.0</maxdiff>
-      </maxdate>
+    </maxdate>
     <size_rowset>1000</size_rowset>
     <sleep_time_empty>1</sleep_time_empty>
     <sleep_time_full>1</sleep_time_full>
@@ -29,17 +37,19 @@
     <feedback_size>5000</feedback_size>
     <using_thread_priorities>Y</using_thread_priorities>
     <shared_objects_file/>
+    <capture_step_performance>N</capture_step_performance>
+    <step_performance_capturing_delay>1000</step_performance_capturing_delay>
     <dependencies>
-      </dependencies>
+    </dependencies>
     <partitionschemas>
-      </partitionschemas>
+    </partitionschemas>
     <slaveservers>
-      </slaveservers>
+    </slaveservers>
     <clusterschemas>
-      </clusterschemas>
+    </clusterschemas>
   <modified_user>-</modified_user>
   <modified_date>2006&#47;11&#47;24 11:44:10.397</modified_date>
-    </info>
+  </info>
   <notepads>
     <notepad>
       <note>Text file output: no separator, no enclosure, no header</note>
@@ -47,33 +57,34 @@
       <yloc>622</yloc>
       <width>277</width>
       <heigth>23</heigth>
-      </notepad>
+    </notepad>
     <notepad>
       <note>Revision notes:
-2006-12-04 Jens Bleuel: created</note>
+2006-12-04 Jens Bleuel: created
+2009-10-12 linked to new XML Join step</note>
       <xloc>531</xloc>
       <yloc>590</yloc>
-      <width>166</width>
-      <heigth>36</heigth>
-      </notepad>
+      <width>206</width>
+      <heigth>47</heigth>
+    </notepad>
     <notepad>
       <note>This example produces a multi level XML document from one Excel source.</note>
       <xloc>9</xloc>
       <yloc>11</yloc>
-      <width>363</width>
+      <width>376</width>
       <heigth>23</heigth>
-      </notepad>
+    </notepad>
     <notepad>
-      <note>REMARK: This example will likely become more easier in future Kettle releases.</note>
+      <note>REMARK: This example is easier to solve now with the step &quot;Join XML&quot;
+see Example &quot;XML Join - Create a multilayer XML file&quot;</note>
       <xloc>417</xloc>
       <yloc>11</yloc>
-      <width>384</width>
-      <heigth>23</heigth>
-      </notepad>
-    </notepads>
+      <width>363</width>
+      <heigth>35</heigth>
+    </notepad>
+  </notepads>
   <order>
   <hop> <from>Sort rows</from><to>Group by</to><enabled>Y</enabled> </hop>  <hop> <from>Placeholder 3x</from><to>xmlOrderLines</to><enabled>Y</enabled> </hop>  <hop> <from>OrderLines</from><to>Placeholder 3x</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy for aggregation</from><to>Group by 2</to><enabled>Y</enabled> </hop>  <hop> <from>OrderList</from><to>Placeholder</to><enabled>Y</enabled> </hop>  <hop> <from>Placeholder</from><to>xmlOrderList</to><enabled>Y</enabled> </hop>  <hop> <from>xmlOrderList</from><to>Join Rows (cartesian product)</to><enabled>Y</enabled> </hop>  <hop> <from>Join Rows (cartesian product)</from><to>Fill the placeholder 2</to><enabled>Y</enabled> </hop>  <hop> <from>Group by 2</from><to>Join Rows (cartesian product)</to><enabled>Y</enabled> </hop>  <hop> <from>Group by</from><to>Stream lookup 2</to><enabled>Y</enabled> </hop>  <hop> <from>OrderHeaders</from><to>Placeholder 2</to><enabled>Y</enabled> </hop>  <hop> <from>Placeholder 2</from><to>xmlOrderHeaders</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup 2</from><to>Fill the placeholder</to><enabled>Y</enabled> </hop>  <hop> <from>Fill the placeholder</from><to>Dummy for aggregation</to><enabled>Y</enabled> </hop>  <hop> <from>Fill the placeholder 2</from><to>Replace separators</to><enabled>Y</enabled> </hop>  <hop> <from>Replace separators</from><to>XML File output</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows 2</from><to>Group by 3</to><enabled>Y</enabled> </hop>  <hop> <from>xmlOrderSubLines</from><to>Sort rows 2</to><enabled>Y</enabled> </hop>  <hop> <from>OrderSubLines</from><to>xmlOrderSubLines</to><enabled>Y</enabled> </hop>  <hop> <from>Fill the placeholder 3</from><to>Sort rows</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup</from><to>Fill the placeholder 3</to><enabled>Y</enabled> </hop>  <hop> <from>Group by 3</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows 2 2</from><to>Group by 3 2</to><enabled>Y</enabled> </hop>  <hop> <from>xmlOrderHeaderComments</from><to>Sort rows 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>OrderHeaderComments</from><to>xmlOrderHeaderComments</to><enabled>Y</enabled> </hop>  <hop> <from>xmlOrderHeaders</from><to>Stream lookup 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup 2 2</from><to>Stream lookup 2</to><enabled>Y</enabled> </hop>  <hop> <from>Group by 3 2</from><to>Stream lookup 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>OrderLineComments</from><to>xmlOrderLineComments</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows 2 2 2</from><to>Group by 3 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>xmlOrderLineComments</from><to>Sort rows 2 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>xmlOrderLines</from><to>Stream lookup 3</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup 3</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>Group by 3 2 2</from><to>Stream lookup 3</to><enabled>Y</enabled> </hop>  </order>
-
   <step>
     <name>Dummy for aggregation</name>
     <type>Constant</type>
@@ -82,7 +93,6 @@
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <fields>
@@ -96,10 +106,10 @@
         <nullif>1</nullif>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
-      </fields>
+      </field>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>196</xloc>
       <yloc>487</yloc>
       <draw>Y</draw>
@@ -108,16 +118,18 @@
 
   <step>
     <name>Fill the placeholder</name>
-    <type>ScriptValue</type>
+    <type>ScriptValueMod</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
-    <script>var xmlOrderHeadersNewTmp=xmlOrderHeaders.replace(&quot;?OrderLinesPlaceholder?&quot;,xmlOrderLines.getString());
+    <compatible>Y</compatible>
+    <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
+        <jsScript_name>ScriptValue</jsScript_name>
+        <jsScript_script>var xmlOrderHeadersNewTmp=xmlOrderHeaders.replace(&quot;?OrderLinesPlaceholder?&quot;,xmlOrderLines.getString());
 xmlOrderHeadersNewTmp=xmlOrderHeadersNewTmp.replace(&quot;&lt;OrderLines&gt;null&lt;&#47;OrderLines&gt;&quot;,&quot;&quot;);
 
 
@@ -125,14 +137,15 @@ var xmlOrderHeadersNew=xmlOrderHeadersNewTmp.replace(&quot;?OrderHeaderCommentsP
 xmlOrderHeadersNew=xmlOrderHeadersNew.replace(&quot;&lt;OrderHeaderComments&gt;null&lt;&#47;OrderHeaderComments&gt;&quot;,&quot;&quot;);
 
 
-</script>
-    <fields>      <field>        <name>xmlOrderHeadersNew</name>
+</jsScript_script>
+      </jsScript>    </jsScripts>    <fields>      <field>        <name>xmlOrderHeadersNew</name>
         <rename>xmlOrderHeadersNew</rename>
         <type>String</type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>      </fields>     <cluster_schema/>
-    <GUI>
+        <replace>N</replace>
+      </field>    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>197</xloc>
       <yloc>427</yloc>
       <draw>Y</draw>
@@ -141,24 +154,27 @@ xmlOrderHeadersNew=xmlOrderHeadersNew.replace(&quot;&lt;OrderHeaderComments&gt;n
 
   <step>
     <name>Fill the placeholder 2</name>
-    <type>ScriptValue</type>
+    <type>ScriptValueMod</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
-    <script>var xmlOrderListNew=xmlOrderLists.replace(&quot;?OrderHeadersPlaceholder?&quot;,xmlOrderHeadersNew.getString());
-xmlOrderListNew=xmlOrderListNew.replace(&quot;&lt;OrderHeaders&gt;null&lt;&#47;OrderHeaders&gt;&quot;,&quot;&quot;);</script>
-    <fields>      <field>        <name>xmlOrderListNew</name>
+    <compatible>Y</compatible>
+    <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
+        <jsScript_name>ScriptValue</jsScript_name>
+        <jsScript_script>var xmlOrderListNew=xmlOrderLists.replace(&quot;?OrderHeadersPlaceholder?&quot;,xmlOrderHeadersNew.getString());
+xmlOrderListNew=xmlOrderListNew.replace(&quot;&lt;OrderHeaders&gt;null&lt;&#47;OrderHeaders&gt;&quot;,&quot;&quot;);</jsScript_script>
+      </jsScript>    </jsScripts>    <fields>      <field>        <name>xmlOrderListNew</name>
         <rename>xmlOrderListNew</rename>
         <type>String</type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>      </fields>     <cluster_schema/>
-    <GUI>
+        <replace>N</replace>
+      </field>    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>80</xloc>
       <yloc>418</yloc>
       <draw>Y</draw>
@@ -167,29 +183,32 @@ xmlOrderListNew=xmlOrderListNew.replace(&quot;&lt;OrderHeaders&gt;null&lt;&#47;O
 
   <step>
     <name>Fill the placeholder 3</name>
-    <type>ScriptValue</type>
+    <type>ScriptValueMod</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
-    <script>var xmlOrderLinesNewTmp=xmlOrderLines.replace(&quot;?OrderSubLinesPlaceholder?&quot;,xmlOrderSubLines.getString());
+    <compatible>Y</compatible>
+    <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
+        <jsScript_name>ScriptValue</jsScript_name>
+        <jsScript_script>var xmlOrderLinesNewTmp=xmlOrderLines.replace(&quot;?OrderSubLinesPlaceholder?&quot;,xmlOrderSubLines.getString());
 xmlOrderLinesNewTmp=xmlOrderLinesNewTmp.replace(&quot;&lt;OrderSubLine&gt;null&lt;&#47;OrderSubLine&gt;&quot;,&quot;&quot;);
 
 var xmlOrderLinesNew=xmlOrderLinesNewTmp.replace(&quot;?OrderLineCommentsPlaceholder?&quot;,xmlOrderLineComments.getString());
 xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt;&#47;OrderLineComments&gt;&quot;,&quot;&quot;);
 
-</script>
-    <fields>      <field>        <name>xmlOrderLinesNew</name>
+</jsScript_script>
+      </jsScript>    </jsScripts>    <fields>      <field>        <name>xmlOrderLinesNew</name>
         <rename>xmlOrderLinesNew</rename>
         <type>String</type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>      </fields>     <cluster_schema/>
-    <GUI>
+        <replace>N</replace>
+      </field>    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>450</xloc>
       <yloc>437</yloc>
       <draw>Y</draw>
@@ -204,7 +223,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
       <all_rows>N</all_rows>
@@ -214,20 +232,22 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
       <prefix>grp</prefix>
       <add_linenr>N</add_linenr>
       <linenr_fieldname/>
+      <give_back_row>N</give_back_row>
       <group>
         <field>
           <name>orderNumber</name>
-          </field>
-        </group>
+        </field>
+      </group>
       <fields>
         <field>
           <aggregate>xmlOrderLines</aggregate>
           <subject>xmlOrderLines</subject>
           <type>CONCAT_COMMA</type>
-          </field>
-        </fields>
+          <valuefield/>
+        </field>
+      </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>450</xloc>
       <yloc>583</yloc>
       <draw>Y</draw>
@@ -242,7 +262,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
       <all_rows>N</all_rows>
@@ -252,20 +271,22 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
       <prefix>grp</prefix>
       <add_linenr>N</add_linenr>
       <linenr_fieldname/>
+      <give_back_row>N</give_back_row>
       <group>
         <field>
           <name>Dummygroup</name>
-          </field>
-        </group>
+        </field>
+      </group>
       <fields>
         <field>
           <aggregate>xmlOrderHeadersNew</aggregate>
           <subject>xmlOrderHeadersNew</subject>
           <type>CONCAT_COMMA</type>
-          </field>
-        </fields>
+          <valuefield/>
+        </field>
+      </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>197</xloc>
       <yloc>557</yloc>
       <draw>Y</draw>
@@ -280,7 +301,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
       <all_rows>N</all_rows>
@@ -290,23 +310,25 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
       <prefix>grp</prefix>
       <add_linenr>N</add_linenr>
       <linenr_fieldname/>
+      <give_back_row>N</give_back_row>
       <group>
         <field>
           <name>orderNumber</name>
-          </field>
+        </field>
         <field>
           <name>orderLineNumber</name>
-          </field>
-        </group>
+        </field>
+      </group>
       <fields>
         <field>
           <aggregate>xmlOrderSubLines</aggregate>
           <subject>xmlOrderSubLines</subject>
           <type>CONCAT_COMMA</type>
-          </field>
-        </fields>
+          <valuefield/>
+        </field>
+      </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>711</xloc>
       <yloc>346</yloc>
       <draw>Y</draw>
@@ -321,7 +343,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
       <all_rows>N</all_rows>
@@ -331,20 +352,22 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
       <prefix>grp</prefix>
       <add_linenr>N</add_linenr>
       <linenr_fieldname/>
+      <give_back_row>N</give_back_row>
       <group>
         <field>
           <name>orderNumber</name>
-          </field>
-        </group>
+        </field>
+      </group>
       <fields>
         <field>
           <aggregate>xmlOrderHeaderComments</aggregate>
           <subject>xmlOrderHeaderComments</subject>
           <type>CONCAT_COMMA</type>
-          </field>
-        </fields>
+          <valuefield/>
+        </field>
+      </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>316</xloc>
       <yloc>282</yloc>
       <draw>Y</draw>
@@ -359,7 +382,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
       <all_rows>N</all_rows>
@@ -369,23 +391,25 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
       <prefix>grp</prefix>
       <add_linenr>N</add_linenr>
       <linenr_fieldname/>
+      <give_back_row>N</give_back_row>
       <group>
         <field>
           <name>orderNumber</name>
-          </field>
+        </field>
         <field>
           <name>orderLineNumber</name>
-          </field>
-        </group>
+        </field>
+      </group>
       <fields>
         <field>
           <aggregate>xmlOrderLineComments</aggregate>
           <subject>xmlOrderLineComments</subject>
           <type>CONCAT_COMMA</type>
-          </field>
-        </fields>
+          <valuefield/>
+        </field>
+      </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>581</xloc>
       <yloc>277</yloc>
       <draw>Y</draw>
@@ -400,7 +424,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
       <directory>%%java.io.tmpdir%%</directory>
@@ -416,7 +439,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
  </condition>
     </compare>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>80</xloc>
       <yloc>338</yloc>
       <draw>Y</draw>
@@ -431,7 +454,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <header>Y</header>
@@ -444,6 +466,8 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <sheetfield/>
     <filefield/>
     <limit>0</limit>
+    <encoding/>
+    <add_to_result_filenames>Y</add_to_result_filenames>
     <accept_filenames>N</accept_filenames>
     <accept_field/>
     <accept_stepname/>
@@ -451,7 +475,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
       <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;XML Add - creating multi level XML files.xls</name>
       <filemask/>
       <file_required/>
-      </file>
+    </file>
     <fields>
       <field>
         <name>orderNumber</name>
@@ -464,7 +488,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>lineNumber</name>
         <type>Integer</type>
@@ -476,7 +500,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>text</name>
         <type>String</type>
@@ -488,15 +512,15 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <sheets>
       <sheet>
         <name>OrderHeaderComments</name>
         <startrow>0</startrow>
         <startcol>0</startcol>
         </sheet>
-      </sheets>
+    </sheets>
     <strict_types>N</strict_types>
     <error_ignored>N</error_ignored>
     <error_line_skipped>N</error_line_skipped>
@@ -507,7 +531,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <line_number_files_destination_directory/>
     <line_number_files_extension>line</line_number_files_extension>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>313</xloc>
       <yloc>61</yloc>
       <draw>Y</draw>
@@ -522,7 +546,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <header>Y</header>
@@ -535,6 +558,8 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <sheetfield/>
     <filefield/>
     <limit>0</limit>
+    <encoding/>
+    <add_to_result_filenames>Y</add_to_result_filenames>
     <accept_filenames>N</accept_filenames>
     <accept_field/>
     <accept_stepname/>
@@ -542,7 +567,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
       <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;XML Add - creating multi level XML files.xls</name>
       <filemask/>
       <file_required/>
-      </file>
+    </file>
     <fields>
       <field>
         <name>orderNumber</name>
@@ -555,7 +580,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>originator</name>
         <type>String</type>
@@ -567,7 +592,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>orderType</name>
         <type>String</type>
@@ -579,7 +604,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>orderDate</name>
         <type>Date</type>
@@ -591,7 +616,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>customerNumber</name>
         <type>Integer</type>
@@ -603,15 +628,15 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <sheets>
       <sheet>
         <name>OrderHeaders</name>
         <startrow>0</startrow>
         <startcol>0</startcol>
         </sheet>
-      </sheets>
+    </sheets>
     <strict_types>N</strict_types>
     <error_ignored>N</error_ignored>
     <error_line_skipped>N</error_line_skipped>
@@ -622,7 +647,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <line_number_files_destination_directory/>
     <line_number_files_extension>line</line_number_files_extension>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>200</xloc>
       <yloc>60</yloc>
       <draw>Y</draw>
@@ -637,7 +662,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <header>Y</header>
@@ -650,6 +674,8 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <sheetfield/>
     <filefield/>
     <limit>0</limit>
+    <encoding/>
+    <add_to_result_filenames>Y</add_to_result_filenames>
     <accept_filenames>N</accept_filenames>
     <accept_field/>
     <accept_stepname/>
@@ -657,7 +683,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
       <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;XML Add - creating multi level XML files.xls</name>
       <filemask/>
       <file_required/>
-      </file>
+    </file>
     <fields>
       <field>
         <name>orderNumber</name>
@@ -670,7 +696,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>orderLineNumber</name>
         <type>Integer</type>
@@ -682,7 +708,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>lineNumber</name>
         <type>Integer</type>
@@ -694,7 +720,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>Text</name>
         <type>String</type>
@@ -706,15 +732,15 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <sheets>
       <sheet>
         <name>OrderLineComments</name>
         <startrow>0</startrow>
         <startcol>0</startcol>
         </sheet>
-      </sheets>
+    </sheets>
     <strict_types>N</strict_types>
     <error_ignored>N</error_ignored>
     <error_line_skipped>N</error_line_skipped>
@@ -725,7 +751,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <line_number_files_destination_directory/>
     <line_number_files_extension>line</line_number_files_extension>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>578</xloc>
       <yloc>63</yloc>
       <draw>Y</draw>
@@ -740,7 +766,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <header>Y</header>
@@ -753,6 +778,8 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <sheetfield/>
     <filefield/>
     <limit>0</limit>
+    <encoding/>
+    <add_to_result_filenames>Y</add_to_result_filenames>
     <accept_filenames>N</accept_filenames>
     <accept_field/>
     <accept_stepname/>
@@ -760,7 +787,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
       <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;XML Add - creating multi level XML files.xls</name>
       <filemask/>
       <file_required/>
-      </file>
+    </file>
     <fields>
       <field>
         <name>orderNumber</name>
@@ -773,7 +800,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>orderLineNumber</name>
         <type>Integer</type>
@@ -785,7 +812,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>productNumber</name>
         <type>String</type>
@@ -797,7 +824,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>productText</name>
         <type>String</type>
@@ -809,7 +836,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>quantity</name>
         <type>Number</type>
@@ -821,7 +848,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>uom</name>
         <type>String</type>
@@ -833,7 +860,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>principal</name>
         <type>String</type>
@@ -845,15 +872,15 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <sheets>
       <sheet>
         <name>OrderLines</name>
         <startrow>0</startrow>
         <startcol>0</startcol>
         </sheet>
-      </sheets>
+    </sheets>
     <strict_types>N</strict_types>
     <error_ignored>N</error_ignored>
     <error_line_skipped>N</error_line_skipped>
@@ -864,7 +891,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <line_number_files_destination_directory/>
     <line_number_files_extension>line</line_number_files_extension>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>447</xloc>
       <yloc>60</yloc>
       <draw>Y</draw>
@@ -879,7 +906,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <header>Y</header>
@@ -892,6 +918,8 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <sheetfield/>
     <filefield/>
     <limit>0</limit>
+    <encoding/>
+    <add_to_result_filenames>Y</add_to_result_filenames>
     <accept_filenames>N</accept_filenames>
     <accept_field/>
     <accept_stepname/>
@@ -899,7 +927,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
       <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;XML Add - creating multi level XML files.xls</name>
       <filemask/>
       <file_required/>
-      </file>
+    </file>
     <fields>
       <field>
         <name>source</name>
@@ -912,7 +940,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>timestamp</name>
         <type>Date</type>
@@ -924,7 +952,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>businessUnitId</name>
         <type>String</type>
@@ -936,7 +964,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>plantId</name>
         <type>String</type>
@@ -948,15 +976,15 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <sheets>
       <sheet>
         <name>OrderList</name>
         <startrow>0</startrow>
         <startcol>0</startcol>
         </sheet>
-      </sheets>
+    </sheets>
     <strict_types>N</strict_types>
     <error_ignored>N</error_ignored>
     <error_line_skipped>N</error_line_skipped>
@@ -967,7 +995,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <line_number_files_destination_directory/>
     <line_number_files_extension>line</line_number_files_extension>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>76</xloc>
       <yloc>57</yloc>
       <draw>Y</draw>
@@ -982,7 +1010,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <header>Y</header>
@@ -995,6 +1022,8 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <sheetfield/>
     <filefield/>
     <limit>0</limit>
+    <encoding/>
+    <add_to_result_filenames>Y</add_to_result_filenames>
     <accept_filenames>N</accept_filenames>
     <accept_field/>
     <accept_stepname/>
@@ -1002,7 +1031,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
       <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;XML Add - creating multi level XML files.xls</name>
       <filemask/>
       <file_required/>
-      </file>
+    </file>
     <fields>
       <field>
         <name>orderNumber</name>
@@ -1015,7 +1044,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>orderLineNumber</name>
         <type>Integer</type>
@@ -1027,7 +1056,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>orderSubLineNumber</name>
         <type>Integer</type>
@@ -1039,7 +1068,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>batch</name>
         <type>String</type>
@@ -1051,7 +1080,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>quantity</name>
         <type>Number</type>
@@ -1063,7 +1092,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
+      </field>
       <field>
         <name>expiryDate</name>
         <type>Date</type>
@@ -1075,15 +1104,15 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <currency/>
         <decimal/>
         <group/>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <sheets>
       <sheet>
         <name>OrderSubLines</name>
         <startrow>0</startrow>
         <startcol>0</startcol>
         </sheet>
-      </sheets>
+    </sheets>
     <strict_types>N</strict_types>
     <error_ignored>N</error_ignored>
     <error_line_skipped>N</error_line_skipped>
@@ -1094,7 +1123,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <line_number_files_destination_directory/>
     <line_number_files_extension>line</line_number_files_extension>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>708</xloc>
       <yloc>127</yloc>
       <draw>Y</draw>
@@ -1109,7 +1138,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <fields>
@@ -1123,10 +1151,10 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <nullif>?OrderHeadersPlaceholder?</nullif>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
-      </fields>
+      </field>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>80</xloc>
       <yloc>140</yloc>
       <draw>Y</draw>
@@ -1141,7 +1169,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <fields>
@@ -1155,7 +1182,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <nullif>?OrderLinesPlaceholder?</nullif>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>OrderHeaderComments</name>
         <type>String</type>
@@ -1166,10 +1193,10 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <nullif>?OrderHeaderCommentsPlaceholder?</nullif>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
-      </fields>
+      </field>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>200</xloc>
       <yloc>140</yloc>
       <draw>Y</draw>
@@ -1184,7 +1211,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <fields>
@@ -1198,7 +1224,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <nullif>?OrderSubLinesPlaceholder?</nullif>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>OrderLineComments</name>
         <type>String</type>
@@ -1209,10 +1235,10 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <nullif>?OrderLineCommentsPlaceholder?</nullif>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
-      </fields>
+      </field>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>450</xloc>
       <yloc>140</yloc>
       <draw>Y</draw>
@@ -1221,26 +1247,29 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
 
   <step>
     <name>Replace separators</name>
-    <type>ScriptValue</type>
+    <type>ScriptValueMod</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
-    <script>var xmlOutput=xmlOrderListNew.replace(&quot;&gt;, &lt;&quot;,&quot;&gt;&lt;&quot;);
+    <compatible>Y</compatible>
+    <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
+        <jsScript_name>ScriptValue</jsScript_name>
+        <jsScript_script>var xmlOutput=xmlOrderListNew.replace(&quot;&gt;, &lt;&quot;,&quot;&gt;&lt;&quot;);
 
 
-</script>
-    <fields>      <field>        <name>xmlOutput</name>
+</jsScript_script>
+      </jsScript>    </jsScripts>    <fields>      <field>        <name>xmlOutput</name>
         <rename>xmlOutput</rename>
         <type>String</type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>      </fields>     <cluster_schema/>
-    <GUI>
+        <replace>N</replace>
+      </field>    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>80</xloc>
       <yloc>478</yloc>
       <draw>Y</draw>
@@ -1255,25 +1284,29 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
       <directory>%%java.io.tmpdir%%</directory>
       <prefix>out</prefix>
       <sort_size>5000</sort_size>
+      <free_memory/>
       <compress>N</compress>
+      <compress_variable/>
+      <unique_rows>N</unique_rows>
     <fields>
       <field>
         <name>orderNumber</name>
         <ascending>Y</ascending>
-        </field>
+        <case_sensitive>Y</case_sensitive>
+      </field>
       <field>
         <name>orderLineNumber</name>
         <ascending>Y</ascending>
-        </field>
-      </fields>
+        <case_sensitive>Y</case_sensitive>
+      </field>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>451</xloc>
       <yloc>498</yloc>
       <draw>Y</draw>
@@ -1288,29 +1321,34 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
       <directory>%%java.io.tmpdir%%</directory>
       <prefix>out</prefix>
       <sort_size>5000</sort_size>
+      <free_memory/>
       <compress>N</compress>
+      <compress_variable/>
+      <unique_rows>N</unique_rows>
     <fields>
       <field>
         <name>orderNumber</name>
         <ascending>Y</ascending>
-        </field>
+        <case_sensitive>Y</case_sensitive>
+      </field>
       <field>
         <name>orderLineNumber</name>
         <ascending>Y</ascending>
-        </field>
+        <case_sensitive>Y</case_sensitive>
+      </field>
       <field>
         <name>orderSubLineNumber</name>
         <ascending>Y</ascending>
-        </field>
-      </fields>
+        <case_sensitive>Y</case_sensitive>
+      </field>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>709</xloc>
       <yloc>278</yloc>
       <draw>Y</draw>
@@ -1325,25 +1363,29 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
       <directory>%%java.io.tmpdir%%</directory>
       <prefix>out</prefix>
       <sort_size>5000</sort_size>
+      <free_memory/>
       <compress>N</compress>
+      <compress_variable/>
+      <unique_rows>N</unique_rows>
     <fields>
       <field>
         <name>orderNumber</name>
         <ascending>Y</ascending>
-        </field>
+        <case_sensitive>Y</case_sensitive>
+      </field>
       <field>
         <name>lineNumber</name>
         <ascending>Y</ascending>
-        </field>
-      </fields>
+        <case_sensitive>Y</case_sensitive>
+      </field>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>314</xloc>
       <yloc>202</yloc>
       <draw>Y</draw>
@@ -1358,29 +1400,34 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
       <directory>%%java.io.tmpdir%%</directory>
       <prefix>out</prefix>
       <sort_size>5000</sort_size>
+      <free_memory/>
       <compress>N</compress>
+      <compress_variable/>
+      <unique_rows>N</unique_rows>
     <fields>
       <field>
         <name>orderNumber</name>
         <ascending>Y</ascending>
-        </field>
+        <case_sensitive>Y</case_sensitive>
+      </field>
       <field>
         <name>orderLineNumber</name>
         <ascending>Y</ascending>
-        </field>
+        <case_sensitive>Y</case_sensitive>
+      </field>
       <field>
         <name>lineNumber</name>
         <ascending>Y</ascending>
-        </field>
-      </fields>
+        <case_sensitive>Y</case_sensitive>
+      </field>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>579</xloc>
       <yloc>197</yloc>
       <draw>Y</draw>
@@ -1395,7 +1442,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <from>Group by 3</from>
@@ -1420,7 +1466,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
       </value>
     </lookup>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>447</xloc>
       <yloc>346</yloc>
       <draw>Y</draw>
@@ -1435,7 +1481,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <from>Group by</from>
@@ -1456,7 +1501,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
       </value>
     </lookup>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>197</xloc>
       <yloc>347</yloc>
       <draw>Y</draw>
@@ -1471,7 +1516,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <from>Group by 3 2</from>
@@ -1492,7 +1536,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
       </value>
     </lookup>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>198</xloc>
       <yloc>278</yloc>
       <draw>Y</draw>
@@ -1507,7 +1551,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <from>Group by 3 2 2</from>
@@ -1532,7 +1575,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
       </value>
     </lookup>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>451</xloc>
       <yloc>277</yloc>
       <draw>Y</draw>
@@ -1547,7 +1590,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <separator/>
@@ -1559,19 +1601,25 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <compression>None</compression>
     <encoding/>
     <endedLine/>
+    <fileNameInField>N</fileNameInField>
+    <fileNameField/>
     <file>
       <name>${Internal.Transformation.Filename.Directory}&#47;output&#47;XMLOrders</name>
       <is_command>N</is_command>
+      <do_not_open_new_file_init>N</do_not_open_new_file_init>
       <extention>xml</extention>
       <append>N</append>
       <split>N</split>
       <haspartno>N</haspartno>
       <add_date>N</add_date>
       <add_time>N</add_time>
+      <SpecifyFormat>N</SpecifyFormat>
+      <date_time_format/>
+      <add_to_result_filenames>Y</add_to_result_filenames>
       <pad>N</pad>
       <fast_dump>N</fast_dump>
       <splitevery>0</splitevery>
-      </file>
+    </file>
     <fields>
       <field>
         <name>xmlOutput</name>
@@ -1581,12 +1629,13 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <decimal/>
         <group/>
         <nullif/>
+        <trim_type>none</trim_type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
-      </fields>
+      </field>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>80</xloc>
       <yloc>558</yloc>
       <draw>Y</draw>
@@ -1601,7 +1650,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <encoding>ISO-8859-1</encoding>
@@ -1609,7 +1657,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <xml_repeat_element>OrderHeaderComment</xml_repeat_element>
     <file>
       <omitXMLheader>Y</omitXMLheader>
-      </file>
+    </file>
     <fields>
       <field>
         <name>lineNumber</name>
@@ -1623,6 +1671,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>text</name>
@@ -1636,10 +1685,11 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
-      </fields>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>314</xloc>
       <yloc>138</yloc>
       <draw>Y</draw>
@@ -1654,7 +1704,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <encoding>ISO-8859-1</encoding>
@@ -1662,7 +1711,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <xml_repeat_element>OrderHeader</xml_repeat_element>
     <file>
       <omitXMLheader>Y</omitXMLheader>
-      </file>
+    </file>
     <fields>
       <field>
         <name>orderNumber</name>
@@ -1676,6 +1725,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>0</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>originator</name>
@@ -1689,6 +1739,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>orderType</name>
@@ -1702,6 +1753,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>orderDate</name>
@@ -1715,6 +1767,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>customerNumber</name>
@@ -1728,6 +1781,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>0</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>OrderLines</name>
@@ -1741,6 +1795,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>N</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>OrderHeaderComments</name>
@@ -1754,10 +1809,11 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>N</attribute>
+        <attributeParentName/>
         </field>
-      </fields>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>200</xloc>
       <yloc>200</yloc>
       <draw>Y</draw>
@@ -1772,7 +1828,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <encoding>ISO-8859-1</encoding>
@@ -1780,7 +1835,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <xml_repeat_element>OrderLineComments</xml_repeat_element>
     <file>
       <omitXMLheader>Y</omitXMLheader>
-      </file>
+    </file>
     <fields>
       <field>
         <name>lineNumber</name>
@@ -1794,6 +1849,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>0</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>Text</name>
@@ -1807,10 +1863,11 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
-      </fields>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>579</xloc>
       <yloc>133</yloc>
       <draw>Y</draw>
@@ -1825,7 +1882,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <encoding>ISO-8859-1</encoding>
@@ -1833,7 +1889,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <xml_repeat_element>OrderLine</xml_repeat_element>
     <file>
       <omitXMLheader>Y</omitXMLheader>
-      </file>
+    </file>
     <fields>
       <field>
         <name>orderLineNumber</name>
@@ -1847,6 +1903,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>0</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>productNumber</name>
@@ -1860,6 +1917,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>productText</name>
@@ -1873,6 +1931,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>quantity</name>
@@ -1886,6 +1945,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>uom</name>
@@ -1899,6 +1959,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>principal</name>
@@ -1912,6 +1973,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>OrderSubLines</name>
@@ -1925,6 +1987,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>N</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>OrderLineComments</name>
@@ -1938,10 +2001,11 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>N</attribute>
+        <attributeParentName/>
         </field>
-      </fields>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>450</xloc>
       <yloc>205</yloc>
       <draw>Y</draw>
@@ -1956,7 +2020,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <encoding>ISO-8859-1</encoding>
@@ -1964,7 +2027,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <xml_repeat_element>OrderList</xml_repeat_element>
     <file>
       <omitXMLheader>N</omitXMLheader>
-      </file>
+    </file>
     <fields>
       <field>
         <name>source</name>
@@ -1978,6 +2041,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>timestamp</name>
@@ -1991,6 +2055,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>businessUnitId</name>
@@ -2004,6 +2069,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>plantId</name>
@@ -2017,6 +2083,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>OrderHeaders</name>
@@ -2030,10 +2097,11 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>N</attribute>
+        <attributeParentName/>
         </field>
-      </fields>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>80</xloc>
       <yloc>200</yloc>
       <draw>Y</draw>
@@ -2048,7 +2116,6 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <encoding>ISO-8859-1</encoding>
@@ -2056,7 +2123,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
     <xml_repeat_element>OrderSubLine</xml_repeat_element>
     <file>
       <omitXMLheader>Y</omitXMLheader>
-      </file>
+    </file>
     <fields>
       <field>
         <name>orderSubLineNumber</name>
@@ -2070,6 +2137,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>0</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>batch</name>
@@ -2083,6 +2151,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>quantity</name>
@@ -2096,6 +2165,7 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
       <field>
         <name>expiryDate</name>
@@ -2109,14 +2179,20 @@ xmlOrderLinesNew=xmlOrderLinesNew.replace(&quot;&lt;OrderLineComments&gt;null&lt
         <length>-1</length>
         <precision>-1</precision>
         <attribute>Y</attribute>
+        <attributeParentName/>
         </field>
-      </fields>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>706</xloc>
       <yloc>206</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
+  <step_error_handling>
+  </step_error_handling>
+   <slave-step-copy-partition-distribution>
+</slave-step-copy-partition-distribution>
+   <slave_transformation>N</slave_transformation>
 </transformation>
