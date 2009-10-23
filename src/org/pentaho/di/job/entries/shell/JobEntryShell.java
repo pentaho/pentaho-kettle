@@ -488,47 +488,24 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			if (Const.getOS().equals("Windows 95"))
 			{
 				base = new String[] { "command.com", "/C" };
+				if (insertScript) {
+					tempFile = KettleVFS.createTempFile("kettle", "shell.bat", workDirectory);
+					fileObject = createTemporaryShellFile(tempFile, realScript);
+				}
 			} else if (Const.getOS().startsWith("Windows"))
 			{
 				base = new String[] { "cmd.exe", "/C" };
+				if (insertScript) {
+					tempFile = KettleVFS.createTempFile("kettle", "shell.bat", workDirectory);
+					fileObject = createTemporaryShellFile(tempFile, realScript);
+				}
 			} else
 			{
-				if (!insertScript) {
-					// Just set the command to the script we need to execute...
-					//
-					base = new String[] { KettleVFS.getFilename(fileObject) };
+				if (insertScript) {
+					tempFile = KettleVFS.createTempFile("kettle", "shell", workDirectory);
+					fileObject = createTemporaryShellFile(tempFile, realScript);
 				}
-				else {
-					// Create a unique new temporary filename in the working directory, put the script in there
-					// Set the permissions to execute and then run it...
-					//
-					try {
-						tempFile = KettleVFS.createTempFile("kettle", "shell", workDirectory);
-						tempFile.createFile();
-						OutputStream outputStream = tempFile.getContent().getOutputStream();
-						outputStream.write(realScript.getBytes());
-						outputStream.close();
-						String tempFilename =  KettleVFS.getFilename(tempFile);
-						// Now we have to make this file executable...
-						// On Unix-like systems this is done using the command "/bin/chmod +x filename"
-						//
-						ProcessBuilder procBuilder = new ProcessBuilder("chmod", "+x", tempFilename);
-						Process proc = procBuilder.start();
-						// Eat/log stderr/stdout all messages in a different thread...
-						StreamLogger errorLogger = new StreamLogger(proc.getErrorStream(), toString() + " (stderr)");
-						StreamLogger outputLogger = new StreamLogger(proc.getInputStream(), toString() + " (stdout)");
-						new Thread(errorLogger).start();
-						new Thread(outputLogger).start();
-						proc.waitFor();
-
-						// Now set this filename as the base command...
-						//
-						base = new String[] { tempFilename };
-					}
-					catch(Exception e) {
-						throw new Exception("Unable to create temporary file to execute script", e);
-					}
-				}
+				base = new String[] { KettleVFS.getFilename(fileObject) };
 			}
 
 			// Construct the arguments...
@@ -547,10 +524,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 					StringBuffer cmdline = new StringBuffer(300);
 
 					cmdline.append('"');
-					if(insertScript)
-						cmdline.append(realScript);
-					else
-						cmdline.append(optionallyQuoteField(KettleVFS.getFilename(fileObject), "\""));
+					cmdline.append(optionallyQuoteField(KettleVFS.getFilename(fileObject), "\""));
 					// Add the arguments from previous results...
 					for (int i = 0; i < cmdRows.size(); i++) // Normally just
 																// one row, but
@@ -604,10 +578,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 					StringBuffer cmdline = new StringBuffer(300);
 
 					cmdline.append('"');
-					if(insertScript)
-						cmdline.append(realScript);
-					else
-						cmdline.append(optionallyQuoteField(KettleVFS.getFilename(fileObject), "\""));
+					cmdline.append(optionallyQuoteField(KettleVFS.getFilename(fileObject), "\""));
 
 					for (int i = 0; i < args.length; i++)
 					{
@@ -722,7 +693,41 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			result.setResult(true);
 		}
 	}
-
+	
+	private FileObject createTemporaryShellFile(FileObject tempFile, String fileContent) throws Exception
+	{
+		// Create a unique new temporary filename in the working directory, put the script in there
+		// Set the permissions to execute and then run it...
+		//
+		if (tempFile != null && fileContent != null) { 
+			try {
+				tempFile.createFile();
+				OutputStream outputStream = tempFile.getContent().getOutputStream();
+				outputStream.write(fileContent.getBytes());
+				outputStream.close();
+				if (!Const.getOS().startsWith("Windows")) {
+					String tempFilename =  KettleVFS.getFilename(tempFile);
+					// Now we have to make this file executable...
+					// On Unix-like systems this is done using the command "/bin/chmod +x filename"
+					//
+					ProcessBuilder procBuilder = new ProcessBuilder("chmod", "+x", tempFilename);
+					Process proc = procBuilder.start();
+					// Eat/log stderr/stdout all messages in a different thread...
+					StreamLogger errorLogger = new StreamLogger(proc.getErrorStream(), toString() + " (stderr)");
+					StreamLogger outputLogger = new StreamLogger(proc.getInputStream(), toString() + " (stdout)");
+					new Thread(errorLogger).start();
+					new Thread(outputLogger).start();
+					proc.waitFor();
+				}
+	
+			}
+			catch(Exception e) {
+				throw new Exception("Unable to create temporary file to execute script", e);
+			}
+		}
+		return tempFile;
+	}
+	
 	private String optionallyQuoteField(String field, String quote)
 	{
 		if (Const.isEmpty(field))
