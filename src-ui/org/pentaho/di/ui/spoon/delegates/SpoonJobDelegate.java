@@ -634,6 +634,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 						// 
 						String fromstepname = BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.FromStep.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 						TableInputMeta tii = new TableInputMeta();
+						tii.setDefault();
 						tii.setDatabaseMeta(sourceDbInfo);
 						tii.setSQL("SELECT * FROM " + tables[i]); //$NON-NLS-1$ // It's already quoted!
 	
