@@ -1,0 +1,15 @@
+<Test>
+
+<Rec>
+<Description>Cell Phone Accessories</Description>
+</Rec>
+
+<Rec>
+<Description>Discount on <Substitution><Field>BRAND</Field><Value>Blackberry</Value></Substitution></Description>
+</Rec>
+
+<Rec>
+<Description><Substitution><Field>BRAND</Field><Value>Blackberry</Value></Substitution> <Substitution><Field>PRODUCT</Field><Value>Battery</Value></Substitution> for <Substitution><Field>PRICE</Field><Value>$14.99</Value></Substitution></Description>
+</Rec>
+
+</Test>
