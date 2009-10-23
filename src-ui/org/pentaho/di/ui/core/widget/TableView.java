@@ -15,6 +15,7 @@
 package org.pentaho.di.ui.core.widget;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -335,8 +336,8 @@ public class TableView extends Composite
 		lsRowInsAft = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { insertRowAfter();   } };		
 		lsCol1      = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { optWidth(true);     } };		
 		lsCol2      = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { optWidth(false);    } };		
-		lsRowUp     = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { moveRowUp();   } };		
-		lsRowDown   = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { moveRowDown(); } };		
+		lsRowUp     = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { moveRows(-1);   } };		
+		lsRowDown   = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { moveRows(+1); } };		
 		lsClear     = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { clearAll(true);     } };
 		lsClipAll   = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { clipSelected();     } };
 		lsCopyToAll = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { copyToAll();        } };
@@ -647,13 +648,15 @@ public class TableView extends Composite
 					// Move rows up or down shortcuts...					
 					if (!readonly && e.keyCode   == SWT.ARROW_DOWN && (( e.stateMask & SWT.CTRL)!=0 ))
 					{
-						moveRowDown();
+						moveRows(+1);
+						e.doit = false;
                         return;
 					}
 
 					if (!readonly && e.keyCode   == SWT.ARROW_UP && (( e.stateMask & SWT.CTRL)!=0 ))
 					{
-						moveRowUp();
+						moveRows(-1);
+						e.doit = false;
                         return;
 					}
 
@@ -1369,44 +1372,65 @@ public class TableView extends Composite
 			this.setModified(); // timh
 		}
 	}
-
-	private void moveRowDown()
+	
+	private void moveRows(int offset) 
 	{
-        if (activeTableItem==null) return;
-        
-		if (activeTableRow<table.getItemCount()-1)
-		{
-			moveRow(activeTableRow, activeTableRow+1);
-			
-            TransAction ta = new TransAction();
-			ta.setItemMove(new int[] { activeTableRow }, new int[] { activeTableRow+1 } );
-			addUndo(ta);
-			
-            activeTableRow++;
-            activeTableItem = table.getItem(activeTableRow);
-            
-			selectRows(activeTableRow, activeTableRow);
+		if ((offset != 1) && (offset != -1)) return;
+		
+		int selectionIndicies[] = table.getSelectionIndices();
+		int selectedIndex = table.getSelectionIndex();
+		
+		// selectionIndicies is not guaranteed to be in any order so must sort before using
+		Arrays.sort(selectionIndicies);
+		
+		if (offset == 1) {
+			if (selectionIndicies[selectionIndicies.length-1] >= table.getItemCount()-1) {
+				// If the last row in the table is selected then don't move any rows down
+				return;
+			}
+			selectionIndicies = moveRowsDown(selectionIndicies);
+		} else {
+			if (selectionIndicies[0] == 0) {
+				// If the first row in the table is selected then don't move any rows up
+				return;
+			}
+			selectionIndicies = moveRowsUp(selectionIndicies);
 		}
+		
+        activeTableRow = selectedIndex + offset;
+		table.setSelection(activeTableRow);
+		table.setSelection(selectionIndicies);
+        activeTableItem = table.getItem(activeTableRow);
 	}
 	
-	private void moveRowUp()
-	{
-        if (activeTableItem==null) return;
-        
-        if (activeTableRow>0)
-		{
-			moveRow(activeTableRow, activeTableRow-1);
-
+	private int[] moveRowsDown(int selectionIndicies[]) {
+		// Move the selected rows down starting with the lowest row  
+		for (int i=selectionIndicies.length-1;i>=0;i--) {
+			int row = selectionIndicies[i];
+			int newRow = row + 1;
+			moveRow(row, newRow);
 			TransAction ta = new TransAction();
-			ta.setItemMove(new int[] { activeTableRow }, new int[] { activeTableRow-1} );
+			ta.setItemMove(new int[] { row }, new int[] { newRow } );
 			addUndo(ta);
-
-            activeTableRow--;
-            activeTableItem = table.getItem(activeTableRow);
-            
-            selectRows(activeTableRow, activeTableRow);
+			selectionIndicies[i] = newRow;
 		}
+		return selectionIndicies;
 	}
+
+	private int[] moveRowsUp(int selectionIndicies[]) {
+		// Move the selected rows up starting with the highest row 
+		for (int i=0;i<selectionIndicies.length;i++) {
+			int row = selectionIndicies[i];
+			int newRow = row - 1;
+			moveRow(row, newRow);
+			TransAction ta = new TransAction();
+			ta.setItemMove(new int[] { row }, new int[] { newRow } );
+			addUndo(ta);
+			selectionIndicies[i] = newRow;
+		}
+		return selectionIndicies;
+	}
+	
 
 	private void moveRow(int from, int to)
 	{
