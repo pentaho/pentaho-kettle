@@ -67,8 +67,8 @@
     </notepad>
     <notepad>
       <note>Note: also see the &quot;Replace in string&quot; step.</note>
-      <xloc>43</xloc>
-      <yloc>346</yloc>
+      <xloc>40</xloc>
+      <yloc>360</yloc>
       <width>218</width>
       <heigth>22</heigth>
     </notepad>
@@ -108,6 +108,17 @@
         <length>100</length>
         <precision>-1</precision>
       </field>
+      <field>
+        <name>fieldNull</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>100</length>
+        <precision>-1</precision>
+      </field>
     </fields>
     <limit>1</limit>
      <cluster_schema/>
@@ -138,6 +149,13 @@ field.replace(&quot;&#47;&quot;, &quot;&quot;).replace(&quot;\\&quot;, &quot;&qu
 
 &#47;&#47; mind the change in the backslash here (4x\ instead of 2x\)!
 var fieldSameReplaced= replace(fieldSame, &quot;&#47;&quot;, &quot;&quot;, &quot;\\\\&quot;, &quot;&quot;, &quot;-&quot;, &quot;&quot;);
+
+&#47;&#47; replace null values:
+if (fieldNull == null) {
+	&#47;&#47; other options are:  fieldNull.isNull()  or fieldNull.getString() == null
+	fieldNull.setValue(&quot;This is NULL&quot;);
+}
+
 </jsScript_script>
       </jsScript>    </jsScripts>    <fields>      <field>        <name>fieldSameReplaced</name>
         <rename>fieldSameReplaced</rename>
@@ -172,7 +190,12 @@ var field=field.replace(&quot;&#47;&quot;, &quot;&quot;).replace(&quot;\\&quot;,
 &#47;&#47; another possibilty: different syntax - this is identical to Compatibility mode
 
 &#47;&#47; mind the change in the backslash here (4x\ instead of 2x\)!
-var fieldSameReplaced= replace(fieldSame, &quot;&#47;&quot;, &quot;&quot;, &quot;\\\\&quot;, &quot;&quot;, &quot;-&quot;, &quot;&quot;);</jsScript_script>
+var fieldSameReplaced= replace(fieldSame, &quot;&#47;&quot;, &quot;&quot;, &quot;\\\\&quot;, &quot;&quot;, &quot;-&quot;, &quot;&quot;);
+
+&#47;&#47; replace null values:
+if (fieldNull == null) {
+	var fieldNull=(&quot;This is NULL&quot;);
+}</jsScript_script>
       </jsScript>    </jsScripts>    <fields>      <field>        <name>field</name>
         <rename>field</rename>
         <type>String</type>
@@ -185,10 +208,16 @@ var fieldSameReplaced= replace(fieldSame, &quot;&#47;&quot;, &quot;&quot;, &quot
         <length>-1</length>
         <precision>-1</precision>
         <replace>N</replace>
+      </field>      <field>        <name>fieldNull</name>
+        <rename>fieldNull</rename>
+        <type>String</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <replace>Y</replace>
       </field>    </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>315</xloc>
-      <yloc>256</yloc>
+      <xloc>320</xloc>
+      <yloc>260</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
