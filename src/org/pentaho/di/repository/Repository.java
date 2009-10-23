@@ -625,6 +625,7 @@ public class Repository
 					setLookupStepAttribute();
                     setLookupTransAttribute();
 					setLookupJobEntryAttribute();
+					setLookupJobAttribute(); 
 				}
 				catch (KettleException dbe)
 				{
@@ -3525,7 +3526,7 @@ public class Repository
     public synchronized String getJobAttributeString(long id_job, int nr, String code) throws KettleException
     {
         RowMetaAndData r = null;
-        r = getTransAttributeRow(id_job, nr, code);
+        r = getJobAttributeRow(id_job, nr, code);
         if (r == null)
             return null;
         return r.getString(FIELD_JOB_ATTRIBUTE_VALUE_STR, null);
@@ -3534,7 +3535,7 @@ public class Repository
     public synchronized boolean getJobAttributeBoolean(long id_job, int nr, String code) throws KettleException
     {
         RowMetaAndData r = null;
-        r = getTransAttributeRow(id_job, nr, code);
+        r = getJobAttributeRow(id_job, nr, code);
         if (r == null)
             return false;
         return r.getBoolean(FIELD_JOB_ATTRIBUTE_VALUE_STR, false);
@@ -4564,10 +4565,10 @@ public class Repository
 	}
 	
 	/**
-	 * Count the number of parameters of a transaction.
+	 * Count the number of parameters of a transformation.
 	 * 
 	 * @param id_transformation transformation id
-	 * @return the number of transactions
+	 * @return the number of parameters of a transformation
 	 * 
 	 * @throws KettleException Upon any error.
 	 */
@@ -4593,7 +4594,7 @@ public class Repository
 	 * 
 	 * @param id_transformation transformation id
 	 * @param nr number of the parameter
-	 * @return
+	 * @return the default value of the parameter
 	 * 
 	 * @throws KettleException Upon any error.
 	 */
@@ -4606,7 +4607,7 @@ public class Repository
 	 * 
 	 * @param id_transformation transformation id
 	 * @param nr number of the parameter
-	 * @return
+	 * @return the description of the parameter
 	 * 
 	 * @throws KettleException Upon any error.
 	 */
@@ -4635,12 +4636,12 @@ public class Repository
 	 * Count the number of parameters of a job.
 	 * 
 	 * @param id_job job id
-	 * @return the number of transactions
+	 * @return the number of parameters of a job
 	 * 
 	 * @throws KettleException Upon any error.
 	 */
 	public int countJobParameter(long id_job) throws KettleException  {
-		return countNrTransAttributes(id_job, JOB_ATTRIBUTE_PARAM_KEY);
+		return countNrJobAttributes(id_job, JOB_ATTRIBUTE_PARAM_KEY);
 	}
 	
 	/**
@@ -4661,12 +4662,12 @@ public class Repository
 	 * 
 	 * @param id_job job id
 	 * @param nr number of the parameter
-	 * @return
+	 * @return the default value of the parameter
 	 * 
 	 * @throws KettleException Upon any error.
 	 */
 	public String getJobParameterDefault(long id_job, int nr) throws KettleException  {
- 		return getTransAttributeString(id_job, nr, JOB_ATTRIBUTE_PARAM_DEFAULT);		
+ 		return getJobAttributeString(id_job, nr, JOB_ATTRIBUTE_PARAM_DEFAULT);		
 	}	
 	
 	/**
@@ -4674,12 +4675,12 @@ public class Repository
 	 * 
 	 * @param id_job job id
 	 * @param nr number of the parameter
-	 * @return
+	 * @return the description of the parameter
 	 * 
 	 * @throws KettleException Upon any error.
 	 */
 	public String getJobParameterDescription(long id_job, int nr) throws KettleException  {
- 		return getTransAttributeString(id_job, nr, JOB_ATTRIBUTE_PARAM_DESCRIPTION);		
+ 		return getJobAttributeString(id_job, nr, JOB_ATTRIBUTE_PARAM_DESCRIPTION);		
 	}
 	
 	/**
