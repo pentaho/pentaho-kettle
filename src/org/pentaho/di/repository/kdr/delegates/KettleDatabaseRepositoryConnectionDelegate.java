@@ -128,6 +128,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 					repository.connectionDelegate.setLookupStepAttribute();
 					repository.connectionDelegate.setLookupTransAttribute();
 					repository.connectionDelegate.setLookupJobEntryAttribute();
+					repository.connectionDelegate.setLookupJobAttribute();
 				}
 				catch (KettleException dbe)
 				{
@@ -757,7 +758,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     public synchronized String getJobAttributeString(ObjectId id_job, int nr, String code) throws KettleException
     {
         RowMetaAndData r = null;
-        r = getTransAttributeRow(id_job, nr, code);
+        r = getJobAttributeRow(id_job, nr, code);
         if (r == null)
             return null;
         return r.getString(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_VALUE_STR, null);
@@ -766,7 +767,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     public synchronized boolean getJobAttributeBoolean(ObjectId id_job, int nr, String code) throws KettleException
     {
         RowMetaAndData r = null;
-        r = getTransAttributeRow(id_job, nr, code);
+        r = getJobAttributeRow(id_job, nr, code);
         if (r == null)
             return false;
         return r.getBoolean(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_VALUE_STR, false);

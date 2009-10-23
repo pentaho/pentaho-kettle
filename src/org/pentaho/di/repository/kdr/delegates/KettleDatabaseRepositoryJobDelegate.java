@@ -458,12 +458,12 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 	 * 
 	 * @param id_job job id
 	 * @param nr number of the parameter
-	 * @return
+	 * @return the default value of the parameter
 	 * 
 	 * @throws KettleException Upon any error.
 	 */
 	public String getJobParameterDefault(ObjectId id_job, int nr) throws KettleException  {
- 		return repository.connectionDelegate.getTransAttributeString(id_job, nr, KettleDatabaseRepository.JOB_ATTRIBUTE_PARAM_DEFAULT);		
+ 		return repository.connectionDelegate.getJobAttributeString(id_job, nr, KettleDatabaseRepository.JOB_ATTRIBUTE_PARAM_DEFAULT);		
 	}	
 	
 	/**
@@ -471,12 +471,12 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 	 * 
 	 * @param id_job job id
 	 * @param nr number of the parameter
-	 * @return
+	 * @return the description of the parameter
 	 * 
 	 * @throws KettleException Upon any error.
 	 */
 	public String getJobParameterDescription(ObjectId id_job, int nr) throws KettleException  {
- 		return repository.connectionDelegate.getTransAttributeString(id_job, nr, KettleDatabaseRepository.JOB_ATTRIBUTE_PARAM_DESCRIPTION);		
+ 		return repository.connectionDelegate.getJobAttributeString(id_job, nr, KettleDatabaseRepository.JOB_ATTRIBUTE_PARAM_DESCRIPTION);		
 	}
 	
 	/**
@@ -501,12 +501,12 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 	 * Count the number of parameters of a job.
 	 * 
 	 * @param id_job job id
-	 * @return the number of transactions
+	 * @return the number of of parameters of the job
 	 * 
 	 * @throws KettleException Upon any error.
 	 */
 	public int countJobParameter(ObjectId id_job) throws KettleException  {
-		return repository.connectionDelegate.countNrTransAttributes(id_job, KettleDatabaseRepository.JOB_ATTRIBUTE_PARAM_KEY);
+		return repository.connectionDelegate.countNrJobAttributes(id_job, KettleDatabaseRepository.JOB_ATTRIBUTE_PARAM_KEY);
 	}
 	
     
