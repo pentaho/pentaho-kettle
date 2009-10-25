@@ -530,7 +530,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					}else if(strType.toLowerCase().equals("wd")){
 						int iOffset = -1;
 						if(endDate.before(startDate)) iOffset = 1;
-						while (endL<startL || endL>startL) {
+						while ((iOffset==1 && endL<startL) || (iOffset==-1 && endL>startL)) {
 							int day = endDate.get(Calendar.DAY_OF_WEEK);
 							if ((day != Calendar.SATURDAY) && (day != Calendar.SUNDAY))	iRC++;
 							endDate.add(Calendar.DATE, iOffset);
