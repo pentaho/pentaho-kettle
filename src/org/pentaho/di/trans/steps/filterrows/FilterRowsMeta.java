@@ -243,7 +243,17 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
         
 	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-		// Default: nothing changes to rowMeta
+        // Clear the sortedDescending flag on fields used within the condition - otherwise the comparisons will be inverted!!
+        String conditionField[] = condition.getUsedFields();
+        for (int i=0;i<conditionField.length;i++)
+        {
+            int idx = rowMeta.indexOfValue(conditionField[i]);
+            if (idx>=0)
+            {
+                ValueMetaInterface valueMeta = rowMeta.getValueMeta(idx);
+                valueMeta.setSortedDescending(false);
+            }
+        }
 	}
 
     public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
