@@ -18,6 +18,9 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
@@ -26,9 +29,11 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.ui.util.ImageUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
+import org.pentaho.di.ui.util.ImageUtil;
 
 /**
  * Displays the Kettle splash screen
@@ -36,73 +41,99 @@ import org.pentaho.di.laf.BasePropertyHandler;
  * @author Matt
  * @since  14-mrt-2005
  */
-public class Splash
-{
-	private Shell splash;
-	 
-	public Splash(Display display) throws KettleException
-	{
-		Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
+public class Splash {
+  private Shell splash;
 
-		final Image kettle_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // "kettle_splash.png"
-        final Image kettle_icon  = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_icon")); // "spoon.ico");
-        
-        splash = new Shell(display, SWT.NONE /*SWT.ON_TOP*/);
-        splash.setImage(kettle_icon);
-        //TODO: move to BaseMessage to track i18n
-        splash.setText(BasePropertyHandler.getProperty("splash_text")); // "Pentaho Data Integration"
-        
-		FormLayout splashLayout = new FormLayout();
-		splash.setLayout(splashLayout);
-        
-		Canvas canvas = new Canvas(splash, SWT.NO_BACKGROUND);
-		
-		FormData fdCanvas = new FormData();
-		fdCanvas.left   = new FormAttachment(0,0);
-		fdCanvas.top    = new FormAttachment(0,0);
-		fdCanvas.right  = new FormAttachment(100,0);
-		fdCanvas.bottom = new FormAttachment(100,0);
-		canvas.setLayoutData(fdCanvas);
+  private static Class<?> PKG = Splash.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-		canvas.addPaintListener(new PaintListener()
-			{
-				public void paintControl(PaintEvent e)
-				{
-					e.gc.drawImage(kettle_image, 0, 0);
-				}
-			}
-		);
-		
-		splash.addDisposeListener(new DisposeListener()
-			{
-				public void widgetDisposed(DisposeEvent arg0)
-				{
-					kettle_image.dispose();
-				}
-			}
-		);
-		Rectangle bounds = kettle_image.getBounds();
-		int x = (displayBounds.width - bounds.width)/2;
-		int y = (displayBounds.height - bounds.height)/2;
-		
-		splash.setSize(bounds.width, bounds.height);
-		splash.setLocation(x,y);
-		
-		splash.open();
-	}
-	
-	public void dispose()
-	{
-		if (!splash.isDisposed()) splash.dispose();
-	}
-	
-	public void hide()
-	{
-		splash.setVisible(false);
-	}
-	
-	public void show()
-	{
-		splash.setVisible(true);
-	}
+  public Splash(Display display) throws KettleException {
+    Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
+
+    final Image kettle_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // "kettle_splash.png"
+    final Image kettle_icon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_icon")); // "spoon.ico"
+
+    splash = new Shell(display, SWT.NONE /*SWT.ON_TOP*/);
+    splash.setImage(kettle_icon);
+
+    splash.setText(BaseMessages.getString(PKG, "SplashDialog.Title")); // "Pentaho Data Integration"
+
+    FormLayout splashLayout = new FormLayout();
+    splash.setLayout(splashLayout);
+
+    Canvas canvas = new Canvas(splash, SWT.NO_BACKGROUND);
+
+    FormData fdCanvas = new FormData();
+    fdCanvas.left = new FormAttachment(0, 0);
+    fdCanvas.top = new FormAttachment(0, 0);
+    fdCanvas.right = new FormAttachment(100, 0);
+    fdCanvas.bottom = new FormAttachment(100, 0);
+    canvas.setLayoutData(fdCanvas);
+
+    canvas.addPaintListener(new PaintListener() {
+      public void paintControl(PaintEvent e) {
+        String versionText = BaseMessages.getString(PKG, "SplashDialog.Version") + " " + Const.VERSION;
+        e.gc.drawImage(kettle_image, 0, 0);
+
+        // If this is a Milestone or RC release, warn the user
+        if (Const.VERSION.matches("^(\\d\\.){2}\\d-M\\d+$")) {
+          versionText = BaseMessages.getString(PKG, "SplashDialog.DeveloperRelease") + " - " + versionText;
+          drawVersionWarning(e);
+        } else if (Const.VERSION.matches("^(\\d\\.){2}\\d-RC\\d+$")) {
+          versionText = BaseMessages.getString(PKG, "SplashDialog.ReleaseCandidate") + " - " + versionText;
+          drawVersionWarning(e);
+        }
+
+        Font font = new Font(e.display, "Helvetica", 11, SWT.NORMAL);
+        e.gc.setFont(font);
+        e.gc.drawText(versionText, 290, 203, true);
+      }
+    });
+
+    splash.addDisposeListener(new DisposeListener() {
+      public void widgetDisposed(DisposeEvent arg0) {
+        kettle_image.dispose();
+      }
+    });
+    Rectangle bounds = kettle_image.getBounds();
+    int x = (displayBounds.width - bounds.width) / 2;
+    int y = (displayBounds.height - bounds.height) / 2;
+
+    splash.setSize(bounds.width, bounds.height);
+    splash.setLocation(x, y);
+
+    splash.open();
+  }
+  
+  private void drawVersionWarning(PaintEvent e) {
+    drawVersionWarning(e.gc, e.display);
+  }
+  
+  private void drawVersionWarning(GC gc, Display display) {
+    final Image exclamation_image = ImageUtil.getImageAsResource(display, BasePropertyHandler
+        .getProperty("exclamation_image")); // "exclamation.png"
+    
+    gc.setBackground(new Color(gc.getDevice(), 255, 253, 213));
+    gc.setForeground(new Color(gc.getDevice(), 220, 177, 20));
+    gc.fillRectangle(290, 231, 367, 49);
+    gc.drawRectangle(290, 231, 367, 49);
+    gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+    gc.drawImage(exclamation_image, 304, 243);
+
+    Font font = new Font(display, "Helvetica", 10, SWT.NORMAL);
+    gc.setFont(font);
+    gc.drawText(BaseMessages.getString(PKG, "SplashDialog.DevelopmentWarning"), 335, 241);
+  }
+
+  public void dispose() {
+    if (!splash.isDisposed())
+      splash.dispose();
+  }
+
+  public void hide() {
+    splash.setVisible(false);
+  }
+
+  public void show() {
+    splash.setVisible(true);
+  }
 }
