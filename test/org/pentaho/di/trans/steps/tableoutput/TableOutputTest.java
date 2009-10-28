@@ -16,6 +16,7 @@
 package org.pentaho.di.trans.steps.tableoutput;
 
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -70,6 +71,7 @@ public class TableOutputTest extends TestCase
     private static String target_table  = "table";
     private static String target_table1 = "table1";
     private static String target_table2 = "table2";
+    private static String target_table3 = "table3";
 
 	/**
 	 * Create table for the normal case.
@@ -551,5 +553,132 @@ public class TableOutputTest extends TestCase
             checkResultsJIRA897(database);
         }    	
         finally {}    
-    }    
+    }
+    
+	/**
+	 * Test case for commitSize see PDI2733 in JIRA.
+	 */
+    public void testTableOutputJIRA2733() throws Exception
+    {
+    	int dataDelay = 100;  	// Delay in milliseconds between issuing records to output rows  
+    	
+        EnvUtil.environmentInit();
+        try
+        {
+            //
+            // Create a new transformation...
+            //
+            TransMeta transMeta = new TransMeta();
+            transMeta.setName("table output JIRA2733 test");
+
+            // Add the database connections
+            for (int i=0;i<databasesXML.length;i++)
+            {
+                DatabaseMeta databaseMeta = new DatabaseMeta(databasesXML[i]);
+                transMeta.addDatabase(databaseMeta);
+            }
+
+            DatabaseMeta dbInfo = transMeta.findDatabase("db");
+
+            // Execute our setup SQLs in the database.
+            Database database = new Database(transMeta, dbInfo);
+            database.connect();
+            createTable(database, target_table3, createSourceRowMetaInterface1());
+            // Add "ts" timestamp field to target_table with a default value of NOW()
+            database.execStatement("ALTER TABLE " + target_table3 + " ADD COLUMN ts TIMESTAMP DEFAULT NOW() ");
+            
+            StepLoader steploader = StepLoader.getInstance();            
+
+            // 
+            // create an injector step...
+            //
+            String injectorStepname = "injector step";
+            InjectorMeta im = new InjectorMeta();
+            
+            // Set the information of the injector.                   
+            String injectorPid = steploader.getStepPluginID(im);
+            StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+            transMeta.addStep(injectorStep);            
+            
+            // 
+            // create the source step...
+            //
+            String outputname = "output to [" + target_table3 + "]";
+            TableOutputMeta tom = new TableOutputMeta();
+            tom.setDatabaseMeta(transMeta.findDatabase("db"));
+            tom.setTablename(target_table3);
+            tom.setTruncateTable(true);
+            tom.setUseBatchUpdate(true);
+
+            String fromid = steploader.getStepPluginID(tom);
+            StepMeta fromstep = new StepMeta(fromid, outputname, (StepMetaInterface)tom);
+            fromstep.setDescription("write data to table [" + target_table3 + "] on database [" + dbInfo + "]");
+            transMeta.addStep(fromstep);
+            
+            TransHopMeta hi = new TransHopMeta(injectorStep, fromstep);
+            transMeta.addTransHop(hi);
+            
+            // With seven rows these are the number of commits that need to made 
+            // for "commitSize"s ranging between 0 and 8. 
+            long goldRowCounts[] = { 7, 7, 4, 3, 2, 2, 2, 1, 1 }; 
+            
+            for (int commitSize=0; commitSize<=8; commitSize++) {
+            	
+            	tom.setCommitSize(commitSize);
+
+            	// Now execute the transformation...
+            	Trans trans = new Trans(transMeta);
+
+	            trans.prepareExecution(null);
+	                    
+	            StepInterface si = trans.getStepInterface(outputname, 0);
+	            RowStepCollector rc = new RowStepCollector();
+	            si.addRowListener(rc);
+	            
+	            RowProducer rp = trans.addRowProducer(injectorStepname, 0);
+	            trans.startThreads();
+	            
+	            // add rows
+	            List<RowMetaAndData> inputList = createNormalDataRows();
+	            for (RowMetaAndData rm : inputList )
+	            {
+	            	Thread.sleep(dataDelay);
+	            	rp.putRow(rm.getRowMeta(), rm.getData());
+	            }   
+	            rp.finished();
+	
+	            trans.waitUntilFinished();
+	            
+	            String query = "SELECT ts FROM " + target_table3 + " ORDER BY ts";
+	            ResultSet rs = database.openQuery(query);
+	            Timestamp last_ts = null;
+	            int actual_commits = 0;
+	            while (rs.next() )
+	            {
+	            	Timestamp ts = rs.getTimestamp("ts");
+
+	            	// WARNING: This comparison is "fuzzy".  The "ts" value DEFAULT NOW() may be slightly 
+	            	// different during the commit, which is why it is not a straight comparison, but
+	            	// the ts timestamps between two records must not be more than half of the record delay.
+	            	if (last_ts == null || 
+	            		(!ts.equals(last_ts) && (ts.getTime() - last_ts.getTime() > dataDelay / 2))) {
+	            		
+	            		actual_commits++;
+	            		last_ts = ts;
+	            	}
+	            	//System.out.println("commitSize=<" + commitSize + "> ts=<" + ts.toString() + "> actual_commits=<" + actual_commits + ">");
+	            }
+	           
+	            long expected_commits = goldRowCounts[commitSize];
+	            
+	            if ( expected_commits != actual_commits) {
+	            	fail("With commitSize=" + commitSize + " expected " + expected_commits + 
+	            			" commits but actually got " + actual_commits);;
+	            }
+            }
+
+        }    	
+        finally {}    
+    }
 }
+

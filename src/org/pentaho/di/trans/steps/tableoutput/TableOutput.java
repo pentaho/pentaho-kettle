@@ -278,8 +278,12 @@ public class TableOutput extends BaseStep implements StepInterface
 			// Get a commit counter per prepared statement to keep track of separate tables, etc. 
 		    //
 			Integer commitCounter = data.commitCounterMap.get(tableName);
-		    if (commitCounter==null) commitCounter=Integer.valueOf(0);
-		    data.commitCounterMap.put(tableName, Integer.valueOf(commitCounter.intValue()+1));
+		    if (commitCounter==null) {
+		    	commitCounter=Integer.valueOf(1);
+		    } else {
+		    	commitCounter++;
+		    }
+		    data.commitCounterMap.put(tableName, Integer.valueOf(commitCounter.intValue()));
 
 		    // Release the savepoint if needed
 		    //
@@ -289,7 +293,8 @@ public class TableOutput extends BaseStep implements StepInterface
 			
 			// Perform a commit if needed
 			//
-			if (commitCounter>0 && (commitCounter%data.commitSize)==0) 
+			
+			if ((data.commitSize>0) && ((commitCounter%data.commitSize)==0)) 
 			{
 				if (data.batchMode)
 				{
