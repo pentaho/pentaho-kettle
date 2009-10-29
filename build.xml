@@ -150,7 +150,7 @@
 		  		</classpath>
 	    </javac>
 	    <copy todir="${classes-ui}">
-	    	<fileset dir="${src-ui}" includes="**/*.png **/*.xml **/*.xul **/*properties"/>
+	    	<fileset dir="${src-ui}" includes="**/*.png **/*.xml **/*.xul **/*txt **/*properties"/>
 	  	    </copy>
         <!-- embedd the UI definition files in the jar so that webstart will work -->
 	    <copy todir="${classes-ui}/ui">
@@ -195,7 +195,7 @@
 	  <target name="copy-core" depends="compile-core" description="copy images etc from the src-core to the classes-core directory" >
 	  	<echo>Copying core images etc to classes directory...</echo>
 	    <copy todir="${classes-core}">
-	    	<fileset dir="${src-core}" includes="**/*.xml **/*properties"/>
+	    	<fileset dir="${src-core}" includes="**/*.xml **/*.xsl **/*properties"/>
 	  	    </copy>
 	  </target>
 	
@@ -209,7 +209,7 @@
 	  <target name="copy" depends="compile" description="copy images etc to the classes directory" >
 	  	<echo>Copying images etc to classes directory...</echo>
 	    <copy todir="${classes}">
-	    	<fileset dir="${src}" includes="**/*.xml **/*properties"/>
+	    	<fileset dir="${src}" includes="**/*.xml **/*.xsl **/*properties"/>
 	  	    </copy>
 	    <copy todir="${classes}">
 	    	<fileset file="${version.file}"/>
