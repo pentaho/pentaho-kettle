@@ -37,6 +37,9 @@ public class BlackBoxTests extends TestCase {
 		// set the locale to English so that log file comparisons work
 		GlobalMessages.setLocale( new Locale("en-US") );
 		
+		// Keep all log rows for at least 60 minutes as per BaseCluster.java
+		CentralLogStore.init(0, 60);
+		
 		// do not process the output folder, there won't be any tests there
 		File dir = new File("testfiles/blackbox/tests");
 		
