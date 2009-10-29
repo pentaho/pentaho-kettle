@@ -106,47 +106,49 @@ public class AddXML extends BaseStep implements StepInterface
             ValueMetaInterface v = getInputRowMeta().getValueMeta( data.fieldIndexes[i]);
             Object valueData = r[ data.fieldIndexes[i] ];
             
-            String value = formatField(v, valueData, outputField);
-
-            String element = outputField.getElementName();
-            if(element == null || element.length() == 0)
-                element = fieldname;
-            
-            if(element == null || element.length() == 0) {
-                throw new KettleException("XML does not allow empty strings for element names.");
-            }
-            if(outputField.isAttribute() ){
-            	String attributeParentName = outputField.getAttributeParentName();
-            	
-            	Element node;
-            	
-            	if (attributeParentName == null || attributeParentName.length() == 0){
-            		node = root;
-            	}
-            	else{
-            		NodeList nodelist = root.getElementsByTagName(attributeParentName);
-            		if(nodelist.getLength()> 0){
-            			node = (Element)nodelist.item(0);
-            		}
-            		else{
-            			node = root;
-            		}
-            	}
-            	
-            	node.setAttribute(element, value);
-            	
-            }
-            else { /* encode as subnode */
-            	if(!element.equals(meta.getRootNode())){
-	                Element e = xmldoc.createElement(element);
-	                Node n = xmldoc.createTextNode(value);
-	                e.appendChild(n);
-	                root.appendChild(e);
-            	}
-            	else{
-            		Node n = xmldoc.createTextNode(value);
-            		root.appendChild(n);
-            	}
+            if (!meta.isOmitNullValues() || !v.isNull(valueData)) {
+              String value = formatField(v, valueData, outputField);
+  
+              String element = outputField.getElementName();
+              if(element == null || element.length() == 0)
+                  element = fieldname;
+              
+              if(element == null || element.length() == 0) {
+                  throw new KettleException("XML does not allow empty strings for element names.");
+              }
+              if(outputField.isAttribute() ){
+              	String attributeParentName = outputField.getAttributeParentName();
+              	
+              	Element node;
+              	
+              	if (attributeParentName == null || attributeParentName.length() == 0){
+              		node = root;
+              	}
+              	else{
+              		NodeList nodelist = root.getElementsByTagName(attributeParentName);
+              		if(nodelist.getLength()> 0){
+              			node = (Element)nodelist.item(0);
+              		}
+              		else{
+              			node = root;
+              		}
+              	}
+              	
+              	node.setAttribute(element, value);
+              	
+              }
+              else { /* encode as subnode */
+              	if(!element.equals(meta.getRootNode())){
+  	                Element e = xmldoc.createElement(element);
+  	                Node n = xmldoc.createTextNode(value);
+  	                e.appendChild(n);
+  	                root.appendChild(e);
+              	}
+              	else{
+              		Node n = xmldoc.createTextNode(value);
+              		root.appendChild(n);
+              	}
+              }
             }
         }
         
@@ -311,11 +313,7 @@ public class AddXML extends BaseStep implements StepInterface
             return false;
 
         try {
-            if(meta.isOmitNullValues()) {
-              setSerializer(TransformerFactory.newInstance().newTransformer(new StreamSource(AddXML.class.getClassLoader().getResourceAsStream("org/pentaho/di/trans/steps/addxml/RemoveNulls.xsl")))); //$NON-NLS-1$
-            } else {
-              setSerializer(TransformerFactory.newInstance().newTransformer());
-            }
+            setSerializer(TransformerFactory.newInstance().newTransformer());
             setDomImplentation(DocumentBuilderFactory.newInstance().newDocumentBuilder().getDOMImplementation());
 
             if(meta.getEncoding()!=null) {
