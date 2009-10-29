@@ -22,6 +22,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -97,7 +98,7 @@ public class XMLJoin extends BaseStep implements StepInterface
         		}
         	}        	
         	//Throw exception if target field has not been found
-        	if(target_field_id == -1) throw new KettleException(BaseMessages.getString(PKG, "XMLJoin.Exception.FieldNotFound", meta.getTargetXMLfield()));
+        	if(target_field_id == -1) throw new KettleException(BaseMessages.getString(PKG, "XMLJoin.Exception.FieldNotFound", meta.getTargetXMLfield())); //$NON-NLS-1$
         	
         	data.outputRowMeta = data.TargetRowSet.getRowMeta().clone();
         	meta.getFields(data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.TargetRowSet.getRowMeta() }, null, this);
@@ -116,7 +117,7 @@ public class XMLJoin extends BaseStep implements StepInterface
             	if(! meta.isComplexJoin()){
             		data.targetNode = (Node) xpath.evaluate(data.XPathStatement, data.targetDOM, XPathConstants.NODE);
             		if(data.targetNode == null){
-            			throw new KettleXMLException("XPath statement returned no reuslt [" + data.XPathStatement +"]");
+            			throw new KettleXMLException("XPath statement returned no reuslt [" + data.XPathStatement +"]"); //$NON-NLS-1$ //$NON-NLS-2$
             		}
             	}
         	}
@@ -134,23 +135,22 @@ public class XMLJoin extends BaseStep implements StepInterface
         	try{
 	            String strOmitXMLHeader;
 	            if(meta.isOmitXMLHeader()){
-	            	strOmitXMLHeader = "yes";
+	            	strOmitXMLHeader = "yes"; //$NON-NLS-1$
 	            }
 	            else{
-	            	strOmitXMLHeader = "no";
+	            	strOmitXMLHeader = "no"; //$NON-NLS-1$
 	            }
 	            serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, strOmitXMLHeader);
-	            serializer.setOutputProperty(OutputKeys.INDENT, "no");
+	            serializer.setOutputProperty(OutputKeys.INDENT, "no"); //$NON-NLS-1$
 	            StringWriter sw = new StringWriter();
 	            StreamResult resultXML = new StreamResult(sw);
 	            DOMSource source = new DOMSource(data.targetDOM);
 	            serializer.transform(source, resultXML);
 	            
-	            String output = sw.toString();
 	            int outputIndex = data.outputRowMeta.size()-1;
 	            
 	            //send the row to the next steps...
-	        	putRow(data.outputRowMeta, RowDataUtil.addValueData(data.outputRowData, outputIndex, output));
+	            putRow(data.outputRowMeta, RowDataUtil.addValueData(data.outputRowData, outputIndex, sw.toString()));
 	            // finishing up
 	            setOutputDone();
 	            return false;
@@ -171,7 +171,7 @@ public class XMLJoin extends BaseStep implements StepInterface
 	    		}
 	    	}        	
 	    	//Throw exception if source xml field has not been found
-	    	if(data.iSourceXMLField == -1) throw new KettleException(BaseMessages.getString(PKG, "XMLJoin.Exception.FieldNotFound", meta.getSourceXMLfield()));
+	    	if(data.iSourceXMLField == -1) throw new KettleException(BaseMessages.getString(PKG, "XMLJoin.Exception.FieldNotFound", meta.getSourceXMLfield())); //$NON-NLS-1$
         }
         
         if(meta.isComplexJoin() && data.iCompareFieldID == -1){
@@ -183,7 +183,7 @@ public class XMLJoin extends BaseStep implements StepInterface
 	    		}
 	    	}        	
 	    	//Throw exception if source xml field has not been found
-	    	if(data.iCompareFieldID == -1) throw new KettleException(BaseMessages.getString(PKG, "XMLJoin.Exception.FieldNotFound", meta.getJoinCompareField()));  	
+	    	if(data.iCompareFieldID == -1) throw new KettleException(BaseMessages.getString(PKG, "XMLJoin.Exception.FieldNotFound", meta.getJoinCompareField()));  	 //$NON-NLS-1$
         }
         
         //get XML tags to join
@@ -206,12 +206,12 @@ public class XMLJoin extends BaseStep implements StepInterface
 	    	
 	    	if(meta.isComplexJoin()){
 	    		String strCompareValue = rJoinSource[data.iCompareFieldID].toString();  
-	    		String strXPathStatement = data.XPathStatement.replace("?", strCompareValue);
+	    		String strXPathStatement = data.XPathStatement.replace("?", strCompareValue); //$NON-NLS-1$
 	  
 	    		try{
 	    			data.targetNode = (Node) xpath.evaluate(strXPathStatement, data.targetDOM, XPathConstants.NODE);
 	    			if(data.targetNode == null){
-            			throw new KettleXMLException("XPath statement returned no reuslt [" + strXPathStatement +"]");
+            			throw new KettleXMLException("XPath statement returned no reuslt [" + strXPathStatement +"]"); //$NON-NLS-1$ //$NON-NLS-2$
             		}else{
             			data.targetNode.appendChild(node);
             		}
@@ -238,13 +238,17 @@ public class XMLJoin extends BaseStep implements StepInterface
         
 
        try {
-    	   setSerializer(TransformerFactory.newInstance().newTransformer());
+         if(meta.isOmitNullValues()) {
+           setSerializer(TransformerFactory.newInstance().newTransformer(new StreamSource(XMLJoin.class.getClassLoader().getResourceAsStream("org/pentaho/di/trans/steps/xmljoin/RemoveNulls.xsl")))); //$NON-NLS-1$
+         } else {
+           setSerializer(TransformerFactory.newInstance().newTransformer());
+         }
     	   if(meta.getEncoding()!=null) {
            	getSerializer().setOutputProperty(OutputKeys.ENCODING, meta.getEncoding());
            }
            
            if(meta.isOmitXMLHeader()) {
-               getSerializer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+               getSerializer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes"); //$NON-NLS-1$
            }
            
     	   this.setSafeModeEnabled(false);
@@ -285,13 +289,13 @@ public class XMLJoin extends BaseStep implements StepInterface
     	//BaseStep.runStepThread(this, meta, data);
 		try
         {
-            logBasic("Starting to run...");
+            logBasic("Starting to run..."); //$NON-NLS-1$
             while (processRow(meta, data) && !isStopped());
             
         }
         catch(Exception e)
         {
-            logError("Unexpected error : ");
+            logError("Unexpected error : "); //$NON-NLS-1$
             logError(Const.getStackTracker(e));
             setErrors(1);
             stopAll();

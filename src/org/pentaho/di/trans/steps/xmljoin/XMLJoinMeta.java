@@ -85,6 +85,9 @@ public class XMLJoinMeta extends BaseStepMeta  implements StepMetaInterface
     
     /** Flag: execute complex join*/
     private  boolean omitXMLHeader;
+    
+    /** Flag: omit null values from result xml */
+    private boolean omitNullValues;
 
     public XMLJoinMeta()
     {
@@ -107,21 +110,22 @@ public class XMLJoinMeta extends BaseStepMeta  implements StepMetaInterface
     {
         try
         {
-            valueXMLfield    = XMLHandler.getTagValue(stepnode, "valueXMLfield");
-            targetXMLstep    = XMLHandler.getTagValue(stepnode, "targetXMLstep");
-            targetXMLfield   = XMLHandler.getTagValue(stepnode, "targetXMLfield");
-            sourceXMLstep    = XMLHandler.getTagValue(stepnode, "sourceXMLstep");
-            sourceXMLfield   = XMLHandler.getTagValue(stepnode, "sourceXMLfield");
-            targetXPath      = XMLHandler.getTagValue(stepnode, "targetXPath");
-            joinCompareField = XMLHandler.getTagValue(stepnode, "joinCompareField");
-            encoding         = XMLHandler.getTagValue(stepnode, "encoding");
-            complexJoin    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "complexJoin"));
-            omitXMLHeader    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "omitXMLHeader"));
+            valueXMLfield    = XMLHandler.getTagValue(stepnode, "valueXMLfield"); //$NON-NLS-1$
+            targetXMLstep    = XMLHandler.getTagValue(stepnode, "targetXMLstep"); //$NON-NLS-1$
+            targetXMLfield   = XMLHandler.getTagValue(stepnode, "targetXMLfield"); //$NON-NLS-1$
+            sourceXMLstep    = XMLHandler.getTagValue(stepnode, "sourceXMLstep"); //$NON-NLS-1$
+            sourceXMLfield   = XMLHandler.getTagValue(stepnode, "sourceXMLfield"); //$NON-NLS-1$
+            targetXPath      = XMLHandler.getTagValue(stepnode, "targetXPath"); //$NON-NLS-1$
+            joinCompareField = XMLHandler.getTagValue(stepnode, "joinCompareField"); //$NON-NLS-1$
+            encoding         = XMLHandler.getTagValue(stepnode, "encoding"); //$NON-NLS-1$
+            complexJoin    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "complexJoin")); //$NON-NLS-1$ //$NON-NLS-2$
+            omitXMLHeader    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "omitXMLHeader")); //$NON-NLS-1$ //$NON-NLS-2$
+            omitNullValues   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "omitNullValues")); //$NON-NLS-1$ //$NON-NLS-2$
 
         }
         catch(Exception e)
         {
-            throw new KettleXMLException("Unable to load step info from XML", e);
+            throw new KettleXMLException("Unable to load step info from XML", e); //$NON-NLS-1$
         }
     }
 
@@ -142,16 +146,17 @@ public class XMLJoinMeta extends BaseStepMeta  implements StepMetaInterface
     {
         StringBuffer retval=new StringBuffer(500);
         
-        retval.append("    ").append(XMLHandler.addTagValue("valueXMLField",  valueXMLfield));
-        retval.append("    ").append(XMLHandler.addTagValue("targetXMLstep",  targetXMLstep));
-        retval.append("    ").append(XMLHandler.addTagValue("targetXMLfield",  targetXMLfield));
-        retval.append("    ").append(XMLHandler.addTagValue("sourceXMLstep",  sourceXMLstep));
-        retval.append("    ").append(XMLHandler.addTagValue("sourceXMLfield",  sourceXMLfield));
-        retval.append("    ").append(XMLHandler.addTagValue("complexJoin",  complexJoin));
-        retval.append("    ").append(XMLHandler.addTagValue("joinCompareField",  joinCompareField));
-        retval.append("    ").append(XMLHandler.addTagValue("targetXPath",  targetXPath));
-        retval.append("    ").append(XMLHandler.addTagValue("encoding",  encoding));
-        retval.append("    ").append(XMLHandler.addTagValue("omitXMLHeader",  omitXMLHeader));
+        retval.append("    ").append(XMLHandler.addTagValue("valueXMLField",  valueXMLfield)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("targetXMLstep",  targetXMLstep)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("targetXMLfield",  targetXMLfield)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("sourceXMLstep",  sourceXMLstep)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("sourceXMLfield",  sourceXMLfield)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("complexJoin",  complexJoin)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("joinCompareField",  joinCompareField)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("targetXPath",  targetXPath)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("encoding",  encoding)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("omitXMLHeader",  omitXMLHeader)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("omitNullValues",  omitNullValues)); //$NON-NLS-1$ //$NON-NLS-2$
 
         return retval.toString();
     }
@@ -159,22 +164,23 @@ public class XMLJoinMeta extends BaseStepMeta  implements StepMetaInterface
     public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
         try
         {
-            targetXMLstep   =      rep.getStepAttributeString (id_step, "targetXMLstep");
-            targetXMLfield   =      rep.getStepAttributeString (id_step, "targetXMLfield");
-            sourceXMLstep   =      rep.getStepAttributeString (id_step, "sourceXMLstep");
-            sourceXMLfield   =      rep.getStepAttributeString (id_step, "sourceXMLfield");
-            targetXPath   =      rep.getStepAttributeString (id_step, "targetXPath");
-            complexJoin        =      rep.getStepAttributeBoolean(id_step, "complexJoin");
-            joinCompareField   =      rep.getStepAttributeString (id_step, "joinCompareField");
-            valueXMLfield     =      rep.getStepAttributeString (id_step, "valueXMLfield");
-            encoding        =      rep.getStepAttributeString (id_step, "encoding");
-            omitXMLHeader        =      rep.getStepAttributeBoolean(id_step, "omitXMLHeader ");
+            targetXMLstep   =      rep.getStepAttributeString (id_step, "targetXMLstep"); //$NON-NLS-1$
+            targetXMLfield   =      rep.getStepAttributeString (id_step, "targetXMLfield"); //$NON-NLS-1$
+            sourceXMLstep   =      rep.getStepAttributeString (id_step, "sourceXMLstep"); //$NON-NLS-1$
+            sourceXMLfield   =      rep.getStepAttributeString (id_step, "sourceXMLfield"); //$NON-NLS-1$
+            targetXPath   =      rep.getStepAttributeString (id_step, "targetXPath"); //$NON-NLS-1$
+            complexJoin        =      rep.getStepAttributeBoolean(id_step, "complexJoin"); //$NON-NLS-1$
+            joinCompareField   =      rep.getStepAttributeString (id_step, "joinCompareField"); //$NON-NLS-1$
+            valueXMLfield     =      rep.getStepAttributeString (id_step, "valueXMLfield"); //$NON-NLS-1$
+            encoding        =      rep.getStepAttributeString (id_step, "encoding"); //$NON-NLS-1$
+            omitXMLHeader        =      rep.getStepAttributeBoolean(id_step, "omitXMLHeader"); //$NON-NLS-1$
+            omitNullValues   =  rep.getStepAttributeBoolean(id_step, "omitNullValues"); //$NON-NLS-1$
             
       
         }
         catch(Exception e)
         {
-            throw new KettleException("Unexpected error reading step information from the repository", e);
+            throw new KettleException("Unexpected error reading step information from the repository", e); //$NON-NLS-1$
         }
     }
 
@@ -182,20 +188,21 @@ public class XMLJoinMeta extends BaseStepMeta  implements StepMetaInterface
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "valueXMLfield", valueXMLfield);
-            rep.saveStepAttribute(id_transformation, id_step, "targetXMLstep", targetXMLstep);
-            rep.saveStepAttribute(id_transformation, id_step, "targetXMLfield", targetXMLfield);
-            rep.saveStepAttribute(id_transformation, id_step, "sourceXMLstep", sourceXMLstep);
-            rep.saveStepAttribute(id_transformation, id_step, "sourceXMLfield", sourceXMLfield);
-            rep.saveStepAttribute(id_transformation, id_step, "complexJoin", complexJoin);            
-            rep.saveStepAttribute(id_transformation, id_step, "targetXPath", targetXPath);
-            rep.saveStepAttribute(id_transformation, id_step, "joinCompareField", joinCompareField);
-            rep.saveStepAttribute(id_transformation, id_step, "encoding", encoding);
-            rep.saveStepAttribute(id_transformation, id_step, "omitXMLHeader", omitXMLHeader);   
+            rep.saveStepAttribute(id_transformation, id_step, "valueXMLfield", valueXMLfield); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "targetXMLstep", targetXMLstep); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "targetXMLfield", targetXMLfield); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "sourceXMLstep", sourceXMLstep); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "sourceXMLfield", sourceXMLfield); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "complexJoin", complexJoin); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "targetXPath", targetXPath); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "joinCompareField", joinCompareField); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "encoding", encoding); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "omitXMLHeader", omitXMLHeader); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "omitNullValues", omitNullValues); //$NON-NLS-1$
         }
         catch(Exception e)
         {
-            throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
+            throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -204,45 +211,45 @@ public class XMLJoinMeta extends BaseStepMeta  implements StepMetaInterface
     	CheckResult cr;
         //checks for empty field which are required 
     	if(this.targetXMLstep == null || this.targetXMLstep.length() == 0){
-    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXMLStepNotSpecified"), stepMeta);
+    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXMLStepNotSpecified"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
     	}else{
-    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXMLStepSpecified"), stepMeta);
+    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXMLStepSpecified"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);    		
     	}
     	if(this.targetXMLfield == null || this.targetXMLfield.length()== 0){
-    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXMLFieldNotSpecified"), stepMeta);
+    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXMLFieldNotSpecified"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
     	}else{
-    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXMLFieldSpecified"), stepMeta);
+    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXMLFieldSpecified"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
     	}
     	if(this.sourceXMLstep == null || this.sourceXMLstep.length() == 0){
-    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.SourceXMLStepNotSpecified"), stepMeta);
+    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.SourceXMLStepNotSpecified"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
     	}else{
-    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.SourceXMLStepSpecified"), stepMeta);
+    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.SourceXMLStepSpecified"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
     	}
     	if(this.sourceXMLfield == null || this.sourceXMLfield.length() == 0){
-    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.SourceXMLFieldNotSpecified"), stepMeta);
+    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.SourceXMLFieldNotSpecified"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
     	}else{
-    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.SourceXMLFieldSpecified"), stepMeta);
+    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.SourceXMLFieldSpecified"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
     	}
     	if(this.valueXMLfield == null || this.valueXMLfield.length() == 0){
-    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.ResultFieldNotSpecified"), stepMeta);
+    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.ResultFieldNotSpecified"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
     	}else{
-    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.ResultFieldSpecified"), stepMeta);
+    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.ResultFieldSpecified"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
     	}
     	if(this.targetXPath == null || this.targetXPath.length() == 0){
-    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXPathNotSpecified"), stepMeta);
+    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXPathNotSpecified"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
     	}else{
-    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXPathSpecified"), stepMeta);
+    		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXPathSpecified"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
     	}
     		        
@@ -254,28 +261,28 @@ public class XMLJoinMeta extends BaseStepMeta  implements StepMetaInterface
             for(int i=0; i< input.length; i++){     	
             	if(this.targetXMLstep != null && this.targetXMLstep.equals(input[i])){
             		targetStepFound = true;
-            		cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXMLStepFound", this.targetXMLstep), stepMeta);
+            		cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXMLStepFound", this.targetXMLstep), stepMeta); //$NON-NLS-1$
                     remarks.add(cr);
             	}
             	if(this.sourceXMLstep != null && this.sourceXMLstep.equals(input[i])){
             		sourceStepFound = true;
-            		cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.SourceXMLStepFound", this.sourceXMLstep), stepMeta);
+            		cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLJoin.CheckResult.SourceXMLStepFound", this.sourceXMLstep), stepMeta); //$NON-NLS-1$
                     remarks.add(cr);
             	}
             }
             
             if(!targetStepFound){
-            	cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXMLStepNotFound",this.targetXMLstep), stepMeta);
+            	cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.TargetXMLStepNotFound",this.targetXMLstep), stepMeta); //$NON-NLS-1$
     			remarks.add(cr);
             }
             if(!sourceStepFound){
-            	cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.SourceXMLStepNotFound",this.sourceXMLstep), stepMeta);
+            	cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.SourceXMLStepNotFound",this.sourceXMLstep), stepMeta); //$NON-NLS-1$
     			remarks.add(cr);
             }            
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.ExpectedInputError"), stepMeta);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLJoin.CheckResult.ExpectedInputError"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
     }
@@ -397,7 +404,21 @@ public class XMLJoinMeta extends BaseStepMeta  implements StepMetaInterface
 		this.omitXMLHeader = omitXMLHeader;
 	}
 
-	public String getEncoding()
+	public void setOmitNullValues(boolean omitNullValues) {
+    
+        this.omitNullValues = omitNullValues;
+      
+  }
+
+
+  public boolean isOmitNullValues() {
+    
+        return omitNullValues;
+      
+  }
+
+
+  public String getEncoding()
     {
         return encoding;
     }

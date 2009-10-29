@@ -12,6 +12,8 @@
 
 package org.pentaho.di.trans.steps.addxml;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
@@ -24,6 +26,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -38,11 +41,13 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.xmljoin.XMLJoin;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Converts input rows to one or more XML files.
@@ -93,7 +98,7 @@ public class AddXML extends BaseStep implements StepInterface
         		data.fieldIndexes[i] = getInputRowMeta().indexOfValue(meta.getOutputFields()[i].getFieldName());
         		if (data.fieldIndexes[i]<0) 
         		{
-        			throw new KettleException(BaseMessages.getString(PKG, "AddXML.Exception.FieldNotFound"));
+        			throw new KettleException(BaseMessages.getString(PKG, "AddXML.Exception.FieldNotFound")); //$NON-NLS-1$
         		}
         	}
         }
@@ -115,7 +120,7 @@ public class AddXML extends BaseStep implements StepInterface
                 element = fieldname;
             
             if(element == null || element.length() == 0) {
-                throw new KettleException("XML does not allow empty strings for element names.");
+                throw new KettleException("XML does not allow empty strings for element names."); //$NON-NLS-1$
             }
             if(outputField.isAttribute() ){
             	String attributeParentName = outputField.getAttributeParentName();
@@ -157,9 +162,21 @@ public class AddXML extends BaseStep implements StepInterface
         try 
         {
             this.getSerializer().transform(domSource, new StreamResult(sw));
+            
+//            if(meta.isOmitNullValues()) {
+//              // Remove empty elements from the xml result
+//              Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(sw.toString().getBytes()));
+//              Element rootElement = doc.getDocumentElement();
+//              AddXML.removeEmptyChildNodes(rootElement);
+//
+//              sw = new StringWriter();
+//              serializer.transform(new DOMSource(doc), new StreamResult(sw));
+//            }
         } catch (TransformerException e) {
-            throw new KettleException(e);
-        }
+          throw new KettleException(e);
+        } catch (Exception e) {
+          throw new KettleException(e);            
+        } 
 
         Object[] outputRowData = RowDataUtil.addValueData(r, getInputRowMeta().size(), sw.toString());
         
@@ -167,17 +184,49 @@ public class AddXML extends BaseStep implements StepInterface
         
         return true;
     }
+    
+//    /**
+//     * Remove all empty nodes from the xml. An empty node is a node
+//     * that has no attributes, no value and no child nodes.
+//     * 
+//     * @param el The root element from which to scrub
+//     */
+//    private static void removeEmptyChildNodes(Node n) {
+//      while( n != null) {
+//        NodeList nl = n.getChildNodes();
+//
+//        // Iterate through the child nodes and remove the empty ones
+//        for(int i = 0; i < nl.getLength(); i++) {
+//          Node c = nl.item(i);
+//          
+//          // Test the child node to see if it is empty
+//          if(!c.hasAttributes() && !c.hasChildNodes() && (c.getNodeValue() == null)) {
+//            n.removeChild(c);
+//          } else if(c.hasChildNodes()) {
+//            // If the child node has its own children, remove the empty child nodes from it
+//            AddXML.removeEmptyChildNodes(c);
+//            
+//            // Check to see if the child node is now empty
+//            if(!c.hasAttributes() && !c.hasChildNodes() && (c.getNodeValue() == null)) {
+//              n.removeChild(c);
+//            }
+//          }
+//        }
+//        
+//        n = n.getNextSibling();
+//      }
+//    }
 
     private String formatField(ValueMetaInterface valueMeta, Object valueData, XMLField field) throws KettleValueException
     {
-        String retval="";
+        String retval=""; //$NON-NLS-1$
         if(field == null)
-            return "";
+            return ""; //$NON-NLS-1$
 
         if(valueMeta == null || valueMeta.isNull(valueData)) 
         {
             String defaultNullValue = field.getNullString();
-            return Const.isEmpty(defaultNullValue) ? "" : defaultNullValue ;
+            return Const.isEmpty(defaultNullValue) ? "" : defaultNullValue ; //$NON-NLS-1$
         }
 
         if (valueMeta.isNumeric())
@@ -287,7 +336,7 @@ public class AddXML extends BaseStep implements StepInterface
             {                   
                 try 
                 {
-                    retval=new String(valueMeta.getBinary(valueData), "UTF-8");
+                    retval=new String(valueMeta.getBinary(valueData), "UTF-8"); //$NON-NLS-1$
                 } 
                 catch (UnsupportedEncodingException e) 
                 {
@@ -313,7 +362,11 @@ public class AddXML extends BaseStep implements StepInterface
             return false;
 
         try {
-            setSerializer(TransformerFactory.newInstance().newTransformer());
+            if(meta.isOmitNullValues()) {
+              setSerializer(TransformerFactory.newInstance().newTransformer(new StreamSource(AddXML.class.getClassLoader().getResourceAsStream("org/pentaho/di/trans/steps/addxml/RemoveNulls.xsl")))); //$NON-NLS-1$
+            } else {
+              setSerializer(TransformerFactory.newInstance().newTransformer());
+            }
             setDomImplentation(DocumentBuilderFactory.newInstance().newDocumentBuilder().getDOMImplementation());
 
             if(meta.getEncoding()!=null) {
@@ -321,7 +374,7 @@ public class AddXML extends BaseStep implements StepInterface
             }
             
             if(meta.isOmitXMLheader()) {
-                getSerializer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+                getSerializer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes"); //$NON-NLS-1$
             }
         } catch (TransformerConfigurationException e) {
             return false;

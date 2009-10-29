@@ -27,64 +27,62 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * @author Matt
  * @since 22-jan-2005
  */
-public class XMLOutputData extends BaseStepData implements StepDataInterface
-{
-	public int splitnr;
+public class XMLOutputData extends BaseStepData implements StepDataInterface {
+  public int splitnr;
 
-	public Object[] headerrow;
+  public Object[] headerrow;
 
-	public int fieldnrs[];
+  public int fieldnrs[];
 
-	public NumberFormat nf;
+  public NumberFormat nf;
 
-	public DecimalFormat df;
+  public DecimalFormat df;
 
-	public RowMetaInterface formatRowMeta;
+  public RowMetaInterface formatRowMeta;
 
-	public RowMetaInterface outputRowMeta;
+  public RowMetaInterface outputRowMeta;
 
-	public DecimalFormatSymbols dfs;
+  public DecimalFormatSymbols dfs;
 
-	public SimpleDateFormat daf;
+  public SimpleDateFormat daf;
 
-	public DateFormatSymbols dafs;
+  public DateFormatSymbols dafs;
 
-	public ZipOutputStream zip;
+  public ZipOutputStream zip;
 
-	public OutputStreamWriter writer;
+  public OutputStreamWriter writer;
 
-	public DecimalFormat defaultDecimalFormat;
+  public DecimalFormat defaultDecimalFormat;
 
-	public DecimalFormatSymbols defaultDecimalFormatSymbols;
+  public DecimalFormatSymbols defaultDecimalFormatSymbols;
 
-	public SimpleDateFormat defaultDateFormat;
+  public SimpleDateFormat defaultDateFormat;
 
-	public DateFormatSymbols defaultDateFormatSymbols;
-	
-	public boolean OpenedNewFile;
+  public DateFormatSymbols defaultDateFormatSymbols;
 
-	/**
-	 * 
-	 */
-	public XMLOutputData()
-	{
-		super();
+  public boolean OpenedNewFile;
 
-		nf = NumberFormat.getInstance();
-		df = (DecimalFormat) nf;
-		dfs = new DecimalFormatSymbols();
+  /**
+   * 
+   */
+  public XMLOutputData() {
+    super();
 
-		defaultDecimalFormat = (DecimalFormat) NumberFormat.getInstance();
-		defaultDecimalFormatSymbols = new DecimalFormatSymbols();
+    nf = NumberFormat.getInstance();
+    df = (DecimalFormat) nf;
+    dfs = new DecimalFormatSymbols();
 
-		daf = new SimpleDateFormat();
-		dafs = new DateFormatSymbols();
+    defaultDecimalFormat = (DecimalFormat) NumberFormat.getInstance();
+    defaultDecimalFormatSymbols = new DecimalFormatSymbols();
 
-		defaultDateFormat = new SimpleDateFormat();
-		defaultDateFormatSymbols = new DateFormatSymbols();
-		
-		OpenedNewFile=false;
+    daf = new SimpleDateFormat();
+    dafs = new DateFormatSymbols();
 
-	}
+    defaultDateFormat = new SimpleDateFormat();
+    defaultDateFormatSymbols = new DateFormatSymbols();
+
+    OpenedNewFile = false;
+
+  }
 
 }

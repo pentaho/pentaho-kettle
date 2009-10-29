@@ -108,6 +108,10 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 	private Button       wZipped;
 	private FormData     fdlZipped, fdZipped;
 	
+	private Label        wlOmitNullValues;
+	private Button       wOmitNullValues;
+	private FormData     fdlOmitNullValues, fdOmitNullValues;
+	
     private Label        wlEncoding;
     private CCombo       wEncoding;
     private FormData     fdlEncoding, fdEncoding;
@@ -638,6 +642,30 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdSplitEvery.top  = new FormAttachment(wRepeatElement, margin);
 		fdSplitEvery.right= new FormAttachment(100, 0);
 		wSplitEvery.setLayoutData(fdSplitEvery);
+		
+		wlOmitNullValues=new Label(wContentComp, SWT.RIGHT);
+    wlOmitNullValues.setText(BaseMessages.getString(PKG, "XMLOutputDialog.OmitNullValues.Label"));
+    props.setLook(wlOmitNullValues);
+    fdlOmitNullValues=new FormData();
+    fdlOmitNullValues.left = new FormAttachment(0, 0);
+    fdlOmitNullValues.top  = new FormAttachment(wSplitEvery, margin);
+    fdlOmitNullValues.right= new FormAttachment(middle, -margin);
+    wlOmitNullValues.setLayoutData(fdlOmitNullValues);
+    wOmitNullValues=new Button(wContentComp, SWT.CHECK );
+    props.setLook(wOmitNullValues);
+    fdOmitNullValues=new FormData();
+    fdOmitNullValues.left = new FormAttachment(middle, 0);
+    fdOmitNullValues.top  = new FormAttachment(wSplitEvery, margin);
+    fdOmitNullValues.right= new FormAttachment(100, 0);
+    wOmitNullValues.setLayoutData(fdOmitNullValues);
+    wOmitNullValues.addSelectionListener(new SelectionAdapter() 
+      {
+        public void widgetSelected(SelectionEvent e) 
+        {
+          input.setChanged();
+        }
+      }
+    );
 
 		fdContentComp = new FormData();
 		fdContentComp.left  = new FormAttachment(0, 0);
@@ -873,6 +901,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		wSplitEvery.setText(""+input.getSplitEvery());
 
 		wZipped.setSelection(input.isZipped());
+		wOmitNullValues.setSelection(input.isOmitNullValues());
 		wAddDate.setSelection(input.isDateInFilename());
 		wAddTime.setSelection(input.isTimeInFilename());
 		wAddStepnr.setSelection(input.isStepNrInFilename());
@@ -945,6 +974,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		tfoi.setTimeInFilename( wAddTime.getSelection() );
 		tfoi.setAddToResultFiles( wAddToResult.getSelection() );
 		tfoi.setZipped( wZipped.getSelection() );
+		tfoi.setOmitNullValues(wOmitNullValues.getSelection());
 
 		//Table table = wFields.table;
 		

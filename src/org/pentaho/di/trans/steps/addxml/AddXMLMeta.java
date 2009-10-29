@@ -58,6 +58,9 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
 
     /** Flag: ommit the XML Header*/
     private  boolean omitXMLheader;
+    
+    /** Flag: omit null elements from the xml result */
+    private  boolean omitNullValues;
 
     /** The encoding to use for reading: null or empty string means system default encoding */
     private String encoding;
@@ -97,6 +100,22 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
     public void setOmitXMLheader(boolean omitXMLheader)
     {
         this.omitXMLheader = omitXMLheader;
+    }
+
+
+
+    public void setOmitNullValues(boolean omitNullValues) {
+      
+          this.omitNullValues = omitNullValues;
+        
+    }
+
+
+
+    public boolean isOmitNullValues() {
+      
+          return omitNullValues;
+        
     }
 
 
@@ -145,49 +164,51 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
     {
         try
         {
-            encoding         = XMLHandler.getTagValue(stepnode, "encoding");
-            valueName      = XMLHandler.getTagValue(stepnode, "valueName");
-            rootNode    = XMLHandler.getTagValue(stepnode, "xml_repeat_element");
+            encoding         = XMLHandler.getTagValue(stepnode, "encoding"); //$NON-NLS-1$
+            valueName      = XMLHandler.getTagValue(stepnode, "valueName"); //$NON-NLS-1$
+            rootNode    = XMLHandler.getTagValue(stepnode, "xml_repeat_element"); //$NON-NLS-1$
 
-            omitXMLheader    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "omitXMLheader"));
+            omitXMLheader    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "omitXMLheader"));   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+            omitNullValues    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "omitNullValues"));   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
             
-            Node fields = XMLHandler.getSubNode(stepnode, "fields");
-            int nrfields= XMLHandler.countNodes(fields, "field");
+            Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
+            int nrfields= XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
     
             allocate(nrfields);
             
             for (int i=0;i<nrfields;i++)
             {
-                Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
+                Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
             
                 outputFields[i] = new XMLField();
-                outputFields[i].setFieldName( XMLHandler.getTagValue(fnode, "name") );
-                outputFields[i].setElementName( XMLHandler.getTagValue(fnode, "element") );
-                outputFields[i].setType( XMLHandler.getTagValue(fnode, "type") );
-                outputFields[i].setFormat( XMLHandler.getTagValue(fnode, "format") );
-                outputFields[i].setCurrencySymbol( XMLHandler.getTagValue(fnode, "currency") );
-                outputFields[i].setDecimalSymbol( XMLHandler.getTagValue(fnode, "decimal") );
-                outputFields[i].setGroupingSymbol( XMLHandler.getTagValue(fnode, "group") );
-                outputFields[i].setNullString( XMLHandler.getTagValue(fnode, "nullif") );
-                outputFields[i].setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
-                outputFields[i].setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
-                outputFields[i].setAttribute( "Y".equalsIgnoreCase( XMLHandler.getTagValue(fnode, "attribute") ) );
-                outputFields[i].setAttributeParentName( XMLHandler.getTagValue(fnode, "attributeParentName") );
+                outputFields[i].setFieldName( XMLHandler.getTagValue(fnode, "name") ); //$NON-NLS-1$
+                outputFields[i].setElementName( XMLHandler.getTagValue(fnode, "element") ); //$NON-NLS-1$
+                outputFields[i].setType( XMLHandler.getTagValue(fnode, "type") ); //$NON-NLS-1$
+                outputFields[i].setFormat( XMLHandler.getTagValue(fnode, "format") ); //$NON-NLS-1$
+                outputFields[i].setCurrencySymbol( XMLHandler.getTagValue(fnode, "currency") ); //$NON-NLS-1$
+                outputFields[i].setDecimalSymbol( XMLHandler.getTagValue(fnode, "decimal") ); //$NON-NLS-1$
+                outputFields[i].setGroupingSymbol( XMLHandler.getTagValue(fnode, "group") ); //$NON-NLS-1$
+                outputFields[i].setNullString( XMLHandler.getTagValue(fnode, "nullif") ); //$NON-NLS-1$
+                outputFields[i].setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) ); //$NON-NLS-1$
+                outputFields[i].setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) ); //$NON-NLS-1$
+                outputFields[i].setAttribute( "Y".equalsIgnoreCase( XMLHandler.getTagValue(fnode, "attribute") ) ); //$NON-NLS-1$ //$NON-NLS-2$
+                outputFields[i].setAttributeParentName( XMLHandler.getTagValue(fnode, "attributeParentName") ); //$NON-NLS-1$
             }
         }
         catch(Exception e)
         {
-            throw new KettleXMLException("Unable to load step info from XML", e);
+            throw new KettleXMLException("Unable to load step info from XML", e); //$NON-NLS-1$
         }
     }
 
     public void setDefault()
     {
         omitXMLheader    = true;
+        omitNullValues   = false;
         encoding         = Const.XML_ENCODING;
         
-        valueName        = "xmlvaluename";
-        rootNode         = "Row";
+        valueName        = "xmlvaluename"; //$NON-NLS-1$
+        rootNode         = "Row"; //$NON-NLS-1$
 
 
         int nrfields=0;
@@ -198,18 +219,18 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
         {
             outputFields[i] = new XMLField();
 
-            outputFields[i].setFieldName( "field"+i );              
-            outputFields[i].setElementName( "field"+i );              
-            outputFields[i].setType( "Number" );
-            outputFields[i].setFormat( " 0,000,000.00;-0,000,000.00" );
-            outputFields[i].setCurrencySymbol( "" );
-            outputFields[i].setDecimalSymbol( "," );
-            outputFields[i].setGroupingSymbol(  "." );
-            outputFields[i].setNullString( "" );
+            outputFields[i].setFieldName( "field"+i ); //$NON-NLS-1$
+            outputFields[i].setElementName( "field"+i ); //$NON-NLS-1$
+            outputFields[i].setType( "Number" ); //$NON-NLS-1$
+            outputFields[i].setFormat( " 0,000,000.00;-0,000,000.00" ); //$NON-NLS-1$
+            outputFields[i].setCurrencySymbol( "" ); //$NON-NLS-1$
+            outputFields[i].setDecimalSymbol( "," ); //$NON-NLS-1$
+            outputFields[i].setGroupingSymbol(  "." ); //$NON-NLS-1$
+            outputFields[i].setNullString( "" ); //$NON-NLS-1$
             outputFields[i].setLength( -1 );
             outputFields[i].setPrecision( -1 );
             outputFields[i].setAttribute( false );
-            outputFields[i].setElementName( "field"+i ); 
+            outputFields[i].setElementName( "field"+i ); //$NON-NLS-1$ 
         }
     }
     
@@ -224,37 +245,38 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
     {
         StringBuffer retval=new StringBuffer(500);
         
-        retval.append("    ").append(XMLHandler.addTagValue("encoding",  encoding));
-        retval.append("    ").append(XMLHandler.addTagValue("valueName",  valueName));
-        retval.append("    ").append(XMLHandler.addTagValue("xml_repeat_element",  rootNode));
+        retval.append("    ").append(XMLHandler.addTagValue("encoding",  encoding)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("valueName",  valueName)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("xml_repeat_element",  rootNode)); //$NON-NLS-1$ //$NON-NLS-2$
 
-        retval.append("    <file>").append(Const.CR);
-        retval.append("      ").append(XMLHandler.addTagValue("omitXMLheader", omitXMLheader));
-        retval.append("    </file>").append(Const.CR);
-        retval.append("    <fields>").append(Const.CR);
+        retval.append("    <file>").append(Const.CR); //$NON-NLS-1$
+        retval.append("      ").append(XMLHandler.addTagValue("omitXMLheader", omitXMLheader)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("omitNullValues", omitNullValues)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    </file>").append(Const.CR); //$NON-NLS-1$
+        retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
         for (int i=0;i<outputFields.length;i++)
         {
             XMLField field = outputFields[i];
             
             if (field.getFieldName()!=null && field.getFieldName().length()!=0)
             {
-                retval.append("      <field>").append(Const.CR);
-                retval.append("        ").append(XMLHandler.addTagValue("name",      field.getFieldName()));
-                retval.append("        ").append(XMLHandler.addTagValue("element",   field.getElementName()));
-                retval.append("        ").append(XMLHandler.addTagValue("type",      field.getTypeDesc()));
-                retval.append("        ").append(XMLHandler.addTagValue("format",    field.getFormat()));
-                retval.append("        ").append(XMLHandler.addTagValue("currency",  field.getCurrencySymbol()));
-                retval.append("        ").append(XMLHandler.addTagValue("decimal",   field.getDecimalSymbol()));
-                retval.append("        ").append(XMLHandler.addTagValue("group",     field.getGroupingSymbol()));
-                retval.append("        ").append(XMLHandler.addTagValue("nullif",    field.getNullString()));
-                retval.append("        ").append(XMLHandler.addTagValue("length",    field.getLength()));
-                retval.append("        ").append(XMLHandler.addTagValue("precision", field.getPrecision()));
-                retval.append("        ").append(XMLHandler.addTagValue("attribute", field.isAttribute()));
-                retval.append("        ").append(XMLHandler.addTagValue("attributeParentName",   field.getAttributeParentName()));
-                retval.append("        </field>").append(Const.CR);
+                retval.append("      <field>").append(Const.CR); //$NON-NLS-1$
+                retval.append("        ").append(XMLHandler.addTagValue("name",      field.getFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("element",   field.getElementName())); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("type",      field.getTypeDesc())); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("format",    field.getFormat())); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("currency",  field.getCurrencySymbol())); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("decimal",   field.getDecimalSymbol())); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("group",     field.getGroupingSymbol())); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("nullif",    field.getNullString())); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("length",    field.getLength())); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("precision", field.getPrecision())); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("attribute", field.isAttribute())); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("attributeParentName",   field.getAttributeParentName())); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
             }
         }
-        retval.append("    </fields>"+Const.CR);
+        retval.append("    </fields>"+Const.CR); //$NON-NLS-1$
 
         return retval.toString();
     }
@@ -262,13 +284,14 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
     public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
         try
         {
-            encoding        =      rep.getStepAttributeString (id_step, "encoding");
-            valueName     =      rep.getStepAttributeString (id_step, "valueName");
-            rootNode   =      rep.getStepAttributeString (id_step, "xml_repeat_element");
+            encoding        =      rep.getStepAttributeString (id_step, "encoding"); //$NON-NLS-1$
+            valueName     =      rep.getStepAttributeString (id_step, "valueName"); //$NON-NLS-1$
+            rootNode   =      rep.getStepAttributeString (id_step, "xml_repeat_element"); //$NON-NLS-1$
             
-            omitXMLheader          =      rep.getStepAttributeBoolean(id_step, "omitXMLheader");
+            omitXMLheader          =      rep.getStepAttributeBoolean(id_step, "omitXMLheader"); //$NON-NLS-1$
+            omitNullValues         =      rep.getStepAttributeBoolean(id_step, "omitNullValues"); //$NON-NLS-1$
     
-            int nrfields = rep.countNrStepAttributes(id_step, "field_name");
+            int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
             
             allocate(nrfields);
             
@@ -276,23 +299,23 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
             {
                 outputFields[i] = new XMLField();
 
-                outputFields[i].setFieldName(       rep.getStepAttributeString (id_step, i, "field_name") );
-                outputFields[i].setElementName(     rep.getStepAttributeString (id_step, i, "field_element") );
-                outputFields[i].setType(            rep.getStepAttributeString (id_step, i, "field_type") );
-                outputFields[i].setFormat(          rep.getStepAttributeString (id_step, i, "field_format") );
-                outputFields[i].setCurrencySymbol(  rep.getStepAttributeString (id_step, i, "field_currency") );
-                outputFields[i].setDecimalSymbol(   rep.getStepAttributeString (id_step, i, "field_decimal") );
-                outputFields[i].setGroupingSymbol(  rep.getStepAttributeString (id_step, i, "field_group") );
-                outputFields[i].setNullString(      rep.getStepAttributeString (id_step, i, "field_nullif") );
-                outputFields[i].setLength(     (int)rep.getStepAttributeInteger(id_step, i, "field_length") );
-                outputFields[i].setPrecision(  (int)rep.getStepAttributeInteger(id_step, i, "field_precision") );
-                outputFields[i].setAttribute(       rep.getStepAttributeBoolean(id_step, i, "field_attribute") );
-                outputFields[i].setAttributeParentName(   rep.getStepAttributeString(id_step, i, "field_attributeName") );
+                outputFields[i].setFieldName(       rep.getStepAttributeString (id_step, i, "field_name") ); //$NON-NLS-1$
+                outputFields[i].setElementName(     rep.getStepAttributeString (id_step, i, "field_element") ); //$NON-NLS-1$
+                outputFields[i].setType(            rep.getStepAttributeString (id_step, i, "field_type") ); //$NON-NLS-1$
+                outputFields[i].setFormat(          rep.getStepAttributeString (id_step, i, "field_format") ); //$NON-NLS-1$
+                outputFields[i].setCurrencySymbol(  rep.getStepAttributeString (id_step, i, "field_currency") ); //$NON-NLS-1$
+                outputFields[i].setDecimalSymbol(   rep.getStepAttributeString (id_step, i, "field_decimal") ); //$NON-NLS-1$
+                outputFields[i].setGroupingSymbol(  rep.getStepAttributeString (id_step, i, "field_group") ); //$NON-NLS-1$
+                outputFields[i].setNullString(      rep.getStepAttributeString (id_step, i, "field_nullif") ); //$NON-NLS-1$
+                outputFields[i].setLength(     (int)rep.getStepAttributeInteger(id_step, i, "field_length") ); //$NON-NLS-1$
+                outputFields[i].setPrecision(  (int)rep.getStepAttributeInteger(id_step, i, "field_precision") ); //$NON-NLS-1$
+                outputFields[i].setAttribute(       rep.getStepAttributeBoolean(id_step, i, "field_attribute") ); //$NON-NLS-1$
+                outputFields[i].setAttributeParentName(   rep.getStepAttributeString(id_step, i, "field_attributeName") ); //$NON-NLS-1$
             }       
         }
         catch(Exception e)
         {
-            throw new KettleException("Unexpected error reading step information from the repository", e);
+            throw new KettleException("Unexpected error reading step information from the repository", e); //$NON-NLS-1$
         }
     }
 
@@ -300,32 +323,33 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "encoding",           encoding);
-            rep.saveStepAttribute(id_transformation, id_step, "valueName",          valueName);
-            rep.saveStepAttribute(id_transformation, id_step, "xml_repeat_element", rootNode);
-            rep.saveStepAttribute(id_transformation, id_step, "omitXMLheader",        omitXMLheader);
+            rep.saveStepAttribute(id_transformation, id_step, "encoding",           encoding); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "valueName",          valueName); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "xml_repeat_element", rootNode); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "omitXMLheader",        omitXMLheader); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "omitNullValues",        omitNullValues); //$NON-NLS-1$
             
             for (int i=0;i<outputFields.length;i++)
             {
                 XMLField field = outputFields[i];
                 
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      field.getFieldName());
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_element",   field.getElementName());
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      field.getTypeDesc());
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_format",    field.getFormat());
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",  field.getCurrencySymbol());
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal",   field.getDecimalSymbol());
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_group",     field.getGroupingSymbol());
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_nullif",    field.getNullString());
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    field.getLength());
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", field.getPrecision());
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_attribute", field.isAttribute());
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_attributeName", field.getAttributeParentName());
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      field.getFieldName()); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_element",   field.getElementName()); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      field.getTypeDesc()); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_format",    field.getFormat()); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",  field.getCurrencySymbol()); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal",   field.getDecimalSymbol()); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_group",     field.getGroupingSymbol()); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_nullif",    field.getNullString()); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    field.getLength()); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", field.getPrecision()); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_attribute", field.isAttribute()); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_attributeName", field.getAttributeParentName()); //$NON-NLS-1$
             }
         }
         catch(Exception e)
         {
-            throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
+            throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -337,7 +361,7 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
         // Check output fields
         if (prev!=null && prev.size()>0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
             
             String  error_message="";
@@ -349,19 +373,19 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
                 int idx = prev.indexOfValue(outputFields[i].getFieldName());
                 if (idx<0)
                 {
-                    error_message+="\t\t"+outputFields[i].getFieldName()+Const.CR;
+                    error_message+="\t\t"+outputFields[i].getFieldName()+Const.CR; //$NON-NLS-1$
                     error_found=true;
                 } 
             }
             if (error_found) 
             {
-                error_message=BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.FieldsNotFound", error_message);
+                error_message=BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.FieldsNotFound", error_message); //$NON-NLS-1$
                 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
                 remarks.add(cr);
             }
             else
             {
-                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.AllFieldsFound"), stepMeta);
+                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.AllFieldsFound"), stepMeta); //$NON-NLS-1$
                 remarks.add(cr);
             }
         }
@@ -369,16 +393,16 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
         // See if we have input streams leading to this step!
         if (input.length>0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.ExpectedInputOk"), stepMeta);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.ExpectedInputOk"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.ExpectedInputError"), stepMeta);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.ExpectedInputError"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
         
-        cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.FilesNotChecked"), stepMeta);
+        cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "AddXMLMeta.CheckResult.FilesNotChecked"), stepMeta); //$NON-NLS-1$
         remarks.add(cr);
     }
 

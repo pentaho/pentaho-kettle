@@ -77,7 +77,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 				data.OpenedNewFile=true;
 			} else
 			{
-				logError("Couldn't open file " + meta.getFileName());
+				logError("Couldn't open file " + meta.getFileName()); //$NON-NLS-1$
 				setErrors(1L);
 				return false;
 			}
@@ -94,7 +94,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 			{
 				if (!openNewFile())
 				{
-					logError("Unable to open new file (split #" + data.splitnr + "...");
+					logError("Unable to open new file (split #" + data.splitnr + "..."); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					return false;
 				}
@@ -113,7 +113,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 		putRow(data.outputRowMeta, r); // in case we want it to go further...
 
-		if (checkFeedback(getLinesOutput())) logBasic("linenr " + getLinesOutput());
+		if (checkFeedback(getLinesOutput())) logBasic("linenr " + getLinesOutput()); //$NON-NLS-1$
 
 		return result;
 	}
@@ -134,7 +134,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 					data.fieldnrs[i] = data.formatRowMeta.indexOfValue(meta.getOutputFields()[i].getFieldName());
 					if (data.fieldnrs[i] < 0)
 					{
-						throw new KettleException("Field [" + meta.getOutputFields()[i].getFieldName()+ "] couldn't be found in the input stream!");
+						throw new KettleException("Field [" + meta.getOutputFields()[i].getFieldName()+ "] couldn't be found in the input stream!"); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				
 					// Apply the formatting settings to the valueMeta object...
@@ -156,7 +156,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 				 */
 
 				// OK, write a new row to the XML file:
-				data.writer.write((" <" + meta.getRepeatElement() + ">").toCharArray());
+				data.writer.write((" <" + meta.getRepeatElement() + ">").toCharArray()); //$NON-NLS-1$ //$NON-NLS-2$
 
 				for (int i = 0; i < data.formatRowMeta.size(); i++)
 				{
@@ -177,7 +177,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 				 */
 
 				// Write a new row to the XML file:
-				data.writer.write((" <" + meta.getRepeatElement() + ">").toCharArray());
+				data.writer.write((" <" + meta.getRepeatElement() + ">").toCharArray()); //$NON-NLS-1$ //$NON-NLS-2$
 
 				for (int i = 0; i < meta.getOutputFields().length; i++)
 				{
@@ -196,16 +196,18 @@ public class XMLOutput extends BaseStep implements StepInterface
 						elementName = outputField.getFieldName();
 					}
 
-					writeField(valueMeta, valueData, elementName);
+					if (!(valueMeta.isNull(valueData) && meta.isOmitNullValues())) {
+					  writeField(valueMeta, valueData, elementName);
+					}
 				}
 			}
 			
-			data.writer.write((" </" + meta.getRepeatElement() + ">").toCharArray());
+			data.writer.write((" </" + meta.getRepeatElement() + ">").toCharArray()); //$NON-NLS-1$ //$NON-NLS-2$
 			data.writer.write(Const.CR.toCharArray());
 		} 
 		catch (Exception e)
 		{
-			throw new KettleException("Error writing XML row :" + e.toString() + Const.CR + "Row: " + getInputRowMeta().getString(r), e);
+			throw new KettleException("Error writing XML row :" + e.toString() + Const.CR + "Row: " + getInputRowMeta().getString(r), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		incrementLinesOutput();
@@ -220,7 +222,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 				data.writer.write(str.toCharArray());
 		} catch (Exception e)
 		{
-			throw new KettleStepException("Error writing line :", e);
+			throw new KettleStepException("Error writing line :", e); //$NON-NLS-1$
 		}
 	}
 
@@ -244,7 +246,7 @@ public class XMLOutput extends BaseStep implements StepInterface
             {
 				// Add this to the result file names...
 				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
-				resultFile.setComment("This file was created with a xml output step");
+				resultFile.setComment("This file was created with a xml output step"); //$NON-NLS-1$
 	            addResultFile(resultFile);
             }
 
@@ -255,7 +257,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 				data.zip = new ZipOutputStream(fos);
 				File entry = new File(buildFilename(false));
 				ZipEntry zipentry = new ZipEntry(entry.getName());
-				zipentry.setComment("Compressed by Kettle");
+				zipentry.setComment("Compressed by Kettle"); //$NON-NLS-1$
 				data.zip.putNextEntry(zipentry);
 				outputStream = data.zip;
 			} else
@@ -265,31 +267,31 @@ public class XMLOutput extends BaseStep implements StepInterface
 			}
 			if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
 			{
-				logBasic("Opening output stream in encoding: " + meta.getEncoding());
+				logBasic("Opening output stream in encoding: " + meta.getEncoding()); //$NON-NLS-1$
 				data.writer = new OutputStreamWriter(outputStream, meta.getEncoding());
 				data.writer.write(XMLHandler.getXMLHeader(meta.getEncoding()).toCharArray());
 			} else
 			{
-				logBasic("Opening output stream in default encoding : " + Const.XML_ENCODING);
+				logBasic("Opening output stream in default encoding : " + Const.XML_ENCODING); //$NON-NLS-1$
 				data.writer = new OutputStreamWriter(outputStream);
 				data.writer.write(XMLHandler.getXMLHeader(Const.XML_ENCODING).toCharArray());
 			}
 
 			// Add the name space if defined
 			StringBuffer nameSpace = new StringBuffer();
-			if ((meta.getNameSpace() != null) && (!"".equals(meta.getNameSpace())))  {
-				nameSpace.append(" xmlns=\"");
+			if ((meta.getNameSpace() != null) && (!"".equals(meta.getNameSpace())))  { //$NON-NLS-1$
+				nameSpace.append(" xmlns=\""); //$NON-NLS-1$
 				nameSpace.append(meta.getNameSpace());
-				nameSpace.append("\"");
+				nameSpace.append("\""); //$NON-NLS-1$
 			}
 
 			// OK, write the header & the parent element:
-			data.writer.write(("<" + meta.getMainElement() + nameSpace.toString() + ">" + Const.CR).toCharArray());
+			data.writer.write(("<" + meta.getMainElement() + nameSpace.toString() + ">" + Const.CR).toCharArray());  //$NON-NLS-1$//$NON-NLS-2$
 
 			retval = true;
 		} catch (Exception e)
 		{
-			logError("Error opening new file : " + e.toString());
+			logError("Error opening new file : " + e.toString()); //$NON-NLS-1$
 		}
 		// System.out.println("end of newFile(), splitnr="+splitnr);
 
@@ -306,7 +308,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 			try
 			{
 				// Close the parent element
-				data.writer.write(("</" + meta.getMainElement() + ">" + Const.CR).toCharArray());
+				data.writer.write(("</" + meta.getMainElement() + ">" + Const.CR).toCharArray()); //$NON-NLS-1$ //$NON-NLS-2$
 	
 				if (meta.isZipped())
 				{
@@ -346,7 +348,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 					return true;
 				} else
 				{
-					logError("Couldn't open file " + meta.getFileName());
+					logError("Couldn't open file " + meta.getFileName()); //$NON-NLS-1$
 					setErrors(1L);
 					stopAll();
 				}

@@ -95,6 +95,10 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
 	private Label        wlOmitXMLHeader;
     private Button       wOmitXMLHeader;
     private FormData     fdlOmitXMLHeader, fdOmitXMLHeader;
+    
+    private Label        wlOmitNullValues;
+    private Button       wOmitNullValues;
+    private FormData     fdlOmitNullValues, fdOmitNullValues;
 
     private XMLJoinMeta   input;
     
@@ -135,14 +139,14 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(BaseMessages.getString(PKG, "XMLJoin.DialogTitle"));
+        shell.setText(BaseMessages.getString(PKG, "XMLJoin.DialogTitle")); //$NON-NLS-1$
         
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         // Step name line
         wlStepname=new Label(shell, SWT.RIGHT);
-        wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
+        wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName")); //$NON-NLS-1$
         props.setLook(wlStepname);
         fdlStepname=new FormData();
         fdlStepname.left  = new FormAttachment(0, 0);
@@ -161,7 +165,7 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
 
         //Target Group 
         gTarget = new Group(shell, SWT.NONE);
-        gTarget.setText(BaseMessages.getString(PKG, "XMLJoin.TargetGroup.Label"));
+        gTarget.setText(BaseMessages.getString(PKG, "XMLJoin.TargetGroup.Label")); //$NON-NLS-1$
         FormLayout targetLayout = new FormLayout();
         targetLayout.marginHeight = margin;
         targetLayout.marginWidth = margin;
@@ -174,7 +178,7 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
         gTarget.setLayoutData(fdTarget);
         // Target XML step line
         wlTargetXMLstep=new Label(gTarget, SWT.RIGHT);
-        wlTargetXMLstep.setText(BaseMessages.getString(PKG, "XMLJoin.TargetXMLStep.Label"));
+        wlTargetXMLstep.setText(BaseMessages.getString(PKG, "XMLJoin.TargetXMLStep.Label")); //$NON-NLS-1$
         props.setLook(wlTargetXMLstep);
         fdlTargetXMLstep=new FormData();
         fdlTargetXMLstep.left = new FormAttachment(0, 0);
@@ -212,7 +216,7 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
 		
 		//Source Group 
         gSource = new Group(shell, SWT.NONE);
-        gSource.setText(BaseMessages.getString(PKG, "XMLJoin.SourceGroup.Label"));
+        gSource.setText(BaseMessages.getString(PKG, "XMLJoin.SourceGroup.Label")); //$NON-NLS-1$
         FormLayout SourceLayout = new FormLayout();
         SourceLayout.marginHeight = margin;
         SourceLayout.marginWidth = margin;
@@ -225,7 +229,7 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
         gSource.setLayoutData(fdSource);
 		// Source XML step line
         wlSourceXMLstep=new Label(gSource, SWT.RIGHT);
-        wlSourceXMLstep.setText(BaseMessages.getString(PKG, "XMLJoin.SourceXMLStep.Label"));
+        wlSourceXMLstep.setText(BaseMessages.getString(PKG, "XMLJoin.SourceXMLStep.Label")); //$NON-NLS-1$
         props.setLook(wlSourceXMLstep);
         fdlSourceXMLstep=new FormData();
         fdlSourceXMLstep.left = new FormAttachment(0, 0);
@@ -263,7 +267,7 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
 		
 		//Join Group 
         gJoin = new Group(shell, SWT.NONE);
-        gJoin.setText(BaseMessages.getString(PKG, "XMLJoin.JoinGroup.Label"));
+        gJoin.setText(BaseMessages.getString(PKG, "XMLJoin.JoinGroup.Label")); //$NON-NLS-1$
         FormLayout JoinLayout = new FormLayout();
         JoinLayout.marginHeight = margin;
         JoinLayout.marginWidth = margin;
@@ -296,7 +300,7 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// Complex Join Line
         wlComplexJoin=new Label(gJoin, SWT.RIGHT);
-        wlComplexJoin.setText(BaseMessages.getString(PKG, "XMLJoin.ComplexJoin.Label"));
+        wlComplexJoin.setText(BaseMessages.getString(PKG, "XMLJoin.ComplexJoin.Label")); //$NON-NLS-1$
         props.setLook(wlComplexJoin);
         fdlComplexJoin=new FormData();
         fdlComplexJoin.left = new FormAttachment(0, 0);
@@ -348,7 +352,7 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
 		
 		//Result Group 
         gResult = new Group(shell, SWT.NONE);
-        gResult.setText(BaseMessages.getString(PKG, "XMLJoin.ResultGroup.Label"));
+        gResult.setText(BaseMessages.getString(PKG, "XMLJoin.ResultGroup.Label")); //$NON-NLS-1$
         FormLayout ResultLayout = new FormLayout();
         ResultLayout.marginHeight = margin;
         ResultLayout.marginWidth = margin;
@@ -380,7 +384,7 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
 		
 		//Encoding Line
 		 wlEncoding=new Label(gResult, SWT.RIGHT);
-	     wlEncoding.setText(BaseMessages.getString(PKG, "XMLJoin.Encoding.Label"));
+	     wlEncoding.setText(BaseMessages.getString(PKG, "XMLJoin.Encoding.Label")); //$NON-NLS-1$
 	     props.setLook(wlEncoding);
 	     fdlEncoding=new FormData();
 	     fdlEncoding.left = new FormAttachment(0, 0);
@@ -415,7 +419,7 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// Complex Join Line
         wlOmitXMLHeader=new Label(gResult, SWT.RIGHT);
-        wlOmitXMLHeader.setText(BaseMessages.getString(PKG, "XMLJoin.OmitXMLHeader.Label"));
+        wlOmitXMLHeader.setText(BaseMessages.getString(PKG, "XMLJoin.OmitXMLHeader.Label")); //$NON-NLS-1$
         props.setLook(wlOmitXMLHeader);
         fdlOmitXMLHeader=new FormData();
         fdlOmitXMLHeader.left = new FormAttachment(0, 0);
@@ -429,15 +433,47 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
         fdOmitXMLHeader.top  = new FormAttachment(wEncoding, margin);
         fdOmitXMLHeader.right= new FormAttachment(100, 0);
         wOmitXMLHeader.setLayoutData(fdOmitXMLHeader);
+        wOmitXMLHeader.addSelectionListener(new SelectionAdapter() 
+        {
+          public void widgetSelected(SelectionEvent e) 
+          {
+            input.setChanged();
+          }
+        }
+      );
+        
+        wlOmitNullValues=new Label(gResult, SWT.RIGHT);
+        wlOmitNullValues.setText(BaseMessages.getString(PKG, "XMLJoin.OmitNullValues.Label")); //$NON-NLS-1$
+        props.setLook(wlOmitNullValues);
+        fdlOmitNullValues=new FormData();
+        fdlOmitNullValues.left = new FormAttachment(0, 0);
+        fdlOmitNullValues.top  = new FormAttachment(wOmitXMLHeader, margin);
+        fdlOmitNullValues.right= new FormAttachment(middle, -margin);
+        wlOmitNullValues.setLayoutData(fdlOmitNullValues);
+        wOmitNullValues=new Button(gResult, SWT.CHECK );
+        props.setLook(wOmitNullValues);
+        fdOmitNullValues=new FormData();
+        fdOmitNullValues.left = new FormAttachment(middle, 0);
+        fdOmitNullValues.top  = new FormAttachment(wOmitXMLHeader, margin);
+        fdOmitNullValues.right= new FormAttachment(100, 0);
+        wOmitNullValues.setLayoutData(fdOmitNullValues);
+        wOmitNullValues.addSelectionListener(new SelectionAdapter() 
+        {
+          public void widgetSelected(SelectionEvent e) 
+          {
+            input.setChanged();
+          }
+        }
+      );
         
         
         shell.layout();        
         
         wOK=new Button(shell, SWT.PUSH);
-        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
         
         wCancel=new Button(shell, SWT.PUSH);
-        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
         setButtonPositions(new Button[] { wOK, wCancel }, margin, gResult);
 
@@ -508,12 +544,13 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
         
         wComplexJoin.setSelection(input.isComplexJoin());
         wOmitXMLHeader.setSelection(input.isOmitXMLHeader());
+        wOmitNullValues.setSelection(input.isOmitNullValues());
         
         if(input.isComplexJoin()){
         	wJoinCompareField.setEnabled(true);
         }
         
-        logDebug(BaseMessages.getString(PKG, "AddXMLDialog.Log.GettingFieldsInfo"));
+        logDebug(BaseMessages.getString(PKG, "AddXMLDialog.Log.GettingFieldsInfo")); //$NON-NLS-1$
         
         wStepname.selectAll();
     }
@@ -538,7 +575,8 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
     	tfoi.setJoinCompareField(wJoinCompareField.getText());
         tfoi.setComplexJoin(wComplexJoin.getSelection() );   
         tfoi.setEncoding( wEncoding.getText() );
-        tfoi.setOmitXMLHeader(wOmitXMLHeader.getSelection() ); 
+        tfoi.setOmitXMLHeader(wOmitXMLHeader.getSelection() );
+        tfoi.setOmitNullValues(wOmitNullValues.getSelection());
     }
     
     private void ok()
@@ -588,11 +626,11 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
             }
             
             // Now select the default!
-            String defEncoding = Const.getEnvironmentVariable("file.encoding", "UTF-8");
+            String defEncoding = Const.getEnvironmentVariable("file.encoding", "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
             int idx = Const.indexOfString(defEncoding, wEncoding.getItems() );
             if (idx>=0) wEncoding.select( idx );
             else 
-            	wEncoding.select(Const.indexOfString("UTF-8", wEncoding.getItems() ));
+            	wEncoding.select(Const.indexOfString("UTF-8", wEncoding.getItems() )); //$NON-NLS-1$
         }
     }
 }
