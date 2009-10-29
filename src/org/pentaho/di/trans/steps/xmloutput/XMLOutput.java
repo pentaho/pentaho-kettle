@@ -196,7 +196,9 @@ public class XMLOutput extends BaseStep implements StepInterface
 						elementName = outputField.getFieldName();
 					}
 
-					writeField(valueMeta, valueData, elementName);
+					if (!(valueMeta.isNull(valueData) && meta.isOmitNullValues())) {
+					  writeField(valueMeta, valueData, elementName);
+					}
 				}
 			}
 			

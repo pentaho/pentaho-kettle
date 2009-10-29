@@ -94,6 +94,10 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
 	private Label        wlOmitXMLHeader;
     private Button       wOmitXMLHeader;
     private FormData     fdlOmitXMLHeader, fdOmitXMLHeader;
+    
+    private Label        wlOmitNullValues;
+    private Button       wOmitNullValues;
+    private FormData     fdlOmitNullValues, fdOmitNullValues;
 
     private XMLJoinMeta   input;
     
@@ -428,6 +432,38 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
         fdOmitXMLHeader.top  = new FormAttachment(wEncoding, margin);
         fdOmitXMLHeader.right= new FormAttachment(100, 0);
         wOmitXMLHeader.setLayoutData(fdOmitXMLHeader);
+        wOmitXMLHeader.addSelectionListener(new SelectionAdapter() 
+        {
+          public void widgetSelected(SelectionEvent e) 
+          {
+            input.setChanged();
+          }
+        }
+      );
+        
+        wlOmitNullValues=new Label(gResult, SWT.RIGHT);
+        wlOmitNullValues.setText(Messages.getString("XMLJoin.OmitNullValues.Label")); //$NON-NLS-1$
+        props.setLook(wlOmitNullValues);
+        fdlOmitNullValues=new FormData();
+        fdlOmitNullValues.left = new FormAttachment(0, 0);
+        fdlOmitNullValues.top  = new FormAttachment(wOmitXMLHeader, margin);
+        fdlOmitNullValues.right= new FormAttachment(middle, -margin);
+        wlOmitNullValues.setLayoutData(fdlOmitNullValues);
+        wOmitNullValues=new Button(gResult, SWT.CHECK );
+        props.setLook(wOmitNullValues);
+        fdOmitNullValues=new FormData();
+        fdOmitNullValues.left = new FormAttachment(middle, 0);
+        fdOmitNullValues.top  = new FormAttachment(wOmitXMLHeader, margin);
+        fdOmitNullValues.right= new FormAttachment(100, 0);
+        wOmitNullValues.setLayoutData(fdOmitNullValues);
+        wOmitNullValues.addSelectionListener(new SelectionAdapter() 
+        {
+          public void widgetSelected(SelectionEvent e) 
+          {
+            input.setChanged();
+          }
+        }
+      );
         
         
         shell.layout();        
@@ -507,6 +543,7 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
         
         wComplexJoin.setSelection(input.isComplexJoin());
         wOmitXMLHeader.setSelection(input.isOmitXMLHeader());
+        wOmitNullValues.setSelection(input.isOmitNullValues());
         
         if(input.isComplexJoin()){
         	wJoinCompareField.setEnabled(true);
@@ -537,7 +574,8 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
     	tfoi.setJoinCompareField(wJoinCompareField.getText());
         tfoi.setComplexJoin(wComplexJoin.getSelection() );   
         tfoi.setEncoding( wEncoding.getText() );
-        tfoi.setOmitXMLHeader(wOmitXMLHeader.getSelection() ); 
+        tfoi.setOmitXMLHeader(wOmitXMLHeader.getSelection() );
+        tfoi.setOmitNullValues(wOmitNullValues.getSelection());
     }
     
     private void ok()

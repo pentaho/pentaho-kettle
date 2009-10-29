@@ -77,6 +77,10 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
     private Button       wOmitXMLHeader;
     private FormData     fdlOmitXMLHeader, fdOmitXMLHeader;
     
+    private Label        wlOmitNullValues;
+    private Button       wOmitNullValues;
+    private FormData     fdlOmitNullValues, fdOmitNullValues;
+    
     private Label        wlEncoding;
     private CCombo       wEncoding;
     private FormData     fdlEncoding, fdEncoding;
@@ -255,6 +259,30 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         fdOmitXMLHeader.right= new FormAttachment(100, 0);
         wOmitXMLHeader.setLayoutData(fdOmitXMLHeader);
         wOmitXMLHeader.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    input.setChanged();
+                }
+            }
+        );
+        
+        wlOmitNullValues=new Label(wContentComp, SWT.RIGHT);
+        wlOmitNullValues.setText(Messages.getString("AddXMLDialog.OmitNullValues.Label")); //$NON-NLS-1$
+        props.setLook(wlOmitNullValues);
+        fdlOmitNullValues=new FormData();
+        fdlOmitNullValues.left = new FormAttachment(0, 0);
+        fdlOmitNullValues.top  = new FormAttachment(wOmitXMLHeader, margin);
+        fdlOmitNullValues.right= new FormAttachment(middle, -margin);
+        wlOmitNullValues.setLayoutData(fdlOmitNullValues);
+        wOmitNullValues=new Button(wContentComp, SWT.CHECK );
+        props.setLook(wOmitNullValues);
+        fdOmitNullValues=new FormData();
+        fdOmitNullValues.left = new FormAttachment(middle, 0);
+        fdOmitNullValues.top  = new FormAttachment(wOmitXMLHeader, margin);
+        fdOmitNullValues.right= new FormAttachment(100, 0);
+        wOmitNullValues.setLayoutData(fdOmitNullValues);
+        wOmitNullValues.addSelectionListener(new SelectionAdapter() 
             {
                 public void widgetSelected(SelectionEvent e) 
                 {
@@ -445,6 +473,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         if (input.getRootNode() != null) wRepeatElement.setText(input.getRootNode());
         
         wOmitXMLHeader.setSelection(input.isOmitXMLheader());
+        wOmitNullValues.setSelection(input.isOmitNullValues());
         
         log.logDebug(toString(), Messages.getString("AddXMLDialog.Log.GettingFieldsInfo"));
         
@@ -487,6 +516,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         tfoi.setRootNode( wRepeatElement.getText() );
 
         tfoi.setOmitXMLheader( wOmitXMLHeader.getSelection() );
+        tfoi.setOmitNullValues( wOmitNullValues.getSelection() );
 
         //Table table = wFields.table;
         

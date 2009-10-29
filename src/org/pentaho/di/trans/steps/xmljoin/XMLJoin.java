@@ -22,6 +22,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -235,7 +236,11 @@ public class XMLJoin extends BaseStep implements StepInterface
         
 
        try {
-    	   setSerializer(TransformerFactory.newInstance().newTransformer());
+         if(meta.isOmitNullValues()) {
+           setSerializer(TransformerFactory.newInstance().newTransformer(new StreamSource(XMLJoin.class.getClassLoader().getResourceAsStream("org/pentaho/di/trans/steps/xmljoin/RemoveNulls.xsl")))); //$NON-NLS-1$
+         } else {
+           setSerializer(TransformerFactory.newInstance().newTransformer());
+         }
     	   if(meta.getEncoding()!=null) {
            	getSerializer().setOutputProperty(OutputKeys.ENCODING, meta.getEncoding());
            }

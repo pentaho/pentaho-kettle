@@ -54,6 +54,9 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
 
     /** Flag: ommit the XML Header*/
     private  boolean omitXMLheader;
+    
+    /** Flag: omit null elements from the xml result */
+    private  boolean omitNullValues;
 
     /** The encoding to use for reading: null or empty string means system default encoding */
     private String encoding;
@@ -93,6 +96,22 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
     public void setOmitXMLheader(boolean omitXMLheader)
     {
         this.omitXMLheader = omitXMLheader;
+    }
+
+
+
+    public void setOmitNullValues(boolean omitNullValues) {
+      
+          this.omitNullValues = omitNullValues;
+        
+    }
+
+
+
+    public boolean isOmitNullValues() {
+      
+          return omitNullValues;
+        
     }
 
 
@@ -145,7 +164,8 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
             valueName      = XMLHandler.getTagValue(stepnode, "valueName");
             rootNode    = XMLHandler.getTagValue(stepnode, "xml_repeat_element");
 
-            omitXMLheader    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "omitXMLheader"));
+            omitXMLheader    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "omitXMLheader"));   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+            omitNullValues    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "omitNullValues"));   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
             
             Node fields = XMLHandler.getSubNode(stepnode, "fields");
             int nrfields= XMLHandler.countNodes(fields, "field");
@@ -180,6 +200,7 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
     public void setDefault()
     {
         omitXMLheader    = true;
+        omitNullValues   = false;
         encoding         = Const.XML_ENCODING;
         
         valueName        = "xmlvaluename";
@@ -224,10 +245,11 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("valueName",  valueName));
         retval.append("    ").append(XMLHandler.addTagValue("xml_repeat_element",  rootNode));
 
-        retval.append("    <file>").append(Const.CR);
-        retval.append("      ").append(XMLHandler.addTagValue("omitXMLheader", omitXMLheader));
-        retval.append("    </file>").append(Const.CR);
-        retval.append("    <fields>").append(Const.CR);
+        retval.append("    <file>").append(Const.CR); //$NON-NLS-1$
+        retval.append("      ").append(XMLHandler.addTagValue("omitXMLheader", omitXMLheader)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("omitNullValues", omitNullValues)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    </file>").append(Const.CR); //$NON-NLS-1$
+        retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
         for (int i=0;i<outputFields.length;i++)
         {
             XMLField field = outputFields[i];
@@ -262,7 +284,8 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
             valueName     =      rep.getStepAttributeString (id_step, "valueName");
             rootNode   =      rep.getStepAttributeString (id_step, "xml_repeat_element");
             
-            omitXMLheader          =      rep.getStepAttributeBoolean(id_step, "omitXMLheader");
+            omitXMLheader          =      rep.getStepAttributeBoolean(id_step, "omitXMLheader"); //$NON-NLS-1$
+            omitNullValues         =      rep.getStepAttributeBoolean(id_step, "omitNullValues"); //$NON-NLS-1$
     
             int nrfields = rep.countNrStepAttributes(id_step, "field_name");
             

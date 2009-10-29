@@ -24,6 +24,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -310,7 +311,11 @@ public class AddXML extends BaseStep implements StepInterface
             return false;
 
         try {
-            setSerializer(TransformerFactory.newInstance().newTransformer());
+            if(meta.isOmitNullValues()) {
+              setSerializer(TransformerFactory.newInstance().newTransformer(new StreamSource(AddXML.class.getClassLoader().getResourceAsStream("org/pentaho/di/trans/steps/addxml/RemoveNulls.xsl")))); //$NON-NLS-1$
+            } else {
+              setSerializer(TransformerFactory.newInstance().newTransformer());
+            }
             setDomImplentation(DocumentBuilderFactory.newInstance().newDocumentBuilder().getDOMImplementation());
 
             if(meta.getEncoding()!=null) {

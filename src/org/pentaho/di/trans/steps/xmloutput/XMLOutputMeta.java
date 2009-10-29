@@ -107,6 +107,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
     private boolean SpecifyFormat;
     
     private String date_time_format;
+    
+    private boolean omitNullValues;
 
 	public XMLOutputMeta()
 	{
@@ -356,6 +358,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 			addToResultFilenames = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));
 			
 			zipped = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "zipped"));
+			omitNullValues = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "omitNullValues"));
 			splitEvery = Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
 
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
@@ -415,6 +418,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		timeInFilename = false;
 		addToResultFilenames = false;
 		zipped = false;
+		omitNullValues = false;
 		splitEvery = 0;
 		encoding = Const.XML_ENCODING;
 		nameSpace = "";
@@ -585,6 +589,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("      ").append(XMLHandler.addTagValue("date_time_format",  date_time_format));
 		retval.append("      ").append(XMLHandler.addTagValue("add_to_result_filenames",   addToResultFilenames));
 		retval.append("      ").append(XMLHandler.addTagValue("zipped", zipped));
+		retval.append("      ").append(XMLHandler.addTagValue("omitNullValues", omitNullValues));
 		retval.append("      ").append(XMLHandler.addTagValue("splitevery", splitEvery));
 		retval.append("    </file>").append(Const.CR);
 		retval.append("    <fields>").append(Const.CR);
@@ -635,6 +640,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 			
 			addToResultFilenames = rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
 			zipped = rep.getStepAttributeBoolean(id_step, "file_zipped");
+			omitNullValues = rep.getStepAttributeBoolean(id_step, "file_omitNullValues");			
 
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 
@@ -683,6 +689,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 			
 			rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addToResultFilenames);
 			rep.saveStepAttribute(id_transformation, id_step, "file_zipped", zipped);
+			rep.saveStepAttribute(id_transformation, id_step, "file_omitNullValues", omitNullValues);
 
 			for (int i = 0; i < outputFields.length; i++)
 			{
@@ -832,7 +839,19 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		this.nameSpace = nameSpace;
 	}
 	
-	/**
+	public void setOmitNullValues(boolean omitNullValues) {
+    
+        this.omitNullValues = omitNullValues;
+      
+  }
+
+  public boolean isOmitNullValues() {
+    
+        return omitNullValues;
+      
+  }
+
+  /**
 	 * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively.
 	 * So what this does is turn the name of the base path into an absolute path.
 	 */
