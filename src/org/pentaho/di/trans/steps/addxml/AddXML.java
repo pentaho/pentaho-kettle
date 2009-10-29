@@ -163,15 +163,6 @@ public class AddXML extends BaseStep implements StepInterface
         {
             this.getSerializer().transform(domSource, new StreamResult(sw));
             
-//            if(meta.isOmitNullValues()) {
-//              // Remove empty elements from the xml result
-//              Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(sw.toString().getBytes()));
-//              Element rootElement = doc.getDocumentElement();
-//              AddXML.removeEmptyChildNodes(rootElement);
-//
-//              sw = new StringWriter();
-//              serializer.transform(new DOMSource(doc), new StreamResult(sw));
-//            }
         } catch (TransformerException e) {
           throw new KettleException(e);
         } catch (Exception e) {
@@ -183,39 +174,7 @@ public class AddXML extends BaseStep implements StepInterface
         putRow(data.outputRowMeta, outputRowData);
         
         return true;
-    }
-    
-//    /**
-//     * Remove all empty nodes from the xml. An empty node is a node
-//     * that has no attributes, no value and no child nodes.
-//     * 
-//     * @param el The root element from which to scrub
-//     */
-//    private static void removeEmptyChildNodes(Node n) {
-//      while( n != null) {
-//        NodeList nl = n.getChildNodes();
-//
-//        // Iterate through the child nodes and remove the empty ones
-//        for(int i = 0; i < nl.getLength(); i++) {
-//          Node c = nl.item(i);
-//          
-//          // Test the child node to see if it is empty
-//          if(!c.hasAttributes() && !c.hasChildNodes() && (c.getNodeValue() == null)) {
-//            n.removeChild(c);
-//          } else if(c.hasChildNodes()) {
-//            // If the child node has its own children, remove the empty child nodes from it
-//            AddXML.removeEmptyChildNodes(c);
-//            
-//            // Check to see if the child node is now empty
-//            if(!c.hasAttributes() && !c.hasChildNodes() && (c.getNodeValue() == null)) {
-//              n.removeChild(c);
-//            }
-//          }
-//        }
-//        
-//        n = n.getNextSibling();
-//      }
-//    }
+    }    
 
     private String formatField(ValueMetaInterface valueMeta, Object valueData, XMLField field) throws KettleValueException
     {
