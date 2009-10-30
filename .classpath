@@ -107,7 +107,6 @@
 	<classpathentry kind="lib" path="libext/JDBC/jtds-1.2.2.jar"/>
 	<classpathentry kind="lib" path="libext/saxon8.jar"/>
 	<classpathentry kind="lib" path="libswt/linux/x86/swt.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/infobright-core-2.4.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-2.5.4.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-2.5.4.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-lang-2.4.jar"/>
@@ -115,5 +114,6 @@
 	<classpathentry kind="lib" path="libext/edtftpj2.0.4.jar"/>
 	<classpathentry kind="lib" path="libext/jackcess-1.1.19.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.42.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/infobright-core-2.7.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
