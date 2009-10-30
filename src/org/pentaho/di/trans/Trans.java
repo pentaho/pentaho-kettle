@@ -391,6 +391,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 // How many times do we start the target step?
                 int nextCopies = nextStep.getCopies();
                 
+                // Are we re-partitioning?
+                boolean repartitioning = !thisStep.isPartitioned() && nextStep.isPartitioned();
+                
                 int nrCopies;
                 if(log.isDetailed()) 
                 	log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.copiesInfo",String.valueOf(thisCopies),String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
@@ -398,7 +401,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				     if (thisCopies==1 && nextCopies==1) { dispatchType=TYPE_DISP_1_1; nrCopies = 1; }
 				else if (thisCopies==1 && nextCopies >1) { dispatchType=TYPE_DISP_1_N; nrCopies = nextCopies; }
 				else if (thisCopies >1 && nextCopies==1) { dispatchType=TYPE_DISP_N_1; nrCopies = thisCopies; }
-				else if (thisCopies==nextCopies)         { dispatchType=TYPE_DISP_N_N; nrCopies = nextCopies; } // > 1!
+				else if (thisCopies==nextCopies && !repartitioning)         { dispatchType=TYPE_DISP_N_N; nrCopies = nextCopies; } // > 1!
 				else                                     { dispatchType=TYPE_DISP_N_M; nrCopies = nextCopies; } // Allocate a rowset for each destination step
 
 				// Allocate the rowsets

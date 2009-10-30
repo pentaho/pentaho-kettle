@@ -1970,8 +1970,13 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
                     {
                         if (prevCopies == nextCopies)
                         {
-                            dispatchType = Trans.TYPE_DISP_N_N;
-                            nrCopies = 1;
+                        	if (stepMeta.isPartitioned() && !prevSteps[i].isPartitioned()) {
+                                dispatchType = Trans.TYPE_DISP_N_M;
+                                nrCopies = nextCopies;
+                        	} else {
+	                            dispatchType = Trans.TYPE_DISP_N_N;
+	                            nrCopies = 1;
+                        	}
                         } // > 1!
                         else
                         {
@@ -2055,8 +2060,13 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
                     {
                         if (prevCopies == nextCopies)
                         {
-                            dispatchType = Trans.TYPE_DISP_N_N;
-                            nrCopies = 1;
+                        	if (!stepMeta.isPartitioned() && nextSteps[i].isPartitioned()) {
+                                dispatchType = Trans.TYPE_DISP_N_M;
+                                nrCopies = nextCopies;
+                        	} else {
+	                            dispatchType = Trans.TYPE_DISP_N_N;
+	                            nrCopies = 1;
+                        	}
                         } // > 1!
                         else
                         {
