@@ -306,7 +306,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 		RowMetaInterface add = null;
 		try
 		{
-			add = db.getQueryFields(sql, true, param, new Object[param.size()]);
+			add = db.getQueryFields(space.environmentSubstitute(sql), true, param, new Object[param.size()]);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -329,7 +329,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 		try 
 		{
 			db.connect();
-			add = db.getQueryFields(sql, true, param, new Object[param.size()]);
+			add = db.getQueryFields(space.environmentSubstitute(sql), true, param, new Object[param.size()]);
 			for (int i=0;i<add.size();i++)
 			{
 				ValueMetaInterface v=add.getValueMeta(i);
@@ -438,8 +438,8 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 					RowMetaInterface param = getParameterRow(prev);
 					
 					error_message = ""; //$NON-NLS-1$
-					
-					RowMetaInterface r = db.getQueryFields(sql, true, param, new Object[param.size()]);
+
+					RowMetaInterface r = db.getQueryFields(transMeta.environmentSubstitute(sql), true, param, new Object[param.size()]);
 					if (r!=null)
 					{
 						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DatabaseJoinMeta.CheckResult.QueryOK"), stepMeta); //$NON-NLS-1$
@@ -452,7 +452,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 						remarks.add(cr);
 					}
 					
-					int q = db.countParameters(sql);
+					int q = db.countParameters(transMeta.environmentSubstitute(sql));
 					if (q!=parameterField.length)
 					{
 						error_message=Messages.getString("DatabaseJoinMeta.CheckResult.DismatchBetweenParametersAndQuestion")+Const.CR; //$NON-NLS-1$
@@ -560,7 +560,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 			try
 			{
 				db.connect();
-				fields = db.getQueryFields(sql, true, param, new Object[param.size()]);
+				fields = db.getQueryFields(databaseMeta.environmentSubstitute(sql), true, param, new Object[param.size()]);
 			}
 			catch(KettleDatabaseException dbe)
 			{
@@ -606,7 +606,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 												outvalue.getName(),
 												outvalue.getName(),
 												stepMeta.getName(),
-												sql,
+												transMeta.environmentSubstitute(sql),
 												Messages.getString("DatabaseJoinMeta.DatabaseImpact.Title") //$NON-NLS-1$
 												);
 				impact.add(di);
