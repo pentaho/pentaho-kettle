@@ -325,8 +325,6 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
                 
 				switch(aggregateType[i])
 				{
-					case TYPE_GROUP_SUM                : 
-					case TYPE_GROUP_AVERAGE            : 
                     case TYPE_GROUP_FIRST              : 
                     case TYPE_GROUP_LAST               : 
                     case TYPE_GROUP_FIRST_INCL_NULL    : 
@@ -336,6 +334,8 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
 					case TYPE_GROUP_COUNT_DISTINCT     :
 					case TYPE_GROUP_COUNT_ALL          : value_type = ValueMetaInterface.TYPE_INTEGER; break;
                     case TYPE_GROUP_CONCAT_COMMA       : value_type = ValueMetaInterface.TYPE_STRING; break;
+					case TYPE_GROUP_SUM                : 
+					case TYPE_GROUP_AVERAGE            : 
                     case TYPE_GROUP_STANDARD_DEVIATION : value_type = ValueMetaInterface.TYPE_NUMBER; break;
                     case TYPE_GROUP_CONCAT_STRING      : value_type = ValueMetaInterface.TYPE_STRING; break;
 					default: break;
