@@ -14,7 +14,7 @@
 package org.pentaho.di.ui.core.widget;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionListener;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -46,7 +46,9 @@ public class ColumnInfo
     
     private ValueMetaInterface valueMeta;
 	
-	private SelectionAdapter selButton;
+	private SelectionListener selButton;
+	
+	private FieldDisabledListener disabledListener;
     
     private boolean usingVariables;
     private boolean passwordField;
@@ -230,12 +232,12 @@ public class ColumnInfo
         return button_text;
     }       
 	
-	public void setSelectionAdapter(SelectionAdapter sb)
+	public void setSelectionAdapter(SelectionListener sb)
 	{
 		selButton = sb;
 	}
 	
-	public SelectionAdapter getSelectionAdapter()
+	public SelectionListener getSelectionAdapter()
 	{
 		return selButton;
 	}
@@ -315,5 +317,19 @@ public class ColumnInfo
 	 */
 	public void setComboValuesSelectionListener(ComboValuesSelectionListener comboValuesSelectionListener) {
 		this.comboValuesSelectionListener = comboValuesSelectionListener;
+	}
+
+	/**
+	 * @return the disabledListener
+	 */
+	public FieldDisabledListener getDisabledListener() {
+		return disabledListener;
+	}
+
+	/**
+	 * @param disabledListener the disabledListener to set
+	 */
+	public void setDisabledListener(FieldDisabledListener disabledListener) {
+		this.disabledListener = disabledListener;
 	}
 }

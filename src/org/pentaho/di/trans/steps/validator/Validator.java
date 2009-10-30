@@ -32,6 +32,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 
 /**
@@ -176,10 +177,12 @@ public class Validator extends BaseStep implements StepInterface
         for (int i=0;i<meta.getValidations().length;i++)
         {
             Validation field = meta.getValidations()[i];
+            StreamInterface[] streams = meta.getStepIOMeta().getInfoStreams();
+            
             // If we need to source the allowed values data from a different step, we do this here as well
             //
             if (field.isSourcingValues()) {
-            	if (field.getSourcingStep()==null) {
+            	if (streams[i].getStepMeta()==null) {
             		throw new KettleStepException("There is no valid source step specified for the allowed values of validation ["+field.getName()+"]");
             	}
             	if (Const.isEmpty(field.getSourcingField())) {
@@ -189,7 +192,7 @@ public class Validator extends BaseStep implements StepInterface
             	// Still here : OK, read the data from the specified step...
             	// The data is stored in data.listValues[i] and data.constantsMeta
             	//
-            	RowSet allowedRowSet = findInputRowSet(field.getSourcingStep().getName()); 
+            	RowSet allowedRowSet = findInputRowSet(streams[i].getStepname()); 
             	int fieldIndex=-1;
             	List<Object> allowedValues = new ArrayList<Object>();
             	Object[] allowedRowData = getRowFrom(allowedRowSet);

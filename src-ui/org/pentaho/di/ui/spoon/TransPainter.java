@@ -437,9 +437,11 @@ public class TransPainter
         int alpha = gc.getAlpha();
         
         StepIOMetaInterface ioMeta = stepMeta.getStepMetaInterface().getStepIOMeta();
-        
-        if (startHopStep!=null && !ioMeta.isInputAcceptor()) {
-        	gc.setAlpha(100);
+
+        boolean fade =  startHopStep!=null && (!ioMeta.isInputAcceptor() || startHopStep.equals(stepMeta));
+        fade=fade || mouseOverSteps.contains(stepMeta);
+        if (fade) {
+        	gc.setAlpha(150);
         }
 
         Point pt = stepMeta.getLocation();
@@ -653,6 +655,14 @@ public class TransPainter
     		}
         }
         
+        // Restore the previous alpha value
+        //
+        if (fade) {
+        	gc.setAlpha(alpha);
+        }
+
+
+        
         // Optionally drawn the mouse-over information
         //
         if (ioMeta.isInputAcceptor() && /*candidate==null && */ !stepMeta.equals(startHopStep) && ((mouseOverSteps.contains(stepMeta)) || showingHopInputIcons) ) {
@@ -661,7 +671,7 @@ public class TransPainter
         	Image hopInput = GUIResource.getInstance().getImageHopInput();
         	Rectangle inputBounds = hopInput.getBounds();
         	int xIcon = x-inputBounds.width-3;
-        	int yIcon = y-inputBounds.height/2;
+        	int yIcon = y;
         	gc.drawImage(hopInput, xIcon, yIcon);
         	areaOwners.add(new AreaOwner(AreaType.STEP_INPUT_HOP_ICON, xIcon, yIcon, inputBounds.width, inputBounds.height, stepMeta, ioMeta));
          }
@@ -671,7 +681,7 @@ public class TransPainter
         	Image hopOutput= GUIResource.getInstance().getImageHopOutput(); 
         	Rectangle outputBounds = hopOutput.getBounds();
         	int xIcon = x+iconsize+3;
-        	int yIcon = y-outputBounds.height/2;
+        	int yIcon = y;
         	gc.drawImage(hopOutput, xIcon, yIcon);
         	areaOwners.add(new AreaOwner(AreaType.STEP_OUTPUT_HOP_ICON, xIcon, yIcon, outputBounds.width, outputBounds.height, stepMeta, ioMeta));
         	rightIconIndex++;
@@ -699,9 +709,12 @@ public class TransPainter
         		 Image targetImage = GUIResource.getInstance().getImageHopTarget();
         		 Rectangle bounds = targetImage.getBounds();
         		 int xIcon = x+iconsize+3;
-        		 int yIcon = (y-(bounds.height/2))+((i+rightIconIndex)*(bounds.height+3));
+        		 int yIcon = y+(i+rightIconIndex)*(bounds.height+3);
         		 gc.drawImage(targetImage, xIcon, yIcon);
-        		 gc.drawText(stream.getDescription(), xIcon+bounds.width+5, yIcon);
+        		 Font oldFont = gc.getFont();
+        		 gc.setFont(GUIResource.getInstance().getFontSmall());
+        		 gc.drawText(stream.getDescription(), xIcon+bounds.width+5, yIcon, true);
+        		 gc.setFont(oldFont);
         		 areaOwners.add(new AreaOwner(AreaType.STEP_TARGET_HOP_ICON, xIcon, yIcon, bounds.width, bounds.height, stepMeta, stream));
         	 }
          }
@@ -714,14 +727,6 @@ public class TransPainter
           	gc.drawImage(hopError, xIcon, yIcon);
           	areaOwners.add(new AreaOwner(AreaType.STEP_ERROR_HOP_ICON, xIcon, yIcon, bounds.width, bounds.height, stepMeta, ioMeta));
           }
-
-
-         // Restore the previous alpha value
-         //
-         if (startHopStep!=null && !ioMeta.isInputAcceptor()) {
-         	gc.setAlpha(alpha);
-         }
-
     }
 
     public static final Point getNamePosition(GC gc, String string, Point screen, int iconsize)
@@ -782,9 +787,13 @@ public class TransPainter
                         	} else if (index==1) {
                         		col = red;
                         	} else {
-                                linestyle = SWT.LINE_DASH;
-                                activeLinewidth= 2;
-                        		col = orange; // Index not found / -1  TODO : figure out a way to put an error icon with tooltip on this hop.
+                        		if (Const.isEmpty(targetSteps[0]) && Const.isEmpty(targetSteps[1])) {
+                        			col = black; 
+                        		} else {
+	                                linestyle = SWT.LINE_DASH;
+	                                activeLinewidth= 2;
+	                        		col = orange; // Index not found / -1  TODO : figure out a way to put an error icon with tooltip on this hop.
+                        		}
                         	}
                         } else { 
 	                        if (Const.indexOfString(ts.getName(), targetSteps) >= 0)

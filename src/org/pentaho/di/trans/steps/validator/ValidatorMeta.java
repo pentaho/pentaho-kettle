@@ -104,8 +104,6 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
         for (int i=0;i<validations.length;i++)
         {
         	validations[i].setSourcingStepName(infoStreams[i].getStepname());  // Just to make sure
-        	validations[i].setSourcingStep(infoStreams[i].getStepMeta());
-        	
             retval.append("       ").append(validations[i].getXML()).append(Const.CR);
         }
         
@@ -171,8 +169,6 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
         for (int i=0;i<validations.length;i++)
         {
         	validations[i].setSourcingStepName(infoStreams[i].getStepname()); // Just to make sure
-        	validations[i].setSourcingStep(infoStreams[i].getStepMeta());
-
         	validations[i].saveRep(rep, id_transformation, id_step, i);
         }
 	}

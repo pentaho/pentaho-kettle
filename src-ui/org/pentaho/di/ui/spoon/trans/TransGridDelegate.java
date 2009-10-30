@@ -133,7 +133,7 @@ public class TransGridDelegate extends SpoonDelegate {
 		colinf[6].setAllignement(SWT.RIGHT);
 		colinf[7].setAllignement(SWT.RIGHT);
 		colinf[8].setAllignement(SWT.RIGHT);
-		colinf[9].setAllignement(SWT.RIGHT);
+		colinf[9].setAllignement(SWT.LEFT);
 		colinf[10].setAllignement(SWT.RIGHT);
 		colinf[11].setAllignement(SWT.RIGHT);
         colinf[12].setAllignement(SWT.RIGHT);

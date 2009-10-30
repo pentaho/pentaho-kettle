@@ -19,6 +19,8 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogTableField;
+import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -173,12 +175,14 @@ public class Mapping extends BaseStep implements StepInterface
 		// If there is no read/write logging step set, we can insert the data from the first mapping input/output step...
 		//
 		MappingInput[] mappingInputs = data.mappingTrans.findMappingInput();
-		if (data.mappingTransMeta.getReadStep()==null && mappingInputs!=null && mappingInputs.length>=1) {
-			data.mappingTransMeta.setReadStep(mappingInputs[0].getStepMeta());
+		LogTableField readField = data.mappingTransMeta.getTransLogTable().findField(TransLogTable.ID_LINES_READ);
+		if (readField.getSubject()==null && mappingInputs!=null && mappingInputs.length>=1) {
+			readField.setSubject(mappingInputs[0].getStepMeta());
 		}
 		MappingOutput[] mappingOutputs = data.mappingTrans.findMappingOutput();
-		if (data.mappingTransMeta.getWriteStep()==null && mappingOutputs!=null && mappingOutputs.length>=1) {
-			data.mappingTransMeta.setWriteStep(mappingOutputs[0].getStepMeta());
+		LogTableField writeField = data.mappingTransMeta.getTransLogTable().findField(TransLogTable.ID_LINES_WRITTEN);
+		if (writeField.getSubject()==null && mappingOutputs!=null && mappingOutputs.length>=1) {
+			writeField.setSubject(mappingOutputs[0].getStepMeta());
 		}
         
         // Before we add rowsets and all, we should note that the mapping step did not receive ANY input and output rowsets.
@@ -436,12 +440,12 @@ public class Mapping extends BaseStep implements StepInterface
 	        {
 	            StepMetaDataCombi sid = steps.get(i);
 	            BaseStep rt = (BaseStep)sid.step;
-	            if (data.mappingTransMeta.getReadStep()    !=null && rt.getStepname().equals(data.mappingTransMeta.getReadStep().getName()))     data.linesReadStepNr = i;
-	            if (data.mappingTransMeta.getInputStep()   !=null && rt.getStepname().equals(data.mappingTransMeta.getInputStep().getName()))    data.linesInputStepNr = i;
-	            if (data.mappingTransMeta.getWriteStep()   !=null && rt.getStepname().equals(data.mappingTransMeta.getWriteStep().getName()))    data.linesWrittenStepNr = i;
-	            if (data.mappingTransMeta.getOutputStep()  !=null && rt.getStepname().equals(data.mappingTransMeta.getOutputStep().getName()))   data.linesOutputStepNr = i;
-	            if (data.mappingTransMeta.getUpdateStep()  !=null && rt.getStepname().equals(data.mappingTransMeta.getUpdateStep().getName()))   data.linesUpdatedStepNr = i;
-	            if (data.mappingTransMeta.getRejectedStep()!=null && rt.getStepname().equals(data.mappingTransMeta.getRejectedStep().getName())) data.linesRejectedStepNr = i;
+	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_READ)))     data.linesReadStepNr = i;
+	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_INPUT)))    data.linesInputStepNr = i;
+	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_WRITTEN)))  data.linesWrittenStepNr = i;
+	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_OUTPUT)))   data.linesOutputStepNr = i;
+	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_UPDATED)))  data.linesUpdatedStepNr = i;
+	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_REJECTED))) data.linesRejectedStepNr = i;
 	        }
 	    }
 	}

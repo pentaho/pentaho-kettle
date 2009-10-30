@@ -278,8 +278,8 @@ public class TransHistoryDelegate extends SpoonDelegate {
      * Better ask confirmation
      */
     public void clearLogTable() {
-    	String logTable = transGraph.getManagedObject().getLogTable();
-    	DatabaseMeta databaseMeta = transGraph.getManagedObject().getLogConnection();
+    	String logTable = transGraph.getManagedObject().getTransLogTable().getTableName();
+    	DatabaseMeta databaseMeta = transGraph.getManagedObject().getTransLogTable().getDatabaseMeta();
     	
     	if (databaseMeta!=null && !Const.isEmpty(logTable)) {
     	
@@ -369,22 +369,24 @@ public class TransHistoryDelegate extends SpoonDelegate {
     	TransMeta transMeta = transGraph.getManagedObject();
         if (transMeta!=null && !Const.isEmpty(transMeta.getName()))
         {
-            if (transMeta.getLogConnection()!=null)
+        	DatabaseMeta logConnection = transMeta.getTransLogTable().getDatabaseMeta(); 
+        	String logTable = transMeta.getTransLogTable().getTableName();
+            if (logConnection!=null)
             {
-                if (!Const.isEmpty(transMeta.getLogTable()))
+                if (!Const.isEmpty(logTable))
                 {
                     Database database = null;
                     try
                     {
                         // open a connection
-                        database = new Database(loggingObject, transMeta.getLogConnection());
+                        database = new Database(loggingObject, logConnection);
                         database.shareVariablesWith(transMeta);
                         database.connect();
                         
                         RowMetaAndData params = new RowMetaAndData();
                         params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), transMeta.getName()); //$NON-NLS-1$
                         params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), transMeta.getName() + " (%"); //$NON-NLS-1$ //$NON-NLS-2$
-                        ResultSet resultSet = database.openQuery("SELECT * FROM "+transMeta.getLogTable()+" WHERE TRANSNAME LIKE ? OR TRANSNAME LIKE ? ORDER BY ID_BATCH desc", params.getRowMeta(), params.getData()); //$NON-NLS-1$ //$NON-NLS-2$
+                        ResultSet resultSet = database.openQuery("SELECT * FROM "+logTable+" WHERE TRANSNAME LIKE ? OR TRANSNAME LIKE ? ORDER BY ID_BATCH desc", params.getRowMeta(), params.getData()); //$NON-NLS-1$ //$NON-NLS-2$
                         // database.getRows("SELECT * FROM "+transMeta.getLogTable()+" WHERE TRANSNAME LIKE 'test-hops-%'", 0);
                         rowList = new ArrayList<RowMetaAndData>();
                         Object[] rowData = database.getRow(resultSet);
@@ -551,7 +553,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
         {
         	String message;
         	TransMeta transMeta = transGraph.getManagedObject();
-        	if (transMeta.getLogConnection()==null || Const.isEmpty(transMeta.getLogTable())) {
+        	if (transMeta.getTransLogTable().getDatabaseMeta()==null || Const.isEmpty(transMeta.getTransLogTable().getTableName())) {
         		message = BaseMessages.getString(PKG, "TransHistory.HistoryConfiguration.Message");
         	} else {
             	message = BaseMessages.getString(PKG, "TransHistory.PleaseRefresh.Message");

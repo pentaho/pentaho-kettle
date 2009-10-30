@@ -31,6 +31,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -181,8 +182,10 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				tabItem.setImage(GUIResource.getInstance().getImageTransGraph());
 				tabItem.setControl(transGraph);
 
+				TransLogTable logTable = transMeta.getTransLogTable();
+				
 				// OK, also see if we need to open a new history window.
-				if (transMeta.getLogConnection() != null && !Const.isEmpty(transMeta.getLogTable()) && !transMeta.isSlaveTransformation())
+				if (logTable.getDatabaseMeta() != null && !Const.isEmpty(logTable.getTableName()) && !transMeta.isSlaveTransformation())
 				{
 					transGraph.addAllTabs();
 					transGraph.extraViewTabFolder.setSelection(transGraph.transHistoryDelegate.getTransHistoryTab());

@@ -23,6 +23,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -260,23 +261,23 @@ public class SlaveServerTransStatus
     		
 			result.setNrErrors(result.getNrErrors()+stepStatus.getErrors()+(result.isStopped()?1:0)); // If the remote trans is stopped, count as an error
 			
-			if (transMeta.getReadStep()    !=null && stepStatus.getStepname().equals(transMeta.getReadStep().getName())) {
-				result.setNrLinesRead(result.getNrLinesRead()+ stepStatus.getLinesRead());
+			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_READ))) {
+				result.increaseLinesRead(stepStatus.getLinesRead());
 			}
-			if (transMeta.getInputStep()   !=null && stepStatus.getStepname().equals(transMeta.getInputStep().getName())) {
-				result.setNrLinesInput(result.getNrLinesInput() + stepStatus.getLinesInput());
+			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_INPUT))) {
+				result.increaseLinesInput(stepStatus.getLinesInput());
 			}
-			if (transMeta.getWriteStep()   !=null && stepStatus.getStepname().equals(transMeta.getWriteStep().getName())) {
-				result.setNrLinesWritten(result.getNrLinesWritten()+stepStatus.getLinesWritten());
+			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_WRITTEN))) {
+				result.increaseLinesWritten(stepStatus.getLinesWritten());
 			}
-			if (transMeta.getOutputStep()  !=null && stepStatus.getStepname().equals(transMeta.getOutputStep().getName())) {
-				result.setNrLinesOutput(result.getNrLinesOutput()+stepStatus.getLinesOutput());
+			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_OUTPUT))) {
+				result.increaseLinesOutput(stepStatus.getLinesOutput());
 			}
-			if (transMeta.getUpdateStep()  !=null && stepStatus.getStepname().equals(transMeta.getUpdateStep().getName())) {
-				result.setNrLinesUpdated(result.getNrLinesUpdated()+stepStatus.getLinesUpdated());
+			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_UPDATED))) {
+				result.increaseLinesUpdated(stepStatus.getLinesUpdated());
 			}
-            if (transMeta.getRejectedStep()!=null && stepStatus.getStepname().equals(transMeta.getRejectedStep().getName())) {
-            	result.setNrLinesRejected(result.getNrLinesRejected()+stepStatus.getLinesRejected());
+			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_REJECTED))) {
+            	result.increaseLinesRejected(stepStatus.getLinesRejected());
             }
             
             if (stepStatus.isStopped()) {

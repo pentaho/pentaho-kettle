@@ -1245,7 +1245,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     
   private void addStepMouseOverDelayTimer(final StepMeta stepMeta) {
 	  mouseOverSteps.add(stepMeta);
-		new Thread(new DelayTimer(5, new DelayListener() {
+		new Thread(new DelayTimer(3, new DelayListener() {
 			public void expired() {
 				mouseOverSteps.remove(stepMeta);
 				asyncRedraw();
@@ -1254,7 +1254,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	}
 
 	protected void asyncRedraw() {
-		getDisplay().asyncExec(new Runnable() {
+		spoon.getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				if (!TransGraph.this.isDisposed()) {
 					TransGraph.this.redraw();
@@ -2182,7 +2182,7 @@ private void addToolBar() {
       String[] targetSteps = prevStep.getStepMetaInterface().getStepIOMeta().getTargetStepnames();
       if (targetSteps != null) {
         for (int t = 0; t < targetSteps.length && enabled; t++) {
-          if (targetSteps[t].equalsIgnoreCase(stepMeta.getName()))
+          if (!Const.isEmpty(targetSteps[t]) && targetSteps[t].equalsIgnoreCase(stepMeta.getName()))
             enabled = false;
         }
       }
@@ -2196,9 +2196,6 @@ private void addToolBar() {
 		if (!spoon.getProperties().showToolTips())
 			return subject;
 
-		canvas.setToolTipText(""); // Some stupid bug in GTK+ causes a phantom
-									// tool tip to pop up, even if the tip is
-									// null
 		canvas.setToolTipText(null);
 
 		String newTip = null;

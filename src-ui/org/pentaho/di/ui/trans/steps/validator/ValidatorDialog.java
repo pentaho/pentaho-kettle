@@ -163,7 +163,6 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		StreamInterface[] infoStreams = input.getStepIOMeta().getInfoStreams();
 		for (int i=0;i<infoStreams.length;i++) {
 			input.getValidations()[i].setSourcingStepName(infoStreams[i].getStepname());
-			input.getValidations()[i].setSourcingStep(infoStreams[i].getStepMeta());
 		}
 
 		selectedField = null;
@@ -1055,7 +1054,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		}
 		
 		wSourceValues.setSelection(field.isSourcingValues());
-		wSourceStep.setText( field.getSourcingStep()!=null ? field.getSourcingStep().getName() : "" );
+		wSourceStep.setText( field.getSourcingStepName() );
 		wSourceField.setText(Const.NVL(field.getSourcingField(), ""));
 	}
 	
@@ -1142,7 +1141,6 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 			selectedField.setAllowedValues(wAllowedValues.getItems());
 			
 			selectedField.setSourcingValues(wSourceValues.getSelection());
-			selectedField.setSourcingStep( transMeta.findStep(wSourceStep.getText()) );
 			selectedField.setSourcingField(wSourceField.getText());
 
 			// Save the old info in the map
@@ -1214,7 +1212,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		StepIOMetaInterface ioMeta = input.getStepIOMeta();
 		ioMeta.clearStreams();
 		for (Validation validation : fields) {
-			ioMeta.addInfoStream(validation.getSourcingStepName(), validation.getSourcingStep(), validation.getName());
+			ioMeta.addInfoStream(validation.getSourcingStepName(), transMeta.findStep(validation.getSourcingStepName()), validation.getName());
 		}
 		
 		dispose();

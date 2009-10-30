@@ -8,9 +8,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 public class Validation implements Cloneable {
@@ -38,7 +37,6 @@ public class Validation implements Cloneable {
 	private String[] allowedValues;
 	private boolean  sourcingValues;
 	private String   sourcingStepName;
-	private StepMeta sourcingStep;
 	private String   sourcingField;
 	
 	private String   startString;
@@ -114,7 +112,7 @@ public class Validation implements Cloneable {
 		xml.append(XMLHandler.addTagValue("error_description", errorDescription));
 
 		xml.append(XMLHandler.addTagValue("is_sourcing_values", sourcingValues));
-		xml.append(XMLHandler.addTagValue("sourcing_step", sourcingStep!=null ? sourcingStep.getName() : null));
+		xml.append(XMLHandler.addTagValue("sourcing_step", sourcingStepName));
 		xml.append(XMLHandler.addTagValue("sourcing_field", sourcingField));
 
 		xml.append(XMLHandler.openTag(XML_TAG_ALLOWED));
@@ -258,7 +256,7 @@ public class Validation implements Cloneable {
 		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_error_description", errorDescription);
 		
 		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_is_sourcing_values", sourcingValues);
-		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_sourcing_step", sourcingStep!=null ? sourcingStep.getName() : null);
+		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_sourcing_step", sourcingStepName);
 		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_sourcing_field", sourcingField);
 		
 		if (allowedValues!=null) {
@@ -615,20 +613,6 @@ public class Validation implements Cloneable {
 	 */
 	public void setSourcingValues(boolean sourcingValues) {
 		this.sourcingValues = sourcingValues;
-	}
-
-	/**
-	 * @return the sourcingStep
-	 */
-	public StepMeta getSourcingStep() {
-		return sourcingStep;
-	}
-
-	/**
-	 * @param sourcingStep the sourcingStep to set
-	 */
-	public void setSourcingStep(StepMeta sourcingStep) {
-		this.sourcingStep = sourcingStep;
 	}
 
 	/**

@@ -144,7 +144,7 @@ public class LogWriter
         
         // Play it safe, if another console appender exists for org.pentaho, don't add another one...
         //
-        if (!consoleAppenderFound && false) {
+        if (!consoleAppenderFound) {
         	Layout patternLayout = new PatternLayout("%-5p %d{dd-MM HH:mm:ss,SSS} - %m%n");
         	ConsoleAppender consoleAppender = new ConsoleAppender(patternLayout);
         	consoleAppender.setName(STRING_PENTAHO_DI_CONSOLE_APPENDER);

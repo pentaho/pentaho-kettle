@@ -27,6 +27,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.SlaveStepCopyPartitionDistribution;
@@ -277,16 +278,7 @@ public class TransSplitter
         transMeta.setUsingUniqueConnections(originalTransformation.isUsingUniqueConnections());
         
         // Also set the logging details...
-        transMeta.setReadStep( originalTransformation.getReadStep() );
-        transMeta.setWriteStep( originalTransformation.getWriteStep() );
-        transMeta.setInputStep( originalTransformation.getInputStep() );
-        transMeta.setOutputStep( originalTransformation.getOutputStep() );
-        transMeta.setRejectedStep( originalTransformation.getRejectedStep() );
-
-        transMeta.setLogConnection( originalTransformation.getLogConnection() );
-        transMeta.setLogTable( originalTransformation.getLogTable() );
-        transMeta.setBatchIdUsed( originalTransformation.isBatchIdUsed() );
-        transMeta.setLogfieldUsed( originalTransformation.isLogfieldUsed() );
+        transMeta.setTransLogTable( (TransLogTable) originalTransformation.getTransLogTable().clone() );
         
         return transMeta;
     }

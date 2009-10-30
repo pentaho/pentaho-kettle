@@ -43,6 +43,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -1191,6 +1192,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			logDate     = new Date();
 			startDate   = Const.MIN_DATE;
 			endDate     = currentDate;
+
+			DatabaseMeta logConnection = transMeta.getTransLogTable().getDatabaseMeta();
+			String logTable = transMeta.getTransLogTable().getTableName();
+
 			SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
 			log.logBasic(BaseMessages.getString(PKG, "Trans.Log.TransformationCanBeReplayed") + df.format(currentDate)); //$NON-NLS-1$
 
@@ -1198,19 +1203,18 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             try
             {
             	boolean lockedTable = false;
-				DatabaseMeta logcon = transMeta.getLogConnection();
-    			if (logcon!=null)
+    			if (logConnection!=null)
     			{
-    				if ( transMeta.getLogTable() == null )
+    				if ( Const.isEmpty(logTable) )
     				{
     				    // It doesn't make sense to start database logging without a table
     					// to log to.
     					throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.NoLogTableDefined")); //$NON-NLS-1$ //$NON-NLS-2$
     				}
     				
-    			    ldb = new Database(this, logcon);
+    			    ldb = new Database(this, logConnection);
     			    ldb.shareVariablesWith(this);
-    			    if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningLogConnection",""+transMeta.getLogConnection())); //$NON-NLS-1$ //$NON-NLS-2$
+    			    if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningLogConnection",""+logConnection)); //$NON-NLS-1$ //$NON-NLS-2$
 					ldb.connect();
 
 					// Use transactions!
@@ -1219,29 +1223,29 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					// See if we have to add a batch id...
 					// Do this first, before anything else to lock the complete table exclusively
 					//
-					if (transMeta.isBatchIdUsed())
+					if (transMeta.getTransLogTable().isBatchIdUsed())
 					{
 						// Make sure we lock the logging table!
 						//
-						ldb.lockTables( new String[] { transMeta.getLogTable(), } );
+						ldb.lockTables( new String[] { logTable, } );
 						lockedTable=true;
 						
 						// Now insert value -1 to create a real write lock blocking the other requests.. FCFS
 						//
-						String sql = "INSERT INTO "+logcon.quoteField(transMeta.getLogTable())+"("+logcon.quoteField("ID_BATCH")+") values (-1)";
+						String sql = "INSERT INTO "+logConnection.quoteField(logTable)+"("+logConnection.quoteField("ID_BATCH")+") values (-1)";
 						ldb.execStatement(sql);
 						
 						
 						// Now this next lookup will stall on the other connections
 						//
-						Long id_batch = ldb.getNextValue(transMeta.getCounters(), transMeta.getLogTable(), "ID_BATCH");
+						Long id_batch = ldb.getNextValue(transMeta.getCounters(), logTable, "ID_BATCH");
 						setBatchId( id_batch.longValue() );
 					}
 
 					//
 					// Get the date range from the logging table: from the last end_date to now. (currentDate)
 					//
-                    Object[] lastr= ldb.getLastLogDate(transMeta.getLogTable(), transMeta.getName(), false, BaseMessages.getString(PKG, "Trans.Row.Status.End")); //$NON-NLS-1$
+                    Object[] lastr= ldb.getLastLogDate(logTable, transMeta.getName(), false, BaseMessages.getString(PKG, "Trans.Row.Status.End")); //$NON-NLS-1$
 					if (lastr!=null && lastr.length>0)
 					{
                         startDate = (Date) lastr[0]; 
@@ -1405,17 +1409,17 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     if ( endDate.compareTo( maxdesired )>0) endDate = maxdesired;
                 }
 
-                if (Const.isEmpty(transMeta.getName()) && logcon!=null && transMeta.getLogTable()!=null)
+                if (Const.isEmpty(transMeta.getName()) && logConnection!=null && logTable!=null)
                 {
                     throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.NoTransnameAvailableForLogging"));
                 }
 
                 
-                if (logcon!=null && transMeta.getLogTable()!=null && transMeta.getName()!=null)
+                if (logConnection!=null && logTable!=null && transMeta.getName()!=null)
                 {
                     ldb.writeLogRecord(
-                               transMeta.getLogTable(),
-                               transMeta.isBatchIdUsed(),
+                    		   logTable,
+                               transMeta.getTransLogTable().isBatchIdUsed(),
                                getBatchId(),
                                false,
                                transMeta.getName(),
@@ -1429,16 +1433,16 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 if (lockedTable) {
                 	// Remove the -1 record again...
                 	//
-					String sql = "DELETE FROM "+logcon.quoteField(transMeta.getLogTable())+" WHERE "+logcon.quoteField("ID_BATCH")+"= -1";
+					String sql = "DELETE FROM "+logConnection.quoteField(logTable)+" WHERE "+logConnection.quoteField("ID_BATCH")+"= -1";
 					ldb.execStatement(sql);
 					
-                	ldb.unlockTables( new String[] { transMeta.getLogTable(), } );
+                	ldb.unlockTables( new String[] { logTable, } );
                 }
 
             }
 			catch(KettleException e)
 			{
-				throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ErrorWritingLogRecordToTable",transMeta.getLogTable()), e); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ErrorWritingLogRecordToTable", logTable), e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			finally
 			{
@@ -1474,6 +1478,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		if (steps==null) return null;
 
 		Result result = new Result();
+		TransLogTable transLogTable = transMeta.getTransLogTable();
 
 		for (int i=0;i<steps.size();i++)
 		{
@@ -1482,13 +1487,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 			result.setNrErrors(result.getNrErrors()+sid.step.getErrors());
 			result.getResultFiles().putAll(rt.getResultFiles());
-
-			if (transMeta.getReadStep()    !=null && rt.getStepname().equals(transMeta.getReadStep().getName()))     result.setNrLinesRead(result.getNrLinesRead()+ rt.getLinesRead());
-			if (transMeta.getInputStep()   !=null && rt.getStepname().equals(transMeta.getInputStep().getName()))    result.setNrLinesInput(result.getNrLinesInput() + rt.getLinesInput());
-			if (transMeta.getWriteStep()   !=null && rt.getStepname().equals(transMeta.getWriteStep().getName()))    result.setNrLinesWritten(result.getNrLinesWritten()+rt.getLinesWritten());
-			if (transMeta.getOutputStep()  !=null && rt.getStepname().equals(transMeta.getOutputStep().getName()))   result.setNrLinesOutput(result.getNrLinesOutput()+rt.getLinesOutput());
-			if (transMeta.getUpdateStep()  !=null && rt.getStepname().equals(transMeta.getUpdateStep().getName()))   result.setNrLinesUpdated(result.getNrLinesUpdated()+rt.getLinesUpdated());
-            if (transMeta.getRejectedStep()!=null && rt.getStepname().equals(transMeta.getRejectedStep().getName())) result.setNrLinesRejected(result.getNrLinesRejected()+rt.getLinesRejected());
+			
+			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID_LINES_READ))) result.setNrLinesRead(result.getNrLinesRead()+ rt.getLinesRead());
+			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID_LINES_INPUT))) result.setNrLinesInput(result.getNrLinesInput() + rt.getLinesInput());
+			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID_LINES_WRITTEN))) result.setNrLinesWritten(result.getNrLinesWritten()+rt.getLinesWritten());
+			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID_LINES_OUTPUT))) result.setNrLinesOutput(result.getNrLinesOutput()+rt.getLinesOutput());
+			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID_LINES_UPDATED))) result.setNrLinesUpdated(result.getNrLinesUpdated()+rt.getLinesUpdated());
+			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID_LINES_REJECTED))) result.setNrLinesRejected(result.getNrLinesRejected()+rt.getLinesRejected());
 		}
 
 		result.setRows( transMeta.getResultRows() );
@@ -1515,7 +1520,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 		// Change the logging back to stream...
 		String log_string = null;
-		if (transMeta.isLogfieldUsed())
+		if (transMeta.getTransLogTable().isLogFieldUsed())
 		{
             StringBuffer buffer = CentralLogStore.getAppender().getBuffer(log.getLogChannelId(), true);
             log_string = buffer.append(Const.CR+"END"+Const.CR).toString();
@@ -1523,7 +1528,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 		// OK, we have some logging to do...
 		//
-		DatabaseMeta logcon = transMeta.getLogConnection();
+		DatabaseMeta logcon = transMeta.getTransLogTable().getDatabaseMeta();
+		String logTable = transMeta.getTransLogTable().getTableName();
 		if (logcon!=null)
 		{
 			Database ldb = new Database(this, logcon);
@@ -1534,11 +1540,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 				// Write to the standard transformation log table...
 				//
-				if (!Const.isEmpty(transMeta.getLogTable())) {
+				if (!Const.isEmpty(logTable)) {
 					ldb.writeLogRecord
 						(
-							transMeta.getLogTable(),
-							transMeta.isBatchIdUsed(),
+							logTable,
+							transMeta.getTransLogTable().isBatchIdUsed(),
 							getBatchId(),
 							false,
 							transMeta.getName(),
@@ -1595,7 +1601,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			}
 			catch(Exception e)
 			{
-				throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.ErrorWritingLogRecordToTable")+transMeta.getLogTable()+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.ErrorWritingLogRecordToTable")+transMeta.getTransLogTable().getTableName()+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			finally
 			{

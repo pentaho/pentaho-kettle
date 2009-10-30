@@ -394,6 +394,14 @@
 		<image-uri>ui/images/GRP.png</image-uri>
 	</step>
 
+	<step id="MemoryGroupBy">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MemoryGroupBy</description>
+		<class-name>org.pentaho.di.trans.steps.memgroupby.MemoryGroupByMeta</class-name>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MemoryGroupby</tooltip>
+		<image-uri>ui/images/GRP.png</image-uri>
+	</step>
+
 	<step id="AnalyticQuery">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AnalyticQuery</description>
 		<class-name>org.pentaho.di.trans.steps.analyticquery.AnalyticQueryMeta</class-name>

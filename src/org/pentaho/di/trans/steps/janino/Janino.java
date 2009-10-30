@@ -16,7 +16,9 @@
 package org.pentaho.di.trans.steps.janino;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.codehaus.janino.ExpressionEvaluator;
 import org.pentaho.di.core.Const;
@@ -108,34 +110,55 @@ public class Janino extends BaseStep implements StepInterface
         	//
         	if (data.expressionEvaluators==null) {
         		data.expressionEvaluators = new ExpressionEvaluator[meta.getFormula().length];
+        		data.argumentIndexes = new ArrayList<List<Integer>>();
         		
-        		String[] parameterNames = new String[data.outputRowMeta.size()];
-        		Class<?>[] parameterTypes = new Class[data.outputRowMeta.size()];
-        		for (int i=0;i<data.outputRowMeta.size();i++) {
-        			switch(data.outputRowMeta.getValueMeta(i).getType()) {
-        			case ValueMetaInterface.TYPE_STRING    : parameterTypes[i] = String.class; break;
-        			case ValueMetaInterface.TYPE_NUMBER    : parameterTypes[i] = Double.class; break;
-        			case ValueMetaInterface.TYPE_INTEGER   : parameterTypes[i] = Long.class; break;
-        			case ValueMetaInterface.TYPE_DATE      : parameterTypes[i] = Date.class; break;
-        			case ValueMetaInterface.TYPE_BIGNUMBER : parameterTypes[i] = BigDecimal.class; break;
-        			case ValueMetaInterface.TYPE_BOOLEAN   : parameterTypes[i] = Boolean.class; break;
-        			case ValueMetaInterface.TYPE_BINARY    : parameterTypes[i] = byte[].class; break;
-        			default: parameterTypes[i] = String.class; break;
-        			}
-        			parameterNames[i] = data.outputRowMeta.getValueMeta(i).getName();
+        		for (int i=0;i<meta.getFormula().length;i++) {
+        			List<Integer> argIndexes = new ArrayList<Integer>();
+        			data.argumentIndexes.add(argIndexes);
         		}
-        		        		
-                for (int i=0;i<meta.getFormula().length;i++) {
-                    JaninoMetaFunction fn = meta.getFormula()[i];
+
+        		for (int m=0;m<meta.getFormula().length;m++) {
+        			List<Integer> argIndexes = data.argumentIndexes.get(m);
+            		List<String> parameterNames = new ArrayList<String>();
+            		List<Class<?>> parameterTypes = new ArrayList<Class<?>>();
+
+	        		for (int i=0;i<data.outputRowMeta.size();i++) {
+	
+	        			ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta(i);
+
+            			
+            			// See if the value is being used in a formula...
+            			//
+            			if (meta.getFormula()[m].getFormula().contains(valueMeta.getName())) {
+            				// If so, add it to the indexes...
+            				argIndexes.add(i);
+
+            				Class<?> parameterType;
+        					switch(valueMeta.getType()) {
+    	        			case ValueMetaInterface.TYPE_STRING    : parameterType = String.class; break;
+    	        			case ValueMetaInterface.TYPE_NUMBER    : parameterType = Double.class; break;
+    	        			case ValueMetaInterface.TYPE_INTEGER   : parameterType = Long.class; break;
+    	        			case ValueMetaInterface.TYPE_DATE      : parameterType = Date.class; break;
+    	        			case ValueMetaInterface.TYPE_BIGNUMBER : parameterType = BigDecimal.class; break;
+    	        			case ValueMetaInterface.TYPE_BOOLEAN   : parameterType = Boolean.class; break;
+    	        			case ValueMetaInterface.TYPE_BINARY    : parameterType = byte[].class; break;
+    	        			default: parameterType = String.class; break;
+    	        			}
+        					parameterTypes.add(parameterType);
+                			parameterNames.add(valueMeta.getName());
+            			}
+            		}
+        			
+                    JaninoMetaFunction fn = meta.getFormula()[m];
                     if (!Const.isEmpty( fn.getFieldName())) {
                     	
                     	// Create the expression evaluator: is relatively slow so we do it only for the first row...
                     	//
-                    	data.expressionEvaluators[i] = new ExpressionEvaluator();
-                    	data.expressionEvaluators[i].setParameters(parameterNames, parameterTypes);
-                    	data.expressionEvaluators[i].setReturnType(Object.class);
-                    	data.expressionEvaluators[i].setThrownExceptions(new Class[] { Exception.class });
-                    	data.expressionEvaluators[i].cook(fn.getFormula());
+                    	data.expressionEvaluators[m] = new ExpressionEvaluator();
+                    	data.expressionEvaluators[m].setParameters(parameterNames.toArray(new String[parameterNames.size()]), parameterTypes.toArray(new Class<?>[parameterTypes.size()]));
+                    	data.expressionEvaluators[m].setReturnType(Object.class);
+                    	data.expressionEvaluators[m].setThrownExceptions(new Class[] { Exception.class });
+                    	data.expressionEvaluators[m].cook(fn.getFormula());
                     } else {
                     	throw new KettleException("Unable to find field name for formula ["+Const.NVL(fn.getFormula(), "")+"]");
                     }
@@ -146,12 +169,19 @@ public class Janino extends BaseStep implements StepInterface
             {
                 JaninoMetaFunction fn = meta.getFormula()[i];
 
+                List<Integer> argumentIndexes = data.argumentIndexes.get(i);
+                
                 // This method can only accept the specified number of values...
                 //
-                Object[] rowData = new Object[data.outputRowMeta.size()];
-                System.arraycopy(outputRowData, 0, rowData, 0, rowData.length);
+                Object[] argumentData = new Object[argumentIndexes.size()];
+                for (int x=0;x<argumentIndexes.size();x++) {
+                	int index = argumentIndexes.get(x);
+                	ValueMetaInterface outputValueMeta = data.outputRowMeta.getValueMeta(index);
+                	argumentData[x] = outputValueMeta.convertToNormalStorageType(outputRowData[index]);
+                }
+                // System.arraycopy(outputRowData, 0, argumentData, 0, argumentData.length);
                 
-                Object formulaResult  = data.expressionEvaluators[i].evaluate(rowData);
+                Object formulaResult  = data.expressionEvaluators[i].evaluate(argumentData);
                     
                 // Calculate the return type on the first row...
                 //

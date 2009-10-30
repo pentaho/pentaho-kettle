@@ -59,6 +59,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -151,6 +152,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     private String              filename;
 
+    /*
+    private DatabaseMeta        logConnection;
+
     private StepMeta            readStep;
 
     private StepMeta            writeStep;
@@ -164,9 +168,17 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     private StepMeta            rejectedStep;
 
     private String              logTable;
-    private String              stepPerformanceLogTable;
 
-    private DatabaseMeta        logConnection;
+    private boolean             useBatchId;
+
+    private boolean             logfieldUsed;
+
+    */
+    
+    private String              stepPerformanceLogTable;
+    
+    private TransLogTable       transLogTable;
+
 
     private int                 sizeRowset;
 
@@ -195,10 +207,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     private DBCache             dbCache;
 
     private ObjectId            id;
-
-    private boolean             useBatchId;
-
-    private boolean             logfieldUsed;
 
     private String              createdUser, modifiedUser;
 
@@ -248,8 +256,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     private List<FilenameChangedListener> filenameChangedListeners;
     
     private NamedParams namedParams = new NamedParamsDefault();
-    
-    private String logSizeLimit;
     
     private RepositoryLock repositoryLock;
     
@@ -455,15 +461,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		trans_version=null;
 		extended_description=null;
         setFilename(null);
-        readStep = null;
-        writeStep = null;
-        inputStep = null;
-        outputStep = null;
-        updateStep = null;
-        logTable = null;
+        
         stepPerformanceLogTable = null;
-        logConnection = null;
-
+        
+        transLogTable = TransLogTable.getDefault();
+        
         sizeRowset     = Const.ROWS_IN_ROWSET;
         sleepTimeEmpty = Const.TIMEOUT_GET_MILLIS;
         sleepTimeFull  = Const.TIMEOUT_PUT_MILLIS;
@@ -485,10 +487,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         clearUndo();
         clearChanged();
 
-        useBatchId = true; // Make this one the default from now on...
-        logfieldUsed = false; // Don't use the log-field by default...
-
-		createdUser = "-"; //$NON-NLS-1$
+        createdUser = "-"; //$NON-NLS-1$
 		createdDate = new Date(); //$NON-NLS-1$
 
         modifiedUser = "-"; //$NON-NLS-1$
@@ -2061,18 +2060,20 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         retval.append("    ").append(XMLHandler.closeTag(XML_TAG_PARAMETERS)).append(Const.CR); //$NON-NLS-1$
         
         retval.append("    <log>").append(Const.CR); //$NON-NLS-1$
-        retval.append("      ").append(XMLHandler.addTagValue("read", readStep == null ? "" : readStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      ").append(XMLHandler.addTagValue("write", writeStep == null ? "" : writeStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      ").append(XMLHandler.addTagValue("input", inputStep == null ? "" : inputStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      ").append(XMLHandler.addTagValue("output", outputStep == null ? "" : outputStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      ").append(XMLHandler.addTagValue("update", updateStep == null ? "" : updateStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      ").append(XMLHandler.addTagValue("rejected", rejectedStep == null ? "" : rejectedStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      ").append(XMLHandler.addTagValue("connection", logConnection == null ? "" : logConnection.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      ").append(XMLHandler.addTagValue("table", logTable)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("read", transLogTable.getSubjectString(TransLogTable.ID_LINES_READ))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("write", transLogTable.getSubjectString(TransLogTable.ID_LINES_WRITTEN))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("input", transLogTable.getSubjectString(TransLogTable.ID_LINES_INPUT))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("output", transLogTable.getSubjectString(TransLogTable.ID_LINES_OUTPUT))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("update", transLogTable.getSubjectString(TransLogTable.ID_LINES_UPDATED))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("rejected", transLogTable.getSubjectString(TransLogTable.ID_LINES_REJECTED))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("connection", transLogTable.getDatabaseMeta()==null ?  null  : transLogTable.getDatabaseMeta().getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("schema", transLogTable.getSchemaName())); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("table", transLogTable.getTableName())); //$NON-NLS-1$ //$NON-NLS-2$
+        
         retval.append("      ").append(XMLHandler.addTagValue("step_performance_table", stepPerformanceLogTable)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      ").append(XMLHandler.addTagValue("use_batchid", useBatchId)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      ").append(XMLHandler.addTagValue("use_logfield", logfieldUsed)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      ").append(XMLHandler.addTagValue("size_limit_lines", logSizeLimit)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("use_batchid", transLogTable.findField(TransLogTable.ID_BATCH_ID).isEnabled())); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("use_logfield", transLogTable.findField(TransLogTable.ID_LOG_FIELD).isEnabled())); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("size_limit_lines", transLogTable.getLogSizeLimit())); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    </log>").append(Const.CR); //$NON-NLS-1$
         retval.append("    <maxdate>").append(Const.CR); //$NON-NLS-1$
         retval.append("      ").append(XMLHandler.addTagValue("connection", maxDateConnection == null ? "" : maxDateConnection.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -2572,20 +2573,27 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 				}
 			}
 
-            // Logging method...
-            readStep = findStep(XMLHandler.getTagValue(infonode, "log", "read")); //$NON-NLS-1$ //$NON-NLS-2$
-            writeStep = findStep(XMLHandler.getTagValue(infonode, "log", "write")); //$NON-NLS-1$ //$NON-NLS-2$
-            inputStep = findStep(XMLHandler.getTagValue(infonode, "log", "input")); //$NON-NLS-1$ //$NON-NLS-2$
-            outputStep = findStep(XMLHandler.getTagValue(infonode, "log", "output")); //$NON-NLS-1$ //$NON-NLS-2$
-            updateStep = findStep(XMLHandler.getTagValue(infonode, "log", "update")); //$NON-NLS-1$ //$NON-NLS-2$
-            rejectedStep = findStep(XMLHandler.getTagValue(infonode, "log", "rejected")); //$NON-NLS-1$ //$NON-NLS-2$
-            String logcon = XMLHandler.getTagValue(infonode, "log", "connection"); //$NON-NLS-1$ //$NON-NLS-2$
-            logConnection = findDatabase(logcon);
-            logTable = XMLHandler.getTagValue(infonode, "log", "table"); //$NON-NLS-1$ //$NON-NLS-2$
-            stepPerformanceLogTable = XMLHandler.getTagValue(infonode, "log", "step_performance_table"); //$NON-NLS-1$ //$NON-NLS-2$
-            useBatchId = "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "use_batchid")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            logfieldUsed= "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "USE_LOGFIELD")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            logSizeLimit = XMLHandler.getTagValue(infonode, "log", "size_limit_lines"); //$NON-NLS-1$ //$NON-NLS-2$
+            // Read logging table information
+			//
+			Node logNode = XMLHandler.getSubNode(infonode, "log");
+			if (logNode!=null) {
+				transLogTable.findField(TransLogTable.ID_LINES_READ).setSubject(findStep(XMLHandler.getTagValue(infonode, "log", "read"))); //$NON-NLS-1$ //$NON-NLS-2$
+	            transLogTable.findField(TransLogTable.ID_LINES_WRITTEN).setSubject(findStep(XMLHandler.getTagValue(infonode, "log", "write"))); //$NON-NLS-1$ //$NON-NLS-2$
+	            transLogTable.findField(TransLogTable.ID_LINES_INPUT).setSubject(findStep(XMLHandler.getTagValue(infonode, "log", "input"))); //$NON-NLS-1$ //$NON-NLS-2$
+	            transLogTable.findField(TransLogTable.ID_LINES_OUTPUT).setSubject(findStep(XMLHandler.getTagValue(infonode, "log", "output"))); //$NON-NLS-1$ //$NON-NLS-2$
+	            transLogTable.findField(TransLogTable.ID_LINES_UPDATED).setSubject(findStep(XMLHandler.getTagValue(infonode, "log", "update"))); //$NON-NLS-1$ //$NON-NLS-2$
+	            transLogTable.findField(TransLogTable.ID_LINES_REJECTED).setSubject(findStep(XMLHandler.getTagValue(infonode, "log", "rejected"))); //$NON-NLS-1$ //$NON-NLS-2$
+	            
+	            transLogTable.setDatabaseMeta(findDatabase(XMLHandler.getTagValue(infonode, "log", "connection"))); //$NON-NLS-1$ //$NON-NLS-2$
+	            transLogTable.setSchemaName(XMLHandler.getTagValue(infonode, "log", "schema")); //$NON-NLS-1$ //$NON-NLS-2$
+	            transLogTable.setTableName(XMLHandler.getTagValue(infonode, "log", "table")); //$NON-NLS-1$ //$NON-NLS-2$
+	            transLogTable.findField(TransLogTable.ID_BATCH_ID).setEnabled( "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "use_batchid")) ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	            transLogTable.findField(TransLogTable.ID_LOG_FIELD).setEnabled( "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "USE_LOGFIELD")) ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	            transLogTable.setLogSizeLimit( XMLHandler.getTagValue(infonode, "log", "size_limit_lines") ); //$NON-NLS-1$ //$NON-NLS-2$
+	            transLogTable.setLogInterval( XMLHandler.getTagValue(infonode, "log", "interval") ); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+
+			stepPerformanceLogTable = XMLHandler.getTagValue(infonode, "log", "step_performance_table"); //$NON-NLS-1$ //$NON-NLS-2$
 
             // Maxdate range options...
             String maxdatcon = XMLHandler.getTagValue(infonode, "maxdate", "connection"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -3986,39 +3994,40 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         }
 
         // Also check the sql for the logtable...
+        //
         if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.GettingTheSQLForTransformationTask.Title2")); //$NON-NLS-1$
-        if (logConnection != null && ( !Const.isEmpty(logTable) || !Const.isEmpty(stepPerformanceLogTable)) )
+        if (transLogTable.getDatabaseMeta() != null && ( !Const.isEmpty(transLogTable.getTableName()) || !Const.isEmpty(stepPerformanceLogTable)) )
         {
-            Database db = new Database(this, logConnection);
+            Database db = new Database(this, transLogTable.getDatabaseMeta());
             db.shareVariablesWith(this);
             try
             {
                 db.connect();
                 
-                if (!Const.isEmpty(logTable)) 
+                if (!Const.isEmpty(transLogTable.getTableName())) 
                 {
-	                RowMetaInterface fields = Database.getTransLogrecordFields(false, useBatchId, logfieldUsed);
-	                String sql = db.getDDL(logTable, fields);
+	                RowMetaInterface fields = Database.getTransLogrecordFields(false, transLogTable.isBatchIdUsed(), transLogTable.isLogFieldUsed());
+	                String sql = db.getDDL(transLogTable.getTableName(), fields);
 	                if (sql != null && sql.length() > 0)
 	                {
-	                    SQLStatement stat = new SQLStatement("<this transformation>", logConnection, sql); //$NON-NLS-1$
+	                    SQLStatement stat = new SQLStatement("<this transformation>", transLogTable.getDatabaseMeta(), sql); //$NON-NLS-1$
 	                    stats.add(stat);
 	                }
                 }
                 if (!Const.isEmpty(stepPerformanceLogTable)) 
                 {
 	                RowMetaInterface fields = Database.getStepPerformanceLogrecordFields();
-	                String sql = db.getDDL(logTable, fields);
+	                String sql = db.getDDL(stepPerformanceLogTable, fields);
 	                if (sql != null && sql.length() > 0)
 	                {
-	                    SQLStatement stat = new SQLStatement("<this transformation>", logConnection, sql); //$NON-NLS-1$
+	                    SQLStatement stat = new SQLStatement("<this transformation>", transLogTable.getDatabaseMeta(), sql); //$NON-NLS-1$
 	                    stats.add(stat);
 	                }
                 }
             }
             catch (KettleDatabaseException dbe)
             {
-                SQLStatement stat = new SQLStatement("<this transformation>", logConnection, null); //$NON-NLS-1$
+                SQLStatement stat = new SQLStatement("<this transformation>", transLogTable.getDatabaseMeta(), null); //$NON-NLS-1$
                 stat.setError(BaseMessages.getString(PKG, "TransMeta.SQLStatement.ErrorDesc.ErrorObtainingTransformationLogTableInfo") + dbe.getMessage()); //$NON-NLS-1$
                 stats.add(stat);
             }
@@ -4223,9 +4232,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             if (monitor == null || !monitor.isCanceled())
             {
                 if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.CheckingTheLoggingTableTask.Title")); //$NON-NLS-1$
-                if (getLogConnection() != null)
+                if (transLogTable.getDatabaseMeta() != null)
                 {
-                    Database logdb = new Database(this, getLogConnection());
+                    Database logdb = new Database(this, transLogTable.getDatabaseMeta());
                     logdb.shareVariablesWith(this);
                     try
                     {
@@ -4234,15 +4243,15 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                                 null);
                         remarks.add(cr);
 
-                        if (getLogTable() != null)
+                        if (transLogTable.getTableName() != null)
                         {
-                            if (logdb.checkTableExists(getLogTable()))
+                            if (logdb.checkTableExists(transLogTable.getTableName()))
                             {
-                                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TransMeta.CheckResult.TypeResultOK.LoggingTableExists.Description", getLogTable() ), null); //$NON-NLS-1$ //$NON-NLS-2$
+                                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TransMeta.CheckResult.TypeResultOK.LoggingTableExists.Description", transLogTable.getTableName() ), null); //$NON-NLS-1$ //$NON-NLS-2$
                                 remarks.add(cr);
 
-                                RowMetaInterface fields = Database.getTransLogrecordFields(false, isBatchIdUsed(), isLogfieldUsed());
-                                String sql = logdb.getDDL(getLogTable(), fields);
+                                RowMetaInterface fields = Database.getTransLogrecordFields(false, transLogTable.isBatchIdUsed(), transLogTable.isLogFieldUsed());
+                                String sql = logdb.getDDL(transLogTable.getTableName(), fields);
                                 if (sql == null || sql.length() == 0)
                                 {
                                     cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TransMeta.CheckResult.TypeResultOK.CorrectLayout.Description"), null); //$NON-NLS-1$
@@ -4398,53 +4407,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         this.dependencies = dependencies;
     }
 
-    /**
-     * @return Returns the inputStep.
-     */
-    public StepMeta getInputStep()
-    {
-        return inputStep;
-    }
-
-    /**
-     * @param inputStep The inputStep to set.
-     */
-    public void setInputStep(StepMeta inputStep)
-    {
-        this.inputStep = inputStep;
-    }
-
-    /**
-     * @return Returns the logConnection.
-     */
-    public DatabaseMeta getLogConnection()
-    {
-        return logConnection;
-    }
-
-    /**
-     * @param logConnection The logConnection to set.
-     */
-    public void setLogConnection(DatabaseMeta logConnection)
-    {
-        this.logConnection = logConnection;
-    }
-
-    /**
-     * @return Returns the logTable.
-     */
-    public String getLogTable()
-    {
-        return logTable;
-    }
-
-    /**
-     * @param logTable The logTable to set.
-     */
-    public void setLogTable(String logTable)
-    {
-        this.logTable = logTable;
-    }
 
     /**
      * @return Returns the maxDateConnection.
@@ -4527,70 +4489,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     }
 
     /**
-     * @return Returns the outputStep.
-     */
-    public StepMeta getOutputStep()
-    {
-        return outputStep;
-    }
-
-    /**
-     * @param outputStep The outputStep to set.
-     */
-    public void setOutputStep(StepMeta outputStep)
-    {
-        this.outputStep = outputStep;
-    }
-
-    /**
-     * @return Returns the readStep.
-     */
-    public StepMeta getReadStep()
-    {
-        return readStep;
-    }
-
-    /**
-     * @param readStep The readStep to set.
-     */
-    public void setReadStep(StepMeta readStep)
-    {
-        this.readStep = readStep;
-    }
-
-    /**
-     * @return Returns the updateStep.
-     */
-    public StepMeta getUpdateStep()
-    {
-        return updateStep;
-    }
-
-    /**
-     * @param updateStep The updateStep to set.
-     */
-    public void setUpdateStep(StepMeta updateStep)
-    {
-        this.updateStep = updateStep;
-    }
-
-    /**
-     * @return Returns the writeStep.
-     */
-    public StepMeta getWriteStep()
-    {
-        return writeStep;
-    }
-
-    /**
-     * @param writeStep The writeStep to set.
-     */
-    public void setWriteStep(StepMeta writeStep)
-    {
-        this.writeStep = writeStep;
-    }
-
-    /**
      * @return Returns the sizeRowset.
      */
     public int getSizeRowset()
@@ -4620,38 +4518,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     public void setDbCache(DBCache dbCache)
     {
         this.dbCache = dbCache;
-    }
-
-    /**
-     * @return Returns the useBatchId.
-     */
-    public boolean isBatchIdUsed()
-    {
-        return useBatchId;
-    }
-
-    /**
-     * @param useBatchId The useBatchId to set.
-     */
-    public void setBatchIdUsed(boolean useBatchId)
-    {
-        this.useBatchId = useBatchId;
-    }
-
-    /**
-     * @return Returns the logfieldUsed.
-     */
-    public boolean isLogfieldUsed()
-    {
-        return logfieldUsed;
-    }
-
-    /**
-     * @param logfieldUsed The logfieldUsed to set.
-     */
-    public void setLogfieldUsed(boolean logfieldUsed)
-    {
-        this.logfieldUsed = logfieldUsed;
     }
 
     /**
@@ -4938,7 +4804,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             }
         }
 
-        if (logConnection!=null && logConnection.equals(databaseMeta)) return true;
+        if (transLogTable.getDatabaseMeta()!=null && transLogTable.getDatabaseMeta().equals(databaseMeta)) return true;
 
         return false;
     }
@@ -5341,22 +5207,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         this.slaveServers = slaveServers;
     }
 
-    /**
-     * @return the rejectedStep
-     */
-    public StepMeta getRejectedStep()
-    {
-        return rejectedStep;
-    }
-
-    /**
-     * @param rejectedStep the rejectedStep to set
-     */
-    public void setRejectedStep(StepMeta rejectedStep)
-    {
-        this.rejectedStep = rejectedStep;
-    }
-    
     /**
      * Check a step to see if there are no multiple steps to read from.
      * If so, check to see if the receiving rows are all the same in layout.
@@ -5900,20 +5750,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	public void copyParametersFrom(NamedParams params) {
 		namedParams.copyParametersFrom(params);		
 	}
-
-	/**
-	 * @return the logSizeLimit
-	 */
-	public String getLogSizeLimit() {
-		return logSizeLimit;
-	}
-
-	/**
-	 * @param logSizeLimit the logSizeLimit to set
-	 */
-	public void setLogSizeLimit(String logSizeLimit) {
-		this.logSizeLimit = logSizeLimit;
-	}
 	
 	public RepositoryObjectType getRepositoryElementType() {
 		return REPOSITORY_ELEMENT_TYPE;
@@ -5964,4 +5800,27 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	public LoggingObjectInterface getParent() {
 		return null; // TODO, we could also keep a link to the parent and job metadata
 	}
+
+	/**
+	 * @return the transLogTable
+	 */
+	public TransLogTable getTransLogTable() {
+		return transLogTable;
+	}
+
+	/**
+	 * @param transLogTable the transLogTable to set
+	 */
+	public void setTransLogTable(TransLogTable transLogTable) {
+		this.transLogTable = transLogTable;
+	}
+
+	public String[] getDatabaseNames() {
+		String[] names = new String[databases.size()];
+		for (int i=0;i<names.length;i++) {
+			names[i] = databases.get(i).getName();
+		}
+		return names;
+	}
+	
 }

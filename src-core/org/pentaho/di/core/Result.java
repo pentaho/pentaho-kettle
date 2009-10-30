@@ -539,4 +539,29 @@ public class Result implements Cloneable
 	public void setLogChannelId(String logChannelId) {
 		this.logChannelId = logChannelId;
 	}
+	
+	public void increaseLinesRead(long incr) {
+		nrLinesRead+=incr;
+	}
+	public void increaseLinesWritten(long incr) {
+		nrLinesWritten+=incr;
+	}
+	public void increaseLinesInput(long incr) {
+		nrLinesInput+=incr;
+	}
+	public void increaseLinesOutput(long incr) {
+		nrLinesOutput+=incr;
+	}
+	public void increaseLinesUpdated(long incr) {
+		nrLinesUpdated+=incr;
+	}
+	public void increaseLinesDeleted(long incr) {
+		nrLinesDeleted+=incr;
+	}
+	public void increaseLinesRejected(long incr) {
+		nrLinesRejected+=incr;
+	}
+	public void increaseErrors(long incr) {
+		nrErrors+=incr;
+	}
 }

@@ -16,6 +16,8 @@
 
 package org.pentaho.di.trans.steps.janino;
 
+import java.util.List;
+
 import org.codehaus.janino.ExpressionEvaluator;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -43,6 +45,7 @@ public class JaninoData extends BaseStepData implements StepDataInterface
 	public int[] replaceIndex;
 
 	public ExpressionEvaluator[] expressionEvaluators;
+	public List<List<Integer>> argumentIndexes;
 	
 	/**
 	 * 

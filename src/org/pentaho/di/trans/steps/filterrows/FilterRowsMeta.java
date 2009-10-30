@@ -136,7 +136,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			StreamInterface[] targetStreams = getStepIOMeta().getTargetStreams();
 
-			targetStreams[0].setStepname( XMLHandler.getTagValue(stepnode, "send_true_to") ); //$NON-NLS-1$
+			targetStreams[1].setStepname( XMLHandler.getTagValue(stepnode, "send_true_to") ); //$NON-NLS-1$
 			targetStreams[1].setStepname( XMLHandler.getTagValue(stepnode, "send_false_to") ); //$NON-NLS-1$
 
 			Node compare = XMLHandler.getSubNode(stepnode, "compare"); //$NON-NLS-1$
@@ -388,8 +388,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 
     		ioMeta = new StepIOMeta(true, true, false, false);
     	
-	    	ioMeta.addStream( new Stream(StreamType.TARGET, BaseMessages.getString(PKG, "FilterRowsMeta.InfoStream.True.Description")));
-	    	ioMeta.addStream(new Stream(StreamType.TARGET, BaseMessages.getString(PKG, "FilterRowsMeta.InfoStream.False.Description")));
+	    	ioMeta.addStream( new Stream(StreamType.TARGET, BaseMessages.getString(PKG, "FilterRowsMeta.InfoStream.True.Description")) );
+	    	ioMeta.addStream( new Stream(StreamType.TARGET, BaseMessages.getString(PKG, "FilterRowsMeta.InfoStream.False.Description")) );
     	}
     	
     	return ioMeta;

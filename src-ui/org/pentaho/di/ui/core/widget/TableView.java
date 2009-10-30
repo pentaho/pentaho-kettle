@@ -46,6 +46,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
@@ -278,7 +279,7 @@ public class TableView extends Composite
 		setRowNums();
 
         // Set the sort sign on the first column. (0)
-        table.setSortColumn(table.getColumn(sortfield));
+		table.setSortColumn(table.getColumn(sortfield));
         table.setSortDirection( sortingDescending ? SWT.DOWN : SWT.UP );
 		
 		// create a ControlEditor field to edit the contents of a cell
@@ -1866,15 +1867,22 @@ public class TableView extends Composite
 	{
 		before_edit = getItemText(row);
 		field_changed = false;
-		
-		if (columns[colnr-1].isReadOnly()) 
+
+		ColumnInfo colinfo = columns[colnr-1];
+
+		if (colinfo.isReadOnly()) 
 		{
 			return;
 		}
         
+        if (colinfo.getDisabledListener()!=null) {
+        	boolean disabled = colinfo.getDisabledListener().isFieldDisabled(rownr);
+        	if (disabled) return;
+        }
+
         if (text!=null && !text.isDisposed()) text.dispose();
 		
-        if (columns[colnr-1].getSelectionAdapter()!=null)
+        if (colinfo.getSelectionAdapter()!=null)
         {
             Event e = new Event();
             e.widget=this;
@@ -2040,9 +2048,14 @@ public class TableView extends Composite
 		field_changed = false;
 		ColumnInfo colinfo = columns[colnr-1];
 
-        if (columns[colnr-1].isReadOnly() && columns[colnr-1].getSelectionAdapter()!=null) 
+        if (colinfo.isReadOnly() && colinfo.getSelectionAdapter()!=null) 
         {
             return;
+        }
+        
+        if (colinfo.getDisabledListener()!=null) {
+        	boolean disabled = colinfo.getDisabledListener().isFieldDisabled(rownr);
+        	if (disabled) return;
         }
         
 		combo   = new CCombo(table, colinfo.isReadOnly()?SWT.READ_ONLY:SWT.NONE );
@@ -2063,8 +2076,8 @@ public class TableView extends Composite
 		if (tooltip!=null) combo.setToolTipText(tooltip); else combo.setToolTipText("");			
 		combo.setVisible(true);		
 		combo.addKeyListener(lsKeyCombo);
-        
-        if (columns[colnr-1].getSelectionAdapter()!=null)
+		
+        if (colinfo.getSelectionAdapter()!=null)
         {
             combo.addSelectionListener(columns[colnr-1].getSelectionAdapter());
         }
@@ -2083,11 +2096,18 @@ public class TableView extends Composite
 	{
 		before_edit = getItemText(row);
 		field_changed = false;
+		
+		ColumnInfo colinfo = columns[colnr-1];
 				
-		if (columns[colnr-1].isReadOnly()) 
+		if (colinfo.isReadOnly()) 
 		{
 			return;
 		}
+		
+        if (colinfo.getDisabledListener()!=null) {
+        	boolean disabled = colinfo.getDisabledListener().isFieldDisabled(rownr);
+        	if (disabled) return;
+        }
 		
 		button = new Button(table, SWT.PUSH );
         props.setLook(button, Props.WIDGET_STYLE_TABLE);
@@ -2095,7 +2115,7 @@ public class TableView extends Composite
         if (buttonText!=null) button.setText(buttonText);
 		button.setImage(GUIResource.getInstance().getImage("ui/images/edittext.png"));
 	
-		SelectionAdapter selAdpt = columns[colnr-1].getSelectionAdapter();
+		SelectionListener selAdpt = colinfo.getSelectionAdapter();
 		if (selAdpt!=null) button.addSelectionListener(selAdpt);
 	
 		button_rownr = rownr;		
@@ -2177,7 +2197,7 @@ public class TableView extends Composite
 				
                 // Check if the column has a sorted mark set. In that case, we need the header to be a bit wider...
                 //
-                if (c==sortfield) {
+                if (c==sortfield && sortable) {
                 	max+=15;
                 }
 			} 
@@ -2229,8 +2249,8 @@ public class TableView extends Composite
 			}
 			try
 			{
-                int extra = 30;
-                if (Const.isOSX() || Const.isLinux()) max*=1.25;
+                int extra = 25;
+                if (Const.isOSX()) max*=1.25;
                 tc.setWidth(max+extra);
 			}
 			catch(Exception e) {}
@@ -2836,6 +2856,12 @@ public class TableView extends Composite
     public void setSortable(boolean sortable)
     {
         this.sortable = sortable;
+        
+        if (!sortable) {
+        	table.setSortColumn(null);
+        } else {
+        	table.setSortColumn(table.getColumn(sortfield));
+        }
     }
     
     public void setFocusOnFirstEditableField()
