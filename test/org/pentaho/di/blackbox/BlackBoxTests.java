@@ -7,11 +7,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import static org.junit.Assert.*;
 
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.KettleEnvironment;
@@ -27,34 +33,55 @@ import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
-public class BlackBoxTests extends TestCase {
+@RunWith(Parameterized.class)
+public class BlackBoxTests {
 
-	protected int failures = 0;
-	protected File currentFile = null;
+	private File transFile;
+	private List<File> expectedFiles;
 	
-	public void testBlackBox() {
+	private static ArrayList<Object> allTests;
+	
+	public BlackBoxTests(File transFile, List<File> expectedFiles) {
+		this.transFile = transFile;
+		this.expectedFiles = expectedFiles;
+	}
+
+	@BeforeClass
+	public static void setupBlackbox() {
 		
 		// set the locale to English so that log file comparisons work
 		GlobalMessages.setLocale( new Locale("en-US") );
 		
 		// Keep all log rows for at least 60 minutes as per BaseCluster.java
 		CentralLogStore.init(0, 60);
+	}	
+
+	@Parameters
+	public static Collection getTests() {
 		
+		allTests = new ArrayList<Object>();
+		
+		// Traverse the "testfiles" tree to generate the collection		
 		// do not process the output folder, there won't be any tests there
 		File dir = new File("testfiles/blackbox/tests");
 		
 		assertTrue( dir.exists() );
 		assertTrue( dir.isDirectory() );
 		processDirectory( dir );
-		assertEquals( 0, failures );
+		
+		Object[][] d = new Object[allTests.size()][2];
+		
+		for (int i=0; i<allTests.size(); i++) {
+			Object params[] = (Object[])allTests.get(i);
+			
+			d[i][0] = params[0];
+			d[i][1] = params[1];
+		}
+			
+		return Arrays.asList(d);		
 	}
 	
-	protected void addFailure( String message ) {
-		System.err.println("failure: "+message);
-		failures++;
-	}
-	
-	protected void processDirectory( File dir ) {
+	protected static void processDirectory( File dir ) {
 		File files[] = dir.listFiles();
 		
 		// recursively process every folder in testfiles/blackbox/tests
@@ -77,24 +104,69 @@ public class BlackBoxTests extends TestCase {
 					// we found a transformation
 					// see if we can find an output file
 					List<File> expected = getExpectedOutputFile( dir, name.substring(0, name.length()-4) );
-					try {
-						runTrans( files[i], expected );
-					} catch ( AssertionFailedError failure ) {
-						// we're going to trap these so that we can continue with the other black box tests
-						System.err.println( failure.getMessage() );
-					}
+					
+					Object params[] = { files[i], expected };
+					allTests.add(params);
 				}
 				else if( name.endsWith(".kjb") ) 
 				{
 					// we found a job
-					System.out.println(name);
+					System.out.println("JOBS NOT YET HANDLED: " + name);
 				}
 			}
 		}
 		
 	}
-	
-	protected void runTrans( File transFile, List<File> expectedFiles ) {
+
+	/**
+	 * Tries to find an output file to match a transformation or job file
+	 * @param dir The directory to look in
+	 * @param baseName Name of the transformation or the job without the extension
+	 * @return
+	 */		
+	protected static List<File> getExpectedOutputFile( File dir, String baseName ) {
+		List<File> files = new ArrayList<File>();
+		
+		File expected = new File( dir, baseName + ".fail.txt" );
+		if (expected.exists()) {
+			files.add(expected);
+		}
+		
+		for (String extension : new String[] { ".txt", ".csv", ".xml" }) {
+			expected = new File( dir, baseName + ".expected"+extension );
+			if( expected.exists() ) 
+			{
+				files.add(expected);
+			}
+		
+			// now see if there are perhaps multiple files generated...
+			//
+			boolean found=true;
+			int nr=0;
+			while (found) {
+				expected = new File( dir, baseName + ".expected_"+nr+extension );
+				if( expected.exists() ) 
+				{
+					files.add(expected);
+					nr++;
+				}
+				else
+				{
+					found=false;
+				}
+			}
+		}
+		
+		return files;
+	}
+
+	// This is a generic JUnit 4 test that takes no parameters
+	@Test
+	public void runTransOrJob() throws Exception {
+		
+		// Params are:
+		//    File transFile
+		//    List<File> expectedFiles
 
 		System.out.println("Running: "+getPath(transFile));
 		LogWriter log;
@@ -104,74 +176,67 @@ public class BlackBoxTests extends TestCase {
         
         LogChannelInterface logChannel = new LogChannel("BlackBoxTest ["+transFile.toString()+"]");
 
-        int failsIn = failures;
         Result result = new Result();
         
-		try {
-			currentFile = transFile;
-			if( !transFile.exists() ) 
-			{
-				logChannel.logError( "Transformation does not exist: "+ getPath( transFile ) );
-				addFailure( "Transformation does not exist: "+ getPath( transFile ) );
-			}
-			if( expectedFiles.isEmpty() ) 
-			{
-				fail( "No expected output files found: "+ getPath( transFile ) );
-				addFailure("No expected output files found: "+ getPath( transFile ));
-			}
-
-			try {
-				result = runTrans( transFile.getAbsolutePath(), logChannel );
-				
-				// verify all the expected output files...
-				//
-		        for (int i=0;i<expectedFiles.size();i++) {
-		            
-		        	File expected = expectedFiles.get(i);
-		        	
-		    		// create a path to the expected output
-		    		String actualFile = expected.getAbsolutePath();
-		    		actualFile = actualFile.replaceFirst(".expected.", ".actual."); // single file case
-		    		actualFile = actualFile.replaceFirst(".expected_"+i+".", ".actual_"+i+"."); // multiple files case
-
-					File actual = new File( actualFile );
-					if( !result.getResult() ) {
-						fileCompare( expected, actual, logChannel );
-					}
-		        }			
-			} catch (KettleException ke) {
-				// this will get logged below
-			} catch ( AssertionFailedError failure ) {
-				// we're going to trap these so that we can continue with the other black box tests
-			} catch (Throwable t) {
-			}
-		} catch ( AssertionFailedError failure ) {
-			// we're going to trap these so that we can continue with the other black box tests
-			System.err.println( failure.getMessage() );
-			result.setResult(false);
+		if( !transFile.exists() ) 
+		{
+			logChannel.logError( "Transformation does not exist: "+ getPath( transFile ) );
+			addFailure( "Transformation does not exist: "+ getPath( transFile ) );
+			fail( "Transformation does not exist: "+ getPath(transFile) );
 		}
+		if( expectedFiles.isEmpty() ) 
+		{
+			addFailure("No expected output files found: "+ getPath( transFile ));
+			fail( "No expected output files found: "+ getPath( transFile ) );
+		}
+
+		result = runTrans( transFile.getAbsolutePath(), logChannel );
+		
+		// verify all the expected output files...
+		//
+        for (int i=0;i<expectedFiles.size();i++) {
+            
+        	File expected = expectedFiles.get(i);
+        	
+        	if (expected.getAbsoluteFile().toString().contains(".expected")) {
+        	
+        		// create a path to the expected output
+        		String actualFile = expected.getAbsolutePath();
+        		actualFile = actualFile.replaceFirst(".expected_"+i+".", ".actual_"+i+"."); // multiple files case
+        		actualFile = actualFile.replaceFirst(".expected.", ".actual."); // single file case
+        		File actual = new File( actualFile );
+        		if( !result.getResult() ) {
+        			fileCompare( expected, actual, logChannel );
+        		}
+        	}
+        }
+        
 		log.removeAppender(bufferAppender);
 		
-		if( !result.getResult() && expectedFiles.size()==1) {
-			
+        // We didn't get a result, so the only expected file should be a ".fail.txt" file
+        if( !result.getResult() ) {
 			File expected = expectedFiles.get(0);
 			String logStr = CentralLogStore.getAppender().getBuffer(result.getLogChannelId(), true).toString();
 			
-			String tmpFileName = transFile.getAbsolutePath().substring(0, transFile.getAbsolutePath().length()-4)+"-log.txt";
-			File logFile = new File( tmpFileName );
-			writeLog( logFile, logStr );
-			try {
-			if( fileCompare( expected, logFile, logChannel ) ) {
-				// we were expecting this to fail, reset any accumulated failures
-				failures = failsIn;
-			}
-			} catch (IOException e) {
-				addFailure("Could not compare log files: " + getPath( logFile ) + "" +e.getMessage());
-				fail( "Could not compare log files: " + getPath( logFile ) + "" +e.getMessage() );
-			}
-		}
+        	if (expectedFiles.size()==1 && expectedFiles.get(0).toString().contains(".fail.txt")) {
+    			String actualFailFileName = transFile.getAbsolutePath().substring(0, transFile.getAbsolutePath().length()-4)+".fail.actual.txt";
+    			File logFile = new File( actualFailFileName );
+    			writeLog( logFile, logStr );
+    			try {
+    				// Compare the log files - they should be identical 
+    				fileCompare(expected, logFile, logChannel);   
+    			} catch (IOException e) {
+    				addFailure("Could not compare log files: " + getPath( logFile ) + "" + e.getMessage());
+    				fail( "Could not compare failure log files " + getPath( logFile ) + " and " + getPath( expected) + ":" + e.getMessage() );
+    			}
+        		
+        	} else {
+        		// We haven't got a ".fail.txt" file, so this is a real failure
+        		fail("Error running " + getPath(transFile) + ":" + logStr);
+        	}
+        }	
 	}
-		
+
 	public void writeLog( File logFile, String logStr ) 
 	{
 		try {
@@ -249,9 +314,8 @@ public class BlackBoxTests extends TestCase {
 		
 	}
 	
-	public boolean fileCompare( File expected, File actual, LogChannelInterface log ) throws IOException {
+	public void fileCompare( File expected, File actual, LogChannelInterface log ) throws IOException {
 		
-		int failsIn = failures;
 		InputStream expectedStream = new FileInputStream( expected );
 		InputStream actualStream = new FileInputStream( actual );
 		
@@ -330,55 +394,19 @@ public class BlackBoxTests extends TestCase {
             		
             }
             if( totalGold != totalTmp ) {
-            	addFailure( "Comparison files are not same length" );
+            	String message = "Comparison files are not same length. " +
+            			"Expected=" + expected.getPath() + " (" + totalGold + ") " + 
+            			"Actual=" + actual.getPath() + " (" + totalTmp +")";
+            	addFailure(message);
+            	fail(message);
             }
         } catch (Exception e) {
         	addFailure("Error trying to compare output files: " + getPath(actual));
         	e.printStackTrace();
         	fail( "Error trying to compare output files: " + getPath(actual) );
         }
-        return failsIn == failures;
-		
 	}
 
-	/**
-	 * Tries to find an output file to match a transformation or job file
-	 * @param dir The directory to look in
-	 * @param baseName Name of the transformation or the job without the extension
-	 * @return
-	 */
-	protected List<File> getExpectedOutputFile( File dir, String baseName ) {
-		List<File> files = new ArrayList<File>();
-		
-		for (String extension : new String[] { ".txt", ".csv", ".xml" }) {
-			File expected;
-			expected = new File( dir, baseName + ".expected"+extension );
-			if( expected.exists() ) 
-			{
-				files.add(expected);
-			}
-		
-			// now see if there are perhaps multiple files generated...
-			//
-			boolean found=true;
-			int nr=0;
-			while (found) {
-				expected = new File( dir, baseName + ".expected_"+nr+extension );
-				if( expected.exists() ) 
-				{
-					files.add(expected);
-					nr++;
-				}
-				else
-				{
-					found=false;
-				}
-			}
-		}
-		
-		return files;
-	}
-	
 	public Result runTrans(String fileName, LogChannelInterface log) throws KettleException
 	{
 		Result result = new Result();
@@ -401,15 +429,19 @@ public class BlackBoxTests extends TestCase {
 			result = trans.getResult();
 			trans=null;
 			transMeta=null;
-			addFailure("Processing has stopped because of an error: " + getPath(fileName));
-			log.logError("BlackBoxTest", "Processing has stopped because of an error: " + getPath(fileName), e);
+			String message = "Processing has stopped because of an error: " + getPath(fileName); 
+			addFailure(message);
+			log.logError(message, e);
+			fail(message);
 			return result;
 		}
 
 		if (trans==null)
 		{
-			addFailure("Can't continue because the transformation couldn't be loaded." + getPath(fileName));
-            log.logError("BlackBoxTest", "Can't continue because the transformation couldn't be loaded." + getPath(fileName));
+			String message = "Can't continue because the transformation couldn't be loaded." + getPath(fileName);
+			addFailure(message);
+            log.logError(message);
+            fail(message);
             return result;
             
 		}
@@ -462,16 +494,22 @@ public class BlackBoxTests extends TestCase {
 		    // allocate & run the required sub-threads
 			try {
 				trans.execute(null); 
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
             	addFailure("Unable to prepare and initialize this transformation: " + getPath(fileName));
                 log.logError("BlackBoxTest", "Unable to prepare and initialize this transformation: " + getPath(fileName));
+                fail("Unable to prepare and initialize this transformation: " + getPath(fileName));
                 return null;
-            }
+			}
+
 			trans.waitUntilFinished();
 			trans.endProcessing(Database.LOG_STATUS_END);
+			result = trans.getResult();
 			
-			return trans.getResult();
+			// The result flag is not set to true by a transformation - set it to true if got no errors
+			// FIXME: Find out if there is a better way to check if a transformation has thrown an error
+			result.setResult(result.getNrErrors() == 0);
+			
+			return result;
 		}
 		catch(KettleException ke)
 		{
@@ -479,19 +517,12 @@ public class BlackBoxTests extends TestCase {
             log.logError("BlackBoxTest", "Unexpected error occurred: " + getPath(fileName), ke);
             result.setResult(false);
             result.setNrErrors(1);
+            fail("Unexpected error occurred: " + getPath(fileName));
             return result;
 		}
 	}
 
-	public static void main( String args[] ) {
-		try {
-			BlackBoxTests test = new BlackBoxTests();
-			test.setUp();
-			test.testBlackBox();
-			test.tearDown();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	protected void addFailure( String message ) {
+		System.err.println("failure: "+message);
 	}
-	
 }
