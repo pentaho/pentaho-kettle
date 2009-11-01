@@ -75,7 +75,7 @@
     <xml_main_element>Rows</xml_main_element>
     <xml_repeat_element>Row</xml_repeat_element>
     <file>
-      <name>testfiles&#47;blackbox&#47;tests&#47;trans&#47;steps&#47;csvinput&#47;svinput-trailing-data.actual</name>
+      <name>testfiles&#47;blackbox&#47;tests&#47;trans&#47;steps&#47;csvinput&#47;csvinput-trailing-data.actual</name>
       <extention>xml</extention>
       <do_not_open_newfile_init>N</do_not_open_newfile_init>
       <split>N</split>
