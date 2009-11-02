@@ -9,4 +9,6 @@ Rename the file to:
 
 	infobright_jni.dll
 
+Background: When using Spoon, the DLLs are picked up in libswt/win32. When using without the user interface (Pan, Kitchen etc.) the DLLs must be in the Windows system path.
+
 The Pentaho team.
