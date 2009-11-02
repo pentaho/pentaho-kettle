@@ -507,17 +507,19 @@ public class Condition implements Cloneable, XMLInterface
 				// 
 				for (int i=1;i<list.size();i++)
 				{
-				    // Composite : evaluate #i
-                    //
+				    // Composite : #i
+                    // Get right hand condition
 					Condition cb = list.get(i);
-					boolean cmp = cb.evaluate(rowMeta, r);
+					
+					// Evaluate the right hand side of the condition cb.evaluate() within the switch statement 
+					// because the condition may be short-circuited due to the left hand side (retval)
 					switch (cb.getOperator()) 
 					{
-					case Condition.OPERATOR_OR      : retval = retval || cmp; break;
-					case Condition.OPERATOR_AND     : retval = retval && cmp; break;
-					case Condition.OPERATOR_OR_NOT  : retval = retval || ( !cmp ); break;
-					case Condition.OPERATOR_AND_NOT : retval = retval && ( !cmp ); break;
-					case Condition.OPERATOR_XOR     : retval = retval ^ cmp; break;
+					case Condition.OPERATOR_OR      : retval = retval || cb.evaluate(rowMeta, r); break;
+					case Condition.OPERATOR_AND     : retval = retval && cb.evaluate(rowMeta, r); break;
+					case Condition.OPERATOR_OR_NOT  : retval = retval || ( !cb.evaluate(rowMeta, r) ); break;
+					case Condition.OPERATOR_AND_NOT : retval = retval && ( !cb.evaluate(rowMeta, r) ); break;
+					case Condition.OPERATOR_XOR     : retval = retval ^ cb.evaluate(rowMeta, r); break;
 					default: break;
 					}
 				}
