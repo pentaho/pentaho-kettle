@@ -1,0 +1,11 @@
+Copyright (C) 2009 Pentaho Corporation. All rights reserved.
+Originally developed by Pentaho Corporation provided under the terms of the
+GNU Lesser General Public License (LGPL), Version 2.1 or any later version.
+You may not use this file except in compliance with the license. If you need
+a copy of the license, please go to http://www.gnu.org/licenses/lgpl.txt.
+The Initial Developer is Pentaho Corporation.
+
+Software distributed under the GNU Lesser General Public License is
+distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either
+express or implied. Please refer to the license for the specific language
+governing you rights and limitations.
