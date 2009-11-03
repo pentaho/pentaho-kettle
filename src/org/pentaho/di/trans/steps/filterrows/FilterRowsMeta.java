@@ -115,7 +115,6 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
         StringBuffer retval = new StringBuffer(200);
         
         StreamInterface[] targetStreams = getStepIOMeta().getTargetStreams();
-
 		retval.append(XMLHandler.addTagValue("send_true_to", targetStreams[0].getStepname()));		 //$NON-NLS-1$
 		retval.append(XMLHandler.addTagValue("send_false_to", targetStreams[1].getStepname()));		 //$NON-NLS-1$
 		retval.append("    <compare>").append(Const.CR); //$NON-NLS-1$

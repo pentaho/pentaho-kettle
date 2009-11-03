@@ -434,6 +434,7 @@ public class KettleDatabaseRepositoryBase {
 	public static final String TRANS_ATTRIBUTE_STEP_PERFORMANCE_CAPTURING_DELAY = "STEP_PERFORMANCE_CAPTURING_DELAY";
 	public static final String TRANS_ATTRIBUTE_STEP_PERFORMANCE_LOG_TABLE = "STEP_PERFORMANCE_LOG_TABLE";
 	public static final String TRANS_ATTRIBUTE_LOG_SIZE_LIMIT = "LOG_SIZE_LIMIT";
+	public static final String TRANS_ATTRIBUTE_LOG_INTERVAL = "LOG_INTERVAL";
 	public static final String TRANS_ATTRIBUTE_PARAM_KEY         = "PARAM_KEY";
 	public static final String TRANS_ATTRIBUTE_PARAM_DEFAULT     = "PARAM_DEFAULT";
 	public static final String TRANS_ATTRIBUTE_PARAM_DESCRIPTION = "PARAM_DESC";

@@ -17,7 +17,6 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowSet;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.TransLogTable;
@@ -175,12 +174,12 @@ public class Mapping extends BaseStep implements StepInterface
 		// If there is no read/write logging step set, we can insert the data from the first mapping input/output step...
 		//
 		MappingInput[] mappingInputs = data.mappingTrans.findMappingInput();
-		LogTableField readField = data.mappingTransMeta.getTransLogTable().findField(TransLogTable.ID_LINES_READ);
+		LogTableField readField = data.mappingTransMeta.getTransLogTable().findField(TransLogTable.ID.LINES_READ);
 		if (readField.getSubject()==null && mappingInputs!=null && mappingInputs.length>=1) {
 			readField.setSubject(mappingInputs[0].getStepMeta());
 		}
 		MappingOutput[] mappingOutputs = data.mappingTrans.findMappingOutput();
-		LogTableField writeField = data.mappingTransMeta.getTransLogTable().findField(TransLogTable.ID_LINES_WRITTEN);
+		LogTableField writeField = data.mappingTransMeta.getTransLogTable().findField(TransLogTable.ID.LINES_WRITTEN);
 		if (writeField.getSubject()==null && mappingOutputs!=null && mappingOutputs.length>=1) {
 			writeField.setSubject(mappingOutputs[0].getStepMeta());
 		}
@@ -386,16 +385,6 @@ public class Mapping extends BaseStep implements StepInterface
             // Wait until the child transformation has finished.
             data.mappingTrans.waitUntilFinished();
             
-            // store some logging, close shop.
-            try
-            {
-                data.mappingTrans.endProcessing(Database.LOG_STATUS_END); //$NON-NLS-1$
-            }
-            catch(KettleException e)
-            {
-                logError(BaseMessages.getString(PKG, "Mapping.Log.UnableToLogEndOfTransformation")+e.toString()); //$NON-NLS-1$
-            }
-            
             // See if there was an error in the sub-transformation, in that case, flag error etc.
             if (data.mappingTrans.getErrors()>0)
             {
@@ -440,12 +429,12 @@ public class Mapping extends BaseStep implements StepInterface
 	        {
 	            StepMetaDataCombi sid = steps.get(i);
 	            BaseStep rt = (BaseStep)sid.step;
-	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_READ)))     data.linesReadStepNr = i;
-	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_INPUT)))    data.linesInputStepNr = i;
-	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_WRITTEN)))  data.linesWrittenStepNr = i;
-	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_OUTPUT)))   data.linesOutputStepNr = i;
-	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_UPDATED)))  data.linesUpdatedStepNr = i;
-	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_REJECTED))) data.linesRejectedStepNr = i;
+	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getStepnameRead()))     data.linesReadStepNr = i;
+	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getStepnameInput()))    data.linesInputStepNr = i;
+	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getStepnameWritten()))  data.linesWrittenStepNr = i;
+	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getStepnameOutput()))   data.linesOutputStepNr = i;
+	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getStepnameUpdated()))  data.linesUpdatedStepNr = i;
+	            if (rt.getStepname().equals(data.mappingTransMeta.getTransLogTable().getStepnameRejected())) data.linesRejectedStepNr = i;
 	        }
 	    }
 	}

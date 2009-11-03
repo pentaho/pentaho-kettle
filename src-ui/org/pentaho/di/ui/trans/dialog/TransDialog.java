@@ -50,7 +50,9 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
+import org.pentaho.di.core.logging.PerformanceLogTable;
 import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.UnknownParamException;
@@ -59,6 +61,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -81,7 +84,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class TransDialog extends Dialog
 {
-    private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+    public static final int	LOG_INDEX_TRANS	       = 0;
+    public static final int	LOG_INDEX_STEP	       = 1; // TODO
+    public static final int	LOG_INDEX_PERFORMANCE  = 2;
+    public static final int	LOG_INDEX_LINEAGE      = 3; // TODO
+	
+	private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     public static enum Tabs { TRANS_TAB, PARAM_TAB, LOG_TAB, DATE_TAB, DEP_TAB, MISC_TAB, MONITOR_TAB, };
   
@@ -121,9 +129,6 @@ public class TransDialog extends Dialog
 
 	private Button       wbLogconnection;
 	private CCombo       wLogconnection;
-	private Text         wStepLogtable;
-	private Button       wBatch;
-	private Button       wLogfield;
 	
 	private Label        wlLogSizeLimit;
 	private TextVar      wLogSizeLimit;
@@ -192,6 +197,7 @@ public class TransDialog extends Dialog
 	private Composite	wLogOptionsComposite;
 	private Composite	wLogComp;
 	private TransLogTable	transLogTable;
+	private PerformanceLogTable	performanceLogTable;
 	
   public TransDialog(Shell parent, int style, TransMeta transMeta, Repository rep, Tabs currentTab)
   {
@@ -214,6 +220,7 @@ public class TransDialog extends Dialog
         // Create a copy of the trans log table object
         //
         transLogTable = (TransLogTable) transMeta.getTransLogTable().clone();
+        performanceLogTable = (PerformanceLogTable) transMeta.getPerformanceLogTable().clone();
     }
 
 
@@ -733,30 +740,7 @@ public class TransDialog extends Dialog
         fdLogOptionsComposite.right= new FormAttachment(100, 0);
         fdLogOptionsComposite.bottom= new FormAttachment(100, 0);
         wLogOptionsComposite.setLayoutData(fdLogOptionsComposite);
-        
-        /*
-        
-        // step Log table...:
-        //
-        Label wlStepLogtable = new Label(wLogComp, SWT.RIGHT);
-        wlStepLogtable.setText(BaseMessages.getString(PKG, "TransDialog.StepLogtable.Label")); //$NON-NLS-1$
-        props.setLook(wlStepLogtable);
-        FormData fdlStepLogtable = new FormData();
-        fdlStepLogtable.left = new FormAttachment(0, 0);
-        fdlStepLogtable.right= new FormAttachment(middle, -margin);
-        fdlStepLogtable.top  = new FormAttachment(wLogtable, margin);
-        wlStepLogtable.setLayoutData(fdlStepLogtable);
-        wStepLogtable=new Text(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wStepLogtable);
-        wStepLogtable.addModifyListener(lsMod);
-        FormData fdStepLogtable = new FormData();
-        fdStepLogtable.left = new FormAttachment(middle, 0);
-        fdStepLogtable.top  = new FormAttachment(wLogtable, margin);
-        fdStepLogtable.right= new FormAttachment(100, 0);
-        wStepLogtable.setLayoutData(fdStepLogtable);
 
-		*/
-        
         FormData fdLogComp = new FormData();
         fdLogComp.left  = new FormAttachment(0, 0);
         fdLogComp.top   = new FormAttachment(0, 0);
@@ -779,7 +763,8 @@ public class TransDialog extends Dialog
     		// Remember the that was entered data...
     		//
 			switch(previousLogTableIndex) {
-			case 0 : getTransLogTableOptions(); break;
+			case LOG_INDEX_TRANS       : getTransLogTableOptions(); break;
+			case LOG_INDEX_PERFORMANCE : getPerformanceLogTableOptions(); break;
 			default: break;
 			}
     		
@@ -791,7 +776,8 @@ public class TransDialog extends Dialog
     		previousLogTableIndex=index;
 	    	
 			switch(index) {
-			case 0 : showTransLogTableOptions(); break;
+			case LOG_INDEX_TRANS : showTransLogTableOptions(); break;
+			case LOG_INDEX_PERFORMANCE : showPerformanceLogTableOptions(); break;
 			default: break;
 			}
     	}
@@ -799,25 +785,26 @@ public class TransDialog extends Dialog
 
 	private void getTransLogTableOptions() {
 		
-		// The connection...
-		//
-		transLogTable.setDatabaseMeta( transMeta.findDatabase(wLogconnection.getText()));
-		transLogTable.setSchemaName( wLogSchema.getText() );
-		transLogTable.setTableName( wLogTable.getText() );
-		transLogTable.setLogInterval( wLogInterval.getText() );
-		transLogTable.setLogSizeLimit( wLogSizeLimit.getText() );
-		
-		for (int i=0;i<transLogTable.getFields().size();i++) {
-			TableItem item = wOptionFields.table.getItem(i);
+		if (previousLogTableIndex==LOG_INDEX_TRANS) {
+			// The connection...
+			//
+			transLogTable.setDatabaseMeta( transMeta.findDatabase(wLogconnection.getText()));
+			transLogTable.setSchemaName( wLogSchema.getText() );
+			transLogTable.setTableName( wLogTable.getText() );
+			transLogTable.setLogInterval( wLogInterval.getText() );
+			transLogTable.setLogSizeLimit( wLogSizeLimit.getText() );
 			
-			LogTableField field = transLogTable.getFields().get(i);
-			field.setEnabled(item.getChecked());
-			field.setFieldName(item.getText(1));
-			if (field.isSubjectAllowed()) {
-				field.setSubject(transMeta.findStep(item.getText(2)));
+			for (int i=0;i<transLogTable.getFields().size();i++) {
+				TableItem item = wOptionFields.table.getItem(i);
+				
+				LogTableField field = transLogTable.getFields().get(i);
+				field.setEnabled(item.getChecked());
+				field.setFieldName(item.getText(1));
+				if (field.isSubjectAllowed()) {
+					field.setSubject(transMeta.findStep(item.getText(2)));
+				}
 			}
 		}
-		
 	}
 
 	private void showTransLogTableOptions() {
@@ -924,7 +911,7 @@ public class TransDialog extends Dialog
         fdLogInterval.top  = new FormAttachment(wLogTable, margin);
         fdLogInterval.right= new FormAttachment(100, 0);
         wLogInterval.setLayoutData(fdLogInterval);
-        wLogInterval.setText(Const.NVL(transLogTable.getTableName(), ""));
+        wLogInterval.setText(Const.NVL(transLogTable.getLogInterval(), ""));
 
         // The log size limit
         //
@@ -958,7 +945,7 @@ public class TransDialog extends Dialog
 		fdlFields.top  = new FormAttachment(wLogSizeLimit, margin*2);
 		wlFields.setLayoutData(fdlFields);
 		
-		final java.util.List<LogTableField> fields = transMeta.getTransLogTable().getFields();
+		final java.util.List<LogTableField> fields = transLogTable.getFields();
 		final int nrRows=fields.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[] {
@@ -972,7 +959,7 @@ public class TransDialog extends Dialog
 			public boolean isFieldDisabled(int rowNr) {
 				if (rowNr>=0 && rowNr<fields.size()) {
 					LogTableField field = fields.get(rowNr);
-					return !field.getId().startsWith("LINES_");
+					return field.isSubjectAllowed();
 				} else {
 					return true;
 				}
@@ -1003,6 +990,199 @@ public class TransDialog extends Dialog
 			if (disabledListener.isFieldDisabled(i)) {
 				item.setBackground(2, GUIResource.getInstance().getColorLightGray());
 			}
+		}
+		
+		wOptionFields.table.getColumn(0).setText(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Enabled"));
+        
+		FormData fdOptionFields = new FormData();
+		fdOptionFields.left = new FormAttachment(0, 0);
+		fdOptionFields.top  = new FormAttachment(wlFields, margin);
+		fdOptionFields.right  = new FormAttachment(100, 0);
+		fdOptionFields.bottom = new FormAttachment(100, 0);
+		wOptionFields.setLayoutData(fdOptionFields);
+		
+		wOptionFields.optWidth(true);
+
+		wOptionFields.layout();
+		wLogOptionsComposite.layout(true, true);
+		wLogComp.layout(true, true);
+	}
+	
+	private void getPerformanceLogTableOptions() {
+		
+		if (previousLogTableIndex==LOG_INDEX_PERFORMANCE) {
+			// The connection...
+			//
+			performanceLogTable.setDatabaseMeta( transMeta.findDatabase(wLogconnection.getText()));
+			performanceLogTable.setSchemaName( wLogSchema.getText() );
+			performanceLogTable.setTableName( wLogTable.getText() );
+			performanceLogTable.setLogInterval( wLogInterval.getText() );
+			
+			for (int i=0;i<performanceLogTable.getFields().size();i++) {
+				TableItem item = wOptionFields.table.getItem(i);
+				
+				LogTableField field = performanceLogTable.getFields().get(i);
+				field.setEnabled(item.getChecked());
+				field.setFieldName(item.getText(1));
+			}
+		}
+	}
+
+	
+	private void showPerformanceLogTableOptions() {
+		
+		// Log table connection...
+		//
+        Label wlLogconnection = new Label(wLogOptionsComposite, SWT.RIGHT);
+        wlLogconnection.setText(BaseMessages.getString(PKG, "TransDialog.LogConnection.Label")); //$NON-NLS-1$
+        props.setLook(wlLogconnection);
+        FormData fdlLogconnection = new FormData();
+        fdlLogconnection.left = new FormAttachment(0, 0);
+        fdlLogconnection.right= new FormAttachment(middle, -margin);
+        fdlLogconnection.top  = new FormAttachment(0, 0);
+        wlLogconnection.setLayoutData(fdlLogconnection);
+
+        wbLogconnection=new Button(wLogOptionsComposite, SWT.PUSH);
+        wbLogconnection.setText(BaseMessages.getString(PKG, "TransDialog.LogconnectionButton.Label")); //$NON-NLS-1$
+        wbLogconnection.addSelectionListener(new SelectionAdapter() 
+        {
+            public void widgetSelected(SelectionEvent e) 
+            {
+                DatabaseMeta databaseMeta = new DatabaseMeta();
+                databaseMeta.shareVariablesWith(transMeta);
+                DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
+                if (cid.open()!=null)
+                {
+                    transMeta.addDatabase(databaseMeta);
+                    wLogconnection.add(databaseMeta.getName());
+                    wLogconnection.select(wLogconnection.getItemCount()-1);
+                }
+            }
+        });
+        FormData fdbLogconnection = new FormData();
+        fdbLogconnection.right= new FormAttachment(100, 0);
+        fdbLogconnection.top  = new FormAttachment(0, 0);
+        wbLogconnection.setLayoutData(fdbLogconnection);
+
+        wLogconnection=new CCombo(wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wLogconnection);
+        wLogconnection.addModifyListener(lsMod);
+        FormData fdLogconnection = new FormData();
+        fdLogconnection.left = new FormAttachment(middle, 0);
+        fdLogconnection.top  = new FormAttachment(0, 0);
+        fdLogconnection.right= new FormAttachment(wbLogconnection, -margin);
+        wLogconnection.setLayoutData(fdLogconnection);
+        wLogconnection.setItems(transMeta.getDatabaseNames());
+        wLogconnection.setText(performanceLogTable.getDatabaseMeta()==null ? "" : transLogTable.getDatabaseMeta().getName());
+
+        // Log schema ...
+        //
+        Label wlLogSchema = new Label(wLogOptionsComposite, SWT.RIGHT);
+        wlLogSchema.setText(BaseMessages.getString(PKG, "TransDialog.LogSchema.Label")); //$NON-NLS-1$
+        props.setLook(wlLogSchema);
+        FormData fdlLogSchema = new FormData();
+        fdlLogSchema.left = new FormAttachment(0, 0);
+        fdlLogSchema.right= new FormAttachment(middle, -margin);
+        fdlLogSchema.top  = new FormAttachment(wLogconnection, margin);
+        wlLogSchema.setLayoutData(fdlLogSchema);
+        wLogSchema=new TextVar(transMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wLogSchema);
+        wLogSchema.addModifyListener(lsMod);
+        FormData fdLogSchema = new FormData();
+        fdLogSchema.left = new FormAttachment(middle, 0);
+        fdLogSchema.top  = new FormAttachment(wLogconnection, margin);
+        fdLogSchema.right= new FormAttachment(100, 0);
+        wLogSchema.setLayoutData(fdLogSchema);
+        wLogSchema.setText(Const.NVL(performanceLogTable.getSchemaName(), ""));
+
+        // Log table...
+        //
+        Label wlLogtable = new Label(wLogOptionsComposite, SWT.RIGHT);
+        wlLogtable.setText(BaseMessages.getString(PKG, "TransDialog.Logtable.Label")); //$NON-NLS-1$
+        props.setLook(wlLogtable);
+        FormData fdlLogtable = new FormData();
+        fdlLogtable.left = new FormAttachment(0, 0);
+        fdlLogtable.right= new FormAttachment(middle, -margin);
+        fdlLogtable.top  = new FormAttachment(wLogSchema, margin);
+        wlLogtable.setLayoutData(fdlLogtable);
+        wLogTable=new TextVar(transMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wLogTable);
+        wLogTable.addModifyListener(lsMod);
+        FormData fdLogtable = new FormData();
+        fdLogtable.left = new FormAttachment(middle, 0);
+        fdLogtable.top  = new FormAttachment(wLogSchema, margin);
+        fdLogtable.right= new FormAttachment(100, 0);
+        wLogTable.setLayoutData(fdLogtable);
+        wLogTable.setText(Const.NVL(performanceLogTable.getTableName(), ""));
+
+        // Log interval...
+        //
+        Label wlLogInterval = new Label(wLogOptionsComposite, SWT.RIGHT);
+        wlLogInterval.setText(BaseMessages.getString(PKG, "TransDialog.LogInterval.Label")); //$NON-NLS-1$
+        props.setLook(wlLogInterval);
+        FormData fdlLogInterval = new FormData();
+        fdlLogInterval.left = new FormAttachment(0, 0);
+        fdlLogInterval.right= new FormAttachment(middle, -margin);
+        fdlLogInterval.top  = new FormAttachment(wLogTable, margin);
+        wlLogInterval.setLayoutData(fdlLogInterval);
+        wLogInterval=new TextVar(transMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wLogInterval);
+        wLogInterval.addModifyListener(lsMod);
+        FormData fdLogInterval = new FormData();
+        fdLogInterval.left = new FormAttachment(middle, 0);
+        fdLogInterval.top  = new FormAttachment(wLogTable, margin);
+        fdLogInterval.right= new FormAttachment(100, 0);
+        wLogInterval.setLayoutData(fdLogInterval);
+        wLogInterval.setText(Const.NVL(performanceLogTable.getLogInterval(), ""));
+        
+        // Add the fields grid...
+        //
+		Label wlFields = new Label(wLogOptionsComposite, SWT.NONE);
+		wlFields.setText(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Label")); //$NON-NLS-1$
+ 		props.setLook(wlFields);
+		FormData fdlFields = new FormData();
+		fdlFields.left = new FormAttachment(0, 0);
+		fdlFields.top  = new FormAttachment(wLogInterval, margin*2);
+		wlFields.setLayoutData(fdlFields);
+		
+		final java.util.List<LogTableField> fields = performanceLogTable.getFields();
+		final int nrRows=fields.size();
+		
+		ColumnInfo[] colinf=new ColumnInfo[] {
+			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		};
+		
+		FieldDisabledListener disabledListener = new FieldDisabledListener() {
+			
+			public boolean isFieldDisabled(int rowNr) {
+				if (rowNr>=0 && rowNr<fields.size()) {
+					LogTableField field = fields.get(rowNr);
+					return field.isSubjectAllowed();
+				} else {
+					return true;
+				}
+			}
+		};
+		
+		colinf[1].setDisabledListener(disabledListener);
+		
+		wOptionFields=new TableView(transMeta, wLogOptionsComposite, 
+						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add a check to the left... 
+						      colinf, 
+						      nrRows,  
+						      true,
+						      lsMod,
+						      props
+						      );      
+		
+		wOptionFields.setSortable(false);
+		
+		for (int i=0;i<fields.size();i++) {
+			LogTableField field = fields.get(i);
+			TableItem item = wOptionFields.table.getItem(i);
+			item.setChecked(field.isEnabled());
+			item.setText(new String[] { "", Const.NVL(field.getFieldName(), ""), Const.NVL(field.getDescription(), "") });
 		}
 		
 		wOptionFields.table.getColumn(0).setText(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Enabled"));
@@ -1588,21 +1768,12 @@ public class TransDialog extends Dialog
 	private void ok() {
 		boolean OK = true;
 
-		/*
-		transMeta.setReadStep(transMeta.findStep(wReadStep.getText()));
-		transMeta.setWriteStep(transMeta.findStep(wWriteStep.getText()));
-		transMeta.setInputStep(transMeta.findStep(wInputStep.getText()));
-		transMeta.setOutputStep(transMeta.findStep(wOutputStep.getText()));
-		transMeta.setUpdateStep(transMeta.findStep(wUpdateStep.getText()));
-		transMeta.setRejectedStep(transMeta.findStep(wRejectedStep.getText()));
-		transMeta.setLogConnection(transMeta.findDatabase(wLogconnection.getText()));
-		transMeta.setLogTable(wLogtable.getText());
-		transMeta.setBatchIdUsed(wBatch.getSelection());
-		transMeta.setLogfieldUsed(wLogfield.getSelection());
-		*/
+		getTransLogTableOptions();
+		
+		transMeta.setTransLogTable(transLogTable);
+		transMeta.setPerformanceLogTable(performanceLogTable);
 		
 		// transMeta.setStepPerformanceLogTable(wStepLogtable.getText());
-		// transMeta.setLogSizeLimit(wLogSizeLimit.getText());
 		transMeta.setMaxDateConnection(transMeta.findDatabase(wMaxdateconnection.getText()));
 		transMeta.setMaxDateTable(wMaxdatetable.getText());
 		transMeta.setMaxDateField(wMaxdatefield.getText());
@@ -1775,15 +1946,20 @@ public class TransDialog extends Dialog
 		return sql.substring(idxfrom+5, idxto);
 	}
 
-	// Generate code for create table...
-	// Conversions done by Database
+	/** 
+	 * Generates code for create table...
+	 * Conversions done by Database
+	 */
 	private void sql()
 	{
+		getTransLogTableOptions();
+		getPerformanceLogTableOptions();
+		
 		DatabaseMeta ci = transMeta.findDatabase(wLogconnection.getText());
 		if (ci!=null)
 		{
-			String tablename = wLogTable.getText();
-			String stepTablename = wStepLogtable.getText();
+			String tablename = transLogTable.getTableName();
+			String stepTablename = performanceLogTable.getTableName();
 			
 			if (!Const.isEmpty(tablename) || !Const.isEmpty(stepTablename) )
 			{
@@ -1797,12 +1973,12 @@ public class TransDialog extends Dialog
 					String createTable = "";
 					
 					if (!Const.isEmpty(tablename)) {
-						r = Database.getTransLogrecordFields(false, wBatch.getSelection(), wLogfield.getSelection());
+						r = transLogTable.getLogRecord(LogStatus.START, null).getRowMeta();
 						createTable += db.getDDL(tablename, r);
 					}
 					
 					if (!Const.isEmpty(stepTablename)) {
-						r = Database.getStepPerformanceLogrecordFields();
+						r = performanceLogTable.getLogRecord(LogStatus.START, null).getRowMeta();
 						createTable += db.getDDL(stepTablename, r);
 					}
 					

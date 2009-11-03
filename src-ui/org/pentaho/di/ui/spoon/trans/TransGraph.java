@@ -81,7 +81,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
@@ -3388,14 +3387,7 @@ private void addToolBar() {
     if (running && !halting) {
       halting = true;
       trans.stopAll();
-      try {
-        trans.endProcessing("stop"); //$NON-NLS-1$
-        log.logMinimal(BaseMessages.getString(PKG, "TransLog.Log.ProcessingOfTransformationStopped")); //$NON-NLS-1$
-      } catch (KettleException e) {
-        new ErrorDialog(
-            shell,
-            BaseMessages.getString(PKG, "TransLog.Dialog.ErrorWritingLogRecord.Title"), BaseMessages.getString(PKG, "TransLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
-      }
+      log.logMinimal(BaseMessages.getString(PKG, "TransLog.Log.ProcessingOfTransformationStopped")); //$NON-NLS-1$
 
       running = false;
       initialized = false;
@@ -3548,42 +3540,40 @@ private void addToolBar() {
   private String lastLog;
 
   private void checkTransEnded() {
-    if (trans != null) {
-      if (trans.isFinished() && (running || halted)) {
-        log.logMinimal(BaseMessages.getString(PKG, "TransLog.Log.TransformationHasFinished")); //$NON-NLS-1$
+		if (trans != null) {
+			if (trans.isFinished() && (running || halted)) {
+				log.logMinimal(BaseMessages.getString(PKG, "TransLog.Log.TransformationHasFinished")); //$NON-NLS-1$
 
-        running = false;
-        initialized = false;
-        halted = false;
-        halting = false;
+				running = false;
+				initialized = false;
+				halted = false;
+				halting = false;
 
-        try {
-          trans.endProcessing(Database.LOG_STATUS_END); //$NON-NLS-1$
-          if (spoonHistoryRefresher != null)
-            spoonHistoryRefresher.markRefreshNeeded();
-        } catch (KettleException e) {
-          new ErrorDialog(
-              shell,
-              BaseMessages.getString(PKG, "TransLog.Dialog.ErrorWritingLogRecord.Title"), BaseMessages.getString(PKG, "TransLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
-        }
+				if (spoonHistoryRefresher != null)
+					spoonHistoryRefresher.markRefreshNeeded();
 
-        setControlStates();
+				setControlStates();
 
-        // OK, also see if we had a debugging session going on.
-        // If so and we didn't hit a breakpoint yet, display the show preview dialog...
-        //
-        if (debug && lastTransDebugMeta != null && lastTransDebugMeta.getTotalNumberOfHits() == 0) {
-          debug = false;
-          showLastPreviewResults();
-        }
-        debug = false;
-        
-        checkErrorVisuals();
-        
-        shell.getDisplay().asyncExec(new Runnable() { public void run() { redraw(); } });
-      }
-    }
-  }
+				// OK, also see if we had a debugging session going on.
+				// If so and we didn't hit a breakpoint yet, display the show
+				// preview dialog...
+				//
+				if (debug && lastTransDebugMeta != null && lastTransDebugMeta.getTotalNumberOfHits() == 0) {
+					debug = false;
+					showLastPreviewResults();
+				}
+				debug = false;
+
+				checkErrorVisuals();
+
+				shell.getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						redraw();
+					}
+				});
+			}
+		}
+	}
 
   private void checkErrorVisuals() {
       if (trans.getErrors()>0) {

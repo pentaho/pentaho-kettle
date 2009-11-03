@@ -544,17 +544,17 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 				transMeta.setTransstatus( (int) r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_TRANS_STATUS, -1L) );
 
 				TransLogTable logTable = transMeta.getTransLogTable();
-				logTable.findField(TransLogTable.ID_LINES_READ).setSubject( StepMeta.findStep(transMeta.getSteps(), new LongObjectId(r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_READ, -1L))) );
+				logTable.findField(TransLogTable.ID.LINES_READ).setSubject( StepMeta.findStep(transMeta.getSteps(), new LongObjectId(r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_READ, -1L))) );
 				
-				logTable.findField(TransLogTable.ID_LINES_READ).setSubject( StepMeta.findStep(transMeta.getSteps(), new LongObjectId(r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_WRITE, -1L))) ); 
-				logTable.findField(TransLogTable.ID_LINES_READ).setSubject( StepMeta.findStep(transMeta.getSteps(), new LongObjectId(r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_INPUT, -1L))) );
-				logTable.findField(TransLogTable.ID_LINES_READ).setSubject( StepMeta.findStep(transMeta.getSteps(), new LongObjectId(r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_OUTPUT, -1L))) );
-				logTable.findField(TransLogTable.ID_LINES_READ).setSubject( StepMeta.findStep(transMeta.getSteps(), new LongObjectId(r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_UPDATE, -1L))) );
+				logTable.findField(TransLogTable.ID.LINES_READ).setSubject( StepMeta.findStep(transMeta.getSteps(), new LongObjectId(r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_WRITE, -1L))) ); 
+				logTable.findField(TransLogTable.ID.LINES_READ).setSubject( StepMeta.findStep(transMeta.getSteps(), new LongObjectId(r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_INPUT, -1L))) );
+				logTable.findField(TransLogTable.ID.LINES_READ).setSubject( StepMeta.findStep(transMeta.getSteps(), new LongObjectId(r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_OUTPUT, -1L))) );
+				logTable.findField(TransLogTable.ID.LINES_READ).setSubject( StepMeta.findStep(transMeta.getSteps(), new LongObjectId(r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_UPDATE, -1L))) );
                
                 long id_rejected = getTransAttributeInteger(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_ID_STEP_REJECTED); // $NON-NLS-1$
                 if (id_rejected>0)
                 {
-                	logTable.findField(TransLogTable.ID_LINES_REJECTED).setSubject( StepMeta.findStep(transMeta.getSteps(), new LongObjectId(id_rejected)) ); //$NON-NLS-1$
+                	logTable.findField(TransLogTable.ID.LINES_REJECTED).setSubject( StepMeta.findStep(transMeta.getSteps(), new LongObjectId(id_rejected)) ); //$NON-NLS-1$
                 }
                 
                 logTable.setDatabaseMeta( DatabaseMeta.findDatabase(transMeta.getDatabases(), new LongObjectId(r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DATABASE_LOG, -1L))) ); //$NON-NLS-1$
@@ -599,8 +599,9 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
                 //
                 transMeta.setCapturingStepPerformanceSnapShots( getTransAttributeBoolean(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_CAPTURE_STEP_PERFORMANCE) );
                 transMeta.setStepPerformanceCapturingDelay( getTransAttributeInteger(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_CAPTURING_DELAY) );
-                transMeta.setStepPerformanceLogTable( getTransAttributeString(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_LOG_TABLE) );
+                transMeta.getPerformanceLogTable().setTableName( getTransAttributeString(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_LOG_TABLE) );
                 transMeta.getTransLogTable().setLogSizeLimit( getTransAttributeString(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_LOG_SIZE_LIMIT) );
+                transMeta.getTransLogTable().setLogInterval( getTransAttributeString(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_LOG_INTERVAL) );
 
                 loadRepParameters(transMeta);
            }
@@ -1048,15 +1049,15 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_TRANS_VERSION, ValueMetaInterface.TYPE_STRING), transMeta.getTransversion());
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_TRANS_STATUS, ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getTransstatus()  <0 ? -1L : transMeta.getTransstatus()));
 		TransLogTable logTable = transMeta.getTransLogTable();
-		StepMeta step = (StepMeta) logTable.getSubject(TransLogTable.ID_LINES_READ);
+		StepMeta step = (StepMeta) logTable.getSubject(TransLogTable.ID.LINES_READ);
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_READ, ValueMetaInterface.TYPE_INTEGER), step==null ? null : step.getObjectId());
-		step = (StepMeta) logTable.getSubject(TransLogTable.ID_LINES_WRITTEN);
+		step = (StepMeta) logTable.getSubject(TransLogTable.ID.LINES_WRITTEN);
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_WRITE, ValueMetaInterface.TYPE_INTEGER), step==null ? null : step.getObjectId());
-		step = (StepMeta) logTable.getSubject(TransLogTable.ID_LINES_INPUT);
+		step = (StepMeta) logTable.getSubject(TransLogTable.ID.LINES_INPUT);
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_INPUT, ValueMetaInterface.TYPE_INTEGER), step==null ? null : step.getObjectId());
-		step = (StepMeta) logTable.getSubject(TransLogTable.ID_LINES_OUTPUT);
+		step = (StepMeta) logTable.getSubject(TransLogTable.ID.LINES_OUTPUT);
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_OUTPUT, ValueMetaInterface.TYPE_INTEGER), step==null ? null : step.getObjectId());
-		step = (StepMeta) logTable.getSubject(TransLogTable.ID_LINES_UPDATED);
+		step = (StepMeta) logTable.getSubject(TransLogTable.ID.LINES_UPDATED);
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_UPDATE, ValueMetaInterface.TYPE_INTEGER), step==null ? null : step.getObjectId());
 		
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER), logTable.getDatabaseMeta()==null ? new LongObjectId(-1L).longValue() : new LongObjectId(logTable.getDatabaseMeta().getObjectId()).longValue());
@@ -1082,7 +1083,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 		repository.connectionDelegate.getDatabase().insertRow();
 		repository.connectionDelegate.getDatabase().closeInsert();
 
-		step = (StepMeta) logTable.getSubject(TransLogTable.ID_LINES_REJECTED);
+		step = (StepMeta) logTable.getSubject(TransLogTable.ID.LINES_REJECTED);
         if (step!=null)
         {
         	ObjectId rejectedId = step.getObjectId();
@@ -1097,9 +1098,10 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
         
         repository.connectionDelegate.insertTransAttribute(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_CAPTURE_STEP_PERFORMANCE, 0, transMeta.isCapturingStepPerformanceSnapShots()?"Y":"N");
         repository.connectionDelegate.insertTransAttribute(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_CAPTURING_DELAY, transMeta.getStepPerformanceCapturingDelay(), "");
-        repository.connectionDelegate.insertTransAttribute(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_LOG_TABLE, 0, transMeta.getStepPerformanceLogTable());
+        repository.connectionDelegate.insertTransAttribute(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_LOG_TABLE, 0, transMeta.getPerformanceLogTable().getTableName());
 
         repository.connectionDelegate.insertTransAttribute(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_LOG_SIZE_LIMIT, 0, transMeta.getTransLogTable().getLogSizeLimit());
+        repository.connectionDelegate.insertTransAttribute(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_LOG_INTERVAL, 0, transMeta.getTransLogTable().getLogInterval());
 
 		// Save the logging connection link...
 		if (logTable.getDatabaseMeta()!=null) repository.insertStepDatabase(transMeta.getObjectId(), null, logTable.getDatabaseMeta().getObjectId());

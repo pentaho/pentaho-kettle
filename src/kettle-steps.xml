@@ -154,6 +154,14 @@
 		<image-uri>ui/images/FLT.png</image-uri>
 	</step>
 
+	<step id="JavaFilter">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.JavaFilter</description>
+		<class-name>org.pentaho.di.trans.steps.javafilter.JavaFilterMeta</class-name>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.JavaFilter</tooltip>
+		<image-uri>ui/images/FLT.png</image-uri>
+	</step>
+
 	<step id="TextFileOutput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TextFileOutput</description>
 		<class-name>org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta</class-name>

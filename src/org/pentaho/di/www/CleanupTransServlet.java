@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -92,7 +91,6 @@ public class CleanupTransServlet extends BaseHttpServlet implements CarteServlet
 	            if (trans!=null)
 	            {
 	                trans.cleanup();
-	                trans.endProcessing(Database.LOG_STATUS_END);
 	                
 	                // Also release the server sockets
 	                message =  BaseMessages.getString(PKG, "TransStatusServlet.Log.TransCleanednup",transName);

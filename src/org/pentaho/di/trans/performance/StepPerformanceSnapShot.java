@@ -4,7 +4,10 @@ import java.util.Date;
 
 public class StepPerformanceSnapShot {
 
+	private long   batchId;
+	private int    seqNr;
 	private Date   date;
+	private String transName;
 	private String stepName;
 	private int    stepCopy;
 	private long   totalLinesRead;
@@ -39,9 +42,12 @@ public class StepPerformanceSnapShot {
 	 * @param totalLinesRejected
 	 * @param totalErrors
 	 */
-	public StepPerformanceSnapShot(Date date, String stepName, int stepCopy, long totalLinesRead, long totalLinesWritten,
+	public StepPerformanceSnapShot(int seqNr, long batchId, Date date, String transName, String stepName, int stepCopy, long totalLinesRead, long totalLinesWritten,
 			long totalLinesInput, long totalLinesOutput, long totalLinesUpdated, long totalLinesRejected, long totalErrors) {
+		this.seqNr = seqNr;
+		this.batchId = batchId;
 		this.date = date;
+		this.transName = transName;
 		this.stepName = stepName;
 		this.stepCopy = stepCopy;
 		this.totalLinesRead = totalLinesRead;
@@ -356,6 +362,48 @@ public class StepPerformanceSnapShot {
 	 */
 	public void setOutputBufferSize(long outputBufferSize) {
 		this.outputBufferSize = outputBufferSize;
+	}
+
+	/**
+	 * @return the seqNr
+	 */
+	public int getSeqNr() {
+		return seqNr;
+	}
+
+	/**
+	 * @param seqNr the seqNr to set
+	 */
+	public void setSeqNr(int seqNr) {
+		this.seqNr = seqNr;
+	}
+
+	/**
+	 * @return the batchId
+	 */
+	public long getBatchId() {
+		return batchId;
+	}
+
+	/**
+	 * @param batchId the batchId to set
+	 */
+	public void setBatchId(long batchId) {
+		this.batchId = batchId;
+	}
+
+	/**
+	 * @return the transName
+	 */
+	public String getTransName() {
+		return transName;
+	}
+
+	/**
+	 * @param transName the transName to set
+	 */
+	public void setTransName(String transName) {
+		this.transName = transName;
 	}
 
 }

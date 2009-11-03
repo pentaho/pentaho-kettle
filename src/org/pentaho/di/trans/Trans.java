@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -41,6 +42,7 @@ import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.TransLogTable;
@@ -189,6 +191,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     private final AtomicBoolean finished;
     private AtomicBoolean paused;
     private AtomicBoolean stopped;
+    
+    private AtomicInteger errors;
 
     private boolean readyToStart;    
     
@@ -203,6 +207,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     private NamedParams namedParams = new NamedParamsDefault();
 
 	private SocketRepository	socketRepository;
+
+	private Database transLogTableDatabaseConnection;
+	
+	private AtomicInteger stepPerformanceSnapshotSeqNr;
+
 	
 	public Trans() {
 		finished = new AtomicBoolean(false);
@@ -213,6 +222,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 		// This is needed for e.g. database 'unique' connections.
         threadName = Thread.currentThread().getName();
+        errors = new AtomicInteger(0);
+        
+        stepPerformanceSnapshotSeqNr = new AtomicInteger(0);
 	}
 
 	/**
@@ -540,6 +552,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         }
 
 		// Now (optionally) write start log record!
+        calculateBatchIdAndDateRange();
 		beginProcessing();
 
         // Set the partition-to-rowset mapping
@@ -721,7 +734,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 								//
 								addStepPerformanceSnapShot();
 								
-								fireTransFinishedListeners();
+								try {
+									fireTransFinishedListeners();
+								} catch(Exception e) {
+									step.setErrors(step.getErrors()+1L);
+									log.logError(getName(), BaseMessages.getString(PKG, "Trans.Log.UnexpectedErrorAtTransformationEnd")); //$NON-NLS-1$ //$NON-NLS-2$
+								}
 							}
 							
 							// If a step fails with an error, we want to kill/stop the others too...
@@ -741,6 +759,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     	if (transMeta.isCapturingStepPerformanceSnapShots()) 
     	{
+    		stepPerformanceSnapshotSeqNr = new AtomicInteger(0);
     		stepPerformanceSnapShots = new HashMap<String, List<StepPerformanceSnapShot>>();
     		
     		// Set a timer to collect the performance data from the running threads...
@@ -792,7 +811,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
      * 	Fire the listeners (if any are registered)
 	 *	
      */
-    protected void fireTransFinishedListeners() {
+    protected void fireTransFinishedListeners() throws KettleException {
     	
 		for (TransListener transListener : transListeners)
 		{
@@ -800,7 +819,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		}
 
 	}
-
+    
 	protected void addStepPerformanceSnapShot() {
     	if (transMeta.isCapturingStepPerformanceSnapShots())
     	{
@@ -813,7 +832,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	            BaseStep baseStep = (BaseStep)step;
 	            
 	            StepPerformanceSnapShot snapShot = new StepPerformanceSnapShot(
+	            		stepPerformanceSnapshotSeqNr.incrementAndGet(),
+	            		getBatchId(),
 	            		new Date(),
+	            		getName(),
 	            		stepMeta.getName(),
 	            		step.getCopy(),
 	            		step.getLinesRead(),
@@ -886,18 +908,18 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 	public int getErrors()
 	{
-        if (steps==null) return 0;
-
-		int errors=0;
+		int nrErrors = errors.get();
+		
+        if (steps==null) return nrErrors;
 
 		for (int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid = steps.get(i);
-			if (sid.step.getErrors()!=0L) errors++;
+			if (sid.step.getErrors()!=0L) nrErrors+=sid.step.getErrors();
 		}
-		if (errors>0) log.logError(BaseMessages.getString(PKG, "Trans.Log.TransformationErrorsDetected")); //$NON-NLS-1$
+		if (nrErrors>0) log.logError(BaseMessages.getString(PKG, "Trans.Log.TransformationErrorsDetected")); //$NON-NLS-1$
 
-		return errors;
+		return nrErrors;
 	}
 
 	public int getEnded()
@@ -1182,183 +1204,173 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 		return null;
 	}
+	
+	public void calculateBatchIdAndDateRange() throws KettleTransException {
+		
+		TransLogTable transLogTable = transMeta.getTransLogTable(); 
 
-	//
-	// Handle logging at start
-	public void beginProcessing() throws KettleTransException
-	{
-		try
-		{
-			// if (preview) return true;
+		currentDate = new Date();
+		logDate     = new Date();
+		startDate   = Const.MIN_DATE;
+		endDate     = currentDate;
+		
+		DatabaseMeta logConnection = transLogTable.getDatabaseMeta();
+		String logTable = transLogTable.getTableName();
 
-			currentDate = new Date();
-			logDate     = new Date();
-			startDate   = Const.MIN_DATE;
-			endDate     = currentDate;
+        try
+        {
+        	boolean lockedTable = false;
+			if (logConnection!=null)
+			{
+				
+				if ( Const.isEmpty(logTable) )
+				{
+				    // It doesn't make sense to start database logging without a table
+					// to log to.
+					throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.NoLogTableDefined")); //$NON-NLS-1$ //$NON-NLS-2$
+				}
 
-			DatabaseMeta logConnection = transMeta.getTransLogTable().getDatabaseMeta();
-			String logTable = transMeta.getTransLogTable().getTableName();
-
-			SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
-			log.logBasic(BaseMessages.getString(PKG, "Trans.Log.TransformationCanBeReplayed") + df.format(currentDate)); //$NON-NLS-1$
-
-            Database ldb = null;
-            try
-            {
-            	boolean lockedTable = false;
-    			if (logConnection!=null)
-    			{
-    				if ( Const.isEmpty(logTable) )
-    				{
-    				    // It doesn't make sense to start database logging without a table
-    					// to log to.
-    					throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.NoLogTableDefined")); //$NON-NLS-1$ //$NON-NLS-2$
-    				}
-    				
-    			    ldb = new Database(this, logConnection);
-    			    ldb.shareVariablesWith(this);
-    			    if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningLogConnection",""+logConnection)); //$NON-NLS-1$ //$NON-NLS-2$
-					ldb.connect();
-
-					// Use transactions!
-					ldb.setCommit(100);
+	            if (Const.isEmpty(transMeta.getName()) && logConnection!=null && logTable!=null)
+	            {
+	                throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.NoTransnameAvailableForLogging"));
+	            }
+	            
+			    transLogTableDatabaseConnection = new Database(this, logConnection);
+			    transLogTableDatabaseConnection.shareVariablesWith(this);
+			    if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningLogConnection",""+logConnection)); //$NON-NLS-1$ //$NON-NLS-2$
+			    transLogTableDatabaseConnection.connect();
+				
+				// See if we have to add a batch id...
+				// Do this first, before anything else to lock the complete table exclusively
+				//
+				if (transLogTable.isBatchIdUsed())
+				{
+					// Make sure we lock the logging table!
+					//
+					transLogTableDatabaseConnection.lockTables( new String[] { logTable, } );
+					lockedTable=true;
 					
-					// See if we have to add a batch id...
-					// Do this first, before anything else to lock the complete table exclusively
+					// Now insert value -1 to create a real write lock blocking the other requests.. FCFS
 					//
-					if (transMeta.getTransLogTable().isBatchIdUsed())
-					{
-						// Make sure we lock the logging table!
-						//
-						ldb.lockTables( new String[] { logTable, } );
-						lockedTable=true;
-						
-						// Now insert value -1 to create a real write lock blocking the other requests.. FCFS
-						//
-						String sql = "INSERT INTO "+logConnection.quoteField(logTable)+"("+logConnection.quoteField("ID_BATCH")+") values (-1)";
-						ldb.execStatement(sql);
-						
-						
-						// Now this next lookup will stall on the other connections
-						//
-						Long id_batch = ldb.getNextValue(transMeta.getCounters(), logTable, "ID_BATCH");
-						setBatchId( id_batch.longValue() );
-					}
+					String sql = "INSERT INTO "+logConnection.quoteField(logTable)+"("+logConnection.quoteField("ID_BATCH")+") values (-1)";
+					transLogTableDatabaseConnection.execStatement(sql);
+					
+					
+					// Now this next lookup will stall on the other connections
+					//
+					Long id_batch = transLogTableDatabaseConnection.getNextValue(transMeta.getCounters(), logTable, "ID_BATCH");
+					setBatchId( id_batch.longValue() );
+				}
 
+				//
+				// Get the date range from the logging table: from the last end_date to now. (currentDate)
+				//
+                Object[] lastr= transLogTableDatabaseConnection.getLastLogDate(logTable, transMeta.getName(), false, LogStatus.END); //$NON-NLS-1$
+				if (lastr!=null && lastr.length>0)
+				{
+                    startDate = (Date) lastr[0]; 
+                    if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.StartDateFound")+startDate); //$NON-NLS-1$
+				}
+
+				//
+				// OK, we have a date-range.
+				// However, perhaps we need to look at a table before we make a final judgment?
+				//
+				if (transMeta.getMaxDateConnection()!=null &&
+					transMeta.getMaxDateTable()!=null && transMeta.getMaxDateTable().length()>0 &&
+					transMeta.getMaxDateField()!=null && transMeta.getMaxDateField().length()>0
+					)
+				{
+					if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.LookingForMaxdateConnection",""+transMeta.getMaxDateConnection())); //$NON-NLS-1$ //$NON-NLS-2$
+					DatabaseMeta maxcon = transMeta.getMaxDateConnection();
+					if (maxcon!=null)
+					{
+						Database maxdb = new Database(this, maxcon);
+						maxdb.shareVariablesWith(this);
+						try
+						{
+							if(log.isDetailed())  log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningMaximumDateConnection")); //$NON-NLS-1$
+							maxdb.connect();
+
+							//
+							// Determine the endDate by looking at a field in a table...
+							//
+							String sql = "SELECT MAX("+transMeta.getMaxDateField()+") FROM "+transMeta.getMaxDateTable(); //$NON-NLS-1$ //$NON-NLS-2$
+							RowMetaAndData r1 = maxdb.getOneRow(sql);
+							if (r1!=null)
+							{
+								// OK, we have a value, what's the offset?
+								Date maxvalue = r1.getRowMeta().getDate(r1.getData(), 0);
+								if (maxvalue!=null)
+								{
+									if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.LastDateFoundOnTheMaxdateConnection")+r1); //$NON-NLS-1$
+									endDate.setTime( (long)( maxvalue.getTime() + ( transMeta.getMaxDateOffset()*1000 ) ));
+								}
+							}
+							else
+							{
+								if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.NoLastDateFoundOnTheMaxdateConnection")); //$NON-NLS-1$
+							}
+						}
+						catch(KettleException e)
+						{
+							throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ErrorConnectingToDatabase",""+transMeta.getMaxDateConnection()), e); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+						finally
+						{
+							maxdb.disconnect();
+						}
+					}
+					else
+					{
+						throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.MaximumDateConnectionCouldNotBeFound",""+transMeta.getMaxDateConnection())); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+				}
+
+				// Determine the last date of all dependend tables...
+				// Get the maximum in depdate...
+				if (transMeta.nrDependencies()>0)
+				{
+					if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.CheckingForMaxDependencyDate")); //$NON-NLS-1$
 					//
-					// Get the date range from the logging table: from the last end_date to now. (currentDate)
+					// Maybe one of the tables where this transformation is dependent on has changed?
+					// If so we need to change the start-date!
 					//
-                    Object[] lastr= ldb.getLastLogDate(logTable, transMeta.getName(), false, BaseMessages.getString(PKG, "Trans.Row.Status.End")); //$NON-NLS-1$
+					depDate = Const.MIN_DATE;
+					Date maxdepdate = Const.MIN_DATE;
 					if (lastr!=null && lastr.length>0)
 					{
-                        startDate = (Date) lastr[0]; 
-                        if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.StartDateFound")+startDate); //$NON-NLS-1$
+						Date dep = (Date) lastr[1]; // #1: last depdate
+						if (dep!=null)
+						{
+							maxdepdate = dep;
+							depDate    = dep;
+						}
 					}
 
-					//
-					// OK, we have a date-range.
-					// However, perhaps we need to look at a table before we make a final judment?
-					//
-					if (transMeta.getMaxDateConnection()!=null &&
-						transMeta.getMaxDateTable()!=null && transMeta.getMaxDateTable().length()>0 &&
-						transMeta.getMaxDateField()!=null && transMeta.getMaxDateField().length()>0
-						)
+					for (int i=0;i<transMeta.nrDependencies();i++)
 					{
-						if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.LookingForMaxdateConnection",""+transMeta.getMaxDateConnection())); //$NON-NLS-1$ //$NON-NLS-2$
-						DatabaseMeta maxcon = transMeta.getMaxDateConnection();
-						if (maxcon!=null)
+						TransDependency td = transMeta.getDependency(i);
+						DatabaseMeta depcon = td.getDatabase();
+						if (depcon!=null)
 						{
-							Database maxdb = new Database(this, maxcon);
-							maxdb.shareVariablesWith(this);
+							Database depdb = new Database(this, depcon);
 							try
 							{
-								if(log.isDetailed())  log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningMaximumDateConnection")); //$NON-NLS-1$
-								maxdb.connect();
+								depdb.connect();
 
-								//
-								// Determine the endDate by looking at a field in a table...
-								//
-								String sql = "SELECT MAX("+transMeta.getMaxDateField()+") FROM "+transMeta.getMaxDateTable(); //$NON-NLS-1$ //$NON-NLS-2$
-								RowMetaAndData r1 = maxdb.getOneRow(sql);
+								String sql = "SELECT MAX("+td.getFieldname()+") FROM "+td.getTablename(); //$NON-NLS-1$ //$NON-NLS-2$
+								RowMetaAndData r1 = depdb.getOneRow(sql);
 								if (r1!=null)
 								{
-									// OK, we have a value, what's the offset?
-									Date maxvalue = r1.getRowMeta().getDate(r1.getData(), 0);
+									// OK, we have a row, get the result!
+									Date maxvalue = (Date) r1.getData()[0];
 									if (maxvalue!=null)
 									{
-										if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.LastDateFoundOnTheMaxdateConnection")+r1); //$NON-NLS-1$
-										endDate.setTime( (long)( maxvalue.getTime() + ( transMeta.getMaxDateOffset()*1000 ) ));
-									}
-								}
-								else
-								{
-									if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.NoLastDateFoundOnTheMaxdateConnection")); //$NON-NLS-1$
-								}
-							}
-							catch(KettleException e)
-							{
-								throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ErrorConnectingToDatabase",""+transMeta.getMaxDateConnection()), e); //$NON-NLS-1$ //$NON-NLS-2$
-							}
-							finally
-							{
-								maxdb.disconnect();
-							}
-						}
-						else
-						{
-							throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.MaximumDateConnectionCouldNotBeFound",""+transMeta.getMaxDateConnection())); //$NON-NLS-1$ //$NON-NLS-2$
-						}
-					}
-
-					// Determine the last date of all dependend tables...
-					// Get the maximum in depdate...
-					if (transMeta.nrDependencies()>0)
-					{
-						if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.CheckingForMaxDependencyDate")); //$NON-NLS-1$
-						//
-						// Maybe one of the tables where this transformation is dependent on has changed?
-						// If so we need to change the start-date!
-						//
-						depDate = Const.MIN_DATE;
-						Date maxdepdate = Const.MIN_DATE;
-						if (lastr!=null && lastr.length>0)
-						{
-							Date dep = (Date) lastr[1]; // #1: last depdate
-							if (dep!=null)
-							{
-								maxdepdate = dep;
-								depDate    = dep;
-							}
-						}
-
-						for (int i=0;i<transMeta.nrDependencies();i++)
-						{
-							TransDependency td = transMeta.getDependency(i);
-							DatabaseMeta depcon = td.getDatabase();
-							if (depcon!=null)
-							{
-								Database depdb = new Database(this, depcon);
-								try
-								{
-									depdb.connect();
-
-									String sql = "SELECT MAX("+td.getFieldname()+") FROM "+td.getTablename(); //$NON-NLS-1$ //$NON-NLS-2$
-									RowMetaAndData r1 = depdb.getOneRow(sql);
-									if (r1!=null)
-									{
-										// OK, we have a row, get the result!
-										Date maxvalue = (Date) r1.getData()[0];
-										if (maxvalue!=null)
+										if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.FoundDateFromTable",td.getTablename(),"."+td.getFieldname()," = "+maxvalue.toString())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+										if ( maxvalue.getTime() > maxdepdate.getTime() )
 										{
-											if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.FoundDateFromTable",td.getTablename(),"."+td.getFieldname()," = "+maxvalue.toString())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-											if ( maxvalue.getTime() > maxdepdate.getTime() )
-											{
-												maxdepdate=maxvalue;
-											}
-										}
-										else
-										{
-											throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.UnableToGetDependencyInfoFromDB",td.getDatabase().getName()+".",td.getTablename()+".",td.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+											maxdepdate=maxvalue;
 										}
 									}
 									else
@@ -1366,82 +1378,140 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 										throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.UnableToGetDependencyInfoFromDB",td.getDatabase().getName()+".",td.getTablename()+".",td.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 									}
 								}
-								catch(KettleException e)
+								else
 								{
-									throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ErrorInDatabase",""+td.getDatabase()), e); //$NON-NLS-1$ //$NON-NLS-2$
-								}
-								finally
-								{
-									depdb.disconnect();
+									throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.UnableToGetDependencyInfoFromDB",td.getDatabase().getName()+".",td.getTablename()+".",td.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 								}
 							}
-							else
+							catch(KettleException e)
 							{
-								throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ConnectionCouldNotBeFound",""+td.getDatabase())); //$NON-NLS-1$ //$NON-NLS-2$
+								throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ErrorInDatabase",""+td.getDatabase()), e); //$NON-NLS-1$ //$NON-NLS-2$
 							}
-							if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.Maxdepdate")+(XMLHandler.date2string(maxdepdate))); //$NON-NLS-1$ //$NON-NLS-2$
+							finally
+							{
+								depdb.disconnect();
+							}
 						}
-
-						// OK, so we now have the maximum depdate;
-						// If it is larger, it means we have to read everything back in again.
-						// Maybe something has changed that we need!
-						//
-						if (maxdepdate.getTime() > depDate.getTime())
+						else
 						{
-							depDate = maxdepdate;
-							startDate = Const.MIN_DATE;
+							throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ConnectionCouldNotBeFound",""+td.getDatabase())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
+						if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.Maxdepdate")+(XMLHandler.date2string(maxdepdate))); //$NON-NLS-1$ //$NON-NLS-2$
 					}
-					else
+
+					// OK, so we now have the maximum depdate;
+					// If it is larger, it means we have to read everything back in again.
+					// Maybe something has changed that we need!
+					//
+					if (maxdepdate.getTime() > depDate.getTime())
 					{
-						depDate = currentDate;
+						depDate = maxdepdate;
+						startDate = Const.MIN_DATE;
 					}
 				}
+				else
+				{
+					depDate = currentDate;
+				}
+			}
 
-                // OK, now we have a date-range.  See if we need to set a maximum!
-                if (transMeta.getMaxDateDifference()>0.0 && // Do we have a difference specified?
-                    startDate.getTime() > Const.MIN_DATE.getTime() // Is the startdate > Minimum?
-                    )
+            // OK, now we have a date-range.  See if we need to set a maximum!
+            if (transMeta.getMaxDateDifference()>0.0 && // Do we have a difference specified?
+                startDate.getTime() > Const.MIN_DATE.getTime() // Is the startdate > Minimum?
+                )
+            {
+                // See if the end-date is larger then Start_date + DIFF?
+                Date maxdesired = new Date( startDate.getTime()+((long)transMeta.getMaxDateDifference()*1000) );
+
+                // If this is the case: lower the end-date. Pick up the next 'region' next time around.
+                // We do this to limit the workload in a single update session (e.g. for large fact tables)
+                //
+                if ( endDate.compareTo( maxdesired )>0) endDate = maxdesired;
+            }
+            
+            if (lockedTable) {
+            	// Remove the -1 record again...
+            	//
+				String sql = "DELETE FROM "+logConnection.quoteField(logTable)+" WHERE "+logConnection.quoteField("ID_BATCH")+"= -1";
+				transLogTableDatabaseConnection.execStatement(sql);
+				
+            	transLogTableDatabaseConnection.unlockTables( new String[] { logTable, } );
+            }
+        }
+		catch(KettleException e)
+		{
+			throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ErrorCalculatingDateRange", logTable), e); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		finally
+		{
+			// Be careful, We DO NOT close the trans log table database connection!!!
+			// It's closed later in beginProcessing() to prevent excessive connect/disconnect repetitions.
+		}
+
+	}
+
+	//
+	// Handle logging at start
+	public void beginProcessing() throws KettleTransException
+	{
+		TransLogTable transLogTable = transMeta.getTransLogTable(); 
+        int intervalInSeconds = Const.toInt( environmentSubstitute(transLogTable.getLogInterval()), -1);
+
+        try
+		{
+			String logTable = transLogTable.getTableName();
+
+			SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
+			log.logBasic(BaseMessages.getString(PKG, "Trans.Log.TransformationCanBeReplayed") + df.format(currentDate)); //$NON-NLS-1$
+
+            try
+            {
+                if (transLogTableDatabaseConnection!=null && !Const.isEmpty(logTable) && !Const.isEmpty(transMeta.getName()))
                 {
-                    // See if the end-date is larger then Start_date + DIFF?
-                    Date maxdesired = new Date( startDate.getTime()+((long)transMeta.getMaxDateDifference()*1000) );
-
-                    // If this is the case: lower the end-date. Pick up the next 'region' next time around.
-                    // We do this to limit the workload in a single update session (e.g. for large fact tables)
+                	transLogTableDatabaseConnection.writeLogRecord(transLogTable, LogStatus.START, this);
+                    
+                    // If we need to do periodic logging, make sure to install a timer for this...
                     //
-                    if ( endDate.compareTo( maxdesired )>0) endDate = maxdesired;
+                    if (intervalInSeconds>0) {
+	                    final Timer timer = new Timer(getName()+" - interval logging timer");
+	                    TimerTask timerTask = new TimerTask() {
+	            			public void run() {
+	            				try {
+	            					endProcessing(LogStatus.RUNNING);
+	            				} catch(Exception e) {
+	            					log.logError(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformIntervalLogging"), e);
+	            					// Also stop the show...
+	            					//
+	            					errors.incrementAndGet();
+	            					stopAll();
+	            				}
+	            			}
+	                    };
+	                    timer.schedule(timerTask, intervalInSeconds*1000, intervalInSeconds*1000);
+	                    
+	                    addTransListener(new TransListener() {
+	    					public void transFinished(Trans trans) {
+	    						timer.cancel();						
+	    					}
+	    				});
+                    }
+                    
+                    // Finally, add a listener to make sure that the last record is also written when transformation finishes...
+                    //
+                    addTransListener(new TransListener() {
+    					public void transFinished(Trans trans) throws KettleException {
+    						try {
+	    						if (trans.isStopped()) {
+	    							endProcessing(LogStatus.STOP);
+	    						} else {
+	    							endProcessing(LogStatus.END);
+	    						}
+    						} catch(KettleException e) {
+    							throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformLoggingAtTransEnd"), e);
+    						}
+    					}
+    				});
                 }
-
-                if (Const.isEmpty(transMeta.getName()) && logConnection!=null && logTable!=null)
-                {
-                    throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.NoTransnameAvailableForLogging"));
-                }
-
-                
-                if (logConnection!=null && logTable!=null && transMeta.getName()!=null)
-                {
-                    ldb.writeLogRecord(
-                    		   logTable,
-                               transMeta.getTransLogTable().isBatchIdUsed(),
-                               getBatchId(),
-                               false,
-                               transMeta.getName(),
-                               Database.LOG_STATUS_START,  //$NON-NLS-1$
-                               0L, 0L, 0L, 0L, 0L, 0L,
-                               startDate, endDate, logDate, depDate,currentDate,
-                               null
-                             );
-                }
-
-                if (lockedTable) {
-                	// Remove the -1 record again...
-                	//
-					String sql = "DELETE FROM "+logConnection.quoteField(logTable)+" WHERE "+logConnection.quoteField("ID_BATCH")+"= -1";
-					ldb.execStatement(sql);
-					
-                	ldb.unlockTables( new String[] { logTable, } );
-                }
-
             }
 			catch(KettleException e)
 			{
@@ -1449,26 +1519,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			}
 			finally
 			{
-				if (ldb!=null) ldb.disconnect();
+				// If we use interval logging, we keep the connection open for performance reasons...
+				//
+				if (transLogTableDatabaseConnection!=null && (intervalInSeconds<=0)) {
+					transLogTableDatabaseConnection.disconnect();
+					transLogTableDatabaseConnection = null;
+				}
 			}
-
-			/*
-            if (transMeta.isLogfieldUsed())
-            {
-                stringAppender = LogWriter.createStringAppender();
-                
-                // Set a max number of lines to prevent out of memory errors...
-                //
-                String logLimit = environmentSubstitute(transMeta.getLogSizeLimit());
-                if (Const.isEmpty(logLimit)) {
-                	logLimit = environmentSubstitute(Const.KETTLE_LOG_SIZE_LIMIT);
-                }
-                stringAppender.setMaxNrLines(Const.toInt(logLimit,0));
-                
-                LogWriter.getInstance().addAppender(stringAppender);
-                stringAppender.setBuffer(new StringBuffer(BaseMessages.getString(PKG, "Trans.Log.Start")+Const.CR));
-            }
-            */
 		}
 		catch(KettleException e)
 		{
@@ -1481,6 +1538,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		if (steps==null) return null;
 
 		Result result = new Result();
+		result.setNrErrors(errors.longValue());
 		TransLogTable transLogTable = transMeta.getTransLogTable();
 
 		for (int i=0;i<steps.size();i++)
@@ -1491,12 +1549,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			result.setNrErrors(result.getNrErrors()+sid.step.getErrors());
 			result.getResultFiles().putAll(rt.getResultFiles());
 			
-			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID_LINES_READ))) result.setNrLinesRead(result.getNrLinesRead()+ rt.getLinesRead());
-			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID_LINES_INPUT))) result.setNrLinesInput(result.getNrLinesInput() + rt.getLinesInput());
-			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID_LINES_WRITTEN))) result.setNrLinesWritten(result.getNrLinesWritten()+rt.getLinesWritten());
-			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID_LINES_OUTPUT))) result.setNrLinesOutput(result.getNrLinesOutput()+rt.getLinesOutput());
-			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID_LINES_UPDATED))) result.setNrLinesUpdated(result.getNrLinesUpdated()+rt.getLinesUpdated());
-			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID_LINES_REJECTED))) result.setNrLinesRejected(result.getNrLinesRejected()+rt.getLinesRejected());
+			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_READ))) result.setNrLinesRead(result.getNrLinesRead()+ rt.getLinesRead());
+			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_INPUT))) result.setNrLinesInput(result.getNrLinesInput() + rt.getLinesInput());
+			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_WRITTEN))) result.setNrLinesWritten(result.getNrLinesWritten()+rt.getLinesWritten());
+			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_OUTPUT))) result.setNrLinesOutput(result.getNrLinesOutput()+rt.getLinesOutput());
+			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_UPDATED))) result.setNrLinesUpdated(result.getNrLinesUpdated()+rt.getLinesUpdated());
+			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_REJECTED))) result.setNrLinesRejected(result.getNrLinesRejected()+rt.getLinesRejected());
 		}
 
 		result.setRows( transMeta.getResultRows() );
@@ -1509,11 +1567,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	//
 	// Handle logging at end
 	//
-	public boolean endProcessing(String status) throws KettleException
+	private synchronized boolean endProcessing(LogStatus status) throws KettleException
 	{
+		TransLogTable transLogTable = transMeta.getTransLogTable(); 
+        int intervalInSeconds = Const.toInt( environmentSubstitute(transLogTable.getLogInterval()), -1);
+
 		Result result = getResult();
 
-		if (transMeta.isUsingUniqueConnections()) {
+		if (transMeta.isUsingUniqueConnections() && (status.equals(LogStatus.END) || status.equals(LogStatus.STOP)) ) {
 			// Commit or roll back the transaction in the unique database connections...
 			// 
 			closeUniqueDatabaseConnections(result);
@@ -1521,55 +1582,41 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		
 		logDate     = new Date();
 
-		// Change the logging back to stream...
-		String log_string = null;
-		if (transMeta.getTransLogTable().isLogFieldUsed())
-		{
-            StringBuffer buffer = CentralLogStore.getAppender().getBuffer(log.getLogChannelId(), true);
-            log_string = buffer.append(Const.CR+"END"+Const.CR).toString();
-		}
-
 		// OK, we have some logging to do...
 		//
 		DatabaseMeta logcon = transMeta.getTransLogTable().getDatabaseMeta();
 		String logTable = transMeta.getTransLogTable().getTableName();
 		if (logcon!=null)
 		{
-			Database ldb = new Database(this, logcon);
-			ldb.shareVariablesWith(this);
+			// Let's not reconnect/disconnect all the time for performance reasons!
+			//
+			Database ldb = null;
+			if (transLogTableDatabaseConnection==null) {
+				ldb = new Database(this, logcon);
+				ldb.shareVariablesWith(this);
+			} else {
+				ldb = transLogTableDatabaseConnection;
+			}
+			
 			try
 			{
-				ldb.connect();
+				if (transLogTableDatabaseConnection==null) {
+					ldb.connect();
+				}
 
 				// Write to the standard transformation log table...
 				//
 				if (!Const.isEmpty(logTable)) {
-					ldb.writeLogRecord
-						(
-							logTable,
-							transMeta.getTransLogTable().isBatchIdUsed(),
-							getBatchId(),
-							false,
-							transMeta.getName(),
-							status,
-							result.getNrLinesRead(),
-							result.getNrLinesWritten(),
-							result.getNrLinesUpdated(),
-							result.getNrLinesInput()+result.getNrFilesRetrieved(),
-							result.getNrLinesOutput(),
-							result.getNrErrors(),
-						    startDate, endDate, logDate, depDate,currentDate,
-							log_string
-						);
+                	transLogTableDatabaseConnection.writeLogRecord(transLogTable, status, this);
 				}
 				
 				// Write to the step performance log table...
 				//
-				if (!Const.isEmpty(transMeta.getStepPerformanceLogTable()) && transMeta.isCapturingStepPerformanceSnapShots()) {
+				if (!Const.isEmpty(transMeta.getPerformanceLogTable().getTableName()) && transMeta.isCapturingStepPerformanceSnapShots()) {
 					// Loop over the steps...
 					//
 					RowMetaInterface rowMeta = Database.getStepPerformanceLogrecordFields();
-					ldb.prepareInsert(rowMeta, transMeta.getStepPerformanceLogTable());
+					ldb.prepareInsert(rowMeta, transMeta.getPerformanceLogTable().getTableName());
 
 					for (String key : stepPerformanceSnapShots.keySet()) {
 						List<StepPerformanceSnapShot> snapshots = stepPerformanceSnapShots.get(key);
@@ -1608,7 +1655,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			}
 			finally
 			{
-				ldb.disconnect();
+				if (intervalInSeconds<=0 || (status.equals(LogStatus.END) || status.equals(LogStatus.STOP)) ) {
+					ldb.disconnect();
+					transLogTableDatabaseConnection = null; // disconnected
+				}
 			}
 		}
 		return true;
@@ -3110,4 +3160,5 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		if (transMeta==null) return null;
 		return transMeta.getRepositoryDirectory();
 	}
+	
 }

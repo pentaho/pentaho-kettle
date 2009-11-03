@@ -31,7 +31,6 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -942,12 +941,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         				{
         					trans.stopAll();
         					trans.waitUntilFinished();
-        					trans.endProcessing(Database.LOG_STATUS_STOP);
                             result.setNrErrors(1);
-        				}
-        				else
-        				{
-        					trans.endProcessing(Database.LOG_STATUS_END);
         				}
         				Result newResult = trans.getResult();
 

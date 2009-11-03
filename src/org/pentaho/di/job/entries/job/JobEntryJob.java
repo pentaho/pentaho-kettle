@@ -30,12 +30,12 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
+import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
@@ -780,11 +780,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	        			{
 	        				job.stopAll();
 	        				runner.waitUntilFinished(); // Wait until finished!
-	        				job.endProcessing("stop", new Result()); // dummy result
+	        				job.endProcessing(LogStatus.STOP, new Result()); // dummy result
 	        			}
 	        			else
 	        			{
-	        				job.endProcessing(Database.LOG_STATUS_END, runner.getResult()); // the result of the execution to be stored in the log file.
+	        				job.endProcessing(LogStatus.END, runner.getResult()); // the result of the execution to be stored in the log file.
 	        			}
 	                }
 	        		catch(KettleException je)

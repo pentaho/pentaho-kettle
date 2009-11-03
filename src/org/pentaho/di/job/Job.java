@@ -37,6 +37,7 @@ import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.parameters.DuplicateParamException;
@@ -276,7 +277,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 			//
 			try 
 			{
-				endProcessing(Database.LOG_STATUS_END, result);  // $NON-NLS-1$
+				endProcessing(LogStatus.END, result);  // $NON-NLS-1$
 			} 
 			catch (KettleJobException e) 
 			{
@@ -729,7 +730,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
                     }
                 }
 			    
-				Object[] lastr = ldb.getLastLogDate(jobMeta.getLogTable(), jobMeta.getName(), true, Database.LOG_STATUS_END); // $NON-NLS-1$
+				Object[] lastr = ldb.getLastLogDate(jobMeta.getLogTable(), jobMeta.getName(), true, LogStatus.END); // $NON-NLS-1$
 				if (!Const.isEmpty(lastr))
 				{
                     Date last;
@@ -749,7 +750,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
 				depDate = currentDate;
 
-				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), Database.LOG_STATUS_START,  // $NON-NLS-1$ 
+				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), LogStatus.START,  // $NON-NLS-1$ 
 				                   0L, 0L, 0L, 0L, 0L, 0L, 
 				                   startDate, endDate, logDate, depDate, currentDate,
 								   null
@@ -799,7 +800,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	
 	//
 	// Handle logging at end
-	public boolean endProcessing(String status, Result res) throws KettleJobException
+	public boolean endProcessing(LogStatus status, Result res) throws KettleJobException
 	{
 		try
 		{

@@ -62,9 +62,12 @@ import org.pentaho.di.core.database.map.DatabaseConnectionMap;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogStatus;
+import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -92,10 +95,14 @@ public class Database implements VariableSpace, LoggingObjectInterface
 {
 	private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+
+	/*
     public static final String LOG_STATUS_START = "start"; //$NON-NLS-1$
     public static final String LOG_STATUS_END = "end"; //$NON-NLS-1$
     public static final String LOG_STATUS_STOP = "stop"; //$NON-NLS-1$
-
+    public static final String LOG_STATUS_RUNNING = "running"; //$NON-NLS-1$
+	*/
+	
 	private DatabaseMeta databaseMeta;
 	
 	private int    rowlimit;
@@ -1202,7 +1209,12 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	
 	public void insertRow(String tableName, RowMetaInterface fields, Object[] data) throws KettleDatabaseException
 	{
-		prepareInsert(fields, tableName);
+		insertRow(null, tableName, fields, data);
+	}
+
+	public void insertRow(String schemaName, String tableName, RowMetaInterface fields, Object[] data) throws KettleDatabaseException
+	{
+		prepareInsert(fields, schemaName, tableName);
 		setValuesInsert(fields, data);
 		insertRow();
 		closeInsert();
@@ -3770,8 +3782,55 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		return r;
 	}
 	
-	public void writeLogRecord(String logtable, boolean use_id, long id, boolean job, String name, String status, long read, long written, long updated, long input, long output, long errors, java.util.Date startdate, java.util.Date enddate, java.util.Date logdate, java.util.Date depdate, java.util.Date replayDate, String log_string) throws KettleDatabaseException {
-		boolean update = use_id && log_string != null && !status.equalsIgnoreCase(LOG_STATUS_START);
+	public void writeLogRecord(LogTableInterface logTable, LogStatus status, Object subject) throws KettleException {
+		try {
+			RowMetaAndData logRecord = logTable.getLogRecord(status, subject);
+			boolean update = logTable.containsKeyField() && !status.equals(LogStatus.START);
+			String schemaTable = databaseMeta.getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
+			RowMetaInterface rowMeta = logRecord.getRowMeta();
+			Object[] rowData = logRecord.getData();
+			
+			if (update) {
+				RowMetaInterface updateRowMeta = new RowMeta();
+				Object[] updateRowData = new Object[rowMeta.size()];
+				ValueMetaInterface keyValueMeta = rowMeta.getValueMeta(0);
+
+				String sql = "UPDATE " + schemaTable + " SET ";
+				for (int i = 1; i < rowMeta.size() ; i++) // Without ID_JOB or ID_BATCH
+				{
+					ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
+					if (i > 1) {
+						sql += ", ";
+					}
+					sql += databaseMeta.quoteField(valueMeta.getName()) + "=? ";
+					updateRowMeta.addValueMeta(valueMeta);
+					updateRowData[i-1] = rowData[i];
+				}
+				sql += "WHERE ";
+				sql += databaseMeta.quoteField(keyValueMeta.getName()) + "=? ";
+				updateRowMeta.addValueMeta(keyValueMeta);
+				updateRowData[rowMeta.size()-1] = rowData[0];
+				
+				execStatement(sql, updateRowMeta, updateRowData);
+				
+			} else {
+				
+				insertRow(logTable.getSchemaName(), logTable.getTableName(), logRecord.getRowMeta(), logRecord.getData());
+
+			}
+ 
+		} catch(Exception e) {
+			throw new KettleDatabaseException("Unable to write log record to log table " + logTable.getTableName(), e);
+		}
+	}
+	
+	/**
+	 * @deprecated To be migrated to the new LogTableInterface architecture (see writeLogRecord())
+
+	 * @throws KettleDatabaseException
+	 */
+	public void writeLogRecord(String logTable, boolean use_id, long id, boolean job, String name, LogStatus status, long read, long written, long updated, long input, long output, long errors, java.util.Date startdate, java.util.Date enddate, java.util.Date logdate, java.util.Date depdate, java.util.Date replayDate, String log_string) throws KettleDatabaseException {
+		boolean update = use_id && log_string != null && !status.equals(LogStatus.START);
 
 		RowMetaInterface rowMeta;
 		if (job) {
@@ -3781,8 +3840,8 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		}
 
 		if (update) {
-
-			String sql = "UPDATE " + logtable + " SET ";
+			
+			String sql = "UPDATE " + logTable + " SET ";
 			for (int i = 0; i < rowMeta.size() - 1; i++) // Without ID_JOB or ID_BATCH
 			{
 				ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
@@ -3799,7 +3858,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			}
 
 			Object[] data = new Object[] {
-					status, 
+					status.toString(), 
 					Long.valueOf(read), Long.valueOf(written), Long.valueOf(updated),  
 					Long.valueOf(input), Long.valueOf(output), 
 					Long.valueOf(errors), 
@@ -3810,27 +3869,8 @@ public class Database implements VariableSpace, LoggingObjectInterface
 
 			execStatement(sql, rowMeta, data);
 		} else {
-			String sql = "INSERT INTO " + logtable + " ( ";
-
-			for (int i = 0; i < rowMeta.size(); i++) {
-				ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
-				if (i > 0)
-					sql += ", ";
-				sql += databaseMeta.quoteField(valueMeta.getName());
-			}
-
-			sql += ") VALUES(";
-
-			for (int i = 0; i < rowMeta.size(); i++) {
-				if (i > 0)
-					sql += ", ";
-				sql += "?";
-			}
-
-			sql += ")";
-
+			
 			try {
-				pstmt = connection.prepareStatement(databaseMeta.stripCR(sql));
 
 				List<Object> data = new ArrayList<Object>();
 				if (job) {
@@ -3844,7 +3884,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 					}
 					data.add(name);
 				}
-				data.add(status);
+				data.add(status.toString());
 				data.add(Long.valueOf(read));
 				data.add(Long.valueOf(written));
 				data.add(Long.valueOf(updated));
@@ -3861,14 +3901,10 @@ public class Database implements VariableSpace, LoggingObjectInterface
 					data.add(log_string);
 				}
 
-				setValues(rowMeta, data.toArray(new Object[data.size()]));
+				insertRow(logTable, rowMeta, data.toArray(new Object[data.size()]));
 
-				pstmt.executeUpdate();
-				pstmt.close();
-				pstmt = null;
-
-			} catch (SQLException ex) {
-				throw new KettleDatabaseException("Unable to write log record to log table " + logtable, ex);
+			} catch (Exception ex) {
+				throw new KettleDatabaseException("Unable to write log record to log table " + logTable, ex);
 			}
 		}
 	}
@@ -3898,7 +3934,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	}
 
 
-	public Object[] getLastLogDate( String logtable, String name, boolean job, String status ) throws KettleDatabaseException
+	public Object[] getLastLogDate( String logtable, String name, boolean job, LogStatus status ) throws KettleDatabaseException
 	{
         Object[] row = null;
         

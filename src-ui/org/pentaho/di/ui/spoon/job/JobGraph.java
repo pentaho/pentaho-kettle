@@ -91,6 +91,7 @@ import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
+import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -2863,7 +2864,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
     try {
       if (job != null && job.isActive() && job.isInitialized()) {
         job.stopAll();
-        job.endProcessing("stop", new Result()); //$NON-NLS-1$
+        job.endProcessing(LogStatus.STOP, new Result()); //$NON-NLS-1$
         job.waitUntilFinished(5000); // wait until everything is stopped, maximum 5 seconds...
         
         log.logMinimal(BaseMessages.getString(PKG, "JobLog.Log.JobWasStopped")); //$NON-NLS-1$

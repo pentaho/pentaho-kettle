@@ -15,9 +15,7 @@ package org.pentaho.di.ui.core.dialog;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;

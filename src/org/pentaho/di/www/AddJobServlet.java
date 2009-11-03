@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -162,7 +162,7 @@ public class AddJobServlet extends BaseHttpServlet implements CarteServletInterf
         	job.addJobListener(new JobListener() {
 				public void jobFinished(Job job) {
 					try {
-						job.endProcessing(Database.LOG_STATUS_END, job.getResult());
+						job.endProcessing(LogStatus.END, job.getResult());
 					} catch(Exception e) {
 						logError("There was an error while logging the job result to the logging table", e);
 					}

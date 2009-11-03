@@ -1,5 +1,8 @@
 package org.pentaho.di.blackbox;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,17 +15,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Test;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import static org.junit.Assert.*;
-
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.Log4jBufferAppender;
@@ -57,7 +57,7 @@ public class BlackBoxTests {
 	}	
 
 	@Parameters
-	public static Collection getTests() {
+	public static Collection<Object[]> getTests() {
 		
 		allTests = new ArrayList<Object>();
 		
@@ -464,33 +464,6 @@ public class BlackBoxTests {
 				}
 			}
 			
-			// TODO move this code to a separate test
-/*
-			// clone it and convert it back into XML and compare it with the one we started with
-			// this tests that the clone and the conversion to and from XML are all consistent
-			TransMeta clone = (TransMeta) trans.getTransMeta().clone();
-			clone.setName( trans.getTransMeta().getName() );
-			clone.setModifiedDate( trans.getTransMeta().getModifiedDate() );
-			String xml = clone.getXML();
-			
-			String tmpFileName = fileName.substring(0, fileName.length()-4)+"-tmp.ktr";
-			File tmpFile = new File( tmpFileName );
-			try {
-				// document encoding will be important here
-				OutputStream stream = new FileOutputStream( tmpFile );
-				stream.write( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".getBytes() );
-				stream.write( xml.getBytes("UTF-8") );
-				stream.close();
-				// now compare the two transformation XML files
-				fileCompare( new File(fileName), tmpFile, log );
-				// if that succeeded we can remove the tmp file
-				tmpFile.delete();
-			} catch (Exception e)
-			{
-				addFailure("Could not write to tmp file: " + getPath(tmpFileName));
-				log.logError("BlackBoxTest", "Could not write to tmp file: " + getPath(tmpFileName), e);
-			}
-*/
 		    // allocate & run the required sub-threads
 			try {
 				trans.execute(null); 
@@ -502,7 +475,6 @@ public class BlackBoxTests {
 			}
 
 			trans.waitUntilFinished();
-			trans.endProcessing(Database.LOG_STATUS_END);
 			result = trans.getResult();
 			
 			// The result flag is not set to true by a transformation - set it to true if got no errors
@@ -511,10 +483,10 @@ public class BlackBoxTests {
 			
 			return result;
 		}
-		catch(KettleException ke)
+		catch(Exception e)
 		{
 			addFailure("Unexpected error occurred: " + getPath(fileName));
-            log.logError("BlackBoxTest", "Unexpected error occurred: " + getPath(fileName), ke);
+            log.logError("BlackBoxTest", "Unexpected error occurred: " + getPath(fileName), e);
             result.setResult(false);
             result.setNrErrors(1);
             fail("Unexpected error occurred: " + getPath(fileName));

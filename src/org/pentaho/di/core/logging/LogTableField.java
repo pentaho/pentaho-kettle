@@ -1,5 +1,6 @@
 package org.pentaho.di.core.logging;
 
+
 /**
  * This is a single log table field.<br>
  * The user can select this field or not, sees a field name, a description in the UI too.
@@ -17,8 +18,8 @@ public class LogTableField implements Cloneable {
 	private int     dataType;
 	private int     length;
 	private boolean subjectAllowed;
+	private boolean key;
 
-	
 	/**
 	 * @param id the ID to reference this field by in the log table
 	 * @param enabled
@@ -34,8 +35,7 @@ public class LogTableField implements Cloneable {
 		this.description = description;
 		this.subjectAllowed = true;
 	}
-	
-	
+
 	/**
 	 * @param id
 	 * @param enabled
@@ -53,7 +53,6 @@ public class LogTableField implements Cloneable {
 		this.dataType = dataType;
 		this.length = length;
 	}
-
 
 	/**
 	 * Create a new enabled log table field with the specified field name for the specified subject.
@@ -74,12 +73,18 @@ public class LogTableField implements Cloneable {
 		return super.clone();
 	}
 
+	@Override
+	public String toString() {
+		return id;
+	}
+	
 	/**
 	 * @return the enabled
 	 */
 	public boolean isEnabled() {
 		return enabled;
 	}
+
 	/**
 	 * @param enabled the enabled to set
 	 */
@@ -93,6 +98,7 @@ public class LogTableField implements Cloneable {
 	public Object getSubject() {
 		return subject;
 	}
+	
 	/**
 	 * @param subject the subject to set
 	 */
@@ -105,13 +111,6 @@ public class LogTableField implements Cloneable {
 	 */
 	public String getId() {
 		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	/**
@@ -170,7 +169,6 @@ public class LogTableField implements Cloneable {
 		this.length = length;
 	}
 
-
 	/**
 	 * @return the subjectAllowed
 	 */
@@ -178,13 +176,24 @@ public class LogTableField implements Cloneable {
 		return subjectAllowed;
 	}
 
-
 	/**
 	 * @param subjectAllowed the subjectAllowed to set
 	 */
 	public void setSubjectAllowed(boolean subjectAllowed) {
 		this.subjectAllowed = subjectAllowed;
 	}
-	
-	
+
+	/**
+	 * @return the key
+	 */
+	public boolean isKey() {
+		return key;
+	}
+
+	/**
+	 * @param key the key to set
+	 */
+	public void setKey(boolean key) {
+		this.key = key;
+	}	
 }

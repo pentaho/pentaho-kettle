@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -443,7 +442,6 @@ public class Pan
 			}
 
 			trans.waitUntilFinished();
-			trans.endProcessing(Database.LOG_STATUS_END);
 
 			log.logMinimal(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.Finished"));
 			 

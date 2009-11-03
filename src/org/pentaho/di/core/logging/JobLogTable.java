@@ -20,17 +20,17 @@ import org.w3c.dom.Node;
  * @author matt
  *
  */
-public class TransLogTable extends BaseLogTable implements Cloneable, LogTableInterface {
+public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInterface {
 
-	private static Class<?> PKG = TransLogTable.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = JobLogTable.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public static final String	XML_TAG	= "trans-log-table";
+	public static final String	XML_TAG	= "job-log-table";
 	
 	public enum ID {
 		
 		ID_BATCH("ID_BATCH"),
 		CHANNEL_ID("CHANNEL_ID"),
-		TRANSNAME("TRANSNAME"),
+		JOBNAME("JOBNAME"),
 		STATUS("STATUS"),
 		LINES_READ("LINES_READ"),
 		LINES_WRITTEN("LINES_WRITTEN"),
@@ -68,19 +68,19 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 	 * @param schemaName
 	 * @param tableName
 	 */
-	public TransLogTable(DatabaseMeta databaseMeta, String schemaName, String tableName) {
+	public JobLogTable(DatabaseMeta databaseMeta, String schemaName, String tableName) {
 		super(databaseMeta, schemaName, tableName);
 		this.logInterval = null;
 	}
 	
-	public TransLogTable() {
+	public JobLogTable() {
 		this(null, null, null);
 	}
 	
 	@Override
 	public Object clone() {
 		try {
-			TransLogTable table = (TransLogTable) super.clone();
+			JobLogTable table = (JobLogTable) super.clone();
 			table.fields = new ArrayList<LogTableField>();
 			for (LogTableField field : this.fields) {
 				table.fields.add((LogTableField) field.clone());
@@ -125,19 +125,19 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 
 
 	
-	public static TransLogTable getDefault() {
-		TransLogTable table = new TransLogTable();
+	public static JobLogTable getDefault() {
+		JobLogTable table = new JobLogTable();
 		
 		table.fields.add( new LogTableField(ID.ID_BATCH.id, true, false, "ID_BATCH", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.BatchID"), ValueMetaInterface.TYPE_INTEGER, 8) );
 		table.fields.add( new LogTableField(ID.CHANNEL_ID.id, false, false, "CHANNEL_ID", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.ChannelID"), ValueMetaInterface.TYPE_STRING, 255) );
-		table.fields.add( new LogTableField(ID.TRANSNAME.id, true, false, "TRANSNAME", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.TransName"), ValueMetaInterface.TYPE_STRING, 255) );
+		table.fields.add( new LogTableField(ID.JOBNAME.id, true, false, "TRANSNAME", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.TransName"), ValueMetaInterface.TYPE_STRING, 255) );
 		table.fields.add( new LogTableField(ID.STATUS.id, true, false, "STATUS", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.Status"), ValueMetaInterface.TYPE_STRING, 15) );
-		table.fields.add( new LogTableField(ID.LINES_READ.id, true, true, "LINES_READ", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesRead"), ValueMetaInterface.TYPE_INTEGER, 18) );
-		table.fields.add( new LogTableField(ID.LINES_WRITTEN.id, true, true, "LINES_WRITTEN", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesWritten"), ValueMetaInterface.TYPE_INTEGER, 18) );
-		table.fields.add( new LogTableField(ID.LINES_UPDATED.id, true, true, "LINES_UPDATED", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesUpdated"), ValueMetaInterface.TYPE_INTEGER, 18) );
-		table.fields.add( new LogTableField(ID.LINES_INPUT.id, true, true, "LINES_INPUT", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesInput"), ValueMetaInterface.TYPE_INTEGER, 18) );
-		table.fields.add( new LogTableField(ID.LINES_OUTPUT.id, true, true, "LINES_OUTPUT", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesOutput"), ValueMetaInterface.TYPE_INTEGER, 18) );
-		table.fields.add( new LogTableField(ID.LINES_REJECTED.id, false, true, "LINES_REJECTED", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesRejected"), ValueMetaInterface.TYPE_INTEGER, 18) );
+		table.fields.add( new LogTableField(ID.LINES_READ.id, true, false, "LINES_READ", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesRead"), ValueMetaInterface.TYPE_INTEGER, 18) );
+		table.fields.add( new LogTableField(ID.LINES_WRITTEN.id, true, false, "LINES_WRITTEN", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesWritten"), ValueMetaInterface.TYPE_INTEGER, 18) );
+		table.fields.add( new LogTableField(ID.LINES_UPDATED.id, true, false, "LINES_UPDATED", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesUpdated"), ValueMetaInterface.TYPE_INTEGER, 18) );
+		table.fields.add( new LogTableField(ID.LINES_INPUT.id, true, false, "LINES_INPUT", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesInput"), ValueMetaInterface.TYPE_INTEGER, 18) );
+		table.fields.add( new LogTableField(ID.LINES_OUTPUT.id, true, false, "LINES_OUTPUT", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesOutput"), ValueMetaInterface.TYPE_INTEGER, 18) );
+		table.fields.add( new LogTableField(ID.LINES_REJECTED.id, false, false, "LINES_REJECTED", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesRejected"), ValueMetaInterface.TYPE_INTEGER, 18) );
 		table.fields.add( new LogTableField(ID.ERRORS.id, true, false, "ERRORS", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.Errors"), ValueMetaInterface.TYPE_INTEGER, 18) );
 		table.fields.add( new LogTableField(ID.STARTDATE.id, true, false, "STARTDATE", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.StartDateRange"), ValueMetaInterface.TYPE_DATE, -1) );
 		table.fields.add( new LogTableField(ID.ENDDATE.id, true, false, "ENDDATE", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.EndDateRange"), ValueMetaInterface.TYPE_DATE, -1) );
@@ -259,7 +259,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 						switch(ID.valueOf(field.getId())){
 						case ID_BATCH : value = new Long(trans.getBatchId()); break;
 						case CHANNEL_ID : value = trans.getLogChannelId(); break;
-						case TRANSNAME : value = trans.getName(); break;
+						case JOBNAME : value = trans.getName(); break;
 						case STATUS : value = status.getStatus(); break;
 						case LINES_READ : value = new Long(result.getNrLinesRead()); break;
 						case LINES_WRITTEN : value = new Long(result.getNrLinesWritten()); break;
@@ -272,7 +272,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 						case LOGDATE: value = trans.getLogDate(); break;
 						case ENDDATE: value = trans.getEndDate(); break;
 						case DEPDATE: value = trans.getDepDate(); break;
-						case REPLAYDATE: value = trans.getStartDate(); break;
+						case REPLAYDATE: value = trans.getReplayDate(); break;
 						case LOG_FIELD: 
 							StringBuffer buffer = CentralLogStore.getAppender().getBuffer(trans.getLogChannelId(), true);
 							value = buffer.append(Const.CR+"END"+Const.CR).toString();

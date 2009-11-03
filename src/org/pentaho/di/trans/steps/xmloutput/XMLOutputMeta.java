@@ -644,8 +644,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
     // Check output fields
     if (prev != null && prev.size() > 0) {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG,
-          "XMLOutputMeta.CheckResult.FieldsReceived", "" + prev.size()), stepinfo);
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.FieldsReceived", "" + prev.size()), stepinfo);
       remarks.add(cr);
 
       String error_message = "";
@@ -664,25 +663,21 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
         cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
         remarks.add(cr);
       } else {
-        cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG,
-            "XMLOutputMeta.CheckResult.AllFieldsFound"), stepinfo);
+        cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.AllFieldsFound"), stepinfo);
         remarks.add(cr);
       }
     }
 
     // See if we have input streams leading to this step!
     if (input.length > 0) {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG,
-          "XMLOutputMeta.CheckResult.ExpectedInputOk"), stepinfo);
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.ExpectedInputOk"), stepinfo);
       remarks.add(cr);
     } else {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
-          "XMLOutputMeta.CheckResult.ExpectedInputError"), stepinfo);
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.ExpectedInputError"), stepinfo);
       remarks.add(cr);
     }
 
-    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG,
-        "XMLOutputMeta.CheckResult.FilesNotChecked"), stepinfo);
+    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.FilesNotChecked"), stepinfo);
     remarks.add(cr);
   }
 

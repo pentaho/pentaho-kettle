@@ -23,7 +23,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -261,22 +260,22 @@ public class SlaveServerTransStatus
     		
 			result.setNrErrors(result.getNrErrors()+stepStatus.getErrors()+(result.isStopped()?1:0)); // If the remote trans is stopped, count as an error
 			
-			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_READ))) {
+			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getStepnameRead())) {
 				result.increaseLinesRead(stepStatus.getLinesRead());
 			}
-			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_INPUT))) {
+			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getStepnameInput())) {
 				result.increaseLinesInput(stepStatus.getLinesInput());
 			}
-			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_WRITTEN))) {
+			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getStepnameWritten())) {
 				result.increaseLinesWritten(stepStatus.getLinesWritten());
 			}
-			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_OUTPUT))) {
+			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getStepnameOutput())) {
 				result.increaseLinesOutput(stepStatus.getLinesOutput());
 			}
-			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_UPDATED))) {
+			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getStepnameUpdated())) {
 				result.increaseLinesUpdated(stepStatus.getLinesUpdated());
 			}
-			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getSubjectString(TransLogTable.ID_LINES_REJECTED))) {
+			if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getStepnameRejected())) {
             	result.increaseLinesRejected(stepStatus.getLinesRejected());
             }
             

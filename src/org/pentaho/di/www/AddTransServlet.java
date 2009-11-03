@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -153,19 +152,7 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
 					}
 				});
             }
-            
-            // Add a listener at the end of the transformation for the logging!
-            //
-        	trans.addTransListener(new TransListener() {
-				public void transFinished(Trans trans) {
-					try {
-						trans.endProcessing(Database.LOG_STATUS_END);
-					} catch(Exception e) {
-						logError("There was an error while logging the transformation result to the logging table", e);
-					}
-				}
-			});
-            
+                        
             String message;
             if (oldOne!=null)
             {

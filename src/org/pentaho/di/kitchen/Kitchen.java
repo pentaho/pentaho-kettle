@@ -25,11 +25,11 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -383,7 +383,7 @@ public class Kitchen
     		}
                        
 			result = job.execute(); // Execute the selected job.		
-			job.endProcessing(Database.LOG_STATUS_END, result);  // The bookkeeping...
+			job.endProcessing(LogStatus.END, result);  // The bookkeeping...
 		}
 		catch(KettleJobException je)
 		{
@@ -395,7 +395,7 @@ public class Kitchen
             
 			try
 			{
-				job.endProcessing("error", result);
+				job.endProcessing(LogStatus.ERROR, result);
 			}
 			catch(KettleJobException je2)
 			{
