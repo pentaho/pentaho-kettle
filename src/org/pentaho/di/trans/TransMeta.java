@@ -57,6 +57,7 @@ import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.PerformanceLogTable;
@@ -3996,7 +3997,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 
                 if (!Const.isEmpty(transLogTable.getTableName())) 
                 {
-	                RowMetaInterface fields = Database.getTransLogrecordFields(false, transLogTable.isBatchIdUsed(), transLogTable.isLogFieldUsed());
+	                RowMetaInterface fields = transLogTable.getLogRecord(LogStatus.START, null).getRowMeta();
 	                String sql = db.getDDL(transLogTable.getTableName(), fields);
 	                if (sql != null && sql.length() > 0)
 	                {
@@ -4006,7 +4007,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 }
                 if (!Const.isEmpty(performanceLogTable.getTableName())) 
                 {
-	                RowMetaInterface fields = Database.getStepPerformanceLogrecordFields();
+	                RowMetaInterface fields = performanceLogTable.getLogRecord(LogStatus.START, null).getRowMeta();
 	                String sql = db.getDDL(performanceLogTable.getTableName(), fields);
 	                if (sql != null && sql.length() > 0)
 	                {
@@ -4240,7 +4241,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                                 cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TransMeta.CheckResult.TypeResultOK.LoggingTableExists.Description", transLogTable.getTableName() ), null); //$NON-NLS-1$ //$NON-NLS-2$
                                 remarks.add(cr);
 
-                                RowMetaInterface fields = Database.getTransLogrecordFields(false, transLogTable.isBatchIdUsed(), transLogTable.isLogFieldUsed());
+                                RowMetaInterface fields = transLogTable.getLogRecord(LogStatus.START, null).getRowMeta();
                                 String sql = logdb.getDDL(transLogTable.getTableName(), fields);
                                 if (sql == null || sql.length() == 0)
                                 {

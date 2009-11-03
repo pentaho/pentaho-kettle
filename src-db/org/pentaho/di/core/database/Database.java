@@ -95,14 +95,6 @@ public class Database implements VariableSpace, LoggingObjectInterface
 {
 	private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-
-	/*
-    public static final String LOG_STATUS_START = "start"; //$NON-NLS-1$
-    public static final String LOG_STATUS_END = "end"; //$NON-NLS-1$
-    public static final String LOG_STATUS_STOP = "stop"; //$NON-NLS-1$
-    public static final String LOG_STATUS_RUNNING = "running"; //$NON-NLS-1$
-	*/
-	
 	private DatabaseMeta databaseMeta;
 	
 	private int    rowlimit;
@@ -3700,47 +3692,6 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		return par;
 	}
 
-	public static final RowMetaInterface getTransLogrecordFields(boolean update, boolean use_batchid, boolean use_logfield)
-	{
-        RowMetaInterface r = new RowMeta();
-		ValueMetaInterface v;
-		
-		if (use_batchid && !update)
-		{
-			v=new ValueMeta("ID_BATCH", ValueMetaInterface.TYPE_INTEGER, 8, 0);   r.addValueMeta(v);
-		}
-		
-		if (!update) 
-		{
-			v=new ValueMeta("TRANSNAME",       ValueMetaInterface.TYPE_STRING, 255, 0); r.addValueMeta(v);
-		}
-		v=new ValueMeta("STATUS",          ValueMetaInterface.TYPE_STRING , 15, 0); r.addValueMeta(v);
-		v=new ValueMeta("LINES_READ",      ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
-		v=new ValueMeta("LINES_WRITTEN",   ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
-		v=new ValueMeta("LINES_UPDATED",   ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
-		v=new ValueMeta("LINES_INPUT",     ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
-		v=new ValueMeta("LINES_OUTPUT",    ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
-		v=new ValueMeta("ERRORS",          ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
-		v=new ValueMeta("STARTDATE",       ValueMetaInterface.TYPE_DATE      );     r.addValueMeta(v);
-		v=new ValueMeta("ENDDATE",         ValueMetaInterface.TYPE_DATE      );     r.addValueMeta(v);
-		v=new ValueMeta("LOGDATE",         ValueMetaInterface.TYPE_DATE      );     r.addValueMeta(v);
-		v=new ValueMeta("DEPDATE",         ValueMetaInterface.TYPE_DATE      );     r.addValueMeta(v);
-		v=new ValueMeta("REPLAYDATE",      ValueMetaInterface.TYPE_DATE      );     r.addValueMeta(v);
-
-		if (use_logfield)
-		{
-			v=new ValueMeta("LOG_FIELD",   ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH, 0);   
-			r.addValueMeta(v);
-		}
-		
-		if (use_batchid && update)
-		{
-			v=new ValueMeta("ID_BATCH", ValueMetaInterface.TYPE_INTEGER, 8, 0);   r.addValueMeta(v);
-		}
-
-		return r;
-	}
-
 	public static final RowMetaInterface getJobLogrecordFields(boolean update, boolean use_jobid, boolean use_logfield)
 	{
         RowMetaInterface r = new RowMeta();
@@ -3832,11 +3783,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	public void writeLogRecord(String logTable, boolean use_id, long id, boolean job, String name, LogStatus status, long read, long written, long updated, long input, long output, long errors, java.util.Date startdate, java.util.Date enddate, java.util.Date logdate, java.util.Date depdate, java.util.Date replayDate, String log_string) throws KettleDatabaseException {
 		boolean update = use_id && log_string != null && !status.equals(LogStatus.START);
 
-		RowMetaInterface rowMeta;
+		RowMetaInterface rowMeta = null;
 		if (job) {
 			rowMeta = getJobLogrecordFields(update, use_id, !Const.isEmpty(log_string));
-		} else {
-			rowMeta = getTransLogrecordFields(update, use_id, !Const.isEmpty(log_string));
 		}
 
 		if (update) {

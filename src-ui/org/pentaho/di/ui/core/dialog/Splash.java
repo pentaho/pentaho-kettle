@@ -14,7 +14,6 @@
 package org.pentaho.di.ui.core.dialog;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.eclipse.swt.SWT;
