@@ -367,7 +367,7 @@ public class Const
     public static final String INTERNAL_VARIABLE_JOB_NAME = INTERNAL_VARIABLE_PREFIX+".Job.Name";
 
     /** The job directory */
-    public static final String INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY = INTERNAL_VARIABLE_PREFIX+".Transformation.Repository.Directory";
+    public static final String INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY = INTERNAL_VARIABLE_PREFIX+".Job.Repository.Directory";
 
 	/** 
 	 * All the internal job variables
