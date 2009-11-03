@@ -13,6 +13,12 @@
 
 package org.pentaho.di.ui.core.dialog;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -49,13 +55,13 @@ public class Splash {
   public Splash(Display display) throws KettleException {
     Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
 
-    final Image kettle_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // "kettle_splash.png"
-    final Image kettle_icon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_icon")); // "spoon.ico"
+    final Image kettle_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // "kettle_splash.png" //$NON-NLS-1$
+    final Image kettle_icon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_icon")); // "spoon.ico" //$NON-NLS-1$
 
     splash = new Shell(display, SWT.NONE /*SWT.ON_TOP*/);
     splash.setImage(kettle_icon);
 
-    splash.setText(BaseMessages.getString(PKG, "SplashDialog.Title")); // "Pentaho Data Integration"
+    splash.setText(BaseMessages.getString(PKG, "SplashDialog.Title")); // "Pentaho Data Integration" //$NON-NLS-1$
 
     FormLayout splashLayout = new FormLayout();
     splash.setLayout(splashLayout);
@@ -71,21 +77,39 @@ public class Splash {
 
     canvas.addPaintListener(new PaintListener() {
       public void paintControl(PaintEvent e) {
-        String versionText = BaseMessages.getString(PKG, "SplashDialog.Version") + " " + Const.VERSION;
+        String versionText = BaseMessages.getString(PKG, "SplashDialog.Version") + " " + Const.VERSION; //$NON-NLS-1$ //$NON-NLS-2$
+        BufferedReader reader = new BufferedReader(new InputStreamReader(Splash.class.getClassLoader().getResourceAsStream("org/pentaho/di/ui/core/dialog/license/license.txt"))); //$NON-NLS-1$
+        
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        
+        try {
+          while((line = reader.readLine()) != null) {
+            sb.append(line + System.getProperty("line.separator")); //$NON-NLS-1$
+          }
+        } catch (IOException ex) {
+          // Unable to load the license text
+        }
+        
+        String licenseText = sb.toString();
         e.gc.drawImage(kettle_image, 0, 0);
 
         // If this is a Milestone or RC release, warn the user
-        if (Const.VERSION.matches("^(\\d\\.){2}\\d-M\\d+$")) {
-          versionText = BaseMessages.getString(PKG, "SplashDialog.DeveloperRelease") + " - " + versionText;
+        if (Const.VERSION.matches("^(\\d\\.){2}\\d-M\\d+$")) { //$NON-NLS-1$
+          versionText = BaseMessages.getString(PKG, "SplashDialog.DeveloperRelease") + " - " + versionText; //$NON-NLS-1$ //$NON-NLS-2$
           drawVersionWarning(e);
-        } else if (Const.VERSION.matches("^(\\d\\.){2}\\d-RC\\d+$")) {
-          versionText = BaseMessages.getString(PKG, "SplashDialog.ReleaseCandidate") + " - " + versionText;
+        } else if (Const.VERSION.matches("^(\\d\\.){2}\\d-RC\\d+$")) { //$NON-NLS-1$
+          versionText = BaseMessages.getString(PKG, "SplashDialog.ReleaseCandidate") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
           drawVersionWarning(e);
         }
 
-        Font font = new Font(e.display, "Helvetica", 11, SWT.NORMAL);
-        e.gc.setFont(font);
-        e.gc.drawText(versionText, 290, 203, true);
+        Font verFont = new Font(e.display, "Helvetica", 11, SWT.BOLD); //$NON-NLS-1$
+        e.gc.setFont(verFont);
+        e.gc.drawText(versionText, 290, 205, true);
+        
+        Font licFont = new Font(e.display, "Helvetica", 8, SWT.NORMAL); //$NON-NLS-1$
+        e.gc.setFont(licFont);
+        e.gc.drawText(licenseText, 290, 290, true);
       }
     });
 
@@ -110,7 +134,7 @@ public class Splash {
   
   private void drawVersionWarning(GC gc, Display display) {
     final Image exclamation_image = ImageUtil.getImageAsResource(display, BasePropertyHandler
-        .getProperty("exclamation_image")); // "exclamation.png"
+        .getProperty("exclamation_image")); // "exclamation.png" //$NON-NLS-1$
     
     gc.setBackground(new Color(gc.getDevice(), 255, 253, 213));
     gc.setForeground(new Color(gc.getDevice(), 220, 177, 20));
@@ -119,9 +143,9 @@ public class Splash {
     gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
     gc.drawImage(exclamation_image, 304, 243);
 
-    Font font = new Font(display, "Helvetica", 10, SWT.NORMAL);
+    Font font = new Font(display, "Helvetica", 10, SWT.NORMAL); //$NON-NLS-1$
     gc.setFont(font);
-    gc.drawText(BaseMessages.getString(PKG, "SplashDialog.DevelopmentWarning"), 335, 241);
+    gc.drawText(BaseMessages.getString(PKG, "SplashDialog.DevelopmentWarning"), 335, 241); //$NON-NLS-1$
   }
 
   public void dispose() {
