@@ -35,6 +35,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.mortbay.log.Log;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -78,17 +79,19 @@ public class Splash {
     canvas.addPaintListener(new PaintListener() {
       public void paintControl(PaintEvent e) {
         String versionText = BaseMessages.getString(PKG, "SplashDialog.Version") + " " + Const.VERSION; //$NON-NLS-1$ //$NON-NLS-2$
-        BufferedReader reader = new BufferedReader(new InputStreamReader(Splash.class.getClassLoader().getResourceAsStream("org/pentaho/di/ui/core/dialog/license/license.txt"))); //$NON-NLS-1$
         
         StringBuilder sb = new StringBuilder();
         String line = null;
         
         try {
+          BufferedReader reader = new BufferedReader(new InputStreamReader(Splash.class.getClassLoader().getResourceAsStream("org/pentaho/di/ui/core/dialog/license/license.txt"))); //$NON-NLS-1$
+          
           while((line = reader.readLine()) != null) {
             sb.append(line + System.getProperty("line.separator")); //$NON-NLS-1$
           }
-        } catch (IOException ex) {
-          // Unable to load the license text
+        } catch (Exception ex) {
+          sb.append(""); //$NON-NLS-1$
+          Log.warn(BaseMessages.getString(PKG, "SplashDialog.LicenseTextNotFound")); //$NON-NLS-1$
         }
         
         String licenseText = sb.toString();
