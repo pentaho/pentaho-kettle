@@ -13,11 +13,18 @@
 
 package org.pentaho.di.ui.core.dialog;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
@@ -26,9 +33,11 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.mortbay.log.Log;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.ui.util.ImageUtil;
 import org.pentaho.di.laf.BasePropertyHandler;
+import org.pentaho.di.ui.util.ImageUtil;
 
 /**
  * Displays the Kettle splash screen
@@ -44,13 +53,13 @@ public class Splash
 	{
 		Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
 
-		final Image kettle_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // "kettle_splash.png"
-        final Image kettle_icon  = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_icon")); // "spoon.ico");
-        
-        splash = new Shell(display, SWT.NONE /*SWT.ON_TOP*/);
-        splash.setImage(kettle_icon);
-        //TODO: move to BaseMessage to track i18n
-        splash.setText(BasePropertyHandler.getProperty("splash_text")); // "Pentaho Data Integration"
+		final Image kettle_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // "kettle_splash.png" //$NON-NLS-1$
+    final Image kettle_icon  = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_icon")); // "spoon.ico"); //$NON-NLS-1$
+    
+    splash = new Shell(display, SWT.NONE /*SWT.ON_TOP*/);
+    splash.setImage(kettle_icon);
+
+    splash.setText(BasePropertyHandler.getProperty("splash_text")); // "Pentaho Data Integration" //$NON-NLS-1$
         
 		FormLayout splashLayout = new FormLayout();
 		splash.setLayout(splashLayout);
@@ -68,8 +77,41 @@ public class Splash
 			{
 				public void paintControl(PaintEvent e)
 				{
-					e.gc.drawImage(kettle_image, 0, 0);
-				}
+				  String versionText = Messages.getString("SplashDialog.Version") + " " + Const.VERSION; //$NON-NLS-1$ //$NON-NLS-2$
+				  StringBuilder sb = new StringBuilder();
+				  
+				  try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(Splash.class.getClassLoader().getResourceAsStream("org/pentaho/di/ui/core/dialog/license/license.txt"))); //$NON-NLS-1$
+            String line = null;
+          
+            while((line = reader.readLine()) != null) {
+              sb.append(line + System.getProperty("line.separator")); //$NON-NLS-1$
+            }
+          } catch (Exception ex) {
+            sb.append(""); //$NON-NLS-1$
+            Log.warn(Messages.getString("SplashDialog.LicenseTextNotFound")); //$NON-NLS-1$
+          }
+          
+          String licenseText = sb.toString();
+          e.gc.drawImage(kettle_image, 0, 0);
+  
+          // If this is a Milestone or RC release, warn the user
+          if (Const.VERSION.matches("^(\\d\\.){2}\\d-M\\d+$")) { //$NON-NLS-1$
+            versionText = Messages.getString("SplashDialog.DeveloperRelease") + " - " + versionText; //$NON-NLS-1$ //$NON-NLS-2$
+            drawVersionWarning(e);
+          } else if (Const.VERSION.matches("^(\\d\\.){2}\\d-RC\\d+$")) { //$NON-NLS-1$
+            versionText = Messages.getString("SplashDialog.ReleaseCandidate") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
+            drawVersionWarning(e);
+          }
+  
+          Font verFont = new Font(e.display, "Helvetica", 11, SWT.BOLD); //$NON-NLS-1$
+          e.gc.setFont(verFont);
+          e.gc.drawText(versionText, 290, 205, true);
+          
+          Font licFont = new Font(e.display, "Helvetica", 8, SWT.NORMAL); //$NON-NLS-1$
+          e.gc.setFont(licFont);
+          e.gc.drawText(licenseText, 290, 290, true);
+        }
 			}
 		);
 		
@@ -90,6 +132,26 @@ public class Splash
 		
 		splash.open();
 	}
+	
+	private void drawVersionWarning(PaintEvent e) {
+    drawVersionWarning(e.gc, e.display);
+  }
+  
+  private void drawVersionWarning(GC gc, Display display) {
+    final Image exclamation_image = ImageUtil.getImageAsResource(display, BasePropertyHandler
+        .getProperty("exclamation_image")); // "exclamation.png" //$NON-NLS-1$
+    
+    gc.setBackground(new Color(gc.getDevice(), 255, 253, 213));
+    gc.setForeground(new Color(gc.getDevice(), 220, 177, 20));
+    gc.fillRectangle(290, 231, 367, 49);
+    gc.drawRectangle(290, 231, 367, 49);
+    gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+    gc.drawImage(exclamation_image, 304, 243);
+
+    Font font = new Font(display, "Helvetica", 10, SWT.NORMAL); //$NON-NLS-1$
+    gc.setFont(font);
+    gc.drawText(Messages.getString("SplashDialog.DevelopmentWarning"), 335, 241); //$NON-NLS-1$
+  }
 	
 	public void dispose()
 	{
