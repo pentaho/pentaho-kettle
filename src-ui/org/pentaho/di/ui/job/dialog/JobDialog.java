@@ -42,6 +42,8 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.JobLogTable;
+import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -841,14 +843,16 @@ public class JobDialog extends Dialog
 			jobMeta.getModifiedDate()!=null	)     						   
 				wModDate.setText    ( jobMeta.getModifiedDate().toString() );
 	
+		JobLogTable jobLogTable = jobMeta.getJobLogTable();
 
-		if (jobMeta.getLogConnection()!=null)  wLogconnection.setText( jobMeta.getLogConnection().getName());
-		if (jobMeta.getLogTable()!=null)       wLogtable.setText     ( jobMeta.getLogTable());
+		if (jobLogTable.getDatabaseMeta()!=null)  wLogconnection.setText( jobLogTable.getDatabaseMeta().getName());
+		if (jobLogTable.getTableName()!=null)     wLogtable.setText     ( jobLogTable.getTableName());
         
-        wBatch.setSelection(jobMeta.isBatchIdUsed());
-        wBatchTrans.setSelection(jobMeta.isBatchIdPassed());
-        wLogfield.setSelection(jobMeta.isLogfieldUsed());
-		wLogSizeLimit.setText( Const.NVL(jobMeta.getLogSizeLimit(), ""));
+        wBatch.setSelection(jobLogTable.isBatchIdUsed());
+        wLogfield.setSelection(jobLogTable.isLogFieldUsed());
+		wLogSizeLimit.setText( Const.NVL(jobLogTable.getLogSizeLimit(), ""));
+
+		wBatchTrans.setSelection(jobMeta.isBatchIdPassed());
 
 		// The named parameters
 		String[] parameters = jobMeta.listParameters();
@@ -918,8 +922,14 @@ public class JobDialog extends Dialog
 		{
 		    jobMeta.setJobstatus( -1  );
 		}
-		jobMeta.setLogConnection( jobMeta.findDatabase(wLogconnection.getText()) );
-        jobMeta.setLogTable( wLogtable.getText() );
+
+		JobLogTable jobLogTable = jobMeta.getJobLogTable();
+		
+		jobLogTable.setDatabaseMeta( jobMeta.findDatabase(wLogconnection.getText()) );
+		jobLogTable.setTableName( wLogtable.getText() );
+		jobLogTable.setBatchIdUsed( wBatch.getSelection() );
+		jobLogTable.setLogFieldUsed( wLogfield.getSelection() );
+		jobLogTable.setLogSizeLimit( wLogSizeLimit.getText() );
         
 		// Clear and add parameters
 		jobMeta.eraseParameters();
@@ -935,10 +945,7 @@ public class JobDialog extends Dialog
 			}
 		}		        
         
-        jobMeta.setUseBatchId( wBatch.getSelection() );
         jobMeta.setBatchIdPassed( wBatchTrans.getSelection() );
-        jobMeta.setLogfieldUsed( wLogfield.getSelection() );
-        jobMeta.setLogSizeLimit( wLogSizeLimit.getText() );
         jobMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );
 
         if (newDirectory!=null) 
@@ -984,7 +991,7 @@ public class JobDialog extends Dialog
 		DatabaseMeta ci = jobMeta.findDatabase(wLogconnection.getText());
 		if (ci!=null)
 		{
-			RowMetaInterface r = Database.getJobLogrecordFields(false, wBatch.getSelection(), wLogfield.getSelection());
+			RowMetaInterface r = jobMeta.getJobLogTable().getLogRecord(LogStatus.START, null).getRowMeta();
 			if (r!=null && r.size()>0)
 			{
 				String tablename = wLogtable.getText();

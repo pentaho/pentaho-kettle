@@ -102,7 +102,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
         retval.append(XMLHandler.addTagValue("size_limit_lines", logSizeLimit)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append(XMLHandler.addTagValue("interval", logInterval)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append(super.getFieldsXML());
-		retval.append(XMLHandler.closeTag(XML_TAG));
+		retval.append(XMLHandler.closeTag(XML_TAG)).append(Const.CR);
 		
 		return retval.toString();
 	}
@@ -275,7 +275,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 						case REPLAYDATE: value = trans.getStartDate(); break;
 						case LOG_FIELD: 
 							StringBuffer buffer = CentralLogStore.getAppender().getBuffer(trans.getLogChannelId(), true);
-							value = buffer.append(Const.CR+"END"+Const.CR).toString();
+							value = buffer.append(Const.CR+status.getStatus().toUpperCase()+Const.CR).toString();
 							break;
 						}
 					}
@@ -292,5 +292,8 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 		}
 	}
 
+	public String getLogTableType() {
+		return BaseMessages.getString(PKG, "TransLogTable.Type.Description");
+	}
 	
 }

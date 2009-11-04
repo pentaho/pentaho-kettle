@@ -20,4 +20,8 @@ public interface LogTableInterface {
 	 * @return true if the table contains a key (we can do updates)
 	 */
 	public boolean containsKeyField();
+	
+	public String getLogTableType();
+	
+	public boolean isDefined();
 }

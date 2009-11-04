@@ -33,6 +33,8 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.JobLogTable;
+import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -301,8 +303,8 @@ public class JobHistoryDelegate extends SpoonDelegate {
      * Better ask confirmation
      */
     public void clearLogTable() {
-    	String logTable = jobGraph.getManagedObject().getLogTable();
-    	DatabaseMeta databaseMeta = jobGraph.getManagedObject().getLogConnection();
+    	String logTable = jobGraph.getManagedObject().getJobLogTable().getTableName();
+    	DatabaseMeta databaseMeta = jobGraph.getManagedObject().getJobLogTable().getDatabaseMeta();
     	
     	if (databaseMeta!=null && !Const.isEmpty(logTable)) {
     	
@@ -363,25 +365,29 @@ public class JobHistoryDelegate extends SpoonDelegate {
         // See if there is a job loaded that has a connection table specified.
         if (jobMeta!=null && !Const.isEmpty(jobMeta.getName()))
         {
-            if (jobMeta.getLogConnection()!=null)
+        	JobLogTable jobLogTable = jobMeta.getJobLogTable();
+        	DatabaseMeta logCon = jobLogTable.getDatabaseMeta();
+        	String tableName = jobLogTable.getTableName();
+        	
+            if (logCon!=null)
             {
-                if (!Const.isEmpty(jobMeta.getLogTable()))
+                if (!Const.isEmpty(tableName))
                 {
                     Database database = null;
                     try
                     {
                         // open a connection
-                        database = new Database(loggingObject, jobMeta.getLogConnection());
+                        database = new Database(loggingObject, logCon);
                         database.shareVariablesWith(jobMeta);
                         database.connect();
                         
-                        RowMetaInterface jobLogMeta = Database.getJobLogrecordFields(false, jobMeta.isBatchIdUsed(), jobMeta.isLogfieldUsed());
+                        RowMetaInterface jobLogMeta = jobLogTable.getLogRecord(LogStatus.START, null).getRowMeta(); // Database.getJobLogrecordFields(false, jobLogTable.isBatchIdUsed(), jobLogTable.isLogFieldUsed());
                         String sql = "SELECT ";
                         for (int i=0;i<jobLogMeta.size();i++) {
                         	if (i>0) sql+=", ";
                         	sql+=jobLogMeta.getValueMeta(i).getName();
                         }
-                        sql+=" FROM "+jobMeta.getLogTable();
+                        sql+=" FROM "+tableName;
                         sql+=" WHERE jobName= ?";
                         sql+=" ORDER BY ID_JOB DESC";
                         

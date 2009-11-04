@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -39,12 +40,17 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogStatus;
+import org.pentaho.di.core.logging.LoggingHierarchy;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.LoggingRegistry;
+import org.pentaho.di.core.logging.PerformanceLogTable;
+import org.pentaho.di.core.logging.StepLogTable;
 import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
@@ -212,6 +218,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	
 	private AtomicInteger stepPerformanceSnapshotSeqNr;
 
+	private int	lastWrittenStepPerformanceSequenceNr;
+
+	private int	lastStepPerformanceSnapshotSeqNrAdded;
+
 	
 	public Trans() {
 		finished = new AtomicBoolean(false);
@@ -225,6 +235,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         errors = new AtomicInteger(0);
         
         stepPerformanceSnapshotSeqNr = new AtomicInteger(0);
+        lastWrittenStepPerformanceSequenceNr = 0;
 	}
 
 	/**
@@ -825,6 +836,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     	{
 	        // get the statistics from the steps and keep them...
 	    	//
+    		int seqNr = stepPerformanceSnapshotSeqNr.incrementAndGet();
 	        for (int i=0;i<steps.size();i++)
 	        {
 	            StepMeta stepMeta = steps.get(i).stepMeta;
@@ -832,7 +844,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	            BaseStep baseStep = (BaseStep)step;
 	            
 	            StepPerformanceSnapShot snapShot = new StepPerformanceSnapShot(
-	            		stepPerformanceSnapshotSeqNr.incrementAndGet(),
+	            		seqNr,
 	            		getBatchId(),
 	            		new Date(),
 	            		getName(),
@@ -861,6 +873,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	            snapShot.diff(previous, baseStep.rowsetInputSize(), baseStep.rowsetOutputSize());
 	            snapShotList.add(snapShot);
 	        }
+	        
+	        lastStepPerformanceSnapshotSeqNrAdded = stepPerformanceSnapshotSeqNr.get();
     	}
 	}
 
@@ -1496,7 +1510,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	    				});
                     }
                     
-                    // Finally, add a listener to make sure that the last record is also written when transformation finishes...
+                    // Add a listener to make sure that the last record is also written when transformation finishes...
                     //
                     addTransListener(new TransListener() {
     					public void transFinished(Trans trans) throws KettleException {
@@ -1506,9 +1520,71 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	    						} else {
 	    							endProcessing(LogStatus.END);
 	    						}
+
+	    						lastWrittenStepPerformanceSequenceNr = writeStepPerformanceLogRecords(lastWrittenStepPerformanceSequenceNr);
+	    						
     						} catch(KettleException e) {
     							throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformLoggingAtTransEnd"), e);
     						}
+    					}
+    				});
+                    
+                }
+
+                // If we need to write out the step logging information, do so at the end of the transformation too...
+                //
+                StepLogTable stepLogTable = transMeta.getStepLogTable();
+                if (stepLogTable.isDefined()) {
+                    addTransListener(new TransListener() {
+    					public void transFinished(Trans trans) throws KettleException {
+    						try {
+    							writeStepLogInformation();
+    						} catch(KettleException e) {
+    							throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformLoggingAtTransEnd"), e);
+    						}
+    					}
+    				});
+                }
+                
+                // If we need to write the log channel hierarchy and lineage information, add a listener for that too... 
+                //
+                ChannelLogTable channelLogTable = transMeta.getChannelLogTable();
+                if (channelLogTable.isDefined()) {
+                    addTransListener(new TransListener() {
+    					public void transFinished(Trans trans) throws KettleException {
+    						try {
+    							writeLogChannelInformation();
+    						} catch(KettleException e) {
+    							throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformLoggingAtTransEnd"), e);
+    						}
+    					}
+    				});
+                }
+                
+                // See if we need to write the step performance records at intervals too...
+                //
+                PerformanceLogTable performanceLogTable = transMeta.getPerformanceLogTable();
+                int perfLogInterval = Const.toInt( environmentSubstitute(performanceLogTable.getLogInterval()), -1); 
+                if (performanceLogTable.isDefined() && perfLogInterval>0) {
+                    final Timer timer = new Timer(getName()+" - step performance log interval timer"); // $NON-NLS-1$
+                    TimerTask timerTask = new TimerTask() {
+            			public void run() {
+            				try {
+            					lastWrittenStepPerformanceSequenceNr = writeStepPerformanceLogRecords(lastWrittenStepPerformanceSequenceNr);
+            				} catch(Exception e) {
+            					log.logError(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformIntervalPerformanceLogging"), e);
+            					// Also stop the show...
+            					//
+            					errors.incrementAndGet();
+            					stopAll();
+            				}
+            			}
+                    };
+                    timer.schedule(timerTask, perfLogInterval*1000, perfLogInterval*1000);
+                    
+                    addTransListener(new TransListener() {
+    					public void transFinished(Trans trans) {
+    						timer.cancel();						
     					}
     				});
                 }
@@ -1531,6 +1607,47 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		{
 			throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.UnableToBeginProcessingTransformation"), e); //$NON-NLS-1$
 		}
+	}
+
+	protected void writeLogChannelInformation() throws KettleException {
+		Database db = null;
+		ChannelLogTable channelLogTable = transMeta.getChannelLogTable();
+		try {
+			db = new Database(this, channelLogTable.getDatabaseMeta());
+			db.shareVariablesWith(this);
+			db.connect();
+			
+			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
+			for (LoggingHierarchy loggingHierarchy : loggingHierarchyList) {
+				db.writeLogRecord(channelLogTable, LogStatus.START, loggingHierarchy);
+			}
+			
+		} catch(Exception e) {
+			throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToWriteLogChannelInformationToLogTable"), e);
+		} finally {
+			db.disconnect();
+		}
+		
+	}
+
+	protected void writeStepLogInformation() throws KettleException {
+		Database db = null;
+		StepLogTable stepLogTable = transMeta.getStepLogTable();
+		try {
+			db = new Database(this, stepLogTable.getDatabaseMeta());
+			db.shareVariablesWith(this);
+			db.connect();
+			
+			for (StepMetaDataCombi combi : steps) {
+				db.writeLogRecord(stepLogTable, LogStatus.START, combi);
+			}
+			
+		} catch(Exception e) {
+			throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToWriteStepInformationToLogTable"), e);
+		} finally {
+			db.disconnect();
+		}
+		
 	}
 
 	public Result getResult()
@@ -1609,45 +1726,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				if (!Const.isEmpty(logTable)) {
                 	transLogTableDatabaseConnection.writeLogRecord(transLogTable, status, this);
 				}
-				
-				// Write to the step performance log table...
-				//
-				if (!Const.isEmpty(transMeta.getPerformanceLogTable().getTableName()) && transMeta.isCapturingStepPerformanceSnapShots()) {
-					// Loop over the steps...
-					//
-					RowMetaInterface rowMeta = Database.getStepPerformanceLogrecordFields();
-					ldb.prepareInsert(rowMeta, transMeta.getPerformanceLogTable().getTableName());
-
-					for (String key : stepPerformanceSnapShots.keySet()) {
-						List<StepPerformanceSnapShot> snapshots = stepPerformanceSnapShots.get(key);
-						long seqNr = 1;
-						for (StepPerformanceSnapShot snapshot : snapshots) {
-							Object[] row = new Object[ rowMeta.size() ];
-							int outputIndex = 0;
-							
-							row[outputIndex++] = new Long(getBatchId());
-							row[outputIndex++] = new Long(seqNr++);
-							row[outputIndex++] = snapshot.getDate();
-							row[outputIndex++] = transMeta.getName();
-							row[outputIndex++] = snapshot.getStepName();
-							row[outputIndex++] = new Long(snapshot.getStepCopy());
-							row[outputIndex++] = new Long(snapshot.getLinesRead()); 
-							row[outputIndex++] = new Long(snapshot.getLinesWritten()); 
-							row[outputIndex++] = new Long(snapshot.getLinesUpdated()); 
-							row[outputIndex++] = new Long(snapshot.getLinesInput()); 
-							row[outputIndex++] = new Long(snapshot.getLinesOutput()); 
-							row[outputIndex++] = new Long(snapshot.getLinesRejected()); 
-							row[outputIndex++] = new Long(snapshot.getErrors()); 
-							row[outputIndex++] = new Long(snapshot.getInputBufferSize()); 
-							row[outputIndex++] = new Long(snapshot.getOutputBufferSize());
-							
-							ldb.setValuesInsert(rowMeta, row);
-							ldb.insertRow(true);
-						}
-					}
-					
-					ldb.insertFinished(true);
-				}
 			}
 			catch(Exception e)
 			{
@@ -1662,6 +1740,57 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			}
 		}
 		return true;
+	}
+
+	private int writeStepPerformanceLogRecords(int startSequenceNr) throws KettleException {
+		int lastSeqNr = 0;
+		Database ldb = null;
+		PerformanceLogTable performanceLogTable = transMeta.getPerformanceLogTable();
+		
+		if (!performanceLogTable.isDefined() || !transMeta.isCapturingStepPerformanceSnapShots()) {
+			return 0; // nothing to do here!
+		}
+		
+		try {
+			ldb = new Database(this, performanceLogTable.getDatabaseMeta());
+			ldb.shareVariablesWith(this);
+			ldb.connect();
+			
+			// Write to the step performance log table...
+			//
+			RowMetaInterface rowMeta = performanceLogTable.getLogRecord(LogStatus.START, null).getRowMeta();
+			ldb.prepareInsert(rowMeta, performanceLogTable.getTableName());
+			
+			synchronized(stepPerformanceSnapShots) {
+				Iterator<List<StepPerformanceSnapShot>> iterator = stepPerformanceSnapShots.values().iterator();
+				while(iterator.hasNext()) {
+					List<StepPerformanceSnapShot> snapshots = iterator.next();
+					synchronized(snapshots) {
+						for (StepPerformanceSnapShot snapshot : snapshots) {
+							if (snapshot.getSeqNr()>=startSequenceNr && snapshot.getSeqNr()<=lastStepPerformanceSnapshotSeqNrAdded) {
+								
+								RowMetaAndData row = performanceLogTable.getLogRecord(LogStatus.START, snapshot);
+								
+								ldb.setValuesInsert(row.getRowMeta(), row.getData());
+								ldb.insertRow(true);
+							}
+							lastSeqNr = snapshot.getSeqNr();
+						}
+					}
+				}
+			}
+			
+			ldb.insertFinished(true);
+
+		} catch(Exception e) {
+			throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.ErrorWritingStepPerformanceLogRecordToTable"), e);
+		} finally {
+			if (ldb!=null) {
+				ldb.disconnect();
+			}
+		}
+		
+		return lastSeqNr+1;
 	}
 
 	private void closeUniqueDatabaseConnections(Result result) {
@@ -3161,4 +3290,16 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		return transMeta.getRepositoryDirectory();
 	}
 	
+	public List<LoggingHierarchy> getLoggingHierarchy() {
+		List<LoggingHierarchy> hierarchy = new ArrayList<LoggingHierarchy>();
+		List<String> childIds = LoggingRegistry.getInstance().getLogChannelChildren(getLogChannelId());
+		for (String childId : childIds) {
+			LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject(childId);
+			if (loggingObject!=null) {
+				hierarchy.add(new LoggingHierarchy(getLogChannelId(), batchId, loggingObject));
+			}
+		}
+		
+		return hierarchy;
+	}
 }

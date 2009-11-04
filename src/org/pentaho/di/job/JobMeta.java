@@ -42,6 +42,8 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
+import org.pentaho.di.core.logging.JobLogTable;
+import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.parameters.DuplicateParamException;
@@ -130,9 +132,19 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 	protected boolean changedEntries, changedHops, changedNotes, changedDatabases;
 
+	protected JobLogTable jobLogTable;
+	
+	/*
 	protected DatabaseMeta logConnection;
 
 	protected String logTable;
+	
+	protected boolean useBatchId;
+	protected boolean logfieldUsed;
+
+	private String logSizeLimit;
+
+	*/
 
 	protected List<TransAction> undo;
 
@@ -167,11 +179,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 	private Date created_date, modifiedDate;
 
-	protected boolean useBatchId;
 
 	protected boolean batchIdPassed;
-
-	protected boolean logfieldUsed;
 
 	/**
 	 * If this is null, we load from the default shared objects file :
@@ -190,8 +199,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     
     private static final String XML_TAG_PARAMETERS = "parameters";
     
-    private String logSizeLimit;
-
+    
 	private ObjectRevision objectRevision;
 	
     private RepositoryLock repositoryLock;
@@ -220,8 +228,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		databases = new ArrayList<DatabaseMeta>();
 		slaveServers = new ArrayList<SlaveServer>();
 
-		logConnection = null;
-		logTable = null;
+		jobLogTable = JobLogTable.getDefault();
+		
 		arguments = null;
 
 		max_undo = Const.MAX_UNDO;
@@ -242,9 +250,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		jobStatus = -1;
 		jobVersion = null;
 		extendedDescription = null;
-		useBatchId = true;
-		logfieldUsed = true;
-
+		
 		// setInternalKettleVariables(); Don't clear the internal variables for
 		// ad-hoc jobs, it's ruins the previews
 		// etc.
@@ -435,13 +441,13 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         this.filename = newFilename;
         setInternalKettleVariables();
     }
-    
-	public DatabaseMeta getLogConnection() {
-		return logConnection;
-	}
 
-	public void setLogConnection(DatabaseMeta ci) {
-		logConnection = ci;
+    public JobLogTable getJobLogTable() {
+		return jobLogTable;
+	}
+    
+    public void setJobLogTable(JobLogTable jobLogTable) {
+		this.jobLogTable = jobLogTable;
 	}
 
 	/**
@@ -528,7 +534,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			}
 		}
 
-		if (logConnection != null && logConnection.equals(databaseMeta))
+		if (jobLogTable.getDatabaseMeta()!= null && jobLogTable.getDatabaseMeta().equals(databaseMeta))
 			return true;
 
 		return false;
@@ -555,7 +561,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		if (Props.isInitialized())
 			props = Props.getInstance();
 
-		DatabaseMeta ci = getLogConnection();
 		StringBuffer retval = new StringBuffer(500);
 
 		retval.append("<").append(XML_TAG).append(">").append(Const.CR); //$NON-NLS-1$
@@ -612,14 +617,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		}
 		retval.append("    ").append(XMLHandler.closeTag(XML_TAG_SLAVESERVERS)).append(Const.CR); //$NON-NLS-1$
 
-		retval.append("  ").append(XMLHandler.addTagValue("logconnection", ci == null ? "" : ci.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		retval.append("  ").append(XMLHandler.addTagValue("logtable", logTable)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("  ").append(XMLHandler.addTagValue("size_limit_lines", logSizeLimit)); //$NON-NLS-1$ //$NON-NLS-2$
-
-		retval.append("   ").append(XMLHandler.addTagValue("use_batchid", useBatchId)); //$NON-NLS-1$ //$NON-NLS-2$
+		// Append the job logging information...
+		//
+		retval.append(jobLogTable.getXML());		
+        
 		retval.append("   ").append(XMLHandler.addTagValue("pass_batchid", batchIdPassed)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("   ").append(XMLHandler.addTagValue("use_logfield", logfieldUsed)); //$NON-NLS-1$ //$NON-NLS-2$
-
 		retval.append("   ").append(XMLHandler.addTagValue("shared_objects_file", sharedObjectsFile)); // $NON-NLS-1$
 
 		retval.append("  <entries>").append(Const.CR); //$NON-NLS-1$
@@ -854,14 +856,21 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			/*
 			 * Get the log database connection & log table
 			 */
-			String logcon = XMLHandler.getTagValue(jobnode, "logconnection"); //$NON-NLS-1$
-			logConnection = findDatabase(logcon);
-			logTable = XMLHandler.getTagValue(jobnode, "logtable"); //$NON-NLS-1$
+			// Backward compatibility...
+			//
+			Node jobLogNode = XMLHandler.getSubNode(jobnode, JobLogTable.XML_TAG);
+			if (jobLogNode==null) {
+				// Load the XML
+				//
+				jobLogTable.setDatabaseMeta( findDatabase(XMLHandler.getTagValue(jobnode, "logconnection")) );
+				jobLogTable.setTableName( XMLHandler.getTagValue(jobnode, "logtable") );
+				jobLogTable.setBatchIdUsed( "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_batchid")) );
+				jobLogTable.setLogFieldUsed( "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_logfield")) );
+			} else {
+				jobLogTable.loadXML(jobLogNode, databases);
+			}
 
-			useBatchId = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_batchid")); //$NON-NLS-1$ //$NON-NLS-2$
 			batchIdPassed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "pass_batchid")); //$NON-NLS-1$ //$NON-NLS-2$
-			logfieldUsed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_logfield")); //$NON-NLS-1$ //$NON-NLS-2$
-            logSizeLimit = XMLHandler.getTagValue(jobnode, "size_limit_lines"); //$NON-NLS-1$ //$NON-NLS-2$
 
 			/*
 			 * read the job entries...
@@ -1713,36 +1722,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
-	 * @return Returns the logfieldUsed.
-	 */
-	public boolean isLogfieldUsed() {
-		return logfieldUsed;
-	}
-
-	/**
-	 * @param logfieldUsed
-	 *            The logfieldUsed to set.
-	 */
-	public void setLogfieldUsed(boolean logfieldUsed) {
-		this.logfieldUsed = logfieldUsed;
-	}
-
-	/**
-	 * @return Returns the useBatchId.
-	 */
-	public boolean isBatchIdUsed() {
-		return useBatchId;
-	}
-
-	/**
-	 * @param useBatchId
-	 *            The useBatchId to set.
-	 */
-	public void setUseBatchId(boolean useBatchId) {
-		this.useBatchId = useBatchId;
-	}
-
-	/**
 	 * @return Returns the batchIdPassed.
 	 */
 	public boolean isBatchIdPassed() {
@@ -1781,18 +1760,18 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		// Also check the sql for the logtable...
 		if (monitor != null)
 			monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.GettingSQLStatementsForJobLogTables")); //$NON-NLS-1$
-		if (logConnection != null && logTable != null && logTable.length() > 0) {
-			Database db = new Database(this, logConnection);
+		if (jobLogTable.getDatabaseMeta()!=null && !Const.isEmpty(jobLogTable.getTableName())) {
+			Database db = new Database(this, jobLogTable.getDatabaseMeta());
 			try {
 				db.connect();
-				RowMetaInterface fields = Database.getJobLogrecordFields(false, useBatchId, logfieldUsed);
-				String sql = db.getDDL(logTable, fields);
+				RowMetaInterface fields = jobLogTable.getLogRecord(LogStatus.START, null).getRowMeta();
+				String sql = db.getDDL(jobLogTable.getTableName(), fields);
 				if (sql != null && sql.length() > 0) {
-					SQLStatement stat = new SQLStatement(BaseMessages.getString(PKG, "JobMeta.SQLFeedback.ThisJob"), logConnection, sql); //$NON-NLS-1$
+					SQLStatement stat = new SQLStatement(BaseMessages.getString(PKG, "JobMeta.SQLFeedback.ThisJob"), jobLogTable.getDatabaseMeta(), sql); //$NON-NLS-1$
 					stats.add(stat);
 				}
 			} catch (KettleDatabaseException dbe) {
-				SQLStatement stat = new SQLStatement(BaseMessages.getString(PKG, "JobMeta.SQLFeedback.ThisJob"), logConnection, null); //$NON-NLS-1$
+				SQLStatement stat = new SQLStatement(BaseMessages.getString(PKG, "JobMeta.SQLFeedback.ThisJob"), jobLogTable.getDatabaseMeta(), null); //$NON-NLS-1$
 				stat.setError(BaseMessages.getString(PKG, "JobMeta.SQLFeedback.ErrorObtainingJobLogTableInfo") + dbe.getMessage()); //$NON-NLS-1$
 				stats.add(stat);
 			} finally {
@@ -1805,21 +1784,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			monitor.done();
 
 		return stats;
-	}
-
-	/**
-	 * @return Returns the logTable.
-	 */
-	public String getLogTable() {
-		return logTable;
-	}
-
-	/**
-	 * @param logTable
-	 *            The logTable to set.
-	 */
-	public void setLogTable(String logTable) {
-		this.logTable = logTable;
 	}
 
 	/**
@@ -2587,20 +2551,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	
 	public void copyParametersFrom(NamedParams params) {
 		namedParams.copyParametersFrom(params);		
-	}
-
-	/**
-	 * @return the logSizeLimit
-	 */
-	public String getLogSizeLimit() {
-		return logSizeLimit;
-	}
-
-	/**
-	 * @param logSizeLimit the logSizeLimit to set
-	 */
-	public void setLogSizeLimit(String logSizeLimit) {
-		this.logSizeLimit = logSizeLimit;
 	}
 	
 	public List<JobEntryCopy> getJobCopies() {

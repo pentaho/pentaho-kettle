@@ -3,6 +3,7 @@ package org.pentaho.di.core.logging;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.xml.XMLHandler;
 
@@ -139,5 +140,9 @@ abstract class BaseLogTable {
 
 		
 		return retval.toString();
+	}
+	
+	public boolean isDefined() {
+		return databaseMeta!=null && !Const.isEmpty(tableName);
 	}
 }

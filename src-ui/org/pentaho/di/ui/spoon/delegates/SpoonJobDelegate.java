@@ -937,7 +937,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 				tabItem.setControl(jobGraph);
 
 				// OK, also see if we need to open a new history window.
-				if (jobMeta.getLogConnection() != null && !Const.isEmpty(jobMeta.getLogTable()))
+				if (jobMeta.getJobLogTable().getDatabaseMeta() != null && !Const.isEmpty(jobMeta.getJobLogTable().getTableName()))
 				{
 					jobGraph.addAllTabs();
 					jobGraph.extraViewTabFolder.setSelection(jobGraph.jobHistoryDelegate.getJobHistoryTab());

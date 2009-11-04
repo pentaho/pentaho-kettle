@@ -291,7 +291,6 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 					jobMeta.setExtendedDescription(jobRow.getString(KettleDatabaseRepository.FIELD_JOB_EXTENDED_DESCRIPTION, null) ); //$NON-NLS-1$
 					jobMeta.setJobversion( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_JOB_VERSION, null) ); //$NON-NLS-1$
 					jobMeta.setJobstatus( Const.toInt(jobRow.getString(KettleDatabaseRepository.FIELD_JOB_JOB_STATUS, null), -1) ); //$NON-NLS-1$
-					jobMeta.setLogTable( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_TABLE_NAME_LOG, null) ); //$NON-NLS-1$
 	
 					jobMeta.setCreatedUser( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_CREATED_USER, null) ); //$NON-NLS-1$
 					jobMeta.setCreatedDate( jobRow.getDate(KettleDatabaseRepository.FIELD_JOB_CREATED_DATE, new Date()) ); //$NON-NLS-1$
@@ -303,16 +302,18 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 					if (id_logdb > 0) {
 						// Get the logconnection
 						//
-						jobMeta.setLogConnection( repository.loadDatabaseMeta(new LongObjectId(id_logdb), null)); // reads last version
-						jobMeta.getLogConnection().shareVariablesWith(jobMeta);
+						jobMeta.getJobLogTable().setDatabaseMeta( repository.loadDatabaseMeta(new LongObjectId(id_logdb), null)); // reads last version
+						jobMeta.getJobLogTable().getDatabaseMeta().shareVariablesWith(jobMeta);
 					}
-					jobMeta.setUseBatchId( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_USE_BATCH_ID, false) ); //$NON-NLS-1$
-					jobMeta.setBatchIdPassed(  jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID, false) ); //$NON-NLS-1$
-					jobMeta.setLogfieldUsed( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_USE_LOGFIELD, false) ); //$NON-NLS-1$
+					jobMeta.getJobLogTable().setTableName( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_TABLE_NAME_LOG, null) ); //$NON-NLS-1$
+					jobMeta.getJobLogTable().setBatchIdUsed( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_USE_BATCH_ID, false) ); //$NON-NLS-1$
+					jobMeta.getJobLogTable().setLogFieldUsed( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_USE_LOGFIELD, false) ); //$NON-NLS-1$
+					jobMeta.getJobLogTable().setLogSizeLimit( getJobAttributeString(jobMeta.getObjectId(), 0, KettleDatabaseRepository.JOB_ATTRIBUTE_LOG_SIZE_LIMIT) );
 					
+					jobMeta.setBatchIdPassed(  jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID, false) ); //$NON-NLS-1$
+
 					// The log size limit is an attribute
 					//
-					jobMeta.setLogSizeLimit( getJobAttributeString(jobMeta.getObjectId(), 0, KettleDatabaseRepository.JOB_ATTRIBUTE_LOG_SIZE_LIMIT) );
 	
 					if (monitor != null)
 						monitor.worked(1);
@@ -743,16 +744,17 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_JOB_VERSION, ValueMetaInterface.TYPE_STRING), jobMeta.getJobversion());
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_JOB_STATUS, ValueMetaInterface.TYPE_INTEGER), new Long(jobMeta.getJobstatus()  <0 ? -1L : jobMeta.getJobstatus()));
 
-		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER), jobMeta.getLogConnection()!=null ? jobMeta.getLogConnection().getObjectId() : -1L);
-		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING), jobMeta.getLogTable());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER), jobMeta.getJobLogTable().getDatabaseMeta()!=null ? jobMeta.getJobLogTable().getDatabaseMeta().getObjectId() : -1L);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING), jobMeta.getJobLogTable().getTableName());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_USE_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.getJobLogTable().isBatchIdUsed());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.getJobLogTable().isLogFieldUsed());
+		repository.connectionDelegate.insertJobAttribute(jobMeta.getObjectId(), 0, KettleDatabaseRepository.JOB_ATTRIBUTE_LOG_SIZE_LIMIT, 0, jobMeta.getJobLogTable().getLogSizeLimit());
 
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_CREATED_USER, ValueMetaInterface.TYPE_STRING), jobMeta.getCreatedUser());
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_CREATED_DATE, ValueMetaInterface.TYPE_DATE), jobMeta.getCreatedDate());
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_MODIFIED_USER, ValueMetaInterface.TYPE_STRING), jobMeta.getModifiedUser());
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE), jobMeta.getModifiedDate());
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_USE_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isBatchIdUsed());
         table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isBatchIdPassed());
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isLogfieldUsed());
         table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING), jobMeta.getSharedObjectsFile());
         
         repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOB);
@@ -761,12 +763,11 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
         if (log.isDebug()) log.logDebug("Inserted new record into table "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" with data : " + table);
         repository.connectionDelegate.getDatabase().closeInsert();
 		
-        repository.connectionDelegate.insertJobAttribute(jobMeta.getObjectId(), 0, KettleDatabaseRepository.JOB_ATTRIBUTE_LOG_SIZE_LIMIT, 0, jobMeta.getLogSizeLimit());
         
         
 		// Save the logging connection link...
-		if (jobMeta.getLogConnection()!=null) {
-			repository.insertJobEntryDatabase(jobMeta.getObjectId(), null, jobMeta.getLogConnection().getObjectId());
+		if (jobMeta.getJobLogTable().getDatabaseMeta()!=null) {
+			repository.insertJobEntryDatabase(jobMeta.getObjectId(), null, jobMeta.getJobLogTable().getDatabaseMeta().getObjectId());
 		}
 	}
 

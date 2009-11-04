@@ -10,12 +10,11 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.job.Job;
 import org.w3c.dom.Node;
 
 /**
- * This class describes a transformation logging table
+ * This class describes a job logging table
  * 
  * @author matt
  *
@@ -28,7 +27,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 	
 	public enum ID {
 		
-		ID_BATCH("ID_BATCH"),
+		ID_JOB("ID_JOB"),
 		CHANNEL_ID("CHANNEL_ID"),
 		JOBNAME("JOBNAME"),
 		STATUS("STATUS"),
@@ -102,12 +101,12 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
         retval.append(XMLHandler.addTagValue("size_limit_lines", logSizeLimit)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append(XMLHandler.addTagValue("interval", logInterval)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append(super.getFieldsXML());
-		retval.append(XMLHandler.closeTag(XML_TAG));
+		retval.append(XMLHandler.closeTag(XML_TAG)).append(Const.CR);
 		
 		return retval.toString();
 	}
 
-	public void loadXML(Node node, List<DatabaseMeta> databases, List<StepMeta> steps) {
+	public void loadXML(Node node, List<DatabaseMeta> databases) {
 		databaseMeta = DatabaseMeta.findDatabase(databases, XMLHandler.getTagValue(node, "connection"));
 		schemaName = XMLHandler.getTagValue(node, "schema");
 		tableName = XMLHandler.getTagValue(node, "table");
@@ -119,7 +118,6 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 			Node fieldNode = XMLHandler.getSubNodeByNr(node, BaseLogTable.XML_TAG, i);
 			field.setFieldName( XMLHandler.getTagValue(fieldNode, "name") );
 			field.setEnabled( "Y".equalsIgnoreCase(XMLHandler.getTagValue(fieldNode, "enabled")) );
-			field.setSubject( StepMeta.findStep(steps, XMLHandler.getTagValue(fieldNode, "subject")) );
 		}
 	}
 
@@ -128,7 +126,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 	public static JobLogTable getDefault() {
 		JobLogTable table = new JobLogTable();
 		
-		table.fields.add( new LogTableField(ID.ID_BATCH.id, true, false, "ID_BATCH", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.BatchID"), ValueMetaInterface.TYPE_INTEGER, 8) );
+		table.fields.add( new LogTableField(ID.ID_JOB.id, true, false, "ID_BATCH", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.BatchID"), ValueMetaInterface.TYPE_INTEGER, 8) );
 		table.fields.add( new LogTableField(ID.CHANNEL_ID.id, false, false, "CHANNEL_ID", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.ChannelID"), ValueMetaInterface.TYPE_STRING, 255) );
 		table.fields.add( new LogTableField(ID.JOBNAME.id, true, false, "TRANSNAME", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.TransName"), ValueMetaInterface.TYPE_STRING, 255) );
 		table.fields.add( new LogTableField(ID.STATUS.id, true, false, "STATUS", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.Status"), ValueMetaInterface.TYPE_STRING, 15) );
@@ -146,7 +144,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 		table.fields.add( new LogTableField(ID.REPLAYDATE.id, true, false, "REPLAYDATE", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.ReplayDate"), ValueMetaInterface.TYPE_DATE, -1) );
 		table.fields.add( new LogTableField(ID.LOG_FIELD.id, true, false, "LOG_FIELD", BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LogField"), ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH) );
 		
-		table.findField(ID.ID_BATCH).setKey(true);
+		table.findField(ID.ID_JOB).setKey(true);
 		
 		return table;
 	}
@@ -164,11 +162,11 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 	}
 
 	public void setBatchIdUsed(boolean use) {
-		findField(ID.ID_BATCH).setEnabled(use);
+		findField(ID.ID_JOB).setEnabled(use);
 	}
 
 	public boolean isBatchIdUsed() {
-		return findField(ID.ID_BATCH).isEnabled();
+		return findField(ID.ID_JOB).isEnabled();
 	}
 
 	public void setLogFieldUsed(boolean use) {
@@ -244,22 +242,22 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 	 * @param status the log status to use
 	 */
 	public RowMetaAndData getLogRecord(LogStatus status, Object subject) {
-		if (subject==null || subject instanceof Trans) {
-			Trans trans = (Trans) subject;
+		if (subject==null || subject instanceof Job) {
+			Job job = (Job) subject;
 			Result result = null;
-			if (trans!=null) result = trans.getResult();
+			if (job!=null) result = job.getResult();
 			
 			RowMetaAndData row = new RowMetaAndData();
 			
 			for (LogTableField field : fields) {
 				if (field.isEnabled()) {
 					Object value = null;
-					if (trans!=null) {
+					if (job!=null) {
 						
 						switch(ID.valueOf(field.getId())){
-						case ID_BATCH : value = new Long(trans.getBatchId()); break;
-						case CHANNEL_ID : value = trans.getLogChannelId(); break;
-						case JOBNAME : value = trans.getName(); break;
+						case ID_JOB : value = new Long(job.getBatchId()); break;
+						case CHANNEL_ID : value = job.getLogChannelId(); break;
+						case JOBNAME : value = job.getName(); break;
 						case STATUS : value = status.getStatus(); break;
 						case LINES_READ : value = new Long(result.getNrLinesRead()); break;
 						case LINES_WRITTEN : value = new Long(result.getNrLinesWritten()); break;
@@ -268,13 +266,13 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 						case LINES_UPDATED : value = new Long(result.getNrLinesUpdated()); break;
 						case LINES_REJECTED : value = new Long(result.getNrLinesRejected()); break;
 						case ERRORS: value = new Long(result.getNrErrors()); break;
-						case STARTDATE: value = trans.getStartDate(); break;
-						case LOGDATE: value = trans.getLogDate(); break;
-						case ENDDATE: value = trans.getEndDate(); break;
-						case DEPDATE: value = trans.getDepDate(); break;
-						case REPLAYDATE: value = trans.getReplayDate(); break;
+						case STARTDATE: value = job.getStartDate(); break;
+						case LOGDATE: value = job.getLogDate(); break;
+						case ENDDATE: value = job.getEndDate(); break;
+						case DEPDATE: value = job.getDepDate(); break;
+						case REPLAYDATE: value = job.getStartDate(); break;
 						case LOG_FIELD: 
-							StringBuffer buffer = CentralLogStore.getAppender().getBuffer(trans.getLogChannelId(), true);
+							StringBuffer buffer = CentralLogStore.getAppender().getBuffer(job.getLogChannelId(), true);
 							value = buffer.append(Const.CR+"END"+Const.CR).toString();
 							break;
 						}
@@ -292,5 +290,8 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 		}
 	}
 
+	public String getLogTableType() {
+		return BaseMessages.getString(PKG, "JobLogTable.Type.Description");
+	}
 	
 }

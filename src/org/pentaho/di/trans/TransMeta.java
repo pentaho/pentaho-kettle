@@ -55,12 +55,15 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
+import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogStatus;
+import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.PerformanceLogTable;
+import org.pentaho.di.core.logging.StepLogTable;
 import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
@@ -154,10 +157,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     private String              filename;
 
-    // private String              stepPerformanceLogTable;
-    
     private TransLogTable       transLogTable;
     private PerformanceLogTable performanceLogTable;
+    private ChannelLogTable     channelLogTable;
+    private StepLogTable     	stepLogTable;
 
 
     private int                 sizeRowset;
@@ -444,6 +447,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         
         transLogTable = TransLogTable.getDefault();
         performanceLogTable = PerformanceLogTable.getDefault();
+        channelLogTable = ChannelLogTable.getDefault();
+        stepLogTable = StepLogTable.getDefault();
         
         sizeRowset     = Const.ROWS_IN_ROWSET;
         sleepTimeEmpty = Const.TIMEOUT_GET_MILLIS;
@@ -2040,14 +2045,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         
         retval.append("    <log>").append(Const.CR); //$NON-NLS-1$
         
-        // Add the transformation logging information
+        // Add the metadata for the various logging tables
         //
         retval.append(transLogTable.getXML());
-        
-        // Add the step performance logging information...
-        //
         retval.append(performanceLogTable.getXML());
-        
+        retval.append(channelLogTable.getXML());
+        retval.append(stepLogTable.getXML());
         
         retval.append("    </log>").append(Const.CR); //$NON-NLS-1$
         retval.append("    <maxdate>").append(Const.CR); //$NON-NLS-1$
@@ -2582,6 +2585,14 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 				Node perfLogNode = XMLHandler.getSubNode(logNode, PerformanceLogTable.XML_TAG);
 				if (perfLogNode!=null) {
 					performanceLogTable.loadXML(perfLogNode, databases);
+				}
+				Node channelLogNode = XMLHandler.getSubNode(logNode, ChannelLogTable.XML_TAG);
+				if (channelLogNode!=null) {
+					channelLogTable.loadXML(channelLogNode, databases);
+				}
+				Node stepLogNode = XMLHandler.getSubNode(logNode, StepLogTable.XML_TAG);
+				if (stepLogNode!=null) {
+					stepLogTable.loadXML(stepLogNode, databases);
 				}
 			}
 
@@ -3989,31 +4000,33 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.GettingTheSQLForTransformationTask.Title2")); //$NON-NLS-1$
         if (transLogTable.getDatabaseMeta() != null && ( !Const.isEmpty(transLogTable.getTableName()) || !Const.isEmpty(performanceLogTable.getTableName())) )
         {
-            Database db = new Database(this, transLogTable.getDatabaseMeta());
-            db.shareVariablesWith(this);
             try
             {
-                db.connect();
-                
-                if (!Const.isEmpty(transLogTable.getTableName())) 
-                {
-	                RowMetaInterface fields = transLogTable.getLogRecord(LogStatus.START, null).getRowMeta();
-	                String sql = db.getDDL(transLogTable.getTableName(), fields);
-	                if (sql != null && sql.length() > 0)
-	                {
-	                    SQLStatement stat = new SQLStatement("<this transformation>", transLogTable.getDatabaseMeta(), sql); //$NON-NLS-1$
-	                    stats.add(stat);
-	                }
-                }
-                if (!Const.isEmpty(performanceLogTable.getTableName())) 
-                {
-	                RowMetaInterface fields = performanceLogTable.getLogRecord(LogStatus.START, null).getRowMeta();
-	                String sql = db.getDDL(performanceLogTable.getTableName(), fields);
-	                if (sql != null && sql.length() > 0)
-	                {
-	                    SQLStatement stat = new SQLStatement("<this transformation>", transLogTable.getDatabaseMeta(), sql); //$NON-NLS-1$
-	                    stats.add(stat);
-	                }
+                for (LogTableInterface logTable : new LogTableInterface[] { transLogTable, performanceLogTable, channelLogTable, stepLogTable, }) {
+                	if (logTable.getDatabaseMeta()!=null && !Const.isEmpty(logTable.getTableName())) {
+                		
+                		Database db =null;
+                		try {
+	                        db = new Database(this, transLogTable.getDatabaseMeta());
+	                        db.shareVariablesWith(this);
+	                        db.connect();
+
+	    	                RowMetaInterface fields = logTable.getLogRecord(LogStatus.START, null).getRowMeta();
+	    	                String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
+	    	                String sql = db.getDDL(schemaTable, fields);
+	    	                if (!Const.isEmpty(sql)) 
+	    	                {
+	    	                    SQLStatement stat = new SQLStatement("<this transformation>", transLogTable.getDatabaseMeta(), sql); //$NON-NLS-1$
+	    	                    stats.add(stat);
+	    	                }
+                		} catch(Exception e) {
+                			throw new KettleDatabaseException("Unable to connect to logging database ["+logTable.getDatabaseMeta()+"]", e);
+                		} finally {
+                			if (db!=null) {
+                				db.disconnect();
+                			}
+                		}
+                	}
                 }
             }
             catch (KettleDatabaseException dbe)
@@ -4021,10 +4034,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 SQLStatement stat = new SQLStatement("<this transformation>", transLogTable.getDatabaseMeta(), null); //$NON-NLS-1$
                 stat.setError(BaseMessages.getString(PKG, "TransMeta.SQLStatement.ErrorDesc.ErrorObtainingTransformationLogTableInfo") + dbe.getMessage()); //$NON-NLS-1$
                 stats.add(stat);
-            }
-            finally
-            {
-                db.disconnect();
             }
         }
         if (monitor != null) monitor.worked(1);
@@ -5813,5 +5822,34 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	public void setPerformanceLogTable(PerformanceLogTable performanceLogTable) {
 		this.performanceLogTable = performanceLogTable;
 	}
+
+	/**
+	 * @return the channelLogTable
+	 */
+	public ChannelLogTable getChannelLogTable() {
+		return channelLogTable;
+	}
+
+	/**
+	 * @param channelLogTable the channelLogTable to set
+	 */
+	public void setChannelLogTable(ChannelLogTable channelLogTable) {
+		this.channelLogTable = channelLogTable;
+	}
+
+	/**
+	 * @return the stepLogTable
+	 */
+	public StepLogTable getStepLogTable() {
+		return stepLogTable;
+	}
+
+	/**
+	 * @param stepLogTable the stepLogTable to set
+	 */
+	public void setStepLogTable(StepLogTable stepLogTable) {
+		this.stepLogTable = stepLogTable;
+	}
+	
 	
 }

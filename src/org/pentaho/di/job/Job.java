@@ -33,7 +33,6 @@ import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.gui.OverwritePrompter;
-import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -683,7 +682,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
 	//
 	// Handle logging at start
-	public boolean beginProcessing() throws KettleJobException
+	public boolean beginProcessing() throws KettleException
 	{
 		currentDate = new Date();
 		logDate     = new Date();
@@ -691,8 +690,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		endDate     = currentDate;
 		
 		resetErrors();
-		DatabaseMeta logcon = jobMeta.getLogConnection();
-		if (logcon!=null && !Const.isEmpty(jobMeta.getLogTable()))
+		DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
+		String tableName = jobMeta.getJobLogTable().getTableName();
+		
+		if (logcon!=null && !Const.isEmpty(tableName))
 		{
 			Database ldb = new Database(this, logcon);
 			ldb.shareVariablesWith(this);
@@ -707,21 +708,21 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 			    
                 // See if we have to add a batch id...
                 Long id_batch = new Long(1);
-                if (jobMeta.isBatchIdUsed())
+                if (jobMeta.getJobLogTable().isBatchIdUsed())
                 {
                     // Make sure we lock that table to avoid concurrency issues
                     //
-                    ldb.lockTables( new String[] { jobMeta.getLogTable(), } );
+                    ldb.lockTables( new String[] { tableName, } );
                     lockedTable=true;
                     
 					// Now insert value -1 to create a real write lock blocking the other requests.. FCFS
 					//
-					String sql = "INSERT INTO "+logcon.quoteField(jobMeta.getLogTable())+"("+logcon.quoteField("ID_JOB")+") values (-1)";
+					String sql = "INSERT INTO "+logcon.quoteField(tableName)+"("+logcon.quoteField("ID_JOB")+") values (-1)";
 					ldb.execStatement(sql);
 					
 					// Now this next lookup will stall on the other connections
 					//
-                    id_batch = ldb.getNextValue(null, jobMeta.getLogTable(), "ID_JOB");
+                    id_batch = ldb.getNextValue(null, tableName, "ID_JOB");
 
                     setBatchId( id_batch.longValue() );
                     if (getPassedBatchId()<=0) 
@@ -730,7 +731,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
                     }
                 }
 			    
-				Object[] lastr = ldb.getLastLogDate(jobMeta.getLogTable(), jobMeta.getName(), true, LogStatus.END); // $NON-NLS-1$
+				Object[] lastr = ldb.getLastLogDate(tableName, jobMeta.getName(), true, LogStatus.END); // $NON-NLS-1$
 				if (!Const.isEmpty(lastr))
 				{
                     Date last;
@@ -740,7 +741,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
                     }
                     catch (KettleValueException e)
                     {
-                        throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.ConversionError",""+jobMeta.getLogTable()), e);
+                        throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.ConversionError",""+tableName), e);
                     }
 					if (last!=null)
 					{
@@ -750,26 +751,30 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
 				depDate = currentDate;
 
-				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), LogStatus.START,  // $NON-NLS-1$ 
+				ldb.writeLogRecord(jobMeta.getJobLogTable(), LogStatus.START, this);
+				
+				/*
+				ldb.writeLogRecord(tableName, jobMeta.getJobLogTable().isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), LogStatus.START,  // $NON-NLS-1$ 
 				                   0L, 0L, 0L, 0L, 0L, 0L, 
 				                   startDate, endDate, logDate, depDate, currentDate,
 								   null
 								   );
+				*/
                 if (lockedTable) {
 
                 	// Remove the -1 record again...
                 	//
-					String sql = "DELETE FROM "+logcon.quoteField(jobMeta.getLogTable())+" WHERE "+logcon.quoteField("ID_JOB")+"= -1";
+					String sql = "DELETE FROM "+logcon.quoteField(tableName)+" WHERE "+logcon.quoteField("ID_JOB")+"= -1";
 					ldb.execStatement(sql);
 
-                	ldb.unlockTables( new String[] { jobMeta.getLogTable(), } );
+                	ldb.unlockTables( new String[] { tableName, } );
                 }
 				ldb.disconnect();
 			}
 			catch(KettleDatabaseException dbe)
 			{
 				addErrors(1);  // This is even before actual execution 
-				throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.UnableToProcessLoggingStart",""+jobMeta.getLogTable()), dbe);
+				throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.UnableToProcessLoggingStart",""+tableName), dbe);
 			}
 			finally
 			{
@@ -777,24 +782,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 			}
 		}
 
-		/*
-        if (jobMeta.isLogfieldUsed())
-        {
-            stringAppender = LogWriter.createStringAppender();
-            
-            // Set a max number of lines to prevent out of memory errors...
-            //
-            String logLimit = environmentSubstitute(jobMeta.getLogSizeLimit());
-            if (Const.isEmpty(logLimit)) {
-            	logLimit = environmentSubstitute(Const.KETTLE_LOG_SIZE_LIMIT);
-            }
-            stringAppender.setMaxNrLines(Const.toInt(logLimit,0));
-            
-            LogWriter.getInstance().addAppender(stringAppender);
-            stringAppender.setBuffer(new StringBuffer("START"+Const.CR));
-        }
-        */
-        
 		return true;
 	}
 	
@@ -804,31 +791,17 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	{
 		try
 		{
-			long read=res.getNrLinesRead();
-	        long written=res.getNrLinesWritten();
-	        long updated=res.getNrLinesUpdated();
-	        long errors=res.getNrErrors();
-	        long input=res.getNrLinesInput();
-	        long output=res.getNrLinesOutput();
-	        
 	        if (errors==0 && !res.getResult()) errors=1;
 			
 			logDate     = new Date();
 	
-	        // Change the logging back to stream...
-	        String log_string = null;
-	        
-	        if (jobMeta.isLogfieldUsed())
-	        {
-	        	StringBuffer stringBuffer = CentralLogStore.getAppender().getBuffer(log.getLogChannelId(), true);
-	        	log_string = stringBuffer.append(Const.CR+"END"+Const.CR).toString();
-	        }
-	        
 			/*
 			 * Sums errors, read, written, etc.
 			 */		
 	
-			DatabaseMeta logcon = jobMeta.getLogConnection();
+			DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
+			String tableName = jobMeta.getJobLogTable().getTableName();
+			
 			if (logcon!=null)
 			{
 				Database ldb = new Database(this, logcon);
@@ -836,16 +809,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 				try
 				{
 					ldb.connect();
-					ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), status, 
-					                   read,written,updated,input,output,errors, 
-					                   startDate, endDate, logDate, depDate, currentDate,
-									   log_string
-									   );
+					ldb.writeLogRecord(jobMeta.getJobLogTable(), status, this);
 				}
 				catch(KettleDatabaseException dbe)
 				{
 					addErrors(1);
-					throw new KettleJobException("Unable to end processing by writing log record to table "+jobMeta.getLogTable(), dbe);
+					throw new KettleJobException("Unable to end processing by writing log record to table "+tableName, dbe);
 				}
 				finally
 				{

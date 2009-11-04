@@ -3,6 +3,7 @@ package org.pentaho.di.core.logging;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -12,7 +13,7 @@ import org.pentaho.di.trans.performance.StepPerformanceSnapShot;
 import org.w3c.dom.Node;
 
 /**
- * This class describes a transformation logging table
+ * This class describes a step performance logging table
  * 
  * @author matt
  *
@@ -95,7 +96,7 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
         retval.append(XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append(XMLHandler.addTagValue("interval", logInterval)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append(super.getFieldsXML());
-		retval.append(XMLHandler.closeTag(XML_TAG));
+		retval.append(XMLHandler.closeTag(XML_TAG)).append(Const.CR);
 		
 		return retval.toString();
 	}
@@ -206,5 +207,8 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
 		}
 	}
 
+	public String getLogTableType() {
+		return BaseMessages.getString(PKG, "PerformanceLogTable.Type.Description");
+	}
 	
 }
